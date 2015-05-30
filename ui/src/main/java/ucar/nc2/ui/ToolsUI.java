@@ -1147,7 +1147,7 @@ public class ToolsUI extends JPanel {
     if (hdf4Panel != null) hdf4Panel.save();
     if (imagePanel != null) imagePanel.save();
     if (ncdumpPanel != null) ncdumpPanel.save();
-    if (ncdumpPanel != null) ncdumpPanel.save();
+    if (ncStreamPanel != null) ncStreamPanel.save();
     if (nc4viewer != null) nc4viewer.save();
     if (ncmlEditorPanel != null) ncmlEditorPanel.save();
     if (pointFeaturePanel != null) pointFeaturePanel.save();

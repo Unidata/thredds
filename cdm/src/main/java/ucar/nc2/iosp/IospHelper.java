@@ -409,7 +409,7 @@ public class IospHelper {
 
     if (data instanceof ArrayStructure) { // use NcStream encoding
       DataOutputStream os = new DataOutputStream(Channels.newOutputStream(channel));
-      return NcStream.encodeArrayStructure((ArrayStructure) data, os);
+      return NcStream.encodeArrayStructure((ArrayStructure) data, null, os);
     }
 
     DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel));
@@ -506,7 +506,7 @@ public class IospHelper {
       dataOut = new DataOutputStream(out);
 
     if (data instanceof ArrayStructure) { // use NcStream encoding
-      return NcStream.encodeArrayStructure((ArrayStructure) data, dataOut);
+      return NcStream.encodeArrayStructure((ArrayStructure) data, null, dataOut);
     }
 
     IndexIterator iterA = data.getIndexIterator();

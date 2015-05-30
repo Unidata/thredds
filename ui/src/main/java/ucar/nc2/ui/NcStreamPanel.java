@@ -144,7 +144,7 @@ public class NcStreamPanel extends JPanel {
     iosp = new NcStreamIosp();
     try {
       raf = new RandomAccessFile(filename, "r");
-      java.util.List<NcStreamIosp.NcsMess> ncm = new ArrayList<NcStreamIosp.NcsMess>();
+      java.util.List<NcStreamIosp.NcsMess> ncm = new ArrayList<>();
       iosp.openDebug(raf, ncd, ncm);
       for (NcStreamIosp.NcsMess m : ncm) {
         messages.add(new MessBean(m));
@@ -184,7 +184,15 @@ public class NcStreamPanel extends JPanel {
       return m.nelems;
     }
 
-    public long getFilePos() {
+    public String getDataType() {
+      return m.dataType == null ? "" : m.dataType.toString();
+    }
+
+    public String getVarname() {
+       return m.varName;
+     }
+
+     public long getFilePos() {
       return m.filePos;
     }
 

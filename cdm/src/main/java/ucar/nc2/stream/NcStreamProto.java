@@ -9,7 +9,7 @@ public final class NcStreamProto {
       com.google.protobuf.ExtensionRegistry registry) {
   }
   /**
-   * Protobuf enum {@code ncstream.DataType}
+   * Protobuf enum {@code DataType}
    */
   public enum DataType
       implements com.google.protobuf.ProtocolMessageEnum {
@@ -195,11 +195,11 @@ public final class NcStreamProto {
       this.value = value;
     }
 
-    // @@protoc_insertion_point(enum_scope:ncstream.DataType)
+    // @@protoc_insertion_point(enum_scope:DataType)
   }
 
   /**
-   * Protobuf enum {@code ncstream.Compress}
+   * Protobuf enum {@code Compress}
    */
   public enum Compress
       implements com.google.protobuf.ProtocolMessageEnum {
@@ -277,7 +277,7 @@ public final class NcStreamProto {
       this.value = value;
     }
 
-    // @@protoc_insertion_point(enum_scope:ncstream.Compress)
+    // @@protoc_insertion_point(enum_scope:Compress)
   }
 
   public interface AttributeOrBuilder
@@ -298,13 +298,13 @@ public final class NcStreamProto {
     com.google.protobuf.ByteString
         getNameBytes();
 
-    // required .ncstream.Attribute.Type type = 2;
+    // required .Attribute.Type type = 2;
     /**
-     * <code>required .ncstream.Attribute.Type type = 2;</code>
+     * <code>required .Attribute.Type type = 2;</code>
      */
     boolean hasType();
     /**
-     * <code>required .ncstream.Attribute.Type type = 2;</code>
+     * <code>required .Attribute.Type type = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.Attribute.Type getType();
 
@@ -383,7 +383,7 @@ public final class NcStreamProto {
     boolean getUnsigned();
   }
   /**
-   * Protobuf type {@code ncstream.Attribute}
+   * Protobuf type {@code Attribute}
    */
   public static final class Attribute extends
       com.google.protobuf.GeneratedMessage
@@ -489,12 +489,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Attribute_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Attribute_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Attribute.class, ucar.nc2.stream.NcStreamProto.Attribute.Builder.class);
     }
@@ -515,7 +515,7 @@ public final class NcStreamProto {
     }
 
     /**
-     * Protobuf enum {@code ncstream.Attribute.Type}
+     * Protobuf enum {@code Attribute.Type}
      */
     public enum Type
         implements com.google.protobuf.ProtocolMessageEnum {
@@ -638,7 +638,7 @@ public final class NcStreamProto {
         this.value = value;
       }
 
-      // @@protoc_insertion_point(enum_scope:ncstream.Attribute.Type)
+      // @@protoc_insertion_point(enum_scope:Attribute.Type)
     }
 
     private int bitField0_;
@@ -685,17 +685,17 @@ public final class NcStreamProto {
       }
     }
 
-    // required .ncstream.Attribute.Type type = 2;
+    // required .Attribute.Type type = 2;
     public static final int TYPE_FIELD_NUMBER = 2;
     private ucar.nc2.stream.NcStreamProto.Attribute.Type type_;
     /**
-     * <code>required .ncstream.Attribute.Type type = 2;</code>
+     * <code>required .Attribute.Type type = 2;</code>
      */
     public boolean hasType() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required .ncstream.Attribute.Type type = 2;</code>
+     * <code>required .Attribute.Type type = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Attribute.Type getType() {
       return type_;
@@ -970,19 +970,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Attribute}
+     * Protobuf type {@code Attribute}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.AttributeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Attribute_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Attribute_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Attribute.class, ucar.nc2.stream.NcStreamProto.Attribute.Builder.class);
       }
@@ -1028,7 +1028,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Attribute_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Attribute_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Attribute getDefaultInstanceForType() {
@@ -1229,22 +1229,22 @@ public final class NcStreamProto {
         return this;
       }
 
-      // required .ncstream.Attribute.Type type = 2;
+      // required .Attribute.Type type = 2;
       private ucar.nc2.stream.NcStreamProto.Attribute.Type type_ = ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING;
       /**
-       * <code>required .ncstream.Attribute.Type type = 2;</code>
+       * <code>required .Attribute.Type type = 2;</code>
        */
       public boolean hasType() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required .ncstream.Attribute.Type type = 2;</code>
+       * <code>required .Attribute.Type type = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Type getType() {
         return type_;
       }
       /**
-       * <code>required .ncstream.Attribute.Type type = 2;</code>
+       * <code>required .Attribute.Type type = 2;</code>
        */
       public Builder setType(ucar.nc2.stream.NcStreamProto.Attribute.Type value) {
         if (value == null) {
@@ -1256,7 +1256,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>required .ncstream.Attribute.Type type = 2;</code>
+       * <code>required .Attribute.Type type = 2;</code>
        */
       public Builder clearType() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -1512,7 +1512,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Attribute)
+      // @@protoc_insertion_point(builder_scope:Attribute)
     }
 
     static {
@@ -1520,7 +1520,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Attribute)
+    // @@protoc_insertion_point(class_scope:Attribute)
   }
 
   public interface DimensionOrBuilder
@@ -1610,7 +1610,7 @@ public final class NcStreamProto {
     boolean getIsPrivate();
   }
   /**
-   * Protobuf type {@code ncstream.Dimension}
+   * Protobuf type {@code Dimension}
    */
   public static final class Dimension extends
       com.google.protobuf.GeneratedMessage
@@ -1699,12 +1699,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Dimension_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Dimension_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Dimension.class, ucar.nc2.stream.NcStreamProto.Dimension.Builder.class);
     }
@@ -2002,19 +2002,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Dimension}
+     * Protobuf type {@code Dimension}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.DimensionOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Dimension_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Dimension_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Dimension.class, ucar.nc2.stream.NcStreamProto.Dimension.Builder.class);
       }
@@ -2058,7 +2058,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Dimension_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Dimension_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Dimension getDefaultInstanceForType() {
@@ -2419,7 +2419,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Dimension)
+      // @@protoc_insertion_point(builder_scope:Dimension)
     }
 
     static {
@@ -2427,7 +2427,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Dimension)
+    // @@protoc_insertion_point(class_scope:Dimension)
   }
 
   public interface VariableOrBuilder
@@ -2460,19 +2460,19 @@ public final class NcStreamProto {
     com.google.protobuf.ByteString
         getNameBytes();
 
-    // required .ncstream.DataType dataType = 2;
+    // required .DataType dataType = 2;
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      */
     boolean hasDataType();
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
-    // repeated .ncstream.Dimension shape = 3;
+    // repeated .Dimension shape = 3;
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2481,7 +2481,7 @@ public final class NcStreamProto {
     java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> 
         getShapeList();
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2489,7 +2489,7 @@ public final class NcStreamProto {
      */
     ucar.nc2.stream.NcStreamProto.Dimension getShape(int index);
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2497,7 +2497,7 @@ public final class NcStreamProto {
      */
     int getShapeCount();
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2506,7 +2506,7 @@ public final class NcStreamProto {
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
         getShapeOrBuilderList();
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2515,27 +2515,27 @@ public final class NcStreamProto {
     ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
         int index);
 
-    // repeated .ncstream.Attribute atts = 4;
+    // repeated .Attribute atts = 4;
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> 
         getAttsList();
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index);
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     int getAttsCount();
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
         getAttsOrBuilderList();
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
         int index);
@@ -2596,7 +2596,7 @@ public final class NcStreamProto {
         getEnumTypeBytes();
   }
   /**
-   * Protobuf type {@code ncstream.Variable}
+   * Protobuf type {@code Variable}
    */
   public static final class Variable extends
       com.google.protobuf.GeneratedMessage
@@ -2713,12 +2713,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Variable_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Variable_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Variable_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Variable_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Variable.class, ucar.nc2.stream.NcStreamProto.Variable.Builder.class);
     }
@@ -2794,27 +2794,27 @@ public final class NcStreamProto {
       }
     }
 
-    // required .ncstream.DataType dataType = 2;
+    // required .DataType dataType = 2;
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private ucar.nc2.stream.NcStreamProto.DataType dataType_;
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      */
     public boolean hasDataType() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
       return dataType_;
     }
 
-    // repeated .ncstream.Dimension shape = 3;
+    // repeated .Dimension shape = 3;
     public static final int SHAPE_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_;
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2824,7 +2824,7 @@ public final class NcStreamProto {
       return shape_;
     }
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2835,7 +2835,7 @@ public final class NcStreamProto {
       return shape_;
     }
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2845,7 +2845,7 @@ public final class NcStreamProto {
       return shape_.size();
     }
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2855,7 +2855,7 @@ public final class NcStreamProto {
       return shape_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference; could use hash id
@@ -2866,36 +2866,36 @@ public final class NcStreamProto {
       return shape_.get(index);
     }
 
-    // repeated .ncstream.Attribute atts = 4;
+    // repeated .Attribute atts = 4;
     public static final int ATTS_FIELD_NUMBER = 4;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_;
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
       return atts_;
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
         getAttsOrBuilderList() {
       return atts_;
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public int getAttsCount() {
       return atts_.size();
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
       return atts_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
         int index) {
@@ -3169,19 +3169,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Variable}
+     * Protobuf type {@code Variable}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.VariableOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Variable_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Variable_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Variable_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Variable_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Variable.class, ucar.nc2.stream.NcStreamProto.Variable.Builder.class);
       }
@@ -3239,7 +3239,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Variable_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Variable_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Variable getDefaultInstanceForType() {
@@ -3522,22 +3522,22 @@ public final class NcStreamProto {
         return this;
       }
 
-      // required .ncstream.DataType dataType = 2;
+      // required .DataType dataType = 2;
       private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        */
       public boolean hasDataType() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
         return dataType_;
       }
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -3549,7 +3549,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -3558,7 +3558,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // repeated .ncstream.Dimension shape = 3;
+      // repeated .Dimension shape = 3;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_ =
         java.util.Collections.emptyList();
       private void ensureShapeIsMutable() {
@@ -3572,7 +3572,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> shapeBuilder_;
 
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3586,7 +3586,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3600,7 +3600,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3614,7 +3614,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3635,7 +3635,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3653,7 +3653,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3673,7 +3673,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3694,7 +3694,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3712,7 +3712,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3730,7 +3730,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3748,7 +3748,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3765,7 +3765,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3782,7 +3782,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3793,7 +3793,7 @@ public final class NcStreamProto {
         return getShapeFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3807,7 +3807,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3822,7 +3822,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3833,7 +3833,7 @@ public final class NcStreamProto {
             ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3845,7 +3845,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference; could use hash id
@@ -3870,7 +3870,7 @@ public final class NcStreamProto {
         return shapeBuilder_;
       }
 
-      // repeated .ncstream.Attribute atts = 4;
+      // repeated .Attribute atts = 4;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
         java.util.Collections.emptyList();
       private void ensureAttsIsMutable() {
@@ -3884,7 +3884,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
 
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
         if (attsBuilder_ == null) {
@@ -3894,7 +3894,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public int getAttsCount() {
         if (attsBuilder_ == null) {
@@ -3904,7 +3904,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
         if (attsBuilder_ == null) {
@@ -3914,7 +3914,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder setAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
@@ -3931,7 +3931,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder setAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -3945,7 +3945,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAtts(ucar.nc2.stream.NcStreamProto.Attribute value) {
         if (attsBuilder_ == null) {
@@ -3961,7 +3961,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
@@ -3978,7 +3978,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAtts(
           ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -3992,7 +3992,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -4006,7 +4006,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAllAtts(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Attribute> values) {
@@ -4020,7 +4020,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder clearAtts() {
         if (attsBuilder_ == null) {
@@ -4033,7 +4033,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder removeAtts(int index) {
         if (attsBuilder_ == null) {
@@ -4046,14 +4046,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder getAttsBuilder(
           int index) {
         return getAttsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
           int index) {
@@ -4063,7 +4063,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
            getAttsOrBuilderList() {
@@ -4074,14 +4074,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder() {
         return getAttsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder(
           int index) {
@@ -4089,7 +4089,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute.Builder> 
            getAttsBuilderList() {
@@ -4293,7 +4293,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Variable)
+      // @@protoc_insertion_point(builder_scope:Variable)
     }
 
     static {
@@ -4301,7 +4301,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Variable)
+    // @@protoc_insertion_point(class_scope:Variable)
   }
 
   public interface StructureOrBuilder
@@ -4334,9 +4334,9 @@ public final class NcStreamProto {
     com.google.protobuf.ByteString
         getNameBytes();
 
-    // required .ncstream.DataType dataType = 2;
+    // required .DataType dataType = 2;
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      *
      * <pre>
      * struct or seq
@@ -4344,7 +4344,7 @@ public final class NcStreamProto {
      */
     boolean hasDataType();
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      *
      * <pre>
      * struct or seq
@@ -4352,9 +4352,9 @@ public final class NcStreamProto {
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
-    // repeated .ncstream.Dimension shape = 3;
+    // repeated .Dimension shape = 3;
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4363,7 +4363,7 @@ public final class NcStreamProto {
     java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> 
         getShapeList();
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4371,7 +4371,7 @@ public final class NcStreamProto {
      */
     ucar.nc2.stream.NcStreamProto.Dimension getShape(int index);
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4379,7 +4379,7 @@ public final class NcStreamProto {
      */
     int getShapeCount();
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4388,7 +4388,7 @@ public final class NcStreamProto {
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
         getShapeOrBuilderList();
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4397,83 +4397,83 @@ public final class NcStreamProto {
     ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
         int index);
 
-    // repeated .ncstream.Attribute atts = 4;
+    // repeated .Attribute atts = 4;
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> 
         getAttsList();
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index);
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     int getAttsCount();
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
         getAttsOrBuilderList();
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
         int index);
 
-    // repeated .ncstream.Variable vars = 5;
+    // repeated .Variable vars = 5;
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Variable> 
         getVarsList();
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     ucar.nc2.stream.NcStreamProto.Variable getVars(int index);
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     int getVarsCount();
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
         getVarsOrBuilderList();
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     ucar.nc2.stream.NcStreamProto.VariableOrBuilder getVarsOrBuilder(
         int index);
 
-    // repeated .ncstream.Structure structs = 6;
+    // repeated .Structure structs = 6;
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Structure> 
         getStructsList();
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     ucar.nc2.stream.NcStreamProto.Structure getStructs(int index);
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     int getStructsCount();
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
         getStructsOrBuilderList();
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     ucar.nc2.stream.NcStreamProto.StructureOrBuilder getStructsOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code ncstream.Structure}
+   * Protobuf type {@code Structure}
    */
   public static final class Structure extends
       com.google.protobuf.GeneratedMessage
@@ -4597,12 +4597,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Structure_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Structure_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Structure_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Structure_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Structure.class, ucar.nc2.stream.NcStreamProto.Structure.Builder.class);
     }
@@ -4678,11 +4678,11 @@ public final class NcStreamProto {
       }
     }
 
-    // required .ncstream.DataType dataType = 2;
+    // required .DataType dataType = 2;
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private ucar.nc2.stream.NcStreamProto.DataType dataType_;
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      *
      * <pre>
      * struct or seq
@@ -4692,7 +4692,7 @@ public final class NcStreamProto {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      *
      * <pre>
      * struct or seq
@@ -4702,11 +4702,11 @@ public final class NcStreamProto {
       return dataType_;
     }
 
-    // repeated .ncstream.Dimension shape = 3;
+    // repeated .Dimension shape = 3;
     public static final int SHAPE_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_;
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4716,7 +4716,7 @@ public final class NcStreamProto {
       return shape_;
     }
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4727,7 +4727,7 @@ public final class NcStreamProto {
       return shape_;
     }
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4737,7 +4737,7 @@ public final class NcStreamProto {
       return shape_.size();
     }
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4747,7 +4747,7 @@ public final class NcStreamProto {
       return shape_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Dimension shape = 3;</code>
+     * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
      * actual dimension instead of reference
@@ -4758,108 +4758,108 @@ public final class NcStreamProto {
       return shape_.get(index);
     }
 
-    // repeated .ncstream.Attribute atts = 4;
+    // repeated .Attribute atts = 4;
     public static final int ATTS_FIELD_NUMBER = 4;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_;
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
       return atts_;
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
         getAttsOrBuilderList() {
       return atts_;
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public int getAttsCount() {
       return atts_.size();
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
       return atts_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 4;</code>
+     * <code>repeated .Attribute atts = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
         int index) {
       return atts_.get(index);
     }
 
-    // repeated .ncstream.Variable vars = 5;
+    // repeated .Variable vars = 5;
     public static final int VARS_FIELD_NUMBER = 5;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_;
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
       return vars_;
     }
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
         getVarsOrBuilderList() {
       return vars_;
     }
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     public int getVarsCount() {
       return vars_.size();
     }
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Variable getVars(int index) {
       return vars_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Variable vars = 5;</code>
+     * <code>repeated .Variable vars = 5;</code>
      */
     public ucar.nc2.stream.NcStreamProto.VariableOrBuilder getVarsOrBuilder(
         int index) {
       return vars_.get(index);
     }
 
-    // repeated .ncstream.Structure structs = 6;
+    // repeated .Structure structs = 6;
     public static final int STRUCTS_FIELD_NUMBER = 6;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_;
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
       return structs_;
     }
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
         getStructsOrBuilderList() {
       return structs_;
     }
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     public int getStructsCount() {
       return structs_.size();
     }
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Structure getStructs(int index) {
       return structs_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Structure structs = 6;</code>
+     * <code>repeated .Structure structs = 6;</code>
      */
     public ucar.nc2.stream.NcStreamProto.StructureOrBuilder getStructsOrBuilder(
         int index) {
@@ -5042,19 +5042,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Structure}
+     * Protobuf type {@code Structure}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.StructureOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Structure_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Structure_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Structure_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Structure_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Structure.class, ucar.nc2.stream.NcStreamProto.Structure.Builder.class);
       }
@@ -5120,7 +5120,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Structure_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Structure_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Structure getDefaultInstanceForType() {
@@ -5462,10 +5462,10 @@ public final class NcStreamProto {
         return this;
       }
 
-      // required .ncstream.DataType dataType = 2;
+      // required .DataType dataType = 2;
       private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        *
        * <pre>
        * struct or seq
@@ -5475,7 +5475,7 @@ public final class NcStreamProto {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        *
        * <pre>
        * struct or seq
@@ -5485,7 +5485,7 @@ public final class NcStreamProto {
         return dataType_;
       }
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        *
        * <pre>
        * struct or seq
@@ -5501,7 +5501,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        *
        * <pre>
        * struct or seq
@@ -5514,7 +5514,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // repeated .ncstream.Dimension shape = 3;
+      // repeated .Dimension shape = 3;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> shape_ =
         java.util.Collections.emptyList();
       private void ensureShapeIsMutable() {
@@ -5528,7 +5528,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> shapeBuilder_;
 
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5542,7 +5542,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5556,7 +5556,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5570,7 +5570,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5591,7 +5591,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5609,7 +5609,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5629,7 +5629,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5650,7 +5650,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5668,7 +5668,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5686,7 +5686,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5704,7 +5704,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5721,7 +5721,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5738,7 +5738,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5749,7 +5749,7 @@ public final class NcStreamProto {
         return getShapeFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5763,7 +5763,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5778,7 +5778,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5789,7 +5789,7 @@ public final class NcStreamProto {
             ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5801,7 +5801,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Dimension shape = 3;</code>
+       * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
        * actual dimension instead of reference
@@ -5826,7 +5826,7 @@ public final class NcStreamProto {
         return shapeBuilder_;
       }
 
-      // repeated .ncstream.Attribute atts = 4;
+      // repeated .Attribute atts = 4;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
         java.util.Collections.emptyList();
       private void ensureAttsIsMutable() {
@@ -5840,7 +5840,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
 
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
         if (attsBuilder_ == null) {
@@ -5850,7 +5850,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public int getAttsCount() {
         if (attsBuilder_ == null) {
@@ -5860,7 +5860,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
         if (attsBuilder_ == null) {
@@ -5870,7 +5870,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder setAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
@@ -5887,7 +5887,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder setAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -5901,7 +5901,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAtts(ucar.nc2.stream.NcStreamProto.Attribute value) {
         if (attsBuilder_ == null) {
@@ -5917,7 +5917,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
@@ -5934,7 +5934,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAtts(
           ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -5948,7 +5948,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -5962,7 +5962,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder addAllAtts(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Attribute> values) {
@@ -5976,7 +5976,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder clearAtts() {
         if (attsBuilder_ == null) {
@@ -5989,7 +5989,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public Builder removeAtts(int index) {
         if (attsBuilder_ == null) {
@@ -6002,14 +6002,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder getAttsBuilder(
           int index) {
         return getAttsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
           int index) {
@@ -6019,7 +6019,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
            getAttsOrBuilderList() {
@@ -6030,14 +6030,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder() {
         return getAttsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder(
           int index) {
@@ -6045,7 +6045,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 4;</code>
+       * <code>repeated .Attribute atts = 4;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute.Builder> 
            getAttsBuilderList() {
@@ -6066,7 +6066,7 @@ public final class NcStreamProto {
         return attsBuilder_;
       }
 
-      // repeated .ncstream.Variable vars = 5;
+      // repeated .Variable vars = 5;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_ =
         java.util.Collections.emptyList();
       private void ensureVarsIsMutable() {
@@ -6080,7 +6080,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Variable, ucar.nc2.stream.NcStreamProto.Variable.Builder, ucar.nc2.stream.NcStreamProto.VariableOrBuilder> varsBuilder_;
 
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
         if (varsBuilder_ == null) {
@@ -6090,7 +6090,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public int getVarsCount() {
         if (varsBuilder_ == null) {
@@ -6100,7 +6100,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable getVars(int index) {
         if (varsBuilder_ == null) {
@@ -6110,7 +6110,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder setVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable value) {
@@ -6127,7 +6127,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder setVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable.Builder builderForValue) {
@@ -6141,7 +6141,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addVars(ucar.nc2.stream.NcStreamProto.Variable value) {
         if (varsBuilder_ == null) {
@@ -6157,7 +6157,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable value) {
@@ -6174,7 +6174,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addVars(
           ucar.nc2.stream.NcStreamProto.Variable.Builder builderForValue) {
@@ -6188,7 +6188,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable.Builder builderForValue) {
@@ -6202,7 +6202,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder addAllVars(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Variable> values) {
@@ -6216,7 +6216,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder clearVars() {
         if (varsBuilder_ == null) {
@@ -6229,7 +6229,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public Builder removeVars(int index) {
         if (varsBuilder_ == null) {
@@ -6242,14 +6242,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable.Builder getVarsBuilder(
           int index) {
         return getVarsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.VariableOrBuilder getVarsOrBuilder(
           int index) {
@@ -6259,7 +6259,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
            getVarsOrBuilderList() {
@@ -6270,14 +6270,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable.Builder addVarsBuilder() {
         return getVarsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Variable.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable.Builder addVarsBuilder(
           int index) {
@@ -6285,7 +6285,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Variable.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 5;</code>
+       * <code>repeated .Variable vars = 5;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Variable.Builder> 
            getVarsBuilderList() {
@@ -6306,7 +6306,7 @@ public final class NcStreamProto {
         return varsBuilder_;
       }
 
-      // repeated .ncstream.Structure structs = 6;
+      // repeated .Structure structs = 6;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_ =
         java.util.Collections.emptyList();
       private void ensureStructsIsMutable() {
@@ -6320,7 +6320,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Structure, ucar.nc2.stream.NcStreamProto.Structure.Builder, ucar.nc2.stream.NcStreamProto.StructureOrBuilder> structsBuilder_;
 
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
         if (structsBuilder_ == null) {
@@ -6330,7 +6330,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public int getStructsCount() {
         if (structsBuilder_ == null) {
@@ -6340,7 +6340,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure getStructs(int index) {
         if (structsBuilder_ == null) {
@@ -6350,7 +6350,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder setStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure value) {
@@ -6367,7 +6367,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder setStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
@@ -6381,7 +6381,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addStructs(ucar.nc2.stream.NcStreamProto.Structure value) {
         if (structsBuilder_ == null) {
@@ -6397,7 +6397,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure value) {
@@ -6414,7 +6414,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addStructs(
           ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
@@ -6428,7 +6428,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
@@ -6442,7 +6442,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder addAllStructs(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Structure> values) {
@@ -6456,7 +6456,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder clearStructs() {
         if (structsBuilder_ == null) {
@@ -6469,7 +6469,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public Builder removeStructs(int index) {
         if (structsBuilder_ == null) {
@@ -6482,14 +6482,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure.Builder getStructsBuilder(
           int index) {
         return getStructsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.StructureOrBuilder getStructsOrBuilder(
           int index) {
@@ -6499,7 +6499,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
            getStructsOrBuilderList() {
@@ -6510,14 +6510,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure.Builder addStructsBuilder() {
         return getStructsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Structure.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure.Builder addStructsBuilder(
           int index) {
@@ -6525,7 +6525,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Structure.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 6;</code>
+       * <code>repeated .Structure structs = 6;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Structure.Builder> 
            getStructsBuilderList() {
@@ -6546,7 +6546,7 @@ public final class NcStreamProto {
         return structsBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Structure)
+      // @@protoc_insertion_point(builder_scope:Structure)
     }
 
     static {
@@ -6554,7 +6554,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Structure)
+    // @@protoc_insertion_point(class_scope:Structure)
   }
 
   public interface EnumTypedefOrBuilder
@@ -6575,33 +6575,33 @@ public final class NcStreamProto {
     com.google.protobuf.ByteString
         getNameBytes();
 
-    // repeated .ncstream.EnumTypedef.EnumType map = 2;
+    // repeated .EnumTypedef.EnumType map = 2;
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> 
         getMapList();
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType getMap(int index);
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     int getMapCount();
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder> 
         getMapOrBuilderList();
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder getMapOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code ncstream.EnumTypedef}
+   * Protobuf type {@code EnumTypedef}
    */
   public static final class EnumTypedef extends
       com.google.protobuf.GeneratedMessage
@@ -6681,12 +6681,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.EnumTypedef.class, ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder.class);
     }
@@ -6735,7 +6735,7 @@ public final class NcStreamProto {
           getValueBytes();
     }
     /**
-     * Protobuf type {@code ncstream.EnumTypedef.EnumType}
+     * Protobuf type {@code EnumTypedef.EnumType}
      */
     public static final class EnumType extends
         com.google.protobuf.GeneratedMessage
@@ -6809,12 +6809,12 @@ public final class NcStreamProto {
       }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_EnumType_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_EnumType_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.class, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder.class);
       }
@@ -7020,19 +7020,19 @@ public final class NcStreamProto {
         return builder;
       }
       /**
-       * Protobuf type {@code ncstream.EnumTypedef.EnumType}
+       * Protobuf type {@code EnumTypedef.EnumType}
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessage.Builder<Builder>
          implements ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_EnumType_descriptor;
+          return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_EnumType_fieldAccessorTable
+          return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
                   ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.class, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder.class);
         }
@@ -7070,7 +7070,7 @@ public final class NcStreamProto {
 
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_EnumType_descriptor;
+          return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_EnumType_descriptor;
         }
 
         public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType getDefaultInstanceForType() {
@@ -7263,7 +7263,7 @@ public final class NcStreamProto {
           return this;
         }
 
-        // @@protoc_insertion_point(builder_scope:ncstream.EnumTypedef.EnumType)
+        // @@protoc_insertion_point(builder_scope:EnumTypedef.EnumType)
       }
 
       static {
@@ -7271,7 +7271,7 @@ public final class NcStreamProto {
         defaultInstance.initFields();
       }
 
-      // @@protoc_insertion_point(class_scope:ncstream.EnumTypedef.EnumType)
+      // @@protoc_insertion_point(class_scope:EnumTypedef.EnumType)
     }
 
     private int bitField0_;
@@ -7318,36 +7318,36 @@ public final class NcStreamProto {
       }
     }
 
-    // repeated .ncstream.EnumTypedef.EnumType map = 2;
+    // repeated .EnumTypedef.EnumType map = 2;
     public static final int MAP_FIELD_NUMBER = 2;
     private java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> map_;
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> getMapList() {
       return map_;
     }
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder> 
         getMapOrBuilderList() {
       return map_;
     }
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     public int getMapCount() {
       return map_.size();
     }
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType getMap(int index) {
       return map_.get(index);
     }
     /**
-     * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+     * <code>repeated .EnumTypedef.EnumType map = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder getMapOrBuilder(
         int index) {
@@ -7482,19 +7482,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.EnumTypedef}
+     * Protobuf type {@code EnumTypedef}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.EnumTypedef.class, ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder.class);
       }
@@ -7537,7 +7537,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_EnumTypedef_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.EnumTypedef getDefaultInstanceForType() {
@@ -7727,7 +7727,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // repeated .ncstream.EnumTypedef.EnumType map = 2;
+      // repeated .EnumTypedef.EnumType map = 2;
       private java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> map_ =
         java.util.Collections.emptyList();
       private void ensureMapIsMutable() {
@@ -7741,7 +7741,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder> mapBuilder_;
 
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> getMapList() {
         if (mapBuilder_ == null) {
@@ -7751,7 +7751,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public int getMapCount() {
         if (mapBuilder_ == null) {
@@ -7761,7 +7761,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType getMap(int index) {
         if (mapBuilder_ == null) {
@@ -7771,7 +7771,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public Builder setMap(
           int index, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType value) {
@@ -7788,7 +7788,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public Builder setMap(
           int index, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder builderForValue) {
@@ -7802,7 +7802,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public Builder addMap(ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType value) {
         if (mapBuilder_ == null) {
@@ -7818,7 +7818,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public Builder addMap(
           int index, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType value) {
@@ -7835,7 +7835,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public Builder addMap(
           ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder builderForValue) {
@@ -7849,7 +7849,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public Builder addMap(
           int index, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder builderForValue) {
@@ -7863,7 +7863,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public Builder addAllMap(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> values) {
@@ -7877,7 +7877,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public Builder clearMap() {
         if (mapBuilder_ == null) {
@@ -7890,7 +7890,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public Builder removeMap(int index) {
         if (mapBuilder_ == null) {
@@ -7903,14 +7903,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder getMapBuilder(
           int index) {
         return getMapFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder getMapOrBuilder(
           int index) {
@@ -7920,7 +7920,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumTypeOrBuilder> 
            getMapOrBuilderList() {
@@ -7931,14 +7931,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder addMapBuilder() {
         return getMapFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder addMapBuilder(
           int index) {
@@ -7946,7 +7946,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef.EnumType map = 2;</code>
+       * <code>repeated .EnumTypedef.EnumType map = 2;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder> 
            getMapBuilderList() {
@@ -7967,7 +7967,7 @@ public final class NcStreamProto {
         return mapBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.EnumTypedef)
+      // @@protoc_insertion_point(builder_scope:EnumTypedef)
     }
 
     static {
@@ -7975,7 +7975,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.EnumTypedef)
+    // @@protoc_insertion_point(class_scope:EnumTypedef)
   }
 
   public interface GroupOrBuilder
@@ -7996,158 +7996,158 @@ public final class NcStreamProto {
     com.google.protobuf.ByteString
         getNameBytes();
 
-    // repeated .ncstream.Dimension dims = 2;
+    // repeated .Dimension dims = 2;
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> 
         getDimsList();
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.Dimension getDims(int index);
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     int getDimsCount();
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
         getDimsOrBuilderList();
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getDimsOrBuilder(
         int index);
 
-    // repeated .ncstream.Variable vars = 3;
+    // repeated .Variable vars = 3;
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Variable> 
         getVarsList();
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.Variable getVars(int index);
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     int getVarsCount();
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
         getVarsOrBuilderList();
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     ucar.nc2.stream.NcStreamProto.VariableOrBuilder getVarsOrBuilder(
         int index);
 
-    // repeated .ncstream.Structure structs = 4;
+    // repeated .Structure structs = 4;
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Structure> 
         getStructsList();
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.Structure getStructs(int index);
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     int getStructsCount();
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
         getStructsOrBuilderList();
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.StructureOrBuilder getStructsOrBuilder(
         int index);
 
-    // repeated .ncstream.Attribute atts = 5;
+    // repeated .Attribute atts = 5;
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> 
         getAttsList();
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index);
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     int getAttsCount();
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
         getAttsOrBuilderList();
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
         int index);
 
-    // repeated .ncstream.Group groups = 6;
+    // repeated .Group groups = 6;
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Group> 
         getGroupsList();
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     ucar.nc2.stream.NcStreamProto.Group getGroups(int index);
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     int getGroupsCount();
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.GroupOrBuilder> 
         getGroupsOrBuilderList();
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     ucar.nc2.stream.NcStreamProto.GroupOrBuilder getGroupsOrBuilder(
         int index);
 
-    // repeated .ncstream.EnumTypedef enumTypes = 7;
+    // repeated .EnumTypedef enumTypes = 7;
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef> 
         getEnumTypesList();
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     ucar.nc2.stream.NcStreamProto.EnumTypedef getEnumTypes(int index);
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     int getEnumTypesCount();
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder> 
         getEnumTypesOrBuilderList();
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder getEnumTypesOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code ncstream.Group}
+   * Protobuf type {@code Group}
    */
   public static final class Group extends
       com.google.protobuf.GeneratedMessage
@@ -8282,12 +8282,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Group_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Group_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Group_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Group_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Group.class, ucar.nc2.stream.NcStreamProto.Group.Builder.class);
     }
@@ -8351,216 +8351,216 @@ public final class NcStreamProto {
       }
     }
 
-    // repeated .ncstream.Dimension dims = 2;
+    // repeated .Dimension dims = 2;
     public static final int DIMS_FIELD_NUMBER = 2;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> dims_;
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getDimsList() {
       return dims_;
     }
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
         getDimsOrBuilderList() {
       return dims_;
     }
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     public int getDimsCount() {
       return dims_.size();
     }
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Dimension getDims(int index) {
       return dims_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Dimension dims = 2;</code>
+     * <code>repeated .Dimension dims = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getDimsOrBuilder(
         int index) {
       return dims_.get(index);
     }
 
-    // repeated .ncstream.Variable vars = 3;
+    // repeated .Variable vars = 3;
     public static final int VARS_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_;
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
       return vars_;
     }
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
         getVarsOrBuilderList() {
       return vars_;
     }
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     public int getVarsCount() {
       return vars_.size();
     }
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Variable getVars(int index) {
       return vars_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Variable vars = 3;</code>
+     * <code>repeated .Variable vars = 3;</code>
      */
     public ucar.nc2.stream.NcStreamProto.VariableOrBuilder getVarsOrBuilder(
         int index) {
       return vars_.get(index);
     }
 
-    // repeated .ncstream.Structure structs = 4;
+    // repeated .Structure structs = 4;
     public static final int STRUCTS_FIELD_NUMBER = 4;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_;
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
       return structs_;
     }
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
         getStructsOrBuilderList() {
       return structs_;
     }
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     public int getStructsCount() {
       return structs_.size();
     }
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Structure getStructs(int index) {
       return structs_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Structure structs = 4;</code>
+     * <code>repeated .Structure structs = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.StructureOrBuilder getStructsOrBuilder(
         int index) {
       return structs_.get(index);
     }
 
-    // repeated .ncstream.Attribute atts = 5;
+    // repeated .Attribute atts = 5;
     public static final int ATTS_FIELD_NUMBER = 5;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_;
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
       return atts_;
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
         getAttsOrBuilderList() {
       return atts_;
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     public int getAttsCount() {
       return atts_.size();
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
       return atts_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Attribute atts = 5;</code>
+     * <code>repeated .Attribute atts = 5;</code>
      */
     public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
         int index) {
       return atts_.get(index);
     }
 
-    // repeated .ncstream.Group groups = 6;
+    // repeated .Group groups = 6;
     public static final int GROUPS_FIELD_NUMBER = 6;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Group> groups_;
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Group> getGroupsList() {
       return groups_;
     }
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.GroupOrBuilder> 
         getGroupsOrBuilderList() {
       return groups_;
     }
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     public int getGroupsCount() {
       return groups_.size();
     }
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Group getGroups(int index) {
       return groups_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Group groups = 6;</code>
+     * <code>repeated .Group groups = 6;</code>
      */
     public ucar.nc2.stream.NcStreamProto.GroupOrBuilder getGroupsOrBuilder(
         int index) {
       return groups_.get(index);
     }
 
-    // repeated .ncstream.EnumTypedef enumTypes = 7;
+    // repeated .EnumTypedef enumTypes = 7;
     public static final int ENUMTYPES_FIELD_NUMBER = 7;
     private java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef> enumTypes_;
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef> getEnumTypesList() {
       return enumTypes_;
     }
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder> 
         getEnumTypesOrBuilderList() {
       return enumTypes_;
     }
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     public int getEnumTypesCount() {
       return enumTypes_.size();
     }
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     public ucar.nc2.stream.NcStreamProto.EnumTypedef getEnumTypes(int index) {
       return enumTypes_.get(index);
     }
     /**
-     * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+     * <code>repeated .EnumTypedef enumTypes = 7;</code>
      */
     public ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder getEnumTypesOrBuilder(
         int index) {
@@ -8759,19 +8759,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Group}
+     * Protobuf type {@code Group}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.GroupOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Group_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Group_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Group_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Group_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Group.class, ucar.nc2.stream.NcStreamProto.Group.Builder.class);
       }
@@ -8849,7 +8849,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Group_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Group_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Group getDefaultInstanceForType() {
@@ -9238,7 +9238,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // repeated .ncstream.Dimension dims = 2;
+      // repeated .Dimension dims = 2;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> dims_ =
         java.util.Collections.emptyList();
       private void ensureDimsIsMutable() {
@@ -9252,7 +9252,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Dimension, ucar.nc2.stream.NcStreamProto.Dimension.Builder, ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> dimsBuilder_;
 
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getDimsList() {
         if (dimsBuilder_ == null) {
@@ -9262,7 +9262,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public int getDimsCount() {
         if (dimsBuilder_ == null) {
@@ -9272,7 +9272,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension getDims(int index) {
         if (dimsBuilder_ == null) {
@@ -9282,7 +9282,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public Builder setDims(
           int index, ucar.nc2.stream.NcStreamProto.Dimension value) {
@@ -9299,7 +9299,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public Builder setDims(
           int index, ucar.nc2.stream.NcStreamProto.Dimension.Builder builderForValue) {
@@ -9313,7 +9313,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public Builder addDims(ucar.nc2.stream.NcStreamProto.Dimension value) {
         if (dimsBuilder_ == null) {
@@ -9329,7 +9329,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public Builder addDims(
           int index, ucar.nc2.stream.NcStreamProto.Dimension value) {
@@ -9346,7 +9346,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public Builder addDims(
           ucar.nc2.stream.NcStreamProto.Dimension.Builder builderForValue) {
@@ -9360,7 +9360,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public Builder addDims(
           int index, ucar.nc2.stream.NcStreamProto.Dimension.Builder builderForValue) {
@@ -9374,7 +9374,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public Builder addAllDims(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Dimension> values) {
@@ -9388,7 +9388,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public Builder clearDims() {
         if (dimsBuilder_ == null) {
@@ -9401,7 +9401,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public Builder removeDims(int index) {
         if (dimsBuilder_ == null) {
@@ -9414,14 +9414,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder getDimsBuilder(
           int index) {
         return getDimsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getDimsOrBuilder(
           int index) {
@@ -9431,7 +9431,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
            getDimsOrBuilderList() {
@@ -9442,14 +9442,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder addDimsBuilder() {
         return getDimsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder addDimsBuilder(
           int index) {
@@ -9457,7 +9457,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Dimension.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Dimension dims = 2;</code>
+       * <code>repeated .Dimension dims = 2;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension.Builder> 
            getDimsBuilderList() {
@@ -9478,7 +9478,7 @@ public final class NcStreamProto {
         return dimsBuilder_;
       }
 
-      // repeated .ncstream.Variable vars = 3;
+      // repeated .Variable vars = 3;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_ =
         java.util.Collections.emptyList();
       private void ensureVarsIsMutable() {
@@ -9492,7 +9492,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Variable, ucar.nc2.stream.NcStreamProto.Variable.Builder, ucar.nc2.stream.NcStreamProto.VariableOrBuilder> varsBuilder_;
 
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
         if (varsBuilder_ == null) {
@@ -9502,7 +9502,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public int getVarsCount() {
         if (varsBuilder_ == null) {
@@ -9512,7 +9512,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable getVars(int index) {
         if (varsBuilder_ == null) {
@@ -9522,7 +9522,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public Builder setVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable value) {
@@ -9539,7 +9539,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public Builder setVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable.Builder builderForValue) {
@@ -9553,7 +9553,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public Builder addVars(ucar.nc2.stream.NcStreamProto.Variable value) {
         if (varsBuilder_ == null) {
@@ -9569,7 +9569,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public Builder addVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable value) {
@@ -9586,7 +9586,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public Builder addVars(
           ucar.nc2.stream.NcStreamProto.Variable.Builder builderForValue) {
@@ -9600,7 +9600,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public Builder addVars(
           int index, ucar.nc2.stream.NcStreamProto.Variable.Builder builderForValue) {
@@ -9614,7 +9614,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public Builder addAllVars(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Variable> values) {
@@ -9628,7 +9628,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public Builder clearVars() {
         if (varsBuilder_ == null) {
@@ -9641,7 +9641,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public Builder removeVars(int index) {
         if (varsBuilder_ == null) {
@@ -9654,14 +9654,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable.Builder getVarsBuilder(
           int index) {
         return getVarsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.VariableOrBuilder getVarsOrBuilder(
           int index) {
@@ -9671,7 +9671,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.VariableOrBuilder> 
            getVarsOrBuilderList() {
@@ -9682,14 +9682,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable.Builder addVarsBuilder() {
         return getVarsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Variable.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Variable.Builder addVarsBuilder(
           int index) {
@@ -9697,7 +9697,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Variable.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Variable vars = 3;</code>
+       * <code>repeated .Variable vars = 3;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Variable.Builder> 
            getVarsBuilderList() {
@@ -9718,7 +9718,7 @@ public final class NcStreamProto {
         return varsBuilder_;
       }
 
-      // repeated .ncstream.Structure structs = 4;
+      // repeated .Structure structs = 4;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_ =
         java.util.Collections.emptyList();
       private void ensureStructsIsMutable() {
@@ -9732,7 +9732,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Structure, ucar.nc2.stream.NcStreamProto.Structure.Builder, ucar.nc2.stream.NcStreamProto.StructureOrBuilder> structsBuilder_;
 
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
         if (structsBuilder_ == null) {
@@ -9742,7 +9742,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public int getStructsCount() {
         if (structsBuilder_ == null) {
@@ -9752,7 +9752,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure getStructs(int index) {
         if (structsBuilder_ == null) {
@@ -9762,7 +9762,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public Builder setStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure value) {
@@ -9779,7 +9779,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public Builder setStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
@@ -9793,7 +9793,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public Builder addStructs(ucar.nc2.stream.NcStreamProto.Structure value) {
         if (structsBuilder_ == null) {
@@ -9809,7 +9809,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public Builder addStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure value) {
@@ -9826,7 +9826,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public Builder addStructs(
           ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
@@ -9840,7 +9840,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public Builder addStructs(
           int index, ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
@@ -9854,7 +9854,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public Builder addAllStructs(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Structure> values) {
@@ -9868,7 +9868,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public Builder clearStructs() {
         if (structsBuilder_ == null) {
@@ -9881,7 +9881,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public Builder removeStructs(int index) {
         if (structsBuilder_ == null) {
@@ -9894,14 +9894,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure.Builder getStructsBuilder(
           int index) {
         return getStructsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.StructureOrBuilder getStructsOrBuilder(
           int index) {
@@ -9911,7 +9911,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.StructureOrBuilder> 
            getStructsOrBuilderList() {
@@ -9922,14 +9922,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure.Builder addStructsBuilder() {
         return getStructsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Structure.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Structure.Builder addStructsBuilder(
           int index) {
@@ -9937,7 +9937,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Structure.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Structure structs = 4;</code>
+       * <code>repeated .Structure structs = 4;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Structure.Builder> 
            getStructsBuilderList() {
@@ -9958,7 +9958,7 @@ public final class NcStreamProto {
         return structsBuilder_;
       }
 
-      // repeated .ncstream.Attribute atts = 5;
+      // repeated .Attribute atts = 5;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
         java.util.Collections.emptyList();
       private void ensureAttsIsMutable() {
@@ -9972,7 +9972,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
 
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
         if (attsBuilder_ == null) {
@@ -9982,7 +9982,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public int getAttsCount() {
         if (attsBuilder_ == null) {
@@ -9992,7 +9992,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
         if (attsBuilder_ == null) {
@@ -10002,7 +10002,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public Builder setAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
@@ -10019,7 +10019,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public Builder setAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -10033,7 +10033,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public Builder addAtts(ucar.nc2.stream.NcStreamProto.Attribute value) {
         if (attsBuilder_ == null) {
@@ -10049,7 +10049,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public Builder addAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
@@ -10066,7 +10066,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public Builder addAtts(
           ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -10080,7 +10080,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public Builder addAtts(
           int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
@@ -10094,7 +10094,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public Builder addAllAtts(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Attribute> values) {
@@ -10108,7 +10108,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public Builder clearAtts() {
         if (attsBuilder_ == null) {
@@ -10121,7 +10121,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public Builder removeAtts(int index) {
         if (attsBuilder_ == null) {
@@ -10134,14 +10134,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder getAttsBuilder(
           int index) {
         return getAttsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
           int index) {
@@ -10151,7 +10151,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
            getAttsOrBuilderList() {
@@ -10162,14 +10162,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder() {
         return getAttsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder(
           int index) {
@@ -10177,7 +10177,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Attribute atts = 5;</code>
+       * <code>repeated .Attribute atts = 5;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute.Builder> 
            getAttsBuilderList() {
@@ -10198,7 +10198,7 @@ public final class NcStreamProto {
         return attsBuilder_;
       }
 
-      // repeated .ncstream.Group groups = 6;
+      // repeated .Group groups = 6;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Group> groups_ =
         java.util.Collections.emptyList();
       private void ensureGroupsIsMutable() {
@@ -10212,7 +10212,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Group, ucar.nc2.stream.NcStreamProto.Group.Builder, ucar.nc2.stream.NcStreamProto.GroupOrBuilder> groupsBuilder_;
 
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Group> getGroupsList() {
         if (groupsBuilder_ == null) {
@@ -10222,7 +10222,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public int getGroupsCount() {
         if (groupsBuilder_ == null) {
@@ -10232,7 +10232,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Group getGroups(int index) {
         if (groupsBuilder_ == null) {
@@ -10242,7 +10242,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public Builder setGroups(
           int index, ucar.nc2.stream.NcStreamProto.Group value) {
@@ -10259,7 +10259,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public Builder setGroups(
           int index, ucar.nc2.stream.NcStreamProto.Group.Builder builderForValue) {
@@ -10273,7 +10273,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public Builder addGroups(ucar.nc2.stream.NcStreamProto.Group value) {
         if (groupsBuilder_ == null) {
@@ -10289,7 +10289,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public Builder addGroups(
           int index, ucar.nc2.stream.NcStreamProto.Group value) {
@@ -10306,7 +10306,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public Builder addGroups(
           ucar.nc2.stream.NcStreamProto.Group.Builder builderForValue) {
@@ -10320,7 +10320,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public Builder addGroups(
           int index, ucar.nc2.stream.NcStreamProto.Group.Builder builderForValue) {
@@ -10334,7 +10334,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public Builder addAllGroups(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Group> values) {
@@ -10348,7 +10348,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public Builder clearGroups() {
         if (groupsBuilder_ == null) {
@@ -10361,7 +10361,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public Builder removeGroups(int index) {
         if (groupsBuilder_ == null) {
@@ -10374,14 +10374,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Group.Builder getGroupsBuilder(
           int index) {
         return getGroupsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.GroupOrBuilder getGroupsOrBuilder(
           int index) {
@@ -10391,7 +10391,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.GroupOrBuilder> 
            getGroupsOrBuilderList() {
@@ -10402,14 +10402,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Group.Builder addGroupsBuilder() {
         return getGroupsFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Group.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Group.Builder addGroupsBuilder(
           int index) {
@@ -10417,7 +10417,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Group.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Group groups = 6;</code>
+       * <code>repeated .Group groups = 6;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Group.Builder> 
            getGroupsBuilderList() {
@@ -10438,7 +10438,7 @@ public final class NcStreamProto {
         return groupsBuilder_;
       }
 
-      // repeated .ncstream.EnumTypedef enumTypes = 7;
+      // repeated .EnumTypedef enumTypes = 7;
       private java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef> enumTypes_ =
         java.util.Collections.emptyList();
       private void ensureEnumTypesIsMutable() {
@@ -10452,7 +10452,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.EnumTypedef, ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder, ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder> enumTypesBuilder_;
 
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef> getEnumTypesList() {
         if (enumTypesBuilder_ == null) {
@@ -10462,7 +10462,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public int getEnumTypesCount() {
         if (enumTypesBuilder_ == null) {
@@ -10472,7 +10472,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedef getEnumTypes(int index) {
         if (enumTypesBuilder_ == null) {
@@ -10482,7 +10482,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public Builder setEnumTypes(
           int index, ucar.nc2.stream.NcStreamProto.EnumTypedef value) {
@@ -10499,7 +10499,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public Builder setEnumTypes(
           int index, ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder builderForValue) {
@@ -10513,7 +10513,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public Builder addEnumTypes(ucar.nc2.stream.NcStreamProto.EnumTypedef value) {
         if (enumTypesBuilder_ == null) {
@@ -10529,7 +10529,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public Builder addEnumTypes(
           int index, ucar.nc2.stream.NcStreamProto.EnumTypedef value) {
@@ -10546,7 +10546,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public Builder addEnumTypes(
           ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder builderForValue) {
@@ -10560,7 +10560,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public Builder addEnumTypes(
           int index, ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder builderForValue) {
@@ -10574,7 +10574,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public Builder addAllEnumTypes(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.EnumTypedef> values) {
@@ -10588,7 +10588,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public Builder clearEnumTypes() {
         if (enumTypesBuilder_ == null) {
@@ -10601,7 +10601,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public Builder removeEnumTypes(int index) {
         if (enumTypesBuilder_ == null) {
@@ -10614,14 +10614,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder getEnumTypesBuilder(
           int index) {
         return getEnumTypesFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder getEnumTypesOrBuilder(
           int index) {
@@ -10631,7 +10631,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.EnumTypedefOrBuilder> 
            getEnumTypesOrBuilderList() {
@@ -10642,14 +10642,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder addEnumTypesBuilder() {
         return getEnumTypesFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.EnumTypedef.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder addEnumTypesBuilder(
           int index) {
@@ -10657,7 +10657,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.EnumTypedef.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.EnumTypedef enumTypes = 7;</code>
+       * <code>repeated .EnumTypedef enumTypes = 7;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder> 
            getEnumTypesBuilderList() {
@@ -10678,7 +10678,7 @@ public final class NcStreamProto {
         return enumTypesBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Group)
+      // @@protoc_insertion_point(builder_scope:Group)
     }
 
     static {
@@ -10686,7 +10686,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Group)
+    // @@protoc_insertion_point(class_scope:Group)
   }
 
   public interface HeaderOrBuilder
@@ -10761,17 +10761,17 @@ public final class NcStreamProto {
     com.google.protobuf.ByteString
         getIdBytes();
 
-    // required .ncstream.Group root = 4;
+    // required .Group root = 4;
     /**
-     * <code>required .ncstream.Group root = 4;</code>
+     * <code>required .Group root = 4;</code>
      */
     boolean hasRoot();
     /**
-     * <code>required .ncstream.Group root = 4;</code>
+     * <code>required .Group root = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.Group getRoot();
     /**
-     * <code>required .ncstream.Group root = 4;</code>
+     * <code>required .Group root = 4;</code>
      */
     ucar.nc2.stream.NcStreamProto.GroupOrBuilder getRootOrBuilder();
 
@@ -10786,7 +10786,7 @@ public final class NcStreamProto {
     int getVersion();
   }
   /**
-   * Protobuf type {@code ncstream.Header}
+   * Protobuf type {@code Header}
    */
   public static final class Header extends
       com.google.protobuf.GeneratedMessage
@@ -10883,12 +10883,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Header_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Header_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Header_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Header_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Header.class, ucar.nc2.stream.NcStreamProto.Header.Builder.class);
     }
@@ -11062,23 +11062,23 @@ public final class NcStreamProto {
       }
     }
 
-    // required .ncstream.Group root = 4;
+    // required .Group root = 4;
     public static final int ROOT_FIELD_NUMBER = 4;
     private ucar.nc2.stream.NcStreamProto.Group root_;
     /**
-     * <code>required .ncstream.Group root = 4;</code>
+     * <code>required .Group root = 4;</code>
      */
     public boolean hasRoot() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>required .ncstream.Group root = 4;</code>
+     * <code>required .Group root = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Group getRoot() {
       return root_;
     }
     /**
-     * <code>required .ncstream.Group root = 4;</code>
+     * <code>required .Group root = 4;</code>
      */
     public ucar.nc2.stream.NcStreamProto.GroupOrBuilder getRootOrBuilder() {
       return root_;
@@ -11250,19 +11250,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Header}
+     * Protobuf type {@code Header}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.HeaderOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Header_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Header_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Header_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Header_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Header.class, ucar.nc2.stream.NcStreamProto.Header.Builder.class);
       }
@@ -11311,7 +11311,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Header_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Header_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Header getDefaultInstanceForType() {
@@ -11696,18 +11696,18 @@ public final class NcStreamProto {
         return this;
       }
 
-      // required .ncstream.Group root = 4;
+      // required .Group root = 4;
       private ucar.nc2.stream.NcStreamProto.Group root_ = ucar.nc2.stream.NcStreamProto.Group.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           ucar.nc2.stream.NcStreamProto.Group, ucar.nc2.stream.NcStreamProto.Group.Builder, ucar.nc2.stream.NcStreamProto.GroupOrBuilder> rootBuilder_;
       /**
-       * <code>required .ncstream.Group root = 4;</code>
+       * <code>required .Group root = 4;</code>
        */
       public boolean hasRoot() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>required .ncstream.Group root = 4;</code>
+       * <code>required .Group root = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Group getRoot() {
         if (rootBuilder_ == null) {
@@ -11717,7 +11717,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>required .ncstream.Group root = 4;</code>
+       * <code>required .Group root = 4;</code>
        */
       public Builder setRoot(ucar.nc2.stream.NcStreamProto.Group value) {
         if (rootBuilder_ == null) {
@@ -11733,7 +11733,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>required .ncstream.Group root = 4;</code>
+       * <code>required .Group root = 4;</code>
        */
       public Builder setRoot(
           ucar.nc2.stream.NcStreamProto.Group.Builder builderForValue) {
@@ -11747,7 +11747,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>required .ncstream.Group root = 4;</code>
+       * <code>required .Group root = 4;</code>
        */
       public Builder mergeRoot(ucar.nc2.stream.NcStreamProto.Group value) {
         if (rootBuilder_ == null) {
@@ -11766,7 +11766,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>required .ncstream.Group root = 4;</code>
+       * <code>required .Group root = 4;</code>
        */
       public Builder clearRoot() {
         if (rootBuilder_ == null) {
@@ -11779,7 +11779,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>required .ncstream.Group root = 4;</code>
+       * <code>required .Group root = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Group.Builder getRootBuilder() {
         bitField0_ |= 0x00000008;
@@ -11787,7 +11787,7 @@ public final class NcStreamProto {
         return getRootFieldBuilder().getBuilder();
       }
       /**
-       * <code>required .ncstream.Group root = 4;</code>
+       * <code>required .Group root = 4;</code>
        */
       public ucar.nc2.stream.NcStreamProto.GroupOrBuilder getRootOrBuilder() {
         if (rootBuilder_ != null) {
@@ -11797,7 +11797,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>required .ncstream.Group root = 4;</code>
+       * <code>required .Group root = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           ucar.nc2.stream.NcStreamProto.Group, ucar.nc2.stream.NcStreamProto.Group.Builder, ucar.nc2.stream.NcStreamProto.GroupOrBuilder> 
@@ -11846,7 +11846,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Header)
+      // @@protoc_insertion_point(builder_scope:Header)
     }
 
     static {
@@ -11854,7 +11854,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Header)
+    // @@protoc_insertion_point(class_scope:Header)
   }
 
   public interface DataOrBuilder
@@ -11887,19 +11887,19 @@ public final class NcStreamProto {
     com.google.protobuf.ByteString
         getVarNameBytes();
 
-    // required .ncstream.DataType dataType = 2;
+    // required .DataType dataType = 2;
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      */
     boolean hasDataType();
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
-    // optional .ncstream.Section section = 3;
+    // optional .Section section = 3;
     /**
-     * <code>optional .ncstream.Section section = 3;</code>
+     * <code>optional .Section section = 3;</code>
      *
      * <pre>
      * not required for Sequence
@@ -11907,7 +11907,7 @@ public final class NcStreamProto {
      */
     boolean hasSection();
     /**
-     * <code>optional .ncstream.Section section = 3;</code>
+     * <code>optional .Section section = 3;</code>
      *
      * <pre>
      * not required for Sequence
@@ -11915,7 +11915,7 @@ public final class NcStreamProto {
      */
     ucar.nc2.stream.NcStreamProto.Section getSection();
     /**
-     * <code>optional .ncstream.Section section = 3;</code>
+     * <code>optional .Section section = 3;</code>
      *
      * <pre>
      * not required for Sequence
@@ -11943,13 +11943,13 @@ public final class NcStreamProto {
      */
     int getVersion();
 
-    // optional .ncstream.Compress compress = 6 [default = NONE];
+    // optional .Compress compress = 6 [default = NONE];
     /**
-     * <code>optional .ncstream.Compress compress = 6 [default = NONE];</code>
+     * <code>optional .Compress compress = 6 [default = NONE];</code>
      */
     boolean hasCompress();
     /**
-     * <code>optional .ncstream.Compress compress = 6 [default = NONE];</code>
+     * <code>optional .Compress compress = 6 [default = NONE];</code>
      */
     ucar.nc2.stream.NcStreamProto.Compress getCompress();
 
@@ -11974,7 +11974,7 @@ public final class NcStreamProto {
     int getUncompressedSize();
   }
   /**
-   * Protobuf type {@code ncstream.Data}
+   * Protobuf type {@code Data}
    */
   public static final class Data extends
       com.google.protobuf.GeneratedMessage
@@ -12098,12 +12098,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Data_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Data_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Data_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Data_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Data.class, ucar.nc2.stream.NcStreamProto.Data.Builder.class);
     }
@@ -12179,27 +12179,27 @@ public final class NcStreamProto {
       }
     }
 
-    // required .ncstream.DataType dataType = 2;
+    // required .DataType dataType = 2;
     public static final int DATATYPE_FIELD_NUMBER = 2;
     private ucar.nc2.stream.NcStreamProto.DataType dataType_;
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      */
     public boolean hasDataType() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required .ncstream.DataType dataType = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
       return dataType_;
     }
 
-    // optional .ncstream.Section section = 3;
+    // optional .Section section = 3;
     public static final int SECTION_FIELD_NUMBER = 3;
     private ucar.nc2.stream.NcStreamProto.Section section_;
     /**
-     * <code>optional .ncstream.Section section = 3;</code>
+     * <code>optional .Section section = 3;</code>
      *
      * <pre>
      * not required for Sequence
@@ -12209,7 +12209,7 @@ public final class NcStreamProto {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional .ncstream.Section section = 3;</code>
+     * <code>optional .Section section = 3;</code>
      *
      * <pre>
      * not required for Sequence
@@ -12219,7 +12219,7 @@ public final class NcStreamProto {
       return section_;
     }
     /**
-     * <code>optional .ncstream.Section section = 3;</code>
+     * <code>optional .Section section = 3;</code>
      *
      * <pre>
      * not required for Sequence
@@ -12261,17 +12261,17 @@ public final class NcStreamProto {
       return version_;
     }
 
-    // optional .ncstream.Compress compress = 6 [default = NONE];
+    // optional .Compress compress = 6 [default = NONE];
     public static final int COMPRESS_FIELD_NUMBER = 6;
     private ucar.nc2.stream.NcStreamProto.Compress compress_;
     /**
-     * <code>optional .ncstream.Compress compress = 6 [default = NONE];</code>
+     * <code>optional .Compress compress = 6 [default = NONE];</code>
      */
     public boolean hasCompress() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional .ncstream.Compress compress = 6 [default = NONE];</code>
+     * <code>optional .Compress compress = 6 [default = NONE];</code>
      */
     public ucar.nc2.stream.NcStreamProto.Compress getCompress() {
       return compress_;
@@ -12489,19 +12489,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Data}
+     * Protobuf type {@code Data}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.DataOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Data_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Data_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Data_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Data_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Data.class, ucar.nc2.stream.NcStreamProto.Data.Builder.class);
       }
@@ -12556,7 +12556,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Data_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Data_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Data getDefaultInstanceForType() {
@@ -12792,22 +12792,22 @@ public final class NcStreamProto {
         return this;
       }
 
-      // required .ncstream.DataType dataType = 2;
+      // required .DataType dataType = 2;
       private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        */
       public boolean hasDataType() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
         return dataType_;
       }
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
@@ -12819,7 +12819,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>required .ncstream.DataType dataType = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
        */
       public Builder clearDataType() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -12828,12 +12828,12 @@ public final class NcStreamProto {
         return this;
       }
 
-      // optional .ncstream.Section section = 3;
+      // optional .Section section = 3;
       private ucar.nc2.stream.NcStreamProto.Section section_ = ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> sectionBuilder_;
       /**
-       * <code>optional .ncstream.Section section = 3;</code>
+       * <code>optional .Section section = 3;</code>
        *
        * <pre>
        * not required for Sequence
@@ -12843,7 +12843,7 @@ public final class NcStreamProto {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional .ncstream.Section section = 3;</code>
+       * <code>optional .Section section = 3;</code>
        *
        * <pre>
        * not required for Sequence
@@ -12857,7 +12857,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .ncstream.Section section = 3;</code>
+       * <code>optional .Section section = 3;</code>
        *
        * <pre>
        * not required for Sequence
@@ -12877,7 +12877,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ncstream.Section section = 3;</code>
+       * <code>optional .Section section = 3;</code>
        *
        * <pre>
        * not required for Sequence
@@ -12895,7 +12895,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ncstream.Section section = 3;</code>
+       * <code>optional .Section section = 3;</code>
        *
        * <pre>
        * not required for Sequence
@@ -12918,7 +12918,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ncstream.Section section = 3;</code>
+       * <code>optional .Section section = 3;</code>
        *
        * <pre>
        * not required for Sequence
@@ -12935,7 +12935,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ncstream.Section section = 3;</code>
+       * <code>optional .Section section = 3;</code>
        *
        * <pre>
        * not required for Sequence
@@ -12947,7 +12947,7 @@ public final class NcStreamProto {
         return getSectionFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .ncstream.Section section = 3;</code>
+       * <code>optional .Section section = 3;</code>
        *
        * <pre>
        * not required for Sequence
@@ -12961,7 +12961,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>optional .ncstream.Section section = 3;</code>
+       * <code>optional .Section section = 3;</code>
        *
        * <pre>
        * not required for Sequence
@@ -13047,22 +13047,22 @@ public final class NcStreamProto {
         return this;
       }
 
-      // optional .ncstream.Compress compress = 6 [default = NONE];
+      // optional .Compress compress = 6 [default = NONE];
       private ucar.nc2.stream.NcStreamProto.Compress compress_ = ucar.nc2.stream.NcStreamProto.Compress.NONE;
       /**
-       * <code>optional .ncstream.Compress compress = 6 [default = NONE];</code>
+       * <code>optional .Compress compress = 6 [default = NONE];</code>
        */
       public boolean hasCompress() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional .ncstream.Compress compress = 6 [default = NONE];</code>
+       * <code>optional .Compress compress = 6 [default = NONE];</code>
        */
       public ucar.nc2.stream.NcStreamProto.Compress getCompress() {
         return compress_;
       }
       /**
-       * <code>optional .ncstream.Compress compress = 6 [default = NONE];</code>
+       * <code>optional .Compress compress = 6 [default = NONE];</code>
        */
       public Builder setCompress(ucar.nc2.stream.NcStreamProto.Compress value) {
         if (value == null) {
@@ -13074,7 +13074,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>optional .ncstream.Compress compress = 6 [default = NONE];</code>
+       * <code>optional .Compress compress = 6 [default = NONE];</code>
        */
       public Builder clearCompress() {
         bitField0_ = (bitField0_ & ~0x00000020);
@@ -13149,7 +13149,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Data)
+      // @@protoc_insertion_point(builder_scope:Data)
     }
 
     static {
@@ -13157,7 +13157,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Data)
+    // @@protoc_insertion_point(class_scope:Data)
   }
 
   public interface RangeOrBuilder
@@ -13194,7 +13194,7 @@ public final class NcStreamProto {
     long getStride();
   }
   /**
-   * Protobuf type {@code ncstream.Range}
+   * Protobuf type {@code Range}
    */
   public static final class Range extends
       com.google.protobuf.GeneratedMessage
@@ -13273,12 +13273,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Range_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Range_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Range_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Range_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Range.class, ucar.nc2.stream.NcStreamProto.Range.Builder.class);
     }
@@ -13477,19 +13477,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Range}
+     * Protobuf type {@code Range}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.RangeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Range_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Range_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Range_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Range_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Range.class, ucar.nc2.stream.NcStreamProto.Range.Builder.class);
       }
@@ -13529,7 +13529,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Range_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Range_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Range getDefaultInstanceForType() {
@@ -13715,7 +13715,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Range)
+      // @@protoc_insertion_point(builder_scope:Range)
     }
 
     static {
@@ -13723,39 +13723,39 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Range)
+    // @@protoc_insertion_point(class_scope:Range)
   }
 
   public interface SectionOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // repeated .ncstream.Range range = 1;
+    // repeated .Range range = 1;
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Range> 
         getRangeList();
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     ucar.nc2.stream.NcStreamProto.Range getRange(int index);
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     int getRangeCount();
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.RangeOrBuilder> 
         getRangeOrBuilderList();
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     ucar.nc2.stream.NcStreamProto.RangeOrBuilder getRangeOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code ncstream.Section}
+   * Protobuf type {@code Section}
    */
   public static final class Section extends
       com.google.protobuf.GeneratedMessage
@@ -13830,12 +13830,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Section_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Section_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Section_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Section_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Section.class, ucar.nc2.stream.NcStreamProto.Section.Builder.class);
     }
@@ -13855,36 +13855,36 @@ public final class NcStreamProto {
       return PARSER;
     }
 
-    // repeated .ncstream.Range range = 1;
+    // repeated .Range range = 1;
     public static final int RANGE_FIELD_NUMBER = 1;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Range> range_;
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Range> getRangeList() {
       return range_;
     }
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.RangeOrBuilder> 
         getRangeOrBuilderList() {
       return range_;
     }
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     public int getRangeCount() {
       return range_.size();
     }
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     public ucar.nc2.stream.NcStreamProto.Range getRange(int index) {
       return range_.get(index);
     }
     /**
-     * <code>repeated .ncstream.Range range = 1;</code>
+     * <code>repeated .Range range = 1;</code>
      */
     public ucar.nc2.stream.NcStreamProto.RangeOrBuilder getRangeOrBuilder(
         int index) {
@@ -14007,19 +14007,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Section}
+     * Protobuf type {@code Section}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.SectionOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Section_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Section_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Section_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Section_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Section.class, ucar.nc2.stream.NcStreamProto.Section.Builder.class);
       }
@@ -14060,7 +14060,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Section_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Section_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Section getDefaultInstanceForType() {
@@ -14161,7 +14161,7 @@ public final class NcStreamProto {
       }
       private int bitField0_;
 
-      // repeated .ncstream.Range range = 1;
+      // repeated .Range range = 1;
       private java.util.List<ucar.nc2.stream.NcStreamProto.Range> range_ =
         java.util.Collections.emptyList();
       private void ensureRangeIsMutable() {
@@ -14175,7 +14175,7 @@ public final class NcStreamProto {
           ucar.nc2.stream.NcStreamProto.Range, ucar.nc2.stream.NcStreamProto.Range.Builder, ucar.nc2.stream.NcStreamProto.RangeOrBuilder> rangeBuilder_;
 
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Range> getRangeList() {
         if (rangeBuilder_ == null) {
@@ -14185,7 +14185,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public int getRangeCount() {
         if (rangeBuilder_ == null) {
@@ -14195,7 +14195,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Range getRange(int index) {
         if (rangeBuilder_ == null) {
@@ -14205,7 +14205,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public Builder setRange(
           int index, ucar.nc2.stream.NcStreamProto.Range value) {
@@ -14222,7 +14222,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public Builder setRange(
           int index, ucar.nc2.stream.NcStreamProto.Range.Builder builderForValue) {
@@ -14236,7 +14236,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public Builder addRange(ucar.nc2.stream.NcStreamProto.Range value) {
         if (rangeBuilder_ == null) {
@@ -14252,7 +14252,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public Builder addRange(
           int index, ucar.nc2.stream.NcStreamProto.Range value) {
@@ -14269,7 +14269,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public Builder addRange(
           ucar.nc2.stream.NcStreamProto.Range.Builder builderForValue) {
@@ -14283,7 +14283,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public Builder addRange(
           int index, ucar.nc2.stream.NcStreamProto.Range.Builder builderForValue) {
@@ -14297,7 +14297,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public Builder addAllRange(
           java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Range> values) {
@@ -14311,7 +14311,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public Builder clearRange() {
         if (rangeBuilder_ == null) {
@@ -14324,7 +14324,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public Builder removeRange(int index) {
         if (rangeBuilder_ == null) {
@@ -14337,14 +14337,14 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Range.Builder getRangeBuilder(
           int index) {
         return getRangeFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public ucar.nc2.stream.NcStreamProto.RangeOrBuilder getRangeOrBuilder(
           int index) {
@@ -14354,7 +14354,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.RangeOrBuilder> 
            getRangeOrBuilderList() {
@@ -14365,14 +14365,14 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Range.Builder addRangeBuilder() {
         return getRangeFieldBuilder().addBuilder(
             ucar.nc2.stream.NcStreamProto.Range.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public ucar.nc2.stream.NcStreamProto.Range.Builder addRangeBuilder(
           int index) {
@@ -14380,7 +14380,7 @@ public final class NcStreamProto {
             index, ucar.nc2.stream.NcStreamProto.Range.getDefaultInstance());
       }
       /**
-       * <code>repeated .ncstream.Range range = 1;</code>
+       * <code>repeated .Range range = 1;</code>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Range.Builder> 
            getRangeBuilderList() {
@@ -14401,7 +14401,7 @@ public final class NcStreamProto {
         return rangeBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Section)
+      // @@protoc_insertion_point(builder_scope:Section)
     }
 
     static {
@@ -14409,7 +14409,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Section)
+    // @@protoc_insertion_point(class_scope:Section)
   }
 
   public interface StructureDataOrBuilder
@@ -14420,7 +14420,7 @@ public final class NcStreamProto {
      * <code>repeated uint32 member = 1;</code>
      *
      * <pre>
-     * optional list of members present
+     * list of members present, if none then all, these are the index in Structure
      * </pre>
      */
     java.util.List<java.lang.Integer> getMemberList();
@@ -14428,7 +14428,7 @@ public final class NcStreamProto {
      * <code>repeated uint32 member = 1;</code>
      *
      * <pre>
-     * optional list of members present
+     * list of members present, if none then all, these are the index in Structure
      * </pre>
      */
     int getMemberCount();
@@ -14436,7 +14436,7 @@ public final class NcStreamProto {
      * <code>repeated uint32 member = 1;</code>
      *
      * <pre>
-     * optional list of members present
+     * list of members present, if none then all, these are the index in Structure
      * </pre>
      */
     int getMember(int index);
@@ -14524,15 +14524,41 @@ public final class NcStreamProto {
     // optional uint64 nrows = 5 [default = 1];
     /**
      * <code>optional uint64 nrows = 5 [default = 1];</code>
+     *
+     * <pre>
+     * number of structData in this message
+     * </pre>
      */
     boolean hasNrows();
     /**
      * <code>optional uint64 nrows = 5 [default = 1];</code>
+     *
+     * <pre>
+     * number of structData in this message
+     * </pre>
      */
     long getNrows();
+
+    // optional uint32 rowLength = 6;
+    /**
+     * <code>optional uint32 rowLength = 6;</code>
+     *
+     * <pre>
+     * length in bytes of each row
+     * </pre>
+     */
+    boolean hasRowLength();
+    /**
+     * <code>optional uint32 rowLength = 6;</code>
+     *
+     * <pre>
+     * length in bytes of each row
+     * </pre>
+     */
+    int getRowLength();
   }
   /**
-   * Protobuf type {@code ncstream.StructureData}
+   * Protobuf type {@code StructureData}
    */
   public static final class StructureData extends
       com.google.protobuf.GeneratedMessage
@@ -14642,6 +14668,11 @@ public final class NcStreamProto {
               nrows_ = input.readUInt64();
               break;
             }
+            case 48: {
+              bitField0_ |= 0x00000004;
+              rowLength_ = input.readUInt32();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -14665,12 +14696,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_StructureData_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_StructureData_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.StructureData.class, ucar.nc2.stream.NcStreamProto.StructureData.Builder.class);
     }
@@ -14698,7 +14729,7 @@ public final class NcStreamProto {
      * <code>repeated uint32 member = 1;</code>
      *
      * <pre>
-     * optional list of members present
+     * list of members present, if none then all, these are the index in Structure
      * </pre>
      */
     public java.util.List<java.lang.Integer>
@@ -14709,7 +14740,7 @@ public final class NcStreamProto {
      * <code>repeated uint32 member = 1;</code>
      *
      * <pre>
-     * optional list of members present
+     * list of members present, if none then all, these are the index in Structure
      * </pre>
      */
     public int getMemberCount() {
@@ -14719,7 +14750,7 @@ public final class NcStreamProto {
      * <code>repeated uint32 member = 1;</code>
      *
      * <pre>
-     * optional list of members present
+     * list of members present, if none then all, these are the index in Structure
      * </pre>
      */
     public int getMember(int index) {
@@ -14836,15 +14867,47 @@ public final class NcStreamProto {
     private long nrows_;
     /**
      * <code>optional uint64 nrows = 5 [default = 1];</code>
+     *
+     * <pre>
+     * number of structData in this message
+     * </pre>
      */
     public boolean hasNrows() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
      * <code>optional uint64 nrows = 5 [default = 1];</code>
+     *
+     * <pre>
+     * number of structData in this message
+     * </pre>
      */
     public long getNrows() {
       return nrows_;
+    }
+
+    // optional uint32 rowLength = 6;
+    public static final int ROWLENGTH_FIELD_NUMBER = 6;
+    private int rowLength_;
+    /**
+     * <code>optional uint32 rowLength = 6;</code>
+     *
+     * <pre>
+     * length in bytes of each row
+     * </pre>
+     */
+    public boolean hasRowLength() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional uint32 rowLength = 6;</code>
+     *
+     * <pre>
+     * length in bytes of each row
+     * </pre>
+     */
+    public int getRowLength() {
+      return rowLength_;
     }
 
     private void initFields() {
@@ -14853,6 +14916,7 @@ public final class NcStreamProto {
       heapCount_ = java.util.Collections.emptyList();
       sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       nrows_ = 1L;
+      rowLength_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -14884,6 +14948,9 @@ public final class NcStreamProto {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeUInt64(5, nrows_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(6, rowLength_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -14928,6 +14995,10 @@ public final class NcStreamProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(5, nrows_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(6, rowLength_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -15008,19 +15079,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.StructureData}
+     * Protobuf type {@code StructureData}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.StructureDataOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_StructureData_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_StructureData_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.StructureData.class, ucar.nc2.stream.NcStreamProto.StructureData.Builder.class);
       }
@@ -15055,6 +15126,8 @@ public final class NcStreamProto {
         bitField0_ = (bitField0_ & ~0x00000008);
         nrows_ = 1L;
         bitField0_ = (bitField0_ & ~0x00000010);
+        rowLength_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -15064,7 +15137,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_StructureData_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_StructureData_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.StructureData getDefaultInstanceForType() {
@@ -15107,6 +15180,10 @@ public final class NcStreamProto {
           to_bitField0_ |= 0x00000002;
         }
         result.nrows_ = nrows_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.rowLength_ = rowLength_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -15159,6 +15236,9 @@ public final class NcStreamProto {
         if (other.hasNrows()) {
           setNrows(other.getNrows());
         }
+        if (other.hasRowLength()) {
+          setRowLength(other.getRowLength());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -15202,7 +15282,7 @@ public final class NcStreamProto {
        * <code>repeated uint32 member = 1;</code>
        *
        * <pre>
-       * optional list of members present
+       * list of members present, if none then all, these are the index in Structure
        * </pre>
        */
       public java.util.List<java.lang.Integer>
@@ -15213,7 +15293,7 @@ public final class NcStreamProto {
        * <code>repeated uint32 member = 1;</code>
        *
        * <pre>
-       * optional list of members present
+       * list of members present, if none then all, these are the index in Structure
        * </pre>
        */
       public int getMemberCount() {
@@ -15223,7 +15303,7 @@ public final class NcStreamProto {
        * <code>repeated uint32 member = 1;</code>
        *
        * <pre>
-       * optional list of members present
+       * list of members present, if none then all, these are the index in Structure
        * </pre>
        */
       public int getMember(int index) {
@@ -15233,7 +15313,7 @@ public final class NcStreamProto {
        * <code>repeated uint32 member = 1;</code>
        *
        * <pre>
-       * optional list of members present
+       * list of members present, if none then all, these are the index in Structure
        * </pre>
        */
       public Builder setMember(
@@ -15247,7 +15327,7 @@ public final class NcStreamProto {
        * <code>repeated uint32 member = 1;</code>
        *
        * <pre>
-       * optional list of members present
+       * list of members present, if none then all, these are the index in Structure
        * </pre>
        */
       public Builder addMember(int value) {
@@ -15260,7 +15340,7 @@ public final class NcStreamProto {
        * <code>repeated uint32 member = 1;</code>
        *
        * <pre>
-       * optional list of members present
+       * list of members present, if none then all, these are the index in Structure
        * </pre>
        */
       public Builder addAllMember(
@@ -15274,7 +15354,7 @@ public final class NcStreamProto {
        * <code>repeated uint32 member = 1;</code>
        *
        * <pre>
-       * optional list of members present
+       * list of members present, if none then all, these are the index in Structure
        * </pre>
        */
       public Builder clearMember() {
@@ -15563,18 +15643,30 @@ public final class NcStreamProto {
       private long nrows_ = 1L;
       /**
        * <code>optional uint64 nrows = 5 [default = 1];</code>
+       *
+       * <pre>
+       * number of structData in this message
+       * </pre>
        */
       public boolean hasNrows() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <code>optional uint64 nrows = 5 [default = 1];</code>
+       *
+       * <pre>
+       * number of structData in this message
+       * </pre>
        */
       public long getNrows() {
         return nrows_;
       }
       /**
        * <code>optional uint64 nrows = 5 [default = 1];</code>
+       *
+       * <pre>
+       * number of structData in this message
+       * </pre>
        */
       public Builder setNrows(long value) {
         bitField0_ |= 0x00000010;
@@ -15584,6 +15676,10 @@ public final class NcStreamProto {
       }
       /**
        * <code>optional uint64 nrows = 5 [default = 1];</code>
+       *
+       * <pre>
+       * number of structData in this message
+       * </pre>
        */
       public Builder clearNrows() {
         bitField0_ = (bitField0_ & ~0x00000010);
@@ -15592,7 +15688,56 @@ public final class NcStreamProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.StructureData)
+      // optional uint32 rowLength = 6;
+      private int rowLength_ ;
+      /**
+       * <code>optional uint32 rowLength = 6;</code>
+       *
+       * <pre>
+       * length in bytes of each row
+       * </pre>
+       */
+      public boolean hasRowLength() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional uint32 rowLength = 6;</code>
+       *
+       * <pre>
+       * length in bytes of each row
+       * </pre>
+       */
+      public int getRowLength() {
+        return rowLength_;
+      }
+      /**
+       * <code>optional uint32 rowLength = 6;</code>
+       *
+       * <pre>
+       * length in bytes of each row
+       * </pre>
+       */
+      public Builder setRowLength(int value) {
+        bitField0_ |= 0x00000020;
+        rowLength_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 rowLength = 6;</code>
+       *
+       * <pre>
+       * length in bytes of each row
+       * </pre>
+       */
+      public Builder clearRowLength() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        rowLength_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:StructureData)
     }
 
     static {
@@ -15600,7 +15745,7 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.StructureData)
+    // @@protoc_insertion_point(class_scope:StructureData)
   }
 
   public interface ErrorOrBuilder
@@ -15622,7 +15767,7 @@ public final class NcStreamProto {
         getMessageBytes();
   }
   /**
-   * Protobuf type {@code ncstream.Error}
+   * Protobuf type {@code Error}
    */
   public static final class Error extends
       com.google.protobuf.GeneratedMessage
@@ -15691,12 +15836,12 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Error_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_Error_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Error_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_Error_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               ucar.nc2.stream.NcStreamProto.Error.class, ucar.nc2.stream.NcStreamProto.Error.Builder.class);
     }
@@ -15874,19 +16019,19 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code ncstream.Error}
+     * Protobuf type {@code Error}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements ucar.nc2.stream.NcStreamProto.ErrorOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Error_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Error_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Error_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_Error_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
                 ucar.nc2.stream.NcStreamProto.Error.class, ucar.nc2.stream.NcStreamProto.Error.Builder.class);
       }
@@ -15922,7 +16067,7 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Error_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_Error_descriptor;
       }
 
       public ucar.nc2.stream.NcStreamProto.Error getDefaultInstanceForType() {
@@ -16071,7 +16216,7 @@ public final class NcStreamProto {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:ncstream.Error)
+      // @@protoc_insertion_point(builder_scope:Error)
     }
 
     static {
@@ -16079,74 +16224,74 @@ public final class NcStreamProto {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:ncstream.Error)
+    // @@protoc_insertion_point(class_scope:Error)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Attribute_descriptor;
+    internal_static_Attribute_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Attribute_fieldAccessorTable;
+      internal_static_Attribute_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Dimension_descriptor;
+    internal_static_Dimension_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Dimension_fieldAccessorTable;
+      internal_static_Dimension_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Variable_descriptor;
+    internal_static_Variable_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Variable_fieldAccessorTable;
+      internal_static_Variable_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Structure_descriptor;
+    internal_static_Structure_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Structure_fieldAccessorTable;
+      internal_static_Structure_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_EnumTypedef_descriptor;
+    internal_static_EnumTypedef_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_EnumTypedef_fieldAccessorTable;
+      internal_static_EnumTypedef_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_EnumTypedef_EnumType_descriptor;
+    internal_static_EnumTypedef_EnumType_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_EnumTypedef_EnumType_fieldAccessorTable;
+      internal_static_EnumTypedef_EnumType_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Group_descriptor;
+    internal_static_Group_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Group_fieldAccessorTable;
+      internal_static_Group_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Header_descriptor;
+    internal_static_Header_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Header_fieldAccessorTable;
+      internal_static_Header_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Data_descriptor;
+    internal_static_Data_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Data_fieldAccessorTable;
+      internal_static_Data_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Range_descriptor;
+    internal_static_Range_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Range_fieldAccessorTable;
+      internal_static_Range_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Section_descriptor;
+    internal_static_Section_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Section_fieldAccessorTable;
+      internal_static_Section_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_StructureData_descriptor;
+    internal_static_StructureData_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_StructureData_fieldAccessorTable;
+      internal_static_StructureData_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_ncstream_Error_descriptor;
+    internal_static_Error_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_ncstream_Error_fieldAccessorTable;
+      internal_static_Error_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -16156,138 +16301,134 @@ public final class NcStreamProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\036ucar/nc2/stream/ncStream.proto\022\010ncstre" +
-      "am\"\327\001\n\tAttribute\022\014\n\004name\030\001 \002(\t\022&\n\004type\030\002" +
-      " \002(\0162\030.ncstream.Attribute.Type\022\013\n\003len\030\003 " +
-      "\002(\r\022\014\n\004data\030\004 \001(\014\022\r\n\005sdata\030\005 \003(\t\022\027\n\010unsi" +
-      "gned\030\006 \001(\010:\005false\"Q\n\004Type\022\n\n\006STRING\020\000\022\010\n" +
-      "\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n" +
-      "\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"v\n\tDimension\022\014\n\004nam" +
-      "e\030\001 \001(\t\022\016\n\006length\030\002 \001(\004\022\032\n\013isUnlimited\030\003" +
-      " \001(\010:\005false\022\025\n\006isVlen\030\004 \001(\010:\005false\022\030\n\tis" +
-      "Private\030\005 \001(\010:\005false\"\276\001\n\010Variable\022\014\n\004nam",
-      "e\030\001 \002(\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.Dat" +
-      "aType\022\"\n\005shape\030\003 \003(\0132\023.ncstream.Dimensio" +
-      "n\022!\n\004atts\030\004 \003(\0132\023.ncstream.Attribute\022\027\n\010" +
-      "unsigned\030\005 \001(\010:\005false\022\014\n\004data\030\006 \001(\014\022\020\n\010e" +
-      "numType\030\007 \001(\t\"\316\001\n\tStructure\022\014\n\004name\030\001 \002(" +
-      "\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.DataType\022" +
-      "\"\n\005shape\030\003 \003(\0132\023.ncstream.Dimension\022!\n\004a" +
-      "tts\030\004 \003(\0132\023.ncstream.Attribute\022 \n\004vars\030\005" +
-      " \003(\0132\022.ncstream.Variable\022$\n\007structs\030\006 \003(" +
-      "\0132\023.ncstream.Structure\"q\n\013EnumTypedef\022\014\n",
-      "\004name\030\001 \002(\t\022+\n\003map\030\002 \003(\0132\036.ncstream.Enum" +
-      "Typedef.EnumType\032\'\n\010EnumType\022\014\n\004code\030\001 \002" +
-      "(\r\022\r\n\005value\030\002 \002(\t\"\356\001\n\005Group\022\014\n\004name\030\001 \002(" +
-      "\t\022!\n\004dims\030\002 \003(\0132\023.ncstream.Dimension\022 \n\004" +
-      "vars\030\003 \003(\0132\022.ncstream.Variable\022$\n\007struct" +
-      "s\030\004 \003(\0132\023.ncstream.Structure\022!\n\004atts\030\005 \003" +
-      "(\0132\023.ncstream.Attribute\022\037\n\006groups\030\006 \003(\0132" +
-      "\017.ncstream.Group\022(\n\tenumTypes\030\007 \003(\0132\025.nc" +
-      "stream.EnumTypedef\"h\n\006Header\022\020\n\010location" +
-      "\030\001 \001(\t\022\r\n\005title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\035\n\004roo",
-      "t\030\004 \002(\0132\017.ncstream.Group\022\022\n\007version\030\005 \001(" +
-      "\r:\0010\"\347\001\n\004Data\022\017\n\007varName\030\001 \002(\t\022$\n\010dataTy" +
-      "pe\030\002 \002(\0162\022.ncstream.DataType\022\"\n\007section\030" +
-      "\003 \001(\0132\021.ncstream.Section\022\024\n\006bigend\030\004 \001(\010" +
-      ":\004true\022\022\n\007version\030\005 \001(\r:\0010\022*\n\010compress\030\006" +
-      " \001(\0162\022.ncstream.Compress:\004NONE\022\024\n\005vdata\030" +
-      "\007 \001(\010:\005false\022\030\n\020uncompressedSize\030\010 \001(\r\":" +
-      "\n\005Range\022\020\n\005start\030\001 \001(\004:\0010\022\014\n\004size\030\002 \002(\004\022" +
-      "\021\n\006stride\030\003 \001(\004:\0011\")\n\007Section\022\036\n\005range\030\001" +
-      " \003(\0132\017.ncstream.Range\"a\n\rStructureData\022\016",
-      "\n\006member\030\001 \003(\r\022\014\n\004data\030\002 \002(\014\022\021\n\theapCoun" +
-      "t\030\003 \003(\r\022\r\n\005sdata\030\004 \003(\t\022\020\n\005nrows\030\005 \001(\004:\0011" +
-      "\"\030\n\005Error\022\017\n\007message\030\001 \002(\t*\251\001\n\010DataType\022" +
-      "\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022" +
-      "\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRI" +
-      "NG\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005ENU" +
-      "M1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\r*!" +
-      "\n\010Compress\022\010\n\004NONE\020\000\022\013\n\007DEFLATE\020\001B \n\017uca" +
-      "r.nc2.streamB\rNcStreamProto"
+      "\n\036ucar/nc2/stream/ncStream.proto\"\316\001\n\tAtt" +
+      "ribute\022\014\n\004name\030\001 \002(\t\022\035\n\004type\030\002 \002(\0162\017.Att" +
+      "ribute.Type\022\013\n\003len\030\003 \002(\r\022\014\n\004data\030\004 \001(\014\022\r" +
+      "\n\005sdata\030\005 \003(\t\022\027\n\010unsigned\030\006 \001(\010:\005false\"Q" +
+      "\n\004Type\022\n\n\006STRING\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022" +
+      "\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020" +
+      "\006\"v\n\tDimension\022\014\n\004name\030\001 \001(\t\022\016\n\006length\030\002" +
+      " \001(\004\022\032\n\013isUnlimited\030\003 \001(\010:\005false\022\025\n\006isVl" +
+      "en\030\004 \001(\010:\005false\022\030\n\tisPrivate\030\005 \001(\010:\005fals" +
+      "e\"\243\001\n\010Variable\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType",
+      "\030\002 \002(\0162\t.DataType\022\031\n\005shape\030\003 \003(\0132\n.Dimen" +
+      "sion\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\027\n\010unsign" +
+      "ed\030\005 \001(\010:\005false\022\014\n\004data\030\006 \001(\014\022\020\n\010enumTyp" +
+      "e\030\007 \001(\t\"\241\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022\033\n\010d" +
+      "ataType\030\002 \002(\0162\t.DataType\022\031\n\005shape\030\003 \003(\0132" +
+      "\n.Dimension\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\027\n" +
+      "\004vars\030\005 \003(\0132\t.Variable\022\033\n\007structs\030\006 \003(\0132" +
+      "\n.Structure\"h\n\013EnumTypedef\022\014\n\004name\030\001 \002(\t" +
+      "\022\"\n\003map\030\002 \003(\0132\025.EnumTypedef.EnumType\032\'\n\010" +
+      "EnumType\022\014\n\004code\030\001 \002(\r\022\r\n\005value\030\002 \002(\t\"\270\001",
+      "\n\005Group\022\014\n\004name\030\001 \002(\t\022\030\n\004dims\030\002 \003(\0132\n.Di" +
+      "mension\022\027\n\004vars\030\003 \003(\0132\t.Variable\022\033\n\007stru" +
+      "cts\030\004 \003(\0132\n.Structure\022\030\n\004atts\030\005 \003(\0132\n.At" +
+      "tribute\022\026\n\006groups\030\006 \003(\0132\006.Group\022\037\n\tenumT" +
+      "ypes\030\007 \003(\0132\014.EnumTypedef\"_\n\006Header\022\020\n\010lo" +
+      "cation\030\001 \001(\t\022\r\n\005title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022" +
+      "\024\n\004root\030\004 \002(\0132\006.Group\022\022\n\007version\030\005 \001(\r:\001" +
+      "0\"\314\001\n\004Data\022\017\n\007varName\030\001 \002(\t\022\033\n\010dataType\030" +
+      "\002 \002(\0162\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Sect" +
+      "ion\022\024\n\006bigend\030\004 \001(\010:\004true\022\022\n\007version\030\005 \001",
+      "(\r:\0010\022!\n\010compress\030\006 \001(\0162\t.Compress:\004NONE" +
+      "\022\024\n\005vdata\030\007 \001(\010:\005false\022\030\n\020uncompressedSi" +
+      "ze\030\010 \001(\r\":\n\005Range\022\020\n\005start\030\001 \001(\004:\0010\022\014\n\004s" +
+      "ize\030\002 \002(\004\022\021\n\006stride\030\003 \001(\004:\0011\" \n\007Section\022" +
+      "\025\n\005range\030\001 \003(\0132\006.Range\"t\n\rStructureData\022" +
+      "\016\n\006member\030\001 \003(\r\022\014\n\004data\030\002 \002(\014\022\021\n\theapCou" +
+      "nt\030\003 \003(\r\022\r\n\005sdata\030\004 \003(\t\022\020\n\005nrows\030\005 \001(\004:\001" +
+      "1\022\021\n\trowLength\030\006 \001(\r\"\030\n\005Error\022\017\n\007message" +
+      "\030\001 \002(\t*\251\001\n\010DataType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022" +
+      "\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005",
+      "\022\n\n\006DOUBLE\020\006\022\n\n\006STRING\020\007\022\r\n\tSTRUCTURE\020\010\022" +
+      "\014\n\010SEQUENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005E" +
+      "NUM4\020\014\022\n\n\006OPAQUE\020\r*!\n\010Compress\022\010\n\004NONE\020\000" +
+      "\022\013\n\007DEFLATE\020\001B \n\017ucar.nc2.streamB\rNcStre" +
+      "amProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_ncstream_Attribute_descriptor =
+          internal_static_Attribute_descriptor =
             getDescriptor().getMessageTypes().get(0);
-          internal_static_ncstream_Attribute_fieldAccessorTable = new
+          internal_static_Attribute_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Attribute_descriptor,
+              internal_static_Attribute_descriptor,
               new java.lang.String[] { "Name", "Type", "Len", "Data", "Sdata", "Unsigned", });
-          internal_static_ncstream_Dimension_descriptor =
+          internal_static_Dimension_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_ncstream_Dimension_fieldAccessorTable = new
+          internal_static_Dimension_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Dimension_descriptor,
+              internal_static_Dimension_descriptor,
               new java.lang.String[] { "Name", "Length", "IsUnlimited", "IsVlen", "IsPrivate", });
-          internal_static_ncstream_Variable_descriptor =
+          internal_static_Variable_descriptor =
             getDescriptor().getMessageTypes().get(2);
-          internal_static_ncstream_Variable_fieldAccessorTable = new
+          internal_static_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Variable_descriptor,
+              internal_static_Variable_descriptor,
               new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", "EnumType", });
-          internal_static_ncstream_Structure_descriptor =
+          internal_static_Structure_descriptor =
             getDescriptor().getMessageTypes().get(3);
-          internal_static_ncstream_Structure_fieldAccessorTable = new
+          internal_static_Structure_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Structure_descriptor,
+              internal_static_Structure_descriptor,
               new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Vars", "Structs", });
-          internal_static_ncstream_EnumTypedef_descriptor =
+          internal_static_EnumTypedef_descriptor =
             getDescriptor().getMessageTypes().get(4);
-          internal_static_ncstream_EnumTypedef_fieldAccessorTable = new
+          internal_static_EnumTypedef_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_EnumTypedef_descriptor,
+              internal_static_EnumTypedef_descriptor,
               new java.lang.String[] { "Name", "Map", });
-          internal_static_ncstream_EnumTypedef_EnumType_descriptor =
-            internal_static_ncstream_EnumTypedef_descriptor.getNestedTypes().get(0);
-          internal_static_ncstream_EnumTypedef_EnumType_fieldAccessorTable = new
+          internal_static_EnumTypedef_EnumType_descriptor =
+            internal_static_EnumTypedef_descriptor.getNestedTypes().get(0);
+          internal_static_EnumTypedef_EnumType_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_EnumTypedef_EnumType_descriptor,
+              internal_static_EnumTypedef_EnumType_descriptor,
               new java.lang.String[] { "Code", "Value", });
-          internal_static_ncstream_Group_descriptor =
+          internal_static_Group_descriptor =
             getDescriptor().getMessageTypes().get(5);
-          internal_static_ncstream_Group_fieldAccessorTable = new
+          internal_static_Group_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Group_descriptor,
+              internal_static_Group_descriptor,
               new java.lang.String[] { "Name", "Dims", "Vars", "Structs", "Atts", "Groups", "EnumTypes", });
-          internal_static_ncstream_Header_descriptor =
+          internal_static_Header_descriptor =
             getDescriptor().getMessageTypes().get(6);
-          internal_static_ncstream_Header_fieldAccessorTable = new
+          internal_static_Header_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Header_descriptor,
+              internal_static_Header_descriptor,
               new java.lang.String[] { "Location", "Title", "Id", "Root", "Version", });
-          internal_static_ncstream_Data_descriptor =
+          internal_static_Data_descriptor =
             getDescriptor().getMessageTypes().get(7);
-          internal_static_ncstream_Data_fieldAccessorTable = new
+          internal_static_Data_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Data_descriptor,
+              internal_static_Data_descriptor,
               new java.lang.String[] { "VarName", "DataType", "Section", "Bigend", "Version", "Compress", "Vdata", "UncompressedSize", });
-          internal_static_ncstream_Range_descriptor =
+          internal_static_Range_descriptor =
             getDescriptor().getMessageTypes().get(8);
-          internal_static_ncstream_Range_fieldAccessorTable = new
+          internal_static_Range_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Range_descriptor,
+              internal_static_Range_descriptor,
               new java.lang.String[] { "Start", "Size", "Stride", });
-          internal_static_ncstream_Section_descriptor =
+          internal_static_Section_descriptor =
             getDescriptor().getMessageTypes().get(9);
-          internal_static_ncstream_Section_fieldAccessorTable = new
+          internal_static_Section_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Section_descriptor,
+              internal_static_Section_descriptor,
               new java.lang.String[] { "Range", });
-          internal_static_ncstream_StructureData_descriptor =
+          internal_static_StructureData_descriptor =
             getDescriptor().getMessageTypes().get(10);
-          internal_static_ncstream_StructureData_fieldAccessorTable = new
+          internal_static_StructureData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_StructureData_descriptor,
-              new java.lang.String[] { "Member", "Data", "HeapCount", "Sdata", "Nrows", });
-          internal_static_ncstream_Error_descriptor =
+              internal_static_StructureData_descriptor,
+              new java.lang.String[] { "Member", "Data", "HeapCount", "Sdata", "Nrows", "RowLength", });
+          internal_static_Error_descriptor =
             getDescriptor().getMessageTypes().get(11);
-          internal_static_ncstream_Error_fieldAccessorTable = new
+          internal_static_Error_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_ncstream_Error_descriptor,
+              internal_static_Error_descriptor,
               new java.lang.String[] { "Message", });
           return null;
         }
