@@ -239,7 +239,7 @@ public class FeatureDatasetFactoryManager {
       // special processing for collection: datasets
     } else if (location.startsWith(ucar.nc2.ft.point.collection.CompositeDatasetFactory.SCHEME)) {
       String spec = location.substring(CompositeDatasetFactory.SCHEME.length());
-      CollectionManager dcm = MFileCollectionManager.open(spec, spec, null, errlog); // LOOK we dont have a name
+      MFileCollectionManager dcm = MFileCollectionManager.open(spec, spec, null, errlog); // look we dont have a name
       return CompositeDatasetFactory.factory(location, wantFeatureType, dcm, errlog);
     }
 

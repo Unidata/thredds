@@ -2186,6 +2186,7 @@ public class ToolsUI extends JPanel {
     void closeOpenFiles() throws IOException {
       if (ncd != null) ncd.close();
       ncd = null;
+      aggTable.clear();
     }
 
     AggPanel(PreferencesExt p) {

@@ -183,7 +183,7 @@ public class AggregationExisting extends AggregationOuterDimension {
   // time units change - must read in time coords and convert, cache the results
   // must be able to be made into a CoordinateAxis1DTime
   protected void readTimeCoordinates(VariableDS timeAxis, CancelTask cancelTask) throws IOException {
-    List<CalendarDate> dateList = new ArrayList<CalendarDate>();
+    List<CalendarDate> dateList = new ArrayList<>();
     String timeUnits = null;
 
     // make concurrent

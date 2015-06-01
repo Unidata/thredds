@@ -422,7 +422,20 @@ mkdir javaUtilPrefs/.usermPrefs
   <p> and choose <strong>maxSize</strong> carefully.
     The trick is to make <strong>maxSize</strong> big enough to keep the "working set" uncompressed, i.e. if there is a reletively small "hot" set of files that
     get accessed a lot, you want to give enough cache space to keep them uncompressed in the cache. Monitor the cache directory closely to see what files stay
-    uncompressed, and how old they are, and modify <strong>maxSize</strong> as needed.<br>
+  uncompressed, and how old they are, and modify <strong>maxSize</strong> as needed.</p>
+</blockquote>
+<p><strong>Q: Since I upgraded, my joinExisting aggregation is now very slow. It used to be fast!</strong></p>
+<blockquote>
+  <p><strong>JoinExisting</strong> aggregations need to open each file and extract the coordinates the first time the aggregation is accessed. The information is cached in <em>content/thredds/cache/agg, </em>so subsequest reads should be much faster.</p>
+  <p>A change to the default behavior of DiskCache2 may cause a need to re-read the files. The 4.3 default was to put all cache files into a single directory, but 4.6 default makes nested directories, because having thousands of files in a single directory is Considered Harmful. If you need to, you can control that behavior in threddsConfig.xml, but better is to pay the price and redo the cache with the default. Email support if you need more details.</p>
+  <div>Note that to get everything to cache, you just need to make a request for the aggregation coordinate (usually time) values. Could do it with a dods request, or open the file as a Grid (eg WMS, WCS, NCSS, rom ToolsUI, IDV, etc) which will automatically request coordinates. A script to do so is easy enough, using wget or python or whatever you like. Email support if you need an example.</div>
+  <div><br>
+  </div>
+  <div>One might ask why doesnt 4.6 used the previous cached values? It does, but a change to the default behavior of DiskCache2 may be affecting this. The 4.3 default was to put all cache files into a single directory, but 4.6 default makes nested directories, because having thousands of files in a single directory is Considered Harmful. If you need to, you can control that behavior in threddsConfig.xml, but better is to pay the price and redo the cache with the default. Email support if you need more details.</div>
+  <div><br>
+  </div>
+  <div>BTW, it might be advisable to take the opportunity to clear out your caches, if you are installing on top of your old TDS. Just go to your cache directory (default is content/thredds/cache), and delete the entire directory, or if you have the inclination, go and selectively delete stuff (but then you have to think hard). Then trigger a repopulation as above.</div>
+  <p><br>
   </p>
 </blockquote>
 

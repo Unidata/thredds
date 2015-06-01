@@ -143,6 +143,11 @@ public class AggTable extends JPanel {
     prefs.putInt("splitPos", split.getDividerLocation());
   }
 
+  public void clear() {
+    datasetTable.clearBeans();
+    aggTA.clear();
+  }
+
   public void setAggDataset(NetcdfDataset ncd) throws IOException {
     current = ncd;
 
