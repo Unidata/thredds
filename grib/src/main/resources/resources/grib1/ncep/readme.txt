@@ -50,3 +50,13 @@
   - AFAICT, GLDAS and NLDAS files -> ncepGrib1-7-4-130, ncepGrib1-7-12-130, ncepGrib1-7-138-130
   - seems likely that nasa has hijacked center/subcenter/version (?)
   - add original files to sources/nasa
+
+06/01/2015 sarms
+  - moved original files to source/nasa
+  - updated grib1 table /grib/src/main/resources/resources/grib1/ncep/ncepGrib1-130.xml by hand
+    to match what is shown in source/nasa/README.NLDAS1.pdf (description not properly shown in the
+    *.txt files sent to us).
+  - See jira for more details: https://bugtracking.unidata.ucar.edu/browse/TDS-674
+  - The update was focused on disambiguating some of the parameters by adding the platform name
+    from which they were obtained (i.e. replacing "Downward Shortwave Radiation Flux" with
+    "Downward Shortwave Radiation Flux from GOES-UMD Pinker".
