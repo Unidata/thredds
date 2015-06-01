@@ -44,8 +44,6 @@ import java.io.StringReader;
  * @author caron
  * @since Jul 8, 2010
  */
-
-
 public class TestFindCoord extends TestCase {
 
   public TestFindCoord(String name) {

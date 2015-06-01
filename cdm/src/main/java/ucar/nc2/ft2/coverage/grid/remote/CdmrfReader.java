@@ -224,7 +224,7 @@ public class CdmrfReader {
     result.setName(proto.getName());
     result.setDataType(NcStream.convertDataType(proto.getDataType()));
     result.setAxisType(type);
-    result.setNvalues(proto.getNvalues());
+    result.setNcoords(proto.getNvalues());
     result.setMinIndex(0);
     result.setMaxIndex(proto.getNvalues()-1);
     result.setUnits(proto.getUnits());

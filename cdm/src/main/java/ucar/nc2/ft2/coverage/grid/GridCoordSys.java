@@ -77,13 +77,15 @@ public class GridCoordSys {
 
   public void toString(Formatter f, Indent indent) {
     indent.incr();
-    f.format("%s CoordSys '%s'", indent, name);
+    f.format("%s CoordSys '%s' type %s", indent, name, type);
     f.format(" has coordVars:");
     for (String v : axisNames)
       f.format("%s, ", v);
-    f.format("; has transforms:");
-    for (String t : transformNames)
-      f.format("%s, ", t);
+    if (transformNames != null) {
+      f.format("; has transforms:");
+      for (String t : transformNames)
+        f.format("%s, ", t);
+    }
     f.format("%n");
 
     indent.decr();

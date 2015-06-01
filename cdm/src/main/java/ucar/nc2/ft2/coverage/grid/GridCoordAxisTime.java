@@ -3,9 +3,7 @@ package ucar.nc2.ft2.coverage.grid;
 
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.units.TimeUnit;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
@@ -40,7 +38,7 @@ public class GridCoordAxisTime extends GridCoordAxis {
   public List<NamedObject> getCoordValueNames() {
     getValues();
     List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < getNvalues(); i++) {
+    for (int i = 0; i < getNcoords(); i++) {
       String valName = "";
       double value;
       switch (getSpacing()) {

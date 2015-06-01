@@ -8,11 +8,9 @@ import ucar.ma2.Range;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +109,7 @@ public class CFGridCoverageWriter {
     Map<String, Dimension> dimHash = new HashMap<>();
     for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
       if (!(axis.getDependenceType() == GridCoordAxis.DependenceType.independent)) continue;
-      Dimension d = writer.addDimension(null, axis.getName(), (int) axis.getNvalues());
+      Dimension d = writer.addDimension(null, axis.getName(), (int) axis.getNcoords());
       dimHash.put(axis.getName(), d);
 
       Variable v = writer.addVariable(null, axis.getName(), axis.getDataType(), axis.getName());

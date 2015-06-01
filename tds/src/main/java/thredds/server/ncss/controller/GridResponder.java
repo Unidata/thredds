@@ -114,10 +114,10 @@ class GridResponder {
 					for (String varName : vars) {
 						GridCoverage grid = gcd.findCoverage(varName);
 						GridCoordAxis vertAxis = gcd.getZAxis(gcd.findCoordSys(grid.getCoordSysName()));
-						if (vertAxis != null && vertAxis.getNvalues() > 1) {
+						if (vertAxis != null && vertAxis.getNcoords() > 1) {
 							int bestIndex = -1;
 							double bestDiff = Double.MAX_VALUE;
-							for (int i = 0; i < vertAxis.getNvalues(); i++) {
+							for (int i = 0; i < vertAxis.getNcoords(); i++) {
 								double diff = Math.abs(vertAxis.getCoord(i) - verticalCoord);
 								if (diff < bestDiff) {
 									bestIndex = i;
@@ -143,7 +143,7 @@ class GridResponder {
 						GridCoverage grid = gcd.findCoverage(varName);
 						GridCoordAxis vertAxis = gcd.getZAxis(gcd.findCoordSys(grid.getCoordSysName()));
 						if (vertAxis != null) {
-							int n = (int) vertAxis.getNvalues();
+							int n = (int) vertAxis.getNcoords();
 							int last = Math.max(zRange.last(), n - 1);  // LOOK bug n vs n-1 ??
 							zRange = new Range(zRange.first(), zRange.last() > n ? zRange.last() : n - 1, vertStride);
 						}

@@ -14,7 +14,6 @@ import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 //import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.nc2.util.Indent;
 import ucar.nc2.util.NamedObject;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -497,7 +496,7 @@ public class CoverageTable extends JPanel {
       setAxisType(v.getAxisType());
       setUnits(v.getUnits());
       setDescription(v.getDescription());
-      setNvalues(v.getNvalues());
+      setNvalues(v.getNcoords());
       setResolution(v.getResolution());
     }
 

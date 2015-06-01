@@ -631,12 +631,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
       // do a linear search to find the nearest index
       for (int i=0; i<n; i++) {
-        if ((bound1[i] <= target) && (target <= bound2[i]))
+        if ((bounds1[i] <= target) && (target <= bounds2[i]))
            return i;
-        if (bound1[i] > target) {
+        if (bounds1[i] > target) {
           if (!bounded) return -1;
-          double d1 = bound1[i] - target;
-          double d2 = target - bound1[i-1];
+          double d1 = bounds1[i] - target;
+          double d2 = target - bounds1[i-1];
           return (d1 > d2) ? i-1 : i;
         }
       }
@@ -652,12 +652,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
       // do a linear search to find the nearest index
       for (int i=0; i<n; i++) {
-        if ((bound2[i] <= target) && (target <= bound1[i]))
+        if ((bounds2[i] <= target) && (target <= bounds1[i]))
            return i;
-        if (bound2[i] < target) {
+        if (bounds2[i] < target) {
           if (!bounded) return -1;
-          double d1 = bound2[i] - target;
-          double d2 = target - bound2[i-1];
+          double d1 = bounds2[i] - target;
+          double d2 = target - bounds2[i-1];
           return (d1 > d2) ? i-1 : i;
         }
       }

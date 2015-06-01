@@ -166,7 +166,8 @@ public class GridCoverageDataset implements AutoCloseable {
     f.format("%s LatLon BoundingBox:%s%n", indent, latLonBoundingBox);
     if (projBoundingBox != null)
       f.format("%s Projection BoundingBox:%s%n", indent, projBoundingBox);
-    f.format("%s Coordinate Systems:%n", indent);
+
+    f.format("%n%s Coordinate Systems:%n", indent);
     for (GridCoordSys cs : coordSys)
       cs.toString(f, indent);
     f.format("%s Coordinate Transforms:%n", indent);
@@ -175,6 +176,7 @@ public class GridCoverageDataset implements AutoCloseable {
     f.format("%s Coordinate Axes:%n", indent);
     for (GridCoordAxis a : coordAxes)
       a.toString(f, indent);
+
     f.format("%n%s Grids:%n", indent);
     for (GridCoverage grid : grids)
       grid.toString(f, indent);
@@ -304,7 +306,7 @@ public class GridCoverageDataset implements AutoCloseable {
     for (String axisName : gcs.getAxisNames()) {
       GridCoordAxis axis = findCoordAxis(axisName);
       if (axis != null)   // LOOK
-        total *= axis.getNvalues();
+        total *= axis.getNcoords();
     }
     total *= grid.getDataType().getSize();
     return total;

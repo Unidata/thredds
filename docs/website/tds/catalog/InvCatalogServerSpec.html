@@ -187,7 +187,7 @@
 results in:<br/>
 <pre>&lt;catalog&#32;xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&gt;<br/>  &lt;service name=&quot;myserv&quot; ... /&gt;<br/>  &lt;dataset name=&quot;GRIB2 Data&quot;&gt;<br/>    &lt;metadata inherited=&quot;true&quot;&gt;&lt;serviceName&gt;myserv&lt;/serviceName&gt;&lt;/metadata&gt;<br/>    &lt;dataset name=&quot;data1.wmo&quot; urlPath=&quot;data1.wmo&quot; /&gt;<br/>    &lt;dataset name=&quot;data2.wmo&quot; urlPath=&quot;data2.wmo&quot; /&gt;<br/>  &lt;/dataset&gt;<br/>&lt;/catalog&gt;<br/></pre>
 <p>When there are one or more <strong>include</strong> filters, datasets must pass at least one of them. When there are one or more <strong>exclude</strong> filters, datasets must pass all of them. The logic can be summarized as </p>
-<pre>dataset is included = (include1 OR include2 OR ...) AND (!exclude1 AND !exclude2 AND ...)</pre>
+<pre>dataset is included if (include1 OR include2 OR ...) AND (!exclude1 AND !exclude2 AND ...)</pre>
 <p>More examples are available in the <a href="../reference/DatasetScan.html#Including_Only_the_Desired_Files">TDS datasetsScan documentation</a>.<br/>
 </p>
 

@@ -216,7 +216,7 @@ public class CdmrfWriter {
     builder.setName(axis.getName());
     builder.setDataType(NcStream.convertDataType(axis.getDataType()));
     builder.setAxisType(convertAxisType(axis.getAxisType()));
-    builder.setNvalues(axis.getNvalues());
+    builder.setNvalues(axis.getNcoords());
     if (axis.getUnits() != null) builder.setUnits(axis.getUnits());
     if (axis.getDescription() != null) builder.setDescription(axis.getDescription());
     builder.setDepend(convertDependenceType(axis.getDependenceType()));
@@ -231,7 +231,7 @@ public class CdmrfWriter {
     builder.setEndValue(axis.getEndValue());
     builder.setResolution(axis.getResolution());
 
-    if (!axis.isRegular() && axis.getNvalues() < MAX_INLINE_NVALUES) {
+    if (!axis.isRegular() && axis.getNcoords() < MAX_INLINE_NVALUES) {
       double[] values = axis.getValues();
       ByteBuffer bb = ByteBuffer.allocate(8 * values.length);
       DoubleBuffer db = bb.asDoubleBuffer();

@@ -85,12 +85,10 @@ public abstract class GridCoverage implements IsMissingEvaluator {
 
   public void toString(Formatter f, Indent indent) {
     indent.incr();
-    f.format("%s  %s type=%s units=%s%n", indent, name, dataType, units);
+    f.format("%n%s  %s %s(%s) desc='%s' units='%s'%n", indent, dataType, name, coordSysName, description, units);
     f.format("%s    attributes:%n", indent);
     for (Attribute att : atts)
       f.format("%s     %s%n", indent, att);
-    f.format("%s    coordSys: '%s'%n", indent, coordSysName);
-
     indent.decr();
   }
 

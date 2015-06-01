@@ -106,7 +106,12 @@ public class DtCoverageAdapter extends GridCoverageDataset {
 
           case GridSubset.vertCoord: // double
             CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-            if (zaxis != null) level = zaxis.findCoordElement( subset.getDouble(key));
+            if (zaxis != null) level = zaxis.findCoordElement(subset.getDouble(key));
+            break;
+
+          case GridSubset.ensCoord: // double
+            CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
+            if (eaxis != null) ens = eaxis.findCoordElement( subset.getDouble(key));
             break;
         }
       }
@@ -169,7 +174,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
         atts.addAttribute(patt);
       setAttributes(atts);
 
-      setNvalues(dtCoordAxis.getSize());
+      setNcoords(dtCoordAxis.getSize());
       setMinIndex(0);
       setMaxIndex(dtCoordAxis.getSize()-1);
 
@@ -239,7 +244,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
         atts.addAttribute(patt);
       setAttributes(atts);
 
-      setNvalues(dtCoordAxis.getSize());
+      setNcoords(dtCoordAxis.getSize());
       setMinIndex(0);
       setMaxIndex(dtCoordAxis.getSize()-1);
 

@@ -34,6 +34,9 @@
 package thredds.server.cdmrfeature;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -118,6 +121,32 @@ public class CdmrGridController implements LastModified {
 
       if (showRes)
         System.out.printf(" CdmrFeatureController.getHeader sent, message size=%s%n", size);
+
+    }
+  }
+
+  @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=form")
+  public ResponseEntity<String> handleFormRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
+    if (showReq)
+      System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
+
+    if (!allowedServices.isAllowed(StandardService.cdmrFeatureGrid))
+      throw new ServiceNotAllowed(StandardService.cdmrFeatureGrid.toString());
+
+    String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
+    HttpHeaders responseHeaders;
+
+    try (GridCoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+      if (gridCoverageDataset == null) return null;
+
+      String text = gridCoverageDataset.toString();
+
+      if (showRes)
+        System.out.printf(" CdmrFeatureController.getHeader sent, message size=%s%n", text.length());
+
+      responseHeaders = new HttpHeaders();
+      responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
+      return new ResponseEntity<>(text, responseHeaders, HttpStatus.OK);
 
     }
   }

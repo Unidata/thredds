@@ -195,7 +195,7 @@ public class GridDatasetHelper {
         if (dval == null) return orgAxis.finish();
 
         // LOOK problems when vertCoord doesnt match any coordinates in the axes
-        return orgAxis.subset(dval, dval);
+        return orgAxis.subsetClosest(dval);
 
       case RunTime:
         return orgAxis.finish();

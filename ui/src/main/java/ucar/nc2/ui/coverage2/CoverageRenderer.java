@@ -6,7 +6,6 @@ import ucar.ma2.*;
 //import ucar.nc2.dataset.CoordinateAxis2D;
 //import ucar.nc2.ft.cover.Coverage;
 //import ucar.nc2.ft.cover.CoverageCS;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;
@@ -819,8 +818,8 @@ public class CoverageRenderer {
   private void drawGridHorizRegular(java.awt.Graphics2D g, Array data) {
     int count = 0;
 
-    int nx = (int) dataState.xaxis.getNvalues();
-    int ny = (int) dataState.yaxis.getNvalues();
+    int nx = (int) dataState.xaxis.getNcoords();
+    int ny = (int) dataState.yaxis.getNcoords();
 
     //// drawing optimizations
     sameProjection = drawProjection.equals(dataProjection); // always true

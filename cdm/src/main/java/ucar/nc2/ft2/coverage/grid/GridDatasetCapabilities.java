@@ -3,7 +3,6 @@ package ucar.nc2.ft2.coverage.grid;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.Namespace;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import ucar.ma2.DataType;
@@ -140,7 +139,7 @@ public class GridDatasetCapabilities {
 
  		Element varElem = new Element("axis");
  		varElem.setAttribute("name", axis.getName());
-    varElem.setAttribute("shape", Long.toString(axis.getNvalues()));
+    varElem.setAttribute("shape", Long.toString(axis.getNcoords()));
 
  		DataType dt = axis.getDataType();
  		varElem.setAttribute("type", dt.toString());
@@ -155,7 +154,7 @@ public class GridDatasetCapabilities {
  		}
 
     Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis.getCoords(), null, false);
-    values.setAttribute("npts", Long.toString(axis.getNvalues()));
+    values.setAttribute("npts", Long.toString(axis.getNcoords()));
     varElem.addContent(values);
 
  		return varElem;
@@ -198,7 +197,7 @@ public class GridDatasetCapabilities {
 
   		Element varElem = new Element(name);
   		varElem.setAttribute("name", axis.getName());
-  		varElem.setAttribute("shape", Long.toString(axis.getNvalues()));
+  		varElem.setAttribute("shape", Long.toString(axis.getNcoords()));
 
   		DataType dt = axis.getDataType();
   		varElem.setAttribute("type", dt.toString());
@@ -212,7 +211,7 @@ public class GridDatasetCapabilities {
   			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
 
   		Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis.getCoords(), null, false);
-  		values.setAttribute("npts", Long.toString(axis.getNvalues()));
+  		values.setAttribute("npts", Long.toString(axis.getNcoords()));
   		varElem.addContent(values);
 
   		return varElem;

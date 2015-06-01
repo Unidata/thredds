@@ -37,7 +37,7 @@ public class GridCoordAxis {
     regular,                // regularly spaced points or intervals (start, end, npts), edges halfway between coords
     irregularPoint,         // irregular spaced points (values, npts), edges halfway between coords
     contiguousInterval,     // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
-    discontiguousInterval }  // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
+    discontiguousInterval } // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
 
   public enum DependenceType {
     independent,             // time(time)
@@ -68,13 +68,16 @@ public class GridCoordAxis {
   private DependenceType dependenceType;
   private String dependsOn;
 
-  private long nvalues, minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
-  private int stride = 1;
+  private int ncoords;            // number of coordinates (not values)
   private Spacing spacing;
   private double startValue;
   private double endValue;
   private double resolution;
   private double[] values;     // null if isRegular,
+
+  // subset
+  private long minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
+  private int stride = 1;
 
   public GridCoordAxis() {
   }
@@ -111,12 +114,12 @@ public class GridCoordAxis {
     this.attributes = attributes;
   }
 
-  public long getNvalues() {
-    return nvalues;
+  public int getNcoords() {
+    return ncoords;
   }
 
-  public void setNvalues(long nvalues) {
-    this.nvalues = nvalues;
+  public void setNcoords(long nvalues) {
+    this.ncoords = (int) nvalues;
   }
 
   public long getMinIndex() {
@@ -156,8 +159,8 @@ public class GridCoordAxis {
   }
 
   public double getResolution() {
-    if (resolution == 0.0 && isRegular() && nvalues > 1)
-      resolution = (endValue - startValue) / (nvalues - 1);
+    if (resolution == 0.0 && isRegular() && ncoords > 1)
+      resolution = (endValue - startValue) / (ncoords - 1);
     return resolution;
   }
 
@@ -238,7 +241,7 @@ public class GridCoordAxis {
   public void toString(Formatter f, Indent indent) {
     indent.incr();
     f.format("%s CoordAxis '%s' axisType=%s dataType=%s", indent, name, axisType, dataType);
-    f.format(" npts: %d [%f,%f] '%s' spacing=%s", nvalues, startValue, endValue, units, spacing);
+    f.format(" npts: %d [%f,%f] '%s' spacing=%s", ncoords, startValue, endValue, units, spacing);
     if (getResolution() != 0.0)
       f.format(" resolution=%f", resolution);
     f.format("%n");
@@ -282,10 +285,46 @@ public class GridCoordAxis {
    * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
    */
 
-  public double getCoordEdge1(int index) {
-    if (index >= nvalues) throw new IllegalArgumentException("Index must be <" + nvalues);
+
+  public boolean isAscending() {
     switch (spacing) {
       case regular:
+        return resolution > 0;
+
+      case irregularPoint:
+        return values[0] <= values[ncoords - 1];
+
+      case contiguousInterval:
+        return values[0] <= values[ncoords];
+
+      case discontiguousInterval:
+        return values[0] <= values[2*ncoords-1];
+    }
+    throw new IllegalStateException("unknown spacing"+spacing);
+  }
+
+  public double getCoord(int index) {
+    switch (spacing) {
+      case regular:
+        if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
+        return startValue + index * resolution;
+
+      case irregularPoint:
+        return values[index];
+
+      case contiguousInterval:
+        return (values[index] + values[index + 1]) / 2;
+
+      case discontiguousInterval:
+        return (values[2 * index] + values[2 * index + 1]) / 2;
+    }
+    throw new IllegalStateException("Unknown spacing=" + spacing);
+  }
+
+  public double getCoordEdge1(int index) {
+    switch (spacing) {
+      case regular:
+        if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
         return startValue + (index - .5) * resolution;
 
       case irregularPoint:
@@ -304,13 +343,13 @@ public class GridCoordAxis {
   }
 
   public double getCoordEdge2(int index) {
-    if (index >= nvalues) throw new IllegalArgumentException("Index must be <" + nvalues);
     switch (spacing) {
       case regular:
+        if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
         return startValue + (index + .5) * resolution;
 
       case irregularPoint:
-        if (index < nvalues - 1)
+        if (index < ncoords - 1)
           return (values[index] + values[index + 1]) / 2;
         else
           return values[index] + (values[index] - values[index - 1]) / 2;
@@ -325,48 +364,29 @@ public class GridCoordAxis {
   }
 
   public double getCoordEdgeLast() {
-    return getCoordEdge2((int) nvalues - 1);
-  }
-
-  public double getCoord(int index) {
-    if (index >= nvalues)
-      throw new IllegalArgumentException("Index must be <" + nvalues);
-    switch (spacing) {
-      case regular:
-        return startValue + index * resolution;
-
-      case irregularPoint:
-        return values[index];
-
-      case contiguousInterval:
-        return (values[index] + values[index + 1]) / 2;
-
-      case discontiguousInterval:
-        return (values[2 * index] + values[2 * index + 1]) / 2;
-    }
-    throw new IllegalStateException("Unknown spacing=" + spacing);
+    return getCoordEdge2((int) ncoords - 1);
   }
 
   public Array getCoords() {
     getValues();
-    Array arr = Array.factory(getDataType(), new int[] {(int)nvalues});
-    for (int i=0; i<nvalues; i++)
+    Array arr = Array.factory(getDataType(), new int[] {(int) ncoords});
+    for (int i=0; i< ncoords; i++)
       arr.setDouble(i, getCoord(i));
     return arr;
   }
 
   public Array getCoordEdge1() {
     getValues();
-    double[] vals = new double[(int) nvalues];
-    for (int i=0; i<nvalues; i++)
+    double[] vals = new double[(int) ncoords];
+    for (int i=0; i< ncoords; i++)
       vals[i] = getCoordEdge1(i);
     return Array.makeFromJavaArray(vals);
   }
 
   public Array getCoordEdge2() {
     getValues();
-    double[] vals = new double[(int) nvalues];
-    for (int i=0; i<nvalues; i++)
+    double[] vals = new double[(int) ncoords];
+    for (int i=0; i< ncoords; i++)
       vals[i] = getCoordEdge2(i);
     return Array.makeFromJavaArray(vals);
   }
@@ -374,7 +394,7 @@ public class GridCoordAxis {
   public List<NamedObject> getCoordValueNames() {
     getValues();
     List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < nvalues; i++) {
+    for (int i = 0; i < ncoords; i++) {
       String valName = "";
       switch (spacing) {
         case regular:
@@ -408,7 +428,7 @@ public class GridCoordAxis {
     setMaxIndex(from.getMaxIndex());
     setMinIndex(from.getMinIndex());
     setName(from.getName());
-    setNvalues(from.getNvalues());
+    setNcoords(from.getNcoords());
     setResolution(from.getResolution());
     setSpacing(from.getSpacing());
     setStartValue(from.getStartValue());
@@ -420,6 +440,12 @@ public class GridCoordAxis {
   public GridCoordAxis subset(double minValue, double maxValue) {
     GridCoordAxis result = new GridCoordAxis(this);
     subsetValues(result, minValue, maxValue);
+    return result.finish();
+  }
+
+  public GridCoordAxis subsetClosest(double want) {
+    GridCoordAxis result = new GridCoordAxis(this);
+    subsetValuesClosest(result, want);
     return result.finish();
   }
 
@@ -444,116 +470,54 @@ public class GridCoordAxis {
      return result.finish();
    }
 
+  // look does min < max when !isAscending ?
+  // look specialize when only one point
   private void subsetValues(GridCoordAxis result, double minValue, double maxValue) {
     double[] subsetValues;
-    double resolution = getResolution();
     int minIndex, maxIndex;
-    double subsetStart, subsetEnd;
-    int count=0, count2=0;
+    int count2 = 0;
+
+    GridCoordAxisHelper helper = new GridCoordAxisHelper(this);
+    minIndex = helper.findCoordElement(minValue);
+    maxIndex = helper.findCoordElement(maxValue);
+    int count = maxIndex - minIndex + 1;
+
+    if (minIndex < 0 )
+      throw new IllegalArgumentException("no points in subset: min > end");
+    if (maxIndex < 0)
+      throw new IllegalArgumentException("no points in subset: max < start");
+    if (count <= 0)
+      throw new IllegalArgumentException("no points in subset");
+
+    result.setNcoords(count);
+    result.setMinIndex(minIndex);
+    result.setMaxIndex(maxIndex);
+    result.setStartValue(getCoord(minIndex));
+    result.setEndValue(getCoord(maxIndex));
 
     switch (spacing) {
-      case regular:                     // LOOK need to deal with longitude wrapping, latitude decreasing
-        if (minValue > endValue)
-          throw new IllegalArgumentException("no points in subset: min > end");
-        if (maxValue < startValue)
-          throw new IllegalArgumentException("no points in subset: max < start");
-
-        if (minValue <= startValue) {
-          minIndex = 0;
-          subsetStart = startValue;
-        } else {
-          minIndex = 1 + (int) ((minValue - startValue) / resolution);
-          subsetStart = startValue + minIndex * resolution;
-        }
-        if (maxValue >= endValue) {
-          maxIndex = (int) nvalues - 1;
-          subsetEnd = endValue;
-        } else {
-          maxIndex = (int) ((maxValue - startValue) / resolution);
-          subsetEnd = startValue + maxIndex * resolution;
-        }
-        result.setNvalues(maxIndex - minIndex + 1);
-        result.setMinIndex(minIndex);
-        result.setMaxIndex(maxIndex);
-        result.setStartValue(subsetStart);
-        result.setEndValue(subsetEnd);
-        break;
 
       case irregularPoint:
-        minIndex = 0;
-        maxIndex = 0;
-        for (double val : getValues()) {  // LOOK linear
-          if (val > maxValue) break;
-          if (val < minValue) minIndex++;
-          maxIndex++;
-        }
-        count = maxIndex - minIndex;
-        if (count == 0)
-          throw new IllegalArgumentException("no points in subset: min > end");
-
         subsetValues = new double[count];
-        for (int i=minIndex; i<maxIndex; i++) {
-          subsetValues[count2++] = getCoord(i);
-        }
-
-        result.setNvalues(count);
-        result.setMinIndex(minIndex);
-        result.setMaxIndex(maxIndex-1); // need closed interval
+        for (int i=minIndex; i<=maxIndex; i++)
+          subsetValues[count2++] = values[i];
         result.setValues(subsetValues);
-        result.setStartValue(subsetValues[0]);
-        result.setEndValue(subsetValues[subsetValues.length - 1]);
         break;
 
       case contiguousInterval:
-        minIndex = -1;
-        count = 0;
-        for (int i=0; i<values.length; i++) {                       // these are edges
-          if (values[i] <= maxValue && values[i+1] >= minValue) {   // count number of intervals that pass
-            count++;
-            if (minIndex < 0) minIndex = i;  // record first one that passes
-          }
-        }
-        if (count == 0)
-          throw new IllegalArgumentException("no points in subset: min > end");
-        maxIndex = minIndex+count-1;
-
         subsetValues = new double[count+1];            // need npts+1
-        for (int i=minIndex; i<=maxIndex; i++)
+        for (int i=minIndex; i<=maxIndex+1; i++)
           subsetValues[count2++] = values[i];
-
-        result.setNvalues(count);
-        result.setMinIndex(minIndex);
-        result.setMaxIndex(maxIndex);
         result.setValues(subsetValues);
-        result.setStartValue(subsetValues[0]);
-        result.setEndValue(subsetValues[subsetValues.length-1]);
         break;
 
       case discontiguousInterval:
-        minIndex = -1;
-        count = 0;
-        for (int i=0; i<values.length; i+=2) {                       // these are bounds (low, high)1, (low,high)2, ...
-          if (values[i] <= maxValue && values[i+1] >= minValue) {
-            count++;     // count number of intervals that pass
-            if (minIndex < 0) minIndex = i;  // record first one that passes
-          }
-        }
-        if (count == 0)
-          throw new IllegalArgumentException("no points in subset: min > end");
-        maxIndex = minIndex+count-1;
-
-        subsetValues = new double[2*count];                   // need 2*npts
+        subsetValues = new double[2*count];            // need 2*npts
         for (int i=minIndex; i<=maxIndex; i+=2) {
           subsetValues[count2++] = values[i];
           subsetValues[count2++] = values[i+1];
         }
-
-        result.setNvalues(count);
-        result.setMinIndex(minIndex);
-        result.setMaxIndex(maxIndex);
         result.setValues(subsetValues);
-        result.setStartValue(subsetValues[0]);
-        result.setEndValue(subsetValues[subsetValues.length-1]);
         break;
     }
   }
@@ -566,90 +530,35 @@ public class GridCoordAxis {
    */
   private void subsetValuesClosest(GridCoordAxis result, double want) {
     double[] subsetValues;
-    double subsetStart;
-    int want_index = -1;
-    double resolution = getResolution();
+
+    GridCoordAxisHelper helper = new GridCoordAxisHelper(this);
+    int want_index = helper.findCoordElement(want);
+
+    result.setNcoords(1);
+    result.setMinIndex(want_index);
+    result.setMaxIndex(want_index);
+    result.setStartValue(getCoord(want_index));
+    result.setEndValue(getCoord(want_index));
 
     switch (spacing) {
-      case regular:
-        if (want >= endValue)
-          want_index = (int) nvalues-1;
-        else if (want <= startValue)
-          want_index = 0;
-        else
-          want_index = (int) (.5 + (want - startValue) / resolution);
-
-        result.setNvalues(1);
-         result.setMinIndex(want_index);
-        result.setMaxIndex(want_index);
-        subsetStart = startValue + want_index * resolution;
-        result.setStartValue(subsetStart);
-        result.setEndValue(subsetStart);
-        break;
-
       case contiguousInterval:
       case irregularPoint:
-        if (want > endValue)
-          want_index = (int) nvalues-1;
-        else if (want < startValue)
-          want_index = 0;
-        else {
-          int idx = 0;
-          for (double val : getValues()) {
-            if (val >= want) break;
-            idx++;
-          }
-          if (spacing == Spacing.irregularPoint && idx+1 < getNvalues()) {  // see which one is closest
-            double lower = want - getCoord(idx);
-            double upper = getCoord(idx + 1) - want;
-            want_index = (lower < upper) ? idx : idx + 1;
-          } else {
-            want_index = idx;
-          }
-        }
-
-        subsetStart = getCoord(want_index);
         if (spacing == Spacing.irregularPoint) {
           subsetValues = new double[1];
-          subsetValues[0] = subsetStart;
+          subsetValues[0] = getCoord(want_index);
         } else {
           subsetValues = new double[2];
           subsetValues[0] = getCoordEdge1(want_index);
           subsetValues[1] = getCoordEdge2(want_index);
         }
         result.setValues(subsetValues);
-
-        result.setNvalues(1);
-        result.setMinIndex(want_index);
-        result.setMaxIndex(want_index);
-        result.setStartValue(subsetStart);
-        result.setEndValue(subsetStart);
         break;
 
       case discontiguousInterval:
-        if (want > endValue)
-          want_index = (int) nvalues-1;
-        else if (want < startValue)
-          want_index = 0;
-        else {
-          for (int i = 0; i < values.length; i += 2) {                      // these are bounds (low, high)1, (low,high)2, ...
-            if (values[i] <= want && values[i+1] >= want) {
-              want_index = i;
-              break;
-            }
-          }
-        }
-
         subsetValues = new double[2];
         subsetValues[0] = getCoordEdge1(want_index);
         subsetValues[1] = getCoordEdge2(want_index);
-
-        result.setNvalues(1);
-        result.setMinIndex(want_index);
-        result.setMaxIndex(want_index);
         result.setValues(subsetValues);
-        result.setStartValue(subsetValues[0]);
-        result.setEndValue(subsetValues[1]);
         break;
     }
 
@@ -658,9 +567,9 @@ public class GridCoordAxis {
   private void subsetValuesLatest(GridCoordAxis result) {
     double[] subsetValues;
 
-    result.setNvalues(1);
-    result.setMinIndex(nvalues- 1);
-    result.setMaxIndex(nvalues-1);
+    result.setNcoords(1);
+    result.setMinIndex(ncoords - 1);
+    result.setMaxIndex(ncoords -1);
     result.setStartValue(endValue);
     result.setEndValue(endValue);
 
