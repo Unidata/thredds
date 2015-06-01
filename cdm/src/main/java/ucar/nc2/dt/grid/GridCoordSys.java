@@ -546,12 +546,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       if (taxis1D != null) {
         Dimension tDim = taxis1D.getDimension(0);
         Dimension rtDim = rtaxis.getDimension(0);
-        if (tDim.getShortName().equals(rtDim.getShortName())) { // must usetime subset range if dims match - FMRC 1D has this a lot
+        if (rtDim != null && tDim.getShortName().equals(rtDim.getShortName())) { // must use time subset range if dims match - FMRC 1D has this a lot
           runTimeAxis = (t_range == null) ? rtaxis : rtaxis.section(t_range);
         }
       }
-      if (runTimeAxis == null)  // regular case of a run tim axis
+      if (runTimeAxis == null) { // regular case of a run time axis
         runTimeAxis = (rt_range == null) ? rtaxis : rtaxis.section(rt_range);
+      }
 
       coordAxes.add(runTimeAxis);
     }

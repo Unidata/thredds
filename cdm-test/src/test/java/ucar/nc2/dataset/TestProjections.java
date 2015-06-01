@@ -107,7 +107,7 @@ public class TestProjections {
                     "air_temperature_2m",
                     ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection.class, null},
 
-            {testDir + "rotatedPole/snow.DMI.ecctrl.ncml",
+            {testDir + "rotatedPole/snow.DMI.ecctrl.v5.ncml",
                     "rotated_pole",
                     "snow",
                     RotatedPole.class, null},
