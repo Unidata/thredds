@@ -137,7 +137,7 @@ public class DtCoverageCSBuilder {
     otherAxes = new ArrayList<>();
     for (CoordinateAxis axis : cs.getCoordinateAxes()) {
       // skip x,y if no projection
-      if ((axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.GeoY) && isLatLon) continue;
+      if ((axis.getAxisType() == AxisType.GeoX || axis.getAxisType() == AxisType.GeoY) && isLatLon) continue;
       if (axis.isIndependentCoordinate()) independentAxes.add(axis);
       else otherAxes.add(axis);
     }

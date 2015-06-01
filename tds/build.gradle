@@ -14,12 +14,20 @@ dependencies {
     compile project(":tdcommon")
     runtime project(":visadCdm")
     compile project(":waterml")
+
+    // DAP4 Dependencies (technically forward)
     compile project(":dap4:d4core")
     compile project(":dap4:d4servletshared")
 
-    compile libraries["coverity-escapers"]
+    // Server stuff
+    provided libraries["javax.servlet-api"]
+    runtime libraries["jstl"]
+
+    // Apache httpclient libraries
     compile libraries["httpclient"]
     compile libraries["httpcore"]
+
+    compile libraries["coverity-escapers"]
     compile libraries["commons-fileupload"]
     compile libraries["jdom2"]
     compile libraries["quartz"]
@@ -30,27 +38,41 @@ dependencies {
     compile libraries["joda-time"]
     compile libraries["52n-xml-waterML-v20"]
 
+    // Spring
     compile libraries["spring-core"]
     compile libraries["spring-context"]
     compile libraries["spring-beans"]
     compile libraries["spring-web"]
     compile libraries["spring-webmvc"]
 
-    runtime libraries["threddsIso"]
-    compile libraries["ncwms"]
-    compile libraries["geoapi-pending"]
-    compile libraries["oro"]
+    // Spring security
+    runtime libraries["spring-security-core"]
+    runtime libraries["spring-security-config"]
+    runtime libraries["spring-security-web"]
 
-    provided libraries["javax.servlet-api"]
-    runtime libraries["jstl"]
-    compile libraries["validation-api"]
-    runtime libraries["hibernate-validator"]
+    // Need to update cas
+    // compile "org.jasig.cas:cas-client-core:________"
+
+    // runtime libraries["threddsIso"]
+    // compile libraries["ncwms"]
+    // compile libraries["geoapi-pending"]
+    // compile libraries["oro"]
+
+    // ncss: Needed for XPath operations in NcssShowDatasetInfoImpl.addElement()
     runtime libraries["jaxen"]
 
+    // JSR 303 with Hibernate Validator, which is dragging in jboss logging
+    compile libraries["validation-api"]
+    runtime libraries["hibernate-validator"]
+
+    // compile "org.thymeleaf:thymeleaf-spring3:2.1.4.RELEASE"
+
+    // Testing
     testCompile libraries["spring-test"]
     testCompile libraries["hamcrest-core"]
     testCompile libraries["httpunit"]
 
+    // Logging
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]
     runtime libraries["log4j-core"]

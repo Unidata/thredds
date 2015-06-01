@@ -93,8 +93,8 @@ public class CoordSysTable extends JPanel {
     varTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        if (null != vb.firstCoordSys)
-          setSelectedCoordinateSystem(vb.firstCoordSys);
+        if (null != vb.coordSysBean)
+          csTable.setSelectedBean(vb.coordSysBean);
       }
     });
 
@@ -554,47 +554,37 @@ public class CoordSysTable extends JPanel {
     this.ds = ds;
     parseInfo = new Formatter();
 
+    List<CoordinateSystemBean> csList = getCoordinateSystemBeans(ds);
     List<VariableBean> beanList = new ArrayList<>();
     List<AxisBean> axisList = new ArrayList<>();
-    setVariables(ds.getVariables(), axisList, beanList);
+    setVariables(ds.getVariables(), axisList, beanList, csList);
 
     varTable.setBeans(beanList);
     axisTable.setBeans(axisList);
-    csTable.setBeans(getCoordinateSystemBeans(ds));
+    csTable.setBeans(csList);
   }
 
-  private void setVariables(List<Variable> varList, List<AxisBean> axisList, List<VariableBean> beanList) {
+  private void setVariables(List<Variable> varList, List<AxisBean> axisList, List<VariableBean> beanList, List<CoordinateSystemBean> csList) {
     for (Variable aVarList : varList) {
       VariableEnhanced v = (VariableEnhanced) aVarList;
       if (v instanceof CoordinateAxis)
         axisList.add(new AxisBean((CoordinateAxis) v));
       else
-        beanList.add(new VariableBean(v));
+        beanList.add(new VariableBean(v, csList));
 
       if (v instanceof Structure) {
         List<Variable> nested = ((Structure) v).getVariables();
-        setVariables(nested, axisList, beanList);
+        setVariables(nested, axisList, beanList, csList);
       }
     }
   }
 
-  public List<CoordinateSystemBean> getCoordinateSystemBeans(NetcdfDataset ds) {
+  private List<CoordinateSystemBean> getCoordinateSystemBeans(NetcdfDataset ds) {
     List<CoordinateSystemBean> vlist = new ArrayList<>();
     for (CoordinateSystem elem : ds.getCoordinateSystems()) {
       vlist.add(new CoordinateSystemBean(elem));
     }
     return vlist;
-  }
-
-  private void setSelectedCoordinateSystem(CoordinateSystem coordSys) {
-    List beans = csTable.getBeans();
-    for (Object bean1 : beans) {
-      CoordinateSystemBean bean = (CoordinateSystemBean) bean1;
-      if (bean.coordSys == coordSys) {
-        csTable.setSelectedBean(bean);
-        return;
-      }
-    }
   }
 
   private void setSelectedCoordinateAxes(CoordinateSystem cs) {
@@ -646,9 +636,9 @@ public class CoordSysTable extends JPanel {
     // static public String editableProperties() { return "title include logging freq"; }
 
     VariableEnhanced ve;
-    CoordinateSystem firstCoordSys = null;
+    CoordinateSystemBean coordSysBean;
     String name, desc, units;
-    String dims, shape, csNames, dataType = "";
+    String dims, shape;
 
     // no-arg constructor
 
@@ -657,94 +647,62 @@ public class CoordSysTable extends JPanel {
 
     // create from a dataset
 
-    public VariableBean(VariableEnhanced v) {
+    public VariableBean(VariableEnhanced v, List<CoordinateSystemBean> csList) {
       this.ve = v;
 
-      setName(v.getFullName());
-      setDescription(v.getDescription());
-      setUnits(v.getUnitsString());
+      name = v.getFullName();
+      desc = v.getDescription();
+      units = v.getUnitsString();
 
       // collect dimensions
+      boolean first = true;
       StringBuilder lens = new StringBuilder();
       StringBuilder names = new StringBuilder();
-      java.util.List dims = v.getDimensions();
-      for (int j = 0; j < dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
-        if (j > 0) {
+      for (ucar.nc2.Dimension dim : v.getDimensions()) {
+        if (!first) {
           lens.append(",");
           names.append(",");
         }
         String name = dim.isShared() ? dim.getShortName() : "anon";
         names.append(name);
         lens.append(dim.getLength());
+        first = false;
       }
-      setDims(names.toString());
-      setShape(lens.toString());
+      dims = names.toString();
+      shape = lens.toString();
 
-      StringBuilder buff = new StringBuilder();
-      List<CoordinateSystem> csList = v.getCoordinateSystems();
-      for (CoordinateSystem cs : csList) {
-        if (firstCoordSys == null)
-          firstCoordSys = cs;
-        else
-          buff.append("; ");
-
-        buff.append(cs.getName());
-
-        Formatter gridBuff = new Formatter();
-        if (GridCoordSys.isGridCoordSys(gridBuff, cs, v)) {
-          addDataType("grid");
-
-        } /* else if (PointDatasetDefaultHandler.isPointFeatureDataset(ds)) {
-          addDataType("point");
-        } */
-
+          // sort by largest size first
+      if (v.getCoordinateSystems().size() > 0) {
+        List<CoordinateSystem> css = new ArrayList<>(v.getCoordinateSystems());
+        Collections.sort(css, new Comparator<CoordinateSystem>() {
+          public int compare(CoordinateSystem o1, CoordinateSystem o2) {
+            return o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size();
+          }
+        });
+        CoordinateSystem cs = css.get(0);
+        for (CoordinateSystemBean csBean : csList)
+          if (cs == csBean.coordSys) coordSysBean = csBean;
       }
-      setCoordSys(buff.toString());
     }
 
     public String getName() {
       return name;
     }
 
-    public void setName(String name) {
-      this.name = name;
-    }
-
-    public String getDataType() {
-      return dataType;
-    }
-
-    void addDataType(String dt) {
-      dataType = dataType + " " + dt;
-    }
-
     public String getDims() {
       return dims;
-    }
-
-    public void setDims(String dims) {
-      this.dims = dims;
     }
 
     public String getShape() {
       return shape;
     }
 
-    public void setShape(String shape) {
-      this.shape = shape;
-    }
-
     public String getDescription() {
-      return desc;
-    }
-
-    public void setDescription(String desc) {
-      this.desc = desc;
+      return (desc == null) ? "null" : desc;
     }
 
     public String getUnits() {
-      return units;
+      return (units == null) ? "null" : units;
     }
 
     public String getAbbrev() {
@@ -752,17 +710,20 @@ public class CoordSysTable extends JPanel {
       return (att == null) ? null : att.getStringValue();
     }
 
-    public void setUnits(String units) {
-      this.units = (units == null) ? "null" : units;
-    }
-
     public String getCoordSys() {
-      return csNames;
+      return (coordSysBean == null) ? "" : coordSysBean.getCoordSys();
     }
 
-    public void setCoordSys(String csNames) {
-      this.csNames = csNames;
+
+    public String getDataType() {
+      return (coordSysBean == null) ? "" : coordSysBean.getDataType();
     }
+
+
+    public String getCoverage() {
+      return (coordSysBean == null) ? "" : coordSysBean.getCoverage();
+    }
+
   }
 
   public class CoordinateSystemBean {

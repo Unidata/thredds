@@ -28,22 +28,27 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>clcommon</artifactId>
     </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
     </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>netcdf4</artifactId>
     </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>opendap</artifactId>
     </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tdcommon</artifactId>
@@ -52,10 +57,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>visadCdm</artifactId>
     </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>waterml</artifactId>
     </dependency>
+
 
     <!-- DAP4 Dependencies (technically forward) -->
     <dependency>
@@ -67,12 +74,8 @@
       <artifactId>d4servletshared</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.coverity.security</groupId>
-      <artifactId>coverity-escapers</artifactId>
-    </dependency>
 
-    <!-- server stuff -->
+    <!-- Server stuff -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -83,14 +86,22 @@
       <artifactId>jstl</artifactId>
     </dependency>
 
+
     <!-- Apache httpclient libraries -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
+    </dependency>
+
+
+    <dependency>
+      <groupId>com.coverity.security</groupId>
+      <artifactId>coverity-escapers</artifactId>
     </dependency>
 
     <dependency>
@@ -138,43 +149,52 @@
       <artifactId>52n-xml-waterML-v20</artifactId>
     </dependency>
 
+
     <!-- spring -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
     </dependency>
+
 
     <!-- spring security -->
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
     </dependency>
 
-    <!-- need to update cas -->
+
+    <!-- Need to update cas -->
     <!-- dependency>
       <groupId>org.jasig.cas</groupId>
      	<artifactId>cas-client-core</artifactId>
@@ -202,16 +222,12 @@
       <artifactId>oro</artifactId>
     </dependency -->
 
-    <!-- dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-    </dependency -->
-
     <!-- ncss: Needed for XPath operations in NcssShowDatasetInfoImpl.addElement() -->
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
     </dependency>
+
 
     <!-- JSR 303 with Hibernate Validator, which is dragging in jboss logging -->
     <dependency>

@@ -273,7 +273,7 @@ public class FeatureScan {
 
     public void toString(Formatter f, boolean showInfo) {
       f.format("%s%n %s%n map = '%s'%n", getName(), getFileType(), getCoordMap());
-      f.format("%n%s%n", builder.toString());
+      if (builder != null) f.format("%n%s%n", builder.toString());
       // f.format("%s%n", builder.makeCoordSys()); LOOK would have to reopen
 
       if (showInfo && info != null) {
