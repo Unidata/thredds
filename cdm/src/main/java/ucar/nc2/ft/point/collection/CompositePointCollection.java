@@ -118,8 +118,8 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   }
 
   @Override
-  public void update() throws IOException {
-    pointCollections.update();
+  public CalendarDateRange update() throws IOException {
+    return pointCollections.update();
   }
 
   private class CompositePointFeatureIterator extends PointIteratorAbstract {
