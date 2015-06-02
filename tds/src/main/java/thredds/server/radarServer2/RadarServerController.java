@@ -454,7 +454,7 @@ public class RadarServerController {
                                            String queryString) throws
             IOException, ParseException
     {
-        List<RadarDataInventory.Query.QueryResultItem> res = query.results();
+        Collection<RadarDataInventory.Query.QueryResultItem> res = query.results();
         CatalogBuilder cb = new CatalogBuilder();
 
         // At least the IDV needs to have the trailing slash included
