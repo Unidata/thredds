@@ -68,7 +68,7 @@ public class DtCoverageCSBuilder {
   DtCoverageCSBuilder(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
     // this.cs = cs; // LOOK gc ??
 
-    // must be at least 2 axes
+    // must be at least 2 dimensions
     if (cs.getRankDomain() < 2) {
       if (errlog != null) errlog.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
       return;
@@ -129,9 +129,9 @@ public class DtCoverageCSBuilder {
       if (errlog != null) errlog.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
       return;
     }
-    allAxes = new ArrayList<>();
-    allAxes.add(xaxis);
-    allAxes.add(yaxis);
+
+    allAxes = new ArrayList<>(cs.getCoordinateAxes());
+    Collections.sort(allAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
 
     independentAxes = new ArrayList<>();
     otherAxes = new ArrayList<>();
@@ -163,7 +163,6 @@ public class DtCoverageCSBuilder {
     if (zAxis != null) {
       if (zAxis instanceof CoordinateAxis1D)
         vertAxis = (CoordinateAxis1D) zAxis;
-      allAxes.add(zAxis);
     }
 
     //////////////////////////////////////////////////////////////
@@ -211,16 +210,11 @@ public class DtCoverageCSBuilder {
         timeAxis = t;
       }
     }
-    if (timeAxis != null)
-      allAxes.add(timeAxis);
-    if (rtAxis != null)
-      allAxes.add(rtAxis);
 
     CoordinateAxis toAxis = cs.findAxis(AxisType.TimeOffset);
     if (toAxis != null) {
       if (toAxis.getRank() == 1)
         timeOffsetAxis = (CoordinateAxis1D) toAxis;
-      allAxes.add(toAxis);
     }
 
     if (t == null && rtAxis != null && timeOffsetAxis != null) {
@@ -231,7 +225,6 @@ public class DtCoverageCSBuilder {
     if (eAxis != null) {
       if (eAxis instanceof CoordinateAxis1D)
         ensAxis = (CoordinateAxis1D) eAxis;
-      allAxes.add(eAxis);
     }
 
     this.type = classify();

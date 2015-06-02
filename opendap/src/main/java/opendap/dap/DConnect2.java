@@ -310,9 +310,12 @@ public class DConnect2
 
             command.process(is);
 
+        } catch (IOException | DAP2Exception e) {
+          throw e;
+
         } catch (Exception e) {
             Util.check(e);
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new DAP2Exception(e);
 
         } finally {

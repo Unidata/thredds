@@ -509,7 +509,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getAxisType() {
-      return axisType.name();
+      return axisType == null ? "" : axisType.name();
     }
 
     public void setAxisType(AxisType axisType) {

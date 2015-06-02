@@ -63,7 +63,6 @@ public class DtCoverageCS {
     } */
 
     // make name based on coordinate
-    Collections.sort(builder.allAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     this.name = CoordinateSystem.makeName(builder.allAxes);
 
     // WRF NMM
