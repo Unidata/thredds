@@ -64,6 +64,12 @@ public class Catalog extends DatasetNode {
   static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XLINK_NAMESPACE);
   static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
+  public static final String DatasetHash = "DatasetHash";       // Map<String,Dataset> (catalog only)
+  public static final String DatasetRoots = "DatasetRoots";     // List<DatasetRootConfig> (catalog only)
+  public static final String Expires = "Expires";               // CalendarDate (catalog only)
+  public static final String Services = "Services";             // List<Service>
+  public static final String Version = "Version";               // String   (catalog only)
+
   //////////////////////////////////////////////////////////////////////////////////////////
   private final URI baseURI;   // LOOK its possible we never want to use this. perhaps "location" instead ??
 
@@ -74,7 +80,7 @@ public class Catalog extends DatasetNode {
     Map<String, Dataset> datasetMap = new HashMap<>();
     addDatasetsToHash(getDatasets(), datasetMap);
     if (!datasetMap.isEmpty())
-      flds.put(Dataset.DatasetHash, datasetMap);
+      flds.put(Catalog.DatasetHash, datasetMap);
   }
 
   private void addDatasetsToHash(List<Dataset> datasets, Map<String, Dataset> datasetMap) {
@@ -91,21 +97,21 @@ public class Catalog extends DatasetNode {
   }
 
   public CalendarDate getExpires() {
-    return (CalendarDate) flds.get(Dataset.Expires);
+    return (CalendarDate) flds.get(Catalog.Expires);
   }
 
   public String getVersion() {
-    return (String) flds.get(Dataset.Version);
+    return (String) flds.get(Catalog.Version);
   }
 
   public List<Service> getServices() {
-    List<Service> services = (List<Service>) flds.get(Dataset.Services);
+    List<Service> services = (List<Service>) flds.get(Catalog.Services);
     return services == null ? new ArrayList<Service>(0) : services;
   }
 
   public Service findService(String serviceName)  {
     if (serviceName == null) return null;
-    List<Service> services = (List<Service>) flds.get(Dataset.Services);
+    List<Service> services = (List<Service>) flds.get(Catalog.Services);
     return findService(services, serviceName);
   }
 
@@ -127,7 +133,7 @@ public class Catalog extends DatasetNode {
   }
 
   public Dataset findDatasetByID( String id) {
-    Map<String, Dataset> datasetMap = (Map<String, Dataset>) flds.get(Dataset.DatasetHash);
+    Map<String, Dataset> datasetMap = (Map<String, Dataset>) flds.get(Catalog.DatasetHash);
     return datasetMap == null ? null : datasetMap.get(id);
   }
 
@@ -175,7 +181,7 @@ public class Catalog extends DatasetNode {
   }
 
   //////////////////////////////////////////////////////////////////////////////////
-  // from DeepCopyUtils
+  // from DeepCopyUtils, for subsetting
 
   public Catalog subsetCatalogOnDataset( Dataset dataset) {
     if ( dataset == null ) throw new IllegalArgumentException( "Dataset may not be null." );
@@ -226,7 +232,7 @@ public class Catalog extends DatasetNode {
     }
 
     result.setName( dataset.getName() );
-    result.transferMetadata( dataset, false );
+    result.transferMetadata( dataset, false );  // make a copy of all local metadata
     return result;
   }
 

@@ -44,7 +44,7 @@ import java.util.*;
 
 /**
  * These are the services that the TDS can do.
- *
+ * @see "src/main/webapp/WEB-INF/tdsGlobalConfig.xml"
  * @author caron
  * @since 1/23/2015
  */
@@ -148,7 +148,7 @@ public class AllowedServices {
 
     } else {
       AllowedService as = findByService(service);
-      if (as == null || !as.allowed)
+      if (as != null && !as.allowed)              // must be explicitly disallowed
         disallowedServices.add(service.getName());
     }
   }
@@ -156,7 +156,7 @@ public class AllowedServices {
   private AllowedService findByService(Service service) {
     for (AllowedService entry : allowed.values()) {
        if (entry.ss.type == service.getType()) {
-         if (entry.ss.type == ServiceType.NetcdfSubset) { // have to special case ncss
+         if (entry.ss.type == ServiceType.NetcdfSubset) { // have to special case this
            if (!service.getBase().startsWith( entry.ss.base)) continue; // keep going
          }
          return entry; // otherwise we found it

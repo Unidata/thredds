@@ -29,58 +29,6 @@
   <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd">Catalog XML xsd</a><br/>
   </li>
 </ul>
-<h3><strong>Change History:</strong></h3>
-<ul>
-  <li>version 1.0.7
-    <ul>
-      <li><em>sort ascending</em> is now the default</li>
-      <li><em>addDatasetSize, addID</em> are always set to true</li>
-      <li><em>featureCollection</em>: seperate <em>tdm</em> from <em>update</em> element, redo both, see <a href="../reference/collections/FeatureCollections.html">here</a></li>
-      <li><em>gribConfigType</em> evolves <a href="../reference/collections/GribConfig.html">here</a></li>
-    </ul>
-  </li>
-  <li>version 1.0.6
-    <ul>
-      <li>add useRemoteCatalogService attribute on catalogRef</li>
-      <li>featureCollection updateType rewrite</li>
-      <li>gribConfigType changes</li>
-    </ul>
-  </li>
-  <li>
-    version 1.0.5
-      <ul>
-        <li>updateType.startup is a string to allow &quot;<em>nocheck</em>&quot; value</li>
-        <li>add pdsHash to gribConfigType</li>
-        <li>add latestNamer, bestNamer, fileSort elements</li>
-      </ul>
-  </li>
-  <li>
-    version 1.0.4
-      <ul>
-        <li>modify featureCollection, epecially gribConfigType</li>
-    </ul>
-  </li>
-  <li>version 1.0.3
-    <ul>
-      <li>Add featureCollection element</li>
-      <li>datasetFMRC is deprecated</li>
-    </ul>
-  </li>
-  <li>
-    version 1.0.2
-<ul>
-      <li>Reorganize addProxies element definition</li>
-      <li> add isResolver
-        attribute to simpleLatest and latestComplete elements      </li>
-      <li>Add &quot;datasetFmrc&quot; element for defining a Forecast Model Run Collection (FMRC).</li>
-      <li>Modify &quot;datasetScan/addProxies&quot; and &quot;datasetScan/addLatest&quot; elements so
-        that &quot;simpleLatest&quot; and &quot;latestComplete&quot; children both have an
-        &quot;isResolver&quot; attribute. </li>
-      <li>Deprecate &quot;service/datasetRoot&quot;, add &quot;catalog/datasetRoot&quot;.</li>
-      <li>Change &quot;dataset@resourceControl&quot; to &quot;dataset@restrictedAccess&quot;.</li>
-</ul>
-  </li>
-</ul>
 <hr/>
 <h3><a name="catalog" id="catalog"></a>The catalog element</h3>
 <p>In addition to all of the elements of a client catalog, a server catalog may also have  <strong>datasetRoot</strong> elements, and also <strong>dataset</strong> elements may be <strong>datasetScan</strong> or a <strong>featureCollection</strong>, because they are in the <em>dataset substitution group</em>.</p>
@@ -153,7 +101,7 @@
 <pre>
 &lt;catalogRef name=&quot;&quot; xlink:href=&quot;/thredds/catalog/grib2/catalog.xml&quot; xlink:title=&quot;GRIB2 Data&quot; /&gt;
 </pre>
-<p>If the <code>grib2</code> directory contained three files (<code>data1.wmo</code>, <code>data2.wmo</code>, and <code>readme.txt</code>) and one directory
+<p>If the <em>C:/data/grib2/</em> directory contained three files (<code>data1.wmo</code>, <code>data2.wmo</code>, and <code>readme.txt</code>) and one directory
   (<code>test</code>), the catalog at the URL given in the above <span style="font-style: italic;">xlink:href</span> attribute would look something like:<br/>
 </p>
 <pre>&lt;catalog&#32;xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&#32;name=&quot;WMO catalogs&quot;&gt;

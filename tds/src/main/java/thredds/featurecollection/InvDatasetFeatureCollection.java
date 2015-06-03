@@ -458,7 +458,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     result.addService(orgService);
 
     DatasetBuilder top = new DatasetBuilder(null);
-    top.transferMetadata(parent, true); // make all inherited metadata local
+    top.transferInheritedMetadata(parent); // make all inherited metadata local
     top.setName(FILES);
 
     // add Variables, GeospatialCoverage, TimeCoverage
@@ -527,7 +527,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     result.addService(orgService);
 
     DatasetBuilder top = new DatasetBuilder(null);
-    top.transferMetadata(parent, true); // make all inherited metadata local
+    top.transferInheritedMetadata(parent); // make all inherited metadata local
     top.setName(getLatestFileName());
     top.put(Dataset.ServiceName, orgService.getName());
 

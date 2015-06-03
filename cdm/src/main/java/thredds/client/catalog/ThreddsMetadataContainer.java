@@ -42,7 +42,7 @@ import java.util.List;
  */
 public interface ThreddsMetadataContainer {
 
-  public Object getLocalField(String fldName);
-  public List getLocalFieldAsList(String fldName);
+  Object getLocalField(String fldName);
+  List getLocalFieldAsList(String fldName);
 
 }

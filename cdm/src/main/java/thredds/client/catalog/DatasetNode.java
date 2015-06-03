@@ -62,9 +62,11 @@ public class DatasetNode {
     }
   }
 
-    // read only
-  public Map<String, Object> getFlds() {
-    return flds;
+  public Iterable<Map.Entry<String, Object>> getFldIterator() {
+    return flds.entrySet();
+  }
+  public Object get(String key) {
+    return flds.get(key);
   }
 
   public DatasetNode getParent() {

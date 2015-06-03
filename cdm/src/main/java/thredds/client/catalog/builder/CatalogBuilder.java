@@ -195,9 +195,9 @@ public class CatalogBuilder {
   protected Map<String, Object> setFields() {
     Map<String, Object> flds = new HashMap<>(10);
 
-    if (expires != null) flds.put(Dataset.Expires, expires);
-    if (version != null) flds.put(Dataset.Version, version);
-    if (services != null) flds.put(Dataset.Services, services);
+    if (expires != null) flds.put(Catalog.Expires, expires);
+    if (version != null) flds.put(Catalog.Version, version);
+    if (services != null) flds.put(Catalog.Services, services);
     if (properties != null) flds.put(Dataset.Properties, properties);
 
     return flds;

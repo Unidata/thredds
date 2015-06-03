@@ -76,6 +76,10 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     return flds;
   }
 
+  public Iterable<Map.Entry<String, Object>> getFldIterator() {
+    return flds.entrySet();
+  }
+
   public void set(String fldName, Object fldValue) {
     if (immutable)
       throw new UnsupportedOperationException();

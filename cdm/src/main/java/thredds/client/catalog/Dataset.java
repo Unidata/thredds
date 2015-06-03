@@ -32,6 +32,7 @@
  */
 package thredds.client.catalog;
 
+import com.google.common.collect.ImmutableSet;
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
@@ -49,40 +50,37 @@ import java.util.*;
 @Immutable
 public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String Access = "Access";                 // Access or list of Access
-  public static final String Alias = "Alias";
-  public static final String Authority = "Authority";
-  public static final String CollectionType = "CollectionType";
+  public static final String Alias = "Alias";                   // String
+  public static final String Authority = "Authority";           // String
+  public static final String CollectionType = "CollectionType"; // String
   public static final String Contributors = "Contributors";     // Contributor or List of Contributor
   public static final String Creators = "Creators";             // String or List of String
   public static final String DataFormatType = "DataFormatType"; // String
-  public static final String Datasets = "Datasets";
-  public static final String DatasetHash = "DatasetHash";
-  public static final String DatasetRoots = "DatasetRoots";
-  public static final String DataSize = "DataSize";
-  public static final String Dates = "Dates";
-  public static final String Documentation = "Documentation";
-  public static final String Expires = "Expires";
+  public static final String Datasets = "Datasets";             // unmodifiable List<Dataset>
+  public static final String DataSize = "DataSize";             // Long
+  public static final String Dates = "Dates";                   // DateType or List of DateType
+  public static final String Documentation = "Documentation";   // Documentation or List of Documentation
   public static final String FeatureType = "FeatureType";       // String
-  public static final String GeospatialCoverage = "GeospatialCoverage";
-  public static final String Harvest = "Harvest";
-  public static final String Id = "Id";
-  public static final String Keywords = "Keywords";
-  public static final String MetadataOther = "MetadataOther";
-  public static final String Ncml = "Ncml";
-  public static final String Projects = "Projects";
-  public static final String Properties = "Properties";
-  public static final String Publishers = "Publishers";
-  public static final String RestrictAccess = "RestrictAccess";
-  public static final String ServiceName = "ServiceName";
-  public static final String Services = "Services";
-  public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable";
+  public static final String GeospatialCoverage = "GeospatialCoverage"; // ThreddsMetadata.GeospatialCoverage
+  public static final String Harvest = "Harvest";               // Boolean
+  public static final String Id = "Id";                         // String
+  public static final String Keywords = "Keywords";             // Vocab or List of Vocab
+  public static final String MetadataOther = "MetadataOther";   // MetadataOther or List of MetadataOther
+  public static final String Ncml = "Ncml";                     // jdom2.Element
+  public static final String Projects = "Projects";             // Vocab or List of Vocab
+  public static final String Properties = "Properties";         // Property or List of Property
+  public static final String Publishers = "Publishers";         // Source or List of Source
+  public static final String RestrictAccess = "RestrictAccess"; // String
+  public static final String ServiceName = "ServiceName";       // String
+  public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable"; // ThreddsMetadata
   public static final String TimeCoverage = "TimeCoverage";             // DateRange
-  public static final String VariableGroups = "VariableGroups";
-  // public static final String VariableMapLink = "VariableMapLink";    // String
+  public static final String VariableGroups = "VariableGroups";         // VariableGroup or List of VariableGroup
   public static final String VariableMapLinkURI = "VariableMapLinkURI";    // ThreddsMetadata.UriResolved
-  public static final String Version = "Version";
-  public static final String UrlPath = "UrlPath";
-  public static final String UseRemoteCatalogService = "UseRemoteCatalogService";
+  public static final String UrlPath = "UrlPath";                         // String
+  public static final String UseRemoteCatalogService = "UseRemoteCatalogService";   // Boolean
+
+  public static final ImmutableSet<String> listFlds = ImmutableSet.of(Access, Contributors, Creators, Dates, Documentation, Keywords, MetadataOther, Projects,
+          Properties, Publishers, VariableGroups);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

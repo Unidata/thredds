@@ -6,6 +6,19 @@ import thredds.client.catalog.ServiceType;
 /**
  * These are the services that the TDS can do
  *
+         <entry key="cdmRemote" value="true"/>
+         <entry key="cdmrFeatureGrid" value="true"/>
+         <entry key="dap4" value="true"/>
+         <entry key="httpServer" value="true"/>
+         <entry key="resolver" value="true"/>
+         <entry key="netcdfSubsetGrid" value="true"/>
+         <entry key="opendap" value="true"/>
+         <entry key="wcs" value="true"/>
+         <entry key="wms" value="true"/>
+         <entry key="iso" value="true"/>
+         <entry key="ncml" value="true"/>
+         <entry key="uddc" value="true"/>
+ *
  * @author caron
  * @since 4/29/2015
  */
@@ -18,8 +31,8 @@ public enum StandardService {
   netcdfSubsetGrid(ServiceType.NetcdfSubset, "/ncss/grid/"),    // heres a wrinkle
   netcdfSubsetPoint(ServiceType.NetcdfSubset, "/ncss/point/"),
   opendap(ServiceType.OPENDAP, "/dodsC/"),
-  wms(ServiceType.WMS, "/wms/"),
   wcs(ServiceType.WCS, "/wcs/"),
+  wms(ServiceType.WMS, "/wms/"),
 
   iso(ServiceType.ISO, "/iso/"),
   ncml(ServiceType.NCML, "/ncml/"),

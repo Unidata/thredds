@@ -140,6 +140,7 @@ public class ConfigCatalogManager  {
 
     List<String> disallowedServices = allowedServices.getDisallowedServices(cat.getServices());
     if (!disallowedServices.isEmpty()) {
+      allowedServices.getDisallowedServices(cat.getServices());
       logCatalogInit.error(ERROR + "initCatalog(): declared services: " + Arrays.toString(disallowedServices.toArray()) + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
     }
 

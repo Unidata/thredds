@@ -178,7 +178,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     DatasetBuilder result = new DatasetBuilder(null);
     result.setName(dsName);
     if (parent != null)
-      result.transferMetadata(parent, true); // make all inherited metadata local
+      result.transferInheritedMetadata(parent); // make all inherited metadata local
 
     String tpath = config.path + "/" + COLLECTION;
     ThreddsMetadata tmi = result.getInheritableMetadata();  // LOOK should we be allowed to modify this ??
@@ -396,6 +396,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
 
     } catch (Exception e) {
+      e.printStackTrace();
       logger.error("Error making catalog for " + configPath, e);
     }
 

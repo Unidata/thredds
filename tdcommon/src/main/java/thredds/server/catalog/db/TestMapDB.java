@@ -42,7 +42,7 @@ public class TestMapDB {
         if (countDs[0] % 10000 == 0) System.out.printf("%d ", countDs[0]);
         String path = dd.getUrlPath();
         if (path != null) {
-          treeMap.put(path, dd.getFlds());
+          treeMap.put(path, dd.getFldIterator());
         }
       }
 

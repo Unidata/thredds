@@ -58,7 +58,7 @@ public class ConfigCatalog extends Catalog {
   }
 
   public List<DatasetRootConfig> getDatasetRoots() {
-    return (List<DatasetRootConfig>) getLocalFieldAsList(Dataset.DatasetRoots);
+    return (List<DatasetRootConfig>) getLocalFieldAsList(Catalog.DatasetRoots);
   }
 
 }

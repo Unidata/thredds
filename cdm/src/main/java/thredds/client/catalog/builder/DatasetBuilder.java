@@ -77,6 +77,24 @@ public class DatasetBuilder {
     }
   }
 
+  public static void addToNewList(Map<String, Object> flds, String fldName, Object fldValue) {
+    if (fldValue == null) return;
+    List prevList;
+    Object prevVal = flds.get(fldName);
+    if (prevVal == null) {
+      prevList = new ArrayList(5);
+      flds.put(fldName, prevList);
+    } else {
+      prevList = (List) prevVal;
+    }
+
+    if (fldValue instanceof List) {
+      prevList.addAll((List) fldValue);
+    } else {
+      prevList.add(fldValue);
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////////
 
   protected DatasetBuilder parent;
@@ -152,16 +170,23 @@ public class DatasetBuilder {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  public void transferMetadata( DatasetNode from, boolean inherit) {
-    if (inherit)
-      inheritMetadata(flds, from);
-
-    Map<String, Object> fromFlds = from.getFlds();
-    for (Map.Entry<String, Object> entry : fromFlds.entrySet()) {
-      flds.put(entry.getKey(), entry.getValue());
+  // transfer all metadata, optionally also inheritable metadata from parents
+  public void transferMetadata( DatasetNode from, boolean parentsAlso) {
+    if (parentsAlso) {
+      ThreddsMetadata inherit = getInheritableMetadata(); // make sure exists
+      inheritMetadata(from, inherit.getFlds());
     }
 
-    // tmi needs to be transferred to mutable version
+    // local metadata
+    for (Map.Entry<String, Object> entry : from.getFldIterator()) {
+      if (parentsAlso && entry.getKey().equals(Dataset.ThreddsMetadataInheritable)) continue; // already did this
+      if (Dataset.listFlds.contains(entry.getKey()))
+        addToNewList(flds, entry.getKey(), entry.getValue());
+      else
+        flds.put(entry.getKey(), entry.getValue());
+    }
+
+    // tmi must be mutable, transfer if not
     ThreddsMetadata tmiOld = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
     if (tmiOld != null && tmiOld.isImmutable()) {
       ThreddsMetadata tmiNew = new ThreddsMetadata(tmiOld);
@@ -169,19 +194,31 @@ public class DatasetBuilder {
     }
   }
 
-  private void inheritMetadata( Map<String, Object> flds, DatasetNode from) {
+  // transfer inherited metadata only, always include parents
+  // place directly into flds (not in this.tmi)
+  public void transferInheritedMetadata( DatasetNode from) {
+    inheritMetadata(from, flds);
+  }
 
+  private void inheritMetadata(DatasetNode from, Map<String, Object> toFlds) {
+   // depth first, so closer parents override;
     Dataset fromParent = from.getParentDataset();
-    if (fromParent == null) return;
-    // depth first, so closer parents override; LOOK need to add to list
-    inheritMetadata( flds, fromParent);
+    if (fromParent != null) {
+      inheritMetadata(fromParent, toFlds);
+    }
 
-    Map<String, Object> fromFlds = fromParent.getFlds();
-    for (Map.Entry<String, Object> entry : fromFlds.entrySet()) {
-      flds.put(entry.getKey(), entry.getValue());
+    ThreddsMetadata tmi = (ThreddsMetadata) from.get(Dataset.ThreddsMetadataInheritable);
+    if (tmi == null) return;
+
+    for (Map.Entry<String, Object> entry : tmi.getFldIterator()) {
+      if (Dataset.listFlds.contains(entry.getKey()))
+        addToNewList(toFlds, entry.getKey(), entry.getValue());
+      else
+        toFlds.put(entry.getKey(), entry.getValue());
     }
   }
 
+  // get the inheritable ThreddsMetadata object. If doesnt exist, create new, empty one
   public ThreddsMetadata getInheritableMetadata() {
     ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
     if (tmi == null) {
@@ -190,6 +227,5 @@ public class DatasetBuilder {
     }
     return tmi;
   }
-
 
 }

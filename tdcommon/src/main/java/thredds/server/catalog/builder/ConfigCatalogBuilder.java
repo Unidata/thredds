@@ -138,7 +138,7 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
 
   public ConfigCatalog makeCatalog() {
     Map<String, Object> flds = setFields();
-    if (roots != null) flds.put(Dataset.DatasetRoots, roots);
+    if (roots != null) flds.put(Catalog.DatasetRoots, roots);
     return new ConfigCatalog(baseURI, name, flds, datasetBuilders);
   }
 

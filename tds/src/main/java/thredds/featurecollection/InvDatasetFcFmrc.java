@@ -177,7 +177,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     result.addService(virtualService);
 
     DatasetBuilder top = new DatasetBuilder(null);
-    top.transferMetadata(parent, true); // make all inherited metadata local
+    top.transferInheritedMetadata(parent); // make all inherited metadata local
     top.setName(name);
 
     ThreddsMetadata tmi = top.getInheritableMetadata();
@@ -293,7 +293,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   @Override
   protected DatasetBuilder makeDatasetTop(URI catURI, State localState) {
     DatasetBuilder top = new DatasetBuilder(null);
-    top.transferMetadata(parent, true); // make all inherited metadata local
+    top.transferInheritedMetadata(parent); // make all inherited metadata local
     top.setName(name);
 
     ThreddsMetadata tmi = top.getInheritableMetadata();  // LOOK allow to change ??
