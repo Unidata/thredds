@@ -134,7 +134,7 @@ public abstract class Grib1Gds {
       case 50:
         return new SphericalHarmonicCoefficients(data, 50);
       default:
-        throw new UnsupportedOperationException("Unsupported GDS type = " + template);
+        return new UnknownGds(data, template);
     }
   }
 
@@ -1301,5 +1301,34 @@ Grid definition –   polar stereographic
               .toString();
     }
   }
+
+  public static class UnknownGds extends Grib1Gds {
+    int j, k, m, type, mode;
+
+    UnknownGds(byte[] data, int template) {
+      super(data, template);
+    }
+
+    @Override
+    public float getDxRaw() {
+      return 0;
+    }
+
+    @Override
+    public float getDyRaw() {
+      return 0;
+    }
+
+    @Override
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      return null;
+    }
+
+    @Override
+    public void testHorizCoordSys(Formatter f) {
+
+    }
+  }
+
 
 }

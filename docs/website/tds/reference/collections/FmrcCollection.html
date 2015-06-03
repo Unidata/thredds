@@ -40,10 +40,10 @@
 <h3><a name="fmrcConfig" id="fmrcConfig"></a>fmrcConfig element</h3>
 
 <p>Defines options on feature collections with <strong> featureType</strong>=&quot;FMRC&quot;.</p>
-<pre>&lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs&quot; /&gt;
+<pre>&lt;fmrcConfig regularize=&quot;false&quot; datasetTypes=&quot;TwoD Best Files Runs&quot; /&gt;
 </pre>
 <pre>
-&lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;Files&quot;&gt;
+&lt;fmrcConfig regularize=&quot;false&quot; datasetTypes=&quot;Files&quot;&gt;
   &lt;dataset name=&quot;Best&quot; offsetsGreaterEqual=&quot;0&quot;/&gt;
 &lt;/fmrcConfig&gt;
 </pre>
@@ -53,8 +53,7 @@
     <li><strong>regularize</strong>: If true, then the runs for a given hour (from 0Z) are assumed to have the same forecast time coordinates. For example, if
       you have 4 model runs per day (eg 0, 6, 12, 18Z) and many days of model runs, then all the 6Z runs for all days will have the same time coordiantes, etc.
       This &quot;regularizes&quot; time coordinates, and is useful when there may be missing forecast times, which may result in creating a new time coordinate.
-      This obviates the need for the FMRC definition files which previously were used on motherlode for models in the IDD feed.
-    </li>
+      <strong><em>Leave this to false unless you really have a series of runs with uniform offsets.</em></strong></li>
     <li><strong>datasetTypes</strong>: list the dataset types that are exposed in the TDS catalog. The possible values are:
       <ul>
         <li><em>TwoD</em>: dataset with two time dimensions (run time and forecast time), which contains all the data in the collection.</li>
@@ -87,6 +86,7 @@
 <ul>
   <li>If an fmrcConfig element is not present, the default is regularize= <em>false</em>, and datasetTypes= &quot;<em>TwoD Best Files Run</em>s&quot;. Specifying
     your own fmrcConfig completely overrides the datasetTypes default.</li>
+  <li>When  using FMRC for gridded data that doesnt  have 2D times, be sure to put <strong>regularize</strong> = false (or leave it off).</li>
 </ul>
 <hr/>
 <h2>Working with FMRC in ToolsUI</h2>
@@ -229,7 +229,7 @@
 <p>&nbsp;</p>
 <hr width="100%"/>
 <address>
-  <img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Mar 2015.
+  <img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated June 2015.
 </address>
 </body>
 </html>

@@ -142,19 +142,6 @@ public class Grib1CollectionPanel extends JPanel {
             "Grib1Record", "from Grib1Input.getRecords()", null);
     varPopup = new PopupMenu(record1BeanTable.getJTable(), "Options");
 
-    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
-        if (bean != null) {
-          Formatter f = new Formatter();
-          showRawPds(bean.pds, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
     varPopup.addAction("Show Complete Grib1 Record(s)", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         infoPopup3.setText("");
@@ -187,6 +174,19 @@ public class Grib1CollectionPanel extends JPanel {
       }
     });
 
+    varPopup.addAction("Show Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          showData(bean, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
     varPopup.addAction("Compare Data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List list = record1BeanTable.getSelectedBeans();
@@ -202,12 +202,12 @@ public class Grib1CollectionPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Show Data", new AbstractAction() {
+    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, f);
+          showRawPds(bean.pds, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -669,6 +669,7 @@ public class Grib1CollectionPanel extends JPanel {
     f.format("Grib1GDS hash = %s%n", gds.hashCode());
     f.format("Grib1GDS = %s", gds);
     GdsHorizCoordSys gdsHc = gds.makeHorizCoordSys();
+    if (gdsHc == null) return;
     f.format("%n%n%s", gdsHc);
     ProjectionImpl proj = gdsHc.proj;
     f.format("%n%nProjection %s%n", proj.getName());
