@@ -43,7 +43,6 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-/** Test writing and reading back. */
 @Category(NeedsCdmUnitTest.class)
 public class TestJustRead {
   private boolean show = false;

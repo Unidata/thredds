@@ -261,6 +261,7 @@ public class Grib2RecordScanner {
 
     } else {
       if (debugRepeat) System.out.printf(" REPEAT Terminate %d%n", section);
+      lastPos = repeatPos; // start next scan from here
       repeatPos = -1;
       repeatRecord = null;
       repeatBms = null;
