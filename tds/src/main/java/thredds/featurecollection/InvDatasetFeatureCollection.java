@@ -47,7 +47,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.log.LoggerFactoryImpl;
 
@@ -126,7 +126,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     // catalog metadata
     protected ThreddsMetadata.VariableGroup vars;
     protected ThreddsMetadata.GeospatialCoverage coverage;
-    protected DateRange dateRange;
+    protected CalendarDateRange dateRange;
 
     //protected DatasetBuilder top;        // top dataset LOOK why ??
     protected long lastInvChange;        // last time dataset inventory was changed

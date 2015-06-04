@@ -139,5 +139,5 @@ message Error {
   required string message = 1;
 }
 
-//  cd c:/dev/github/thredds/cdm/src/main/java
+//  cd cdm/src/main/java
 //  protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto

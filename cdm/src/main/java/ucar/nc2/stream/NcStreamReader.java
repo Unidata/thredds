@@ -248,7 +248,7 @@ public class NcStreamReader {
         int dsize = NcStream.readVInt(is);
         byte[] datab = new byte[dsize];
         NcStream.readFully(is, datab);
-        curr = NcStream.decodeStructureData(members, datab);
+        curr = NcStream.decodeStructureData(members, bo, datab);
         // System.out.printf("StreamDataIterator read sdata size= %d%n", dsize);
 
       } else if (NcStream.test(b, NcStream.MAGIC_VEND)) {

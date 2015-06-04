@@ -345,7 +345,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       this.what = what;
       if (what instanceof NcStreamProto.Data) {
         NcStreamProto.Data dataMess = (NcStreamProto.Data) what;
-        this.dataType = NcStream.decodeDataType(dataMess.getDataType());
+        this.dataType = NcStream.convertDataType(dataMess.getDataType());
         this.varName = dataMess.getVarName();
         Section s = NcStream.decodeSection(dataMess.getSection());
         if (s != null)

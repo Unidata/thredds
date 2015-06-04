@@ -74,14 +74,10 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   @Override
   public void updateCollection(State localState, CollectionUpdateType force) {
     try {
-      ((UpdateableCollection) fd).update();
+      ((UpdateableCollection)fd).update();
     } catch (IOException e) {
       logger.error("update failed", e);
     }
-
-    // time coverage = expect it may be changing
-    if (fd.getCalendarDateRange() != null)
-      localState.dateRange = new DateRange(fd.getCalendarDateRange());
   }
 
   @Override

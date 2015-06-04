@@ -117,7 +117,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
           ThreddsMetadataExtractor extractor = new ThreddsMetadataExtractor();
           localState.vars = extractor.extractVariables(null, gds);
           localState.coverage = extractor.extractGeospatial(gds);
-          localState.dateRange = new DateRange(extractor.extractCalendarDateRange(gds));
+          localState.dateRange = extractor.extractCalendarDateRange(gds);
         }
         localState.lastProtoChange = System.currentTimeMillis();
       }

@@ -36,6 +36,7 @@ import ucar.nc2.*;
 import ucar.ma2.*;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.WritableByteChannel;
 import java.io.OutputStream;
 import java.io.IOException;

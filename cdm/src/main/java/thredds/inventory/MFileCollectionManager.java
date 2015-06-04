@@ -55,7 +55,6 @@ import thredds.inventory.filter.*;
  * </ul>
  * <p/>
  * we need to be thread safe, for InvDatasetFeatureCollection
- * @deprecated
  * @author caron
  * @since Jul 8, 2009
  */
