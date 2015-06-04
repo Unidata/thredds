@@ -63,10 +63,11 @@ public class StructureDataDeep extends StructureDataA {
    * Make deep copy from an ArrayStructure to a ArrayStructureBB whose data is contained in a ByteBuffer
    * @param as    original ArrayStructure
    * @param bo    what byte order to use ? (null for any)
+   * @param canonical  packing must be canonical
    * @return ArrayStructureBB with all data self contained
    */
-  static public ArrayStructureBB copyToArrayBB(ArrayStructure as, ByteOrder bo) throws IOException {
-    if (as.getClass().equals(ArrayStructureBB.class)) { // no subclasses
+  static public ArrayStructureBB copyToArrayBB(ArrayStructure as, ByteOrder bo, boolean canonical) throws IOException {
+    if (!canonical && as.getClass().equals(ArrayStructureBB.class)) { // no subclasses, LOOK detect already canonical later
       ArrayStructureBB abb = (ArrayStructureBB) as;
       ByteBuffer bb = abb.getByteBuffer();
       if (bo == null || bo.equals(bb.order()))
@@ -76,7 +77,7 @@ public class StructureDataDeep extends StructureDataA {
     StructureMembers smo = as.getStructureMembers();
     StructureMembers sm = new StructureMembers(smo);
     ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
-    ArrayStructureBB.setOffsets(sm);
+    ArrayStructureBB.setOffsets(sm);  // this makes the packing canonical
     if (bo != null) {
       ByteBuffer bb = abb.getByteBuffer();
       bb.order(bo);
@@ -121,7 +122,7 @@ public class StructureDataDeep extends StructureDataA {
 
 
   /**
-   * Make deep copy from a StructureData to a ArrayStructureBB whose data is contained in a ByteBuffer
+   * Make deep copy from a StructureData to a ArrayStructureBB whose data is contained in a ByteBuffer.
    * @param sdata  original ArrayStructure.
    * @return ArrayStructureBB with all data self contained
    */

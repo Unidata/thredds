@@ -203,7 +203,7 @@ public class NcStream {
     return builder.build();
   }
 
-  static NcStreamProto.Data encodeDataProto(Variable var, Section section, boolean deflate, int uncompressedLength) {
+  static NcStreamProto.Data encodeDataProto(Variable var, Section section, boolean deflate, ByteOrder bo, int uncompressedLength) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getFullNameEscaped());
     builder.setDataType(convertDataType(var.getDataType()));
@@ -213,6 +213,7 @@ public class NcStream {
       builder.setUncompressedSize(uncompressedLength);
     }
     if (var.isVariableLength()) builder.setVdata(true);
+    builder.setBigend(bo == ByteOrder.BIG_ENDIAN);
     builder.setVersion(2);
     return builder.build();
   }
@@ -244,10 +245,10 @@ public class NcStream {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static long encodeArrayStructure(ArrayStructure as, OutputStream os) throws java.io.IOException {
+  public static long encodeArrayStructure(ArrayStructure as, ByteOrder bo, OutputStream os) throws java.io.IOException {
     long size = 0;
 
-    ArrayStructureBB dataBB = StructureDataDeep.copyToArrayBB(as, null); // LOOK what should the bo be ??
+    ArrayStructureBB dataBB = StructureDataDeep.copyToArrayBB(as, bo, true);  // force canonical packing
     List<String> ss = new ArrayList<>();
     List<Object> heap = dataBB.getHeap();
     List<Integer> count = new ArrayList<>();
@@ -264,8 +265,10 @@ public class NcStream {
       }
     }
 
+    // LOOK optionally compress
+    StructureMembers sm = dataBB.getStructureMembers();
     ByteBuffer bb = dataBB.getByteBuffer();
-    NcStreamProto.StructureData proto = NcStream.encodeStructureDataProto(bb.array(), count, ss);
+    NcStreamProto.StructureData proto = NcStream.encodeStructureDataProto(bb.array(), count, ss, (int) as.getSize(), sm.getStructureSize());
     byte[] datab = proto.toByteArray();
     size += NcStream.writeVInt(os, datab.length); // proto len
     os.write(datab); // proto
@@ -275,9 +278,11 @@ public class NcStream {
     return size;
   }
 
-  static NcStreamProto.StructureData encodeStructureDataProto(byte[] fixed, List<Integer> count, List<String> ss) {
+  static NcStreamProto.StructureData encodeStructureDataProto(byte[] fixed, List<Integer> count, List<String> ss, int nrows, int rowLength) {
     NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
     builder.setData(ByteString.copyFrom(fixed));
+    builder.setNrows(nrows);
+    builder.setRowLength(rowLength);
     for (Integer c : count)
       builder.addHeapCount(c);
     for (String s : ss)
@@ -310,11 +315,12 @@ public class NcStream {
     return dataBB;
   }
 
-  public static StructureData decodeStructureData(StructureMembers sm, byte[] proto) throws java.io.IOException {
+  public static StructureData decodeStructureData(StructureMembers sm, ByteOrder bo, byte[] proto) throws java.io.IOException {
     NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
     builder.mergeFrom(proto);
 
     ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
+    bb.order(bo);
     ArrayStructureBB dataBB = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
 
     List<String> ss = builder.getSdataList();

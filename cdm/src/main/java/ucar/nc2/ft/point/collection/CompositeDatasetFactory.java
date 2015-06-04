@@ -162,8 +162,9 @@ public class CompositeDatasetFactory {
 
 
     @Override
-    public void update() throws IOException {
-      ((UpdateableCollection)pfc).update();
+    public CalendarDateRange update() throws IOException {
+      UpdateableCollection uc = (UpdateableCollection) pfc;
+      return uc.update();
     }    
 
     /* @Override

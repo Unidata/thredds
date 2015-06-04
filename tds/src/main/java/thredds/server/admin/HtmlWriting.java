@@ -54,6 +54,16 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
  * LOOK maybe can get rid of
@@ -331,7 +341,7 @@ public class HtmlWriting {
       sb.append(this.htmlConfig.getHostInstName());
       if (hostInstUrl != null)
       sb.append("</a>");
-      sb.append(" see <a href='/thredds/info/serverInfo.html'> Info </a>");
+      sb.append(String.format(" see <a href='%s/serverInfo.html'> Info </a>", tdsContext.getContextPath()));
       sb.append("<br>\n");
     }
 

@@ -228,8 +228,6 @@ map_proj =  1: Lambert Conformal
       dataVar.addAttribute(new Attribute(_Coordinate.Systems, "LatLonCoordSys"));
 
     } else {
-
-
       double lat1 = findAttributeDouble(ds, "TRUELAT1");
       double lat2 = findAttributeDouble(ds, "TRUELAT2");
       double centralLat = findAttributeDouble(ds, "CEN_LAT");  // center of grid
@@ -273,20 +271,12 @@ map_proj =  1: Lambert Conformal
           for (Variable v : vlist) {
             if (v.getShortName().startsWith("XLAT")) {
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-              int[] shape = v.getShape();
-              if (v.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
-                List<Dimension> dims = v.getDimensions();
-                dims.remove(0);
-                v.setDimensions(dims);
-              }
+              removeConstantTimeDim(ds, v);
+
             } else if (v.getShortName().startsWith("XLONG")) {
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-              int[] shape = v.getShape();
-              if (v.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
-                List<Dimension> dims = v.getDimensions();
-                dims.remove(0);
-                v.setDimensions(dims);
-              }
+              removeConstantTimeDim(ds, v);
+
             } else if (v.getShortName().equals("T")) { // ANOTHER MAJOR KLUDGE to pick up 4D fields
               v.addAttribute(new Attribute(_Coordinate.Axes, "Time XLAT XLONG z"));
             } else if (v.getShortName().equals("U")) {
@@ -344,6 +334,21 @@ map_proj =  1: Lambert Conformal
     ds.addCoordinateAxis(makeSoilDepthCoordAxis(ds, "ZS"));
 
     ds.finish();
+  }
+
+  private void removeConstantTimeDim(NetcdfDataset ds, Variable v) {
+    int[] shape = v.getShape();
+    if (v.getRank() == 3 && shape[0] == 1) { // remove time dependcies - MAJOR KLUDGE
+      Variable view = null;
+      try {
+        view = v.slice(0, 0);
+      } catch (InvalidRangeException e) {
+        log.error("Cant remove first dimension in variable {}", v);
+        return;
+      }
+      ds.removeVariable(null, v.getShortName());
+      ds.addVariable(null, view);
+    }
   }
 
   private Array convertToDegrees(Variable v) {

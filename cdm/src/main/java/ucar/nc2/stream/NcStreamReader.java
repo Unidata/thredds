@@ -42,6 +42,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.zip.InflaterInputStream;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -210,18 +211,20 @@ public class NcStreamReader {
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureBB.setOffsets(members);
 
-    return new StreamDataIterator(is, members);
+    return new StreamDataIterator(is, members, dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
   }
 
   private static class StreamDataIterator implements StructureDataIterator {
     private InputStream is;
     private StructureMembers members;
     private StructureData curr = null;
+    private ByteOrder bo;
     private int count = 0;
 
-    StreamDataIterator(InputStream is, StructureMembers members) {
+    StreamDataIterator(InputStream is, StructureMembers members, ByteOrder bo) {
       this.is = is;
       this.members = members;
+      this.bo = bo;
     }
 
     @Override

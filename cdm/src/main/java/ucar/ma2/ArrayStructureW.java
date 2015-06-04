@@ -55,6 +55,13 @@ public class ArrayStructureW extends ArrayStructure {
     this.sdata = new StructureData[nelems];
   }
 
+  // wrap a StructureDatain an ArrrayStructure
+  public ArrayStructureW(StructureData sdata) {
+    super(sdata.getStructureMembers(), new int[] {1});
+    this.sdata = new StructureData[1];
+    this.sdata[0] = sdata;
+  }
+
   /**
    * Create a new Array of type StructureData and the given members, shape, and array of StructureData.
    * @param members a description of the structure members

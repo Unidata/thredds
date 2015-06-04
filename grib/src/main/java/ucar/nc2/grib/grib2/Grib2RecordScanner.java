@@ -20,6 +20,7 @@ public class Grib2RecordScanner {
   static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
   static private final boolean debug = false;
   static private final boolean debugRepeat = false;
+  static private final boolean debugEnding = false;
   static private final int maxScan = 16000;
 
   static public boolean isValidFile(RandomAccessFile raf) {
@@ -70,7 +71,7 @@ public class Grib2RecordScanner {
   private ucar.unidata.io.RandomAccessFile raf = null;
 
   private byte[] header;
-  // private long startPos = 0;
+  private int badEndings = 0;
   private long lastPos = 0;    // start scanning from here
 
   // deal with repeating sections - each becomes a Grib2Record
@@ -124,6 +125,7 @@ public class Grib2RecordScanner {
 
     if (more) {
       int sizeHeader = (int) (stop - lastPos);  // wmo headers are embedded between records in some idd streams
+      if (debugEnding) System.out.printf("bytes between last and next=%d%n", sizeHeader);
       long startPos = stop-sizeHeader;
       if (sizeHeader > 100) sizeHeader = 100;   // maximum 100 bytes; more is likely to be garbage
       header = new byte[sizeHeader];
@@ -151,7 +153,6 @@ public class Grib2RecordScanner {
       Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
       Grib2SectionData dataSection = new Grib2SectionData(raf);
       if (dataSection.getMsgLength() > is.getMessageLength()) { // presumably corrupt
-        // raf.seek(drs.getStartingPosition()); // go back to before the dataSection
         throw new IllegalStateException("Illegal Grib2SectionData Message Length");
       }
 
@@ -192,17 +193,18 @@ public class Grib2RecordScanner {
       for (int i = 0; i < 4; i++) {
         if (raf.read() != 55) {
           foundEnding = false;
-          String clean = StringUtil2.cleanup(header);
-          if (clean.length() > 40) clean = clean.substring(0,40) + "...";
+          badEndings++;
+          //String clean = StringUtil2.cleanup(header);
+          //if (clean.length() > 40) clean = clean.substring(0,40) + "...";
           if (debug) System.out.printf(" **missing End of GRIB message at pos=%d start= %d%n", ending, is.getStartPos());
-          log.warn("Missing End of GRIB message at pos=" + ending + " start= " + is.getStartPos()+" header= "+clean+" for="+raf.getLocation());
+          log.warn("Missing End of GRIB message {} starting at pos={} is.ending={} data.ending={} file={}", badEndings, is.getStartPos(),ending,dataSection.getEndingPosition(),raf.getLocation());
           break;
         }
       }
       if (debug) System.out.printf(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
               raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
 
-      if (foundEnding) {
+      if (foundEnding || debugEnding) {
         lastPos = raf.getFilePointer();
         return new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, Grib2Index.ScanModeMissing);
 

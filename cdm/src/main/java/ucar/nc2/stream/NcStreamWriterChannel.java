@@ -40,6 +40,7 @@ import ucar.nc2.constants.CDM;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
@@ -98,9 +99,10 @@ public class NcStreamWriterChannel {
   public long sendData(Variable v, Section section, WritableByteChannel wbc, boolean deflate) throws IOException, InvalidRangeException {
     if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
 
+    ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
     long size = 0;
     size += writeBytes(wbc, NcStream.MAGIC_DATA); // magic
-    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, deflate, 0);
+    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, deflate, bo, 0);
     byte[] datab = dataProto.toByteArray();
     size += NcStream.writeVInt(wbc, datab.length); // dataProto len
     size += writeBytes(wbc, datab); // dataProto
@@ -115,7 +117,7 @@ public class NcStreamWriterChannel {
         while (iter.hasNext()) {
           size += writeBytes(wbc, NcStream.MAGIC_VDATA); // magic
           ArrayStructureBB abb = StructureDataDeep.copyToArrayBB(iter.next());
-          size += NcStream.encodeArrayStructure(abb, os);
+          size += NcStream.encodeArrayStructure(abb, bo, os);
           count++;
         }
       } finally {

@@ -73,6 +73,9 @@ public class Grib2SectionData {
   public long getStartingPosition() {
     return startingPosition;
   }
+  public long getEndingPosition() {
+    return startingPosition+msgLength;
+  }
 
   public int getMsgLength() {
     return msgLength;

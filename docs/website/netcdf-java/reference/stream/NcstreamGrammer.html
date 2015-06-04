@@ -14,17 +14,17 @@
 
 <p>An <em><strong>ncstream</strong></em> is an ordered sequence of one or more messages:</p>
 <pre>
-   <strong>ncstream</strong> = <strong>MAGIC_START</strong>, <strong></strong>{message}, <strong>MAGIC_END</strong>
+   <strong>ncstream</strong> = <strong>MAGIC_START</strong>, <strong></strong>{message}*, <strong>MAGIC_END</strong>
    <strong>message</strong> = headerMessage | dataMessage | errorMessage
    <strong>headerMessage</strong> = MAGIC_HEADER, vlenb, NcStreamProto.Header
-   <strong>dataMessage</strong> = MAGIC_DATA, vlenb, NcStreamProto.Data, <strong>regData | vlenData | seqData</strong>
+   <strong>dataMessage</strong> = MAGIC_DATA, vlenb, NcStreamProto.Data, <strong>regData | vlenData | seqData | structData</strong>
    <strong>errorMessage</strong> = MAGIC_ERR, vlenb, NcStreamProto.Error
 
    <strong>regData</strong> = vlenb, (byte)*vlenb
    <strong>vlenData</strong>= vlenn, {vlenb, (byte)*vlenb}*vlenn
-   <strong>seqData</strong> = MAGIC_VDATA, {vlenb, NcStreamProto.StructureData}*, MAGIC_VEND
    <strong>seqData</strong> = {MAGIC_VDATA, vlenb, NcStreamProto.StructureData}*, MAGIC_VEND
-   
+   <strong>structData</strong> = vlenb, NcStreamProto.StructureData
+
    <strong>vlenb</strong> = variable length encoded positive integer == length of the following object in bytes
    <strong>vlenn</strong> = variable length encoded positive integer == number of objects that follow
    <strong>NcStreamProto.Header</strong> = Header message encoded by protobuf
@@ -35,8 +35,9 @@ primitives:
 
    <strong>MAGIC_START</strong> = 0x43, 0x44, 0x46, 0x53 
    <strong>MAGIC_HEADER</strong>= 0xad, 0xec, 0xce, 0xda 
-   <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba <br/>   <strong>MAGIC_VDATA</strong> = 0xab, 0xef, 0xfe, 0xba <br/>
-   <strong>MAGIC_VEND </strong> = 0xed, 0xef, 0xfe, 0xda <br/>
+   <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba 
+   <strong>MAGIC_VDATA</strong> = 0xab, 0xef, 0xfe, 0xba 
+   <strong>MAGIC_VEND </strong> = 0xed, 0xef, 0xfe, 0xda 
    <strong>MAGIC_ERR</strong>   = 0xab, 0xad, 0xba, 0xda 
    <strong>MAGIC_END</strong> =   0xed, 0xed, 0xde, 0xde</pre>
 <p>The protobuf messages are defined by </p>
@@ -56,6 +57,8 @@ primitives:
   <li>A variable may have 0, 1, or many data messages. These are logically combined, with later data messages taking precedent. Missing data values are taken
     from the variable's <em>_FillValue</em> attribute if it exists, else the default missing value for the dataType, following netCDF conventions.
   </li>
+    <li>Primitive types are fixed length, following Java; StructureData has no padding.</li>
+    <li>If StructureData member list is empty, then all members are present.</li>
 </ul>
 <h3>Data encoding</h3>
 

@@ -33,6 +33,7 @@
 
 package ucar.nc2.stream;
 
+import ucar.nc2.Structure;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -45,6 +46,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -87,98 +89,26 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     openDebug(raf, ncfile, null);
   }
 
-  /* public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask2) throws IOException {
-    try {
-      this.raf = raf;
-      raf.seek(0);
-      if (!readAndTest(raf, NcStream.MAGIC_START))
-        throw new IOException("Data corrupted on " + ncfile.getLocation());
-
-      // assume for the moment its always starts with one header message
-      if (!readAndTest(raf, NcStream.MAGIC_HEADER))
-        throw new IOException("Data corrupted on " + ncfile.getLocation());
-
-      int msize = readVInt(raf);
-      if (debug) System.out.printf("READ header len= %d%n", msize);
-
-      byte[] m = new byte[msize];
-      raf.read(m);
-      NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);
-      version = proto.getVersion();
-
-      NcStreamProto.Group root = proto.getRoot();
-      NcStream.readGroup(root, ncfile, ncfile.getRootGroup());
-      ncfile.finish();
-
-      // LOOK why doesnt this work ?
-      //CodedInputStream cis = CodedInputStream.newInstance(is);
-      //cis.setSizeLimit(msize);
-      //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
-
-      while (!raf.isAtEndOfFile()) {
-        if (debug) System.out.printf("READ message at = %d%n", raf.getFilePointer());
-        byte[] b = new byte[4];
-        raf.read(b);
-        if (test(b, NcStream.MAGIC_END))
-          break;
-        else if (!test(b, NcStream.MAGIC_DATA))
-          throw new IllegalStateException("bad format");
-
-        int psize = readVInt(raf);
-        if (debug) System.out.println(" dproto len= " + psize);
-        byte[] dp = new byte[psize];
-        raf.read(dp);
-        NcStreamProto.Data pdata = NcStreamProto.Data.parseFrom(dp);
-        Variable v = ncfile.getRootGroup().findVariable(pdata.getVarName());
-        if (debug) System.out.printf(" dproto = %s for %s%n", pdata, v.getShortName());
-        List<DataStorage> storage = (List<DataStorage>) v.getSPobject(); // LOOK should be an in memory Rtree using section
-        if (storage == null) {
-          storage = new ArrayList<DataStorage>();
-          v.setSPobject(storage);
-        }
-
-        if (!pdata.getVdata()) { // regular data
-          int dsize = readVInt(raf);
-          if (debug) System.out.println(" data len= " + dsize);
-
-          DataStorage dataStorage = new DataStorage();
-          dataStorage.size = dsize;
-          dataStorage.filePos = raf.getFilePointer();
-          dataStorage.section = NcStream.decodeSection(pdata.getSection());
-          dataStorage.isDeflate = pdata.getCompress() == NcStreamProto.Compress.DEFLATE;
-          storage.add(dataStorage);
-          raf.skipBytes(dsize);
-
-        } else {
-          DataStorage dataStorage = new DataStorage();
-          dataStorage.filePos = raf.getFilePointer();
-          int nelems = readVInt(raf);
-          int totalSize = 0;
-          for (int i = 0; i < nelems; i++) {
-            int dsize = readVInt(raf);
-            totalSize += dsize;
-            raf.skipBytes(dsize);
-          }
-          dataStorage.isVlen = true;
-          dataStorage.nelems = nelems;
-          dataStorage.size = totalSize;
-          dataStorage.section = NcStream.decodeSection(pdata.getSection());
-
-          storage.add(dataStorage);
-        }
-      }
-
-    } catch (Throwable t) {
-      throw new RuntimeException("NcStreamIosp: " + t.getMessage() + " on " + raf.getLocation(), t);
-    }
-  }     */
-
   private static class DataStorage {
     int size;
     long filePos;
     Section section;
     boolean isVlen, isDeflate;
+    ByteOrder bo;
     int nelems, uncompressedLen;
+    NcStreamProto.StructureData sdata;
+
+    DataStorage(int size, long filePos, NcStreamProto.Data dproto) {
+      this.size = size;
+      this.filePos = filePos;
+      section = NcStream.decodeSection(dproto.getSection());
+      nelems = (int) section.computeSize();
+      bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+      isVlen = dproto.getVdata();
+      isDeflate = dproto.getCompress() == NcStreamProto.Compress.DEFLATE;
+      if (isDeflate)
+        uncompressedLen = dproto.getUncompressedSize();
+    }
 
     @Override
     public String toString() {
@@ -196,8 +126,11 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     ByteBuffer result = null;
 
     for (DataStorage dataStorage : storage) {
-      //if (dataStorage.isVlen)
-      //  return readVlenData(v, section, dataStorage);
+      if (dataStorage.isVlen)
+        return readVlenData(v, section, dataStorage);
+
+      if (dataStorage.sdata != null)
+        return readStructureData((Structure) v, section, dataStorage);
 
       if (dataStorage.section.intersects(section)) { // LOOK WRONG
         raf.seek(dataStorage.filePos);
@@ -225,7 +158,18 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     //return dataArray.sectionNoReduce(section.getRanges());
   }
 
-  public Array readVlenData(Variable v, Section section, DataStorage dataStorage) throws IOException, InvalidRangeException {
+  private Array readStructureData(Structure v, Section section, DataStorage dataStorage) throws IOException, InvalidRangeException {
+    ByteBuffer bb = dataStorage.sdata.getData().asReadOnlyByteBuffer();
+    bb.order(dataStorage.bo);
+    StructureMembers sm = v.makeStructureMembers();
+    ArrayStructureBB.setOffsets(sm);
+    // StructureMembers members, int[] shape, ByteBuffer bbuffer, int offset
+    ArrayStructureBB all =  new ArrayStructureBB(sm, v.getShape(), bb, 0);
+    return ArrayStructureBBsection.factory(all, section);
+  }
+
+  // lOOK probably desnt work
+  private Array readVlenData(Variable v, Section section, DataStorage dataStorage) throws IOException, InvalidRangeException {
     raf.seek(dataStorage.filePos);
     int nelems = readVInt(raf);
     Object[] result = new Object[nelems];
@@ -292,6 +236,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     if (ncm != null) ncm.add(new NcsMess(pos, 4,  "MAGIC_HEADER"));
 
     // assume for the moment it always starts with one header message
+    pos = raf.getFilePointer();
     int msize = readVInt(raf);
     byte[] m = new byte[msize];
     raf.readFully(m);
@@ -303,6 +248,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     NcStream.readGroup(root, ncfile, ncfile.getRootGroup());
     ncfile.finish();
 
+    // then we have a stream of data messages with a final END or ERR
     while (!raf.isAtEndOfFile()) {
       pos = raf.getFilePointer();
       byte[] b = new byte[4];
@@ -318,14 +264,14 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
         raf.readFully(dp);
         NcStreamProto.Error error = NcStreamProto.Error.parseFrom(dp);
         if (ncm != null) ncm.add(new NcsMess(pos, esize, error.getMessage()));
-        break;
+        break; // assume broken now ?
       }
 
       if (!test(b, NcStream.MAGIC_DATA)) {
         if (ncm != null) ncm.add(new NcsMess(pos, 4, "MAGIC_DATA missing - abort"));
         break;
       }
-      if (ncm != null) ncm.add(new NcsMess(pos, 4, "MAGIC_DATA".intern()));
+      if (ncm != null) ncm.add(new NcsMess(pos, 4, "MAGIC_DATA"));
 
       // data messages
       pos = raf.getFilePointer();
@@ -336,33 +282,32 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       Variable v = ncfile.findVariable(dproto.getVarName());
       if (v == null) {
         System.out.printf(" ERR cant find var %s%n%s%n", dproto.getVarName(), dproto);
-        continue;
       }
       if (debug) System.out.printf(" dproto = %s for %s%n", dproto, v.getShortName());
       if (ncm != null) ncm.add(new NcsMess(pos, psize, dproto));
-      List<DataStorage> storage = (List<DataStorage>) v.getSPobject(); // LOOK should be an in memory Rtree using section
-      if (storage == null) {
-        storage = new ArrayList<>();
-        v.setSPobject(storage);
-      }
+      List<DataStorage> storage;
+      if (v != null) {
+        storage = (List<DataStorage>) v.getSPobject(); // LOOK should be an in memory Rtree using section
+        if (storage == null) {
+          storage = new ArrayList<>();
+          v.setSPobject(storage);
+        }
+      } else
+        storage = new ArrayList<>(); // barf
 
-      if (!dproto.getVdata()) { // regular data
-        int dsize = readVInt(raf);
-        DataStorage dataStorage = new DataStorage();
-        dataStorage.size = dsize;
-        dataStorage.filePos = raf.getFilePointer();
-        dataStorage.section = NcStream.decodeSection(dproto.getSection());
-        dataStorage.nelems = (int) dataStorage.section.computeSize();
-        dataStorage.isDeflate = dproto.getCompress() == NcStreamProto.Compress.DEFLATE;
-        if (dataStorage.isDeflate)
-          dataStorage.uncompressedLen = dproto.getUncompressedSize();
-        if (ncm != null) ncm.add(new NcsMess(dataStorage.filePos, dsize, dataStorage));
+      if (dproto.getDataType() == NcStreamProto.DataType.STRUCTURE) {
+        pos = raf.getFilePointer();
+        msize = readVInt(raf);
+        m = new byte[msize];
+        raf.readFully(m);
+        NcStreamProto.StructureData sdata = NcStreamProto.StructureData.parseFrom(m);
+        DataStorage dataStorage = new DataStorage(msize, pos, dproto);
+        dataStorage.sdata = sdata;
+        if (ncm != null) ncm.add(new NcsMess(dataStorage.filePos, msize, sdata));
         storage.add(dataStorage);
-        raf.skipBytes(dsize);
 
-      } else {  // LOOK WRONG
-        DataStorage dataStorage = new DataStorage();
-        dataStorage.filePos = raf.getFilePointer();
+      } else if (dproto.getVdata()) {
+        DataStorage dataStorage = new DataStorage(0, raf.getFilePointer(), dproto);
         int nelems = readVInt(raf);
         int totalSize = 0;
         for (int i = 0; i < nelems; i++) {
@@ -370,12 +315,18 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
           totalSize += dsize;
           raf.skipBytes(dsize);
         }
-        dataStorage.isVlen = true;
         dataStorage.nelems = nelems;
         dataStorage.size = totalSize;
-        dataStorage.section = NcStream.decodeSection(dproto.getSection());
         if (ncm != null) ncm.add(new NcsMess(dataStorage.filePos, totalSize, dataStorage));
         storage.add(dataStorage);
+
+      } else {  // regular data
+        int dsize = readVInt(raf);
+        DataStorage dataStorage = new DataStorage(dsize, raf.getFilePointer(), dproto);
+        if (ncm != null) ncm.add(new NcsMess(dataStorage.filePos, dsize, dataStorage));
+        storage.add(dataStorage);
+        raf.skipBytes(dsize);
+
       }
     }
   }
@@ -385,12 +336,22 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     public int len;
     public int nelems;
     public Object what;
+    public DataType dataType;
+    public String varName;
 
     public NcsMess(long filePos, int len, Object what) {
       this.filePos = filePos;
       this.len = len;
       this.what = what;
-      if (what instanceof DataStorage)
+      if (what instanceof NcStreamProto.Data) {
+        NcStreamProto.Data dataMess = (NcStreamProto.Data) what;
+        this.dataType = NcStream.decodeDataType(dataMess.getDataType());
+        this.varName = dataMess.getVarName();
+        Section s = NcStream.decodeSection(dataMess.getSection());
+        if (s != null)
+          this.nelems = (int) s.computeSize();
+      }
+      else if (what instanceof DataStorage)
         this.nelems = ((DataStorage) what).nelems;
     }
 

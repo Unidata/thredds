@@ -1,5 +1,7 @@
 package ucar.nc2.ft.point.collection;
 
+import ucar.nc2.time.CalendarDateRange;
+
 import java.io.IOException;
 
 /**
@@ -9,5 +11,5 @@ import java.io.IOException;
  * @since Nov 22, 2010
  */
 public interface UpdateableCollection {
-  void update() throws IOException;
+  CalendarDateRange update() throws IOException;
 }

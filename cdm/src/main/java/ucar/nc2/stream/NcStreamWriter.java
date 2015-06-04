@@ -39,6 +39,7 @@ import ucar.nc2.constants.CDM;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.zip.DeflaterOutputStream;
 
 /**
@@ -102,9 +103,10 @@ public class NcStreamWriter {
     if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
       uncompressedLength *= v.getElementSize(); // nelems for vdata, else nbytes
 
+    ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
     long size = 0;
     size += writeBytes(out, NcStream.MAGIC_DATA); // magic
-    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, deflate, (int) uncompressedLength);
+    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, deflate, bo, (int) uncompressedLength);
     byte[] datab = dataProto.toByteArray();
     size += NcStream.writeVInt(out, datab.length); // dataProto len
     size += writeBytes(out, datab); // dataProto
@@ -117,19 +119,28 @@ public class NcStreamWriter {
       try {
         while (iter.hasNext()) {
           size += writeBytes(out, NcStream.MAGIC_VDATA); // magic
-          ArrayStructureBB abb = StructureDataDeep.copyToArrayBB(iter.next());
-          size += NcStream.encodeArrayStructure(abb, out);
+          StructureData sdata = iter.next();
+          ArrayStructure as = new ArrayStructureW(sdata);
+          size += NcStream.encodeArrayStructure(as, bo, out);
           count++;
         }
       } finally {
         iter.finish();
       }
       size += writeBytes(out, NcStream.MAGIC_VEND);
-      if (show) System.out.printf(" NcStreamWriter sent %d sdata bytes = %d%n", count, size);
+      if (show) System.out.printf(" NcStreamWriter sent %d seqData bytes = %d%n", count, size);
       return size;
     }
 
-    // regular arrays
+    if (v.getDataType() == DataType.STRUCTURE) {
+      ArrayStructure abb = (ArrayStructure) v.read();   // read all - LOOK break this up into chunks if needed
+       //coverity[FB.BC_UNCONFIRMED_CAST]
+      size += NcStream.encodeArrayStructure(abb, bo, out);
+     if (show) System.out.printf(" NcStreamWriter sent ArrayStructure bytes = %d%n", size);
+     return size;
+    }
+
+     // regular arrays
     if (deflate) {
       ByteArrayOutputStream bout = new ByteArrayOutputStream();
       DeflaterOutputStream dout = new DeflaterOutputStream(bout);

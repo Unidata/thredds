@@ -125,11 +125,12 @@ message Section {
 }
 
 message StructureData {
-  repeated uint32 member = 1; // optional list of members present
+  repeated uint32 member = 1; // list of members present, if none then all, these are the index in Structure
   required bytes data = 2; // fixed length data
   repeated uint32 heapCount = 3; // heap String count
   repeated string sdata = 4; // Strings
-  optional uint64 nrows = 5 [default = 1];
+  optional uint64 nrows = 5 [default = 1];  // number of structData in this message
+  optional uint32 rowLength = 6;  // length in bytes of each row
 }
 
 //////////////////////////////////

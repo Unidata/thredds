@@ -108,8 +108,8 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   @Override
-  public void update() throws IOException {
-    dataCollection.update();
+  public CalendarDateRange update() throws IOException {
+    return dataCollection.update();
   }
 
   // Must override default subsetting implementation for efficiency

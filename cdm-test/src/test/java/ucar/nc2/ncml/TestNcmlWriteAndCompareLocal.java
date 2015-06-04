@@ -146,7 +146,7 @@ public class TestNcmlWriteAndCompareLocal {
     try {
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, compareData);
-      boolean ok = mind.compare(org, copy, new Netcdf4ObjectFilter(), false, false, compareData);
+      boolean ok = mind.compare(org, copy, new CompareNetcdf2.Netcdf4ObjectFilter(), false, false, compareData);
       if (!ok) {
         fail++;
         System.out.printf("--Compare %s, useRecords=%s explicit=%s openDataset=%s compareData=%s %n", location, useRecords, explicit, openDataset, compareData);
@@ -162,32 +162,4 @@ public class TestNcmlWriteAndCompareLocal {
     }
   }
 
-  public static class Netcdf4ObjectFilter implements CompareNetcdf2.ObjFilter {
-    @Override
-    public boolean attCheckOk(Variable v, Attribute att) {
-      // if (v != null && v.isMemberOfStructure()) return false;
-      String name = att.getShortName();
-
-      // added by cdm
-      if (name.equals(CDM.CHUNK_SIZES)) return false;
-      if (name.equals(CDM.FILL_VALUE)) return false;
-      if (name.equals("_lastModified")) return false;
-
-      // hidden by nc4
-      if (name.equals(Nc4.NETCDF4_DIMID)) return false;  // preserve the order of the dimensions
-      if (name.equals(Nc4.NETCDF4_COORDINATES)) return false;  // ??
-      if (name.equals(Nc4.NETCDF4_STRICT)) return false;
-
-      // not implemented yet
-      //if (att.getDataType().isEnum()) return false;
-
-      return true;
-    }
-
-    @Override
-    public boolean varDataTypeCheckOk(Variable v) {
-      if (v.getDataType() == DataType.CHAR) return false;    // temp workaround
-      return v.getDataType() != DataType.STRING;
-    }
-  }
 }
