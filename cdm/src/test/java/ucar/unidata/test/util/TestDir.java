@@ -8,10 +8,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -183,8 +180,6 @@ public class TestDir {
         " MB");
   }
 
-  // from testLocal
-
   private static boolean dumpFile = false;
 
   public static NetcdfFile open( String filename) {
@@ -268,12 +263,20 @@ public class TestDir {
     }
   }
 
-  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
+  //
+
+  /**
+   * Call act.doAct() of each file in dirName passing
+   * @param dirName
+   * @param ff
+   * @param act
+   * @return
+   * @throws IOException
+   */
   public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
     return actOnAll( dirName, ff, act, true);
   }
 
-  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   public static int actOnAllParameterized(String dirName, FileFilter ff, Collection<Object[]> filenames) throws IOException {
     return actOnAll( dirName, ff, new ListAction(filenames), true);
   }
@@ -300,7 +303,6 @@ public class TestDir {
    * @return count
    * @throws IOException on IO error
    */
-  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   public static int actOnAll(String dirName, FileFilter ff, Act act, boolean recurse) throws IOException {
     int count = 0;
 
@@ -309,7 +311,7 @@ public class TestDir {
     File[] allFiles = allDir.listFiles();
     if (null == allFiles) {
       System.out.println("---------------INVALID "+dirName);
-      return count;
+      throw new FileNotFoundException("Cant open "+dirName);
     }
     List<File> flist = Arrays.asList(allFiles);
     Collections.sort(flist);
@@ -335,7 +337,6 @@ public class TestDir {
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   public static int readAllDir(String dirName, FileFilter ff) throws IOException {
     return actOnAll(dirName, ff, new ReadAllVariables());
   }

@@ -96,6 +96,7 @@ public class TableAnalyzer {
     registerAnalyzer("BuoyShip-NetCDF", BuoyShipSynop.class, null);
     registerAnalyzer("NCAR-RAF/nimbus", RafNimbus.class, null);
     registerAnalyzer("NLDN-CDM", Nldn.class, null);
+    registerAnalyzer("SimpleTrajectory", SimpleTrajectory.class, null);
 
     // further calls to registerConvention are by the user
     userMode = true;

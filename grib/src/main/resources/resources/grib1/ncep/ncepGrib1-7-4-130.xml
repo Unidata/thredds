@@ -39,7 +39,7 @@
     </parameter>
     <parameter code="63">
         <shortName>ACPCP</shortName>
-        <description>Convective Precipitation</description>
+        <description>Convective Precipitation from EDAS</description>
         <units>kg/m^2</units>
     </parameter>
     <parameter code="65">
