@@ -33,8 +33,10 @@
 
 package ucar.nc2.dataset;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import ucar.ma2.DataType;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
@@ -91,6 +93,7 @@ public class TestConventionsMisc {
       assert grid != null;
       GridCoordSystem gcs = grid.getCoordinateSystem();
       assert gcs.isLatLon();
+      Assert.assertEquals(DataType.UBYTE, grid.getDataType());
     }
   }
 

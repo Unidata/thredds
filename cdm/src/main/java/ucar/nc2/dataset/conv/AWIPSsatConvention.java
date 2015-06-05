@@ -119,12 +119,13 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     String long_name = ds.findAttValueIgnoreCase(null, "channel", null);
     if (null != long_name)
       datav.addAttribute( new Attribute(CDM.LONG_NAME, long_name));
+    datav.setDataType(DataType.UBYTE);
 
     // missing values
     ArrayByte.D1 missing_values = new ArrayByte.D1(2, true);
     missing_values.set(0, (byte) 0);
     missing_values.set(1, (byte) -127);
-    datav.addAttribute( new Attribute("missing_values", missing_values));
+    datav.addAttribute(new Attribute(CDM.MISSING_VALUE, missing_values));
     // datav.setUnsigned(true);  // LOOK we want to change the datatype !!
 
     if (projCT != null) {

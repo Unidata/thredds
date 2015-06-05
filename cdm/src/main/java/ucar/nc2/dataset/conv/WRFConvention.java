@@ -84,10 +84,11 @@ public class WRFConvention extends CoordSysBuilder {
       if (att.getNumericValue().intValue() != 2) return false;
     } else {
       att = ncfile.findGlobalAttribute("GRIDTYPE");
-      if (att == null) return false;
-      if (!att.getStringValue().equalsIgnoreCase("C") &&  
-          !att.getStringValue().equalsIgnoreCase("E")) 
-        return false;
+      if (att != null) {
+        if (!att.getStringValue().equalsIgnoreCase("C") &&
+                !att.getStringValue().equalsIgnoreCase("E"))
+          return false;
+      }
     }
 
     att = ncfile.findGlobalAttribute("MAP_PROJ");

@@ -385,7 +385,7 @@ public class TestDir {
   }
 
   static public int readAllData( NetcdfFile ncfile) {
-    System.out.println("\n------Reading ncfile "+ncfile.getLocation());
+    System.out.println("\n------Reading ncfile " + ncfile.getLocation());
     try {
 
       for (Variable v : ncfile.getVariables()) {
@@ -435,5 +435,69 @@ public class TestDir {
     }
 
     return result;
+  }
+
+  public static List<File> getAllFilesInDirectoryStandardFilter(File topDir) {
+    if (topDir == null || !topDir.exists())
+      return Collections.emptyList();
+
+    if ((topDir.getName().equals("exclude")) || (topDir.getName().equals("problem")))
+      return Collections.emptyList();
+
+       // get list of files
+    File[] fila= topDir.listFiles();
+    if (fila == null)
+      return Collections.emptyList();
+
+    List<File> files = new ArrayList<>();
+    for (File f : fila) {
+      if (!f.isDirectory()) {
+        files.add(f);
+      }
+    }
+
+    // eliminate redundant files
+    // ".Z", ".zip", ".gzip", ".gz", or ".bz2"
+    if (files.size() > 0) {
+      Collections.sort(files);
+      ArrayList<File> files2 = new ArrayList<>(files);
+
+      File prev = null;
+      for (File f : files) {
+        String name = f.getName();
+        String stem = stem(name);
+        if (name.contains(".gbx") || name.contains(".ncx") ||
+                name.endsWith(".xml") || name.endsWith(".pdf") || name.endsWith(".txt") || name.endsWith(".tar")) {
+          files2.remove(f);
+
+        } else if (prev != null) {
+
+          if (name.endsWith(".ncml")) {
+            if (prev.getName().equals(stem) || prev.getName().equals(stem + ".nc"))
+              files2.remove(prev);
+          } else if (name.endsWith(".bz2")) {
+            if (prev.getName().equals(stem)) files2.remove(f);
+          } else if (name.endsWith(".gz")) {
+            if (prev.getName().equals(stem)) files2.remove(f);
+          } else if (name.endsWith(".gzip")) {
+            if (prev.getName().equals(stem)) files2.remove(f);
+          } else if (name.endsWith(".zip")) {
+            if (prev.getName().equals(stem)) files2.remove(f);
+          } else if (name.endsWith(".Z")) {
+            if (prev.getName().equals(stem)) files2.remove(f);
+          }
+        }
+        prev = f;
+      }
+      return files2;
+    }
+
+    return files;
+
+  }
+
+  private static String stem(String name) {
+    int pos = name.lastIndexOf('.');
+    return (pos > 0) ? name.substring(0, pos) : name;
   }
 }
