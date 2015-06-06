@@ -58,10 +58,10 @@ import java.util.*;
 
 /**
  * The DataRootHandler manages all the "data roots" for a TDS
- * and provides mappings from URLs to catalog and datasets
+ * and provides mappings from URLs to catalog and datasets.
  * <p/>
  * <p>The "data roots" are read in from one or more trees of config catalogs
- * and are defined by the datasetScan and datasetRoot and featureColelction elements in the config catalogs.
+ * and are defined by the datasetScan and datasetRoot and featureCollection elements in the config catalogs.
  * <p/>
  *
  * @author caron
@@ -88,16 +88,13 @@ public class DataRootManager implements InitializingBean {
   private DataRootPathMatcher<DataRoot> dataRootPathMatcher;
 
   @Autowired
-  private ConfigCatalogManager ccManager;
-
-  @Autowired
   private ConfigCatalogCache ccc;
 
   @Autowired
-  FeatureCollectionCache featureCollectionCache;
+  private FeatureCollectionCache featureCollectionCache;
   
   @Autowired
-  DebugCommands debugCommands;
+  private DebugCommands debugCommands;
 
   private DataRootManager() {
   }
@@ -436,22 +433,6 @@ public class DataRootManager implements InitializingBean {
   public void makeDebugActions() {
     DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
     DebugCommands.Action act;
-
-    act = new DebugCommands.Action("showStatic", "Show root catalogs") {
-      public void doAction(DebugCommands.Event e) {
-        StringBuilder sbuff = new StringBuilder();
-        synchronized (DataRootManager.this) {
-          List<String> list = ccManager.getRootCatalogKeys();
-          for (String catPath : list) {
-            sbuff.append(" catalog= ").append(catPath).append("\n");
-            //String filename = StringUtil2.unescape(cat.getUriString());
-            //sbuff.append(" from= ").append(filename).append("\n");
-          }
-        }
-        e.pw.println(StringUtil2.quoteHtmlContent("\n" + sbuff.toString()));
-      }
-    };
-    debugHandler.addAction(act);
 
     act = new DebugCommands.Action("showDataRootPaths", "Show data roots paths") {
       public void doAction(DebugCommands.Event e) {

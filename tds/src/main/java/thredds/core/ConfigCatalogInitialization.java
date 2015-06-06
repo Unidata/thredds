@@ -38,11 +38,13 @@ import org.springframework.util.StringUtils;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
+import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
 import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,37 +59,65 @@ import java.util.*;
  * @author caron
  * @since 3/21/2015
  */
-@Component("ConfigCatalogManager")
-public class ConfigCatalogManager  {
-  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class.getName()+".catalogInit");
+@Component("ConfigCatalogInitialization")
+public class ConfigCatalogInitialization {
+  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName()+".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private final String ERROR = "*** ERROR: ";
 
-  @Autowired
-  private TdsContext tdsContext;
+  static public interface Callback {
+    void hasDataRoot(DataRoot dataRoot);
+    void hasDataset(Dataset dd);
+    void hasNcml(Dataset dd);
+    void hasRestriction(Dataset dd);
+    void hasCatalogRef(ConfigCatalog dd);
+  }
 
-  @Autowired                                                 // Let Spring autowire so shared object
-  private DataRootPathMatcher<DataRoot> dataRootPathMatcher; // collection of DataRoot objects
+  @Autowired
+  private TdsContext tdsContext;  // used for  getContentDirectory, contextPath
+
+  @Autowired
+  private DataRootPathMatcher<DataRoot> dataRootPathMatcher;
 
   @Autowired
   DatasetManager datasetManager;
 
   @Autowired
-  private ConfigCatalogCache ccc;
+  private ConfigCatalogCache ccc; // not needed ??
 
   @Autowired
   private AllowedServices allowedServices;
 
-  private List<String> rootCatalogKeys;    // needed ??
+  @Autowired
+  private DebugCommands debugCommands;
 
-  ConfigCatalogManager() {
+  private List<String> rootCatalogKeys;    // needed ??
+  private File rootFile;
+  private String contextPath;
+  private Callback callback;
+
+  public ConfigCatalogInitialization() {
   }
 
-  public List<String> getRootCatalogKeys() {
-    return rootCatalogKeys;
+  public ConfigCatalogInitialization(String rootPath, String rootCatalog, DataRootPathMatcher<DataRoot> matcher, DatasetManager manager,
+                                     AllowedServices allowedServices, Callback callback) throws IOException {
+    this.rootFile = new File(rootPath);
+    this.contextPath = "/thredds";
+    this.dataRootPathMatcher = matcher;
+    this.datasetManager = manager;
+    this.allowedServices = allowedServices;
+    this.callback = callback;
+
+    Set<String> pathHash = new HashSet<>();       // Hash of ids, to look for duplicates
+    Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
+
+    initCatalog(rootCatalog, pathHash, idHash);
   }
 
   public void init() {
+    this.rootFile = this.tdsContext.getContentDirectory();
+    this.contextPath = tdsContext.getContextPath();
+
     rootCatalogKeys = new ArrayList<>();
     rootCatalogKeys.add("catalog.xml"); // always first
     rootCatalogKeys.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
@@ -106,16 +136,19 @@ public class ConfigCatalogManager  {
         logCatalogInit.error(ERROR + "initializing catalog " + path + "; " + e.getMessage(), e);
       }
     }
+
+    makeDebugActions();
   }
 
   private void initCatalog(String path, Set<String> pathHash, Set<String> idHash) throws IOException {
     path = StringUtils.cleanPath(path);
-    File f = this.tdsContext.getCatalogRootDirSource().getFile(path);
-    if (f == null) {
+    // File f = this.tdsContext.getCatalogRootDirSource().getFile(path);
+    File f = new File(this.rootFile, path);
+    if (!f.exists()) {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
       return;
     }
-    System.out.printf("initCatalog %s%n", f.getPath());
+    // System.out.printf("initCatalog %s%n", f.getPath());
 
     // make sure we dont already have it
     if (pathHash.contains(path)) {
@@ -131,17 +164,20 @@ public class ConfigCatalogManager  {
       logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + f.getPath() + ">.");
       return;
     }
-    ccc.put(path, cat);
+    //ccc.put(path, cat);  // LOOK really ??
+    if (callback != null) callback.hasCatalogRef(cat);
 
     // look for datasetRoots
     for (DatasetRootConfig p : cat.getDatasetRoots()) {
       addRoot(p, true);
     }
 
-    List<String> disallowedServices = allowedServices.getDisallowedServices(cat.getServices());
-    if (!disallowedServices.isEmpty()) {
-      allowedServices.getDisallowedServices(cat.getServices());
-      logCatalogInit.error(ERROR + "initCatalog(): declared services: " + Arrays.toString(disallowedServices.toArray()) + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
+    if (callback == null) {
+      List<String> disallowedServices = allowedServices.getDisallowedServices(cat.getServices());
+      if (!disallowedServices.isEmpty()) {
+        allowedServices.getDisallowedServices(cat.getServices());
+        logCatalogInit.error(ERROR + "initCatalog(): declared services: " + Arrays.toString(disallowedServices.toArray()) + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
+      }
     }
 
     // get the directory path, reletive to the contentPath
@@ -166,7 +202,7 @@ public class ConfigCatalogManager  {
     URI uri;
     try {
       // uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
-      uri = new URI(tdsContext.getContextPath() + "/catalog/" + path);
+      uri = new URI(this.contextPath + "/catalog/" + path);
     } catch (URISyntaxException e) {
       logCatalogInit.error(ERROR + "readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
@@ -195,6 +231,8 @@ public class ConfigCatalogManager  {
 
   private void processDatasets(String dirPath, List<Dataset> datasets, Set<String> pathHash, Set<String> idHash) throws IOException {
     for (Dataset ds : datasets) {
+      if (callback != null) callback.hasDataset(ds);
+
       if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollectionRef)) continue;
 
       if (ds instanceof CatalogRef) {
@@ -210,7 +248,7 @@ public class ConfigCatalogManager  {
           }
 
           String path;
-          String contextPathPlus = this.tdsContext.getContextPath() + "/";
+          String contextPathPlus = this.contextPath + "/";
           if (href.startsWith(contextPathPlus)) {
             path = href.substring(contextPathPlus.length()); // absolute starting from content root
           } else if (href.startsWith("/")) {
@@ -253,8 +291,10 @@ public class ConfigCatalogManager  {
         }
       }
 
-      if (dataset.getRestrictAccess() != null)
-        datasetManager.putResourceControl(dataset);
+      if (dataset.getRestrictAccess() != null) {
+        if (callback != null) callback.hasRestriction(dataset);
+        else datasetManager.putResourceControl(dataset);
+      }
 
       if (dataset instanceof DatasetScan) {
         DatasetScan ds = (DatasetScan) dataset;
@@ -272,7 +312,8 @@ public class ConfigCatalogManager  {
 
         // not a DatasetScan or DatasetFmrc or FeatureCollection
       } else if (dataset.getNcmlElement() != null) {
-        datasetManager.putNcmlDataset(dataset.getUrlPath(), dataset);
+        if (callback != null) callback.hasNcml(dataset);
+        else datasetManager.putNcmlDataset(dataset.getUrlPath(), dataset);
       }
 
       if (!(dataset instanceof CatalogRef)) {
@@ -305,7 +346,7 @@ public class ConfigCatalogManager  {
     // add it
     droot = new DataRoot(dscan);
     dataRootPathMatcher.put(path, droot);
-
+    if (callback != null) callback.hasDataRoot(droot);
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
     return true;
   }
@@ -338,6 +379,7 @@ public class ConfigCatalogManager  {
     }
 
     dataRootPathMatcher.put(path, droot);
+    if (callback != null) callback.hasDataRoot(droot);
     logCatalogInit.debug(" added rootPath=<" + path + ">  for feature collection= <" + fc.getName() + ">");
     return true;
   }
@@ -358,7 +400,7 @@ public class ConfigCatalogManager  {
 
     location = DataRootAlias.translateAlias(location);
     File file = new File(location);
-    if (!file.exists()) {
+    if (!file.exists() && (callback == null)) {
       logCatalogInit.error(ERROR + "DatasetRootConfig path ='" + path + "' directory= <" + location + "> does not exist");
       return false;
     }
@@ -366,8 +408,31 @@ public class ConfigCatalogManager  {
     // add it
     droot = new DataRoot(path, location);
     dataRootPathMatcher.put(path, droot);
-
+    if (callback != null) callback.hasDataRoot(droot);
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + location + ">");
     return true;
+  }
+
+  /////////////////////////////////////////////////////
+
+  public void makeDebugActions() {
+    DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
+    DebugCommands.Action act;
+
+    act = new DebugCommands.Action("showStatic", "Show root catalogs") {
+      public void doAction(DebugCommands.Event e) {
+        StringBuilder sbuff = new StringBuilder();
+        synchronized (ConfigCatalogInitialization.this) {
+          for (String catPath : rootCatalogKeys) {
+            sbuff.append(" catalog= ").append(catPath).append("\n");
+            //String filename = StringUtil2.unescape(cat.getUriString());
+            //sbuff.append(" from= ").append(filename).append("\n");
+          }
+        }
+        e.pw.println(StringUtil2.quoteHtmlContent("\n" + sbuff.toString()));
+      }
+    };
+    debugHandler.addAction(act);
+
   }
 }

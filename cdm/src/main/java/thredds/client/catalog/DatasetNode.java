@@ -53,7 +53,6 @@ public class DatasetNode {
     this.parent = parent;
     this.name = name;
     this.flds = Collections.unmodifiableMap(flds);
-
     if (datasetBuilders != null && datasetBuilders.size() > 0) {
       List<Dataset> datasets = new ArrayList<>(datasetBuilders.size());
       for (DatasetBuilder dsb : datasetBuilders)

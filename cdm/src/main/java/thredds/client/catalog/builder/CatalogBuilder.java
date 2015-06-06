@@ -36,6 +36,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.StAXStreamBuilder;
 import thredds.client.catalog.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
@@ -48,6 +49,9 @@ import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.URLnaming;
 import ucar.unidata.util.StringUtil2;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -211,7 +215,23 @@ public class CatalogBuilder {
   /////////////////////////////////////////////////////////////////////
   // JDOM
 
-  private void readXML(String location) throws IOException {
+  private void readXML(String fileName)  throws IOException {
+    try {
+      StAXStreamBuilder staxBuilder = new StAXStreamBuilder();
+      XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+      XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(new FileInputStream(fileName));
+      org.jdom2.Document jdomDoc = staxBuilder.build(xmlStreamReader);
+      readCatalog(jdomDoc.getRootElement());
+
+    } catch (Exception e) {
+      errlog.format("failed to read catalog at '%s' err='%s'%n", fileName, e);
+      logger.error("failed to read catalog at " + fileName, e);
+      // e.printStackTrace();
+      fatalError = true;
+    }
+  }
+
+  /* private void readXML(String location) throws IOException {
      try {
        SAXBuilder saxBuilder = new SAXBuilder();
        org.jdom2.Document jdomDoc = saxBuilder.build(location);
@@ -223,8 +243,7 @@ public class CatalogBuilder {
        // e.printStackTrace();
        fatalError = true;
      }
-   }
-
+   } */
 
   private void readXML(URI uri) throws IOException {
     try {

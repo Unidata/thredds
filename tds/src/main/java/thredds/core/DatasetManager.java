@@ -79,23 +79,23 @@ public class DatasetManager implements InitializingBean  {
   static private final boolean debugResourceControl = false;
 
   @Autowired
-  DebugCommands debugCommands;
+  private DebugCommands debugCommands;
 
   @Autowired
-  DataRootManager dataRootManager;
+  private DataRootManager dataRootManager;
 
   @Autowired
-  FeatureCollectionCache featureCollectionCache;
+  private FeatureCollectionCache featureCollectionCache;
 
   @Autowired
-  Authorizer restrictedDatasetAuthorizer;
+  private Authorizer restrictedDatasetAuthorizer;
 
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
   private Map<String, Dataset> ncmlDatasetHash = new HashMap<>();
 
   // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
   // possible change to one global hash table request
-  private ArrayList<DatasetSource> sourceList = new ArrayList<>();
+  private ArrayList<DatasetSource> datasetSources = new ArrayList<>();
 
   // resource control
   private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
@@ -108,11 +108,15 @@ public class DatasetManager implements InitializingBean  {
     makeDebugActions();
   }
 
+  public DatasetManager() {
+
+  }
+
   void reinit() {
     ncmlDatasetHash = new HashMap<>();
     resourceControlHash = new HashMap<>();
     resourceControlMatcher = new PathMatcher<>();
-    sourceList = new ArrayList<>();
+    datasetSources = new ArrayList<>();
     hasResourceControl = false;
   }
 
@@ -194,7 +198,7 @@ public class DatasetManager implements InitializingBean  {
 
     // might be a pluggable DatasetSource:
     NetcdfFile ncfile = null;
-    for (DatasetSource datasetSource : sourceList) {   // LOOK lineaar
+    for (DatasetSource datasetSource : datasetSources) {   // LOOK lineaar
       if (datasetSource.isMine(req)) {
         ncfile = datasetSource.getNetcdfFile(req, res);
         if (ncfile != null) return ncfile;
@@ -483,7 +487,7 @@ public class DatasetManager implements InitializingBean  {
   }
 
   public void registerDatasetSource(DatasetSource v) {
-    sourceList.add(v);
+    datasetSources.add(v);
     if (debugResourceControl) System.out.println("registerDatasetSource " + v.getClass().getName());
   }
 

@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.core.AllowedServices;
-import thredds.core.ConfigCatalogManager;
+import thredds.core.ConfigCatalogInitialization;
 import thredds.core.DatasetManager;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.featurecollection.CollectionUpdater;
@@ -88,7 +88,7 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
   private DatasetManager datasetManager;
 
   @Autowired
-  private ConfigCatalogManager configCatalogManager;
+  private ConfigCatalogInitialization configCatalogManager;
 
 
   @Autowired

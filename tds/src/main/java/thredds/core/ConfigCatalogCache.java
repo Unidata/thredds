@@ -68,7 +68,7 @@ public class ConfigCatalogCache implements InitializingBean {
   static private final String ERROR = "*** ERROR ";
 
   @Autowired
-  private TdsContext tdsContext;
+  private TdsContext tdsContext;  // only needed for rootPath
 
   private String rootPath;
   private Cache<String, ConfigCatalog> cache;

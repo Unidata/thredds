@@ -146,6 +146,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   }
 
   private void addAllAccess(Access a, List<Access> result) {
+    if (a.getService() == null)
+      System.out.println("HEY");
     if (a.getService().getType() == ServiceType.Compound) {
       for (Service nested : a.getService().getNestedServices()) {
         Access nestedAccess = new Access(this, a.getUrlPath(), nested, a.getDataFormatName(), a.getDataSize());

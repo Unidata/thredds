@@ -27,6 +27,7 @@ import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.ui.ReportPanel;
+import ucar.nc2.util.Counters;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -43,7 +44,7 @@ import java.util.*;
 public class Grib2ReportPanel extends ReportPanel {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
-  public static enum Report {
+  public enum Report {
     checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsSummary, pdsSummary, pdsProblems, idProblems, timeCoord,
     rename, renameCheck, copyCompress
   }
@@ -107,7 +108,9 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private void doCopyCompress(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
     f.format("Copy and Compress selected files%n");
-    CounterOfInt nbitsC = new CounterOfInt("Number of Bits");
+    Counters counters = new Counters();
+    counters.add("Nbits");
+    
     long totalOrg = 0;
     long totalZip = 0;
 
@@ -124,7 +127,7 @@ public class Grib2ReportPanel extends ReportPanel {
         Grib2RecordScanner scan = new Grib2RecordScanner(raf);
         while (scan.hasNext()) {
           ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
-          doCopyCompress(f, gr, raf, fout, nbitsC);
+          doCopyCompress(f, gr, raf, fout, counters);
           if (count++ % 100 == 0) System.out.printf("%s%n", count);
         }
       }
@@ -136,7 +139,7 @@ public class Grib2ReportPanel extends ReportPanel {
     double r = totalOrg != 0 ? ((double) totalZip) / totalOrg : 0;
     f.format("  org=%d zip=%d ratio=%f%n", totalOrg, totalZip, r);
 
-    nbitsC.show(f);
+    counters.show(f);
   }
 
   /*
@@ -187,7 +190,7 @@ public class Grib2ReportPanel extends ReportPanel {
   The units attribute applies to unpacked values.
    */
 
-  private void doCopyCompress(Formatter f, ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, OutputStream out, CounterOfInt nbitsC) throws IOException {
+  private void doCopyCompress(Formatter f, ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, OutputStream out, Counters counters) throws IOException {
     float[] data = gr.readData(raf);
 
     Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
@@ -196,7 +199,7 @@ public class Grib2ReportPanel extends ReportPanel {
     // calc scale/offset
     GribData.Info info = gr.getBinaryDataInfo(raf);
     int nbits = info.numberOfBits;
-    nbitsC.count(nbits);
+    counters.count("Nbits", nbits);
 
     int width = (2 << (nbits-1)) - 1;
     //f.format(" nbits = %d%n", nbits);
@@ -462,9 +465,9 @@ public class Grib2ReportPanel extends ReportPanel {
     if (index == null) return;
 
     Formatter errlog = new Formatter();
-    GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(false, ff, CollectionUpdateType.nocheck,
-            new FeatureCollectionConfig(), errlog, logger);
-    gc.close();
+    try (GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(false, ff, CollectionUpdateType.nocheck, new FeatureCollectionConfig(), errlog, logger)) {
+      // ??
+    }
 
     GridDataset ncfile = null;
     try {
@@ -512,15 +515,15 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private void doPdsSummary(Formatter f, MCollection dcm, boolean eachFile) throws IOException {
     Counters countersAll = new Counters();
-    countersAll.add(new CounterOfInt("template"));
-    countersAll.add(new CounterOfInt("timeUnit"));
-    countersAll.add(new CounterOfInt("timeOffset"));
-    countersAll.add(new CounterOfInt("timeIntervalSize"));
-    countersAll.add(new CounterOfInt("levelType"));
-    countersAll.add(new CounterOfInt("genProcessType"));
-    countersAll.add(new CounterOfInt("genProcessId"));
-    countersAll.add(new CounterOfInt("levelScale"));
-    countersAll.add(new CounterOfInt("nExtraCoords"));
+    countersAll.add("template");
+    countersAll.add("timeUnit");
+    countersAll.add("timeOffset");
+    countersAll.add("timeIntervalSize");
+    countersAll.add("levelType");
+    countersAll.add("genProcessType");
+    countersAll.add("genProcessId");
+    countersAll.add("levelScale");
+    countersAll.add("nExtraCoords");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format("---%s%n", mfile.getPath());
@@ -597,34 +600,25 @@ public class Grib2ReportPanel extends ReportPanel {
   private void doIdProblems(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     f.format("Look for ID Problems%n");
 
-    CounterOfInt disciplineSet = new CounterOfInt("discipline");
-    CounterOfInt masterTable = new CounterOfInt("masterTable");
-    CounterOfInt localTable = new CounterOfInt("localTable");
-    CounterOfInt centerId = new CounterOfInt("centerId");
-    CounterOfInt subcenterId = new CounterOfInt("subcenterId");
-    CounterOfInt genProcess = new CounterOfInt("genProcess");
-    CounterOfInt backProcess = new CounterOfInt("backProcess");
-    CounterOfInt sigRefProcess = new CounterOfInt("significanceOfReference");
+    Counters countersAll = new Counters();
+    countersAll.add("discipline");
+    countersAll.add("masterTable");
+    countersAll.add("localTable");
+    countersAll.add("centerId");
+    countersAll.add("subcenterId");
+    countersAll.add("genProcess");
+    countersAll.add("backProcess");
+    countersAll.add("significanceOfReference");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
-      doIdProblems(f, mfile, useIndex,
-              disciplineSet, masterTable, localTable, centerId, subcenterId, genProcess, backProcess, sigRefProcess);
+      doIdProblems(f, mfile, useIndex, countersAll);
     }
-
-    disciplineSet.show(f);
-    masterTable.show(f);
-    localTable.show(f);
-    centerId.show(f);
-    subcenterId.show(f);
-    genProcess.show(f);
-    backProcess.show(f);
-    sigRefProcess.show(f);
+    
+    countersAll.show(f);
   }
 
-  private void doIdProblems(Formatter f, MFile mf, boolean showProblems,
-                            CounterOfInt disciplineSet, CounterOfInt masterTable, CounterOfInt localTable, CounterOfInt centerId,
-                            CounterOfInt subcenterId, CounterOfInt genProcessC, CounterOfInt backProcessC, CounterOfInt sigRefProcess) throws IOException {
+  private void doIdProblems(Formatter f, MFile mf, boolean showProblems, Counters countersAll) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
@@ -638,14 +632,14 @@ public class Grib2ReportPanel extends ReportPanel {
     int sigRef = -1;
 
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
-      disciplineSet.count(gr.getDiscipline());
-      masterTable.count(gr.getId().getMaster_table_version());
-      localTable.count(gr.getId().getLocal_table_version());
-      centerId.count(gr.getId().getCenter_id());
-      subcenterId.count(gr.getId().getSubcenter_id());
-      genProcessC.count(gr.getPDS().getGenProcessId());
-      backProcessC.count(gr.getPDS().getBackProcessId());
-      sigRefProcess.count(gr.getId().getSignificanceOfRT());
+      countersAll.count("discipline", gr.getDiscipline());
+      countersAll.count("masterTable", gr.getId().getMaster_table_version());
+      countersAll.count("localTable", gr.getId().getLocal_table_version());
+      countersAll.count("centerId", gr.getId().getCenter_id());
+      countersAll.count("subcenterId", gr.getId().getSubcenter_id());
+      countersAll.count("genProcess", gr.getPDS().getGenProcessId());
+      countersAll.count("backProcess", gr.getPDS().getBackProcessId());
+      countersAll.count("significanceOfReference", gr.getId().getSignificanceOfRT());
 
       if (!showProblems) continue;
 
@@ -719,10 +713,10 @@ public class Grib2ReportPanel extends ReportPanel {
   private void doDrsSummary(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
     f.format("Show Unique DRS Templates%n");
     Counters countersAll = new Counters();
-    countersAll.add(new CounterOfInt("DRS_template"));
-    countersAll.add(new CounterOfInt("BMS indicator"));
-    countersAll.add(new CounterOfInt("DRS template 40 signed problem"));
-    countersAll.add(new CounterOfInt("Number_of_Bits"));
+    countersAll.add("DRS_template");
+    countersAll.add("BMS indicator");
+    countersAll.add("DRS template 40 signed problem");
+    countersAll.add("Number_of_Bits");
 
     for (MFile mfile : dcm.getFilesSorted()) {
 
@@ -815,9 +809,9 @@ public class Grib2ReportPanel extends ReportPanel {
   private void doGdsSummary(Formatter f, MCollection dcm, boolean extra) throws IOException {
     f.format("Show Unique GDS Templates%n");
     Counters counters = new Counters();
-    counters.add(new CounterOfInt("template"));
-    counters.add(new CounterOfInt("scanMode"));
-    counters.add(new CounterOfString("scanModeDifference"));
+    counters.add("template");
+    counters.add("scanMode");
+    counters.add("scanModeDifference");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
@@ -853,7 +847,7 @@ public class Grib2ReportPanel extends ReportPanel {
       counters.count("template", gdss.getGDSTemplateNumber());
       counters.count("scanMode", gr.getScanMode());
       if (gdsIndex.getScanMode() != gr.getScanMode()) {
-        counters.countS("scanModeDifference", mf.getName());
+        counters.count("scanModeDifference", mf.getName());
       }
 
     }
@@ -862,32 +856,26 @@ public class Grib2ReportPanel extends ReportPanel {
   ///////////////////////////////////////////////////////////////////
 
   private void doTimeCoord(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    CounterOfInt templateSet = new CounterOfInt("template");
-    CounterOfInt timeUnitSet = new CounterOfInt("timeUnit");
-    CounterOfInt statTypeSet = new CounterOfInt("statType");
-    CounterOfInt NTimeIntervals = new CounterOfInt("NumberTimeIntervals");
-    CounterOfInt TinvDiffer = new CounterOfInt("TimeIntervalsDiffer");
-    CounterOfInt TinvLength = new CounterOfInt("TimeIntervalsLength");
+    Counters counters = new Counters();
+    counters.add("template");
+    counters.add("timeUnit");
+    counters.add("statType");
+    counters.add("NumberTimeIntervals");
+    counters.add("TimeIntervalsDiffer");
+    counters.add("TimeIntervalsLength");
 
     int count = 0;
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
-      count += doTimeCoord(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, TinvDiffer, TinvLength);
+      count += doTimeCoord(f, mfile, counters);
     }
 
     f.format("total records = %d%n", count);
-
-    templateSet.show(f);
-    timeUnitSet.show(f);
-    statTypeSet.show(f);
-    NTimeIntervals.show(f);
-    TinvDiffer.show(f);
-    TinvLength.show(f);
+    counters.show(f);
   }
 
 
-  private int doTimeCoord(Formatter f, MFile mf, CounterOfInt templateSet, CounterOfInt timeUnitSet, CounterOfInt statTypeSet, CounterOfInt NTimeIntervals,
-                          CounterOfInt TinvDiffer, CounterOfInt TinvLength) throws IOException {
+  private int doTimeCoord(Formatter f, MFile mf, Counters counters) throws IOException {
     boolean showTinvDiffers = true;
     boolean showNint = true;
     boolean shutup = false;
@@ -899,17 +887,17 @@ public class Grib2ReportPanel extends ReportPanel {
     int count = 0;
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
       Grib2Pds pds = gr.getPDS();
-      templateSet.count(pds.getTemplateNumber());
+      counters.count("template", pds.getTemplateNumber());
       int timeUnit = pds.getTimeUnit();
-      timeUnitSet.count(timeUnit);
+      counters.count("timeUnit", timeUnit);
 
       if (pds instanceof Grib2Pds.PdsInterval) {
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals()) {
-          statTypeSet.count(ti.statProcessType);
+          counters.count("statType", ti.statProcessType);
 
           if ((ti.timeRangeUnit != timeUnit) || (ti.timeIncrementUnit != timeUnit && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
-            TinvDiffer.count(ti.timeRangeUnit);
+            counters.count("TimeIntervalsDiffer", ti.timeRangeUnit);
             if (showTinvDiffers) {
               f.format("  TimeInterval has different units timeUnit= %s file=%s%n  ", timeUnit, mf.getName());
               pds.show(f);
@@ -918,7 +906,7 @@ public class Grib2ReportPanel extends ReportPanel {
           }
         }
 
-        NTimeIntervals.count(pdsi.getTimeIntervals().length);
+        counters.count("NumberTimeIntervals", pdsi.getTimeIntervals().length);
         if (showNint && !shutup && pdsi.getTimeIntervals().length > 1) {
           f.format("  TimeIntervals > 1 = %s file=%s%n  ", getId(gr), mf.getName());
           shutup = true;
@@ -926,7 +914,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
         if (cust == null) cust = Grib2Customizer.factory(gr);
         double len = cust.getForecastTimeIntervalSizeInHours(pds);
-        TinvLength.count((int) len);
+        counters.count("TimeIntervalsLength", (int) len);
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
         if (intv != null && (intv[0] == 0) && (intv[1] == 0)) {
           f.format("  TimeInterval [0,0] = %s file=%s%n  ", getId(gr), mf.getName());

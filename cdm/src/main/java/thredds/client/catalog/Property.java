@@ -92,5 +92,11 @@ public class Property {
     return result;
   }
 
-
+  @Override
+  public String toString() {
+    return "Property{" +
+            "name='" + name + '\'' +
+            ", value='" + value + '\'' +
+            '}';
+  }
 }

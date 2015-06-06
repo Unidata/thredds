@@ -107,7 +107,7 @@
 
   <!--- thredds 4.6 / 5.0 -->
   <bean id="pathMatcher" class="thredds.core.DataRootPathMatcher" />
-  <bean id="ConfigCatalogManager" class="thredds.core.ConfigCatalogManager" />
+  <bean id="ConfigCatalogInitialization" class="thredds.core.ConfigCatalogInitialization" />
   <bean id="ConfigCatalogCache" class="thredds.core.ConfigCatalogCache" />
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->

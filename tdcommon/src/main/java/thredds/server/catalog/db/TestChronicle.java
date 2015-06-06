@@ -66,7 +66,7 @@ public class TestChronicle {
       File file = new File(pathname);
 
       ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
-              .averageValueSize(1000).entries(1100 * 1000);
+              .averageValueSize(1000).entries(1000 * 1000);
 
       final ChronicleMap<String, Externalizable> map = builder.createPersistedTo(file);
 

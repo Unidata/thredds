@@ -20,6 +20,11 @@ public class Counters {
     return c;
   }
 
+  public void reset () {
+    for (Counter c : counters)
+      c.reset();
+  }
+
   public void show(Formatter f) {
     for (Counter c : counters)
       c.show(f);
@@ -59,24 +64,17 @@ public class Counters {
     return result;
   }
 
-  public static interface Counter {
-    public void show(Formatter f);
-
-    public String showRange();
-
-    public String getName();
-
-    public void addTo(Counter sub);
-
-    public int getUnique();
-
-    public Comparable getFirst();
-
-    public Comparable getLast();
-
-    public int getTotal();
-
-    public Counter setShowRange(boolean showRange);
+  public interface Counter {
+    void show(Formatter f);
+    String showRange();
+    String getName();
+    void addTo(Counter sub);
+    int getUnique();
+    Comparable getFirst();
+    Comparable getLast();
+    int getTotal();
+    Counter setShowRange(boolean showRange);
+    void reset();
   }
 
   private static class CounterImpl implements Counter {
@@ -91,6 +89,10 @@ public class Counters {
     public Counter setShowRange(boolean showRange) {
       this.showRange = showRange;
       return this;
+    }
+
+    public void reset() {
+      set = new HashMap<>();
     }
 
     private Map<Comparable, Integer> set = new HashMap<>();

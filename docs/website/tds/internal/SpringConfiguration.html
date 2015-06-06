@@ -26,7 +26,7 @@
     <ul>
     <li>*TdsContext</li>
     <li>*DataRootPathMatcher</li>
-    <li>*ConfigCatalogManager</li>
+    <li>*ConfigInitialization</li>
     <li>*ConfigCatalogCache    </li>
     
     <li>*FeatureCollectionCache</li>
@@ -38,7 +38,7 @@
       <li>*FeatureCollectionCache</li>
     </ul>
   </li>
-  <li>ConfigCatalogManager
+  <li>ConfigInitialization
     <ul>
       <li>*TdsContext</li>
       <li>-DataRootPathMatcher</li>
@@ -91,10 +91,10 @@
   <ol>
     <li>read <em>threddsConfig.xml</em> and set values</li>
     <li>register dataSources with <em>DatasetManager</em></li>
-    <li>call ConfigCatalogManager.init()</li>
+    <li>call ConfigInitialization.init()</li>
     </ol>
   </li>
-  <li><em>ConfigCatalogManager</em> read config catalogs
+  <li><em>ConfigInitialization</em> read config catalogs
     <ol>
       <li>add dataRoots to        <em>DataRootPathMatcher</em> </li>
       <li>add catalogs to <em>ConfigCatalogCache</em></li>

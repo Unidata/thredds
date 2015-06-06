@@ -29,7 +29,6 @@ public class TestPathMatcher {
     m.put("ncmodels", 8);
     m.put("ncmodels/bzipped", 9);
 
-
     doit(m, "nope", false);
     doit(m, "/thredds/dods/test", true);
     doit(m, "/thredds/dods/test/lo", true);

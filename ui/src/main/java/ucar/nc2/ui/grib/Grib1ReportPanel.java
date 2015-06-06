@@ -54,6 +54,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.ui.ReportPanel;
+import ucar.nc2.util.Counters;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
@@ -183,9 +184,9 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doCheckTables(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     Counters counters = new Counters();
-    counters.add(new CounterOfString("tableVersion"));
-    counters.add(new CounterOfInt("local"));
-    counters.add(new CounterOfInt("missing"));
+    counters.add("tableVersion");
+    counters.add("local");
+    counters.add("missing");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
@@ -233,7 +234,7 @@ public class Grib1ReportPanel extends ReportPanel {
   private void doCheckTables(ucar.nc2.grib.grib1.Grib1Record gr, Counters counters) throws IOException {
     Grib1SectionProductDefinition pds = gr.getPDSsection();
     String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
-    counters.countS("tableVersion", key);
+    counters.count("tableVersion", key);
 
     if (pds.getParameterNumber() > 127)
       counters.count("local", pds.getParameterNumber());
@@ -248,18 +249,18 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extraInfo) throws IOException {
     Counters countersAll = new Counters();
-    countersAll.add(new CounterOfString("referenceDate"));
-    countersAll.add(new CounterOfString("timeCoord"));
-    countersAll.add(new CounterOfString("table version"));
-    countersAll.add(new CounterOfInt("param"));
-    countersAll.add(new CounterOfInt("timeRangeIndicator"));
-    countersAll.add(new CounterOfInt("vertCoord"));
-    countersAll.add(new CounterOfInt("earthShape"));
-    countersAll.add(new CounterOfString("uvIsReletive"));
+    countersAll.add("referenceDate");
+    countersAll.add("timeCoord");
+    countersAll.add("table version");
+    countersAll.add("param");
+    countersAll.add("timeRangeIndicator");
+    countersAll.add("vertCoord");
+    countersAll.add("earthShape");
+    countersAll.add("uvIsReletive");
 
-    countersAll.add(new CounterOfInt("vertCoordInGDS"));
-    countersAll.add(new CounterOfInt("predefined"));
-    countersAll.add(new CounterOfInt("thin"));
+    countersAll.add("vertCoordInGDS");
+    countersAll.add("predefined");
+    countersAll.add("thin");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       Counters countersOneFile = countersAll.makeSubCounters();
@@ -317,18 +318,18 @@ public class Grib1ReportPanel extends ReportPanel {
     Grib1Gds gds = gdss.getGDS();
     Grib1SectionProductDefinition pds = gr.getPDSsection();
     String table = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
-    counters.countS("table version", table);
+    counters.count("table version", table);
     counters.count("param", pds.getParameterNumber());
     counters.count("timeRangeIndicator", pds.getTimeRangeIndicator());
     counters.count("vertCoord", pds.getLevelType());
-    counters.countS("referenceDate", pds.getReferenceDate().toString());
+    counters.count("referenceDate", pds.getReferenceDate().toString());
 
     if (cust == null) cust = Grib1Customizer.factory(gr, null);
 
     Grib1ParamTime ptime = cust.getParamTime(pds);;
-    counters.countS("timeCoord", ptime.getTimeCoord());
+    counters.count("timeCoord", ptime.getTimeCoord());
     counters.count("earthShape", gds.getEarthShape());
-    counters.countS("uvIsReletive", gds.getUVisReletive() ? "true" : "false");
+    counters.count("uvIsReletive", gds.getUVisReletive() ? "true" : "false");
 
     if (gdss.isThin()) {
       if (extraInfo) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), path);
@@ -352,14 +353,14 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doShowEncoding(Formatter f, MCollection dcm) throws IOException {
     Counters countersAll = new Counters();
-    countersAll.add(new CounterOfInt("decimalScale"));
-    countersAll.add(new CounterOfInt("binScale"));
-    countersAll.add(new CounterOfInt("nbits"));
-    countersAll.add(new CounterOfInt("gridType"));
-    countersAll.add(new CounterOfInt("packing"));
-    countersAll.add(new CounterOfInt("dataType"));
-    countersAll.add(new CounterOfInt("hasMore"));
-    countersAll.add(new CounterOfInt("mixed scaling"));
+    countersAll.add("decimalScale");
+    countersAll.add("binScale");
+    countersAll.add("nbits");
+    countersAll.add("gridType");
+    countersAll.add("packing");
+    countersAll.add("dataType");
+    countersAll.add("hasMore");
+    countersAll.add("mixed scaling");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());

@@ -45,13 +45,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import thredds.core.DataRoot;
 import thredds.core.DataRootManager;
 import thredds.server.config.TdsContext;
-import thredds.core.PathMatcher;
 import thredds.servlet.ServletUtil;
 import thredds.util.TdsPathUtils;
-import ucar.nc2.constants.CDM;
 
 /**
  * Handle the /admin/log interface

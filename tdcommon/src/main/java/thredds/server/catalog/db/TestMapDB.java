@@ -138,7 +138,7 @@ public class TestMapDB {
        //Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
        //count += crawler.crawlAllInDirectory(top, false, null, null, null);
 
-       count += crawler.crawl("file:B:/esgf/ncar/esgcet/catalog.xml", null, null, null);
+       count += crawler.crawl("file:B:/esgf/gfdl/esgcet/catalog.xml", null, null, null);
        // count += crawler.crawl("file:B://esgf/ncar/esgcet/56/ucar.cgd.ccsm4.CESM_CAM5_BGC_LE_COMPROJ.ice.proc.monthly_ave.fswthru.v1.xml", null, null, null);
 
        /*

@@ -190,14 +190,17 @@ To configure JDK logging:
 </ul>
 
 You can also set the configuration by using
-<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/LogManager.html">java.util.logging.LogManager</a>
+<a href="http://docs.oracle.com/javase/7/docs/api/java/util/logging/LogManager.html">java.util.logging.LogManager</a>
 from your application. most likely by creating your own properties file or resources and calling:
 
 <pre>
-FileInputStream inputStream = new FileInputStream("my.properties");
+StringBufferInputStream&#32;inputStream&#32;=&#32;new&#32;StringBufferInputStream(&quot;.level=&#32;SEVERE&quot;);<br />java.util.logging.LogManager.getLogManager().readConfiguration(inputStream);
+
+(or)
+
+FileInputStream inputStream = new FileInputStream("C:/my/log.properties");
 LogManager lm = java.util.logging.LogManager.getLogManager();
-lm.readConfiguration(inputStream);
-</pre>
+lm.readConfiguration(inputStream);</pre>
 
 <h3>2) <a href="http://logging.apache.org/log4j/1.2/index.html">log4j</a></h3>
 
@@ -231,7 +234,7 @@ lm.readConfiguration(inputStream);
 <hr width="100%"/>
 
 <address>
-    <img src="../nc.gif" alt="" width="64" height="64"/>This document was last updated Dec 2014.
+    <img src="../nc.gif" alt="" width="64" height="64"/>This document was last updated Jun 2015.
 </address>
 </body>
 </html>

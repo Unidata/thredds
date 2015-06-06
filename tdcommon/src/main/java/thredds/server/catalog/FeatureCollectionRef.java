@@ -44,7 +44,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The point of this appears to be to subclasss CatalogRef
+ * This is the "configuration object" for a InvDatasetFeatureCollection object.
+ * InvDatasetFeatureCollection are managed by FeatureCollectionCache.
  *
  * @author John
  * @since 1/17/2015

@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * Superclass for report panels
@@ -98,7 +97,7 @@ public abstract class ReportPanel extends JPanel {
 
   MCollection getCollection(String spec, Formatter f) {
     try {
-      MCollection org =  CollectionAbstract.open(spec, spec, null, f);
+      MCollection org = CollectionAbstract.open(spec, spec, null, f);
       CollectionFiltered filteredCollection = new CollectionFiltered("GribReportPanel", org, new MFileFilter() {
         public boolean accept(MFile mfile) {
           String suffix = mfile.getName();
@@ -116,8 +115,10 @@ public abstract class ReportPanel extends JPanel {
       return null;
     }
   }
+}
 
   ///////////////////////////////////////////////
+  /*
   public static class Counters {
     List<Counter> counters = new ArrayList<>();
     Map<String, Counter> map = new HashMap<>();
