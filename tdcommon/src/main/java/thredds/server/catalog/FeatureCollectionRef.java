@@ -32,6 +32,7 @@
 
 package thredds.server.catalog;
 
+import net.jcip.annotations.Immutable;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.builder.AccessBuilder;
@@ -44,12 +45,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is the "configuration object" for a InvDatasetFeatureCollection object.
+ * This holds the "configuration object" for a InvDatasetFeatureCollection object.
  * InvDatasetFeatureCollection are managed by FeatureCollectionCache.
  *
  * @author John
  * @since 1/17/2015
  */
+@Immutable
 public class FeatureCollectionRef extends CatalogRef {
   final thredds.featurecollection.FeatureCollectionConfig config;
   final String topDirectoryLocation;

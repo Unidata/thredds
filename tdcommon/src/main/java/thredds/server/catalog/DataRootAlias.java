@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Describe
+ * Handle textual substitution for dataroots.
  *
  * @author caron
  * @since 4/16/2015
