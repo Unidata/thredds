@@ -215,7 +215,7 @@ public class CatalogBuilder {
   /////////////////////////////////////////////////////////////////////
   // JDOM
 
-  private void readXML(String fileName)  throws IOException {
+  /* private void readXML(String fileName)  throws IOException {
     try {
       StAXStreamBuilder staxBuilder = new StAXStreamBuilder();
       XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
@@ -229,9 +229,9 @@ public class CatalogBuilder {
       // e.printStackTrace();
       fatalError = true;
     }
-  }
+  }  */
 
-  /* private void readXML(String location) throws IOException {
+  private void readXML(String location) throws IOException {
      try {
        SAXBuilder saxBuilder = new SAXBuilder();
        org.jdom2.Document jdomDoc = saxBuilder.build(location);
@@ -243,7 +243,7 @@ public class CatalogBuilder {
        // e.printStackTrace();
        fatalError = true;
      }
-   } */
+   }
 
   private void readXML(URI uri) throws IOException {
     try {
