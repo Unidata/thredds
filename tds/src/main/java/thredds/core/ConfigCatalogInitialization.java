@@ -99,6 +99,7 @@ public class ConfigCatalogInitialization {
   public ConfigCatalogInitialization() {
   }
 
+  // used from outside of tomcat/spring
   public ConfigCatalogInitialization(String rootPath, String rootCatalog, DataRootPathMatcher<DataRoot> matcher, DatasetManager manager,
                                      AllowedServices allowedServices, Callback callback) throws IOException {
     this.rootFile = new File(rootPath);
