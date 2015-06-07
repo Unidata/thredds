@@ -62,16 +62,7 @@ import java.util.*;
 @Component("ConfigCatalogInitialization")
 public class ConfigCatalogInitialization {
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName()+".catalogInit");
-  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private final String ERROR = "*** ERROR: ";
-
-  static public interface Callback {
-    void hasDataRoot(DataRoot dataRoot);
-    void hasDataset(Dataset dd);
-    void hasNcml(Dataset dd);
-    void hasRestriction(Dataset dd);
-    void hasCatalogRef(ConfigCatalog dd);
-  }
 
   @Autowired
   private TdsContext tdsContext;  // used for  getContentDirectory, contextPath
@@ -80,10 +71,7 @@ public class ConfigCatalogInitialization {
   private DataRootPathMatcher<DataRoot> dataRootPathMatcher;
 
   @Autowired
-  DatasetManager datasetManager;
-
-  @Autowired
-  private ConfigCatalogCache ccc; // not needed ??
+  private DatasetTracker datasetTracker;
 
   @Autowired
   private AllowedServices allowedServices;
@@ -94,18 +82,18 @@ public class ConfigCatalogInitialization {
   private List<String> rootCatalogKeys;    // needed ??
   private File rootFile;
   private String contextPath;
-  private Callback callback;
+  private DatasetTracker.Callback callback;
 
   public ConfigCatalogInitialization() {
   }
 
   // used from outside of tomcat/spring
-  public ConfigCatalogInitialization(String rootPath, String rootCatalog, DataRootPathMatcher<DataRoot> matcher, DatasetManager manager,
-                                     AllowedServices allowedServices, Callback callback) throws IOException {
+  public ConfigCatalogInitialization(String rootPath, String rootCatalog, DataRootPathMatcher<DataRoot> matcher, DatasetTracker datasetTracker,
+                                     AllowedServices allowedServices, DatasetTracker.Callback callback) throws IOException {
     this.rootFile = new File(rootPath);
     this.contextPath = "/thredds";
     this.dataRootPathMatcher = matcher;
-    this.datasetManager = manager;
+    this.datasetTracker = datasetTracker;
     this.allowedServices = allowedServices;
     this.callback = callback;
 
@@ -185,8 +173,8 @@ public class ConfigCatalogInitialization {
     int pos = path.lastIndexOf("/");
     String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
 
-    // look for datasetScans and NcML elements and Fmrc and featureCollections
-    boolean needsCache = extractRoots(cat.getDatasets(), idHash);
+    // look for dataRoots in datasetScans and featureCollections
+    extractDataRoots(cat.getDatasets(), idHash);
 
     // recurse
     processDatasets(dirPath, cat.getDatasets(), pathHash, idHash);
@@ -232,11 +220,11 @@ public class ConfigCatalogInitialization {
 
   private void processDatasets(String dirPath, List<Dataset> datasets, Set<String> pathHash, Set<String> idHash) throws IOException {
     for (Dataset ds : datasets) {
-      if (callback != null) callback.hasDataset(ds);
+      datasetTracker.trackDataset(ds, callback);
 
       if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollectionRef)) continue;
 
-      if (ds instanceof CatalogRef) {
+      if (ds instanceof CatalogRef) { // follow catalog refs
         CatalogRef catref = (CatalogRef) ds;
         String href = catref.getXlinkHref();
         // if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  catref.getXlinkHref=" + href);
@@ -276,10 +264,8 @@ public class ConfigCatalogInitialization {
    * Look for duplicate Ids (give message). Dont follow catRefs.
    *
    * @param dsList the list of Dataset
-   * @return true if the containing catalog should be cached
    */
-  private boolean extractRoots(List<Dataset> dsList, Set<String> idHash) {
-    boolean needsCache = false;
+  private void extractDataRoots(List<Dataset> dsList, Set<String> idHash) {
 
     for (Dataset dataset : dsList) {
       // look for duplicate ids
@@ -294,7 +280,6 @@ public class ConfigCatalogInitialization {
 
       if (dataset.getRestrictAccess() != null) {
         if (callback != null) callback.hasRestriction(dataset);
-        else datasetManager.putResourceControl(dataset);
       }
 
       if (dataset instanceof DatasetScan) {
@@ -309,21 +294,18 @@ public class ConfigCatalogInitialization {
       } else if (dataset instanceof FeatureCollectionRef) {
         FeatureCollectionRef fc = (FeatureCollectionRef) dataset;
         addRoot(fc);
-        needsCache = true;
 
         // not a DatasetScan or DatasetFmrc or FeatureCollection
       } else if (dataset.getNcmlElement() != null) {
         if (callback != null) callback.hasNcml(dataset);
-        else datasetManager.putNcmlDataset(dataset.getUrlPath(), dataset);
       }
 
       if (!(dataset instanceof CatalogRef)) {
         // recurse
-        extractRoots(dataset.getDatasets(), idHash);
+        extractDataRoots(dataset.getDatasets(), idHash);
       }
     }
 
-    return needsCache;
   }
 
   private boolean addRoot(DatasetScan dscan) {

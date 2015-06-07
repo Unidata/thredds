@@ -77,7 +77,7 @@ ConfigCatalogCache</h3>
   <li>reads configuration catalogs
     <ol>
       <li>finds DatasetRoots, DatasetScan, FeatureCollection</li>
-      <li>finds NcML</li>
+      <li>finds restrictAccess, NcML</li>
       <li>look for duplicate ids (paths?)</li>
     </ol>
   </li>
@@ -85,8 +85,7 @@ ConfigCatalogCache</h3>
   <li>configures the datasetManager</li>
   <li>adds a watch on all configCatalogs, or on directories (ESG mode)</li>
   <li>Keep track of all root catalogs (all other catalogs can be found from these)
-    <pre>@Autowired private&#32;DataRootPathMatcher&lt;DataRoot&gt;&#32;dataRootPathMatcher;
-@Autowired DatasetManager&#32;datasetManager;<br>@Autowired private&#32;ConfigCatalogCache&#32;ccc;<br>List&lt;String&gt;&#32;rootCatalogKeys;</pre>
+    <pre>@Autowired private&#32;DataRootPathMatcher&lt;DataRoot&gt;&#32;dataRootPathMatcher;<br>@Autowired private DatasetTracker&#32;datasetTracker;<br>List&lt;String&gt;&#32;rootCatalogKeys;</pre>
 </li>
 </ol>
 <h3>DataRoot</h3>
@@ -120,11 +119,10 @@ ConfigCatalogCache</h3>
 </ol>
 <pre>@Autowired private&#32;DataRootManager&#32;dataRootManager;
 @Autowired private FeatureCollectionCache&#32;featureCollectionCache;
+@Autowired private&#32;Authorizer&#32;restrictedDatasetAuthorizer;
+@Autowired private DatasetTracker&#32;datasetTracker;
 
-private&#32;Map&lt;String,&#32;Dataset&gt;&#32;ncmlDatasetHash&#32;=&#32;new&#32;HashMap&lt;&gt;();
-private&#32;ArrayList&lt;DatasetSource&gt; datasetSources =&#32;new&#32;ArrayList&lt;&gt;();
-private HashMap&lt;String,&#32;String&gt;&#32;resourceControlHash&#32;=&#32;new&#32;HashMap&lt;&gt;();
-private PathMatcher&lt;String&gt;&#32;resourceControlMatcher&#32;=&#32;new&#32;PathMatcher&lt;&gt;()</pre>
+private&#32;ArrayList&lt;DatasetSource&gt; datasetSources =&#32;new&#32;ArrayList&lt;&gt;();</pre>
 <p>Currently we dont have access to the catalog Dataset object. Could we?</p>
 <ol>
   <li>DataRootPathMatcher gives you the dataRoot; if DatasetScan or FeatureCollection then done.</li>

@@ -119,46 +119,6 @@ public class DataRootManager implements InitializingBean {
     startupLog.info("DataRootManager:" + DataRootAlias.size() +" aliases set ");
   }
 
-  /* public boolean registerConfigListener(ConfigListener cl) {
-    if (cl == null) return false;
-    if (configListeners.contains(cl)) return false;
-    return configListeners.add(cl);
-  }
-
-  public boolean unregisterConfigListener(ConfigListener cl) {
-    if (cl == null) return false;
-    return configListeners.remove(cl);
-  }  */
-
-  /**
-   * Reinitialize lists of static catalogs, data roots, dataset Ids.
-   *
-  public synchronized void reinit() {
-    // Notify listeners of start of initialization.
-    isReinit = true;
-    for (ConfigListener cl : configListeners)
-      cl.configStart();
-
-    logCatalogInit.info("\n**************************************\n**************************************\nStarting TDS config catalog reinitialization\n["
-            + CalendarDate.present() + "]");
-
-    // cleanup 
-    thredds.inventory.bdb.MetadataManager.closeAll();
-
-    // Empty all config catalog information.
-    pathMatcher = new PathMatcher();
-    //idHash = new HashSet<>();
-
-    DatasetHandler.reinit(); // NcML datasets
-
-    isReinit = false;
-
-    logCatalogInit.info("\n**************************************\n**************************************\nDone with TDS config catalog reinitialization\n["
-            + CalendarDate.present() + "]");
-  }
-
-  volatile boolean isReinit = false;  */
-
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   static public class DataRootMatch {
@@ -239,54 +199,6 @@ public class DataRootManager implements InitializingBean {
 
     return reqDataRoot.getFileLocationFromRequestPath(reqPath);
   }
-
-  /*
-   * Return the the location to which the given path maps.
-   * Null is returned if 1) there is no dataRoot match, 2) the dataset does not exist, or
-   * 3) the matching DatasetScan filters it out the requested MFile
-   *
-   * @param reqPath the request path.
-   * @return the location of the file on disk, or null
-   * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
-   *
-  public String getLocationFromRequestPath(String reqPath) {
-    DataRootMatch match = findDataRootMatch(reqPath);
-    if (match == null) return null;
-
-    String fullPath = match.dirLocation + match.remaining;
-    if (match.dataRoot.getFeatureCollection() != null) {
-      return match.dirLocation + match.remaining;
-    }
-
-    match.dataRoot.getFileLocationFromRequestPath(reqPath);
-    return fullPath;
-  }
-
-  static public String getNetcdfFilePath(HttpServletRequest req, String reqPath) throws IOException {
-    if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
-    if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
-
-    if (reqPath == null)
-      return null;
-
-    if (reqPath.startsWith("/"))
-      reqPath = reqPath.substring(1);
-
-    // look for a match
-    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
-
-    String fullpath = null;
-    if (match != null)
-      fullpath = match.dirLocation + match.remaining;
-    else {
-      File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
-      if (file != null)
-        fullpath = file.getAbsolutePath();
-    }
-    return fullpath;
-  }
-
-  }   */
 
   ///////////////////////////////////////////////////////////
 

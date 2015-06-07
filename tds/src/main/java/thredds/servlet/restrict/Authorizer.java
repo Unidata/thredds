@@ -41,6 +41,7 @@ import java.io.IOException;
 
 /**
  * An implementation must have a no-arg constructor, so it can be created through reflection.
+ * This design allows for third party plug-ins.
  *
  * @author caron
  */

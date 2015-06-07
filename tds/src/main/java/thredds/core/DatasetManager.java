@@ -36,10 +36,8 @@ package thredds.core;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import thredds.client.catalog.*;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
 import thredds.servlet.DatasetSource;
@@ -63,6 +61,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 
 /**
@@ -76,10 +75,7 @@ import java.util.*;
 @Component
 public class DatasetManager implements InitializingBean  {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetManager.class);
-  static private final boolean debugResourceControl = false;
-
-  @Autowired
-  private DebugCommands debugCommands;
+  static final boolean debugResourceControl = false;
 
   @Autowired
   private DataRootManager dataRootManager;
@@ -90,22 +86,17 @@ public class DatasetManager implements InitializingBean  {
   @Autowired
   private Authorizer restrictedDatasetAuthorizer;
 
-  // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
-  private Map<String, Dataset> ncmlDatasetHash = new HashMap<>();
+  @Autowired
+  private DatasetTracker datasetTracker;
 
   // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
   // possible change to one global hash table request
   private ArrayList<DatasetSource> datasetSources = new ArrayList<>();
 
-  // resource control
-  private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
-  private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
-  private boolean hasResourceControl = false;
 
   @Override
   public void afterPropertiesSet() throws Exception {
     TdsRequestedDataset.setDatasetManager( this);      // LOOK why not autowire this ?  maybe because static ??
-    makeDebugActions();
   }
 
   public DatasetManager() {
@@ -113,27 +104,8 @@ public class DatasetManager implements InitializingBean  {
   }
 
   void reinit() {
-    ncmlDatasetHash = new HashMap<>();
-    resourceControlHash = new HashMap<>();
-    resourceControlMatcher = new PathMatcher<>();
     datasetSources = new ArrayList<>();
-    hasResourceControl = false;
   }
-
-  void makeDebugActions() {
-    DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
-    DebugCommands.Action act;
-
-    act = new DebugCommands.Action("showNcml", "Show ncml datasets") {
-      public void doAction(DebugCommands.Event e) {
-        for (Object key : ncmlDatasetHash.keySet()) {
-          e.pw.println(" url=" + key);
-        }
-      }
-    };
-    debugHandler.addAction(act);
-  }
-
 
   public String getLocationFromRequestPath(String reqPath) {
     return dataRootManager.getLocationFromRequestPath(reqPath);
@@ -145,22 +117,21 @@ public class DatasetManager implements InitializingBean  {
   // used only for the case of Dataset (not DatasetScan) that have an NcML element inside.
   // This makes the NcML dataset the target of the server.
   private class NcmlFileFactory implements FileFactory {
-    private Dataset ds;
+    private String ncml;
 
-    NcmlFileFactory(Dataset ds) {
-      this.ds = ds;
+    NcmlFileFactory(String ncml) {
+      this.ncml = ncml;
     }
 
     public NetcdfFile open(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-      org.jdom2.Element netcdfElem = ds.getNcmlElement();
-      return NcMLReader.readNcML(cacheName, netcdfElem, cancelTask);
+      return NcMLReader.readNcML(new StringReader(ncml), cacheName, cancelTask);
+     // return NcMLReader.readNcML(cacheName, netcdfElem, cancelTask);
     }
   }
 
   // return null means request has been handled, and calling routine should exit without further processing
   public NetcdfFile openNetcdfFile(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
-    if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
 
     if (reqPath == null)
       return null;
@@ -172,13 +143,14 @@ public class DatasetManager implements InitializingBean  {
     if (!resourceControlOk(req, res, reqPath))
       return null;
 
+    // HEY LOOK datascan below has its own Ncml
     // look for a dataset (non scan, non fmrc) that has an ncml element
-    Dataset ds = ncmlDatasetHash.get(reqPath);
-    if (ds != null) {
-      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found NcmlDataset= " + ds);
+    String ncml= datasetTracker.findNcml(reqPath);
+    if (ncml != null) {
+      // if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found NcmlDataset= " + ds);
       //String cacheName = ds.getUniqueID(); // LOOK use reqPath !!
 
-      NetcdfFile ncfile = NetcdfDataset.acquireFile(new NcmlFileFactory(ds), null, reqPath, -1, null, null);
+      NetcdfFile ncfile = NetcdfDataset.acquireFile(new NcmlFileFactory(ncml), null, reqPath, -1, null, null);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
       return ncfile;
     }
@@ -227,7 +199,7 @@ public class DatasetManager implements InitializingBean  {
         String ncmlLocation = "DatasetScan#" + location; // LOOK some descriptive name
         NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, netcdfElem, "file:" + location, null);
         //new NcMLReader().readNetcdf(reqPath, ncd, ncd, netcdfElem, null);
-        if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found DataRoot NcML = " + ds);
+        //if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found DataRoot NcML = " + ds);
         return ncd;
       }
 
@@ -358,22 +330,13 @@ public class DatasetManager implements InitializingBean  {
   // Resource control
 
   /**
-   * Find the longest match for this path.
+   * Find the restrictAccess for this path.
    *
    * @param path the complete path name of the dataset
-   * @return ResourceControl for this dataset, or null if none
+   * @return the value of the restrictAccess for this dataset, or null if none
    */
   public String findResourceControl(String path) {
-    if (!hasResourceControl) return null;
-
-    if (path.startsWith("/"))
-      path = path.substring(1);
-
-    String rc = resourceControlHash.get(path);
-    if (null == rc)
-      rc = resourceControlMatcher.match(path);
-
-    return rc;
+    return datasetTracker.findResourceControl(path);
   }
 
   /**
@@ -383,9 +346,8 @@ public class DatasetManager implements InitializingBean  {
    * @param res     the response
    * @param reqPath the request path; if null, use req.getPathInfo()
    * @return true if ok to proceed. If false, the appropriate error or redirect message has been sent, the caller only needs to return.
-   * @throws IOException on read error
    */
-  public boolean resourceControlOk(HttpServletRequest req, HttpServletResponse res, String reqPath) { // throws IOException {
+  public boolean resourceControlOk(HttpServletRequest req, HttpServletResponse res, String reqPath) {
     if (null == reqPath)
       reqPath = TdsPathUtils.extractPath(req, null);
 
@@ -407,51 +369,6 @@ public class DatasetManager implements InitializingBean  {
     }
 
     return true;
-  }
-
-  /**
-   * This tracks Dataset elements that have resource control attributes
-   *
-   * @param ds the dataset
-   */
-  void putResourceControl(Dataset ds) {
-    if (log.isDebugEnabled()) log.debug("putResourceControl " + ds.getRestrictAccess() + " for " + ds.getName());
-
-    // resourceControl is inherited, but no guarentee that children paths are related, unless its a
-    //   DatasetScan or InvDatasetFmrc. So we keep track of all datasets that have a ResourceControl, including children
-    // DatasetScan and InvDatasetFmrc must use a PathMatcher, others can use exact match (hash)
-
-    if (ds instanceof DatasetScan) {
-      DatasetScan scan = (DatasetScan) ds;
-      if (debugResourceControl)
-        System.out.println("putResourceControl " + ds.getRestrictAccess() + " for datasetScan " + scan.getPath());
-      resourceControlMatcher.put(scan.getPath(), ds.getRestrictAccess());
-
-    } else { // dataset
-      if (debugResourceControl)
-        System.out.println("putResourceControl " + ds.getRestrictAccess() + " for dataset " + ds.getUrlPath());
-
-      // LOOK: seems like you only need to add if InvAccess.InvService.isReletive
-      // LOOK: seems like we should use resourceControlMatcher to make sure we match .dods, etc
-      for (Access access : ds.getAccess()) {
-        if (access.getService().isRelativeBase())
-          resourceControlHash.put(access.getUrlPath(), ds.getRestrictAccess());
-      }
-
-    }
-
-    hasResourceControl = true;
-  }
-
-  /**
-   * This tracks Dataset elements that have embedded NcML
-   *
-   * @param path the req.getPathInfo() of the dataset.
-   * @param ds   the dataset
-   */
-  void putNcmlDataset(String path, Dataset ds) {
-    if (log.isDebugEnabled()) log.debug("putNcmlDataset " + path + " for " + ds.getName());
-    ncmlDatasetHash.put(path, ds);
   }
 
   /////////////////////////////////////////////////////////
@@ -488,7 +405,6 @@ public class DatasetManager implements InitializingBean  {
 
   public void registerDatasetSource(DatasetSource v) {
     datasetSources.add(v);
-    if (debugResourceControl) System.out.println("registerDatasetSource " + v.getClass().getName());
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////

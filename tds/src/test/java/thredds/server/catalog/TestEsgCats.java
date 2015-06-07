@@ -156,11 +156,11 @@ public class TestEsgCats {
     long start = System.nanoTime();
 
     DataRootPathMatcher<DataRoot> dataRootPathMatcher = new DataRootPathMatcher<>();
-    DatasetManager manager = new DatasetManager();
+    DatasetTracker tracker = new DatasetTrackerInMem();
     AllowedServices allowedServices = new AllowedServices();
     String top = "B:/esgf/gfdl/esgcet/";
     ConfigCatalogInitialization reader = new ConfigCatalogInitialization(top, "catalog.xml",
-            dataRootPathMatcher, manager, allowedServices, new ConfigCatalogInitialization.Callback() {
+            dataRootPathMatcher, tracker, allowedServices, new DatasetTracker.Callback() {
 
       @Override
       public void hasDataRoot(DataRoot dataRoot) {
