@@ -25,12 +25,14 @@ public class DatasetExt implements Externalizable {
   static public long total_nbytes = 0;
 
   Dataset ds;
+  String ncml;
 
   public DatasetExt() {
   }
 
-  public DatasetExt(Dataset delegate) {
+  public DatasetExt(Dataset delegate, String ncml) {
     this.ds = delegate;
+    this.ncml = ncml;
   }
 
   @Override
