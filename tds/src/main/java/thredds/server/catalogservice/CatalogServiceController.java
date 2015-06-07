@@ -33,15 +33,9 @@
 package thredds.server.catalogservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,8 +43,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
+import thredds.core.CatalogManager;
 import thredds.core.ConfigCatalogHtmlWriter;
-import thredds.core.DataRootManager;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
 
@@ -74,7 +68,7 @@ public class CatalogServiceController {
   private TdsContext tdsContext;
 
   @Autowired
-  private DataRootManager dataRootManager;
+  private CatalogManager catalogManager;
 
   @Autowired
   ConfigCatalogHtmlWriter writer;
@@ -92,7 +86,7 @@ public class CatalogServiceController {
     String baseUriString = request.getRequestURL().toString();
     try {
       baseUri = new URI(baseUriString);
-      catalog = dataRootManager.getCatalog(catalogPath, baseUri);
+      catalog = catalogManager.getCatalog(catalogPath, baseUri);
 
     } catch (URISyntaxException e) {
       String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();

@@ -101,12 +101,24 @@ ConfigCatalogCache</h3>
 <pre>private&#32;final&#32;TreeSet&lt;String&gt;&#32;treeSet;&#32;&#32;&#32;&#32;//&#32;this&#32;should&#32;be&#32;in-memory&#32;for&#32;speed<br>private&#32;final&#32;Map&lt;String,&#32;T&gt;&#32;map;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;//&#32;this&#32;could&#32;be&#32;turned&#32;into&#32;an&#32;off-heap&#32;cache&#32;if&#32;needed<br></pre>
 <h3>DataRootManager
 </h3>
-<p>DataRoot and Catalog Manager</p>
 <ol>
-<li>  <strong>getLocationFromRequestPath(); </strong></li>
+  <li>  <strong>getLocationFromRequestPath()</strong></li>
+  <li><strong>findDataRootMatch()</strong></li>
 <li><strong>getCatalog();</strong> this is here because of need for dataRoots to find datasetScan, featureCollection (dynamic catalogs)</li>
 </ol>
-<pre>@Autowired private&#32;DataRootPathMatcher&lt;DataRoot&gt;&#32;dataRootPathMatcher;<br>@Autowired private&#32;ConfigCatalogCache&#32;ccc;<br>@Autowired private FeatureCollectionCache&#32;featureCollectionCache;</pre>
+<pre>@Autowired private&#32;DataRootPathMatcher&lt;DataRoot&gt;&#32;dataRootPathMatcher;<br></pre>
+<h3>CatalogManager </h3>
+<ol>
+  <li><strong>getCatalog()</strong>, called by CatalogServiceController</li>
+</ol>
+<pre>@Autowired private&#32;DataRootManager&#32;dataRootManager;<br>@Autowired private&#32;ConfigCatalogCache&#32;ccc;<br>@Autowired private FeatureCollectionCache&#32;featureCollectionCache;</pre>
+<h3>DatasetTracker</h3>
+<p>Maybe eventually track all metadata</p>
+<ul>
+  <li>String&#32;findResourceControl(String&#32;path);</li>
+  <li>String&#32;findNcml(String&#32;path);
+  </li>
+</ul>
 <h3>DatasetManager</h3>
 <p>Turns request into CDM Dataset objects. Fronted by <strong>TdsRequestedDataset</strong>.</p>
 <ol>
@@ -194,11 +206,11 @@ private&#32;ArrayList&lt;DatasetSource&gt; datasetSources =&#32;new&#32;ArrayLis
     [/view/{viewer}.jnlp]: thredds.server.viewer.ViewerController.launchViewer()
     [/wcs/**]: thredds.server.wcs.WCSController.doGet()
 </pre>
-<p>NOtes</p>
+<p>Notes</p>
 <ul>
   <li>opendap not in here</li>
   <li>cdmrfeature is wrong</li>
-  <li>ncss needss to be disambiguated, prob back to ncss/grid and ncss/point</li>
+  <li>ncss needs to be disambiguated, prob back to ncss/grid and ncss/point</li>
 </ul>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
