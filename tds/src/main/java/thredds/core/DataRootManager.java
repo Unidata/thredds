@@ -38,22 +38,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.springframework.util.StringUtils;
-import thredds.client.catalog.*;
-import thredds.featurecollection.FeatureCollectionCache;
-import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.config.TdsContext;
 
 import thredds.util.*;
 import thredds.util.filesource.FileSource;
-import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 import java.util.*;
 
 /**

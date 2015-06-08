@@ -1,25 +1,17 @@
 /* Copyright */
-package thredds.core;
+package thredds.server.catalog.tracker;
 
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
-import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
-import thredds.server.catalog.proto.DatasetExt;
 
 import java.io.Externalizable;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentNavigableMap;
 
 /**
  * Describe
@@ -69,20 +61,20 @@ public class DatasetTrackerMapDB implements DatasetTracker {
       ncml = xmlOut.outputString(ncmlElem);
     }
 
-    DatasetExt dsext = new DatasetExt(dataset, ncml);
+    CatalogExt dsext = new CatalogExt(dataset, ncml);
     map.put(dataset.getUrlPath(), dsext);
   }
 
   @Override
   public String findResourceControl(String path) {
-    DatasetExt dext = (DatasetExt) map.get(path);
+    CatalogExt dext = (CatalogExt) map.get(path);
     if (dext == null) return null;
     return null; // dext.getResourceControl();
   }
 
   @Override
   public String findNcml(String path) {
-    DatasetExt dext = (DatasetExt) map.get(path);
+    CatalogExt dext = (CatalogExt) map.get(path);
     if (dext == null) return null;
     return null; // dext.getNcml();
   }

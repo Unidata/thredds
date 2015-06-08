@@ -6,6 +6,8 @@ import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.core.*;
+import thredds.server.catalog.tracker.DatasetTracker;
+import thredds.server.catalog.tracker.DatasetTrackerInMem;
 import ucar.nc2.util.Counters;
 
 import java.io.IOException;

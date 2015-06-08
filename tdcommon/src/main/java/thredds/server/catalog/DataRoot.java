@@ -31,13 +31,9 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.core;
+package thredds.server.catalog;
 
 import net.jcip.annotations.Immutable;
-import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.server.catalog.ConfigCatalog;
-import thredds.server.catalog.DatasetScan;
-import thredds.server.catalog.FeatureCollectionRef;
 
 /**
  * A DataRoot matches URLs to the objects that can serve them.
@@ -54,12 +50,14 @@ import thredds.server.catalog.FeatureCollectionRef;
 */
 @Immutable
 public class DataRoot {
+  private static final boolean show = false;
+
   private final String path;          // match this path
   private final String dirLocation;   // to this directory
   private final DatasetScan scan;     // the DatasetScan that created this (may be null)
   private final FeatureCollectionRef featCollection; // the FeatureCollection that created this (may be null)
 
-  DataRoot(FeatureCollectionRef featCollection) {
+  public DataRoot(FeatureCollectionRef featCollection) {
     this.path = featCollection.getPath();
     this.dirLocation = featCollection.getTopDirectoryLocation();
     this.scan = null;
@@ -67,7 +65,7 @@ public class DataRoot {
     show();
   }
 
-  DataRoot(DatasetScan scan) {
+  public DataRoot(DatasetScan scan) {
     this.path = scan.getPath();
     this.dirLocation = scan.getScanLocation();
     this.scan = scan;
@@ -75,7 +73,7 @@ public class DataRoot {
     show();
   }
 
-  DataRoot(String path, String dirLocation) {
+  public DataRoot(String path, String dirLocation) {
     this.path = path;
     this.dirLocation = dirLocation;
     this.scan = null;
@@ -84,7 +82,7 @@ public class DataRoot {
   }
 
   private void show() {
-    if (DataRootManager.debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
+    if (show) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
   }
 
   public String getPath() {

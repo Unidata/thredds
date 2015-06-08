@@ -1,23 +1,21 @@
 /* Copyright */
-package thredds.server.catalog.db;
+package thredds.server.catalog;
 
 import org.mapdb.*;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
-import thredds.server.catalog.proto.DatasetExt;
+import thredds.server.catalog.tracker.CatalogExt;
 
 import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentNavigableMap;
 
-public class TestMapDB {
+public class TestMapDBTracker {
 
   public static void main1(String[] args) {
     DB db = DBMaker.newMemoryDB().make();
@@ -114,7 +112,7 @@ public class TestMapDB {
                return;
              }
 
-             DatasetExt dsext = new DatasetExt(dd);
+             CatalogExt dsext = new CatalogExt(dd, null);
              map.put(key, dsext);
            }
          }
@@ -157,12 +155,12 @@ public class TestMapDB {
        System.out.printf("count barf %d%n", countDs[3]);
        // System.out.printf("map.size %d%n", map.size());
 
-       System.out.printf("DatasetExt.total_count %d%n", DatasetExt.total_count);
-       System.out.printf("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
-       float avg = DatasetExt.total_count == 0 ? 0 : ((float)DatasetExt.total_nbytes) / DatasetExt.total_count;
+       System.out.printf("DatasetExt.total_count %d%n", CatalogExt.total_count);
+       System.out.printf("DatasetExt.total_nbytes %d%n", CatalogExt.total_nbytes);
+       float avg = CatalogExt.total_count == 0 ? 0 : ((float) CatalogExt.total_nbytes) / CatalogExt.total_count;
        System.out.printf("DatasetExt.avg_nbytes %5.0f%n", avg);
 
-       float avg_time = ((float)took) / DatasetExt.total_count;
+       float avg_time = ((float)took) / CatalogExt.total_count;
        System.out.printf(" msecs / record %8.3f%n", avg_time);
 
        db.commit();

@@ -1,8 +1,9 @@
 /* Copyright */
-package thredds.core;
+package thredds.server.catalog.tracker;
 
 import thredds.client.catalog.Dataset;
 import thredds.server.catalog.ConfigCatalog;
+import thredds.server.catalog.DataRoot;
 
 /**
  * Describe

@@ -1,21 +1,17 @@
 /* Copyright */
-package thredds.server.catalog.db;
+package thredds.server.catalog;
 
 import net.openhft.chronicle.map.*;
-import net.openhft.lang.io.serialization.BytesMarshallable;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
-import thredds.server.catalog.proto.DatasetExt;
+import thredds.server.catalog.tracker.CatalogExt;
 
 import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.Random;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Describe
@@ -23,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author caron
  * @since 3/28/2015
  */
-public class TestChronicle {
+public class TestChronicleTracker {
 
   public static void main1(String[] args) {
 
@@ -79,7 +75,7 @@ public class TestChronicle {
           if (countDs[0] % chunk10 == 0) System.out.printf("%n");
           String key = dd.getId();
           if (key != null) {
-            DatasetExt dsext = new DatasetExt(dd);
+            CatalogExt dsext = new CatalogExt(dd, null);
             map.put(key, dsext);
           }
         }
@@ -114,12 +110,12 @@ public class TestChronicle {
       System.out.printf("countCatref %d%n", countDs[1]);
       System.out.printf("map.size %d%n", map.size());
 
-      System.out.printf("DatasetExt.total_count %d%n", DatasetExt.total_count);
-      System.out.printf("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
-      float avg = DatasetExt.total_count == 0 ? 0 : ((float)DatasetExt.total_nbytes) / DatasetExt.total_count;
+      System.out.printf("DatasetExt.total_count %d%n", CatalogExt.total_count);
+      System.out.printf("DatasetExt.total_nbytes %d%n", CatalogExt.total_nbytes);
+      float avg = CatalogExt.total_count == 0 ? 0 : ((float) CatalogExt.total_nbytes) / CatalogExt.total_count;
       System.out.printf("DatasetExt.avg_nbytes %5.0f%n", avg);
 
-      float avg_time = ((float)took) / DatasetExt.total_count;
+      float avg_time = ((float)took) / CatalogExt.total_count;
       System.out.printf(" msecs / record %8.3f%n", avg_time);
 
       map.close();

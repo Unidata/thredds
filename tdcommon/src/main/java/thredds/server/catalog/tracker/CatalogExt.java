@@ -1,5 +1,5 @@
 /* Copyright */
-package thredds.server.catalog.proto;
+package thredds.server.catalog.tracker;
 
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
@@ -20,37 +20,41 @@ import java.util.List;
  * @author caron
  * @since 3/28/2015
  */
-public class DatasetExt implements Externalizable {
+public class CatalogExt implements Externalizable {
   static public int total_count = 0;
   static public long total_nbytes = 0;
 
   Dataset ds;
   String ncml;
 
-  public DatasetExt() {
+  public CatalogExt() {
   }
 
-  public DatasetExt(Dataset delegate, String ncml) {
+  public CatalogExt(Dataset delegate, String ncml) {
     this.ds = delegate;
     this.ncml = ncml;
   }
 
   @Override
   public void writeExternal(ObjectOutput out) throws IOException {
-    ConfigCatalogProto.Dataset.Builder builder =  ConfigCatalogProto.Dataset.newBuilder();
+    ConfigCatalogExtProto.Dataset.Builder builder =  ConfigCatalogExtProto.Dataset.newBuilder();
     builder.setName(ds.getName());
     if (ds.getUrlPath() != null)
       builder.setPath(ds.getUrlPath());
     if (ds.getId() != null)
       builder.setId(ds.getId());
+    if (ds.getRestrictAccess() != null)
+      builder.setRestrict(ds.getRestrictAccess());
+    if (ncml != null)
+      builder.setId(ncml);
 
     for (Access access : ds.getAccess())
       builder.addAccess(buildAccess(access));
 
-    for (Property p : ds.getProperties())
-      builder.addProperty( buildProperty(p));
+    //for (Property p : ds.getProperties())
+    //  builder.addProperty( buildProperty(p));
 
-    ConfigCatalogProto.Dataset index = builder.build();
+    ConfigCatalogExtProto.Dataset index = builder.build();
     byte[] b = index.toByteArray();
     out.writeInt(b.length);
     out.write(b);
@@ -72,7 +76,7 @@ public class DatasetExt implements Externalizable {
       if (n != len)
         throw new RuntimeException("barf with read size="+len+" in.available=" + avail);
 
-      ConfigCatalogProto.Dataset dsp = ConfigCatalogProto.Dataset.parseFrom(b);
+    ConfigCatalogExtProto.Dataset dsp = ConfigCatalogExtProto.Dataset.parseFrom(b);
       DatasetBuilder dsb = new DatasetBuilder(null);
       dsb.setName(dsp.getName());
       if (dsp.hasId())
@@ -80,7 +84,7 @@ public class DatasetExt implements Externalizable {
       if (dsp.hasPath())
         dsb.put(Dataset.UrlPath, dsp.getPath());
 
-      for (ConfigCatalogProto.Access accessp : dsp.getAccessList())
+      for (ConfigCatalogExtProto.Access accessp : dsp.getAccessList())
         dsb.addAccess(parseAccess(dsb, accessp));
 
       if (dsp.getPropertyCount() > 0)
@@ -94,22 +98,22 @@ public class DatasetExt implements Externalizable {
     //}
   }
 
-  private ConfigCatalogProto.Property buildProperty( Property p) {
-    ConfigCatalogProto.Property.Builder builder =  ConfigCatalogProto.Property.newBuilder();
+  private ConfigCatalogExtProto.Property buildProperty( Property p) {
+    ConfigCatalogExtProto.Property.Builder builder =  ConfigCatalogExtProto.Property.newBuilder();
     builder.setName( p.getName());
     builder.setValue(p.getValue());
     return builder.build();
   }
 
-  private List<Property> parseProperty( List<ConfigCatalogProto.Property> ps) {
+  private List<Property> parseProperty( List<ConfigCatalogExtProto.Property> ps) {
     List<Property> result = new ArrayList<>();
-    for (ConfigCatalogProto.Property p : ps)
+    for (ConfigCatalogExtProto.Property p : ps)
       result.add(new Property( p.getName(), p.getValue()));
     return result;
   }
 
-  private ConfigCatalogProto.Access buildAccess( Access a) {
-    ConfigCatalogProto.Access.Builder builder =  ConfigCatalogProto.Access.newBuilder();
+  private ConfigCatalogExtProto.Access buildAccess( Access a) {
+    ConfigCatalogExtProto.Access.Builder builder =  ConfigCatalogExtProto.Access.newBuilder();
     builder.setServiceName(a.getService().getName());
     builder.setUrlPath(a.getUrlPath());
     builder.setDataSize(a.getDataSize());
@@ -118,7 +122,7 @@ public class DatasetExt implements Externalizable {
     return builder.build();
   }
 
-  private AccessBuilder parseAccess( DatasetBuilder dsb, ConfigCatalogProto.Access ap) {
+  private AccessBuilder parseAccess( DatasetBuilder dsb, ConfigCatalogExtProto.Access ap) {
     return new AccessBuilder(dsb, ap.getUrlPath(), null, /* ap.getServiceName(), */ ap.getDataFormatS(), ap.getDataSize());
   }
 

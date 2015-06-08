@@ -38,8 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
+import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
+import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.servlet.DatasetSource;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.restrict.Authorizer;
@@ -89,6 +91,9 @@ public class DatasetManager implements InitializingBean  {
   @Autowired
   private DatasetTracker datasetTracker;
 
+  @Autowired
+  private DebugCommands debugCommands;
+
   // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
   // possible change to one global hash table request
   private ArrayList<DatasetSource> datasetSources = new ArrayList<>();
@@ -97,6 +102,7 @@ public class DatasetManager implements InitializingBean  {
   @Override
   public void afterPropertiesSet() throws Exception {
     TdsRequestedDataset.setDatasetManager( this);      // LOOK why not autowire this ?  maybe because static ??
+    makeDebugActions();
   }
 
   public DatasetManager() {
@@ -412,5 +418,19 @@ public class DatasetManager implements InitializingBean  {
   public InvDatasetFeatureCollection openFeatureCollection(FeatureCollectionRef ftCollection) throws IOException {
       return featureCollectionCache.get(ftCollection);
   }
+
+  void makeDebugActions() {
+     /* DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
+     DebugCommands.Action act;
+
+     act = new DebugCommands.Action("showNcml", "Show ncml datasets") {
+       public void doAction(DebugCommands.Event e) {
+         for (Object key : ncmlDatasetHash.keySet()) {
+           e.pw.println(" url=" + key);
+         }
+       }
+     };
+     debugHandler.addAction(act);  */
+   }
 
 }

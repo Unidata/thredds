@@ -41,6 +41,7 @@ import thredds.client.catalog.Service;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
+import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;

@@ -1,5 +1,5 @@
 /* Copyright */
-package thredds.core;
+package thredds.server.catalog;
 
 import ucar.unidata.util.StringUtil2;
 
