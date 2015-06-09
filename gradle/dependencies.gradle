@@ -147,7 +147,7 @@ libraries["commons-lang3"] = "org.apache.commons:commons-lang3:3.3.2"
 
 libraries["guava"] = "com.google.guava:guava:18.0"
 
-libraries["jj2000"] = "edu.ucar:jj2000:5.3-SNAPSHOT"
+libraries["jj2000"] = "edu.ucar:jj2000:5.3"
 
 libraries["xz"] = "org.tukaani:xz:1.0"
 

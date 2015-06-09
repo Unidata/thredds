@@ -21,7 +21,7 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
    - gradlew clean publish
    - Check artifacts at http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/
 
-7. Prepare the FTP directory for the new version of TDS and TDM (best to do from SSH)
+7. On conan, prepare the FTP directory for the new version of TDS and TDM (best to do from SSH)
   - cd /web/ftp/pub/thredds/{release.major}
   - mkdir {release.minor}
   - move /web/ftp/pub/thredds/{release.major}/current to point to /web/ftp/pub/thredds/{release.major}/{release.minor}
@@ -112,7 +112,7 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
     - At the very least, project.version in the root build script should have been modified.
     - Make the commit message something like "Release {release.minor}".
 
-19. Create a tag for the release: "v{release.monor}".
+19. Create a tag for the release: "v{release.minor}".
 
 20. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
