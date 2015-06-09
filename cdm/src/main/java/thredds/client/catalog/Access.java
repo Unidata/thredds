@@ -55,10 +55,13 @@ public class Access {                 // (5)
 
   public Access(Dataset dataset, String urlPath, Service service, String dataFormatS, long dataSize) {
     this.dataset = dataset;
-    this.urlPath = urlPath;
+    this.urlPath = urlPath.startsWith("/") ? urlPath.substring(1) : urlPath;
     this.service = service;
     this.dataFormatS = dataFormatS;
     this.dataSize = dataSize;
+    if (service == null) {
+      System.out.println("HEY");
+    }
   }
 
   public Dataset getDataset() {
@@ -167,8 +170,8 @@ public class Access {                 // (5)
   @Override
   public String toString() {
     return "Access{" +
-            "urlPath='" + urlPath + '\'' +
-            ", service=" + service +
+            "service=" + service +
+            ", urlPath='" + urlPath + '\'' +
             ", dataFormatS='" + dataFormatS + '\'' +
             ", dataSize=" + dataSize +
             '}';

@@ -64,6 +64,7 @@ import java.util.*;
 public class ConfigCatalogInitialization {
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName()+".catalogInit");
   static private final String ERROR = "*** ERROR: ";
+  static private final boolean show = false;
 
   @Autowired
   private TdsContext tdsContext;  // used for  getContentDirectory, contextPath
@@ -84,19 +85,23 @@ public class ConfigCatalogInitialization {
   private File rootFile;
   private String contextPath;
   private DatasetTracker.Callback callback;
+  private boolean exceedLimit = false;
+  private long countDatasets = 0;
+  private long maxDatasets;
 
   public ConfigCatalogInitialization() {
   }
 
   // used from outside of tomcat/spring
   public ConfigCatalogInitialization(String rootPath, String rootCatalog, DataRootPathMatcher<DataRoot> matcher, DatasetTracker datasetTracker,
-                                     AllowedServices allowedServices, DatasetTracker.Callback callback) throws IOException {
+                                     AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
     this.rootFile = new File(rootPath);
     this.contextPath = "/thredds";
     this.dataRootPathMatcher = matcher;
     this.datasetTracker = datasetTracker;
     this.allowedServices = allowedServices;
     this.callback = callback;
+    this.maxDatasets = maxDatasets;
 
     Set<String> pathHash = new HashSet<>();       // Hash of ids, to look for duplicates
     Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
@@ -131,14 +136,15 @@ public class ConfigCatalogInitialization {
   }
 
   private void initCatalog(String path, Set<String> pathHash, Set<String> idHash) throws IOException {
+    if (exceedLimit) return;
+
     path = StringUtils.cleanPath(path);
-    // File f = this.tdsContext.getCatalogRootDirSource().getFile(path);
     File f = new File(this.rootFile, path);
     if (!f.exists()) {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
       return;
     }
-    // System.out.printf("initCatalog %s%n", f.getPath());
+    if (show) System.out.printf("initCatalog %s%n", f.getPath());
 
     // make sure we dont already have it
     if (pathHash.contains(path)) {
@@ -162,7 +168,7 @@ public class ConfigCatalogInitialization {
       addRoot(p, true);
     }
 
-    if (callback == null) {
+    if (callback == null) {   // LOOK
       List<String> disallowedServices = allowedServices.getDisallowedServices(cat.getServices());
       if (!disallowedServices.isEmpty()) {
         allowedServices.getDisallowedServices(cat.getServices());
@@ -220,8 +226,11 @@ public class ConfigCatalogInitialization {
   }
 
   private void processDatasets(String dirPath, List<Dataset> datasets, Set<String> pathHash, Set<String> idHash) throws IOException {
+    if (exceedLimit) return;
+
     for (Dataset ds : datasets) {
-      datasetTracker.trackDataset(ds, callback);
+      if (datasetTracker.trackDataset(ds, callback)) countDatasets++;
+      if (maxDatasets > 0 && countDatasets > maxDatasets) exceedLimit = true;
 
       if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollectionRef)) continue;
 
@@ -261,7 +270,7 @@ public class ConfigCatalogInitialization {
   }
 
   /**
-   * Finds datasetScan, datasetFmrc, NcML and restricted access datasets.
+   * Finds datasetScan, datasetFmrc
    * Look for duplicate Ids (give message). Dont follow catRefs.
    *
    * @param dsList the list of Dataset
@@ -279,10 +288,6 @@ public class ConfigCatalogInitialization {
         }
       }
 
-      if (dataset.getRestrictAccess() != null) {
-        if (callback != null) callback.hasRestriction(dataset);
-      }
-
       if (dataset instanceof DatasetScan) {
         DatasetScan ds = (DatasetScan) dataset;
         Service service = ds.getServiceDefault();
@@ -295,10 +300,6 @@ public class ConfigCatalogInitialization {
       } else if (dataset instanceof FeatureCollectionRef) {
         FeatureCollectionRef fc = (FeatureCollectionRef) dataset;
         addRoot(fc);
-
-        // not a DatasetScan or DatasetFmrc or FeatureCollection
-      } else if (dataset.getNcmlElement() != null) {
-        if (callback != null) callback.hasNcml(dataset);
       }
 
       if (!(dataset instanceof CatalogRef)) {

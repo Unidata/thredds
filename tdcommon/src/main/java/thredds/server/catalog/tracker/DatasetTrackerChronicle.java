@@ -1,9 +1,8 @@
-/* Copyright */
 package thredds.server.catalog.tracker;
 
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
-import org.mapdb.HTreeMap;
+import net.openhft.chronicle.map.ChronicleMap;
+import net.openhft.chronicle.map.ChronicleMapBuilder;
+
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.server.catalog.DatasetScan;
@@ -11,28 +10,27 @@ import thredds.server.catalog.FeatureCollectionRef;
 
 import java.io.Externalizable;
 import java.io.File;
+import java.io.IOException;
 
 /**
- * Describe
+ * Description
  *
- * @author caron
- * @since 6/7/2015
+ * @author John
+ * @since 6/8/2015
  */
-public class DatasetTrackerMapDB implements DatasetTracker {
+public class DatasetTrackerChronicle implements DatasetTracker {
 
-  final HTreeMap<String, Externalizable> map;
-  private int count;
+  final ChronicleMap<String, Externalizable> map;
+  private int count = 0;
 
-  public DatasetTrackerMapDB() {
-    String pathname = "C:/temp/mapDBtest/cats.dat";
+  public DatasetTrackerChronicle() throws IOException {
+    String pathname = "C:/temp/chronicleTest/cats.dat";
     File file = new File(pathname);
 
-    DB db = DBMaker.newFileDB(file)
-            .mmapFileEnableIfSupported()
-            .closeOnJvmShutdown()
-            .make();
+    ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
+             .averageValueSize(400).entries(1000 * 1100);
 
-    map = db.getHashMap("datasets");
+    map = builder.createPersistedTo(file);
   }
 
   @Override

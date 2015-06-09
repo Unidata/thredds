@@ -11,11 +11,11 @@ import thredds.server.catalog.DataRoot;
  * @author caron
  * @since 6/6/2015
  */
-public interface DatasetTracker {
-  void trackDataset(Dataset ds, Callback callback);
+public interface DatasetTracker extends AutoCloseable {
+  boolean trackDataset(Dataset ds, Callback callback);
   String findResourceControl(String path);
   String findNcml(String path);
-
+  void close();
 
   interface Callback {
     void hasDataRoot(DataRoot dataRoot);

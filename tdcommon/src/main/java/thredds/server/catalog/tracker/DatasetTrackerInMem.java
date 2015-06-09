@@ -29,8 +29,9 @@ public class DatasetTrackerInMem implements DatasetTracker {
 
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
   private Map<String, String> ncmlDatasetHash = new HashMap<>();
+  private int count;
 
-  public void trackDataset(Dataset dataset, Callback callback) {
+  public boolean trackDataset(Dataset dataset, Callback callback) {
     if (callback != null) callback.hasDataset(dataset);
 
     if (dataset.getRestrictAccess() != null) {
@@ -39,8 +40,8 @@ public class DatasetTrackerInMem implements DatasetTracker {
     }
 
     // dont track ncml for DatasetScan or FeatureCollectionRef
-    if (dataset instanceof DatasetScan) return;
-    if (dataset instanceof FeatureCollectionRef) return;
+    if (dataset instanceof DatasetScan) return false;
+    if (dataset instanceof FeatureCollectionRef) return false;
 
     if (dataset.getNcmlElement()!= null) {
       if (callback != null) callback.hasNcml(dataset);
@@ -51,7 +52,7 @@ public class DatasetTrackerInMem implements DatasetTracker {
       System.out.printf("%s%n", ncml);
       ncmlDatasetHash.put(dataset.getUrlPath(), ncml);
     }
-
+return true;
   }
 
   /**
@@ -105,6 +106,7 @@ public class DatasetTrackerInMem implements DatasetTracker {
     return ncmlDatasetHash.get(path);
   }
 
-
+  public void close() {
+  }
 
 }

@@ -1,6 +1,10 @@
 /* Copyright */
 package thredds.server.catalog.tracker;
 
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Property;
@@ -24,15 +28,30 @@ public class CatalogExt implements Externalizable {
   static public int total_count = 0;
   static public long total_nbytes = 0;
 
+  static private final boolean showParsedXML = true;
+
   Dataset ds;
   String ncml;
+
+  public String getNcml() {
+    return ncml;
+  }
+
+  public String getRestrictAccess() {
+    return ds == null ? null : ds.getRestrictAccess();
+  }
 
   public CatalogExt() {
   }
 
-  public CatalogExt(Dataset delegate, String ncml) {
+  public CatalogExt(Dataset delegate, boolean useNcml) {
     this.ds = delegate;
-    this.ncml = ncml;
+    // want the string representation
+    Element ncmlElem = delegate.getNcmlElement();
+    if (useNcml && ncmlElem != null) {
+      XMLOutputter xmlOut = new XMLOutputter();
+      ncml = xmlOut.outputString(ncmlElem);
+    }
   }
 
   @Override
@@ -41,15 +60,15 @@ public class CatalogExt implements Externalizable {
     builder.setName(ds.getName());
     if (ds.getUrlPath() != null)
       builder.setPath(ds.getUrlPath());
-    if (ds.getId() != null)
-      builder.setId(ds.getId());
+    //if (ds.getId() != null)
+    //  builder.setId(ds.getId());
     if (ds.getRestrictAccess() != null)
       builder.setRestrict(ds.getRestrictAccess());
     if (ncml != null)
-      builder.setId(ncml);
+      builder.setNcml(ncml);
 
-    for (Access access : ds.getAccess())
-      builder.addAccess(buildAccess(access));
+    //for (Access access : ds.getAccess())
+    //  builder.addAccess(buildAccess(access));
 
     //for (Property p : ds.getProperties())
     //  builder.addProperty( buildProperty(p));
@@ -79,7 +98,29 @@ public class CatalogExt implements Externalizable {
     ConfigCatalogExtProto.Dataset dsp = ConfigCatalogExtProto.Dataset.parseFrom(b);
       DatasetBuilder dsb = new DatasetBuilder(null);
       dsb.setName(dsp.getName());
-      if (dsp.hasId())
+      if (dsp.hasRestrict())
+        dsb.put(Dataset.RestrictAccess, dsp.getRestrict());
+
+      if (dsp.hasNcml()) {
+        org.jdom2.Document doc;
+        try {
+          SAXBuilder builder = new SAXBuilder();
+          doc = builder.build(dsp.getName());
+        } catch (JDOMException e) {
+          throw new IOException(e.getMessage());
+        }
+        Element ncmlElem = doc.getRootElement();
+
+        if (showParsedXML) {
+          XMLOutputter xmlOut = new XMLOutputter();
+          ncml = xmlOut.outputString(ncmlElem);
+          System.out.println("*** ConfigCatalogExtProto/ncmlElem = \n" + xmlOut.outputString(ncmlElem) + "\n*******");
+        }
+
+        dsb.put(Dataset.Ncml, ncmlElem);
+      }
+
+      /* if (dsp.hasId())
         dsb.put(Dataset.Id, dsp.getId());
       if (dsp.hasPath())
         dsb.put(Dataset.UrlPath, dsp.getPath());
@@ -88,7 +129,7 @@ public class CatalogExt implements Externalizable {
         dsb.addAccess(parseAccess(dsb, accessp));
 
       if (dsp.getPropertyCount() > 0)
-        dsb.put(Dataset.Properties, parseProperty(dsp.getPropertyList()));
+        dsb.put(Dataset.Properties, parseProperty(dsp.getPropertyList()));  */
 
       this.ds = dsb.makeDataset(null);
 

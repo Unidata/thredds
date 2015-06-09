@@ -6,8 +6,7 @@ import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.core.*;
-import thredds.server.catalog.tracker.DatasetTracker;
-import thredds.server.catalog.tracker.DatasetTrackerInMem;
+import thredds.server.catalog.tracker.*;
 import ucar.nc2.util.Counters;
 
 import java.io.IOException;
@@ -47,7 +46,7 @@ public class TestEsgCats {
   static Stats stat = new Stats();
   static boolean show = false;
 
-  public static void main2(String[] args) {
+  /* public static void main2(String[] args) {
     long start = System.nanoTime();
 
     try {
@@ -93,13 +92,13 @@ public class TestEsgCats {
       //Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
       //count += crawler.crawlAllInDirectory(top, false, null, null, null);
 
-      String top = "file:B:/esgf/gfdl/esgcet/catalog.xml";
+      String top = "file:C:/data:/esgf/ncar/esgcet/catalog.xml";
       crawlCount += crawler.crawl(top, null, null, null);
       // count += crawler.crawl("file:B://esgf/ncar/esgcet/56/ucar.cgd.ccsm4.CESM_CAM5_BGC_LE_COMPROJ.ice.proc.monthly_ave.fswthru.v1.xml", null, null, null);
 
        /*
        Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
-       count += crawler.crawlAllInDirectory(top, false, null, null, null); */
+       count += crawler.crawlAllInDirectory(top, false, null, null, null);
 
       pw.flush();
 
@@ -117,7 +116,7 @@ public class TestEsgCats {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
+  }   */
 
   static class Stats2 {
     int catrefs;
@@ -139,7 +138,7 @@ public class TestEsgCats {
       f.format("   catrefs=%d%n", catrefs);
       f.format("  datasets=%d%n", datasets);
       f.format("  restrict=%d%n", restrict);
-      f.format("  ncml=%d%n", ncml);
+      f.format("  ncml=%d ncmlOne=%d%n", ncml, ncmlOne);
       f.format("  dataRoot=%d%n", dataRoot);
       f.format("    dataRootFc=%d%n", dataRootFc);
       f.format("    dataRootScan=%d%n", dataRootScan);
@@ -158,9 +157,9 @@ public class TestEsgCats {
     long start = System.nanoTime();
 
     DataRootPathMatcher<DataRoot> dataRootPathMatcher = new DataRootPathMatcher<>();
-    DatasetTracker tracker = new DatasetTrackerInMem();
+    DatasetTracker tracker = new DatasetTrackerChronicle();
     AllowedServices allowedServices = new AllowedServices();
-    String top = "B:/esgf/gfdl/esgcet/";
+    String top = "C:/data/esgf/ncar/esgcet/";
     ConfigCatalogInitialization reader = new ConfigCatalogInitialization(top, "catalog.xml",
             dataRootPathMatcher, tracker, allowedServices, new DatasetTracker.Callback() {
 
@@ -189,6 +188,8 @@ public class TestEsgCats {
         if (agg == null) return;
         List<org.jdom2.Element> nested =  agg.getChildren("netcdf", thredds.client.catalog.Catalog.ncmlNS);
         if (nested == null) return;
+        if (nested.size() == 1)
+          stat2.ncmlOne++;
         // look for nested ncml - count how many
         stat2.counters.count("ncmlAggSize", nested.size());
       }
@@ -206,7 +207,9 @@ public class TestEsgCats {
         if (stat2.catrefs % 100 == 0) System.out.printf("%d ", stat2.catrefs);
         if (stat2.catrefs % 1000 == 0) System.out.printf("%n");
       }
-    });
+    }, 1000 * 1000);
+
+    tracker.close();
 
     long now = System.nanoTime();
     long took = now - start;
@@ -217,6 +220,11 @@ public class TestEsgCats {
     System.out.printf(" microsecs / dataset %8.3f%n", avg_time2);
 
     stat2.show();
+
+    System.out.printf("DatasetExt.total_count %d%n", CatalogExt.total_count);
+    System.out.printf("DatasetExt.total_nbytes %d%n", CatalogExt.total_nbytes);
+    float avg = CatalogExt.total_count == 0 ? 0 : ((float) CatalogExt.total_nbytes) / CatalogExt.total_count;
+    System.out.printf("DatasetExt.avg_nbytes %5.0f%n", avg);
   }
 
 }
