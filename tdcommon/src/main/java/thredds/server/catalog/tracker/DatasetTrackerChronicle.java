@@ -28,7 +28,7 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     File file = new File(pathname);
 
     ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
-             .averageValueSize(400).entries(1000 * 1100);
+             .averageValueSize(200).entries(1000 * 1100);
 
     map = builder.createPersistedTo(file);
   }

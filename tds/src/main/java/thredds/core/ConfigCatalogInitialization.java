@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.*;
 import java.util.*;
 
 /**
@@ -89,6 +90,9 @@ public class ConfigCatalogInitialization {
   private long countDatasets = 0;
   private long maxDatasets;
 
+  Set<String> pathHash = new HashSet<>();       // Hash of paths, to look for duplicates LOOK maybe tracker should do this
+  Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
+
   public ConfigCatalogInitialization() {
   }
 
@@ -103,10 +107,7 @@ public class ConfigCatalogInitialization {
     this.callback = callback;
     this.maxDatasets = maxDatasets;
 
-    Set<String> pathHash = new HashSet<>();       // Hash of ids, to look for duplicates
-    Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
-
-    initCatalog(rootCatalog, pathHash, idHash);
+    initCatalog(rootCatalog);
   }
 
   public void init() {
@@ -119,23 +120,21 @@ public class ConfigCatalogInitialization {
 
     logCatalogInit.info("ConfigCatalogManage: initializing " + rootCatalogKeys.size() + " root catalogs.");
 
-    Set<String> pathHash = new HashSet<>();       // Hash of ids, to look for duplicates
-    Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
-
-    for (String path : rootCatalogKeys) {
+    for (String pathname : rootCatalogKeys) {
       try {
-        path = StringUtils.cleanPath(path);
-        logCatalogInit.info("\n**************************************\nCatalog init " + path + "[" + CalendarDate.present() + "]");
-        initCatalog(path, pathHash, idHash);
+        logCatalogInit.info("\n**************************************\nCatalog init " + pathname + "[" + CalendarDate.present() + "]");
+        pathname = StringUtils.cleanPath(pathname);
+        initCatalog(pathname);
       } catch (Throwable e) {
-        logCatalogInit.error(ERROR + "initializing catalog " + path + "; " + e.getMessage(), e);
+        logCatalogInit.error(ERROR + "initializing catalog " + pathname + "; " + e.getMessage(), e);
       }
     }
 
     makeDebugActions();
   }
 
-  private void initCatalog(String path, Set<String> pathHash, Set<String> idHash) throws IOException {
+  // path must be relative to rootDir
+  private void initCatalog(String path) throws IOException {
     if (exceedLimit) return;
 
     path = StringUtils.cleanPath(path);
@@ -144,7 +143,7 @@ public class ConfigCatalogInitialization {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
       return;
     }
-    if (show) System.out.printf("initCatalog %s%n", f.getPath());
+    if (show) System.out.printf("initCatalog %s%n", path);
 
     // make sure we dont already have it
     if (pathHash.contains(path)) {
@@ -164,9 +163,8 @@ public class ConfigCatalogInitialization {
     if (callback != null) callback.hasCatalogRef(cat);
 
     // look for datasetRoots
-    for (DatasetRootConfig p : cat.getDatasetRoots()) {
+    for (DatasetRootConfig p : cat.getDatasetRoots())
       addRoot(p, true);
-    }
 
     if (callback == null) {   // LOOK
       List<String> disallowedServices = allowedServices.getDisallowedServices(cat.getServices());
@@ -176,15 +174,21 @@ public class ConfigCatalogInitialization {
       }
     }
 
-    // get the directory path, reletive to the contentPath
+    // look for dataRoots in datasetScans and featureCollections
+    extractDataRoots(cat.getDatasets());
+
+    // get the directory path, reletive to the rootDir
     int pos = path.lastIndexOf("/");
     String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
+    processDatasets(dirPath, cat.getDatasets());     // recurse
 
-    // look for dataRoots in datasetScans and featureCollections
-    extractDataRoots(cat.getDatasets(), idHash);
-
-    // recurse
-    processDatasets(dirPath, cat.getDatasets(), pathHash, idHash);
+    // look for catalogScans
+    for (CatalogScan catScan : cat.getCatalogScans()) {
+      if (exceedLimit) return;
+      Path relLocation = Paths.get(dirPath, catScan.getLocation());
+      Path absLocation = Paths.get(f.getParent(), catScan.getLocation());
+      readCatsInDirectory(relLocation.toString(), absLocation);
+    }
   }
 
   /**
@@ -225,7 +229,8 @@ public class ConfigCatalogInitialization {
     }
   }
 
-  private void processDatasets(String dirPath, List<Dataset> datasets, Set<String> pathHash, Set<String> idHash) throws IOException {
+  // dirPath = the directory path, reletive to the rootDir
+  private void processDatasets(String dirPath, List<Dataset> datasets) throws IOException {
     if (exceedLimit) return;
 
     for (Dataset ds : datasets) {
@@ -259,15 +264,45 @@ public class ConfigCatalogInitialization {
             path = dirPath + href;  // reletive starting from current directory
           }
 
-          initCatalog(path, pathHash, idHash);
+          initCatalog(path);
         }
 
       } else {
         // recurse through nested datasets
-        processDatasets(dirPath, ds.getDatasets(), pathHash, idHash);
+        processDatasets(dirPath, ds.getDatasets());
       }
     }
   }
+
+  // dirPath is the directory relative to rootDir, directory is absolute
+  private void readCatsInDirectory(String dirPath, Path directory) throws IOException {
+    if (exceedLimit) return;
+
+     // do any catalogs first
+    try (DirectoryStream<Path> ds = Files.newDirectoryStream(directory, "*.xml")) {
+      for (Path p : ds) {
+        if (!Files.isDirectory(p)) {
+          // path must be relative to rootDir
+          String filename = p.getFileName().toString();
+          String path = dirPath.length() == 0 ? filename :  dirPath + "/" + filename;  // reletive starting from current directory
+          initCatalog(path);
+        }
+      }
+    }
+
+    // now recurse into the directory
+    try (DirectoryStream<Path> ds = Files.newDirectoryStream(directory)) {
+       for (Path dir : ds) {
+         if (Files.isDirectory(dir)) {
+           String dirPathChild = dirPath + dir.getFileName().toString();  // reletive starting from current directory
+           readCatsInDirectory(dirPathChild, dir);
+         }
+       }
+     }
+
+   }
+
+
 
   /**
    * Finds datasetScan, datasetFmrc
@@ -275,7 +310,7 @@ public class ConfigCatalogInitialization {
    *
    * @param dsList the list of Dataset
    */
-  private void extractDataRoots(List<Dataset> dsList, Set<String> idHash) {
+  private void extractDataRoots(List<Dataset> dsList) {
 
     for (Dataset dataset : dsList) {
       // look for duplicate ids
@@ -304,7 +339,7 @@ public class ConfigCatalogInitialization {
 
       if (!(dataset instanceof CatalogRef)) {
         // recurse
-        extractDataRoots(dataset.getDatasets(), idHash);
+        extractDataRoots(dataset.getDatasets());
       }
     }
 

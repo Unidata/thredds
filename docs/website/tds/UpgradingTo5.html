@@ -17,14 +17,14 @@
 <h2>API Changes</h2>
 <h3>Catalogs</h3>
 <ul>
-  <li>All uses of thredds.catalog.* are deprecated. If you still need it, you must add legacy.jar to your path.</li>
-  <li>TDS and CDM now use thredds.server.catalog.* and thredds.client.catalog.*</li>
+  <li>All uses of classes in <strong>thredds.catalog.*</strong> are deprecated. If you still need, you must add <strong>legacy.jar</strong> to your path.</li>
+  <li>TDS and CDM now use<strong> thredds.server.catalog.*</strong> and <strong>thredds.client.catalog.*</strong></li>
 </ul>
 <h3>Viewers</h3>
 <ul>
-  <li>thredds.servlet.Viewer has InvDatasetImpl changed to Dataset</li>
-  <li>thredds.servlet.ViewerLinkProvider has InvDatasetImpl changed to Dataset</li>
-  <li>thredds.server.viewer.dataservice.ViewerService has InvDatasetImpl changed to Dataset</li>
+  <li><strong>thredds.servlet.Viewer </strong>has<strong> InvDatasetImpl </strong>changed to<strong> Dataset</strong></li>
+  <li><strong>thredds.servlet.ViewerLinkProvider </strong>has<strong> InvDatasetImpl </strong>changed to<strong> Dataset</strong></li>
+  <li><strong>thredds.server.viewer.dataservice.ViewerService </strong>has<strong> InvDatasetImpl </strong>changed to<strong> Dataset</strong></li>
 </ul>
 <h3>Coordinate Systems</h3>
 <ul>
@@ -56,6 +56,12 @@
   <li>StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;boolean isUnsigned, Number&#32;val  ) -&gt; StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;Number&#32;val  ) -&gt; </li>
 </ul>
 <h2>Catalog Schema changes</h2>
+<p>Schema version is now 1.2</p>
+<h3>Server Configuration Catalog</h3>
+<ul>
+  <li>the <strong>catalogScan</strong> element is now available</li>
+  <li>the <strong>datasetFmrc</strong> element is no longer supported in a configCatalog</li>
+</ul>
 <h3>Client Catalogs</h3>
 <ul>
   <li><strong>service</strong> elements may not be nested inside of <strong>dataset</strong> elements, they must be directly contained in the <strong>catalog</strong> element</li>
@@ -74,7 +80,7 @@
 <ul>
   <li>standard service elements are used, user specified ones are ignored</li>
 </ul>
-<h2>New Features in version 4.5</h2>
+<h2>New Features in version 5 ??</h2>
 <ul>
   <li>TDS
     <ul>

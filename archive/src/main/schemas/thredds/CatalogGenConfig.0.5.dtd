@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ENTITY % catalogDTD SYSTEM "../../../../archive/schemas/thredds/InvCatalog.0.6.dtd">
+%catalogDTD;
+
+<!ENTITY % CatalogGenConfigType "Catalog | Aggregation">
+<!ENTITY % DatasetSourceType "Local | DodsDir | DodsFileServer">
+<!ENTITY % DatasetSourceStructure "Flat | DirTree">
+<!ENTITY % DatasetNamerType "RegExp | DodsAttrib">
+<!ENTITY % DatasetFilterType "RegExp">
+
+<!ENTITY % TrueFalse "true | false">
+
+<!ELEMENT catalogGenConfig ( ( datasetSource | datasetNamer)*)>
+<!ATTLIST catalogGenConfig
+        type (%CatalogGenConfigType;) #REQUIRED
+>
+
+<!ELEMENT datasetSource ( resultService, ( datasetNamer | datasetFilter)*)>
+<!ATTLIST datasetSource
+        name CDATA #REQUIRED
+        type (%DatasetSourceType;) #REQUIRED
+        structure (%DatasetSourceStructure;) #REQUIRED
+        accessPoint CDATA #REQUIRED
+>
+
+<!ELEMENT datasetNamer  ( ( datasetFilter | datasetSource)*)>
+<!ATTLIST datasetNamer
+        name CDATA #REQUIRED
+        addLevel (%TrueFalse;) #REQUIRED
+        type (%DatasetNamerType;) #REQUIRED
+        matchPattern CDATA #IMPLIED
+        substitutePattern CDATA #IMPLIED
+        attribContainer CDATA #IMPLIED
+        attribName CDATA #IMPLIED
+>
+
+<!ELEMENT datasetFilter ( datasetNamer*)>
+<!ATTLIST datasetFilter
+        name CDATA #REQUIRED
+        type (%DatasetFilterType;) #REQUIRED
+        matchPattern CDATA #IMPLIED
+>
+
+<!ELEMENT resultService EMPTY>
+<!ATTLIST resultService
+        name CDATA #REQUIRED
+        serviceType (%ServiceType;) #REQUIRED
+        base CDATA #REQUIRED
+        suffix CDATA #IMPLIED
+        accessPointHeader CDATA #REQUIRED
+>
+

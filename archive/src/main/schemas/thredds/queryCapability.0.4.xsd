@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.4"
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.4"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  elementFormDefault="qualified">
+
+  <xsd:import namespace="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+    schemaLocation="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd" />
+
+  <!--
+    The queryCapability element.
+  -->
+  <xsd:element name="queryCapability">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="query"/>
+        <!-- Require a selectService, more allowed because of selector elements. -->
+        <xsd:element ref="selectService"/>
+        <xsd:element ref="selector" minOccurs="1" maxOccurs="unbounded"/>
+        <xsd:element ref="userInterface" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="version" type="xsd:token" default="0.4"/>
+      <xsd:attribute name="name" type="xsd:token"/>
+    </xsd:complexType>
+
+    <!-- The id attribute of the selector element must be unique. -->
+    <xsd:unique name="selectorID">
+      <xsd:selector xpath=".//selector"/>
+      <xsd:field xpath="@id"/>
+    </xsd:unique>
+  </xsd:element>
+
+  <!--
+    The query element.
+  -->
+  <xsd:element name="query">
+    <xsd:complexType>
+      <xsd:attribute name="base" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+    An abstract base class for all selector elements.
+  -->
+  <xsd:element name="selector" type="selectorType" abstract="true"/>
+  <xsd:complexType name="selectorType">
+    <xsd:sequence>
+      <xsd:element name="description" type="cat:documentationType" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:token" use="required"/>
+    <xsd:attribute name="title" type="xsd:token" use="required"/>
+    <xsd:attribute name="template" type="xsd:token"/>
+    <xsd:attribute name="required" type="xsd:boolean" default="true"/>
+  </xsd:complexType>
+
+  <!--
+    compound selectors.
+  -->
+  <xsd:element name="compound" substitutionGroup="selector">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="selectorType">
+          <xsd:sequence>
+            <xsd:element ref="selector"/>
+            <xsd:element name="or"/>
+            <xsd:element ref="selector"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="operator">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="and"/>
+          <xsd:enumeration value="or"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <!--
+    The selectList element defines a list of choices from which a user can
+    select one or more entries.
+  -->
+  <!-- When the construct method is set to "template", the
+       template string must contain exactly one replacement string.
+       The template string does not have to be related to the id
+       of the selector, if one is given. No matter the actual
+       replacement string used, it will be replaced with the value
+       of the selection. When the "paramValue" construct method
+       is chosen, the parameter name will be the value of the id
+       or "item" if no id is given, i.e., "<id>=<value>" or
+       "item=<value>".
+    -->
+  <xsd:element name="selectList" substitutionGroup="selector">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="selectorType">
+          <xsd:sequence>
+            <xsd:element ref="choice" minOccurs="1" maxOccurs="unbounded"/>
+          </xsd:sequence>
+          <xsd:attribute name="multiple" type="xsd:boolean" default="false"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="choice" type="choiceType"/>
+  <xsd:complexType name="choiceType">
+    <xsd:sequence>
+      <xsd:element name="description" type="cat:documentationType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element ref="selectList" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="value" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!--
+    A selectService element defines the list of serviceTypes available through
+    a query. The user can select the service type(s) they understand and limit the
+    datasets returned to only those service types..
+  -->
+  <xsd:element name="selectService" substitutionGroup="selector">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="selectorType">
+          <xsd:sequence>
+            <xsd:element name="serviceType" minOccurs="1" maxOccurs="unbounded">
+              <xsd:complexType>
+                <xsd:simpleContent>
+                  <xsd:extension base="cat:serviceTypes">
+                    <xsd:attribute name="title" type="xsd:token"/>
+                    <xsd:attribute name="dataFormatType" type="cat:dataFormatTypes"/>
+                    <xsd:attribute name="returns" type="xsd:token" use="required"/>
+                    <xsd:attribute name="value" type="xsd:token" use="required"/>
+                  </xsd:extension>
+                </xsd:simpleContent>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+          <xsd:attribute name="multiple" type="xsd:boolean" default="false"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+    A selectStation element defines a list of stations from which a user can select.
+  -->
+  <!-- When the construct method is set to "template", the
+       template string must contain exactly one replacement string.
+       The template string does not have to be related to the id
+       of the selector, if one is given. No matter the actual
+       replacement string used, it will be replaced with the value
+       of the selection. When the "paramValue" construct method
+       is chosen, the parameter name will be the value of the id
+       or "stn" if no id is given, i.e., "<id>=<value>" or
+       "stn=<value>".
+    -->
+  <xsd:element name="selectStation" substitutionGroup="selector">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="selectorType">
+          <xsd:sequence>
+            <xsd:element ref="station" minOccurs="1" maxOccurs="unbounded"/>
+          </xsd:sequence>
+          <xsd:attribute name="multiple" type="xsd:boolean" default="false"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="station" substitutionGroup="choice">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="choiceType">
+          <xsd:sequence>
+            <xsd:element ref="location"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="location" type="locationType"/>
+  <xsd:complexType name="locationType">
+    <xsd:attribute name="latitude" type="xsd:float" use="required"/>
+    <xsd:attribute name="longitude" type="xsd:float" use="required"/>
+    <xsd:attribute name="latitude_units" type="xsd:token" default="degrees_north"/>
+    <xsd:attribute name="longitude_units" type="xsd:token" default="degrees_east"/>
+  </xsd:complexType>
+
+  <xsd:element name="location3D" substitutionGroup="location">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="locationType">
+          <xsd:attribute name="elevation" type="xsd:float" use="required"/>
+          <xsd:attribute name="elevation_units" type="xsd:token" default="msl"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+    A selectFromRange element defines a range from which a user may select
+    a point or a range.
+
+    To select a point, a single replacement string is required: {point}. To
+    select a range, two replacement strings are required: {min} and {max}.
+  -->
+  <xsd:element name="selectFromRange" substitutionGroup="selector">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="selectorType">
+          <xsd:attribute name="min" type="xsd:decimal" use="required"/>
+          <xsd:attribute name="max" type="xsd:decimal" use="required"/>
+          <xsd:attribute name="units" type="xsd:string"/>
+          <xsd:attribute name="modulo" type="xsd:boolean" default="false"/>
+          <xsd:attribute name="resolution" type="xsd:float" use="required"/>
+          <xsd:attribute name="selectType" type="rangeSelectTypeEnum" default="subrange" />
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Enumeration of allowed types of selections from a range. -->
+  <xsd:simpleType name="rangeSelectTypeEnum">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="point"/>
+      <xsd:enumeration value="subrange"/>
+      <!--xsd:enumeration value="pointOrRange"/-->
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!--
+    A selectFromDateRange element defines a date range from which a user may
+    select a point or a date range.
+
+    To select a point, a single replacement string is required: {point}. To
+    select a range, two replacement strings are required: {min} and {max}.
+  -->
+  <xsd:element name="selectFromDateRange" substitutionGroup="selector">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="selectorType">
+          <xsd:attribute name="start" type="cat:dateType"/>
+          <xsd:attribute name="end" type="cat:dateType"/>
+          <xsd:attribute name="duration" type="cat:duration"/>
+          <xsd:attribute name="resolution" type="cat:duration" use="required"/>
+          <xsd:attribute name="selectType" type="rangeSelectTypeEnum" default="subrange"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+     The selectFromGeoRegion element defines a geographic region from which the
+     user can select a geographic region, currently limited to a bounding box.
+    -->
+  <xsd:element name="selectFromGeoRegion" substitutionGroup="selector">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="selectorType">
+          <xsd:sequence>
+            <xsd:element ref="geoBoundingBox"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="geoBoundingBox">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="lowerLeft" type="locationType"/>
+        <xsd:element name="upperRight" type="locationType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+    The userInterface element definition.
+  -->
+  <xsd:element name="userInterface">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>

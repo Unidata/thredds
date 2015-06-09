@@ -64,11 +64,13 @@ public class Catalog extends DatasetNode {
   static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XLINK_NAMESPACE);
   static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
-  public static final String DatasetHash = "DatasetHash";       // Map<String,Dataset> (catalog only)
-  public static final String DatasetRoots = "DatasetRoots";     // List<DatasetRootConfig> (catalog only)
-  public static final String Expires = "Expires";               // CalendarDate (catalog only)
+  // all of these are catalog only
+  public static final String CatalogScan = "CatalogScan";       // List<CatalogScan>
+  public static final String DatasetHash = "DatasetHash";       // Map<String,Dataset>
+  public static final String DatasetRoots = "DatasetRoots";     // List<DatasetRootConfig>
+  public static final String Expires = "Expires";               // CalendarDate
   public static final String Services = "Services";             // List<Service>
-  public static final String Version = "Version";               // String   (catalog only)
+  public static final String Version = "Version";               // String
 
   //////////////////////////////////////////////////////////////////////////////////////////
   private final URI baseURI;   // LOOK its possible we never want to use this. perhaps "location" instead ??

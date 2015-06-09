@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="tds.css" type="text/css"/>
 </head>
 <body>
-<h1 align="left"><strong>THREDDS Data Server</strong> 4.6</h1>
+<h1 align="left"><strong>THREDDS Data Server</strong> 5.0</h1>
 <hr>
 <h2> Overview</h2>
 
@@ -41,7 +41,9 @@
     Reading (UK) E-Science Center) as part of the <a href="http://behemoth.nerc-essc.ac.uk/ncWMS/godiva2.html">ESSC Web Map Service for environmental data</a>
     (aka Godiva2).  </li>
   <li>The integrated <a href="reference/ncISO.html">ncISO server</a> provides automated metadata analysis and ISO metadata generation.</li>
-  <li>The integrated <a href="reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service</a> allows subsetting certain CDM datasets in coordinate space, using a REST API. Gridded data subsets can be returned in <a href="http://cfconventions.org/">CF-compliant</a> netCDF-3 or netCDF-4. Point data subsets can be returned in CSV, XML, or <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries">CF-DSG</a> netCDF files.</li>
+  <li>The integrated <a href="reference/services/NetcdfSubsetServiceReference.html">NetCDF Subset Service</a> allows subsetting certain CDM datasets in coordinate space, using a REST API. Gridded data subsets can be returned in <a href="http://cfconventions.org/">CF-compliant</a> netCDF-3 or netCDF-4. Point data subsets can be returned in CSV, XML, or <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries">CF-DSG</a> netCDF files.</li>
+  <li>The integrated <a href="../netcdf-java/reference/stream/CdmRemote.html">CDM Remote Service</a> provides index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the
+  full CDM data model. </li>
 </ol>
 <p>The THREDDS Data Server is implemented in 100% Java*, and is
   contained in a single war file, which allows very easy installation
@@ -58,18 +60,36 @@
   you need regular access to large amounts of data, please contact <a href="mailto:support-idd@unidata.ucar.edu.">support-idd@unidata.ucar.edu.</a></p>
 
 <h2>System Requirements</h2>
+<p>Java 8 is strongly recommended for production use in all cases. Java 7 is no longer getting security updates.</p>
 <ul>
-  <li><a href="http://www.oracle.com/technetwork/java/javase/overview/index.html">Java</a> version 7</li>
-  <li> <a href="http://tomcat.apache.org/">Tomcat</a> version 7.</li>
+  <li><a href="http://www.oracle.com/technetwork/java/javase/overview/index.html">Java</a> version 8</li>
+  <li> <a href="http://tomcat.apache.org/">Tomcat</a> version 8</li>
   <li><strong>Be sure to keep up with the latest versions of Java and Tomcat for security fixes. This is required for publically accessible servers!</strong>
   </li>
 </ul>
 
 <h2>Downloads</h2>
+<p><strong>TDS 5.0 is the development release. It requires Tomcat 8 and Java 8.</strong></p>
+<ul>
+  <li>Download the latest development release: [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war">thredds.war</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.md5">MD5</a>)]
+    (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.sha1">SHA1</a>)]
+    [<a href="https://github.com/Unidata/thredds">source on GitHub</a>]
+    [<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>] </li>
+  <li>The THREDDS Data Manager (TDM) <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/tdm-5.0.jar">tdm.jar</a></li>
+  <li>Documentation:
+    <ul>
+      <li><a href="reference/index.html">Reference</a></li>
+      <li><a href="tutorial/index.html">Tutorial</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="UpgradingTo5.html">Upgrading to TDS 5</a></li>
+      <li><a href="tutorial/Checklist.html">Checklist for Production Installation</a></li>
+    </ul>
+  </li>
+</ul>
 
 <p><strong>TDS 4.6 is the stable release. It requires Tomcat 7+ and Java 7+.</strong></p>
 <ul>
-  <li>Download the latest development release: [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war">thredds.war</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war.md5">MD5</a>)]
+  <li>Download the latest stable release: [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war">thredds.war</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war.md5">MD5</a>)]
     (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war.sha1">SHA1</a>)]
     [<a href="https://github.com/Unidata/thredds">source on GitHub</a>]
     [<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>] </li>
@@ -80,27 +100,10 @@
       <li><a href="tutorial/index.html">Tutorial</a></li>
       <li><a href="faq.html">FAQ</a></li>
       <li><a href="UpgradingTo4.6.html">Upgrading to TDS 4.6</a></li>
-      <li><a href="tutorial/Checklist.html">Checklist for Production Installation</a></li>
+      <li><a href="tutorial/Checklist.html">Checklist for Production Installation</a>  </li>
     </ul>
   </li>
 </ul>
-<p><strong>TDS 4.3 is the previous release. It requires Tomcat 6+ and Java 6+.</strong></p>
-<ul>
-  <li>Download the latest  release: [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.3/current/thredds.war">thredds.war</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.3/current/thredds.war.md5">MD5</a>)] (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.3/current/thredds.war.sha1">SHA1</a>)]
-    [<a href="https://github.com/Unidata/thredds">source on GitHub</a>] [<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>]</li>
-  <li>Documentation:
-    <ul>
-      <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/tds/tds4.3/reference/index.html">Reference</a></li>
-      <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/tds/tds4.3/tutorial/index.html">Tutorial</a></li>
-      <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/tds/tds4.3/faq.html">FAQ</a></li>
-      <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/tds/tds4.3/UpgradingTo4.3.html">Upgrading to TDS 4.3</a> </li>
-      <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/tds/tds4.3/AccessChangesTds4.3.html">New GRIB handling in TDS 4.3</a></li>
-      <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/tds/tds4.3/tutorial/Checklist.html">Checklist for Production Installation</a></li>
-      <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/tds/tds4.3/SourceCodeBuild.html">Building TDS 4.3 from Source Code</a></li>
-    </ul>
-  </li>
-</ul>
-
 <h2>TDS Services</h2>
 <blockquote>
   <h3>Standard TDS Services</h3>
@@ -109,11 +112,12 @@
     <li><a href="http://www.resc.rdg.ac.uk/trac/ncWMS/">ncWMS</a> implementing the <a href="reference/WMS.html">Web Map Service</a></li>
     <li><a href="reference/WCS.html">Web Coverage Service</a></li>
     <li><a href="http://www.ngdc.noaa.gov/eds/tds/">ncISO</a></li>
-    <li><a href="reference/NetcdfSubsetServiceReference.html">Netcdf Subset Services</a></li>
+    <li><a href="reference/services/NetcdfSubsetServiceReference.html">Netcdf Subset Services</a></li>
+    <li><a href="../netcdf-java/reference/stream/CdmRemote.html">CdmRemote web service</a></li>
   </ul>
   <h3>Experimental TDS Services</h3>
   <ul>
-    <li><a href="reference/NetcdfSubsetServiceReference.html">CdmRemote web service</a></li>
+    <li><a href="../netcdf-java/reference/stream/CdmrFeature.html">CdmrFeature web service</a></li>
     <li>Radar Subset Service
       <ul>
         <li><a href="reference/radarServer/RadarLevel2SubsetService.html">NEXRAD Level 2</a></li>
@@ -141,7 +145,7 @@
 </ul>
 <hr width="100%">
 <address>
-  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated May 2015
+  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated July 2015
 </address>
 </body>
 </html>

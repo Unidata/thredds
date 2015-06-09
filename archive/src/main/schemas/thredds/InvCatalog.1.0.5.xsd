@@ -1,0 +1,942 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  targetNamespace="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified"
+  version="1.0.5">
+
+  <!-- import other namespaces -->
+  <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.unidata.ucar.edu/schemas/other/xlink.xsd"/>
+  <xsd:import namespace="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" schemaLocation="http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd"/>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- Catalog element -->
+  <xsd:element name="catalog">
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
+      </xsd:sequence>
+
+      <xsd:attribute name="base" type="xsd:anyURI" />
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="expires" type="dateType"/>
+      <xsd:attribute name="version" type="xsd:token" default="1.0.2"/>
+    </xsd:complexType>
+
+    <!-- Enforce dataset ID references:
+       1) Each dataset ID must be unique in the document.
+       2) Each dataset alias must reference a dataset ID in the document.
+       -->
+    <xsd:unique name="datasetID">
+      <xsd:selector xpath=".//dataset"/>
+      <xsd:field xpath="@ID"/>
+    </xsd:unique>
+
+    <xsd:keyref name="datasetAlias" refer="datasetID">
+      <xsd:selector xpath=".//dataset"/>
+      <xsd:field xpath="@alias"/>
+    </xsd:keyref>
+
+    <!-- Enforce references to services:
+        1) Each service name must be unique and is required.
+        2) Each dataset that references a service (i.e., has a serviceName
+            attribute) must reference a service that exists.
+        3) Each access that references a service (i.e., has a serviceName
+            attribute) must reference a service that exists.
+        4) Each serviceName element must reference a service that exists.
+      -->
+    <xsd:key name="serviceNameKey">
+      <xsd:selector xpath=".//service"/>
+      <xsd:field xpath="@name"/>
+    </xsd:key>
+
+    <xsd:keyref name="datasetServiceName" refer="serviceNameKey">
+      <xsd:selector xpath=".//dataset"/>
+      <xsd:field xpath="@serviceName"/>
+    </xsd:keyref>
+
+    <xsd:keyref name="accessServiceName" refer="serviceNameKey">
+      <xsd:selector xpath=".//access"/>
+      <xsd:field xpath="@serviceName"/>
+    </xsd:keyref>
+
+    <xsd:keyref name="serviceName" refer="serviceNameKey">
+      <xsd:selector xpath=".//serviceName"/>
+      <xsd:field xpath="."/>
+    </xsd:keyref>
+
+  </xsd:element>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- Service element -->
+  <xsd:element name="service">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>  <!-- deprecated -->
+     </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="base" type="xsd:string" use="required"/>
+      <xsd:attribute name="serviceType" type="serviceTypes" use="required"/>
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <xsd:attribute name="suffix" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- Dataset element -->
+  <xsd:element name="dataset" type="DatasetType" />
+  <xsd:complexType name="DatasetType">
+    <xsd:sequence>
+      <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/> <!-- deprecated -->
+
+      <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded"/>
+
+      <xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element ref="ncml:netcdf" minOccurs="0"/>
+      <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="alias" type="xsd:token"/>
+    <xsd:attribute name="authority" type="xsd:string"/>  <!-- deprecated : use element -->
+    <xsd:attribute name="collectionType" type="collectionTypes"/>
+    <xsd:attribute name="dataType" type="dataTypes"/> <!-- deprecated : use element -->
+    <xsd:attribute name="harvest" type="xsd:boolean"/>
+    <xsd:attribute name="ID" type="xsd:token"/>
+    <xsd:attribute name="restrictAccess" type="xsd:string"/>
+
+    <xsd:attribute name="serviceName" type="xsd:string"/>  <!-- deprecated : use element -->
+    <xsd:attribute name="urlPath" type="xsd:token"/>
+
+  </xsd:complexType>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- Access element -->
+  <xsd:element name="access">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="dataSize" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="urlPath" type="xsd:token" use="required"/>
+      <xsd:attribute name="serviceName" type="xsd:string"/>
+      <xsd:attribute name="dataFormat" type="dataFormatTypes"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- CatalogRef element -->
+  <!-- external catalog gets added as a dataset -->
+  <xsd:element name="catalogRef" substitutionGroup="dataset">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="DatasetType">
+           <xsd:attributeGroup ref="XLink"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- DatasetScan element -->
+  <!-- scan a directory to add datasets to catalog -->
+  <xsd:element name="datasetScan" substitutionGroup="dataset">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="DatasetType">
+          <xsd:sequence>
+            <xsd:element name="crawlableDatasetImpl" minOccurs="0" type="UserImplType" />
+            <xsd:element ref="filter" minOccurs="0"/>
+            <xsd:element ref="addID" minOccurs="0"/>
+            <xsd:element ref="namer" minOccurs="0"/>
+            <xsd:element ref="sort" minOccurs="0"/>
+            <xsd:element ref="addLatest" minOccurs="0"/>
+            <xsd:element ref="addProxies" minOccurs="0"/>
+            <xsd:element name="addDatasetSize" minOccurs="0"/>
+            <xsd:element ref="addTimeCoverage" minOccurs="0"/>
+            <!--xsd:element name="datasetEnhancerImpl"
+                         minOccurs="0" maxOccurs="unbounded"
+                         type="UserImplType" /-->
+            <!--xsd:element ref="datasetScan" minOccurs="0" maxOccurs="unbounded"/-->
+          </xsd:sequence>
+
+          <xsd:attribute name="path" type="xsd:string" use="required"/>
+          <xsd:attribute name="location" type="xsd:string"/>
+          <xsd:attribute name="dirLocation" type="xsd:string"/> <!-- deprecated : use location attribute -->
+          <xsd:attribute name="filter" type="xsd:string"/> <!-- deprecated : use filter element -->
+          <xsd:attribute name="addDatasetSize" type="xsd:boolean"/> <!-- deprecated : use enhance/addDatasetSize element -->
+          <xsd:attribute name="addLatest" type="xsd:boolean"/> <!-- deprecated : use addLatest element -->
+          <xsd:attribute name="addId" type="xsd:boolean"/> <!-- deprecated : use addID element -->
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="UserImplType">
+    <xsd:sequence>
+      <xsd:any namespace="##other" minOccurs="0" processContents="lax"/>
+    </xsd:sequence>
+    <xsd:attribute name="className" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:element name="filter">
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+          <xsd:element name="include" type="FilterSelectorType" minOccurs="0"/>
+          <xsd:element name="exclude" type="FilterSelectorType" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:element name="crawlableDatasetFilterImpl" minOccurs="0" type="UserImplType"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="FilterSelectorType">
+    <xsd:attribute name="regExp" type="xsd:string"/>
+    <xsd:attribute name="wildcard" type="xsd:string"/>
+    <xsd:attribute name="atomic" type="xsd:boolean"/>
+    <xsd:attribute name="collection" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <xsd:element name="addID">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="crawlableDatasetLabelerImpl" minOccurs="0" type="UserImplType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="namer">
+    <xsd:complexType>
+      <xsd:choice maxOccurs="unbounded">
+        <xsd:element name="regExpOnName" type="NamerSelectorType"/>
+        <xsd:element name="regExpOnPath" type="NamerSelectorType"/>
+        <!--xsd:element name="crawlableDatasetLabelerImpl" type="UserImplType"/-->
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="NamerSelectorType">
+    <xsd:attribute name="regExp" type="xsd:string"/>
+    <xsd:attribute name="replaceString" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:element name="sort">
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:element name="lexigraphicByName">
+          <xsd:complexType>
+            <xsd:attribute name="increasing" type="xsd:boolean"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="crawlableDatasetSorterImpl" minOccurs="0" type="UserImplType"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="addLatest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="simpleLatest" minOccurs="0" maxOccurs="unbounded"/>
+        <!--xsd:element name="datasetInserterImpl" minOccurs="0" type="UserImplType"/-->
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Allow addition of proxy datasets (e.g., latest). -->
+  <xsd:element name="addProxies">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="simpleLatest"/>
+        <xsd:element ref="latestComplete"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="simpleLatest">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="top" type="xsd:boolean"/>
+      <xsd:attribute name="isResolver" type="xsd:boolean"/>
+      <xsd:attribute name="serviceName" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="latestComplete">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="top" type="xsd:boolean"/>
+      <xsd:attribute name="serviceName" type="xsd:string"/>
+      <xsd:attribute name="isResolver" type="xsd:boolean"/>
+      <xsd:attribute name="lastModifiedLimit" type="xsd:float"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="addTimeCoverage">
+    <xsd:complexType>
+      <xsd:attribute name="datasetNameMatchPattern" type="xsd:string"/>
+      <xsd:attribute name="datasetPathMatchPattern" type="xsd:string"/>
+      <xsd:attribute name="startTimeSubstitutionPattern" type="xsd:string"/>
+      <xsd:attribute name="duration" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- datasetRoot element: associate a url path with a directory location -->
+  <xsd:element name="datasetRoot">
+    <xsd:complexType>
+      <xsd:attribute name="path" type="xsd:string" use="required"/>
+      <xsd:attribute name="location" type="xsd:string" use="required"/>
+      <xsd:attribute name="cache" type="xsd:boolean" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- featureCollection element -->
+  <xsd:element name="featureCollection" substitutionGroup="dataset">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="DatasetType">
+          <xsd:sequence>
+            <xsd:element type="collectionType" name="collection"/>
+            <xsd:element type="updateType" name="update" minOccurs="0"/>
+            <xsd:element type="updateType" name="tdm" minOccurs="0"/>
+            <xsd:element type="protoDatasetType" name="protoDataset" minOccurs="0"/>
+            <xsd:element type="fmrcConfigType" name="fmrcConfig" minOccurs="0"/>
+            <xsd:element type="pointConfigType" name="pointConfig" minOccurs="0"/>
+            <xsd:element type="gribConfigType" name="gribConfig" minOccurs="0"/>
+            <xsd:element ref="ncml:netcdf" minOccurs="0"/>
+          </xsd:sequence>
+          <xsd:attribute name="featureType" type="featureTypeChoice" use="required"/>
+          <xsd:attribute name="path" type="xsd:string" use="required"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="featureTypeChoice">
+   <xsd:union memberTypes="xsd:token">
+     <xsd:simpleType>
+       <xsd:restriction base="xsd:token">
+         <xsd:enumeration value="FMRC"/>
+         <xsd:enumeration value="GRIB"/>
+         <xsd:enumeration value="Station"/>
+         <xsd:enumeration value="Point"/>
+         <xsd:enumeration value="Station_Profile"/>
+       </xsd:restriction>
+     </xsd:simpleType>
+   </xsd:union>
+  </xsd:simpleType>
+
+  <xsd:complexType name="collectionType">
+    <xsd:attribute name="spec" type="xsd:string" use="required"/>
+    <xsd:attribute name="name" type="xsd:token"/>
+    <xsd:attribute name="olderThan" type="xsd:string" />
+    <xsd:attribute name="dateFormatMark" type="xsd:string"/>
+    <xsd:attribute name="timePartition" type="xsd:string"/>
+    <xsd:attribute name="useIndexOnly" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="updateType">
+    <xsd:sequence>
+      <xsd:element ref="manage" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="startup" type="xsd:string"/>
+    <xsd:attribute name="recheckAfter" type="xsd:string" />
+    <xsd:attribute name="rescan" type="xsd:token"/>
+    <xsd:attribute name="trigger" type="xsd:token"/>
+    <xsd:attribute name="deleteAfter" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:element name="manage">
+    <xsd:complexType>
+      <xsd:attribute name="deleteAfter" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="protoDatasetType">
+    <xsd:sequence>
+      <xsd:element ref="ncml:netcdf" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="choice" type="protoChoices"/>
+    <xsd:attribute name="change" type="xsd:string"/>
+    <xsd:attribute name="param" type="xsd:string"/>
+  </xsd:complexType>
+
+   <xsd:simpleType name="protoChoices">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="First"/>
+          <xsd:enumeration value="Random"/>
+          <xsd:enumeration value="Penultimate"/>
+          <xsd:enumeration value="Latest"/>
+          <xsd:enumeration value="Run"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <xsd:complexType name="fmrcConfigType">
+    <xsd:attribute name="regularize" type="xsd:boolean"/>
+    <xsd:attribute name="datasetTypes" type="fmrcDatasetTypes"/>
+  </xsd:complexType>
+
+  <xsd:simpleType name="fmrcDatasetTypes">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="TwoD"/>
+          <xsd:enumeration value="Best"/>
+          <xsd:enumeration value="Files"/>
+          <xsd:enumeration value="Runs"/>
+          <xsd:enumeration value="ConstantForecasts"/>
+          <xsd:enumeration value="ConstantOffsets"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <xsd:complexType name="pointConfigType">
+    <xsd:attribute name="datasetTypes" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="gribConfigType">
+    <xsd:sequence>
+      <xsd:element name="gdsHash" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="from" type="xsd:int" use="required"/>
+          <xsd:attribute name="to" type="xsd:int" use="required"/>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="gdsName" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:attribute name="hash" type="xsd:int"/>
+          <xsd:attribute name="groupName" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="groupNamer" minOccurs="0" maxOccurs="1"/>
+
+      <xsd:element name="pdsHash" minOccurs="0" maxOccurs="unbounded">
+         <xsd:complexType>
+           <xsd:sequence>
+             <xsd:element name="useGenType" minOccurs="0" maxOccurs="1"/>
+             <xsd:element name="useTableVersion" minOccurs="0" maxOccurs="1"/>
+             <xsd:element name="mergeIntv" minOccurs="0" maxOccurs="1"/>
+           </xsd:sequence>
+         </xsd:complexType>
+       </xsd:element>
+
+      <xsd:element name="useGenType" minOccurs="0" maxOccurs="1"/>
+
+      <xsd:element name="intvFilter" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="variable" minOccurs="0" maxOccurs="unbounded">
+              <xsd:complexType>
+                <xsd:attribute name="id" type="xsd:string" use="required"/>
+                <xsd:attribute name="prob" type="xsd:string" use="optional"/>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+          <xsd:attribute name="excludeZero" type="xsd:boolean" use="optional"/>
+          <xsd:attribute name="intvLength" type="xsd:int" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="timeUnitConvert" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="from" type="xsd:int" use="required"/>
+          <xsd:attribute name="to" type="xsd:int" use="required"/>
+        </xsd:complexType>
+      </xsd:element>
+
+        <xsd:element name="latestNamer" minOccurs="0" maxOccurs="1">
+            <xsd:complexType>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+        </xsd:element>
+
+        <xsd:element name="bestNamer" minOccurs="0" maxOccurs="1">
+            <xsd:complexType>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+        </xsd:element>
+
+        <xsd:element name="filesSort" minOccurs="0" maxOccurs="1">
+            <xsd:complexType>
+                <xsd:choice>
+                    <xsd:element name="lexigraphicByName">
+                        <xsd:complexType>
+                            <xsd:attribute name="increasing" type="xsd:boolean"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:sequence>
+
+    <xsd:attribute name="datasetTypes" type="gribDatasetTypes"/>
+
+  </xsd:complexType>
+
+  <xsd:simpleType name="gribDatasetTypes">
+     <xsd:union memberTypes="xsd:token">
+       <xsd:simpleType>
+         <xsd:restriction base="xsd:token">
+           <xsd:enumeration value="Best"/>
+           <xsd:enumeration value="Files"/>
+           <xsd:enumeration value="LatestFile"/>
+         </xsd:restriction>
+       </xsd:simpleType>
+     </xsd:union>
+   </xsd:simpleType>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- DatasetFmrc element DEPRECATED - use featureCollection -->
+  <!-- Define a Forecast Model Run Collection dataset -->
+  <xsd:element name="datasetFmrc" substitutionGroup="dataset">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="DatasetType">
+          <xsd:sequence>
+            <xsd:element ref="fmrcInventory" minOccurs="0"/>
+            <xsd:element ref="addTimeCoverage" minOccurs="0"/>
+          </xsd:sequence>
+          <xsd:attribute name="path" type="xsd:string" use="required"/>
+          <xsd:attribute name="runsOnly" type="xsd:boolean" />
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="fmrcInventory">
+    <xsd:complexType>
+      <xsd:attribute name="location" type="xsd:string" use="required"/>
+      <xsd:attribute name="suffix" type="xsd:string"/>
+      <xsd:attribute name="fmrcDefinition" type="xsd:string" use="required"/>
+      <xsd:attribute name="olderThan" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- Documentation element -->
+  <!-- this is human readable info, as text or XHTML, or an Xlink to text or HTML -->
+  <xsd:complexType name="documentationType" mixed="true">
+    <xsd:sequence>
+      <xsd:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded" processContents="strict"/>
+    </xsd:sequence>
+    <xsd:attribute name="type" type="documentationEnumTypes"/>
+    <xsd:attributeGroup ref="XLink"/>
+  </xsd:complexType>
+
+  <!-- Metadata element -->
+  <!-- this is machine readable info in XML, or an Xlink to XML -->
+  <xsd:element name="metadata">
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+      </xsd:choice>
+
+      <xsd:attribute name="inherited" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="metadataType" type="metadataTypeEnum"/>
+      <xsd:attributeGroup ref="XLink"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Property element -->
+  <!-- name/value pair -->
+  <xsd:element name="property">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+      <xsd:attribute name="value" type="xsd:string" use="required" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- here is where we augment with new metadata types -->
+
+  <!-- group of elements can be used in a dataset or in metadata elements -->
+  <xsd:group name="threddsMetadataGroup">
+    <xsd:choice>
+      <xsd:element name="documentation" type="documentationType"/>
+      <xsd:element ref="metadata"/>
+      <xsd:element ref="property"/>
+
+      <xsd:element ref="contributor"/>
+      <xsd:element name="creator" type="sourceType"/>
+      <xsd:element name="date" type="dateTypeFormatted"/>
+      <xsd:element name="keyword" type="controlledVocabulary"/>
+      <xsd:element name="project" type="controlledVocabulary"/>
+      <xsd:element name="publisher" type="sourceType"/>
+
+      <xsd:element ref="geospatialCoverage"/>
+      <xsd:element name="timeCoverage" type="timeCoverageType"/>
+      <xsd:element ref="variables"/>
+      <xsd:element ref="variableMap"/>
+
+      <xsd:element name="dataType" type="dataTypes"/>
+      <xsd:element name="dataFormat" type="dataFormatTypes"/>
+      <xsd:element name="serviceName" type="xsd:string"/>
+      <xsd:element name="authority" type="xsd:string"/>
+      <xsd:element ref="dataSize"/>
+    </xsd:choice>
+  </xsd:group>
+
+  <xsd:complexType name="sourceType">
+    <xsd:sequence>
+      <xsd:element name="name" type="controlledVocabulary"/>
+
+      <xsd:element name="contact">
+        <xsd:complexType>
+          <xsd:attribute name="email" type="xsd:string" use="required"/>
+          <xsd:attribute name="url" type="xsd:anyURI"/>
+        </xsd:complexType>
+      </xsd:element>
+
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- contributorType extends dc:contributor to add role attribute -->
+  <xsd:element name="contributor">
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:string">
+          <xsd:attribute name="role" type="xsd:string" use="required"/>
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- size element -->
+  <xsd:element name="dataSize">
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:string">
+          <xsd:attribute name="units" type="xsd:string" use="required"/>
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- geospatialCoverageType element -->
+  <xsd:element name="geospatialCoverage">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="northsouth" type="spatialRange" minOccurs="0"/>
+        <xsd:element name="eastwest" type="spatialRange" minOccurs="0"/>
+        <xsd:element name="updown" type="spatialRange" minOccurs="0"/>
+        <xsd:element name="name" type="controlledVocabulary" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="zpositive" type="upOrDown" default="up"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="spatialRange">
+    <xsd:sequence>
+      <xsd:element name="start" type="xsd:double"/>
+      <xsd:element name="size" type="xsd:double"/>
+      <xsd:element name="resolution" type="xsd:double" minOccurs="0"/>
+      <xsd:element name="units" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="upOrDown">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="up"/>
+      <xsd:enumeration value="down"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- date and time-->
+  <xsd:complexType name="timeCoverageType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="2" maxOccurs="3" >
+          <xsd:element name="start" type="dateTypeFormatted"/>
+          <xsd:element name="end" type="dateTypeFormatted"/>
+          <xsd:element name="duration" type="duration"/>
+      </xsd:choice>
+
+      <xsd:element name="resolution" type="duration" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- may be a dateType or have a format attribute  -->
+  <xsd:complexType name="dateTypeFormatted">
+    <xsd:simpleContent>
+      <xsd:extension base="dateType">
+        <xsd:attribute name="format" type="xsd:string"/> <!-- follow java.text.SimpleDateFormat -->
+        <xsd:attribute name="type" type="dateEnumTypes"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <!-- may be a built in date or dateTIme, or a udunit encoded string -->
+  <xsd:simpleType name="dateType">
+    <xsd:union memberTypes="xsd:date xsd:dateTime udunitDate">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="present"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="udunitDate">
+    <xsd:restriction base="xsd:string">
+      <xsd:annotation>
+        <xsd:documentation>Must conform to complete udunits date string, eg "20 days since 1991-01-01"</xsd:documentation>
+      </xsd:annotation>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="duration">
+    <xsd:union memberTypes="xsd:duration udunitDuration"/>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="udunitDuration">
+    <xsd:restriction base="xsd:string">
+      <xsd:annotation>
+        <xsd:documentation>Must conform to udunits time duration, eg "20.1 hours"</xsd:documentation>
+      </xsd:annotation>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- variables element -->
+  <xsd:element name="variables">
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="variableMap" minOccurs="0"/>
+      </xsd:choice>
+      <xsd:attribute name="vocabulary" type="variableNameVocabulary" use="optional"/>
+      <xsd:attributeGroup ref="XLink"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="variable">
+    <xsd:complexType mixed="true">
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="vocabulary_name" type="xsd:string" use="optional"/>
+      <xsd:attribute name="vocabulary_id" type="xsd:string" use="optional"/>
+      <xsd:attribute name="units" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="variableMap">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="XLink"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="variableNameVocabulary">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="CF-1.0"/>
+          <xsd:enumeration value="DIF"/>
+          <xsd:enumeration value="GRIB-1"/>
+          <xsd:enumeration value="GRIB-2"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- reusable types and groups -->
+
+  <!-- controlledVocabulary type allows optional vocabulary attribute-->
+  <xsd:complexType name="controlledVocabulary">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="vocabulary" type="xsd:string"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <!-- Xlink attribute group -->
+  <xsd:attributeGroup name="XLink">
+    <xsd:attribute ref="xlink:type"/>
+    <xsd:attribute ref="xlink:href"/>
+    <xsd:attribute ref="xlink:title"/>
+    <xsd:attribute ref="xlink:show"/>
+  </xsd:attributeGroup>
+
+  <!-- Collection Types -->
+  <xsd:simpleType name="collectionTypes">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="TimeSeries"/>
+          <xsd:enumeration value="Stations"/>
+          <xsd:enumeration value="ForecastModelRuns"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <!-- Data Types -->
+  <xsd:simpleType name="dataTypes">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="Grid"/>
+          <xsd:enumeration value="Image"/>
+          <xsd:enumeration value="Point"/>
+          <xsd:enumeration value="Radial"/>
+          <xsd:enumeration value="Station"/>
+          <xsd:enumeration value="Swath"/>
+          <xsd:enumeration value="Trajectory"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <!-- DataFormat Types -->
+  <xsd:simpleType name="dataFormatTypes">
+    <xsd:union memberTypes="xsd:token mimeType">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="BUFR"/>
+          <xsd:enumeration value="ESML"/>
+          <xsd:enumeration value="GEMPAK"/>
+          <xsd:enumeration value="GINI"/>
+          <xsd:enumeration value="GRIB-1"/>
+          <xsd:enumeration value="GRIB-2"/>
+          <xsd:enumeration value="HDF4"/>
+          <xsd:enumeration value="HDF5"/>
+          <xsd:enumeration value="McIDAS-AREA"/>
+          <xsd:enumeration value="NcML"/>
+          <xsd:enumeration value="NetCDF"/>
+          <xsd:enumeration value="NEXRAD2"/>
+          <xsd:enumeration value="NIDS"/>
+
+          <xsd:enumeration value="image/gif"/>
+          <xsd:enumeration value="image/jpeg"/>
+          <xsd:enumeration value="image/tiff"/>
+          <xsd:enumeration value="text/html"/>
+          <xsd:enumeration value="text/plain"/>
+          <xsd:enumeration value="text/tab-separated-values"/>
+          <xsd:enumeration value="text/xml"/>
+          <xsd:enumeration value="video/mpeg"/>
+          <xsd:enumeration value="video/quicktime"/>
+          <xsd:enumeration value="video/realtime"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="mimeType">
+    <xsd:restriction base="xsd:token">
+      <xsd:annotation>
+        <xsd:documentation>any valid mime type (see http://www.iana.org/assignments/media-types/)</xsd:documentation>
+      </xsd:annotation>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Date Types -->
+  <xsd:simpleType name="dateEnumTypes">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="created"/>
+          <xsd:enumeration value="modified"/>
+          <xsd:enumeration value="valid"/>
+          <xsd:enumeration value="issued"/>
+          <xsd:enumeration value="available"/>
+          <xsd:enumeration value="metadataCreated"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <!-- Documentation Types -->
+  <xsd:simpleType name="documentationEnumTypes">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="funding"/>
+          <xsd:enumeration value="history"/>
+          <xsd:enumeration value="processing_level"/>
+          <xsd:enumeration value="rights"/>
+          <xsd:enumeration value="summary"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <!-- MetadataTypeEnum -->
+  <xsd:simpleType name="metadataTypeEnum">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="THREDDS"/>
+          <xsd:enumeration value="ADN"/>
+          <xsd:enumeration value="Aggregation"/>
+          <xsd:enumeration value="CatalogGenConfig"/>
+          <xsd:enumeration value="DublinCore"/>
+          <xsd:enumeration value="DIF"/>
+          <xsd:enumeration value="FGDC"/>
+          <xsd:enumeration value="LAS"/>
+          <xsd:enumeration value="ESG"/>
+          <xsd:enumeration value="Other"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <!-- ServiceTypeEnum -->
+  <xsd:simpleType name="serviceTypes">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <!-- client/server -->
+          <xsd:enumeration value="ADDE"/>
+          <xsd:enumeration value="DODS"/>  <!-- same as OpenDAP -->
+          <xsd:enumeration value="OpenDAP"/>
+          <xsd:enumeration value="OpenDAP-G"/>
+
+          <!-- bulk transport -->
+          <xsd:enumeration value="HTTPServer"/>
+          <xsd:enumeration value="FTP"/>
+          <xsd:enumeration value="GridFTP"/>
+          <xsd:enumeration value="File"/>
+
+          <xsd:enumeration value="NetcdfSubset"/>
+          <xsd:enumeration value="CdmRemote"/>
+
+          <!-- web services -->
+          <xsd:enumeration value="LAS"/>
+          <xsd:enumeration value="WMS"/>
+          <xsd:enumeration value="WFS"/>
+          <xsd:enumeration value="WCS"/>
+          <xsd:enumeration value="WSDL"/>
+
+          <!--offline -->
+          <xsd:enumeration value="WebForm"/>
+
+          <!-- THREDDS -->
+          <xsd:enumeration value="Catalog"/>
+          <xsd:enumeration value="QueryCapability"/>
+          <xsd:enumeration value="Resolver"/>
+          <xsd:enumeration value="Compound"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+</xsd:schema>

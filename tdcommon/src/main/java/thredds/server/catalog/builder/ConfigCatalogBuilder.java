@@ -38,6 +38,7 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.server.catalog.CatalogScan;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetRootConfig;
 import thredds.server.catalog.DatasetScanConfig;
@@ -52,6 +53,7 @@ import java.util.*;
  */
 public class ConfigCatalogBuilder extends CatalogBuilder {
   protected List<DatasetRootConfig> roots;
+  protected List<CatalogScan> catScans;
 
   protected DatasetBuilder buildOtherDataset(DatasetBuilder parent, Element elem) {
       // this finds datasetRoot in catalogs (unwanted side effect in regular dataset elements)
@@ -59,6 +61,13 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
       DatasetRootConfig root = readDatasetRoot(elem);
       if (roots == null) roots = new ArrayList<>();
       roots.add(root);
+      return null;
+    }
+
+    else if (elem.getName().equals("catalogScan")) {
+      CatalogScan catScan = readCatalogScan(elem);
+      if (catScans == null) catScans = new ArrayList<>();
+      catScans.add(catScan);
       return null;
     }
 
@@ -84,6 +93,12 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     String name = s.getAttributeValue("path");
     String value = s.getAttributeValue("location");
     return new DatasetRootConfig(name, value);
+  }
+
+  private CatalogScan readCatalogScan(Element s) {
+    String watch = s.getAttributeValue("watch");
+    String location = s.getAttributeValue("location");
+    return new CatalogScan(location, watch);
   }
 
   @Override
@@ -139,6 +154,7 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
   public ConfigCatalog makeCatalog() {
     Map<String, Object> flds = setFields();
     if (roots != null) flds.put(Catalog.DatasetRoots, roots);
+    if (catScans != null) flds.put(Catalog.CatalogScan, catScans);
     return new ConfigCatalog(baseURI, name, flds, datasetBuilders);
   }
 
