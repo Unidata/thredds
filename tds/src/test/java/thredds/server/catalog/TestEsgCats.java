@@ -157,7 +157,7 @@ public class TestEsgCats {
     long start = System.nanoTime();
 
     DataRootPathMatcher<DataRoot> dataRootPathMatcher = new DataRootPathMatcher<>();
-    DatasetTracker tracker = new DatasetTrackerChronicle();
+    DatasetTracker tracker = new DatasetTrackerNoop();
     AllowedServices allowedServices = new AllowedServices();
     String top = "C:/data/esgf/ncar/esgcet/";
     ConfigCatalogInitialization reader = new ConfigCatalogInitialization(top, "catalog.xml",
@@ -207,7 +207,7 @@ public class TestEsgCats {
         if (stat2.catrefs % 100 == 0) System.out.printf("%d ", stat2.catrefs);
         if (stat2.catrefs % 1000 == 0) System.out.printf("%n");
       }
-    }, 1000 * 1000);
+    }, -1);
 
     tracker.close();
 
