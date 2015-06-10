@@ -15,6 +15,7 @@ public interface DatasetTracker extends AutoCloseable {
   boolean trackDataset(Dataset ds, Callback callback);
   String findResourceControl(String path);
   String findNcml(String path);
+  CatalogExt findCatalogExt(String path);
   void close();
 
   interface Callback {

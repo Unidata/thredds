@@ -82,6 +82,11 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     return dext.getNcml();
   }
 
+  @Override
+  public CatalogExt findCatalogExt(String path) {
+    return (CatalogExt) map.get(path);
+  }
+
   public void close() {
     map.close();
   }

@@ -67,7 +67,7 @@ import java.io.StringReader;
 import java.util.*;
 
 /**
- * Manages the Dataset objects.
+ * Provides an API to obtain the various Dataset objects, given the request Path.
  *
  * Need to rethink return type - using null to mean many things
  *
@@ -131,7 +131,6 @@ public class DatasetManager implements InitializingBean  {
 
     public NetcdfFile open(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
       return NcMLReader.readNcML(new StringReader(ncml), cacheName, cancelTask);
-     // return NcMLReader.readNcML(cacheName, netcdfElem, cancelTask);
     }
   }
 
@@ -176,7 +175,7 @@ public class DatasetManager implements InitializingBean  {
 
     // might be a pluggable DatasetSource:
     NetcdfFile ncfile = null;
-    for (DatasetSource datasetSource : datasetSources) {   // LOOK lineaar
+    for (DatasetSource datasetSource : datasetSources) {   // LOOK linear
       if (datasetSource.isMine(req)) {
         ncfile = datasetSource.getNetcdfFile(req, res);
         if (ncfile != null) return ncfile;

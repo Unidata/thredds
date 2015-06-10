@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.URI;
 
 /**
- * Describe
+ * Provides an API to find a catalog from its path. Handles static and dynamic catalogs.
  *
  * @author caron
  * @since 6/7/2015
@@ -27,14 +27,12 @@ public class CatalogManager {
   @Autowired
   private FeatureCollectionCache featureCollectionCache;
 
-
   @Autowired
   private DataRootManager dataRootManager;
 
   ///////////////////////////////////////////////////////////
 
   /**
-   * LOOK not sure why in this class, maybe better in ??
    * If a catalog exists and is allowed (not filtered out) for the given path, return
    * the catalog as an Catalog. Otherwise, return null.
    * <p/>

@@ -106,6 +106,10 @@ return true;
     return ncmlDatasetHash.get(path);
   }
 
+  public CatalogExt findCatalogExt(String path) {
+    return null;
+  }
+
   public void close() {
   }
 

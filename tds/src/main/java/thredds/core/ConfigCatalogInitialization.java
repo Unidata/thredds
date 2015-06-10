@@ -41,6 +41,7 @@ import thredds.client.catalog.Service;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
+import thredds.server.catalog.tracker.CatalogWatcher;
 import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
@@ -75,6 +76,9 @@ public class ConfigCatalogInitialization {
 
   @Autowired
   private DatasetTracker datasetTracker;
+
+  @Autowired
+  private CatalogWatcher catalogWatcher;
 
   @Autowired
   private AllowedServices allowedServices;
@@ -187,6 +191,7 @@ public class ConfigCatalogInitialization {
       if (exceedLimit) return;
       Path relLocation = Paths.get(dirPath, catScan.getLocation());
       Path absLocation = Paths.get(f.getParent(), catScan.getLocation());
+      if (catalogWatcher != null) catalogWatcher.register(absLocation);
       readCatsInDirectory(relLocation.toString(), absLocation);
     }
   }

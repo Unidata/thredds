@@ -158,6 +158,8 @@ public class TestEsgCats {
 
     DataRootPathMatcher<DataRoot> dataRootPathMatcher = new DataRootPathMatcher<>();
     DatasetTracker tracker = new DatasetTrackerChronicle();
+    CatalogWatcher catalogWatcher = new CatalogWatcher(tracker);
+
     AllowedServices allowedServices = new AllowedServices();
     String top = "B:/esgf/badc/data1/esgcet/";
     ConfigCatalogInitialization reader = new ConfigCatalogInitialization(top, "catalogScan.xml",
@@ -209,6 +211,7 @@ public class TestEsgCats {
       }
     }, 1000 * 1000);
 
+    catalogWatcher.processEvents(); // this will loop forever
     tracker.close();
 
     long now = System.nanoTime();
