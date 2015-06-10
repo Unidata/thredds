@@ -337,11 +337,7 @@ public class TestDir {
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  public static int readAllDir(String dirName, FileFilter ff) throws IOException {
-    return actOnAll(dirName, ff, new ReadAllVariables());
-  }
 
-  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   public static void readAll(String filename) throws IOException {
     ReadAllVariables act = new ReadAllVariables();
     act.doAct(filename);
@@ -353,7 +349,6 @@ public class TestDir {
     public int doAct(String filename) throws IOException {
       System.out.println("\n------Reading filename "+filename);
       try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
-
         for (Variable v : ncfile.getVariables()) {
           if (v.getSize() > max_size) {
             Section s = makeSubset(v);
@@ -364,10 +359,8 @@ public class TestDir {
             v.read();
           }
         }
-      } catch (Exception e) {
-        e.printStackTrace();
-        //assert false;
-
+      } catch (InvalidRangeException e) {
+        throw new RuntimeException(e);
       }
 
       return 1;

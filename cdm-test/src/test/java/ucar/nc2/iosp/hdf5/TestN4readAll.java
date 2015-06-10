@@ -58,11 +58,22 @@ public class TestN4readAll {
   @Parameterized.Parameters(name="{0}")
  	public static Collection<Object[]> getTestParameters() throws IOException {
     Collection<Object[]> filenames = new ArrayList<>();
-    TestDir.actOnAllParameterized(testDir + "nc4", null, filenames);
-    TestDir.actOnAllParameterized(testDir + "nc4-classic", null, filenames);
-    TestDir.actOnAllParameterized(testDir + "files", null, filenames);
 
- 		return filenames;
+    try {
+      TestDir.actOnAllParameterized(testDir + "nc4-classic", null, filenames);
+      TestDir.actOnAllParameterized(testDir + "files", null, filenames);
+    } catch (IOException e) {
+      // JUnit *always* executes a test class's @Parameters method, even if it won't subsequently run the class's tests
+      // due to an @Category exclusion. Therefore, we must not let it throw an exception, or else we'll get a build
+      // failure. Instead, we return a collection containing a nonsense value (to wit, the exception message).
+      //
+      // Naturally, if we execute a test using that nonsense value, it'll fail. That's fine; we need to deal with the
+      // root cause. However, it is more likely that the exception occurred because "!isCdmUnitTestDirAvailable", and
+      // as a result, all NeedsCdmUnitTest tests will be excluded.
+      filenames.add(new Object[]{e.getMessage()});
+    }
+
+    return filenames;
  	}
 
   String filename;
@@ -74,5 +85,4 @@ public class TestN4readAll {
   public void readAll() throws IOException {
     TestDir.readAll(filename);
   }
-
 }
