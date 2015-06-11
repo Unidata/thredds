@@ -103,8 +103,48 @@ public class TestTdsDatasetScan {
     Dataset top = cat.findDatasetByID("NWS/NPN/6min");
     List<Dataset> children = top.getDatasets();
     assert children.size() == 2 : children.size();
-
   }
+
+  /*
+  see http://www.freeformatter.com/url-encoder.html
+
+  Current State in 4,6:
+  1) no encoding in the XML:
+
+  <dataset name="encoding" ID="scanCdmUnitTests/encoding">
+    <catalogRef xlink:href="d2.nc%3Bchunk%3D0/catalog.xml" xlink:title="d2.nc%3Bchunk%3D0" ID="scanCdmUnitTests/encoding/d2.nc%3Bchunk%3D0" name=""/>
+    <catalogRef xlink:href="d2.nc;chunk=0/catalog.xml" xlink:title="d2.nc;chunk=0" ID="scanCdmUnitTests/encoding/d2.nc;chunk=0" name=""/>
+    <catalogRef xlink:href="dir mit blank/catalog.xml" xlink:title="dir mit blank" ID="scanCdmUnitTests/encoding/dir mit blank" name=""/>
+  </dataset>
+
+  2) no url encoding in the HTML:
+
+    <a href='d2.nc%3Bchunk%3D0/catalog.html'><tt>d2.nc%3Bchunk%3D0/</tt></a></td>
+    <a href='d2.nc;chunk=0/catalog.html'><tt>d2.nc;chunk=0/</tt></a></td>
+    <a href='dir mit blank/catalog.xml'><tt>dir mit blank/</tt></a></td>
+
+  3) drill further in
+   3.1)  encoding/d2.nc%3Bchunk%3D0/catalog.xml gets returned and unencoded to encoding/d2.nc;chunk=0/20070301.nc"
+         http://localhost:8081/thredds/dodsC/scanCdmUnitTests/encoding/d2.nc;chunk=0/20070301.nc.html fails (wrong directory)
+
+   3.2) http://localhost:8081/thredds/catalog/scanCdmUnitTests/encoding/d2.nc;chunk=0/catalog.xml does not get urlencoded by browser
+        HEAD /thredds/catalog/scanCdmUnitTests/encoding/d2.nc;chunk=0/catalog.html
+        fails with 404
+
+   3.3) dir mit blank/catalog.xml gets URLencoded by browser to dir%20mit%20blank/catalog.xml
+        all seems to work ok (with exception of the containing catalog)
+        notice that "dir mit blank/catalog.xml" ends in xml (!) : getting an exception in HtmlWriter
+
+   */
+
+  @Test
+   public void testEncodingWithBlanks() throws IOException {
+     Catalog cat = TestTdsLocal.open("catalog/scanCdmUnitTests/encoding/catalog.xml");
+
+     Dataset top = cat.findDatasetByID("scanCdmUnitTests/encoding");
+     List<Dataset> children = top.getDatasets();
+     assert children.size() == 3 : children.size();
+   }
 
 
 }
