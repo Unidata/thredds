@@ -63,7 +63,7 @@ import java.util.concurrent.ExecutionException;
  */
 @Component("ConfigCatalogCache")
 @DependsOn("TdsContext")
-public class ConfigCatalogCache implements InitializingBean {
+public class ConfigCatalogCache {
   static private final Logger logger = LoggerFactory.getLogger(ConfigCatalogCache.class);
   static private final String ERROR = "*** ERROR ";
 
@@ -84,11 +84,10 @@ public class ConfigCatalogCache implements InitializingBean {
             .build();
   }
 
-  @Override
-  public void afterPropertiesSet() {
-    this.rootPath = tdsContext.getContentRootPathProperty() +"thredds/";
+  public void init(String rootPath, int maxSize) {
+    this.rootPath = rootPath == null ? tdsContext.getContentRootPathProperty() +"/thredds/" : rootPath;
     this.cache = CacheBuilder.newBuilder()
-            .maximumSize(1000)
+            .maximumSize(maxSize)
             .recordStats()
                     // .removalListener(MY_LISTENER)
             .build( new CacheLoader<String, ConfigCatalog>() {

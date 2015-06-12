@@ -78,7 +78,17 @@
 </ul>
 <h3>FeatureCollection</h3>
 <ul>
-  <li>standard service elements are used, user specified ones are ignored</li>
+  <li>standard service elements are used, user specified ones are ignored (?)</li>
+</ul>
+<h2>ThreddsConfig.xml</h2>
+<ul>
+  <li>Control over Catalog Caching is different, now you can control how many catalogs are cached, rather than turning caching on or off. So the following is no longer used, see <a href="reference/ThreddsConfigXMLFile.html#CatalogCaching">here</a> for the new syntax:
+<pre>
+&lt;Catalog&gt;
+  &lt;cache&gt;false&lt;/cache&gt;
+&lt;/Catalog&gt;
+</pre></li>
+  <li></li>
 </ul>
 <h2>New Features in version 5 ??</h2>
 <ul>

@@ -69,7 +69,7 @@
     </ul>
   </li>
   <ul>
-    <li><a href="#CatalogCaching">Static Catalog caching</a><br>
+    <li><a href="#CatalogCaching">Config Catalog caching</a><br>
     </li>
   </ul>
 </ul>
@@ -156,9 +156,6 @@ where:
     it here to enable this feature. (<em>since version 4.3.14)</em></li>
 </ol>
 <h3><a name="catalogOutput" id="catalogOutput">Controlling THREDDS catalog output</a></h3>
-
-<p><em>since version 4.1</em><br>
-</p>
 <pre>
 &lt;catalogWriting&gt;
   &lt;useBytesForDataSize&gt;false&lt;useBytesForDataSize/&gt;
@@ -195,8 +192,6 @@ where:
 </pre>
 <p>You can add a <em><strong>DataSource</strong></em> - essentially an IOSP with access to Servlet request parameters, by loading a
   <a href="DatasetSource.html">dataset source</a> at runtime.</p>
-<hr>
-
 <h3><a name="LogVersionInfo">Checking for Updates</a></h3>
 <pre>
 &lt;TdsUpdateConfig&gt;
@@ -456,9 +451,9 @@ where:
       </p></td>
     </tr>
     <tr>
-      <td>ehcache.dir</td>
-      <td><strong>cache/ehcache/</strong></td>
-      <td>object cache, put ehcache backup file in this directory</td>
+      <td>GribIndex.dir</td>
+      <td><strong>cache/grib/</strong></td>
+      <td>put GRIB Index files (gbx9, ncx3) in this directory</td>
     </tr>
     <tr>
       <td>FeatureCollectionCache.dir</td>
@@ -524,11 +519,9 @@ ln -s /data/thredds/content content</pre>
   not specifying the <strong>DiskCache.dir</strong> element.</p>
 
 <h3><a name="AggregationCache">Aggregation Cache</a></h3>
-
-<p><em>since version 4.1</em></p>
 <pre>
 &lt;AggregationCache&gt;
-  &lt;dir&gt;/temp/acache/&lt;/dir&gt;
+  &lt;dir&gt;/tomcat_home/content/thredds/cache/agg/&lt;/dir&gt;
   &lt;scour&gt;24 hours&lt;/scour&gt;
   &lt;maxAge&gt;90 days&lt;/maxAge&gt;
 &lt;/AggregationCache&gt;
@@ -549,8 +542,7 @@ ln -s /data/thredds/content content</pre>
   pronounced difference with and without this cache. </p>
 
 <p>The cache information is updated based on the <strong>recheckEvery</strong> field in the <strong>joinExisting</strong> aggregation element.</p>
-<h3>FeatureCollection cache<a name="FeatureCollectionCache"></a></h3>
-<p><em>since version 4.2</em></p>
+<h3>FeatureCollection cache</h3>
 <p>This is where persistent information is kept about FMRCs, in order to speed them up. We recommend that you use the default settings, by not specifying this option.</p>
 <pre> &lt;FeatureCollection&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/cache/collection/&lt;/<strong>dir</strong>&gt;
    &lt;<strong>maxSize</strong>&gt;20 Mb&lt;/<strong>maxSize</strong>&gt;
@@ -561,8 +553,6 @@ ln -s /data/thredds/content content</pre>
   <li><strong>jvmPercent</strong>: alternately, set the memory use as a percent of JVM memory, ie -Xmx value.&nbsp;<strong>maxSize</strong>&nbsp;will override if present. Default is 2 %.</li>
 </ol>
 <h3><a name="GribIndexWriting" id="GribIndexWriting">GRIB Index redirection</a></h3>
-
-<p><em>since version 4.3.15</em></p>
 <pre>
 &lt;GribIndex&gt;
   &lt;alwaysUse&gt;false&lt;/alwaysUse&gt;
@@ -594,14 +584,13 @@ ln -s /data/thredds/content content</pre>
 </ol>
 <p>Managing the GRIB indices is an important task, and can be difficult if the files are changing, as in a rolling archive, or for very large collections. There are two typical ways to do this:</p>
 <ol>
-  <li>For rolling archives, allow the indices to be written in the same directory as the data files by specifying <em>&lt;neverUse&gt;true&lt;/neverUse&gt;</em> or by not using a <em>&lt;neverUse&gt;</em> or <em>&lt;alwaysUse&gt;</em> element (which uses the default behavior). When you delete the data files, delete the corresponding indices. (The TDM will eventually handle the task of mainintaining a rolling archive by deleting files).</li>
-  <li>If you need to keep the index files separate from your data files, set <em>&lt;alwaysUse&gt;true&lt;/alwaysUse&gt;</em>, and use <em>&lt;policy&gt;nestedDirectory&lt;/policy&gt;</em>. There is currently no way to specify different cache directories for different datasets. All GRIB indices, both <strong>gbx9</strong> and <strong>ncx2</strong>, are kept in the same cache.</li>
+  <li>For rolling archives, allow the indices to be written in the same directory as the data files by specifying <em>&lt;neverUse&gt;true&lt;/neverUse&gt;</em> or by not using a <em>&lt;neverUse&gt;</em> or <em>&lt;alwaysUse&gt;</em> element (which uses the default behavior). When you delete the data files, delete the corresponding indices. </li>
+  <li>If you need to keep the index files separate from your data files, set <em>&lt;alwaysUse&gt;true&lt;/alwaysUse&gt;</em>, and use <em>&lt;policy&gt;nestedDirectory&lt;/policy&gt;</em>. There is currently no way to specify different cache directories for different datasets. All GRIB indices, both <strong>gbx9</strong> and <strong>ncx3</strong>, are kept in the same cache.</li>
 </ol>
 <p>A good rule of thumb is that the index files will need disk space between 500 and 1000 times smaller than the size of the grib data files. So a 1 Terabyte collection of GRIB data will need up to 2 GB of indices.</p>
 <hr style="width: 100%; height: 2px;">
 <h2>Object Caching</h2>
 <p>The default settings will work well enough, and you should only tune them if you have performance problems, and are able to monitor their effect.</p>
-<h2></h2>
 <h3><a name="RafCache" id="RafCache">File Handle Caching</a></h3>
 <pre>
 &lt;RandomAccessFile&gt;
@@ -632,103 +621,19 @@ sum of the maxFiles does not exceed your OS maximum. For better performance, mak
   <strong>scour</strong> amount of time, older items in the cache will be released, until only <strong>minFiles</strong> objects are left. The
   <strong>scour</strong> element uses any valid <strong><em>udunits</em></strong> time string, such as <em><strong>sec, min, hour, day</strong></em>. To disable
   the cache, set <strong>maxFiles</strong> to 0.</p>
-<h3><a name="CatalogCaching" id="CatalogCaching">Static Catalog Caching</a></h3>
-
-<p><em>since version 4.2.8</em></p>
-
-<p>Static catalogs are cached for performance, under the assumption there are a small number of them. If you have a large number of static catalogs, you may
-  turn caching off to save memory, at the cost of some performace slowdown. Root catalogs are always cached, as are catalogs with <strong>datasetFmrc</strong>
-  and <strong>featureCollections</strong> in them.</p>
+<h3><a name="CatalogCaching" id="CatalogCaching">Configuration Catalog Caching</a></h3>
+<p>Configuration catalogs are always cached in memory, for performance reasons, using an LRU (least recently used) eviction algorithm. You can no longer turn off caching. To set the maximum number of catalogs in cache, set the &lt;cacheCatalogs&gt; element.</p>
+<p>Certain datasets have metadata that needs to be quickly accessible. We use an off-heap, peristent key-value store for that, stored, by default in <strong>{tomcat_home}/content/thredds/cache/catalog/</strong>. Some key-value implementations need to know the maximum number of datasets that might be stored. In particular, ESG/ESGF nodes may need to find out this value and set the following:</p>
 <pre>
 &lt;Catalog&gt;
-  &lt;cache&gt;false&lt;/cache&gt;
-&lt;/Catalog&gt;
-</pre>
-<hr>
-<h2>IGNORE BELOW THIS</h2>
-<p><strong>LOOK the following may not be working</strong></p>
-
-<p>You may also set <em>cache=false</em> on a <strong>datasetRoot</strong> element. This controls whether a file is put in the NetcdfFile object cache. All
-  files that are found through that datasetRoot are affected. Example:</p>
- <pre>
- &lt;catalog xmlns=<a href="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0">"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"</a>
-  xmlns:xlink=<a href="http://www.w3.org/1999/xlink">"http://www.w3.org/1999/xlink"</a> name="THREDDS Catalog for  NetCDF Files" version="1.0.3"&gt;      
-     
-  &lt;service name="ncdods" serviceType="OpenDAP" base="<em>/thredds/dodsC/</em>"/&gt;      
-
-  &lt;datasetRoot path="FVCOM" location="<em>/http/www/CODFISH/Data/COM/</em>" cache="false"/&gt;
-  &lt;datasetRoot path="ZZTOP" location="<em>/http/www/CODFISH/Data/ZCOM/</em>" /&gt;
-      
-  &lt;dataset name="GOM2 Forecast" ID="gom2_nocache" serviceName="ncdods" urlPath="FVCOM/NECOFS/Forecasts/NECOFS_GOM2_FORECAST.nc" dataType="Grid"/&gt;     
-  &lt;dataset name="GOM3 Forecast" ID="gom3_nocache" serviceName="ncdods" urlPath="FVCOM/NECOFS/Forecasts/NECOFS_GOM3_FORECAST.nc" dataType="Grid"/&gt;     
-  &lt;dataset name="MASSBAY Forecast" ID="massbay_nocache"  serviceName="ncdods" urlPath="ZZTOP/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_MASSBAY_FORECAST.nc"  dataType="Grid"/&gt; 
-&lt;/catalog&gt;    
- </pre>
-<p>In the above example, the files </p>
-<ul>
-  <li><em>/http/www/CODFISH/Data/COM/NECOFS/Forecasts/NECOFS_GOM2_FORECAST.nc</em></li>
-  <li><em>/http/www/CODFISH/Data/COM/NECOFS/Forecasts/NECOFS_GOM3_FORECAST.nc</em></li>
-</ul>
-<p>will not be cached, but this one will be cached:</p>
-<ul>
-  <li><em>/http/www/CODFISH/Data/ZCOM/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_MASSBAY_FORECAST.nc</em></li>
-</ul>
-<h3><a name="Ehcache">Ehcache Object Cache</a></h3>
-
-<p><em>NOT CURRENTLY USED</em></p>
-
-<p>The ehcache object cache is backed up in this directory. Currently, only OS directory scans are cached here.</p>
-<pre>
-&lt;ehcache&gt;
-  &lt;configFile&gt;/tomcat_home/webapp/WEB-INF/ehcache.xml&lt;/configFile&gt;
-  &lt;dir&gt;/tomcat_home/content/thredds/ehcache/&lt;/dir&gt;
-&lt;/ehcache&gt;
-</pre>
-<ul>
-  <li>location of <a href="http://ehcache.org/">ehcache</a> configuration file.</li>
-  <li>location of ehcache data files. If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/ehcache/</strong> directory We
-    recommend that you use this default, by not specifying an <strong>ehcache</strong>.<strong>dir</strong> element.
-</li>
-</ul>
-<h3>The <code>contentRoot</code> Element</h3>
-
-<p><strong>DO NOT USE</strong></p>
-
-<p>Intended to chain together multiple "content" directories. For instance, the following:</p>
-<pre>
-&lt;contentRoots&gt;
-  &lt;contentRoot&gt;motherlode&lt;/contentRoot&gt;
-  &lt;contentRoot&gt;idd&lt;/contentRoot&gt;
-&lt;/contentRoots&gt;
-</pre>
-
-<p>chains together:</p>
-<ul>
-  <li>content/thredds,</li>
-  <li>WEB-INF/altContent/idd/thredds, and</li>
-  <li>WEB-INF/altContent/motherlode/thredds</li>
-</ul>
-
-<h3>The <code>dataRoot</code> Element</h3>
-
-<p><strong>NOT YET IMPLEMENTED</strong></p>
-
-<p>Eventually will provide macro-replacment in datasetScan location attributes.
-  For instance:</p>
-
-<pre>
-&lt;DataRoots&gt;
-  &lt;idd&gt;/data/ldm/pub&lt;/idd&gt;
-&lt;/DataRoots&gt;
-</pre>
-<p>Could be used with:</p>
-<pre>
-&lt;datasetScan ... location="${iddDataRoot}/fsl"&gt;...&lt;/datasetScan&gt;
-</pre>
+  &lt;cacheCatalogs&gt;100&lt;/cacheCatalogs&gt;
+  &lt;dir&gt;/tomcat_home/content/thredds/cache/catalog/&lt;/dir&gt;
+  &lt;maxDatasets&gt;10000&lt;/maxDatasets&gt;
+&lt;/Catalog&gt;</pre>
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">
-  This document is maintained by elves and was last updated April 2015.
+  This document is maintained by elves and was last updated July 2015.
   Send comments to
 <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

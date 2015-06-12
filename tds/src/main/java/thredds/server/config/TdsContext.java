@@ -153,9 +153,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
   @Override
   public void destroy() {
-    logServerStartup.info("TdsContext: releasing resources");
-    logServerStartup.info("TdsContext: Shutting down collection manager");
-    CollectionUpdater.INSTANCE.shutdown();
     logServerStartup.info("TdsContext: shutdownLogging()");
     Log4jWebConfigurer.shutdownLogging(servletContext); // probably not needed anymore with log4j-web in classpath
   }

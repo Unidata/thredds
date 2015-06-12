@@ -20,17 +20,16 @@ import java.io.IOException;
  */
 public class DatasetTrackerChronicle implements DatasetTracker {
 
-  final ChronicleMap<String, Externalizable> map;
-  private int count = 0;
+  ChronicleMap<String, Externalizable> map;
 
-  public DatasetTrackerChronicle() throws IOException {
-    String pathname = "C:/temp/chronicleTest/cats.dat";
-    File file = new File(pathname);
+  public boolean init(String pathname, long maxDatasets) throws IOException {
+    File file = new File(pathname+"/chronicle.dat");
 
     ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
-             .averageValueSize(200).entries(1000 * 1100);
+             .averageValueSize(200).entries(maxDatasets);
 
     map = builder.createPersistedTo(file);
+    return true;
   }
 
   @Override
@@ -57,7 +56,7 @@ public class DatasetTrackerChronicle implements DatasetTracker {
         System.out.println("HEY");
       if (path == null) path = accessPath;
       else if (!path.equals(access.getUrlPath())) {
-        System.out.printf(" %s%n %s%n%n", path, accessPath);
+        System.out.printf(" paths differ: %s%n %s%n%n", path, accessPath);
       }
     }
     if (path == null)

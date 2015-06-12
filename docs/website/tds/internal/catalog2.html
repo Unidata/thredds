@@ -4,34 +4,29 @@
 </head>
 <body>
 <h1>Catalog redesign</h1>
-<p><em>3/30/2015</em></p>
+<p><em>6/12/2015</em></p>
+<h2>ESGF Mode</h2>
 <ol>
-  <li>Client / server catalog split
-    <ul>
-      <li>thredds.client.catalog</li>
-      <li>thredds.server.catalog</li>
-    </ul>
-  </li>
-  <li>Catalog objects are immutable
-    <ul>
-      <li>Builder pattern</li>
-    </ul>
-  </li>
-  <li>Server objects cacheable  </li>
-  <ul>
-    <li>ConfigCatalogCache</li>
-  </ul>
-  <li>Probably have to be serializable
-    
-    <ul>
-      <li>Externalizable </li>
-      <li>protobuf </li>
-      <li>thredds.server.catalog.proto</li>
-    </ul>
+  <li>DataRoots are in top catalog.</li>
+  <li>Standard services in top catalog (?)</li>
+  <li>Use CatalogScan with watches</li>
+  <li>DatasetTracker persists <em>restrict, ncml</em></li>
+  <li>Updating
+    <ol>
+      <li>If no cache, read in all catalogs into cache, record lastRead</li>
+      <li>If cache, read catalog lastModified, test against lastRead, record lastRead</li>
+      <li>Manual reinit (just remove cache ??)</li>
+      <li>CatalogScan has watch, if changed, then reread that catalog.</li>
+      <li>This doesnt solve the problem of deletions. (drag and drop into delete folder ?)</li>
+    </ol>
   </li>
 </ol>
+<p>More General</p>
+<ol>
+  <li>    DataRootPathMatcher  could perist all data roots (dir, datasetScan, FC)</li>
+</ol>
 <p>&nbsp;</p>
-<h1>State redesign</h1>
+<h2>State redesign</h2>
 <p><em>3/30/2015</em></p>
 <ol>
   <li>Ids vs paths</li>

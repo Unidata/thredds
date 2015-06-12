@@ -7,7 +7,8 @@ import java.util.*;
 
 /**
  * Find the dataRoot path from the request, by getting the longest match.
- * Use a TreeSet for minimum memory use
+ * Use a TreeSet for minimum in-memory use.
+ * Keep the objects in a seperate map that could be off-heap and persistent.
  *
  * @author caron
  * @since 4/1/2015
@@ -15,7 +16,7 @@ import java.util.*;
 public class DataRootPathMatcher<T> {
   static private final boolean debug = false;
   private final TreeSet<String> treeSet;    // this should be in-memory for speed
-  private final Map<String, T> map;         // this could be turned into an off-heap cache if needed
+  private final Map<String, T> map;         // this could be turned into an off-heap cache if needed, with persistence.
 
   public DataRootPathMatcher() {
     treeSet = new TreeSet<>( new PathComparator());

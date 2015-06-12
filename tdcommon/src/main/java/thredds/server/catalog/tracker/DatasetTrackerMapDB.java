@@ -20,19 +20,20 @@ import java.io.File;
  */
 public class DatasetTrackerMapDB implements DatasetTracker {
 
-  final HTreeMap<String, Externalizable> map;
+  private HTreeMap<String, Externalizable> map;
   private int count;
 
-  public DatasetTrackerMapDB() {
-    String pathname = "C:/temp/mapDBtest/cats.dat";
-    File file = new File(pathname);
+  public boolean init(String pathname, long maxDatasets) {
+    File file = new File(pathname+"/mapdb.dat");
 
     DB db = DBMaker.newFileDB(file)
+            .transactionDisable()
             .mmapFileEnableIfSupported()
             .closeOnJvmShutdown()
             .make();
 
     map = db.getHashMap("datasets");
+    return true;
   }
 
   @Override

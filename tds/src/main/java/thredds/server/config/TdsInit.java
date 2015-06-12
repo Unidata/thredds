@@ -36,16 +36,20 @@ package thredds.server.config;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.core.AllowedServices;
+import thredds.core.ConfigCatalogCache;
 import thredds.core.ConfigCatalogInitialization;
 import thredds.core.DatasetManager;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.featurecollection.CollectionUpdater;
+import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.util.LoggerFactorySpecial;
@@ -61,6 +65,7 @@ import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -73,8 +78,8 @@ import java.util.TimerTask;
  * @since Feb 20, 2009
  */
 
-@Component
-public class TdsInit implements DisposableBean, ApplicationListener<ContextRefreshedEvent> {
+@Component("TdsInit")
+public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private DiskCache2 aggCache, gribCache, cdmrCache;
@@ -88,22 +93,52 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
   private DatasetManager datasetManager;
 
   @Autowired
-  private ConfigCatalogInitialization configCatalogManager;
+  private ConfigCatalogCache ccc;
 
+  @Autowired
+  private DatasetTracker datasetTracker;
+
+  @Autowired
+  private ConfigCatalogInitialization configCatalogInitializer;
 
   @Autowired
   private AllowedServices allowedServices;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
-    startupLog.info("TdsInit {}", event);
-    synchronized (this) {
-      if (!wasInitialized) {
-        wasInitialized = true;
-        init();
-        configCatalogManager.init();
+    if (event instanceof ContextRefreshedEvent) {  // startup
+      startupLog.info("TdsInit {}", event);
+      synchronized (this) {
+        if (!wasInitialized) {
+          wasInitialized = true;
+          init();
+          configCatalogInitializer.init();
+        }
       }
     }
+  }
+
+  @Override
+  public void destroy() {
+      // background threads
+      if (timer != null) timer.cancel();
+      FileCache.shutdown();              // this handles background threads for all instances of FileCache
+      if (aggCache != null) aggCache.exit();
+      if (gribCache != null) gribCache.exit();
+      if (cdmrCache != null) cdmrCache.exit();
+      thredds.inventory.bdb.MetadataManager.closeAll(); // LOOK used ??
+      CollectionUpdater.INSTANCE.shutdown();
+
+      // open files caches
+      RandomAccessFile.shutdown();
+      NetcdfDataset.shutdown();
+
+      // memory caches
+      GribCdmIndex.shutdown();
+      datasetTracker.close();
+
+      startupLog.info("TdsInit shutdown");
+      MDC.clear();
   }
 
   public void init() {
@@ -255,26 +290,6 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
       startupLog.error("TdsInit: Failed to open CollectionManagerAbstract.setMetadataStore= " + fcCache, e);
     }
 
-    /*
-    // new for 4.1 - ehcache object caching
-    String ehConfig = ThreddsConfig.get("ehcache.configFile", tdsContext.getWebinfPath() + "/ehcache.xml");
-    String ehDirectory = ThreddsConfig.get("ehcache.dir", null);
-    if (ehDirectory == null)
-      ehDirectory = ThreddsConfig.get("ehcache.directory", tdsContext.getContentDirectory().getPath() + "/cache/ehcache/");  // directory is old way
-    try {
-      cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
-      DatasetCollectionMFiles.setController(cacheManager);
-      startupLog.info("TdsInit: ehcache.config= "+ehConfig+" directory= "+ehDirectory);
-
-    } catch (IOException ioe) {
-      startupLog.error("TdsInit: Cant read ehcache config file "+ehConfig, ioe);
-    }
-    */
-
-    ////////////////////////////////////
-    //AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
-    // FmrcInventoryServlet.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
-
     ///////////////////////////////////////////////
     // Object caching
     int min, max, secs;
@@ -309,29 +324,26 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     //RandomAccessFile.enableDefaultGlobalFileCache();
     //RandomAccessFile.setDebugLeaks(true);
 
+    // Config Cat Cache
+    max = ThreddsConfig.getInt("Catalog.cacheCatalogs", 100);
+    ccc.init(null, max);
+
+    // Config Dataset Tracker
+    String trackerDir = ThreddsConfig.get("Catalog.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/catalog/").getPath());
+    int trackerMax = ThreddsConfig.getInt("Catalog.maxDatasets", 1000 * 1000);
+    try {
+      File trackerFile = new File(trackerDir);
+      if (!trackerFile.exists()) {
+        boolean ok = trackerFile.mkdir();
+        startupLog.info("TdsInit: tracker directory {} make ok = {}", trackerDir, ok);
+      }
+
+      datasetTracker.init(trackerDir, trackerMax);
+    } catch (IOException e) {
+      startupLog.error("Error initializing dataset tracker " + datasetTracker.getClass().getName(), e);
+    }
+
     startupLog.info("TdsInit complete");
-  }
-
-  //should be called when tomcat exits
-  public void destroy() throws Exception {
-    // background threads
-    if (timer != null) timer.cancel();
-    FileCache.shutdown();              // this handles background threads for all instances of FileCache
-    if (aggCache != null) aggCache.exit();
-    if (gribCache != null) gribCache.exit();
-    if (cdmrCache != null) cdmrCache.exit();
-    thredds.inventory.bdb.MetadataManager.closeAll(); // LOOK used ??
-    CollectionUpdater.INSTANCE.shutdown();
-
-    // open files caches
-    RandomAccessFile.shutdown();
-    NetcdfDataset.shutdown();
-
-    // memory caches
-    GribCdmIndex.shutdown();
-
-    startupLog.info("TdsInit shutdown");
-    MDC.clear();
   }
 
   static private class CacheScourTask extends TimerTask {

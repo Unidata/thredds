@@ -9,6 +9,11 @@ import thredds.client.catalog.Dataset;
  * @since 6/8/2015
  */
 public class DatasetTrackerNoop implements DatasetTracker {
+
+  public boolean init(String dirPath, long maxDatasets) {
+    return true;
+  }
+
   @Override
   public boolean trackDataset(Dataset ds, Callback callback) {
     if (callback != null) callback.hasDataset(ds);

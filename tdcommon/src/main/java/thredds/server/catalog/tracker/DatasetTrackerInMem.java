@@ -9,6 +9,7 @@ import thredds.client.catalog.Dataset;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +31,10 @@ public class DatasetTrackerInMem implements DatasetTracker {
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
   private Map<String, String> ncmlDatasetHash = new HashMap<>();
   private int count;
+
+  public boolean init(String dirPath, long maxDatasets) {
+    return true;
+  }
 
   public boolean trackDataset(Dataset dataset, Callback callback) {
     if (callback != null) callback.hasDataset(dataset);

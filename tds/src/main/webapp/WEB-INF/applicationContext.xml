@@ -106,10 +106,14 @@
 	</bean> -->
 
   <!--- thredds 4.6 / 5.0 -->
+  <bean id="TdsInit" class="thredds.server.config.TdsInit" />   <!-- must declare here in order to get destroy() to be called -->
   <bean id="pathMatcher" class="thredds.server.catalog.DataRootPathMatcher" />
-  <bean id="ConfigCatalogInitialization" class="thredds.core.ConfigCatalogInitialization" />
   <bean id="ConfigCatalogCache" class="thredds.core.ConfigCatalogCache" />
   <bean id="DatasetTracker" class="thredds.server.catalog.tracker.DatasetTrackerMapDB" />
+  <bean id="CatalogWatcher" class="thredds.server.catalog.tracker.CatalogWatcher">
+    <constructor-arg ref="DatasetTracker" />
+  </bean>
+  <bean id="ConfigCatalogInitialization" class="thredds.core.ConfigCatalogInitialization" />
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
   <!-- bean id="RestrictedDataset" class="thredds.servlet.restrict.RestrictedAccessController" / -->

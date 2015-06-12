@@ -1,7 +1,7 @@
 package thredds.servlet;
 
 import org.junit.Test;
-import thredds.core.PathMatcher;
+import thredds.server.catalog.DataRootPathMatcher;
 
 /**
  * Test PathMatcher
@@ -11,14 +11,14 @@ import thredds.core.PathMatcher;
  */
 public class TestPathMatcher {
 
-  private void doit( PathMatcher m, String s, boolean hasMatch) {
-    Object result = m.match(s);
+  private void doit( DataRootPathMatcher m, String s, boolean hasMatch) {
+    Object result = m.findLongestPathMatch(s);
     assert (result != null) == hasMatch : s +" match " + result;
   }
       
   @Test
   public void tester() {
-    PathMatcher<Integer> m = new PathMatcher<>();
+    DataRootPathMatcher<Integer> m = new DataRootPathMatcher<>();
     m.put("/thredds/dods/test/longer", 1);
     m.put("/thredds/dods/test", 2);
     m.put("/thredds/dods/tester", 3);

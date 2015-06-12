@@ -37,7 +37,7 @@ import net.jcip.annotations.Immutable;
 
 /**
  * A DataRoot matches URLs to the objects that can serve them.
- * A PathMatcher manages a hash table of path -> DataRoot
+ * A DataRootPathMatcher manages a hash tree of path -> DataRoot
  *
  * Possible design:
  *   catKey : which catalog defined this?   not present at the moment
@@ -52,10 +52,10 @@ import net.jcip.annotations.Immutable;
 public class DataRoot {
   private static final boolean show = false;
 
-  private final String path;          // match this path
-  private final String dirLocation;   // to this directory
-  private final DatasetScan scan;     // the DatasetScan that created this (may be null)
-  private final FeatureCollectionRef featCollection; // the FeatureCollection that created this (may be null)
+  private final String path;          // match this path to 1 of the following:
+  private final String dirLocation;   // 1) this directory  (not null)
+  private final DatasetScan scan;     // 2) the DatasetScan that created this (may be null)
+  private final FeatureCollectionRef featCollection; // 2) the FeatureCollection that created this (may be null)
 
   public DataRoot(FeatureCollectionRef featCollection) {
     this.path = featCollection.getPath();

@@ -20,8 +20,6 @@ public class CatalogScan {
   }
 
   public CatalogScan(String location, String watch) {
-
-
     this.location = location;
     this.watch = watch;
   }
