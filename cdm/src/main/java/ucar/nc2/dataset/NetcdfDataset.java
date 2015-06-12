@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 import org.apache.http.Header;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
+import ucar.httpservices.HTTPCloseableMethod;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.ma2.Array;
@@ -825,7 +826,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (result != null)
       return result;
 
-    try (HTTPMethod method = HTTPFactory.Head(location)) {
+    try (HTTPCloseableMethod method = HTTPFactory.HEAD(location)) {
       int statusCode = method.execute();
       if (statusCode >= 300) {
         if (statusCode == 401)
@@ -847,7 +848,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(String location) throws IOException {
-    HTTPMethod method = null;
+    HTTPCloseableMethod method = null;
     int len = location.length();
     // Strip off any trailing .dds, .das, or .dods
     if (location.endsWith(".dds"))
@@ -860,7 +861,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     try {
       // For some reason, the head method is not using credentials
       // method = session.newMethodHead(location + ".dds");
-      method = HTTPFactory.Get(location + ".dds");
+      method = HTTPFactory.GET(location + ".dds");
 
       int status = method.execute();
       if (status == 200) {

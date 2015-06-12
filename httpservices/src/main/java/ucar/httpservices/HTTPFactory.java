@@ -131,5 +131,13 @@ public class HTTPFactory
     {
         return new HTTPMethod(HTTPSession.Methods.Options, legalurl);
     }
+    
+    static public HTTPCloseableMethod GET(String legalurl) throws HTTPException{
+    	return new HTTPCloseableMethod(HTTPSession.Methods.Get, legalurl);
+    }
+    
+    static public HTTPCloseableMethod HEAD(String legalurl) throws HTTPException{
+    	return new HTTPCloseableMethod(HTTPSession.Methods.Head, legalurl);
+    }
 
 }
