@@ -32,6 +32,7 @@
  */
 package ucar.nc2.writer;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -41,12 +42,14 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -159,7 +162,13 @@ public class TestFileWriting {
       System.out.println("N3streamWriter took " + took + " msecs");
 
       try (NetcdfFile file2 = NetcdfFile.open(fileOut)) {
-        assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+        Formatter f = new Formatter();
+        CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, true);
+        boolean ok = mind.compare(fileIn, file2, new CompareNetcdf2.Netcdf4ObjectFilter(), false, false, true);
+        if (!ok) {
+          System.out.printf("  %s%n", f);
+        }
+        Assert.assertTrue(filename, ok);
       }
       System.out.println("testFileWriter took " + took + " msecs");
     }

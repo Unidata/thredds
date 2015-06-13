@@ -65,7 +65,7 @@
       <property name="resolution" value="20 min"/>
 
       <collection spec="${cdmUnitTest}/ft/station/ldm-metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$"/>
-      <update startup="true" rescan="0 0/5 * * * ? *"/>
+      <update startup="true" rescan="0 0/1 * * * ? *"/>
       <protoDataset choice="Penultimate"/>
       <pointConfig datasetTypes="cdmrFeature Files"/>
     </featureCollection>

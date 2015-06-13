@@ -5,7 +5,7 @@
     <parameter code="1">
         <shortName>PRES</shortName>
         <description>Pressure</description>
-        <units>PA</units>
+        <units>Pa</units>
     </parameter>
     <parameter code="11">
         <shortName>TMP</shortName>
@@ -39,7 +39,7 @@
     </parameter>
     <parameter code="63">
         <shortName>ACPCP</shortName>
-        <description>Convective Precipitation</description>
+        <description>Convective Precipitation from EDAS</description>
         <units>kg/m^2</units>
     </parameter>
     <parameter code="65">
@@ -79,7 +79,7 @@
     </parameter>
     <parameter code="101">
         <shortName>PAR</shortName>
-        <description>Photosynthetically Active Radiation (PAR)</description>
+        <description>Photosynthetically Active Radiation (PAR) from GOES-UMD Pinker</description>
         <units>W/m^2</units>
     </parameter>
     <parameter code="111">
@@ -94,7 +94,7 @@
     </parameter>
     <parameter code="118">
         <shortName>BRTMP</shortName>
-        <description>Brightness Temperature</description>
+        <description>Brightness Temperature from GOES-UMD Pinker</description>
         <units>K</units>
     </parameter>
     <parameter code="121">
@@ -179,12 +179,12 @@
     </parameter>
     <parameter code="201">
         <shortName>PEDAS</shortName>
-        <description>Total Precipitation</description>
+        <description>Total Precipitation from EDAS</description>
         <units>kg/m^2</units>
     </parameter>
     <parameter code="202">
         <shortName>PRDAR</shortName>
-        <description>Total Precipitation</description>
+        <description>Total Precipitation from StageII</description>
         <units>kg/m^2</units>
     </parameter>
     <parameter code="203">
@@ -204,7 +204,7 @@
     </parameter>
     <parameter code="206">
         <shortName>RGOES</shortName>
-        <description>Downward Shortwave Radiation Flux</description>
+        <description>Downward Shortwave Radiation Flux from GOES-UMD Pinker</description>
         <units>W/m^2</units>
     </parameter>
     <parameter code="207">
@@ -214,7 +214,7 @@
     </parameter>
     <parameter code="209">
         <shortName>RSWRF</shortName>
-        <description>Downward Shortwave Radiation Flux</description>
+        <description>Downward Shortwave Radiation Flux blended from EDAS and GOES-UMD Pinker</description>
         <units>W/m^2</units>
     </parameter>
     <parameter code="210">

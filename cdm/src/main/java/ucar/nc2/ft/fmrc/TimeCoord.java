@@ -352,7 +352,7 @@ public class TimeCoord implements Comparable {
     for (TimeCoord tc : timeCoords) {
       if (tc.isInterval)
         throw new IllegalArgumentException("Cant mix interval coordinates");
-      for (double off : tc.getOffsetTimes()) 
+      for (double off : tc.getOffsetTimes())
         offsets.add(off);
     }
 

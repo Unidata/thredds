@@ -84,7 +84,7 @@ public class TimedCollection {
 
   }
 
-  public void update() throws IOException {
+  public CalendarDateRange update() throws IOException {
     datasets = new ArrayList<>();
     manager.scan(false);
     for (MFile f :  manager.getFilesSorted())
@@ -112,6 +112,7 @@ public class TimedCollection {
         dateRange = CalendarDateRange.of(first.getDateRange().getStart(), last.getDateRange().getEnd());
       }
     }
+    return dateRange;
   }
 
   private TimedCollection(TimedCollection from, CalendarDateRange want) {

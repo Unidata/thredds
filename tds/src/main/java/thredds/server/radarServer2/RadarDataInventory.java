@@ -174,15 +174,31 @@ public class RadarDataInventory {
         private String sep;
 
         private List<DirEntry> order;
+        private List<Integer> keyIndices;
 
         public DirectoryStructure(Path dir) {
             base = dir;
             sep = System.getProperty("file.separator");
             order = new ArrayList<>();
+            keyIndices = new ArrayList<>();
         }
 
         public void addSubDir(DirType type, String fmt) {
-            order.add(new DirEntry(type, fmt));
+            keyIndices.add(order.size());
+            if (type == DirType.Station || type == DirType.Variable) {
+                order.add(new DirEntry(type, fmt));
+            }
+        }
+
+        // Get a key for a path based on station/var
+        public String getKey(Path path) {
+            Path relPath = base.relativize(path);
+            String[] parts = relPath.toString().split(sep);
+            StringBuilder sb = new StringBuilder("");
+            for (int ind: keyIndices) {
+                sb.append(parts[ind]);
+            }
+            return sb.toString();
         }
 
         public DirectoryDateMatcher matcher() { return new DirectoryDateMatcher(); }
@@ -399,7 +415,7 @@ public class RadarDataInventory {
             return range == null || range.includes(d);
         }
 
-        public List<QueryResultItem> results() {
+        public Collection<QueryResultItem> results() {
             List<Path> results = new ArrayList<>();
             DirectoryStructure.DirectoryDateMatcher matcher = structure.matcher();
             results.add(structure.base);
@@ -466,7 +482,7 @@ public class RadarDataInventory {
             }
 
             // Now get the contents of the remaining directories
-            List<QueryResultItem> filteredFiles = new ArrayList<>();
+            Collection<QueryResultItem> filteredFiles = new ArrayList<>();
             for(Path p : filteredResults) {
                 try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
                     for (Path f: dirStream) {
@@ -495,21 +511,24 @@ public class RadarDataInventory {
             // If only looking for nearest, perform that reduction now
             CalendarDateRange originalRange = (CalendarDateRange) dates.get(0);
             if (originalRange != null && originalRange.isPoint()) {
-                long offset = Long.MAX_VALUE;
-                QueryResultItem bestMatch = null;
+                Map<String, Long> offsets = new TreeMap<>();
+                Map<String, QueryResultItem> best = new TreeMap<>();
+
                 for (QueryResultItem it: filteredFiles) {
+                    String key = structure.getKey(it.file);
+                    Long offset = offsets.get(key);
+                    if (offset == null) offset = Long.MAX_VALUE;
+
                     long check = Math.abs(it.time.getDifferenceInMsecs(
                             originalRange.getStart()));
                     if (check < offset) {
-                        offset = check;
-                        bestMatch = it;
+                        offsets.put(key, check);
+                        best.put(key, it);
                     }
                 }
 
-                // Clear and only return one file
-                filteredFiles.clear();
-                if (bestMatch != null)
-                    filteredFiles.add(bestMatch);
+                // Return the best matches in the map
+                filteredFiles = best.values();
             }
 
             return filteredFiles;

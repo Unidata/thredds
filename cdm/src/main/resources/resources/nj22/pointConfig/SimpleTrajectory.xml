@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointConfig featureType="TRAJECTORY">
+    <table type="Top" structName="traj">
+      <table type="Structure" subtype="Structure" structName="record">
+        <coordinate type="Lat">latitude</coordinate>
+        <coordinate type="Lon">longitude</coordinate>
+        <coordinate type="Elev">altitude</coordinate>
+        <coordinate type="Time">time</coordinate>
+      </table>
+    </table>
+</pointConfig>

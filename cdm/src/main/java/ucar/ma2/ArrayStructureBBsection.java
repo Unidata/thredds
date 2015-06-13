@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -30,59 +30,49 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package ucar.ma2;
 
-package ucar.nc2.iosp.hdf5;
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Describe
  *
  * @author caron
- * @since 10/27/2014
+ * @since 5/31/2015
  */
-@RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
-public class TestN4readAll {
-  public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf4/";
+public class ArrayStructureBBsection extends ArrayStructureBB {
+  protected int[] orgRecnum;
 
-  @Parameterized.Parameters(name="{0}")
- 	public static Collection<Object[]> getTestParameters() throws IOException {
-    Collection<Object[]> filenames = new ArrayList<>();
-
-    try {
-      TestDir.actOnAllParameterized(testDir + "nc4-classic", null, filenames);
-      TestDir.actOnAllParameterized(testDir + "files", null, filenames);
-    } catch (IOException e) {
-      // JUnit *always* executes a test class's @Parameters method, even if it won't subsequently run the class's tests
-      // due to an @Category exclusion. Therefore, we must not let it throw an exception, or else we'll get a build
-      // failure. Instead, we return a collection containing a nonsense value (to wit, the exception message).
-      //
-      // Naturally, if we execute a test using that nonsense value, it'll fail. That's fine; we need to deal with the
-      // root cause. However, it is more likely that the exception occurred because "!isCdmUnitTestDirAvailable", and
-      // as a result, all NeedsCdmUnitTest tests will be excluded.
-      filenames.add(new Object[]{e.getMessage()});
-    }
-
-    return filenames;
- 	}
-
-  String filename;
-  public TestN4readAll(String filename) {
-    this.filename = filename;
+  /**
+   * Make a section of an ArrayStructureBB
+   *
+   * @param org the original
+   * @param section of the whole
+   * @return original, if section is empty or the same saze as the original, else a section of the original
+   */
+  static public ArrayStructureBB factory(ArrayStructureBB org, Section section) {
+    if (section == null || section.computeSize() == org.getSize())
+      return org;
+    return new ArrayStructureBBsection(org.getStructureMembers(), org.getShape(), org.getByteBuffer(), section);
   }
 
-  @Test
-  public void readAll() throws IOException {
-    TestDir.readAll(filename);
+  private ArrayStructureBBsection(StructureMembers members, int[] shape, ByteBuffer bbuffer, Section section) {
+    super(members, shape, bbuffer, 0);
+    int n = (int) section.computeSize();
+    Section.Iterator iter = section.getIterator(shape);
+    orgRecnum = new int[n];
+    int count = 0;
+    while (iter.hasNext()) {
+      orgRecnum[count++] = iter.next(null);
+    }
+  }
+
+
+  @Override
+  protected int calcOffsetSetOrder(int recnum, StructureMembers.Member m) {
+    if (null != m.getDataObject())
+      bbuffer.order( (ByteOrder) m.getDataObject());
+    return bb_offset + orgRecnum[recnum] * getStructureSize() + m.getDataParam();
   }
 }

@@ -13,6 +13,45 @@
 <ul>
   <li>Java 7 is  required</li>
   <li>Tomcat version 7.0.50 or greater</li>
+  <li>On the command line when starting up Tomcat, you must specify <strong>-Dtds.content.root.path=&lt;content root&gt;</strong> where &lt;content root&gt; points to the top of the content directory (This is<strong> ${tomcat}/content</strong>, not<strong> ${tomcat}/content/thredds</strong>). For example:
+    <blockquote>
+      <pre>-Dtds.content.root.path=/opt/tomcat-home/content/</pre>
+          <p>For example, your <strong>{tomcat}/bin/setenv.sh</strong> might look like:</p>
+          <pre>
+#!/bin/sh
+#
+ulimit -n 2048
+#
+CATALINA_HOME=&quot;/opt/tomcat-home&quot;
+export CATALINA_HOME
+CATALINA_BASE=&quot;/opt/tomcat-home&quot;
+export CATALINA_BASE
+JAVA_HOME=&quot;/opt/jdk&quot;
+export JAVA_HOME
+#
+<strong>CONTENT_ROOT=&quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong>
+NORMAL=&quot;-d64 -Xmx4090m -Xms512m -server&quot;
+MAX_PERM_GEN=&quot;-XX:MaxPermSize=256m&quot;
+HEADLESS=&quot;-Djava.awt.headless=true&quot;
+JAVA_PREFS_SYSTEM_ROOT=&quot;-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs&quot;
+#             
+JAVA_OPTS=&quot;<strong>$CONTENT_ROOT</strong> $NORMAL $MAX_PERM_GEN $HEADLESS $JAVA_PREFS_SYSTEM_ROOT&quot;
+export JAVA_OPTS
+</pre>
+</blockquote>
+</li>
+  <p><strong>Troubleshooting</strong>: </p>
+  <p>Don't leave a space after the =</p>
+  <pre><strong> CONTENT_ROOT=&quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong>
+
+not
+
+<strong> CONTENT_ROOT= &quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong></pre>
+  <p>If the content root is not correctly set, you will see a message like: &quot;<strong>SEVERE: Error listenerStart</strong>&quot; in <strong>{tomcat}/logs/catalina.out</strong> and &quot;<strong>Error creating bean with name 'tdsContext'</strong>&quot;<strong>, </strong>and<strong> &quot;Content directory not a directory&quot;</strong> in  <strong>{$tomcat}/logs/localhost.log.</strong><strong></strong></p>
+  <p>By default, the content root is set to <strong>&quot;../content&quot;</strong> relative to where tomcat is started. Since this directory varies and is not standard across servlet containers, you should always explicitly set <strong>-Dtds.content.root.path</strong>.</p>
+  <p>We recommend that you use an absolute path, like <strong>/opt/tomcat/content</strong>, instead of a reletive path like <strong>&quot;../content&quot;</strong>.</p>
+  <p>Note  that your catalogs are  under <strong>${tomcat}</strong><strong>/content/thredds</strong> but  <strong>tds.content.root.path</strong> does not include the <strong>thredds</strong> subdirectory.</p>
+  <p>&nbsp;</p>
 </ul>
 <h2>GRIB Feature Collection Changes</h2>
 <ol>
@@ -61,11 +100,17 @@
   <li>Using <strong>Coverity</strong> to find and fix more than 4000 defects. Defect count now &lt; 1 / 1000 LOC.</li>
 </ul>
 <p>&nbsp;</p>
+
+<h3>Upgrading from 4.3</h3>
+<ul>
+  <p>If you are upgrading from 4.3, you may find the 4.3 to 4.5 <a href="UpgradingTo4.5.html">upgrade document</a> helpful.</p>
+</ul>
+<p>&nbsp;</p>
 <hr>
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated Mar 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated June 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 

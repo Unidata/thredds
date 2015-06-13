@@ -34,21 +34,18 @@
 package ucar.nc2.iosp.hdf4;
 
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
+import ucar.nc2.util.DebugFlagsImpl;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import junit.framework.TestCase;
-import ucar.nc2.util.DebugFlagsImpl;
-import ucar.unidata.test.util.TestDir;
 
 /**
  * Read all hdf4 files in cdmUnitTestDir + "formats/hdf4/"
@@ -56,6 +53,7 @@ import ucar.unidata.test.util.TestDir;
  * @author caron
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestH4readAll {
   static private String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
 
@@ -67,10 +65,22 @@ public class TestH4readAll {
   @Parameterized.Parameters(name="{0}")
  	public static Collection<Object[]> getTestParameters() throws IOException {
     Collection<Object[]> filenames = new ArrayList<>();
-    TestDir.actOnAllParameterized(testDir , new H4FileFilter(), filenames);
-    // TestDir.actOnAllParameterized("D:/hdf4/" , new H4FileFilter(), filenames);
 
- 		return filenames;
+    try {
+      TestDir.actOnAllParameterized(testDir , new H4FileFilter(), filenames);
+      // TestDir.actOnAllParameterized("D:/hdf4/" , new H4FileFilter(), filenames);
+    } catch (IOException e) {
+      // JUnit *always* executes a test class's @Parameters method, even if it won't subsequently run the class's tests
+      // due to an @Category exclusion. Therefore, we must not let it throw an exception, or else we'll get a build
+      // failure. Instead, we return a collection containing a nonsense value (to wit, the exception message).
+      //
+      // Naturally, if we execute a test using that nonsense value, it'll fail. That's fine; we need to deal with the
+      // root cause. However, it is more likely that the exception occurred because "!isCdmUnitTestDirAvailable", and
+      // as a result, all NeedsCdmUnitTest tests will be excluded.
+      filenames.add(new Object[]{e.getMessage()});
+    }
+
+    return filenames;
  	}
 
   String filename;
@@ -88,5 +98,4 @@ public class TestH4readAll {
       return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos") || pathname.getName().endsWith(".h4");
     }
   }
-
 }
