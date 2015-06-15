@@ -97,7 +97,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       throw new IOException(e);
     }
     remoteURI = temp;
-    String url = remoteURI + "?req=header";
     httpClient = HTTPFactory.newSession(remoteURI);
     // get the header
     String url = remoteURI + "?req=header";
@@ -155,8 +154,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " section= " + section + " url=" + f);
 
     try (HTTPMethod method = HTTPFactory.Get(httpClient, f.toString())) {
-      int statusCode = method.execute();
-
       int statusCode = method.execute();
       if (statusCode == 404)
         throw new FileNotFoundException(getErrorMessage(method));

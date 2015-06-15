@@ -56,12 +56,10 @@ import java.util.Collection;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestRestrictDataset
-{
-    @Parameterized.Parameters(name = "{0}")
-    public static Collection<Object[]> getTestParameters()
-    {
-        return Arrays.asList(new Object[][]{
+public class TestRestrictDataset {
+  @Parameterized.Parameters(name="{0}")
+  public static Collection<Object[]> getTestParameters() {
+    return Arrays.asList(new Object[][]{
             {"/dodsC/testRestrictedDataset/testData2.nc.dds"},
             {"/cdmremote/testRestrictedDataset/testData2.nc?req=form"},
             {"/fileServer/testRestrictedDataset/testData2.nc"},
@@ -185,6 +183,7 @@ public class TestRestrictDataset
       e.printStackTrace();
       Assert.fail(e.getMessage());
     }
+  }
 
 }
 

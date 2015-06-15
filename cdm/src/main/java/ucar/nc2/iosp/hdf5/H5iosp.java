@@ -264,7 +264,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       return Array.factory(dataType, shape, data);
     }
 
-    if (typeInfo.isVString) { // vlen (not string)
+    if (typeInfo.isVlen) { // vlen (not string)
       DataType readType = dataType;
       if (typeInfo.base.hdfType == 7) // reference
         readType = DataType.LONG;

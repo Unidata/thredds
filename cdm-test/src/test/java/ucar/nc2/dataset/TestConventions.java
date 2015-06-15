@@ -49,7 +49,7 @@ import ucar.unidata.test.util.TestDir;
 import java.io.IOException;
 
 /**
- * Test CoordSys COnventions
+ * Test specific files for CoordSys Conventions
  *
  * @author caron
  */
@@ -57,13 +57,33 @@ import java.io.IOException;
 public class TestConventions  {
 
   @Test
-  public void testWRF() throws IOException {
-    testWRF(TestDir.cdmUnitTestDir + "conventions/wrf/wrf-ver1.3.nc");
+  public void testCF() throws IOException {
+    try (GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/twoGridMaps.nc")) {
+      GeoGrid grid = ds.findGridByName("altitude");
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert 1 == gcs.getCoordinateTransforms().size();
+      CoordinateTransform ct = gcs.getCoordinateTransforms().get(0);
+      assert ct.getTransformType() == TransformType.Projection;
+      assert ct.getName().equals("projection_stere");
+    }
   }
 
-  private void testWRF(String location) throws IOException {
-    NetcdfDataset ds = NetcdfDataset.openDataset(location);
-    ds.close();
+  @Test
+  public void testCOARDSdefaultCalendar() throws IOException {
+    try (GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/coards/olr.day.mean.nc")) {
+      GeoGrid grid = ds.findGridByName("olr");
+      assert grid != null;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      CoordinateAxis1DTime time = gcs.getTimeAxis1D();
+      assert time != null;
+
+      CalendarDate first = time.getCalendarDate(0);
+      CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2002-01-01T00:00:00Z");
+      assert first.equals(cd) : first + " != " + cd;
+      CalendarDate last = time.getCalendarDate((int) time.getSize() - 1);
+      CalendarDate cd2 = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2012-12-02T00:00:00Z");
+      assert last.equals(cd2) : last + " != " + cd2;
+    }
   }
 
   @Test
@@ -75,31 +95,6 @@ public class TestConventions  {
       assert gcs.isLatLon();
       Assert.assertEquals(DataType.UBYTE, grid.getDataType());
     }
-  public void testCF() throws IOException {
-    GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/twoGridMaps.nc");
-    GeoGrid grid = ds.findGridByName("altitude");
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert 1 == gcs.getCoordinateTransforms().size();
-    CoordinateTransform ct = gcs.getCoordinateTransforms().get(0);
-    assert ct.getTransformType() == TransformType.Projection;
-    assert ct.getName().equals("projection_stere");
-    ds.close();
   }
 
-  @Test
-  public void testCOARDSdefaultCalendar() throws IOException {
-    GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/coards/olr.day.mean.nc");
-    GeoGrid grid = ds.findGridByName("olr");
-    assert grid != null;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    CoordinateAxis1DTime time = gcs.getTimeAxis1D();
-    assert time != null;
-
-    CalendarDate first = time.getCalendarDate(0);
-    CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2002-01-01T00:00:00Z");
-    assert first.equals(cd) : first + " != " + cd;
-    CalendarDate last = time.getCalendarDate((int)time.getSize()-1);
-    CalendarDate cd2 = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2012-12-02T00:00:00Z");
-    assert last.equals(cd2) : last + " != " + cd2;
-  }
 }

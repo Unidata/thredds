@@ -33,7 +33,7 @@
  *
  */
 
-package thredds;
+package thredds.server.wcs;
 
 import org.jdom2.input.SAXBuilder;
 import org.junit.Assert;
@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import thredds.TestWithLocalServer;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -62,7 +63,7 @@ import java.util.Collection;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestEncoding {
+public class TestUTF8GetCapabilitiesEncoding {
 
   @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters(){
@@ -73,7 +74,7 @@ public class TestEncoding {
  	}
 
   String path, query;
-  public TestEncoding(String path, String query) {
+  public TestUTF8GetCapabilitiesEncoding(String path, String query) {
     this.path = path;
     this.query = query;
   }
