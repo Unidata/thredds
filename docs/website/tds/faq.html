@@ -43,8 +43,7 @@
   <li><a href="#forms">Why are TDS web forms not working?</a></li>
   <li><a href="#catalogCaching">What does the TDS do at startup to read the configuration catalogs? What gets cached? Does it have a way to know a referenced
     catalog is unchanged? When do referenced catalogs get scanned?</a></li>
-  <li><a href="#antDeployTask">Why do I get a message that "class org.apache.catalina.ant.DeployTask
-    cannot be found" when I try to build the TDS from source using Ant?</a></li>
+  <li><a href="#changeLogging">How do I change how the TDS logs?</a></li>
 </ul>
 <h2>Caching</h2>
 <ul>
@@ -77,7 +76,7 @@
   <li><a href="#removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></li>
   <li><a href="#howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></li>
   <li><a href="#SizeLimitExceededException">Manager fails to upload new thredds.war with SizeLimitExceededException</a></li>
-  <li><a href="#Logging">Logging</a> is not working</li>
+  <li><a href="#Logging">Logging is not working</a></li>
 </ul>
 <hr width="100%">
 <h2>General</h2>
@@ -86,7 +85,7 @@
 
 <p>A: Here is what we need from you in order to deal with hard problems:</p>
 <ol>
-  <li>Run the latest stable release. Sorry, we dont have the resources to keep older versions running, so we need to deal with just the latest code.</li>
+  <li>Run the latest stable release. Sorry, we don't have the resources to keep older versions running, so we need to deal with just the latest code.</li>
   <li>Get a clean set of logs that capture the problem:
     <ol>
       <li>Stop the tomcat server.</li>
@@ -374,27 +373,21 @@ mkdir javaUtilPrefs/.usermPrefs
 
 <hr width="50%" align="left">
 
-<p><a name="antDeployTask" id="antDeployTask"></a><strong>Q: Why do I get a message that
-  "class org.apache.catalina.ant.DeployTask cannot be found" when I try to build the TDS from
-  source using Ant?</strong></p>
+<p><strong><a name="changeLogging">Q: How do I change how the TDS logs?</a></strong></p>
+
 <blockquote>
-  <p><strong>Note:</strong> Ant builds are not supported in TDS 4.3, and <code>build.xml</code> is removed from the repository as of version 4.3.16
-  </p>
+<p>When the TDS is deployed for the first time, the contents of thredds.war will be &quot;exploded&quot; (i.e. extracted) to <code>$TOMCAT_HOME/webapps/thredds</code>. To change how the TDS logs, you'll need to modify <code>$TOMCAT_HOME/webapps/thredds/WEB-INF/classes/log4j2.xml</code>, which is a <a href="https://logging.apache.org/log4j/2.x/manual/configuration.html">Log4j 2 configuration file</a>.</p>
+<p>For example, suppose that instead of overwriting server startup messages in <code>$CONTENT_ROOT/thredds/logs/serverStartup.log</code> from a previous run with new ones (the default behavior), you want to create a new log file for each startup. In that case, you'd change:</p>
 
-  <p>The TDS <code>build.xml</code> file uses several external Ant tasks defined in the
-    <code>catalina-ant.jar</code> file. For TDS 4.2.5 and before, you need to have the
-    <code>catalina-ant.jar</code> file in the <code>lib/</code> directory of your Ant installation.
-    If it is not there you will get a message that looks something like:
-  </p>
-  <pre>../tds/build.xml:730: taskdef class org.apache.catalina.ant.DeployTask cannot be found</pre>
-  <p>You can find the <code>catalina-ant.jar</code> file in the <code>lib/</code> directory of a
-    Tomcat distribution.</p>
+<pre>&lt;File name=&quot;serverStartupAppender&quot; fileName=&quot;${tds.log.dir}/serverStartup.log&quot; append=&quot;false&quot;&gt;
+    &lt;PatternLayout pattern=&quot;%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p %c: %m%n&quot;/&gt;
+&lt;/File&gt;</pre>
 
-  <p>For TDS 4.2.6 and above, you should not see this problem as the <code>build.xml</code> file
-    directly references a copy of the <code>catalina-ant.jar</code> file. </p>
+<p>to something like:</p>
 
-  <p>For TDS 4.3 and above, building with ant is no longer supported. <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/SourceCodeBuild.html">Build
-    with maven</a> instead.</p>
+<pre>&lt;RollingFile name=&quot;serverStartupAppender&quot; fileName=&quot;${tds.log.dir}/serverStartup.log&quot;<br>      filePattern=&quot;${tds.log.dir}/serverStartup.%d{yyyy-MM-dd}_%i.log&quot;&gt;<br>  &lt;PatternLayout pattern=&quot;%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p %c: %m%n&quot;/&gt;<br>  &lt;Policies&gt;<br>    &lt;OnStartupTriggeringPolicy /&gt;<br>  &lt;/Policies&gt;<br>&lt;/RollingFile&gt;
+</pre>
+<p>Be aware that if you install a new thredds.war to <code>$TOMCAT_HOME/webapps</code>, the exploded directory&mdash;including all changes you made to <code>log4j2.xml</code>&mdash;will be removed and the webapp will be redeployed from the new thredds.war. We suggest you copy <code>log4j2.xml</code> to a different location for the deployment and then copy it back over afterwards.</p>
 </blockquote>
 
 <hr width="100%">
@@ -406,7 +399,7 @@ mkdir javaUtilPrefs/.usermPrefs
   way to keep them in the cache permanently? </strong><br>
 </p>
 <blockquote>
-  <p>Esentially this is a tradeoff between storage spaceand the time to decompress. I assume you dont want to store the files uncompressed, so you have to pay
+  <p>Esentially this is a tradeoff between storage space and the time to decompress. I assume you dont want to store the files uncompressed, so you have to pay
     the price of that. To control how these files are cached, see <a href="reference/ThreddsConfigXMLFile.html#DiskCache">CDM library Disk cache</a>. I would
     suggest that you use:<br>
   </p>

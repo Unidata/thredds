@@ -518,8 +518,7 @@ public class HTTPSession implements AutoCloseable
     getUrlAsString(String url) throws HTTPException
     {
         try (
-            HTTPSession session = HTTPFactory.newSession(url);
-            HTTPMethod m = HTTPFactory.Get(session);) {
+            HTTPMethod m = HTTPFactory.Get(url);) {
             int status = m.execute();
             String content = null;
             if(status == 200) {

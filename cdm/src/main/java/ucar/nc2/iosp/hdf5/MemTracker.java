@@ -29,7 +29,7 @@ class MemTracker {
   }
 
   void report(Formatter f) {
-    f.format("Memory used file size= %d%n" + fileSize);
+    f.format("Memory used file size= %d%n", fileSize);
     f.format("  start    end   size   name");
     Collections.sort(memList);
     Mem prev = null;

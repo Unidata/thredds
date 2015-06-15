@@ -127,16 +127,12 @@ public class ReadTdsLogs {
     }
 
     void send() throws IOException {
-      HTTPSession httpClient = null;
-      HTTPMethod method = null;
-      try {
         String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
         //if (!unescapedForm.equals(log.path))
         //  System.out.printf("org=%s unescaped=%s%n", log.path, unescapedForm);
         String urlencoded = server + unescapedForm;
         // String urlencoded = server + URLnaming.escapeQuery(unescapedForm);
-        httpClient = HTTPFactory.newSession(urlencoded);        // LOOK new session ??
-        method = HTTPFactory.Get(httpClient);  // escape the query part
+        try (HTTPMethod method = HTTPFactory.Get(urlencoded)) {  // escape the query part
         //out2.format("send %s %n", method.getPath());
         statusCode = method.execute();
 
@@ -144,8 +140,6 @@ public class ReadTdsLogs {
         if (is != null)
           bytesRead = IO.copy2null(is, 10 * 1000); // read data and throw away
 
-      } finally {
-        if (method != null) method.close();
       }
 
     }
@@ -200,11 +194,7 @@ public class ReadTdsLogs {
 
     private boolean compareAgainstLive(SendRequestTask itask) throws IOException {
       if (serverLive == null) return true;
-      HTTPSession httpClient = null;
-      HTTPMethod method = null;
-      try {
-        httpClient = HTTPFactory.newSession(serverLive + itask.log.path);
-        method = HTTPFactory.Get(httpClient);
+      try (HTTPMethod method = HTTPFactory.Get(serverLive + itask.log.path)) {
         out2.format("send %s %n", method.getPath());
 
         int statusCode = method.execute();
@@ -216,8 +206,6 @@ public class ReadTdsLogs {
         // out2.format("%5d: test status=%d live=%d %n", itask.reqnum, itask.statusCode, statusCode);
         return statusCode == itask.statusCode;
 
-      } finally {
-        if (httpClient != null) httpClient.close();
       }
 
     }

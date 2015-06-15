@@ -79,7 +79,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////////////////////
 
-  private HTTPSession httpClient;
+  private HTTPSession httpClient = null;  // stays open until close is called
 
   private final String remoteURI;
 
@@ -97,9 +97,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       throw new IOException(e);
     }
     remoteURI = temp;
-
+    String url = remoteURI + "?req=header";
     httpClient = HTTPFactory.newSession(remoteURI);
-
     // get the header
     String url = remoteURI + "?req=header";
     try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
@@ -158,6 +157,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     try (HTTPMethod method = HTTPFactory.Get(httpClient, f.toString())) {
       int statusCode = method.execute();
 
+      int statusCode = method.execute();
       if (statusCode == 404)
         throw new FileNotFoundException(getErrorMessage(method));
 
@@ -213,7 +213,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     sbuff.append("?");
     sbuff.append(query);
 
-    if (showRequest)
+    if(showRequest)
       System.out.printf(" CdmRemote sendQuery= %s", sbuff);
 
     try (HTTPMethod method = HTTPFactory.Get(session, sbuff.toString()) ) {

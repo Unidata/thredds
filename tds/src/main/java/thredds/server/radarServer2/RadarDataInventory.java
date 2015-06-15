@@ -184,10 +184,10 @@ public class RadarDataInventory {
         }
 
         public void addSubDir(DirType type, String fmt) {
-            keyIndices.add(order.size());
             if (type == DirType.Station || type == DirType.Variable) {
-                order.add(new DirEntry(type, fmt));
+                keyIndices.add(order.size());
             }
+            order.add(new DirEntry(type, fmt));
         }
 
         // Get a key for a path based on station/var

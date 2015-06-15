@@ -62,6 +62,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debug = false;
   static boolean debugPos = false;
   static boolean debugHeap = false;
+  static boolean debugHeapStrings = false;
   static boolean debugFilter = false;
   static boolean debugRead = false;
   static boolean debugFilterIndexer = false;
@@ -145,7 +146,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
     Object data;
-    Layout layout;
+    Layout layout = null;
 
     if (vinfo.useFillValue) { // fill value only
       Object pa = IospHelper.makePrimitiveArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());
@@ -158,8 +159,12 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (debugFilter) System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
       ByteOrder bo = (vinfo.typeInfo.endian == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
-      layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
-      data = IospHelper.readDataFill((LayoutBB) layout, v2.getDataType(), vinfo.getFillValue());
+      LayoutBB layoutbb = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
+      if (vinfo.typeInfo.isVString) {
+        data = readFilteredStringData(layoutbb);
+      } else{
+        data = IospHelper.readDataFill(layoutbb, v2.getDataType(), vinfo.getFillValue());
+      }
 
     } else { // normal case
       if (debug) System.out.println("read variable " + v2.getFullName() + " vinfo = " + vinfo);
@@ -206,6 +211,22 @@ public class H5iosp extends AbstractIOServiceProvider {
       return Array.factory(dataType, wantSection.getShape(), data);
   }
 
+  public String[] readFilteredStringData(LayoutBB layout) throws java.io.IOException {
+    int size = (int) layout.getTotalNelems();
+    String[] sa = new String[size];
+    while (layout.hasNext()) {
+      LayoutBB.Chunk chunk = layout.next();
+      ByteBuffer bb = chunk.getByteBuffer();
+      //bb.position(chunk.getSrcElem());
+      if (debugHeapStrings) System.out.printf("readFilteredStringData chunk=%s%n", chunk);
+      int destPos = (int) chunk.getDestElem();
+      for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
+        sa[destPos++] = headerParser.readHeapString(bb, (chunk.getSrcElem() + i) * 16); // LOOK does this handle section correctly ??
+      }
+    }
+    return sa;
+  }
+
   /*
    * Read data subset from file for a variable, return Array or java primitive array.
    *
@@ -243,7 +264,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       return Array.factory(dataType, shape, data);
     }
 
-    if ((typeInfo.hdfType == 9) && !typeInfo.isVString) { // vlen (not string)
+    if (typeInfo.isVString) { // vlen (not string)
       DataType readType = dataType;
       if (typeInfo.base.hdfType == 7) // reference
         readType = DataType.LONG;

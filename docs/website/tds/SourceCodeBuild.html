@@ -10,16 +10,22 @@
 
 <hr width="100%">
 
-<h2>THREDDS Source Code Build</a></h2>
-<p>THREDDS source code is  hosted on&nbsp;<a href="https://github.com/Unidata/thredds">GitHub</a>, and <a href="http://maven.apache.org/">maven</a> is used to build (ant builds are no longer supported). THREDDS includes  the NetCDF-Java client libraries,  the TDS server, the TDM indexer, and other related packages. The file layout follows the maven conventions, and the build integrates with your local maven repository. To build, you need git, maven and the Java JDK installed.</p>
-<p>To build version the latest stable release from source with maven:</p>
-<blockquote>
-  <pre>git clone git://github.com/Unidata/thredds.git thredds
+<h2><a name="build">THREDDS Source Code Build</a></h2>
+<p>THREDDS source code is hosted on <a href="https://github.com/Unidata/thredds">GitHub</a>, and&mdash;as of v4.6.1&mdash;we use <a href="https://gradle.org/">Gradle</a> to build it. Ant and Maven builds are no longer supported. THREDDS includes the NetCDF-Java client libraries, the TDS server, the TDM indexer, and other related packages. To build, you need <a href="https://git-scm.com/">Git</a> and <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK 7+</a> installed.</p>
+<p>First, clone the THREDDS repository from Github:</p>
+<pre>
+git clone git://github.com/Unidata/thredds.git thredds</pre>
+<p>By default, the current branch head is set to <code>master</code>, which is our main development branch. If you'd like to build a released version instead&mdash;v4.6.2, for example&mdash;you'll need to checkout that version:</p>
+<pre>git checkout v4.6.2</pre>
+<p>Next, change into the <code>thredds</code> directory and execute the Gradle <code>assemble</code> task:</p>
+
+<pre>
 cd thredds
-mvn clean install</pre>
-</blockquote>
-<p>There will be various artifacts under the <strong>&lt;module&gt;/target</strong> subdirectories, for example <strong>thredds.war</strong>  will be found under <strong>thredds/tds/targe</strong>t.</p>
-<h2>Contributing a fix to the THREDDS code<a name="contribute"></a></h2>
+./gradlew assemble</pre>
+
+<p>There will be various artifacts under <code>&lt;subproject&gt;/build/libs/</code>. For example, the THREDDS WAR will be in <code>tds/build/libs/</code>. The <a href="http://stackoverflow.com/questions/11947037/what-is-an-uber-jar">&quot;uber jars&quot;</a>, such as toolsUI.jar and netcdfAll.jar, will be found in <code>build/libs/</code>.</p>
+
+<h2><a name="contribute">Contributing a fix to the THREDDS code</a></h2>
 <p>To contribute changes to the THREDDS source code, you will make a copy of the THREDDS git repository on GitHub and on your local machine, make changes to it on your local machine, push the changes up to GitHub, and then submit a &quot;pull request&quot; to Unidata.</p>
 <ol>
   <li> Fork the code on github (if necessary), by going to the repository at <a href="https://github.com/Unidata/thredds">https://github.com/Unidata/thredds</a> <br>
@@ -30,19 +36,18 @@ mvn clean install</pre>
   <pre>
   git clone git@github.com:&lt;github_user_name&gt;/thredds.git 
 </pre>
-  <li> Create a branch for the changes based on a source branch <br>
+  <li> Create a branch for the changes based on <code>master</code><br>
   <pre>
-  git checkout -b &lt;descriptive_branch_name&gt; &lt;source_branch&gt;</pre>
+  git checkout -b &lt;descriptive_branch_name&gt; master</pre>
   For instance: <br>
   <pre>
-  git checkout -b fix_radar_iosp target-4.3.23 
-</pre>
+  git checkout -b fix_radar_iosp master</pre>
   <li> Make changes to the source code 
   <li> Commit your changes using "git add" and "git commit" 
   <br>
   <li> Push your branch to GitHub: <br>
   <pre>  git push -u origin &lt;descriptive_branch_name&gt; </pre>
-  <li> Go to your GitHub repository for thredds and select   &lt;descriptive_branch_name&gt; from the list of branches on the left side. <br>
+  <li> Go to your GitHub repository for thredds and select <code>descriptive_branch_name</code> from the list of branches on the left side. <br>
   <li> Click the link that says "Pull Request", review the changes, and   click the green "Create Pull Request" button.   
   <li>Unidata will get notified of your changes, and will be able to review and test them before merging.    
 </ol>
@@ -51,9 +56,8 @@ mvn clean install</pre>
 </p>
 <h3>Resources:</h3>
 <ul>
-  <li>On windows, you might want to use <a href="http://code.google.com/p/msysgit/downloads/list">mysygit</a>. </li>
   <li>Git recipes from Unidata: <a href="https://github.com/Unidata/git-recipes">https://github.com/Unidata/git-recipes</a></li>
-  <li><a href="http://schacon.github.io/git/git.html">git man pages </a></li>
+  <li><a href="http://schacon.github.io/git/git.html">git man page</a></li>
   <li><a href="http://git-scm.com/book">Pro Git book</a></li>
   <li><a href="http://gitref.org/">Git reference</a></li>
 </ul>
@@ -61,7 +65,7 @@ mvn clean install</pre>
 
 <address>
   <img src="thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated May 2014.
+  This document is maintained by Unidata and was last updated June 2015.
 </address>
 
 </body>

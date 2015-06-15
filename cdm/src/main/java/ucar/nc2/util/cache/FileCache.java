@@ -516,8 +516,12 @@ public class FileCache implements FileCacheIF {
       //counter.decrementAndGet();
 
       try {
-        file.ncfile.setFileCache(null);
-        file.ncfile.close();
+        if(file == null || file.ncfile == null) {
+          log.error(String.format("FileCache %s: null file or null ncfile",name));
+        } else {
+          file.ncfile.setFileCache(null);
+          file.ncfile.close();
+        }
         file.ncfile = null; // help the gc
       } catch (IOException e) {
         log.error("FileCache " + name + " close failed on " + file);

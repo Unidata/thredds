@@ -21,19 +21,19 @@
     <!-- In particular, all of these jars should have the download="lazy" attribute. -->
     <resources>
         <j2se version="1.7+" max-heap-size="1500m"/>
-        <!-- Updated by hand for 4.6.1, using :ui:showDependencies to print the deps.
+        <!-- Updated by hand for 4.6.2, using :ui:showDependencies to print the deps.
         In the future, we should be generating this file in Gradle. -->
 
         <!-- In theory, Webstart will use these in conjunction with ui.jar/META-INF/INDEX.LIST to download
              the minimum number of dependencies when running the application. -->
-        <jar href="cdm-4.6.1.jar" download="lazy"/>
-        <jar href="clcommon-4.6.1.jar" download="lazy"/>
-        <jar href="bufr-4.6.1.jar" download="lazy"/>
-        <jar href="grib-4.6.1.jar" download="lazy"/>
-        <jar href="netcdf4-4.6.1.jar" download="lazy"/>
-        <jar href="opendap-4.6.1.jar" download="lazy"/>
-        <jar href="waterml-4.6.1.jar" download="lazy"/>
-        <jar href="httpservices-4.6.1.jar" download="lazy"/>
+        <jar href="cdm-4.6.2.jar" download="lazy"/>
+        <jar href="clcommon-4.6.2.jar" download="lazy"/>
+        <jar href="bufr-4.6.2.jar" download="lazy"/>
+        <jar href="grib-4.6.2.jar" download="lazy"/>
+        <jar href="netcdf4-4.6.2.jar" download="lazy"/>
+        <jar href="opendap-4.6.2.jar" download="lazy"/>
+        <jar href="waterml-4.6.2.jar" download="lazy"/>
+        <jar href="httpservices-4.6.2.jar" download="lazy"/>
         <jar href="ehcache-core-2.6.2.jar" download="lazy"/>
         <jar href="jdom2-2.0.4.jar" download="lazy"/>
         <jar href="spring-context-4.1.6.RELEASE.jar" download="lazy"/>
@@ -49,7 +49,7 @@
         <jar href="guava-18.0.jar" download="lazy"/>
         <jar href="slf4j-api-1.7.7.jar" download="lazy"/>
         <jar href="slf4j-jdk14-1.7.7.jar" download="lazy"/>
-        <jar href="udunits-4.6.1.jar" download="lazy"/>
+        <jar href="udunits-4.6.2.jar" download="lazy"/>
         <jar href="joda-time-2.2.jar" download="lazy"/>
         <jar href="jcip-annotations-1.0.jar" download="lazy"/>
         <jar href="quartz-2.2.0.jar" download="lazy"/>
@@ -57,7 +57,7 @@
         <jar href="jcommander-1.35.jar" download="lazy"/>
         <jar href="je-4.0.92.jar" download="lazy"/>
         <jar href="jsoup-1.7.2.jar" download="lazy"/>
-        <jar href="jj2000-5.2.jar" download="lazy"/>
+        <jar href="jj2000-5.3.jar" download="lazy"/>
         <jar href="jna-4.1.0.jar" download="lazy"/>
         <jar href="coverity-escapers-1.1.1.jar" download="lazy"/>
         <jar href="xmlbeans-2.6.0.jar" download="lazy"/>

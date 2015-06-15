@@ -233,7 +233,7 @@ public class TestOffAggDirectory extends TestCase {
   }
 
   public void testBlanksInDirectory() throws IOException {
-    String dir = TestDir.cdmUnitTestDir;
+    String dir = TestDir.cdmUnitTestDir +"encoding/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +

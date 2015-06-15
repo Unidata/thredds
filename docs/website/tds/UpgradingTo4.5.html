@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Upgrading To TDS 4.5</title>
+  <link rel="stylesheet" href="tds.css" type="text/css">
+</head>
+<body>
+<h1><img alt="Unidata" src="images/unidataLogo.png" align="middle" height="75" width="75"> Upgrading To TDS 4.5</h1>
+
+<hr>
+<h2>New Requirements</h2>
+<ul>
+  <li>Java 7 is now required</li>
+  <li>Tomcat 7 (servlet 3.0) is now required</li>
+  <li>On the command line when starting up Tomcat, you must specify <strong>-Dtds.content.root.path=&lt;content root&gt;</strong> where &lt;content root&gt; points to the top of the content directory (This is<strong> ${tomcat}/content</strong>, not<strong> ${tomcat}/content/thredds</strong>). For example:
+    <blockquote>
+      <pre>-Dtds.content.root.path=/opt/tomcat-home/content/</pre>
+          <p>For example, your <strong>{tomcat}/bin/setenv.sh</strong> might look like:</p>
+          <pre>
+#!/bin/sh
+#
+ulimit -n 2048
+#
+CATALINA_HOME=&quot;/opt/tomcat-home&quot;
+export CATALINA_HOME
+CATALINA_BASE=&quot;/opt/tomcat-home&quot;
+export CATALINA_BASE
+JAVA_HOME=&quot;/opt/jdk&quot;
+export JAVA_HOME
+#
+<strong>CONTENT_ROOT=&quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong>
+NORMAL=&quot;-d64 -Xmx4090m -Xms512m -server&quot;
+MAX_PERM_GEN=&quot;-XX:MaxPermSize=256m&quot;
+HEADLESS=&quot;-Djava.awt.headless=true&quot;
+JAVA_PREFS_SYSTEM_ROOT=&quot;-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs&quot;
+#             
+JAVA_OPTS=&quot;<strong>$CONTENT_ROOT</strong> $NORMAL $MAX_PERM_GEN $HEADLESS $JAVA_PREFS_SYSTEM_ROOT&quot;
+export JAVA_OPTS
+</pre>
+</blockquote>
+</li>
+  <p><strong>Troubleshooting</strong>: </p>
+  <p>Don't leave a space after the =</p>
+  <pre><strong> CONTENT_ROOT=&quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong>
+
+not
+
+<strong> CONTENT_ROOT= &quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong></pre>
+  <p>If the content root is not correctly set, you will see a message like: &quot;<strong>SEVERE: Error listenerStart</strong>&quot; in <strong>{tomcat}/logs/catalina.out</strong> and &quot;<strong>Error creating bean with name 'tdsContext'</strong>&quot;<strong>, </strong>and<strong> &quot;Content directory not a directory&quot;</strong> in  <strong>{$tomcat}/logs/localhost.log.</strong><strong></strong></p>
+  <p>By default, the content root is set to <strong>&quot;../content&quot;</strong> relative to where tomcat is started. Since this directory varies and is not standard across servlet containers, you should always explicitly set <strong>-Dtds.content.root.path</strong>.</p>
+  <p>We recommend that you use an absolute path, like <strong>/opt/tomcat/content</strong>, instead of a reletive path like <strong>&quot;../content&quot;</strong>.</p>
+  <p>Note  that your catalogs are  under <strong>${tomcat}</strong><strong>/content/thredds</strong> but  <strong>tds.content.root.path</strong> does not include the <strong>thredds</strong> subdirectory.</p>
+  <p>&nbsp;</p>
+</ul>
+<h2>GRIB Feature Collection Changes</h2>
+<ol>
+  <li>You must change your GRIB feature Collection from featureType=&quot;<strong>GRIB</strong>&quot; to featureType=&quot;<strong>GRIB1</strong>&quot; or featureType=&quot;<strong>GRIB2</strong>&quot;.</li>
+  <li>The valid options for timePartitions are <strong>directory</strong> or <strong>file</strong>.</li>
+  <li>On-the-fly updating of datasets is no longer supported. If you have datasets that change, you must use the <a href="reference/collections/TDM.html">TDM</a>.</li>
+  <li>Datasets are automatically partitioned by GRIB reference time. If there are multiple reference times, you have the option of giving access to a TwoD dataset which has two time dimensions, reference time and valid time. </li>
+</ol>
+<p>Example 4.3 catalog:</p>
+<pre>&lt;featureCollection featureType=&quot;GRIB&quot; name=&quot;GFS-Global_onedeg&quot; path=&quot;grib/NCEP/GFS/Global_onedeg&quot;&gt;
+ &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/.*grib2$&quot;
+   dateFormatMark=&quot;#GFS_Global_onedeg_#yyyyMMdd_HHmm&quot;
+   timePartition=&quot;1 day&quot;
+   olderThan=&quot;5 min&quot;/&gt;
+
+ &lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot;/&gt;
+ &lt;tdm startup=&quot;true&quot; rescan=&quot;0 8,23,38,53 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+
+ &lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot; /&gt;
+&lt;/featureCollection&gt;</pre>
+<p>For version 4.5 should be:</p>
+<pre>&lt;featureCollection featureType=&quot;GRIB2&quot; name=&quot;GFS-Global_onedeg&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_onedeg&quot;&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/.*grib2$&quot;
+    dateFormatMark=&quot;#GFS_Global_onedeg_#yyyyMMdd_HHmm&quot;
+    timePartition=&quot;directory&quot;
+    olderThan=&quot;5 min&quot;/&gt;
+  &lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;
+  &lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 8,23,38,53 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+  &lt;gribConfig datasetTypes=&quot;TwoD Best LatestFile Files&quot; /&gt;
+&lt;/featureCollection&gt;</pre>
+<p>For complete information, see <a href="reference/collections/GribCollections.html">GRIB Collections</a> and <a href="reference/collections/TDM.html">TDM</a>.</p>
+<h2>Netcdf Subset Service Changes</h2>
+<ol>
+  <li>You must change the service endpoint for Netcdf Subset Service (NCSS)  in your catalogs from:</li>
+<blockquote>
+  <pre> &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid&quot;/&gt;
+</pre>
+  to:
+  <pre> &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/&quot;/&gt;</pre></blockquote>
+  <li>Consequently, access to the NCSS has a different URL path. (If you are accessing NCSS from the HTML form, or are correctly parsing the catalog, then you dont need to do anything different)</li>
+<blockquote>
+  <p>An old (4.3) NCSS URL:</p>
+  <pre> http://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p5deg/best/dataset.html</pre>
+  <p> Should  be changed in version 4.5 to:</p>
+  <pre> http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best/dataset.html
+  </pre> 
+  Note the only difference is the absence of &quot;grid&quot; after &quot;thredds/ncss&quot; in the URL.
+</blockquote>
+<li>The REST interface has changed.  If you have been using NCSS from a script, you will need to check your URLs and parameters, and possibly change them, see the <a href="reference/NetcdfSubsetServiceReference.html">NCSS REST API</a>. (If you are accessing NCSS from the HTML form, then you dont need to do anything different).</li>
+</ol>
+<h2>New Features in version 4.5</h2>
+<ul>
+  <li>TDS
+    <ul>
+      <li>Point Feature Collections (point, stations) now handled by Netcdf Subset Service.</li>
+      <li>Automatic Metadata Extraction from the dataset into the thredds catalogs, on point collections only but will extend to other collections.</li>
+      <li>NCSS Station data can output WaterML (beta).</li>
+      <li>NCSS Point can output NetCDF-4/CF.</li>
+    </ul>
+  </li>
+  <li>NcML
+    <ul>
+      <li> updated to implement full extended model.</li>
+      <li> logicalReduce allows you to remove length 1 dimensions [<a href="https://bugtracking.unidata.ucar.edu/browse/TDS-267">TDS-267</a>].</li>
+      <li>NcML handles multichar separators.</li>
+    </ul>
+  </li>
+  <li>CDM
+    <ul>
+      <li>add Albers Equal Area projection</li>
+      <li>add Geostationary projection (Tom Rink SSEC)</li>
+      <li>CFPointWriter refactored, can write to netCDF-4</li>
+      <li>CFGridWriter2 replaces CFGridWriter</li>
+    </ul>
+  </li>
+  <li>IOSPs
+  </li>
+  <ul>
+    <li><a href="../netcdf-java/reference/netcdf4Clibrary.html#writing">Netcdf-4 writing</a> improved, default chunking improved.</li>
+    <li>GRIB: yet another rewrite of Grib Collections to allow scaling to very large collections.</li>
+    <li>Improved HDF-EOS processing.</li>
+    <li>CF 1.6 DSG: bug in handling station profiles, multidimensional representation [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">TDS-513</a>]</li>
+    <li>MSGnavigation scan mode bug</li>
+    <li>IOSP for SIGMET radar files (beta)</li>
+  </ul>
+  <li>GRIB
+    <ul>
+      <li>ECMWF DRS 50002 added by <a href="mailto:jkaehler@meteomatics.com">jkaehler@meteomatics.com</a></li>
+    </ul>
+  </li>
+  <li>ToolsUI 
+  </li>
+  <ul>
+    <li>using new Swing Look and Feel</li>
+    <li>table columns can be set by user (upper right button on header line)</li>
+    <li>File Chooser improvements</li>
+    <li></li>
+  </ul>
+</ul>
+<h3>API changes</h3>
+<ul>
+  <li>Writing CF gridded data: <strong>ucar.nc2.dt.grid.CFGridWriter</strong> is deprecated in favor of <strong>ucar.nc2.dt.grid.CFGridWriter2</strong>. The API is a bit different, and simpler. Please switch to it.</li>
+  <li>Writing Netcdf-4 files with chunking: The <strong>Nc4Chunking</strong>&nbsp;object changed from package ucar.nc2.jni to package ucar.nc2.write. It was substantially rewritten, and the set of standard strategies has changed.</li>
+  <li><strong>ucar.unidata.geoloc.ProjectionRect</strong> no longer extends <strong>java.awt.Rectangle2D</strong>. This is necessary to remove dependence of the core package on java.awt, which is not supported on Android. If you need to convert <strong>ProjectionRect</strong> into <strong>Rectangle2D</strong>, you can use:</li>
+</ul>
+<blockquote>
+<pre><p> Rectangle2D hr = new Rectangle2D.Double();
+ hr.setRect(prect.getX(), prect.getY(), prect.getWidth(), prect.getHeight());</p>
+</pre>
+</blockquote>
+<h3>Internal changes</h3>
+<ul>
+  <li><strong>HttpClient</strong> library upgraded to 4.2, previously was 3.</li>
+  <li>We are now using <strong>log4j2</strong>. The configuration file is in <strong>{tomcat}/webapps/thredds//WEB-INF/classes/log4j2.xml</strong>. See <a href="http://logging.apache.org/log4j/2.x/">http://logging.apache.org/log4j/2.x/</a></li>
+  <li> Most services have been converted to <a href="http://docs.spring.io/spring/docs/3.0.x/reference/mvc.html">annotated Spring controllers</a>. Documentation on adding your own service is coming soon.</li>
+  <li>Point dataset unit tests upgraded to CF 1.6.</li>
+  <li>    Unit testing framework now complete; 2700+ unit tests.</li>
+  <li><a href="https://scan.coverity.com/projects/388?tab=overview">Covarity</a> static analysis now being done. 3000+ defects eliminated, about 1000 to go.</li>
+  <li>Code being converted to use Java 7 constructs, eg try-with-resources, generics.</li>
+</ul>
+<p>&nbsp;</p>
+<hr>
+
+<address>
+  <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
+  last updated Oct 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  support</a>.
+</address>
+
+</body>
+</html>

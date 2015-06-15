@@ -4368,6 +4368,7 @@ public class H5header {
     H5header.HeapIdentifier heapId = new HeapIdentifier(bb, pos);
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null) throw new IllegalStateException("Cant find Heap Object,heapId="+heapId);
+    // if (H5iosp.debugHeapStrings) System.out.printf("    readHeapString ho=%s%n", ho);
     raf.seek(ho.dataPos);
     return readStringFixedLength((int) ho.dataSize);
   }
@@ -4451,11 +4452,10 @@ public class H5header {
         heapMap.put(heapAddress, gheap);
       }
 
-      for (GlobalHeap.HeapObject ho : gheap.hos) {// this is pretty lame - linear search !
-        if (ho.id == index)
-          return ho;
-      }
-      throw new IllegalStateException("cant find HeapObject");
+      GlobalHeap.HeapObject ho = gheap.getHeapObject((short) index);
+      if (ho == null)
+        throw new IllegalStateException("cant find HeapObject");
+      return ho;
     }
 
   } // HeapIdentifier
@@ -4477,36 +4477,29 @@ public class H5header {
         heapMap.put(heapAddress, gheap);
       }
 
-      GlobalHeap.HeapObject want;
-      for (GlobalHeap.HeapObject ho : gheap.hos) {
-        if (ho.id == index) {
-          want = ho;
-          if (debugRegionReference) System.out.println(" found ho=" + ho);
-          /* - The offset of the object header of the object (ie. dataset) pointed to (yes, an object ID)
-- A serialized form of a dataspace _selection_ of elements (in the dataset pointed to).
-I don't have a formal description of this information now, but it's encoded in the H5S_<foo>_serialize() routines in
-src/H5S<foo>.c, where foo = {all, hyper, point, none}.
-There is _no_ datatype information stored for these kind of selections currently. */
-          raf.seek(ho.dataPos);
-          long objId = raf.readLong();
-          DataObject ndo = getDataObject(objId, null);
-          // String what = (ndo == null) ? "none" : ndo.getName();
-          if (debugRegionReference) System.out.println(" objId=" + objId + " DataObject= " + ndo);
-          if (null == ndo)
-            throw new IllegalStateException("cant find data object at" + objId);
-          return;
-        }
-      }
-      throw new IllegalStateException("cant find HeapObject");
+      GlobalHeap.HeapObject want = gheap.getHeapObject( (short) index);
+      if (debugRegionReference) System.out.println(" found ho=" + want);
+      /* - The offset of the object header of the object (ie. dataset) pointed to (yes, an object ID)
+          - A serialized form of a dataspace _selection_ of elements (in the dataset pointed to).
+          I don't have a formal description of this information now, but it's encoded in the H5S_<foo>_serialize() routines in
+          src/H5S<foo>.c, where foo = {all, hyper, point, none}.
+          There is _no_ datatype information stored for these kind of selections currently. */
+      raf.seek(want.dataPos);
+      long objId = raf.readLong();
+      DataObject ndo = getDataObject(objId, null);
+      // String what = (ndo == null) ? "none" : ndo.getName();
+      if (debugRegionReference) System.out.println(" objId=" + objId + " DataObject= " + ndo);
+      if (null == ndo)
+        throw new IllegalStateException("cant find data object at" + objId);
     }
 
   } // RegionReference
 
   // level 1E
   private class GlobalHeap {
-    byte version;
-    int sizeBytes;
-    List<HeapObject> hos = new ArrayList<>();
+    private byte version;
+    private int sizeBytes;
+    private Map<Short,HeapObject> hos = new HashMap<>();
 
     GlobalHeap(long address) throws IOException {
       // header information is in le byte order
@@ -4548,7 +4541,7 @@ There is _no_ datatype information stored for these kind of selections currently
                   " dataSize = " + o.dataSize + " dataPos = " + o.dataPos + " count= " + count + " countBytes= " + countBytes);
 
         raf.skipBytes(dsize);
-        hos.add(o);
+        hos.put(o.id, o);
         count++;
 
         if (countBytes + 16 >= sizeBytes) break; // ran off the end, must be done
@@ -4556,6 +4549,10 @@ There is _no_ datatype information stored for these kind of selections currently
 
       if (debugDetail && (debugOut != null)) debugOut.println("-- endGlobalHeap position=" + raf.getFilePointer());
       if (debugTracker) memTracker.addByLen("GlobalHeap", address, sizeBytes);
+    }
+
+    HeapObject getHeapObject(short id) {
+      return hos.get(id);
     }
 
     class HeapObject {
