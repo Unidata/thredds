@@ -23,7 +23,8 @@
 </ol>
 <p>More General</p>
 <ol>
-  <li>    DataRootPathMatcher  could perist all data roots (dir, datasetScan, FC)</li>
+  <li>    DataRootPathMatcher  could persist all data roots (dir, datasetScan, FC)</li>
+  <li>DatasetTracker could persist found metadata after cracking the file (space/time extents, global attributes)</li>
 </ol>
 <p>&nbsp;</p>
 <h2>State redesign</h2>
@@ -42,7 +43,7 @@
 </ol>
 <h3>TdsContext</h3>
 <p>Implements&#32;ServletContextAware&#32;so&#32;it&#32;gets&#32;a&#32;ServletContext&#32;and&#32;performs&#32;most&#32;initial&#32;THREDDS&#32;set&#32;up. </p>
-<p>Not sure if it needs to have a &quot;reinit&quot; ? Perhaps this should be the objet that does not reinit.</p>
+<p>Not sure if it needs to have a &quot;reinit&quot; ? Perhaps this should be the object that does not reinit.</p>
 <ol>
   <li> checks&#32;version</li>
   <li> check&#32;for&#32;latest&#32;stable&#32;and&#32;development&#32;release&#32;versions</li>
