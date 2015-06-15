@@ -90,7 +90,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////////////////////
 
-  private HTTPSession httpClient;
+  private HTTPSession httpClient = null;  // stays open until close is called
 
   private final String remoteURI;
 
@@ -107,14 +107,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     } catch (Exception e) {
     }
     remoteURI = temp;
-
+    String url = remoteURI + "?req=header";
     httpClient = HTTPFactory.newSession(remoteURI);
-
     // get the header
-    HTTPMethod method = null;
-    try {
-      String url = remoteURI + "?req=header";
-      method = HTTPFactory.Get(httpClient, url);
+    try (HTTPMethod method = HTTPFactory.Get(httpClient,url)) {
       method.setFollowRedirects(true);
       if (showRequest) System.out.printf("CdmRemote request %s %n", url);
       int statusCode = method.execute();
@@ -129,8 +125,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       NcStreamReader reader = new NcStreamReader();
       reader.readStream(is, this);
       this.location = SCHEME + remoteURI;
-    } finally {
-      if (method != null) method.close();
     }
     long took = System.currentTimeMillis() - start;
     if (showRequest) System.out.printf(" took %d msecs %n", took);
@@ -172,17 +166,14 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest)
       System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " section= " + section + " url=" + f);
 
-    HTTPMethod method = null;
-    try {
-      method = HTTPFactory.Get(httpClient, f.toString());
-      int statusCode = method.execute();
+    try (
+      HTTPMethod method = HTTPFactory.Get(httpClient,f.toString())) {
 
+      int statusCode = method.execute();
       if (statusCode == 404)
         throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
-
       if (statusCode >= 300)
         throw new IOException(method.getPath() + " " + method.getStatusLine());
-
       Header h = method.getResponseHeader("Content-Length");
       if (h != null) {
         String s = h.getValue();
@@ -203,9 +194,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       assert v.getFullNameEscaped().equals(result.varNameFullEsc);
       result.data.setUnsigned(v.isUnsigned());
       return result.data;
-
-    } finally {
-      if (method != null) method.close();
     }
   }
 
@@ -221,11 +209,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
   }
 
-  public static InputStream sendQuery(String remoteURI, String query) throws IOException {
+  public static InputStream sendQuery(String remoteURI, String query) throws IOException
+  {
     long start = System.currentTimeMillis();
 
-    HTTPSession session = null;
-    HTTPMethod method = null;
     InputStream stream = null;
     int statusCode = 0;
 
@@ -233,32 +220,24 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     sbuff.append("?");
     sbuff.append(query);
 
-    if (showRequest)
+    if(showRequest)
       System.out.printf(" CdmRemote sendQuery= %s", sbuff);
 
     try {
-
-      try {
-        session = HTTPFactory.newSession(sbuff.toString());
-        method = HTTPFactory.Get(session);
-        statusCode = method.execute();
-      } catch (HTTPException he) {
+        try (
+            HTTPMethod method = HTTPFactory.Get(sbuff.toString()) // use temp session
+        ) {
+            statusCode = method.execute();
+            if(statusCode == 404)
+                throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+            if(statusCode >= 300)
+                throw new IOException(method.getPath() + " " + method.getStatusLine());
+            stream = method.getResponseBodyAsStream();
+            if(showRequest) System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
+            return stream;
+        }
+    } catch (HTTPException he) {
         throw new IOException(he);
-      }
-
-      if (statusCode == 404)
-        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
-
-      if (statusCode >= 300)
-        throw new IOException(method.getPath() + " " + method.getStatusLine());
-
-      stream = method.getResponseBodyAsStream();
-      if (showRequest) System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
-      return stream;
-
-    } catch (IOException ioe) {
-      if (session != null) session.close();
-      throw ioe;
     }
   }
 
@@ -281,11 +260,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       fos.write(NcStream.MAGIC_START);
 
       // header
-      HTTPMethod method = null;
-      try {
+      String url = remoteURI + "?req=header";
+      try (
         // get the header
-        String url = remoteURI + "?req=header";
-        method = HTTPFactory.Get(httpClient, url);
+        HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
         if (showRequest) System.out.printf("CdmRemote request %s %n", url);
         int statusCode = method.execute();
 
@@ -298,8 +276,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         InputStream is = method.getResponseBodyAsStream();
         size += IO.copyB(is, fos, IO.default_socket_buffersize);
 
-      } finally {
-        if (method != null) method.close();
       }
 
       for (Variable v : getVariables()) {
@@ -310,8 +286,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         if (showRequest)
           System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " url=" + sbuff);
 
-        try {
-          method = HTTPFactory.Get(httpClient, sbuff.toString());
+        try (
+          HTTPMethod method = HTTPFactory.Get(httpClient, sbuff.toString())) {
           int statusCode = method.execute();
 
           if (statusCode == 404)
@@ -331,9 +307,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
           InputStream is = method.getResponseBodyAsStream();
           size += IO.copyB(is, fos, IO.default_socket_buffersize);
-
-        } finally {
-          if (method != null) method.close();
         }
       }
 

@@ -187,7 +187,7 @@ public class HttpDSP extends D4DSP
         long stop = 0;
         this.status = 0;
         HTTPMethod method = null;
-        try {   // Note that we cannot use try with resources because we exort the method stream, so method
+        try {   // Note that we cannot use try with resources because we export the method stream, so method
             // must not be closed.
             method = HTTPFactory.Get(methodurl);
             if(allowCompression)

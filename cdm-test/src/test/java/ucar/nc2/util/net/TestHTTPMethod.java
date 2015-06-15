@@ -84,9 +84,6 @@ public class TestHTTPMethod extends UnitTestCommon
     public void
     testGetStream() throws Exception
     {
-        HTTPSession session = null;
-        HTTPMethod method = null;
-
         String url = baseurl + "/" + testcase;
         String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
 
@@ -94,29 +91,26 @@ public class TestHTTPMethod extends UnitTestCommon
         System.out.println("*** URL: " + url);
 
         System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream");
-        session = HTTPFactory.newSession(url);
-        method = HTTPFactory.Get(session);
-        method.execute();
-        InputStream stream = method.getResponseBodyAsStream();
-        // Read the whole thing
-        byte[] buffer = new byte[EXPECTED];
-        int count = stream.read(buffer);
-        stream.close(); /* should close the method also */
-        try {
+        try (HTTPMethod method = HTTPFactory.Get(url)) {
             method.execute();
-            pass = false;
-        } catch (HTTPException he) {
-            pass = true;
+            InputStream stream = method.getResponseBodyAsStream();
+            // Read the whole thing
+            byte[] buffer = new byte[EXPECTED];
+            int count = stream.read(buffer);
+            stream.close(); /* should close the method also */
+            try {
+                method.execute();
+                pass = false;
+            } catch (HTTPException he) {
+                pass = true;
+            }
         }
         assertTrue("TestHTTPMethod.testGetStream", pass);
-        session.close();
     }
+
     public void
     testGetStreamPartial() throws Exception
     {
-        HTTPSession session = null;
-        HTTPMethod method = null;
-
         String url = baseurl + "/" + testcase;
         String baseline = getThreddsroot() + relativebaseline + "/" + testcase;
 
@@ -124,20 +118,19 @@ public class TestHTTPMethod extends UnitTestCommon
         System.out.println("*** URL: " + url);
 
         System.out.println("*** Testing: HTTPMethod.getResponseBodyAsStream partial read");
-        session = HTTPFactory.newSession(url);
-        method = HTTPFactory.Get(session);
-        method.execute();
-        InputStream stream = method.getResponseBodyAsStream();
-        byte[] buffer = new byte[EXPECTED];
-        int count = stream.read(buffer,0,10); // partial read
-        method.close();
-        try {
-            count = stream.read(buffer);
-            pass = false;
-        } catch (Throwable t) {
-            pass = true;
+        try (HTTPMethod method = HTTPFactory.Get(url)) {
+            method.execute();
+            InputStream stream = method.getResponseBodyAsStream();
+            byte[] buffer = new byte[EXPECTED];
+            int count = stream.read(buffer, 0, 10); // partial read
+            method.close();
+            try {
+                count = stream.read(buffer);
+                pass = false;
+            } catch (Throwable t) {
+                pass = true;
+            }
         }
         assertTrue("TestHTTPMethod.testGetStreamPartial", pass);
-        session.close();
     }
 }

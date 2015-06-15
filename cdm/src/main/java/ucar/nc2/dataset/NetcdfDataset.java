@@ -847,7 +847,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(String location) throws IOException {
-    HTTPMethod method = null;
     int len = location.length();
     // Strip off any trailing .dds, .das, or .dods
     if (location.endsWith(".dds"))
@@ -857,10 +856,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (location.endsWith(".dods"))
       location = location.substring(0, len - ".dods".length());
     // Opendap assumes that the caller has properly escaped the url
-    try {
+    try (
       // For some reason, the head method is not using credentials
       // method = session.newMethodHead(location + ".dds");
-      method = HTTPFactory.Get(location + ".dds");
+      HTTPMethod method = HTTPFactory.Get(location + ".dds")) {
 
       int status = method.execute();
       if (status == 200) {
@@ -878,15 +877,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
       // not dods
       return null;
-
-    } finally {
-      if (method != null) method.close();
     }
   }
 
   // check for dmr
   static private ServiceType checkIfDap4(String location) throws IOException {
-    HTTPMethod method = null;
     // Strip off any trailing DAP4 prefix
     if (location.endsWith(".dap"))
       location = location.substring(0, location.length() - ".dap".length());
@@ -894,9 +889,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       location = location.substring(0, location.length() - ".dmr".length());
     else if (location.endsWith(".dsr"))
       location = location.substring(0, location.length() - ".dsr".length());
-    try {
-      method = HTTPFactory.Get(location + ".dmr");
-
+    try (HTTPMethod method = HTTPFactory.Get(location + ".dmr")) {
       int status = method.execute();
       if (status == 200) {
         Header h = method.getResponseHeader("Content-Type");
@@ -911,9 +904,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
       // not dods
       return null;
-
-    } finally {
-      if (method != null) method.close();
     }
   }
 

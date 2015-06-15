@@ -252,13 +252,13 @@ public class UnitTestCommon extends TestCase
         // See if the sourceurl is available by trying to get the DSR
         System.err.print("Checking for sourceurl: " + candidate);
         try {
-            HTTPSession session = new HTTPSession(candidate);
-            HTTPMethod method = HTTPFactory.Get(session);
-            method.execute();
-            String s = method.getResponseAsString();
-            session.close();
-            System.err.println(" ; found");
-            return true;
+            try (
+                HTTPMethod method = HTTPFactory.Get(candidate)) {
+                method.execute();
+                String s = method.getResponseAsString();
+                System.err.println(" ; found");
+                return true;
+            }
         } catch (IOException ie) {
             System.err.println(" ; fail");
             return false;

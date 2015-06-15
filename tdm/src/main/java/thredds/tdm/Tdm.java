@@ -373,32 +373,30 @@ public class Tdm {
 
     }
 
-    private void sendTriggers(String path) {
-      for (Server server : servers) {
+    private void sendTriggers(String path)
+    {
+      for(Server server : servers) {
         String url = server.name + path;
-        HTTPMethod m = null;
         try {
-          m = HTTPFactory.Get(server.session, url);
-          int status = m.execute();
-          if (status == 200)
-            logger.info("send trigger to {} status = {}", url, status);
-          else
-            logger.warn("FAIL send trigger to {} status = {}", url, status);
-
+          try (HTTPMethod m = HTTPFactory.Get(server.session, url)) {
+            int status = m.execute();
+            if(status == 200)
+              logger.info("send trigger to {} status = {}", url, status);
+            else
+              logger.warn("FAIL send trigger to {} status = {}", url, status);
+          }
         } catch (HTTPException e) {
           Throwable cause = e.getCause();
-          if (cause instanceof ConnectException) {
+          if(cause instanceof ConnectException) {
             logger.warn("server {} not running", server.name);
           } else {
             e.printStackTrace();
             logger.error("FAIL send trigger to " + url + " failed", cause);
           }
 
-        } finally {
-          if (m != null) m.close();
         }
-      }
 
+      }
     }
 
     /* private void doManage(String deleteAfterS) throws IOException {

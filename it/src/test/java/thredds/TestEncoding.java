@@ -82,32 +82,30 @@ public class TestEncoding {
   public void readCapabilities() {
     String endpoint = TestWithLocalServer.withPath(path + "?" + query);
     System.out.printf("GetCapabilities req = '%s'%n", endpoint);
+    try {
+      try (HTTPMethod method = HTTPFactory.Get(endpoint)) {
+        int statusCode = method.execute();
 
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
+        Assert.assertEquals(200, statusCode);
+        byte[] content = method.getResponseAsBytes();
+        assert content.length > 1000;
+        //System.out.printf("%s%n", new String(content, "UTF-8"));
 
-      Assert.assertEquals(200, statusCode);
-      byte[] content = method.getResponseAsBytes();
-      assert content.length > 1000;
-      //System.out.printf("%s%n", new String(content, "UTF-8"));
+        ByteArrayInputStream bin = new ByteArrayInputStream(content);
+        try {
+          SAXBuilder builder = new SAXBuilder();
+          org.jdom2.Document tdoc = builder.build(bin);
+          org.jdom2.Element root = tdoc.getRootElement();
 
-      ByteArrayInputStream bin = new ByteArrayInputStream(content);
-      try {
-        SAXBuilder builder = new SAXBuilder();
-        org.jdom2.Document tdoc = builder.build(bin);
-        org.jdom2.Element root = tdoc.getRootElement();
-
-      } catch (Throwable t) {
-        // if fail, go find where it barfs
-        isValidUTF8(content);
-        assert false;
+        } catch (Throwable t) {
+          // if fail, go find where it barfs
+          isValidUTF8(content);
+          assert false;
+        }
       }
-
     } catch (Exception e) {
       e.printStackTrace();
       assert false;
-
     }
   }
 

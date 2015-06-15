@@ -62,26 +62,21 @@ public class TestStream {
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
-    HTTPSession client = null;
-    HTTPMethod m = null;
     try {
-      client = HTTPFactory.newSession(catalogName);
-      m = HTTPFactory.Get(client);
+      try (HTTPMethod m = HTTPFactory.Get(catalogName)) {
 
-      int statusCode = m.execute();
-      System.out.printf("status = %d%n", statusCode);
+        int statusCode = m.execute();
+        System.out.printf("status = %d%n", statusCode);
 
-      InputStream stream = m.getResponseBodyAsStream();
-      InvCatalogFactory reader = InvCatalogFactory.getDefaultFactory(true);
+        InputStream stream = m.getResponseBodyAsStream();
+        InvCatalogFactory reader = InvCatalogFactory.getDefaultFactory(true);
 
-      InvCatalogImpl catalog = reader.readXML(stream, catalogURI);
-      catalog.writeXML(System.out);
+        InvCatalogImpl catalog = reader.readXML(stream, catalogURI);
+        catalog.writeXML(System.out);
+      }
 
     } catch (IOException e) {
       e.printStackTrace();
-
-    } finally {
-      if (client != null) client.close();
     }
 
   }
@@ -92,28 +87,22 @@ public class TestStream {
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
-    HTTPSession client = null;
-    HTTPMethod m = null;
     try {
-      client = HTTPFactory.newSession(catalogName);
-      m = HTTPFactory.Get(client);
+      try (HTTPMethod m = HTTPFactory.Get(catalogName)) {
 
-      int statusCode = m.execute();
-      System.out.printf("status = %d%n", statusCode);
+        int statusCode = m.execute();
+        System.out.printf("status = %d%n", statusCode);
 
-      String stream = m.getResponseAsString(CDM.UTF8);
-      System.out.printf("cat = %s%n", stream);
+        String stream = m.getResponseAsString(CDM.UTF8);
+        System.out.printf("cat = %s%n", stream);
 
-      InvCatalogFactory reader = InvCatalogFactory.getDefaultFactory(true);
+        InvCatalogFactory reader = InvCatalogFactory.getDefaultFactory(true);
 
-      InvCatalogImpl catalog = reader.readXML(stream, catalogURI);
-      catalog.writeXML(System.out);
-
+        InvCatalogImpl catalog = reader.readXML(stream, catalogURI);
+        catalog.writeXML(System.out);
+      }
     } catch (IOException e) {
       e.printStackTrace();
-
-    } finally {
-      if (client != null) client.close();
     }
 
   }

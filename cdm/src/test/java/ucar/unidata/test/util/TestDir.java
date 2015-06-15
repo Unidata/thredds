@@ -337,6 +337,9 @@ public class TestDir {
   }
 
   ////////////////////////////////////////////////////////////////////////////
+  public static int readAllDir(String dirName, FileFilter ff) throws IOException {
+    return actOnAll(dirName, ff, new ReadAllVariables());
+  }
 
   public static void readAll(String filename) throws IOException {
     ReadAllVariables act = new ReadAllVariables();
