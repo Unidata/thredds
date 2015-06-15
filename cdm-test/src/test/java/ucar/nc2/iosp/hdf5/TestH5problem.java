@@ -33,16 +33,18 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
 /**
- * Describe
+ * Miscellaneaous problems with hdf5 reader
  *
  * @author caron
  * @since 10/27/2014
@@ -50,22 +52,40 @@ import java.io.IOException;
 @Category(NeedsCdmUnitTest.class)
 public class TestH5problem {
 
-  public void problemV() throws IOException {
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = TestH5.testDir + "ssec-h5/MYD04_L2.A2006188.1830.005.2006194121515.hdf";
+  // original file name is AG_100nt_even10k.biom
+  // problem is that theres a deflate filter on array of strings
+  // whats screwy about that is that the heapids get compressed, not the strings (!) doubt thats very useful.
+  @Test
+  public void problemStringsWithFilter() throws IOException, InvalidRangeException {
+    String filename = TestH5.testDir + "StringsWFilter.h5";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
-      Variable v = ncfile.findVariable("/U-MARF/EPS/IASI_xxx_1C/DATA/SPECT_LAT_ARRAY");
+      Variable v = ncfile.findVariable("/sample/ids");
       assert v != null;
+      int[] shape = v.getShape();
+      Assert.assertEquals(1, shape.length);
+      Assert.assertEquals(3107, shape[0]);
       Array data = v.read();
-      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-      NCdumpW.printArray(data, "primary_cloud", System.out, null);
+      Assert.assertEquals(1, data.getRank());
+      Assert.assertEquals(3107, data.getShape()[0]);
+      //NCdumpW.printArray(data, "sample/ids", System.out, null);
     }
   }
 
-  // also look at
-  String bad = TestH5.testDir + "compressCompoundBarrowdale.h5";
+  @Test
+  public void sectionStringsWithFilter() throws IOException, InvalidRangeException {
+    String filename = TestH5.testDir + "StringsWFilter.h5";
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Variable v = ncfile.findVariable("/sample/ids");
+      assert v != null;
+      int[] shape = v.getShape();
+      Assert.assertEquals(1, shape.length);
+      Assert.assertEquals(3107, shape[0]);
 
- // NetcdfFile ncfile = NetcdfFile.open(testDir + "eos/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5");
+      Array dataSection = v.read("700:900:2");      // make sure to go acrross a chunk boundary
+      Assert.assertEquals(1, dataSection.getRank());
+      Assert.assertEquals(101, dataSection.getShape()[0]);
+    }
+  }
 
   // The HugeHeapId problem: java.io.IOException: java.lang.RuntimeException: Cant find DHeapId=0
   // fixes by rschmunk 4/30/2015

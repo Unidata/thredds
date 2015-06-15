@@ -237,6 +237,11 @@ public class LayoutBBTiled implements LayoutBB {
       return db;
     }
 
+    @Override
+    public String toString() {
+      return delegate.toString();
+    }
+
     // artifact of overriding Layout
     public long getSrcPos(){
       throw new UnsupportedOperationException();
