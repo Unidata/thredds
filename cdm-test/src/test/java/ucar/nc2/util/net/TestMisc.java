@@ -105,15 +105,9 @@ public class TestMisc extends UnitTestCommon
         String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
         URI catalogURI = new URI(catalogName);
 
-        HTTPSession client = null;
-        HTTPMethod m = null;
-        try {
-            client = HTTPFactory.newSession(catalogName);
-            m = HTTPFactory.Get(client);
-
+        try (HTTPMethod m = HTTPFactory.Get(catalogName)) {
             int statusCode = m.execute();
             System.out.printf("status = %d%n", statusCode);
-
             try {
                 String content = m.getResponseAsString("ASCII");
                 System.out.printf("cat = %s%n", content);
@@ -121,8 +115,6 @@ public class TestMisc extends UnitTestCommon
                 t.printStackTrace();
                 assert false;
             }
-        } finally {
-            if(client != null) client.close();
         }
 
     }

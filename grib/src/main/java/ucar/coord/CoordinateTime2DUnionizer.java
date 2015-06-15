@@ -2,10 +2,13 @@ package ucar.coord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -41,7 +44,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
       CoordinateTimeAbstract timesPrev = timeMap.get(coordT2D.getRuntime(runIdx));
       if (timesPrev != null && !shown) {
         logger.warn("CoordinateTime2DUnionizer duplicate runtimes from different partitions {}",
-                Thread.currentThread().getStackTrace());
+                GribUtils.stackTraceToString(Thread.currentThread().getStackTrace()));
         shown = true;
       }
       timeMap.put(coordT2D.getRuntime(runIdx), times);   // later partitions will override LOOK could check how many times there are and choose larger

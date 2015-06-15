@@ -53,16 +53,18 @@ import java.util.Collection;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestRestrictDataset {
-  @Parameterized.Parameters(name="{0}")
-  public static Collection<Object[]> getTestParameters() {
-    return Arrays.asList(new Object[][]{
+public class TestRestrictDataset
+{
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<Object[]> getTestParameters()
+    {
+        return Arrays.asList(new Object[][]{
             {"/dodsC/testRestrictedDataset/testData2.nc.dds"},
             {"/cdmremote/testRestrictedDataset/testData2.nc?req=form"},
             {"/fileServer/testRestrictedDataset/testData2.nc"},
             {"/wms/testRestrictedDataset/testData2.nc?service=WMS&version=1.3.0&request=GetCapabilities"},
 
-             // restricted DatasetScan
+            // restricted DatasetScan
             {"/dodsC/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc.html"},
             {"/cdmremote/testRestrictedScan/GFS_CONUS_80km_20120229_1200.grib1?req=form"},
             {"/fileServer/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc"},
@@ -72,37 +74,37 @@ public class TestRestrictDataset {
             {"/dodsC/restrictCollection/GFS_CONUS_80km/TwoD.dds"},
             {"/ncss/restrictCollection/GFS_CONUS_80km/TwoD/dataset.html"},
             {"/cdmremote/restrictCollection/GFS_CONUS_80km/TwoD?req=form"},
-    });
-  }
-
-  String path, query;
-
-  public TestRestrictDataset(String path) {
-    this.path = path;
-  }
-
-
-  @Test
-  public void testRestriction() {
-    //String server = "http://thredds-test.unidata.ucar.edu/thredds/";
-    //String endpoint = server + path;
-
-    String endpoint = TestWithLocalServer.withPath(path);
-    System.out.printf("testRestriction req = '%s'%n", endpoint);
-
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
-
-      if (statusCode != 401 && statusCode != 403)
-        assert false;
-      // Assert.assertEquals(401, statusCode);
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assert.fail(e.getMessage());
+        });
     }
-  }
+
+    String path, query;
+
+    public TestRestrictDataset(String path)
+    {
+        this.path = path;
+    }
+
+
+    @Test
+    public void testRestriction()
+    {
+        //String server = "http://thredds-test.unidata.ucar.edu/thredds/";
+        //String endpoint = server + path;
+
+        String endpoint = TestWithLocalServer.withPath(path);
+        System.out.printf("testRestriction req = '%s'%n", endpoint);
+        try {
+            try (HTTPMethod method = HTTPFactory.Get(endpoint)) {
+                int statusCode = method.execute();
+                if(statusCode != 401 && statusCode != 403)
+                    assert false;
+                // Assert.assertEquals(401, statusCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail(e.getMessage());
+        }
+    }
 
 }
 

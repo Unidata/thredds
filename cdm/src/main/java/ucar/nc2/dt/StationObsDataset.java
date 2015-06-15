@@ -37,6 +37,8 @@ package ucar.nc2.dt;
  * @deprecated use ucar.nc2.ft.*
  * @author caron
  */
-public interface StationObsDataset extends ucar.nc2.dt.PointObsDataset, ucar.nc2.dt.StationCollection {
+public interface StationObsDataset extends ucar.nc2.dt.PointObsDataset, ucar.nc2.dt.StationCollection
+, AutoCloseable
+{
 
 }

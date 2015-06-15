@@ -579,28 +579,28 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     Map<String, String> latestVersionInfo = new HashMap<>();
 
     String versionUrl = "http://www.unidata.ucar.edu/software/thredds/latest.xml";
+    try {
+      try (HTTPMethod method = HTTPFactory.Get(versionUrl)) {
+        HTTPSession httpClient = method.getSession();
+        httpClient.setSoTimeout(socTimeout * 1000);
+        httpClient.setConnectionTimeout(connectionTimeout * 1000);
+        httpClient.setUserAgent("TDS_" + getVersionInfo().replace(" ", ""));
+        method.execute();
+        InputStream responseIs = method.getResponseBodyAsStream();
 
-    try (HTTPSession httpClient = HTTPFactory.newSession(versionUrl)) {
-
-      httpClient.setSoTimeout(socTimeout * 1000);
-      httpClient.setConnectionTimeout(connectionTimeout * 1000);
-      httpClient.setUserAgent("TDS_" + getVersionInfo().replace(" ", ""));
-      HTTPMethod method = HTTPFactory.Get(httpClient);
-      method.execute();
-      InputStream responseIs = method.getResponseBodyAsStream();
-
-      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      DocumentBuilder db = dbf.newDocumentBuilder();
-      Document dom = db.parse(responseIs);
-      Element docEle = dom.getDocumentElement();
-      NodeList versionElements = docEle.getElementsByTagName("version");
-      if (versionElements != null && versionElements.getLength() > 0) {
-        for (int i = 0; i < versionElements.getLength(); i++) {
-          //get the version element
-          Element versionElement = (Element) versionElements.item(i);
-          String verType = versionElement.getAttribute("name");
-          String verStr = versionElement.getAttribute("value");
-          latestVersionInfo.put(verType, verStr);
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document dom = db.parse(responseIs);
+        Element docEle = dom.getDocumentElement();
+        NodeList versionElements = docEle.getElementsByTagName("version");
+        if(versionElements != null && versionElements.getLength() > 0) {
+          for(int i = 0;i < versionElements.getLength();i++) {
+            //get the version element
+            Element versionElement = (Element) versionElements.item(i);
+            String verType = versionElement.getAttribute("name");
+            String verStr = versionElement.getAttribute("value");
+            latestVersionInfo.put(verType, verStr);
+          }
         }
       }
     } catch (IOException e) {

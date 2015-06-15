@@ -81,9 +81,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     boolean needtest = true;
 
-    HTTPMethod method = null;
-    try {
-      method = HTTPFactory.Head(session);
+    try (
+      HTTPMethod method = HTTPFactory.Head(session)) {
 
       doConnect(method);
 
@@ -112,8 +111,6 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
         throw new IOException("Server has malformed Content-Length header");
       }
 
-    } finally {
-      if (method != null) method.close();
     }
 
     if (needtest && !rangeOk(url))
@@ -139,27 +136,24 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     }
   }
 
-  private boolean rangeOk(String url) {
-    HTTPMethod method = null;
+  private boolean rangeOk(String url)
+  {
     try {
-      method = HTTPFactory.Get(session,url);
-      method.setRequestHeader("Range", "bytes=" + 0 + "-" + 0);
-      doConnect(method);
+      try (HTTPMethod method = HTTPFactory.Get(session, url)) {
+        method.setRequestHeader("Range", "bytes=" + 0 + "-" + 0);
+        doConnect(method);
 
-      int code = method.getStatusCode();
-      if (code != 206)
-        throw new IOException("Server does not support Range requests, code= " + code);
-      Header head = method.getResponseHeader("Content-Range");
-      total_length = Long.parseLong(head.getValue().substring(head.getValue().lastIndexOf("/")+1));
-      // clear stream
-      method.close();
-      return true;
-
+        int code = method.getStatusCode();
+        if(code != 206)
+          throw new IOException("Server does not support Range requests, code= " + code);
+        Header head = method.getResponseHeader("Content-Range");
+        total_length = Long.parseLong(head.getValue().substring(head.getValue().lastIndexOf("/") + 1));
+        // clear stream
+        method.close();
+        return true;
+      }
     } catch (IOException e) {
       return false;
-
-    } finally {
-      if (method != null) method.close();
     }
   }
 
@@ -208,9 +202,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     if (debug) System.out.println(" HTTPRandomAccessFile bytes=" + pos + "-" + end + ": ");
 
-    HTTPMethod method = null;
-    try {
-      method = HTTPFactory.Get(session);
+    try (HTTPMethod method = HTTPFactory.Get(session)) {
       method.setFollowRedirects(true);
       method.setRequestHeader("Range", "bytes=" + pos + "-" + end);
       doConnect(method);
@@ -230,8 +222,6 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       readLen = copy(is, buff, offset, readLen);
       return readLen;
 
-    } finally {
-      if (method != null) method.close();
     }
   }
 

@@ -125,12 +125,7 @@ public class HttpClientManager
      */
     public static int putContent(String urlencoded, String content) throws IOException
     {
-        HTTPSession session = null;
-
-        try {
-
-            session = HTTPFactory.newSession(urlencoded);
-            try (HTTPMethod m = HTTPFactory.Put(session)) {
+            try (HTTPMethod m = HTTPFactory.Put(urlencoded)) {
 
                 m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
                 m.execute();
@@ -138,20 +133,16 @@ public class HttpClientManager
                 int resultCode = m.getStatusCode();
 
                 // followRedirect wont work for PUT
-                if (resultCode == 302) {
+                if(resultCode == 302) {
                     String redirectLocation;
                     Header locationHeader = m.getResponseHeader("location");
-                    if (locationHeader != null) {
+                    if(locationHeader != null) {
                         redirectLocation = locationHeader.getValue();
                         resultCode = putContent(redirectLocation, content);
                     }
                 }
-                if(session != null) { session.close(); };
                 return resultCode;
             }
-        } finally {
-            if(session != null) session.close();
-        }
     }
 
     //////////////////////

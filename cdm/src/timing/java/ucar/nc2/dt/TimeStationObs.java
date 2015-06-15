@@ -51,11 +51,8 @@ public class TimeStationObs {
 
   public static void scanStation(String url, String station, Predicate p, Action a, Limit limit) throws IOException {
 
-    StationObsDataset sod = null;
-    try {
-      if (debug) System.out.println("scanStation open "+url);
-      sod = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuilder());
-
+    if (debug) System.out.println("scanStation open "+url);
+    try (StationObsDataset sod = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuilder());) {
       ucar.unidata.geoloc.Station s = sod.getStation(station);
       if (s == null) return;
 
@@ -71,37 +68,26 @@ public class TimeStationObs {
         limit.count++;
         if (limit.count > limit.limit) break;
       }
-
-    } finally {
-      if (null != sod)
-        sod.close();
     }
   }
 
   public static void scanAll(String url, Predicate p, Action a, Limit limit) throws IOException {
 
-    PointObsDataset dataset = null;
-    try {
-      if (debug) System.out.println("scanAll open "+url);
-      dataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, url, null, new StringBuilder());
-
+    if (debug) System.out.println("scanAll open "+url);
+    try (PointObsDataset dataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, url, null, new StringBuilder())) {
       DataIterator iter = dataset.getDataIterator(0);
-      while (iter.hasNext()) {
+      while(iter.hasNext()) {
         PointObsDatatype pobs = (PointObsDatatype) iter.nextData();
 
         StructureData sdata = pobs.getData();
-        if (p.match(sdata)) {
+        if(p.match(sdata)) {
           a.act(sdata);
           limit.matches++;
         }
 
         limit.count++;
-        if (limit.count > limit.limit) break;
+        if(limit.count > limit.limit) break;
       }
-
-    } finally {
-      if (null != dataset)
-        dataset.close();
     }
   }
 

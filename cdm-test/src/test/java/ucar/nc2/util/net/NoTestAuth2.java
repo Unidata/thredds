@@ -81,28 +81,25 @@ public class NoTestAuth2 extends UnitTestCommon
   {
     boolean pass = true;
     for(Data data: cases) {
-        HTTPSession session = HTTPFactory.newSession(data.url);
-        if(data.provider != null)
-            session.setCredentialsProvider(data.provider);
-        session.setUserAgent("tdmRunner");
-        HTTPSession.setGlobalUserAgent("TDM v4.3");
-        HTTPMethod m = null;
-        try {
-          System.out.printf("url %s%n", data.url);
-          m = HTTPFactory.Get(session);
-          int status = m.execute();
-          String s = m.getResponseAsString();
-          System.out.printf("Trigger response = %d == %s%n", status, s);
-          if(status != 200  && status != 404)
-              pass = false;
-        } catch (HTTPException e) {
-          System.err.println("Fail: "+data.url);
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          e.printStackTrace(new PrintStream(bos));
-          e.printStackTrace();
-          pass = false;
-        } finally {
-          if (session != null) session.close();
+        System.out.printf("url %s%n", data.url);
+        try (HTTPMethod m = HTTPFactory.Get(data.url)) {
+            try {
+                if(data.provider != null)
+                    m.getSession().setCredentialsProvider(data.provider);
+                m.getSession().setUserAgent("tdmRunner");
+                HTTPSession.setGlobalUserAgent("TDM v4.3");
+                int status = m.execute();
+                String s = m.getResponseAsString();
+                System.out.printf("Trigger response = %d == %s%n", status, s);
+                if(status != 200 && status != 404)
+                    pass = false;
+            } catch (HTTPException e) {
+                System.err.println("Fail: " + data.url);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+                e.printStackTrace(new PrintStream(bos));
+                e.printStackTrace();
+                pass = false;
+            }
         }
     }
     if(pass)
