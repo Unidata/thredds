@@ -1,0 +1,78 @@
+= TDS Configuration with Properties
+:source-highlighter: coderay
+:linkcss:
+:stylesheet: ../tds.css
+
+A number of TDS configuration settings can be set as Java system properties. Default values for some of those
+properties are defined in the TDS properties file:
+`${TOMCAT_HOME}/webapps/thredds/WEB-INF/classes/thredds/server/tds.properties`
+
+Modifying `tds.properties` is an alternative means of changing those configuration settings. However,
+`tds.properties` lives in the `${TOMCAT_HOME}/webapps/` directory, meaning that it'll be overwritten whenever the TDS
+is upgraded. So, if you make any edits to that file, make sure to back them up before deploying a new version of
+`thredds.war`, and then restore them after depoloyment.
+
+The Java system properties that TDS uses for configuration are:
+
+[cols="1,3,2", options="header"]
+|===
+|Property name
+|Description
+|Default value from `tds.properties`
+
+|`tds.version`
+|TDS Full Version Number
+|"4.2.<version>"
+
+|`tds.version.brief`
+|TDS Short Version Number
+|"4.2"
+
+|`tds.version.builddate`
+|TDS Build Date
+|"<yyyyMMdd.hhmm>"
+
+|`tds.url`
+|TDS web page URL
+|"http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html"
+
+|`tds.documentation.url`
+|TDS Documentation URL
+|"http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html"
+
+|`tds.logo.url`
+|TDS Logo URL
+|"threddsIcon.gif"
+
+|`tds.logo.alt`
+|TDS Logo Alternate Text
+|"TDS"
+
+|`tds.content.root.path`
+|Root path for TDS content/thredds directory
+|"../../content"
+
+|`tds.content.path`
+|Additional path for TDS content/thredds directory
+|"thredds"
+
+|`tds.config.file`
+|Name of TDS configuration file (relative path from content/thredds).
+|"threddsConfig.xml"
+
+|`tds.content.startup.path`
+|
+|"WEB-INF/altContent/startup"
+
+|`tds.content.idd.path`
+|
+|"WEB-INF/altContent/idd/thredd"
+
+|`tds.content.motherlode.path`
+|
+|"WEB-INF/altContent/motherlode/thredds"
+
+|`tds.install.url`
+|
+|"catalog.html"
+|===
