@@ -10,7 +10,8 @@
 <h1>TDS Services</h1>
 <hr>
 <ul>
-  <li><a href="#available">Available TDS Services</a>
+  <li><a href="#standard">Data Services</a></li>
+  <li><a href="#available">List of all TDS Services</a>
     <ul>
       <li><a href="#serverInfo">Server Information Services</a></li>
       <li><a href="#catalogServices">Catalog Services</a></li>
@@ -36,7 +37,37 @@
   <li><a href="#tdsServiceElemRequirements">TDS Requirements for THREDDS Catalog <code>service</code> Elements</a></li>
 </ul>
 <hr>
-<h2><a name="available">Available Services</a></h2>
+<h2><a name="standard" id="standard"> Data Services</a> (new in 5.0)</h2>
+<h3>Standard Data Services</h3>
+<p>The TDS has a set of Standard Data Services that are always available (unless explicitly disabled) that can be referrenced from any configuration catalog:</p>
+<ul>
+  <li>cdmRemote</li>
+  <li>    cdmrFeatureGrid</li>
+  <li>dap4</li>
+  <li>httpService</li>
+  <li>resolver</li>
+  <li>netcdfSubsetGrid</li>
+  <li>netcdfSubsetPoint</li>
+  <li>opendap</li>
+  <li>wcs</li>
+</ul>
+<p>And, optionally, if the corresponding jar files are present:</p>
+<ul>
+  <li>wms</li>
+  <li>iso</li>
+  <li>ncml</li>
+  <li>uddc</li>
+</ul>
+<h3>Available Services</h3>
+<p>The TDS configures the appropriate set of standard services for each <strong>dataType/featureType</strong>. You can configure the <em>available services</em> globally, and they will be applied to all datasets of that <strong>dataType/featureType</strong>. If you do not specify a service for a dataset, but you do specify  its <strong>dataType/featureType</strong>, then the datatype-appropriate  services will be enabled for it.</p>
+<h3>User defined Services</h3>
+<p>You can still define your own services, either globally in the root catalog, or locally in any configuration catalog.</p>
+<ol>
+  <li>Services placed in the root catalog are global and can be referenced in any other config catalog.</li>
+  <li>Services placed in any other catalog are local, are used only in that catalog, and override (by name) any global services.</li>
+</ol>
+<hr />
+<h2><a name="serviceList" id="serviceList">TDS Services</a></h2>
 
 <p>
   The THREDDS Data Server (TDS) supports a variety of web services. Each of the available
@@ -648,7 +679,7 @@
 
 <address>
   <img alt="THREDDS" src="../thread.png" height="71" width="73"/>
-  This document is maintained by Unidata. Send
+  This document last changed June 2015. Send
   comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 

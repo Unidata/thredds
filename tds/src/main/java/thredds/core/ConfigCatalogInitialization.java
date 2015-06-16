@@ -64,7 +64,7 @@ import java.util.*;
  */
 @Component("ConfigCatalogInitialization")
 public class ConfigCatalogInitialization {
-  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName()+".catalogInit");
+  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName());
   static private final String ERROR = "*** ERROR: ";
   static private final boolean show = false;
 

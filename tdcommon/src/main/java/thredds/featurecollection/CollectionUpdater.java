@@ -199,8 +199,6 @@ public enum CollectionUpdater {
     if (scheduler == null) return;
     try {
       scheduler.shutdown(true);
-      org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
-      logServerStartup.info("Scheduler shutdown");
     } catch (Throwable e) {
       startupLogger.error("Scheduler failed to shutdown", e);
       scheduler = null;

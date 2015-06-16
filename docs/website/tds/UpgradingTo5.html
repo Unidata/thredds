@@ -57,15 +57,18 @@
 </ul>
 <h2>Catalog Schema changes</h2>
 <p>Schema version is now 1.2</p>
-<h3>Server Configuration Catalog</h3>
-<ul>
-  <li>the <strong>catalogScan</strong> element is now available</li>
-  <li>the <strong>datasetFmrc</strong> element is no longer supported in a configCatalog</li>
-</ul>
 <h3>Client Catalogs</h3>
 <ul>
-  <li><strong>service</strong> elements may not be nested inside of <strong>dataset</strong> elements, they must be directly contained in the <strong>catalog</strong> element</li>
+  <li><strong>service</strong> elements may not be nested inside of <strong>dataset</strong> elements, they must be directly contained in the <strong>catalog</strong> element.</li>
+</ul>
+<h3>Server Configuration Catalogs</h3>
+<ul>
+  <li>the <strong>catalogScan</strong> element is now available, which scans a directory for catalog files (any file ending in xml)</li>
+  <li>the <strong>datasetFmrc</strong> element is no longer supported</li>
   <li><strong>datasetRoot</strong> elements may not be contained inside of <strong>service</strong> elements, they must be directly contained in the <strong>catalog</strong> element</li>
+  <li><strong>service</strong> elements may not be nested inside of <strong>dataset</strong> elements, they must be directly contained in the <strong>catalog</strong> element.</li>
+  <li><strong>service</strong> elements no longer need to be explicitly defined in each config catalog, but may reference user defined global services</li>
+  <li>if the <strong>datatype/featureType</strong> is defined for a dataset, then the <strong>service</strong> element may be ommited, and the default set of services for that <strong>datatype</strong> will be used.</li>
 </ul>
 <h3>DatasetScan</h3>
 <ul>
@@ -74,88 +77,41 @@
   <li><strong>sort: </strong>by default, datasets at each collection level are listed
   in ascending order by filename</li>
   <li><strong>User pluggable classes implementing UserImplType</strong> (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl, crawlableDatasetSorterImpl) are no longer supported. This was never officially released or documented.</li>
-  <li>details are <a href="catalog/InvCatalogServerSpec.html">here</a></li>
+  <li>DatasetScan details are <a href="catalog/InvCatalogServerSpec.html">here</a></li>
 </ul>
-<h3>FeatureCollection</h3>
+<h3>Standard Services</h3>
 <ul>
-  <li>standard service elements are used, user specified ones are ignored (?)</li>
+  <li>Services no longer need to be specified in each configuration catalog, but can be placed in the root catalog and referenced in any other config catalog.</li>
+  <li>For backwards compatibility, one can still define services in  config catalogs other than root, and these wwill take precedence.</li>
+  <li>The TDS provides global, standard service elements, which know which services are appropriate for each Feature Type.</li>
+  <li>Standard service  details are <a href="reference/Services.html">here</a></li>
 </ul>
 <h2>ThreddsConfig.xml</h2>
 <ul>
-  <li>Control over Catalog Caching is different, now you can control how many catalogs are cached, rather than turning caching on or off. So the following is no longer used, see <a href="reference/ThreddsConfigXMLFile.html#CatalogCaching">here</a> for the new syntax:
+  <li>Control over Catalog Caching is different, now you  control how many catalogs are cached, rather than turning caching on or off. So the following is no longer used, see <a href="reference/ThreddsConfigXMLFile.html#CatalogCaching">here</a> for the new syntax:
 <pre>
 &lt;Catalog&gt;
   &lt;cache&gt;false&lt;/cache&gt;
 &lt;/Catalog&gt;
 </pre></li>
-  <li></li>
 </ul>
-<h2>New Features in version 5 ??</h2>
+<h2>New Features in version 5</h2>
 <ul>
-  <li>TDS
+  <li>TDS  
     <ul>
-      <li>Point Feature Collections (point, stations) now handled by Netcdf Subset Service.</li>
-      <li>Automatic Metadata Extraction from the dataset into the thredds catalogs, on point collections only but will extend to other collections.</li>
-      <li>NCSS Station data can output WaterML (beta).</li>
-      <li>NCSS Point can output NetCDF-4/CF.</li>
+      <li>catalogScan, watch for changes</li>
+      <li>catalogs are cached off heap, solving ESG/ESGF problems</li>
+      <li>services can be globally managed</li>
+      <li>datasetScan has new defaults</li>
     </ul>
   </li>
-  <li>NcML
-    <ul>
-      <li> updated to implement full extended model.</li>
-      <li> logicalReduce allows you to remove length 1 dimensions [<a href="https://bugtracking.unidata.ucar.edu/browse/TDS-267">TDS-267</a>].</li>
-      <li>NcML handles multichar separators.</li>
-    </ul>
-  </li>
-  <li>CDM
-    <ul>
-      <li>add Albers Equal Area projection</li>
-      <li>add Geostationary projection (Tom Rink SSEC)</li>
-      <li>CFPointWriter refactored, can write to netCDF-4</li>
-      <li>CFGridWriter2 replaces CFGridWriter</li>
-    </ul>
-  </li>
-  <li>IOSPs
-  </li>
-  <ul>
-    <li><a href="../netcdf-java/reference/netcdf4Clibrary.html#writing">Netcdf-4 writing</a> improved, default chunking improved.</li>
-    <li>GRIB: yet another rewrite of Grib Collections to allow scaling to very large collections.</li>
-    <li>Improved HDF-EOS processing.</li>
-    <li>CF 1.6 DSG: bug in handling station profiles, multidimensional representation [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">TDS-513</a>]</li>
-    <li>MSGnavigation scan mode bug</li>
-    <li>IOSP for SIGMET radar files (beta)</li>
-  </ul>
-  <li>GRIB
-    <ul>
-      <li>ECMWF DRS 50002 added by <a href="mailto:jkaehler@meteomatics.com">jkaehler@meteomatics.com</a></li>
-    </ul>
-  </li>
-  <li>ToolsUI 
-  </li>
-  <ul>
-    <li>using new Swing Look and Feel</li>
-    <li>table columns can be set by user (upper right button on header line)</li>
-    <li>File Chooser improvements</li>
-    <li></li>
-  </ul>
-</ul>
-<h3>&nbsp;</h3>
-<h3>Internal changes</h3>
-<ul>
-  <li><strong>HttpClient</strong> library upgraded to 4.2, previously was 3.</li>
-  <li>We are now using <strong>log4j2</strong>. The configuration file is in <strong>{tomcat}/webapps/thredds//WEB-INF/classes/log4j2.xml</strong>. See <a href="http://logging.apache.org/log4j/2.x/">http://logging.apache.org/log4j/2.x/</a></li>
-  <li> Most services have been converted to <a href="http://docs.spring.io/spring/docs/3.0.x/reference/mvc.html">annotated Spring controllers</a>. Documentation on adding your own service is coming soon.</li>
-  <li>Point dataset unit tests upgraded to CF 1.6.</li>
-  <li>    Unit testing framework now complete; 2700+ unit tests.</li>
-  <li><a href="https://scan.coverity.com/projects/388?tab=overview">Covarity</a> static analysis now being done. 3000+ defects eliminated, about 1000 to go.</li>
-  <li>Code being converted to use Java 7 constructs, eg try-with-resources, generics.</li>
 </ul>
 <p>&nbsp;</p>
 <hr>
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated May 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated June 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 

@@ -319,7 +319,6 @@ public class DConnect2 implements AutoCloseable
 
                 command.process(is);
             }
-            command.process(is);
 
         } catch (IOException | DAP2Exception e) {
           throw e;

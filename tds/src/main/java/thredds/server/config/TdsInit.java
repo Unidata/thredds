@@ -338,7 +338,9 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
         startupLog.info("TdsInit: tracker directory {} make ok = {}", trackerDir, ok);
       }
 
-      datasetTracker.init(trackerDir, trackerMax);
+      if (!datasetTracker.init(trackerDir, trackerMax))
+        throw new IllegalStateException("Cant start datasetTracker");
+
     } catch (IOException e) {
       startupLog.error("Error initializing dataset tracker " + datasetTracker.getClass().getName(), e);
     }

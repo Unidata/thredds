@@ -71,8 +71,7 @@
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-
-    <logger name="thredds.core.ConfigCatalogInitialization.catalogInit" level="debug" additivity="false">
+    <logger name="thredds.core.ConfigCatalogInitialization" level="debug" additivity="false">
       <appender-ref ref="catalogInit"/>
     </logger>
 
@@ -85,10 +84,6 @@
     </logger>
 
     <logger name="thredds.featurecollection.InvDatasetFeatureCollection.catalogInit" level="info" additivity="false">
-      <appender-ref ref="catalogInit"/>
-    </logger>
-
-    <logger name="thredds.catalog.InvDatasetFeatureCollection.catalogInit" level="info" additivity="false">
       <appender-ref ref="catalogInit"/>
     </logger>
 
@@ -109,7 +104,7 @@
       <appender-ref ref="fmrc"/>
     </logger>
 
-    <logger name="thredds.featurecollection.InvDatasetFcFmrc" level="debug" additivity="false">
+    <logger name="thredds.featurecollection.InvDatasetFcFmrc" level="info" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>
 
@@ -185,23 +180,19 @@
       <appender-ref ref="threddsServlet"/>
     </logger>
 
-    <logger name="org.springframework.beans.factory" level="debug" additivity="false">
+    <logger name="org.springframework.beans.factory" level="info" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <logger name="org.springframework.web" level="debug" additivity="false">
+    <logger name="org.springframework.web" level="info" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <logger name="org.springframework" level="debug" additivity="false">
+    <logger name="org.springframework" level="info" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
     <!-- =========================================== -->
-
-    <logger name="thredds.catalog.XMLEntityResolver" level="info" additivity="false">
-       <appender-ref ref="httpout"/>
-     </logger>
 
     <logger name="org.apache.http.impl.conn" level="info" additivity="false">
        <appender-ref ref="httpout"/>

@@ -622,8 +622,8 @@ sum of the maxFiles does not exceed your OS maximum. For better performance, mak
   <strong>scour</strong> element uses any valid <strong><em>udunits</em></strong> time string, such as <em><strong>sec, min, hour, day</strong></em>. To disable
   the cache, set <strong>maxFiles</strong> to 0.</p>
 <h3><a name="CatalogCaching" id="CatalogCaching">Configuration Catalog Caching</a></h3>
-<p>Configuration catalogs are always cached in memory, for performance reasons, using an LRU (least recently used) eviction algorithm. You can no longer turn off caching. To set the maximum number of catalogs in cache, set the &lt;cacheCatalogs&gt; element.</p>
-<p>Certain datasets have metadata that needs to be quickly accessible. We use an off-heap, peristent key-value store for that, stored, by default in <strong>{tomcat_home}/content/thredds/cache/catalog/</strong>. Some key-value implementations need to know the maximum number of datasets that might be stored. In particular, ESG/ESGF nodes may need to find out this value and set the following:</p>
+<p>Configuration catalogs are always cached in memory, for performance reasons, using an LRU (least recently used) eviction algorithm. You can no longer turn off caching. To set the maximum number of catalogs in cache, set the &lt;<em><strong>cacheCatalogs</strong></em>&gt; element.</p>
+<p>Certain datasets have metadata that need to be quickly accessible. We use an off-heap, peristent key-value store for that, stored, by default in <strong>{tomcat_home}/content/thredds/cache/catalog/</strong>. Some key-value implementations need to know the maximum number of datasets that might be stored. In particular, ESG/ESGF nodes may need to find out this value and set the &lt;<em><strong>maxDatasets</strong></em>&gt; element. The following are the default settings:</p>
 <pre>
 &lt;Catalog&gt;
   &lt;cacheCatalogs&gt;100&lt;/cacheCatalogs&gt;
@@ -633,7 +633,7 @@ sum of the maxFiles does not exceed your OS maximum. For better performance, mak
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">
-  This document is maintained by elves and was last updated July 2015.
+  This document is maintained by elves and was last updated June 2015.
   Send comments to
 <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

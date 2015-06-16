@@ -118,8 +118,6 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     return result;
   }
 
-
-
   /////////////////////////////////////////////////////////////////////////////
   // heres how we manage state changes in a thread-safe way
   protected class State {

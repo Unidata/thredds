@@ -4,6 +4,8 @@ package thredds.server.catalog.tracker;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.server.catalog.DatasetScan;
@@ -13,27 +15,49 @@ import java.io.Externalizable;
 import java.io.File;
 
 /**
- * Describe
+ * org.mapdb.DB implementation of DatasetTracker
  *
  * @author caron
  * @since 6/7/2015
  */
 public class DatasetTrackerMapDB implements DatasetTracker {
+  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private HTreeMap<String, Externalizable> map;
-  private int count;
 
   public boolean init(String pathname, long maxDatasets) {
-    File file = new File(pathname+"/mapdb.dat");
+    File file = new File(pathname+"/mapdb1.dat");
 
-    DB db = DBMaker.newFileDB(file)
-            .transactionDisable()
-            .mmapFileEnableIfSupported()
-            .closeOnJvmShutdown()
-            .make();
+    try {
+      DB db = DBMaker.newFileDB(file)
+              .transactionDisable()
+              .mmapFileEnableIfSupported()
+              .closeOnJvmShutdown()
+              .make();
 
-    map = db.getHashMap("datasets");
-    return true;
+      map = db.getHashMap("datasets");
+      return true;
+
+    } catch (Throwable e) {
+      startupLog.error("DatasetTrackerMapDB failed on '"+ file.getAbsolutePath()+ "', delete catalog cache and reload ", e);
+      if (file.exists()) {
+        boolean wasDeleted = file.delete();
+        if (!wasDeleted) {
+          startupLog.error("DatasetTrackerMapDB not able to delete {} ", file.getAbsolutePath());
+          throw e;
+        }
+      }
+
+      // try again
+      DB db = DBMaker.newFileDB(file)
+              .transactionDisable()
+              .mmapFileEnableIfSupported()
+              .closeOnJvmShutdown()
+              .make();
+
+      map = db.getHashMap("datasets");
+      return true;
+    }
   }
 
   @Override

@@ -8,16 +8,23 @@
 <h2>ESGF Mode</h2>
 <ol>
   <li>DataRoots are in top catalog.</li>
-  <li>Standard services in top catalog (?)</li>
-  <li>Use CatalogScan with watches</li>
+  <li>Global  services in top catalog</li>
+  <li>Top catalog always read in and cached</li>
   <li>DatasetTracker persists <em>restrict, ncml</em></li>
+  <li>Use CatalogScan with watches</li>
   <li>Updating
     <ol>
-      <li>If no cache, read in all catalogs into cache, record lastRead</li>
-      <li>If cache, read catalog lastModified, test against lastRead, record lastRead</li>
+      <li>If no cache, read in all catalogs into cache, record lastRead (global i think)</li>
+      <li>If cache, read catalog lastModified, test against lastRead, reread if needed</li>
       <li>Manual reinit (just remove cache ??)</li>
       <li>CatalogScan has watch, if changed, then reread that catalog.</li>
-      <li>This doesnt solve the problem of deletions. (drag and drop into delete folder ?)</li>
+      <li>This doesnt solve the problem of deletions. 
+        <ol>
+          <li>(drag and drop into delete folder ?)</li>
+          <li>keep copy of old catalog</li>
+          <li>keep track of what datasets belong to what catalog</li>
+        </ol>
+      </li>
     </ol>
   </li>
 </ol>
@@ -26,7 +33,6 @@
   <li>    DataRootPathMatcher  could persist all data roots (dir, datasetScan, FC)</li>
   <li>DatasetTracker could persist found metadata after cracking the file (space/time extents, global attributes)</li>
 </ol>
-<p>&nbsp;</p>
 <h2>State redesign</h2>
 <p><em>3/30/2015</em></p>
 <ol>
