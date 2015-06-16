@@ -74,9 +74,9 @@ processTestResources {
 }
 
 war {
-    // This is the default version of tds.properties that we'll be replacing with the filtered version below.
-    // It seems crufty. TODO: After Maven is out of the picture, nuke it, along with any other tds.properties dupes.
-    exclude('WEB-INF/classes/thredds/server/tds.properties')  // Relative to src/main/webapp/
+    // Exclude tds.properties from the War CopySpec. We'll re-add it below, with filtering.
+    // TODO: Is there a less-awkward way to filter a single file when it's already part of a CopySpec?
+    exclude 'WEB-INF/classes/thredds/server/tds.properties'  // Relative to src/main/webapp/
 
     // This is a hack to handle Maven-style placeholders in a file to be filtered: http://goo.gl/9sQebt
     // Once Maven is out of the picture, the easiest way to refactor this is to remove the dots from the property
@@ -84,7 +84,7 @@ war {
     ant.properties['project.version'] = project.version
     ant.properties['build.timestamp'] = project.buildTimestamp  // Defined in root project.
 
-    from ('src/main/template/thredds/server/tds.properties') {
+    from ('src/main/webapp/WEB-INF/classes/thredds/server/tds.properties') {
         into 'WEB-INF/classes/thredds/server'
         filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
     }

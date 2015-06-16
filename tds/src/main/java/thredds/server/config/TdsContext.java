@@ -96,9 +96,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   @Value("${tds.version}")
   private String webappVersion;
 
-  //@Value("${tds.version.brief}")
-  //private String webappVersionBrief;
-
   @Value("${tds.version.builddate}")
   private String webappVersionBuildDate;
 
