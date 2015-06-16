@@ -10,7 +10,12 @@ pre {
 }
 
 code {
-    color: #708090 !important;
+    color: #708090;
+}
+
+pre code {
+    /* Don't do grey text inside a grey box. Change color to black for better readability. */
+    color: black;
 }
 
 dl {

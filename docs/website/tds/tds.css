@@ -13,6 +13,11 @@ code {
     color: #708090 !important;
 }
 
+pre code {
+    /* Don't do grey text inside a grey box. Change color to black for better readability. */
+    color: black;
+}
+
 dl {
     margin: 10px 5px 5px 15px;
 }

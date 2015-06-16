@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>NetCDF-Java Build Dependencies</title>
+<link rel="stylesheet" href="./../cdm.css">
+<link rel="stylesheet" href="./coderay-asciidoctor.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>NetCDF-Java Build Dependencies</h1>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_building_with_maven_artifacts">Building with Maven artifacts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We make the NetCDF-Java library available as Maven artifacts. To use them in your build, you need to add the Unidata
+Releases repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="comment">&lt;!-- In Maven --&gt;</span>
+<span class="tag">&lt;repositories&gt;</span>
+    <span class="tag">&lt;repository&gt;</span>
+        <span class="tag">&lt;id&gt;</span>unidata-releases<span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;name&gt;</span>Unidata Releases<span class="tag">&lt;/name&gt;</span>
+        <span class="tag">&lt;url&gt;</span>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/<span class="tag">&lt;/url&gt;</span>
+    <span class="tag">&lt;/repository&gt;</span>
+<span class="tag">&lt;/repositories&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// In Gradle</span>
+repositories {
+    maven {
+        url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, select modules based on the functionality you need. In the minimal case, you&#8217;ll just want <code>cdm</code> and a
+<a href="#_logging">logger</a>. <code>cdm</code> implements the <a href="../CDM/index.html">CDM data model</a> and allows you to read NetCD-3 files (and a number of other
+file types). An example using JDK14 logging:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="comment">&lt;!-- In Maven --&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>edu.ucar<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>cdm<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${netcdfJavaVersion}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;scope&gt;</span>compile<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+
+<span class="tag">&lt;dependency&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>org.slf4j<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>slf4j-jdk14<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${slf4jVersion}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;scope&gt;</span>runtime<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// In Gradle</span>
+dependencies {
+  compile <span class="string"><span class="delimiter">&quot;</span><span class="content">edu.ucar:cdm:${netcdfJavaVersion}</span><span class="delimiter">&quot;</span></span>
+  runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.slf4j:slf4j-jdk14:${slf4jVersion}</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are optional modules add support for reading (and sometimes writing) various
+<a href="formats/FileTypes.html">scientific data formats</a>. The formats associated with each module are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>bufr</code>: BUFR</p>
+</li>
+<li>
+<p><code>clcommon</code>: GINI and FYSAT</p>
+</li>
+<li>
+<p><code>grib</code>: GRIB-1 and GRIB-2</p>
+</li>
+<li>
+<p><code>netcdf4</code>: NetCDF-4. Writing requires the <a href="netcdf4Clibrary.html">NetCDF-4 C library</a>
+to be installed.</p>
+</li>
+<li>
+<p><code>opendap</code>: OPeNDAP</p>
+</li>
+<li>
+<p><code>visadCdm</code>: GEMPAK grid, station, and sounding; McIDAS grid; and ADDE image and station</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can include any number of the above components. To do so in Maven and Gradle:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="comment">&lt;!-- In Maven --&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>edu.ucar<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>bufr<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${netcdfJavaVersion}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;scope&gt;</span>runtime<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+
+<span class="tag">&lt;dependency&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>edu.ucar<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>clcommon<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${netcdfJavaVersion}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;scope&gt;</span>runtime<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+
+<span class="tag">&lt;dependency&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>edu.ucar<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>grib<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${netcdfJavaVersion}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;scope&gt;</span>runtime<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+
+<span class="tag">&lt;dependency&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>edu.ucar<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>netcdf4<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${netcdfJavaVersion}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;scope&gt;</span>runtime<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+
+<span class="tag">&lt;dependency&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>edu.ucar<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>opendap<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${netcdfJavaVersion}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;scope&gt;</span>runtime<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+
+<span class="tag">&lt;dependency&gt;</span>
+  <span class="tag">&lt;groupId&gt;</span>edu.ucar<span class="tag">&lt;/groupId&gt;</span>
+  <span class="tag">&lt;artifactId&gt;</span>visadCdm<span class="tag">&lt;/artifactId&gt;</span>
+  <span class="tag">&lt;version&gt;</span>${netcdfJavaVersion}<span class="tag">&lt;/version&gt;</span>
+  <span class="tag">&lt;scope&gt;</span>runtime<span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// In Gradle</span>
+dependencies {
+  runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">edu.ucar:bufr:${netcdfJavaVersion}</span><span class="delimiter">&quot;</span></span>
+  runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">edu.ucar:clcommon:${netcdfJavaVersion}</span><span class="delimiter">&quot;</span></span>
+  runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">edu.ucar:grib:${netcdfJavaVersion}</span><span class="delimiter">&quot;</span></span>
+  runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">edu.ucar:netcdf4:${netcdfJavaVersion}</span><span class="delimiter">&quot;</span></span>
+  runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">edu.ucar:opendap:${netcdfJavaVersion}</span><span class="delimiter">&quot;</span></span>
+  runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">edu.ucar:visadCdm:${netcdfJavaVersion}</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_building_with_netcdfall">Building with netcdfAll</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is the appropriate option if you&#8217;re not using a dependency management tool like Maven or Gradle and you don&#8217;t
+care about jar size or compatibility with other libraries. Simply include
+<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdfAll/">netcdfAll-${netcdfJavaVersion}.jar</a>
+on the classpath when you run your program. You&#8217;ll also need a <a href="#_logging">logger</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_logging">Logging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The NetCDF-Java library uses the <a href="http://www.slf4j.org/">SLF4J</a> logging facade. This allows applications to choose their
+own logging implementation, by including the appropriate jar file on the classpath at runtime. Common choices are:</p>
+</div>
+<div class="sect2">
+<h3 id="__a_href_http_docs_oracle_com_javase_8_docs_api_java_util_logging_package_summary_html_package_description_jdk_logging_a"><a href="http://docs.oracle.com/javase/8/docs/api/java/util/logging/package-summary.html#package.description">JDK Logging</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>You must include the SLF4J-to-JDK Logging interface jar: <code>slf4j-jdk14-${slf4jVersion}.jar</code>.</p>
+</li>
+<li>
+<p>The actual logging is implemented in the <code>java.util.log</code> package, part of the Java runtime.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To configure JDK logging:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Modify the file <code>$JAVA_HOME/jre/lib/logging.properties</code>. Or, create you own logging properties file and specify it
+with the <code>java.util.logging.config.file</code> system property.</p>
+</li>
+<li>
+<p>Possible log levels are <code>SEVERE</code>, <code>WARNING</code>, <code>INFO</code>, <code>CONFIG</code>, <code>FINE</code>, <code>FINER</code>, <code>FINEST</code>, and <code>ALL</code>.</p>
+</li>
+<li>
+<p>To show only <code>SEVERE</code> messages for all loggers, use: <code>.level= SEVERE</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can also set the configuration by using
+<a href="http://docs.oracle.com/javase/8/docs/api/java/util/logging/LogManager.html">java.util.logging.LogManager</a> in your
+application, most likely by creating your own properties file or resources and calling:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">FileInputStream</span> inputStream = <span class="keyword">new</span> <span class="predefined-type">FileInputStream</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">my.properties</span><span class="delimiter">&quot;</span></span>);
+<span class="predefined-type">LogManager</span> lm = java.util.logging.LogManager.getLogManager();
+lm.readConfiguration(inputStream);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="__a_href_http_logging_apache_org_log4j_2_x_log4j_2_a"><a href="http://logging.apache.org/log4j/2.x/">Log4j 2</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>You must include the <a href="https://logging.apache.org/log4j/2.0/log4j-slf4j-impl/index.html">Log4j 2 SLF4J Binding</a>
+(<code>log4j-slf4j-impl-${log4j2Version}.jar</code>) and the Log4j 2 implementation (<code>log4j-core-${log4j2Version}.jar</code>) on the classpath.</p>
+</li>
+<li>
+<p>You should then <a href="https://logging.apache.org/log4j/2.x/manual/configuration.html">configure</a> the logging by adding a
+<code>log4j2.xml</code> config file to your classpath. A minimal version is:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="preprocessor">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="tag">&lt;Configuration</span> <span class="attribute-name">status</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">WARN</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;Appenders&gt;</span>
+    <span class="tag">&lt;Console</span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Console</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">target</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">SYSTEM_OUT</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+      <span class="tag">&lt;PatternLayout</span> <span class="attribute-name">pattern</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/Console&gt;</span>
+  <span class="tag">&lt;/Appenders&gt;</span>
+  <span class="tag">&lt;Loggers&gt;</span>
+    <span class="tag">&lt;Root</span> <span class="attribute-name">level</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">error</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+      <span class="tag">&lt;AppenderRef</span> <span class="attribute-name">ref</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Console</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/Root&gt;</span>
+  <span class="tag">&lt;/Loggers&gt;</span>
+<span class="tag">&lt;/Configuration&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_see_the_a_href_http_www_slf4j_org_manual_html_slf4j_manual_a_for_more_possibilites">See the <a href="http://www.slf4j.org/manual.html">SLF4J manual</a> for more possibilites.</h3>
+
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-06-15 18:13:11 MDT
+</div>
+</div>
+</body>
+</html>
