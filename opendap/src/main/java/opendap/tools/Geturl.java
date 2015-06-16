@@ -43,6 +43,7 @@ package opendap.tools;
 import opendap.dap.*;
 import opendap.util.Getopts;
 import opendap.util.InvalidSwitch;
+import ucar.httpservices.HTTPException;
 
 /**
  * Java port of the geturl command-line client.
@@ -164,7 +165,7 @@ public class Geturl {
                 try {
                     url = new DConnect2(nextURL, accept_deflate);
                     //url.setServerVersion("dods/3.7");
-                } catch (java.io.FileNotFoundException e) {
+                } catch (HTTPException e) {
                     System.err.println(nextURL + " is neither a valid URL nor a filename.");
                     System.exit(1);
                 }

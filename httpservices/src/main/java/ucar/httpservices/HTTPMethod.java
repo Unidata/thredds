@@ -711,6 +711,8 @@ public class HTTPMethod implements AutoCloseable
 
     /**
      * Define URI compatibility.
+     * Currently, it is assumed that two urls are compatible if and only if
+     * they have the same host and port
      */
     static protected boolean compatibleURL(String u1, String u2)
     {
@@ -718,81 +720,14 @@ public class HTTPMethod implements AutoCloseable
         if(u1 == null) return false;
         if(u2 == null) return false;
 
-        if(u1.equals(u2)
-            || u1.startsWith(u2)
-            || u2.startsWith(u1)) return true;
-
-        // Check piece by piece
-        URI uu1;
-        URI uu2;
         try {
-            uu1 = new URI(u1);
-        } catch (URISyntaxException use) {
+            URL url1 = new URL(u1);
+            URL url2 = new URL(u2);
+            return url1.getHost().equals(url2.getHost())
+                    && url1.getPort() == url2.getPort();
+        } catch (MalformedURLException mue) {
             return false;
         }
-        try {
-            uu2 = new URI(u2);
-        } catch (URISyntaxException use) {
-            return false;
-        }
-
-        // For the following we want this truth table
-        // s1    s2    t/f
-        // ---------------
-        //  null  null  match
-        //  null !null  !match
-        // !null  null  !match
-        // !null !null  match = s1.equals(s2)
-        // The if statement condition is the negation of match, namely:
-        // if((s1 != null || s2 != null)
-        //    && s1 != null && s2 != null && !s1.equals(s2))
-        //    return false; // => !match
-
-        // protocols comparison
-        String s1 = uu1.getScheme();
-        String s2 = uu2.getScheme();
-        if((s1 != null || s2 != null)
-            && s1 != null && s2 != null && !s1.equals(s2))
-            return false;
-
-        // Match user info; differs from table above
-        // because we allow added user info to match null
-        //  null  null  match
-        //  null !null  match <-- different
-        // !null  null  !match
-        // !null !null  match = s1.equals(s2)
-        s1 = uu1.getUserInfo();
-        s2 = uu2.getUserInfo();
-        if(s1 != null
-            && (s2 == null || !s1.equals(s2)))
-            return false;
-
-        // hosts must be same
-        s1 = uu1.getHost();
-        s2 = uu2.getHost();
-        if((s1 != null || s2 != null)
-            && s1 != null && s2 != null && !s1.equals(s2))
-            return false;
-
-        // ports must be the same
-        if(uu1.getPort() != uu2.getPort())
-            return false;
-
-        // paths must have prefix relationship
-        // and missing is a prefix of anything
-        // s1    s2    t/f
-        // ---------------
-        //  null  null  match
-        //  null !null  !match
-        // !null  null  !match
-        // !null !null  match = (s1.startsWith(s2)||s2.startsWith(s1))
-        s1 = uu1.getRawPath();
-        s2 = uu2.getRawPath();
-        if((s1 != null || s2 != null)
-            && s1 != null && s2 != null && !(s1.startsWith(s2) || s2.startsWith(s1)))
-            return false;
-
-        return true;
     }
 
     //////////////////////////////////////////////////

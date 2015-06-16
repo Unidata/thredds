@@ -33,7 +33,7 @@
  *
  */
 
-package thredds;
+package thredds.server.wcs;
 
 import org.jdom2.input.SAXBuilder;
 import org.junit.Assert;
@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import thredds.TestWithLocalServer;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -62,7 +63,7 @@ import java.util.Collection;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestEncoding {
+public class TestUTF8GetCapabilitiesEncoding {
 
   @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters(){
@@ -73,7 +74,7 @@ public class TestEncoding {
  	}
 
   String path, query;
-  public TestEncoding(String path, String query) {
+  public TestUTF8GetCapabilitiesEncoding(String path, String query) {
     this.path = path;
     this.query = query;
   }
@@ -82,32 +83,30 @@ public class TestEncoding {
   public void readCapabilities() {
     String endpoint = TestWithLocalServer.withPath(path + "?" + query);
     System.out.printf("GetCapabilities req = '%s'%n", endpoint);
+    try {
+      try (HTTPMethod method = HTTPFactory.Get(endpoint)) {
+        int statusCode = method.execute();
 
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
+        Assert.assertEquals(200, statusCode);
+        byte[] content = method.getResponseAsBytes();
+        assert content.length > 1000;
+        //System.out.printf("%s%n", new String(content, "UTF-8"));
 
-      Assert.assertEquals(200, statusCode);
-      byte[] content = method.getResponseAsBytes();
-      assert content.length > 1000;
-      //System.out.printf("%s%n", new String(content, "UTF-8"));
+        ByteArrayInputStream bin = new ByteArrayInputStream(content);
+        try {
+          SAXBuilder builder = new SAXBuilder();
+          org.jdom2.Document tdoc = builder.build(bin);
+          org.jdom2.Element root = tdoc.getRootElement();
 
-      ByteArrayInputStream bin = new ByteArrayInputStream(content);
-      try {
-        SAXBuilder builder = new SAXBuilder();
-        org.jdom2.Document tdoc = builder.build(bin);
-        org.jdom2.Element root = tdoc.getRootElement();
-
-      } catch (Throwable t) {
-        // if fail, go find where it barfs
-        isValidUTF8(content);
-        assert false;
+        } catch (Throwable t) {
+          // if fail, go find where it barfs
+          isValidUTF8(content);
+          assert false;
+        }
       }
-
     } catch (Exception e) {
       e.printStackTrace();
       assert false;
-
     }
   }
 

@@ -47,12 +47,10 @@ public class TimeObsRaw {
     int count = 0, bad = 0;
     // DataInputStream fin = new DataInputStream(new BufferedInputStream(new FileInputStream(url), 10000));
 
-    BufferedReader fin = new BufferedReader(new InputStreamReader(new FileInputStream(url)), 10000);
 
     double sum = 0.0;
     long start = System.currentTimeMillis();
-    try {
-
+    try (BufferedReader fin = new BufferedReader(new InputStreamReader(new FileInputStream(url)), 10000);) {
       while (true) {
         String line = fin.readLine();
         if (null == line) break;
@@ -84,11 +82,6 @@ public class TimeObsRaw {
 
       long took = System.currentTimeMillis() - start;
       System.out.println("that took = " + took + " msecs temperature sum= "+sum);
-
-
-    } finally {
-      if (fin != null)
-        fin.close();
     }
 
     System.out.println("successfully read " + count + " records " + bad + " bad");

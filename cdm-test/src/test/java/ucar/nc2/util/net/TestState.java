@@ -79,7 +79,7 @@ public class TestState extends UnitTestCommon
     {
         ThreddsServer.REMOTETEST.assumeIsAvailable();
         int status = 0;
-        HTTPSession session = HTTPFactory.newSession(SESSIONURL);
+        HTTPSession session = HTTPFactory.newSession(SESSIONURL); // do NOT use try(){}
         assertFalse(session.isClosed());
 
         // Check state transitions for open and execute

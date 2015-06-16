@@ -57,7 +57,7 @@ import java.io.InputStream;
  */
 
 
-public class HTTPMethodStream extends FilterInputStream
+public class HTTPMethodStream extends FilterInputStream implements AutoCloseable
 {
     //////////////////////////////////////////////////////////////////////////
     static public org.slf4j.Logger log = HTTPSession.log;

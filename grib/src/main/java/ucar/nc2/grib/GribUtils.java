@@ -207,4 +207,13 @@ public class GribUtils {
     return (scanMode & GribNumbers.bitmask[3]) == 0;
   }
 
+    public static String stackTraceToString(StackTraceElement[] stackTrace)
+    {
+        StringBuffer buf = new StringBuffer();
+        for(StackTraceElement ste: stackTrace) {
+            buf.append(ste.toString());
+            buf.append("\n");
+        }
+        return buf.toString();
+    }
 }

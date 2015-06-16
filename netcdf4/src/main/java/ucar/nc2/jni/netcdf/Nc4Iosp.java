@@ -221,7 +221,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     skipEos = flags.isSet("HdfEos/turnOff");
   }
 
-  static final private boolean trace = true;
+  static final private boolean trace = false;
 
   //////////////////////////////////////////////////
   // Instance Variables
