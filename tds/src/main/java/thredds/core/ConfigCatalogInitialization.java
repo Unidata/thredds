@@ -47,6 +47,7 @@ import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
+import ucar.util.prefs.PreferencesExt;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,6 +87,7 @@ public class ConfigCatalogInitialization {
   @Autowired
   private DebugCommands debugCommands;
 
+  ///////////////////////////////////////////////////////
   private List<String> rootCatalogKeys;    // needed ??
   private File rootFile;
   private String contextPath;
@@ -102,19 +104,24 @@ public class ConfigCatalogInitialization {
 
   // used from outside of tomcat/spring
   public ConfigCatalogInitialization(String rootPath, String rootCatalog, DataRootPathMatcher<DataRoot> matcher, DatasetTracker datasetTracker,
+                                     CatalogWatcher catalogWatcher,
                                      AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
     this.rootFile = new File(rootPath);
     this.contextPath = "/thredds";
     this.dataRootPathMatcher = matcher;
     this.datasetTracker = datasetTracker;
+    this.catalogWatcher = catalogWatcher;
     this.allowedServices = allowedServices;
     this.callback = callback;
     this.maxDatasets = maxDatasets;
 
-    initCatalog(rootCatalog);
+    readRootCatalog(rootCatalog);
   }
 
-  public void init() {
+  // called from TdsInit
+  public void init(PreferencesExt prefs) {
+    long lastRead = prefs.getLong("lastRead", 0);
+
     this.rootFile = this.tdsContext.getContentDirectory();
     this.contextPath = tdsContext.getContextPath();
 
@@ -128,7 +135,7 @@ public class ConfigCatalogInitialization {
       try {
         logCatalogInit.info("\n**************************************\nCatalog init " + pathname + "[" + CalendarDate.present() + "]");
         pathname = StringUtils.cleanPath(pathname);
-        initCatalog(pathname);
+        readRootCatalog(pathname);
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + pathname + "; " + e.getMessage(), e);
       }
@@ -137,8 +144,9 @@ public class ConfigCatalogInitialization {
     makeDebugActions();
   }
 
+  // root catalogs are always read
   // path must be relative to rootDir
-  private void initCatalog(String path) throws IOException {
+  private void readRootCatalog(String path) throws IOException {
     if (exceedLimit) return;
 
     path = StringUtils.cleanPath(path);
@@ -191,7 +199,7 @@ public class ConfigCatalogInitialization {
       if (exceedLimit) return;
       Path relLocation = Paths.get(dirPath, catScan.getLocation());
       Path absLocation = Paths.get(f.getParent(), catScan.getLocation());
-      if (catalogWatcher != null) catalogWatcher.register(absLocation);
+      if (catalogWatcher != null) catalogWatcher.registerAll(absLocation);
       readCatsInDirectory(relLocation.toString(), absLocation);
     }
   }
@@ -269,7 +277,7 @@ public class ConfigCatalogInitialization {
             path = dirPath + href;  // reletive starting from current directory
           }
 
-          initCatalog(path);
+          readRootCatalog(path); // LOOK
         }
 
       } else {
@@ -290,7 +298,7 @@ public class ConfigCatalogInitialization {
           // path must be relative to rootDir
           String filename = p.getFileName().toString();
           String path = dirPath.length() == 0 ? filename :  dirPath + "/" + filename;  // reletive starting from current directory
-          initCatalog(path);
+          readRootCatalog(path); // LOOK
         }
       }
     }

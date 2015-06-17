@@ -9,7 +9,6 @@ import thredds.client.catalog.Dataset;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,7 +110,7 @@ return true;
     return ncmlDatasetHash.get(path);
   }
 
-  public CatalogExt findCatalogExt(String path) {
+  public DatasetExt findCatalogExt(String path) {
     return null;
   }
 

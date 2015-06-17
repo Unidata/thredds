@@ -5,7 +5,7 @@ import net.openhft.chronicle.map.*;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
-import thredds.server.catalog.tracker.CatalogExt;
+import thredds.server.catalog.tracker.DatasetExt;
 
 import java.io.Externalizable;
 import java.io.File;
@@ -75,7 +75,7 @@ public class TestChronicleTracker {
           if (countDs[0] % chunk10 == 0) System.out.printf("%n");
           String key = dd.getId();
           if (key != null) {
-            CatalogExt dsext = new CatalogExt(dd, true);
+            DatasetExt dsext = new DatasetExt(dd, true);
             map.put(key, dsext);
           }
         }
@@ -110,12 +110,12 @@ public class TestChronicleTracker {
       System.out.printf("countCatref %d%n", countDs[1]);
       System.out.printf("map.size %d%n", map.size());
 
-      System.out.printf("DatasetExt.total_count %d%n", CatalogExt.total_count);
-      System.out.printf("DatasetExt.total_nbytes %d%n", CatalogExt.total_nbytes);
-      float avg = CatalogExt.total_count == 0 ? 0 : ((float) CatalogExt.total_nbytes) / CatalogExt.total_count;
+      System.out.printf("DatasetExt.total_count %d%n", DatasetExt.total_count);
+      System.out.printf("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
+      float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
       System.out.printf("DatasetExt.avg_nbytes %5.0f%n", avg);
 
-      float avg_time = ((float)took) / CatalogExt.total_count;
+      float avg_time = ((float)took) / DatasetExt.total_count;
       System.out.printf(" msecs / record %8.3f%n", avg_time);
 
       map.close();

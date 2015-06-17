@@ -34,26 +34,26 @@ package ucar.util.prefs;
 
 public interface PersistenceManager {
 
-  public void addPreferenceChangeListener(java.util.prefs.PreferenceChangeListener pcl);
+  void addPreferenceChangeListener(java.util.prefs.PreferenceChangeListener pcl);
 
-  public String get(String key, String def);
-  public void put(String key, String value);
+  String get(String key, String def);
+  void put(String key, String value);
 
-  public boolean getBoolean(String key, boolean def);
-  public void putBoolean(String key, boolean value);
+  boolean getBoolean(String key, boolean def);
+  void putBoolean(String key, boolean value);
 
-  public double getDouble(String key, double def);
-  public void putDouble(String key, double value);
+  double getDouble(String key, double def);
+  void putDouble(String key, double value);
 
-  public int getInt(String key, int def);
-  public void putInt(String key, int value);
+  int getInt(String key, int def);
+  void putInt(String key, int value);
 
-  public java.util.List getList(String key, java.util.List def);
-  public void putList(String key, java.util.List value);
+  java.util.List getList(String key, java.util.List def);
+  void putList(String key, java.util.List value);
 
-  public Object getObject(String key);
-  public void putObject(String key, Object value);
+  Object getObject(String key);
+  void putObject(String key, Object value);
 
-  public long getLong(String key, long def);
-  public void putLong(String key, long value);
+  long getLong(String key, long def);
+  void putLong(String key, long value);
 }

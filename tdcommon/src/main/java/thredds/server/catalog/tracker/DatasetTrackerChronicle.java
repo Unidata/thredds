@@ -62,28 +62,28 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     if (path == null)
       return false;
 
-    CatalogExt dsext = new CatalogExt(dataset, hasNcml);
+    DatasetExt dsext = new DatasetExt(dataset, hasNcml);
     map.put(path, dsext);
     return true;
   }
 
   @Override
   public String findResourceControl(String path) {
-    CatalogExt dext = (CatalogExt) map.get(path);
+    DatasetExt dext = (DatasetExt) map.get(path);
     if (dext == null) return null;
     return dext.getRestrictAccess();
   }
 
   @Override
   public String findNcml(String path) {
-    CatalogExt dext = (CatalogExt) map.get(path);
+    DatasetExt dext = (DatasetExt) map.get(path);
     if (dext == null) return null;
     return dext.getNcml();
   }
 
   @Override
-  public CatalogExt findCatalogExt(String path) {
-    return (CatalogExt) map.get(path);
+  public DatasetExt findCatalogExt(String path) {
+    return (DatasetExt) map.get(path);
   }
 
   public void close() {

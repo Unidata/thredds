@@ -6,7 +6,7 @@ dependencies {
     compile project(':udunits')
     compile project(':httpservices')
 
-    compile libraries["httpcore"]
+    //compile libraries["httpcore"]
     compile libraries["joda-time"]
     compile libraries["jdom2"]
     compile libraries["jcip-annotations"]

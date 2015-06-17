@@ -2320,7 +2320,7 @@ public class ToolsUI extends JPanel {
   private FileManager bufrFileChooser = null;
 
   private void initBufrFileChooser() {
-    bufrFileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("bufrFileManager"));
+    bufrFileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
   }
 
   private class BufrTableBPanel extends OpPanel {

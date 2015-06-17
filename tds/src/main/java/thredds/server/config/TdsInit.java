@@ -36,9 +36,7 @@ package thredds.server.config;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.tools.CatalogXmlWriter;
@@ -63,6 +61,8 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.XMLStore;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,10 +82,6 @@ import java.util.TimerTask;
 public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  private DiskCache2 aggCache, gribCache, cdmrCache;
-  private Timer timer;
-  private boolean wasInitialized;
-
   @Autowired
   private TdsContext tdsContext;
 
@@ -104,45 +100,47 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
   @Autowired
   private AllowedServices allowedServices;
 
+  private DiskCache2 aggCache, gribCache, cdmrCache;
+  private Timer timer;
+  private boolean wasInitialized;
+
+  private XMLStore store;
+  private PreferencesExt mainPrefs;
+
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
     if (event instanceof ContextRefreshedEvent) {  // startup
       startupLog.info("TdsInit {}", event);
+      startupLog.info("TdsInit getContentRootPathAbsolute= " + tdsContext.getContentRootPathProperty());
       synchronized (this) {
         if (!wasInitialized) {
           wasInitialized = true;
-          init();
-          configCatalogInitializer.init();
+          readState();
+          readThreddsConfig();
+          configCatalogInitializer.init((PreferencesExt) mainPrefs.node("configCatalog"));
         }
       }
     }
   }
 
-  @Override
-  public void destroy() {
-      // background threads
-      if (timer != null) timer.cancel();
-      FileCache.shutdown();              // this handles background threads for all instances of FileCache
-      if (aggCache != null) aggCache.exit();
-      if (gribCache != null) gribCache.exit();
-      if (cdmrCache != null) cdmrCache.exit();
-      thredds.inventory.bdb.MetadataManager.closeAll(); // LOOK used ??
-      CollectionUpdater.INSTANCE.shutdown();
+  public void readState() {
+    File prefsDir = new File(tdsContext.getContentDirectory(), "/state/");
+    if (!prefsDir.exists()) {
+      boolean ok = prefsDir.mkdirs();
+      startupLog.info("TdsInit: makeDir= " + prefsDir.getAbsolutePath()+" ok="+ok);
+    }
 
-      // open files caches
-      RandomAccessFile.shutdown();
-      NetcdfDataset.shutdown();
-
-      // memory caches
-      GribCdmIndex.shutdown();
-      datasetTracker.close();
-
-      startupLog.info("TdsInit shutdown");
-      MDC.clear();
+    File prefsFile = new File(prefsDir, "prefs.xml");
+    try {
+      store = XMLStore.createFromFile(prefsFile.getAbsolutePath(), null);
+      mainPrefs = store.getPreferences();
+    } catch (IOException e) {
+      startupLog.error("TdsInit: failed to get prefs file= " + prefsDir.getAbsolutePath(), e);
+    }
   }
 
-  public void init() {
-    startupLog.info("TdsInit getContentRootPathAbsolute= " + tdsContext.getContentRootPathProperty());
+
+  public void readThreddsConfig() {
 
     // prefer cdmRemote when available
     DataFactory.setPreferCdm(true);
@@ -361,6 +359,36 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
       sbuff.append("----------------------\n");
       // cacheLog.info(sbuff.toString());
     }
+  }
+
+
+  @Override
+  public void destroy() {
+    try {
+      store.save();
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
+
+      // background threads
+      if (timer != null) timer.cancel();
+      FileCache.shutdown();              // this handles background threads for all instances of FileCache
+      if (aggCache != null) aggCache.exit();
+      if (gribCache != null) gribCache.exit();
+      if (cdmrCache != null) cdmrCache.exit();
+      thredds.inventory.bdb.MetadataManager.closeAll(); // LOOK used ??
+      CollectionUpdater.INSTANCE.shutdown();
+
+      // open files caches
+      RandomAccessFile.shutdown();
+      NetcdfDataset.shutdown();
+
+      // memory caches
+      GribCdmIndex.shutdown();
+      datasetTracker.close();
+
+      startupLog.info("TdsInit shutdown");
+      MDC.clear();
   }
 
 }

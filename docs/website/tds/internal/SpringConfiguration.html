@@ -6,13 +6,33 @@
     <link rel="stylesheet" href="../tds.css" type="text/css"/>
 </head>
 <body>
-<h2>Spring Configuration - 5.0</h2>
-<p><em>June 12, 2015</em></p>
-<h2>Notes</h2>
+<h2>Spring Configuration Notes - 5.0</h2>
+<p><em>June 16, 2015</em></p>
+<h2>Nota Bene</h2>
 <ol>
   <li>Be careful of trusting IntelliJ too much. It sometimes show problems in Spring that arent there. </li>
   <li>Layout of resources: webapp/** is visible if user knows the URL, but webapp/WEB-INF/** is only acessible from controllers.</li>
-  <li>Difference between mapping spring dispatcher servlet to &quot;/&quot; and to &quot;/*&quot;: 1) allow tomcat default servlet to handle jsps 2) spring takes over everything. Currently we need 1), but probably should switch to 2).</li>
+  <li>Difference between mapping spring dispatcher servlet to &quot;/&quot; and to &quot;/*&quot;: 
+    <ol>
+      <li>&quot;/&quot;  allow tomcat default servlet to handle jsps </li>
+      <li>&quot;/*&quot; spring takes over everything. </li>
+      <li>Currently we use 1), but probably should switch to 2).</li>
+    </ol>
+  </li>
+  
+  <li>http://stackoverflow.com/questions/3652090/difference-between-applicationcontext-xml-and-spring-servlet-xml-in-spring
+    <ul>
+      <li>The <strong>applicationContext.xml</strong> defines the beans for the &quot;root webapp context&quot;, i.e. the context associated with the webapp.</li>
+      <li>The <strong>spring-servlet.xml</strong> defines the beans for one servlet's app context. There can be many of these in a webapp, one per Spring servlet. We only have one.</li>
+      <li>Beans in spring-servlet.xml can reference beans in applicationContext.xml, but not vice versa.</li>
+      <li>All Spring MVC controllers must go in the spring-servlet.xml context.</li>
+      <li>In most simple cases, the applicationContext.xml context is unnecessary. It is generally used to contain beans that are shared between all servlets in a webapp. If you only have one servlet, then there's not really much point, unless you have a specific use for it. </li>
+      <li>We use <strong>applicationContext.xml</strong> to define general TDS beans, and <strong>spring-servlet.xml</strong> to define MVC (controllers, etc).</li>
+    </ul>
+  </li>
+  <li>Dont do any heavy processing in the bean initialization phase, just get the beans wired in</li>
+  <li>So bean constructors must not depend on anything else, or assume the order of wiring.</li>
+  <li>see http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc</li>
 </ol>
 <h2>Spring DI  </h2>
 <h3>Core Beans</h3>
@@ -59,42 +79,22 @@
   </li>
 </ul>
 <p>(* = read, - = write)</p>
-<h3>Startup</h3>
-<h4>Notes</h4>
-<ul>
-  <li>http://stackoverflow.com/questions/3652090/difference-between-applicationcontext-xml-and-spring-servlet-xml-in-spring
-    <ul>
-      <li>The <strong>applicationContext.xml</strong> defines the beans for the &quot;root webapp context&quot;, i.e. the context associated with the webapp.</li>
-      <li>The <strong>spring-servlet.xml</strong> defines the beans for one servlet's app context. There can be many of these in a webapp, one per Spring servlet. We only have one.</li>
-      <li>Beans in spring-servlet.xml can reference beans in applicationContext.xml, but not vice versa.</li>
-      <li>All Spring MVC controllers must go in the spring-servlet.xml context.</li>
-      <li>In most simple cases, the applicationContext.xml context is unnecessary. It is generally used to contain beans that are shared between all servlets in a webapp. If you only have one servlet, then there's not really much point, unless you have a specific use for it. </li>
-      <li>We use <strong>applicationContext.xml</strong> to define general TDS beans, and <strong>spring-servlet.xml</strong> to define MVC (controllers, etc).</li>
-    </ul>
-  </li>
-  <li>Dont do any heavy processing in the bean initialization phase, just get the beans wired in</li>
-  <li>So bean constructors must not depend on anything else, or assume the order of wiring.</li>
-  <li>see http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc</li>
-  <li>Do  initialization from: 
-    <ol>
-      <li><strong>TdsContext.afterPropertiesSet(). </strong>This has the ServletContext already set. </li>
-      <li><strong>TdsInit</strong>, by listening for <em>ContextRefreshedEvent. </em>Can assume all beans are now wired.</li>
-    </ol>
-  </li>
-</ul>
-<h4>Sequence</h4>
+<h2>Startup
+</h2>
+<p>see http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc  </p>
+<h4>Startup Sequence</h4>
 <ol>
   <li>    Tomcat loads <em>thredds.war</em> with /WEB-INF/web.xml</li>
   <li>org.springframework.web.context.<em>ContextLoaderListener</em> listens for context loading</li>
-  <li>beans in <em>applicationContext.xml</em> are created and wired, annotations are found and wired</li>
-  <li>    ContextRefreshedEvent caught by <em>TdsInit</em>
-  <ol>
-    <li>read <em>threddsConfig.xml</em> and set values</li>
-    <li>register dataSources with <em>DatasetManager</em></li>
-    <li>call ConfigInitialization.init()</li>
+  <li>beans in <em>applicationContext.xml</em> are created and wired, annotations are found and wired.</li>
+  <li><em>TdsContext.afterPropertiesSet(</em><strong>). </strong>This has the <em>ServletContext</em> already set. </li>
+  <li>    ContextRefreshedEvent caught by <em>TdsInit</em>. Can assume all beans are now wired.
+    <ol>
+    <li>read <em>threddsConfig.xml</em> and set values (eg register dataSources with <em>DatasetManager</em>)</li>
+    <li>call <em>ConfigInitialization</em>.<em>init</em>()</li>
     </ol>
   </li>
-  <li><em>ConfigInitialization</em> read config catalogs
+  <li><em>ConfigInitialization</em> reads config catalogs
     <ol>
       <li>add dataRoots to        <em>DataRootPathMatcher</em> </li>
       <li>add catalogs to <em>ConfigCatalogCache</em></li>

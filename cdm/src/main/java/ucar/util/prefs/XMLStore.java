@@ -274,7 +274,7 @@ public class XMLStore {
 
   private void add(Element elem, Element parent) {
     if (elem.getName().equals("object")) {
-      parent.addContent( (Element) elem.clone());
+      parent.addContent( elem.clone());
       return;
     }
 
@@ -282,29 +282,6 @@ public class XMLStore {
       add((Element) child, parent);
     }
   }
-
-
-  /* private XMLDecoder openBeanDecoder( InputStream objIS) {
-    // filter stream for XMLDecoder
-    try {
-      InputMunger im = new InputMunger( objIS);
-      XMLDecoder beanDecoder = new XMLDecoder( im, null, new ExceptionListener() {
-        public void exceptionThrown(Exception e) {
-          if (showDecoderExceptions)
-            System.out.println("***XMLStore.read() got Exception= "+e.getClass().getName()+" "+e.getMessage());
-            e.printStackTrace();
-        }
-      });
-
-      //System.out.println("openBeanDecoder at "+objIS);
-      return beanDecoder;
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      return null;
-    }
-
-  } */
 
   /**
    * Convenience routine for creating an XMLStore file in a standard place.
@@ -338,22 +315,6 @@ public class XMLStore {
     }
     return dirFilename +"/"+ storeName;
   }
-
-
-  /**
-   * Open/Create a read-only XMLStore from the specified InputStream.
-   * @param InputStream inStream: read the XML from this InputStream.
-   * @param XMLStore chain: This contains the "stored defaults", or null if none.
-   *
-  public XMLStore(InputStream prefsIS, XMLStore storedDefaults) {
-
-    // read in values
-    readXmlInput( new BufferedInputStream(inStream), rootPrefs);
-
-    // chain
-    if (storedDefaults != null)
-      rootPrefs.setStoredDefaults( storedDefaults.getPreferences());
-  } */
 
   /**
    * Get the root Preferences node. All manipulation is done through it.
@@ -477,89 +438,6 @@ public class XMLStore {
     }
     return null;
   }
-
-  /* Filter out the prefs stuff, add the header and trailer.
-   * this is needed to present to XMLDecoder a clean IOstream.
-   * rather lame, XMLDecoder should be modified to take a Filter or something.
-   *
-  private static final int BUFF_SIZE = 1024;
-  private static final String header = "<?xml version='1.0' encoding='UTF-8'?>\n<java version='1.4.1_01' class='java.beans.XMLDecoder'>\n";
-  private static final String trailer = "</java>\n";
-  class InputMunger extends java.io.BufferedInputStream { // java.io.FilterInputStream {
-    // buffer
-    private byte buf[];
-    private int count = 0;
-    private int pos = 0;
-
-    // insert header
-    boolean isHeader = true;
-    int countHeader = 0;
-    int sizeHeader = header.length();
-
-    // insert trailer
-    boolean isTrailer = false;
-    int countTrailer = 0;
-    int sizeTrailer = trailer.length();
-
-    InputMunger(InputStream in) throws IOException {
-       this( in, BUFF_SIZE);
-    }
-
-    InputMunger(InputStream in, int size) throws IOException {
-      super(in);
-      buf = new byte[size];
-      fill(0);
-      pos = prologue.length(); // skip the prologue, its in the header
-    }
-
-    public int read(byte[] b, int off, int len) throws IOException {
-      for (int i = 0; i < len; i++) {
-        int bval = read();
-        if (bval < 0) return i > 0 ? i : -1;
-        b[off+i] = (byte) bval;
-      }
-      return len;
-    }
-
-    public int read() throws IOException {
-      if (isHeader) {
-        isHeader = countHeader+1 < sizeHeader;
-        return (int) header.charAt ( countHeader++);
-      } else if (isTrailer) {
-        return (countTrailer < sizeTrailer) ? (int) trailer.charAt ( countTrailer++) : -1;
-      } else {
-        return read1();
-      }
-    }
-
-        // read 1 byte from buffer
-    private int read1() throws IOException {
-      if (pos >= count) { // need a new buffer
-        fill(0);
-        if (pos >= count) {
-          isTrailer = true; // switch to trailer
-          return read();
-        }
-      }
-      return buf[pos++] & 0xff;
-    }
-
-    // fill buffer from underlying stream, saving the last "save" chars
-    // pos always set to 0
-    private int fill(int save) throws IOException {
-      int start = count - save;
-      if (save > 0)
-        System.arraycopy(buf, start, buf, 0, save);
-
-      pos = 0;
-      count = save;
-      int n = in.read(buf, save, buf.length - save);
-      if (n > 0) count += n;
-      return n;
-    }
-
-  } // InputMunger  */
-
 
   /////////////////////////////////////////////////
   // writing

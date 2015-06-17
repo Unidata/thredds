@@ -2,20 +2,15 @@
 package thredds.server.catalog;
 
 import thredds.client.catalog.Access;
-import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.core.*;
 import thredds.server.catalog.tracker.*;
 import ucar.nc2.util.Counters;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringBufferInputStream;
 import java.util.Formatter;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Describe
@@ -158,13 +153,14 @@ public class TestEsgCats {
 
     DataRootPathMatcher<DataRoot> dataRootPathMatcher = new DataRootPathMatcher<>();
     DatasetTracker tracker = new DatasetTrackerMapDB();
-    tracker.init("C:\\dev\\github\\thredds50\\tds\\src\\test\\content\\thredds\\cache\\catalog", 1000 * 1000);
+    // tracker.init("C:\\dev\\github\\thredds50\\tds\\src\\test\\content\\thredds\\cache\\catalog", 1000 * 1000);
+    tracker.init("C:/temp/mapDBtest", 1000 * 1000);
     CatalogWatcher catalogWatcher = new CatalogWatcher(tracker);
 
     AllowedServices allowedServices = new AllowedServices();
     String top = "B:/esgf/badc/data1/esgcet/";
     ConfigCatalogInitialization reader = new ConfigCatalogInitialization(top, "catalogScan.xml",
-            dataRootPathMatcher, tracker, allowedServices, new DatasetTracker.Callback() {
+            dataRootPathMatcher, tracker, catalogWatcher, allowedServices, new DatasetTracker.Callback() {
 
       @Override
       public void hasDataRoot(DataRoot dataRoot) {
@@ -210,9 +206,10 @@ public class TestEsgCats {
         if (stat2.catrefs % 100 == 0) System.out.printf("%d ", stat2.catrefs);
         if (stat2.catrefs % 1000 == 0) System.out.printf("%n");
       }
-    }, 1000 * 1000);
+    }, 1000 * 100);
 
-    catalogWatcher.processEvents(); // this will loop forever
+    catalogWatcher.processEvents(); // this will loop forever, how to interrupt?
+    catalogWatcher.close();
     tracker.close();
 
     long now = System.nanoTime();
@@ -225,9 +222,9 @@ public class TestEsgCats {
 
     stat2.show();
 
-    System.out.printf("DatasetExt.total_count %d%n", CatalogExt.total_count);
-    System.out.printf("DatasetExt.total_nbytes %d%n", CatalogExt.total_nbytes);
-    float avg = CatalogExt.total_count == 0 ? 0 : ((float) CatalogExt.total_nbytes) / CatalogExt.total_count;
+    System.out.printf("DatasetExt.total_count %d%n", DatasetExt.total_count);
+    System.out.printf("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
+    float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
     System.out.printf("DatasetExt.avg_nbytes %5.0f%n", avg);
   }
 

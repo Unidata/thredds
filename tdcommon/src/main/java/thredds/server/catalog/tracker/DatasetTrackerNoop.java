@@ -44,7 +44,7 @@ public class DatasetTrackerNoop implements DatasetTracker {
   }
 
   @Override
-  public CatalogExt findCatalogExt(String path) {
+  public DatasetExt findCatalogExt(String path) {
     return null;
   }
 }

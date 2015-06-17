@@ -16,13 +16,13 @@ import java.util.*;
  * @author caron
  * @since 6/9/2015
  */
-public class CatalogWatcher {
+public class CatalogWatcher implements AutoCloseable {
 
   private final WatchService watcher;
   private final DatasetTracker tracker;
   private final Map<WatchKey, Path> keys;
   private boolean recursive = true;
-  private boolean trace = false;
+  private boolean trace = true;
 
   @SuppressWarnings("unchecked")
   static <T> WatchEvent<T> cast(WatchEvent<?> event) {
@@ -60,7 +60,7 @@ public class CatalogWatcher {
    * Register the given directory, and all its sub-directories, with the
    * WatchService.
    */
-  private void registerAll(final Path start) throws IOException {
+  public void registerAll(final Path start) throws IOException {
     // register directory and sub-directories
     Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
       @Override
@@ -132,5 +132,10 @@ public class CatalogWatcher {
         }
       }
     }
+  }
+
+  @Override
+  public void close() throws IOException {
+    watcher.close();
   }
 }
