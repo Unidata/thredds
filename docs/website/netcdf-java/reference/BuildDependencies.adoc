@@ -161,7 +161,7 @@ You can also set the configuration by using
 http://docs.oracle.com/javase/8/docs/api/java/util/logging/LogManager.html[java.util.logging.LogManager] in your
 application, most likely by creating your own properties file or resources and calling:
 
-[source, java]
+[source,java]
 ----
 FileInputStream inputStream = new FileInputStream("my.properties");
 LogManager lm = java.util.logging.LogManager.getLogManager();

@@ -105,12 +105,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   @Value("${tds.content.path}")
   private String contentPath;
 
-  @Value("${tds.content.idd.path}")
-  private String iddContentPath;
-
-  @Value("${tds.content.motherlode.path}")
-  private String motherlodeContentPath;
-
   @Value("${tds.config.file}")
   private String tdsConfigFileName;
 
@@ -190,14 +184,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
   public void setStartupContentPath(String startupContentPath) {
     this.startupContentPath = startupContentPath;
-  }
-
-  public void setIddContentPath(String iddContentPath) {
-    this.iddContentPath = iddContentPath;
-  }
-
-  public void setMotherlodeContentPath(String motherlodeContentPath) {
-    this.motherlodeContentPath = motherlodeContentPath;
   }
 
   public void setTdsConfigFileName(String filename) {
@@ -441,28 +427,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     }
     this.publicContentDirSource = new BasicDescendantFileSource(this.publicContentDirectory);
 
-    /* this.iddContentDirectory = new File(this.rootDirectory, this.iddContentPath);
-    this.iddContentPublicDirSource = new BasicDescendantFileSource(this.iddContentDirectory);
-
-    this.motherlodeContentDirectory = new File(this.rootDirectory, this.motherlodeContentPath);
-    this.motherlodeContentPublicDirSource = new BasicDescendantFileSource(this.motherlodeContentDirectory);
-
-
-    for (String curContentRoot : ThreddsConfig.getContentRootList()) {
-      if (curContentRoot.equalsIgnoreCase("idd"))
-        chain.add(this.iddContentPublicDirSource);
-      else if (curContentRoot.equalsIgnoreCase("motherlode"))
-        chain.add(this.motherlodeContentPublicDirSource);
-      else {
-        try {
-          chain.add(new BasicDescendantFileSource(StringUtils.cleanPath(curContentRoot)));
-        } catch (IllegalArgumentException e) {
-          String msg = "Couldn't add content root [" + curContentRoot + "]: " + e.getMessage();
-          logServerStartup.warn("TdsContext.init(): " + msg, e);
-        }
-      }
-    }  */
-
     List<DescendantFileSource> chain = new ArrayList<>();
     DescendantFileSource contentMinusPublicSource =
             new BasicWithExclusionsDescendantFileSource(this.contentDirectory, Collections.singletonList("public"));
@@ -694,8 +658,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     sb.append("\n  webappVersionBuildDate='").append(webappVersionBuildDate).append('\'');
     sb.append("\n  contentRootPath='").append(contentRootPath).append('\'');
     sb.append("\n  contentPath='").append(contentPath).append('\'');
-    sb.append("\n  iddContentPath='").append(iddContentPath).append('\'');
-    sb.append("\n  motherlodeContentPath='").append(motherlodeContentPath).append('\'');
     sb.append("\n  tdsConfigFileName='").append(tdsConfigFileName).append('\'');
     sb.append("\n  startupContentPath='").append(startupContentPath).append('\'');
     sb.append("\n  webinfPath='").append(webinfPath).append('\'');
@@ -704,14 +666,10 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     sb.append("\n  publicContentDirectory=").append(publicContentDirectory);
     sb.append("\n  tomcatLogDir=").append(tomcatLogDir);
     sb.append("\n  startupContentDirectory=").append(startupContentDirectory);
-    //sb.append("\n  iddContentDirectory=").append(iddContentDirectory);
-    //sb.append("\n  motherlodeContentDirectory=").append(motherlodeContentDirectory);
     sb.append("\n  rootDirSource=").append(rootDirSource);
     sb.append("\n  contentDirSource=").append(contentDirSource);
     sb.append("\n  publicContentDirSource=").append(publicContentDirSource);
     sb.append("\n  startupContentDirSource=").append(startupContentDirSource);
-    //sb.append("\n  iddContentPublicDirSource=").append(iddContentPublicDirSource);
-    //sb.append("\n  motherlodeContentPublicDirSource=").append(motherlodeContentPublicDirSource);
     sb.append("\n  configSource=").append(configSource);
     sb.append("\n  publicDocSource=").append(publicDocSource);
     sb.append('}');
