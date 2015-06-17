@@ -1,5 +1,5 @@
 Making a release for CDM/TDS using Gradle
-Last edited 2015/05/15
+Last edited 2015/05/17
 
 {release.minor} refers to the full, 3-part version, e.g. "4.6.1"
 {release.major} refers to the truncated, 2-part version, e.g. "4.6"
@@ -124,7 +124,15 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
     - Be sure to include the tag you created.
       * In IntelliJ, check the "Push Tags" box in the "Push Commits" dialog.
 
+22. On Robin, edit /web/content/software/thredds/latest.xml to reflect the correct
+    {release.minor} version for stable and development. This file is read by all
+    TDS > v4.6 to make log enteries regarding current stable and development versions
+    to give users a heads up of the need update.
 
 NOTE 1: In the Maven build, the maven-release-plugin roughly handled steps 2-6 and 18-21 for us. In the future, we
 should investigate similar Gradle plugins that offer the same functionality.
+
 NOTE 2: In the future, we should be performing many (all?) of these steps from Jenkins, not our local machine.
+
+Note 3: The latest.xml doc in step 22 is very simple and could probably be updated
+        automatically during the release process.
