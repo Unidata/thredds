@@ -21,7 +21,7 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
    - gradlew clean publish
    - Check artifacts at http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/
 
-7. On conan, prepare the FTP directory for the new version of TDS and TDM (best to do from SSH)
+7. On robin, prepare the FTP directory for the new version of TDS and TDM (best to do from SSH)
   - cd /web/ftp/pub/thredds/{release.major}
   - mkdir {release.minor}
   - move /web/ftp/pub/thredds/{release.major}/current to point to /web/ftp/pub/thredds/{release.major}/{release.minor}
@@ -68,7 +68,7 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
     - chmod 775 .
     - chmod 664 *
 
-14. Release Web Start to conan:/content/software/thredds/v{release.major}/netcdf-java/webstart
+14. Release Web Start to robin:/content/software/thredds/v{release.major}/netcdf-java/webstart
     - Make sure that you have the correct gradle.properties (see Christian for info). In particular, you'll need the
       'keystore', 'keystoreAlias', 'keystorePassword', 'webdir', and 'ftpdir' properties defined.
     - Rename old directories
@@ -81,7 +81,7 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
     - If there were no errors and the new Web Start looks good, delete the old stuff.
       * rm -r webstartOld
 
-15. Release Javadoc to conan:/content/software/thredds/v{release.major}/netcdf-java/javadoc and javadocAll
+15. Release Javadoc to robin:/content/software/thredds/v{release.major}/netcdf-java/javadoc and javadocAll
     - Rename old directories
       * cd /content/software/thredds/v{release.major}/netcdf-java/
       * mv javadoc javadocOld
@@ -104,9 +104,9 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
 
 17. Update Unidata download page(s)
     - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
-      * modify conan:/content/downloads/thredds/toc.xml as needed
+      * modify robin:/content/downloads/thredds/toc.xml as needed
     - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
-      * modify conan:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
+      * modify robin:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
 
 18. Commit the changes you've made.
     - At the very least, project.version in the root build script should have been modified.
