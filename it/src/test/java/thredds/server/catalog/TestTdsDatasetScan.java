@@ -144,13 +144,16 @@ public class TestTdsDatasetScan {
    */
 
   @Test
-   public void testEncodingWithBlanks() throws IOException {
-     Catalog cat = TestTdsLocal.open("catalog/scanCdmUnitTests/encoding/catalog.xml");
+  public void testEncodingWithBlanks() throws IOException {
+    Catalog cat = TestTdsLocal.open("catalog/scanCdmUnitTests/encoding/catalog.xml");
 
-     Dataset top = cat.findDatasetByID("scanCdmUnitTests/encoding");
-     List<Dataset> children = top.getDatasets();
-     assert children.size() == 3 : children.size();
-   }
+    List<Dataset> ds = cat.getDatasets();
+    assert ds.size() == 1;
+    Dataset top = ds.get(0);
+
+    List<Dataset> children = top.getDatasets();
+    assert children.size() == 3 : children.size();
+  }
 
 
 }

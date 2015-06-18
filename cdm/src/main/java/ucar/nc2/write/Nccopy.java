@@ -71,8 +71,7 @@ public class Nccopy {
             "Allowed values = [standard, grib, none]")
     public Nc4Chunking.Strategy strategy = Nc4Chunking.Strategy.standard;
 
-    @Parameter(names = {"-isLargeFile", "--isLargeFile"}, description = "Write to large file format. Only used in NetCDF 3. " +
-            "Allowed values = [standard, grib, none]")
+    @Parameter(names = {"-isLargeFile", "--isLargeFile"}, description = "Write to large file format. Only used in NetCDF 3.")
     public boolean isLargeFile = false;
 
    @Parameter(names = {"-d", "--deflateLevel"}, description = "Compression level. Only used in NetCDF 4. " +

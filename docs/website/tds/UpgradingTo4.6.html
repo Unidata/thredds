@@ -13,7 +13,7 @@
 <ul>
   <li>Java 7 is  required</li>
   <li>Tomcat version 7.0.50 or greater</li>
-  <li>On the command line when starting up Tomcat, you must specify <strong>-Dtds.content.root.path=&lt;content root&gt;</strong> where &lt;content root&gt; points to the top of the content directory (This is<strong> ${tomcat}/content</strong>, not<strong> ${tomcat}/content/thredds</strong>). For example:
+  <li>On the command line when starting up Tomcat, you must specify <strong>-Dtds.content.root.path=&lt;content root&gt;</strong> where &lt;content root&gt; points to the top of the content directory (This is<strong> ${tomcat}/content/</strong>, not<strong> ${tomcat}/content/thredds/</strong>). Dont forget the trailing slash. For example:
     <blockquote>
       <pre>-Dtds.content.root.path=/opt/tomcat-home/content/</pre>
           <p>For example, your <strong>{tomcat}/bin/setenv.sh</strong> might look like:</p>
