@@ -416,7 +416,7 @@ public class Cinrad2Record {
       if (record == 0) {
         if (reflect_gate_count == 1000 && doppler_gate_count == 1000)
           RADAR_DATA_SIZE = 3132;
-        else if (reflect_gate_count == 800 && doppler_gate_count == 1600)
+        else if (reflect_gate_count == 800 || doppler_gate_count == 1600)
           RADAR_DATA_SIZE = 4132;
         else
           RADAR_DATA_SIZE = 2432;
