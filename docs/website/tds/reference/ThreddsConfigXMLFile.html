@@ -68,8 +68,10 @@
       <li><a href="#FileCache">NetcdfFile Object </a></li>
     </ul>
   </li>
+  <li>Catalog Processing</li>
   <ul>
-    <li><a href="#CatalogCaching">Config Catalog caching</a><br>
+    <li><a href="#CatalogCaching">Config Catalog caching</a></li>
+    <li><a href="#ESGFmode">ESGF mode</a><br>
     </li>
   </ul>
 </ul>
@@ -621,15 +623,38 @@ sum of the maxFiles does not exceed your OS maximum. For better performance, mak
   <strong>scour</strong> amount of time, older items in the cache will be released, until only <strong>minFiles</strong> objects are left. The
   <strong>scour</strong> element uses any valid <strong><em>udunits</em></strong> time string, such as <em><strong>sec, min, hour, day</strong></em>. To disable
   the cache, set <strong>maxFiles</strong> to 0.</p>
+<p>&nbsp;</p>
+<h2>Catalog Processing</h2>
 <h3><a name="CatalogCaching" id="CatalogCaching">Configuration Catalog Caching</a></h3>
-<p>Configuration catalogs are always cached in memory, for performance reasons, using an LRU (least recently used) eviction algorithm. You can no longer turn off caching. To set the maximum number of catalogs in cache, set the &lt;<em><strong>cacheCatalogs</strong></em>&gt; element.</p>
-<p>Certain datasets have metadata that need to be quickly accessible. We use an off-heap, peristent key-value store for that, stored, by default in <strong>{tomcat_home}/content/thredds/cache/catalog/</strong>. Some key-value implementations need to know the maximum number of datasets that might be stored. In particular, ESG/ESGF nodes may need to find out this value and set the &lt;<em><strong>maxDatasets</strong></em>&gt; element. The following are the default settings:</p>
+<p>Configuration catalogs are always cached in memory, for performance reasons, using an LRU (least recently used) eviction algorithm. You can no longer turn off caching, but you can set the maximum number of catalogs in the cache. The amount of memory used by a catalog can be approximated simply by the size in bytes of the <strong>catalog.xml</strong> file itself.</p>
 <pre>
 &lt;Catalog&gt;
   &lt;cacheCatalogs&gt;100&lt;/cacheCatalogs&gt;
+&lt;/Catalog&gt;</pre>
+<h3><a name="ESGFmode" id="CatalogCaching2">ESGF mode</a></h3>
+<p>ESG/ESGF nodes have special requirements to deal with large numbers of catalogs and datasets. Certain datasets have metadata that need to be quickly accessible. By default, this information is kept in memory. When the number of datasets is very large, this leads to excessive memory use. To solve this problem, we use an off-heap, persistent key-value store. To use ESGF mode, add the following element to <strong>threddsConfig.xml:</strong></p>
+<pre>
+&lt;ESGF&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
+  &lt;store&gt;MemDB&lt;/store&gt;
   &lt;dir&gt;/tomcat_home/content/thredds/cache/catalog/&lt;/dir&gt;
   &lt;maxDatasets&gt;10000&lt;/maxDatasets&gt;
-&lt;/Catalog&gt;</pre>
+&lt;/ESGF&gt;</pre>
+<p>where:</p>
+<ul>
+  <li><strong>allow</strong>: turns ESGF mode option on or off. Default is off.</li>
+  <li><strong>store</strong>: Valid values are <strong>MemDB</strong> or <strong>ChronicleDB</strong>. Default is MemDB.</li>
+  <li><strong>dir</strong>: The location where the key-value database is written to disk. Default is <strong>${tds.content.root.path}/thredds/cache/catalog/</strong>. We recommend that you leave the default and use a symbolic link to move it if needed.</li>
+  <li><strong>maxDatasets</strong>: ChronicleDB needs to know the maximum number of datasets, MemDB does not. The size of the key/value data store on disk is approximately 200 bytes * maxDatasets.</li>
+</ul>
+<h3>Watch Mode (NOT IMPLEMENTED YET)</h3>
+<p>In this mode, the TDS will not read all catalogs in when starting. but will only read in root catalogs and catalogs that have changed. If using <strong>catalogScan</strong>, the catalogScan directories will be watched and any changes made while TDS is running will be detected.</p>
+<p>To use this mode, the following conditions must be met:</p>
+<ul>
+  <li>all <strong>dataRoot </strong>elements must be in a root catalog. A root catalog is the top catalog (<em>$tomcat/content/thredds/catalog.xml</em>), plus any other catalogs specified in a <a href="catalogRoots">catalogRoot element</a>.</li>
+  <li>all catalogs are referenced in a <strong>catalogRef</strong> element in a root catalog, or you are using <strong>catalogScan</strong> from a root catalog.</li>
+</ul>
+<p>&nbsp;</p>
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">

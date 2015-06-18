@@ -39,7 +39,7 @@ package thredds.util;
  * @since 4.0
  */
 public interface PathAliasReplacement {
-  public boolean containsPathAlias( String path );
-  public String replacePathAlias( String path );
-  public String replaceIfMatch( String path );
+  boolean containsPathAlias( String path );
+  String replacePathAlias( String path );
+  String replaceIfMatch( String path );
 }

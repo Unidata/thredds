@@ -38,29 +38,31 @@ import net.jcip.annotations.Immutable;
 /**
  * A DataRoot matches URLs to the objects that can serve them.
  * A DataRootPathMatcher manages a hash tree of path -> DataRoot
- *
+ * <p/>
  * Possible design:
- *   catKey : which catalog defined this?   not present at the moment
- *   directory : if its a simple DataRoot
- *   fc        : prob is this drags in entire configCat
- *   dscan     : ditto
-*
-* @author caron
-* @since 1/23/2015
-*/
+ * catKey : which catalog defined this?   not present at the moment
+ * directory : if its a simple DataRoot
+ * fc        : prob is this drags in entire configCat
+ * dscan     : ditto
+ *
+ * @author caron
+ * @since 1/23/2015
+ */
 @Immutable
 public class DataRoot {
   private static final boolean show = false;
 
   private final String path;          // match this path to 1 of the following:
   private final String dirLocation;   // 1) this directory  (not null)
-  private final DatasetScan scan;     // 2) the DatasetScan that created this (may be null)
-  private final FeatureCollectionRef featCollection; // 2) the FeatureCollection that created this (may be null)
+  private final DatasetScan datasetScan;     // 2) the DatasetScan that created this (may be null)
+  private final FeatureCollectionRef featCollection; // 3) the FeatureCollection that created this (may be null)
+  private final CatalogScan catScan;  // 4) the CatalogScan that created this (may be null)
 
   public DataRoot(FeatureCollectionRef featCollection) {
     this.path = featCollection.getPath();
     this.dirLocation = featCollection.getTopDirectoryLocation();
-    this.scan = null;
+    this.datasetScan = null;
+    this.catScan = null;
     this.featCollection = featCollection;
     show();
   }
@@ -68,7 +70,17 @@ public class DataRoot {
   public DataRoot(DatasetScan scan) {
     this.path = scan.getPath();
     this.dirLocation = scan.getScanLocation();
-    this.scan = scan;
+    this.datasetScan = scan;
+    this.catScan = null;
+    this.featCollection = null;
+    show();
+  }
+
+  public DataRoot(CatalogScan catScan) {
+    this.path = catScan.getPath();
+    this.dirLocation = catScan.getLocation();
+    this.datasetScan = null;
+    this.catScan = catScan;
     this.featCollection = null;
     show();
   }
@@ -76,7 +88,8 @@ public class DataRoot {
   public DataRoot(String path, String dirLocation) {
     this.path = path;
     this.dirLocation = dirLocation;
-    this.scan = null;
+    this.datasetScan = null;
+    this.catScan = null;
     this.featCollection = null;
     show();
   }
@@ -94,7 +107,11 @@ public class DataRoot {
   }
 
   public DatasetScan getDatasetScan() {
-    return scan;
+    return datasetScan;
+  }
+
+  public CatalogScan getCatalogScan() {
+    return catScan;
   }
 
   public FeatureCollectionRef getFeatureCollection() {
@@ -129,16 +146,20 @@ public class DataRoot {
 
   public String getFileLocationFromRequestPath(String reqPath) {
 
-    if (scan != null) {
+    if (datasetScan != null) {
       // LOOK should check to see if its been filtered out by scan
-      return getFileLocationFromRequestPath(reqPath, scan.getPath(), scan.getScanLocation());
+      return getFileLocationFromRequestPath(reqPath, datasetScan.getPath(), datasetScan.getScanLocation());
+
+    } else if (catScan != null) {
+      // LOOK should check to see if its allowed in fc
+      return getFileLocationFromRequestPath(reqPath, catScan.getPath(), catScan.getLocation());
 
     } else if (featCollection != null) {
-       // LOOK should check to see if its allowed in fc
+      // LOOK should check to see if its allowed in fc
       return getFileLocationFromRequestPath(reqPath, featCollection.getPath(), featCollection.getTopDirectoryLocation());
 
     } else {  // must be a datasetRoot
-       // LOOK should check to see if it exists ??
+      // LOOK should check to see if it exists ??
       return getFileLocationFromRequestPath(reqPath, getPath(), getDirLocation());
     }
 
@@ -146,21 +167,21 @@ public class DataRoot {
 
   private String getFileLocationFromRequestPath(String reqPath, String rootPath, String rootLocation) {
     if (reqPath == null) return null;
-     if (reqPath.length() == 0) return null;
+    if (reqPath.length() == 0) return null;
 
-     if (reqPath.startsWith("/"))
-       reqPath = reqPath.substring(1);
+    if (reqPath.startsWith("/"))
+      reqPath = reqPath.substring(1);
 
-     if (!reqPath.startsWith(rootPath))
-       return null;
+    if (!reqPath.startsWith(rootPath))
+      return null;
 
-     // remove the matching part, the rest is the "data directory"
-     String locationReletive = reqPath.substring(rootPath.length());
-     if (locationReletive.startsWith("/"))
-       locationReletive = locationReletive.substring(1);
+    // remove the matching part, the rest is the "data directory"
+    String locationReletive = reqPath.substring(rootPath.length());
+    if (locationReletive.startsWith("/"))
+      locationReletive = locationReletive.substring(1);
 
-     if (!rootLocation.endsWith("/"))
-       rootLocation = rootLocation + "/";
+    if (!rootLocation.endsWith("/"))
+      rootLocation = rootLocation + "/";
 
     // put it together
     return (locationReletive.length() > 1) ? rootLocation + locationReletive : rootLocation;

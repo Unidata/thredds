@@ -35,10 +35,17 @@ package thredds.client.catalog;
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
+import thredds.filesystem.MFileOS7;
+import thredds.inventory.MFile;
+import ucar.nc2.util.CloseableIterator;
 
+import java.io.IOException;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 
 /**
  * A Client CatalogRef
@@ -59,7 +66,7 @@ public class CatalogRef extends Dataset {
     return xlink;
   }
 
-  // LOOK not so sure about this
+  // LOOK not so sure about this, prevents immutable
   public boolean isRead() {
     return isRead;
   }
@@ -89,5 +96,24 @@ public class CatalogRef extends Dataset {
     return null;
   }
 
+  /////////////////////////////////////////////////
+
+  protected String translatePathToReletiveLocation(String dsPath, String configPath) {
+    if (dsPath == null) return null;
+    if (dsPath.length() == 0) return null;
+
+    if (dsPath.startsWith("/"))
+      dsPath = dsPath.substring(1);
+
+    if (!dsPath.startsWith(configPath))
+      return null;
+
+    // remove the matching part, the rest is the "reletive location"
+    String dataDir = dsPath.substring(configPath.length());
+    if (dataDir.startsWith("/"))
+      dataDir = dataDir.substring(1);
+
+    return dataDir;
+  }
 
 }

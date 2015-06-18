@@ -39,5 +39,5 @@ package thredds.featurecollection;
  * @since 1/23/12
  */
 public interface TimeUnitConverter {
-  public int convertTimeUnit(int timUnit);
+  int convertTimeUnit(int timUnit);
 }

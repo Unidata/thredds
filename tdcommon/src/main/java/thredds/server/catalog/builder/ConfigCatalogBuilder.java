@@ -38,7 +38,6 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.server.catalog.CatalogScan;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetRootConfig;
 import thredds.server.catalog.DatasetScanConfig;
@@ -53,10 +52,9 @@ import java.util.*;
  */
 public class ConfigCatalogBuilder extends CatalogBuilder {
   protected List<DatasetRootConfig> roots;
-  protected List<CatalogScan> catScans;
 
   protected DatasetBuilder buildOtherDataset(DatasetBuilder parent, Element elem) {
-      // this finds datasetRoot in catalogs (unwanted side effect in regular dataset elements)
+    // this finds datasetRoot in catalogs (unwanted side effect in regular dataset elements)
     if (elem.getName().equals("datasetRoot")) {
       DatasetRootConfig root = readDatasetRoot(elem);
       if (roots == null) roots = new ArrayList<>();
@@ -65,10 +63,7 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     }
 
     else if (elem.getName().equals("catalogScan")) {
-      CatalogScan catScan = readCatalogScan(elem);
-      if (catScans == null) catScans = new ArrayList<>();
-      catScans.add(catScan);
-      return null;
+      return readCatalogScan(parent, elem);
     }
 
     else if (elem.getName().equals("datasetScan")) {
@@ -95,10 +90,11 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     return new DatasetRootConfig(name, value);
   }
 
-  private CatalogScan readCatalogScan(Element s) {
-    String watch = s.getAttributeValue("watch");
+  private CatalogScanBuilder readCatalogScan(DatasetBuilder parent, Element s) {
+    String path = s.getAttributeValue("path");
     String location = s.getAttributeValue("location");
-    return new CatalogScan(location, watch);
+    String watch = s.getAttributeValue("watch");
+    return new CatalogScanBuilder(parent, path, location, watch);
   }
 
   @Override
@@ -154,7 +150,7 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
   public ConfigCatalog makeCatalog() {
     Map<String, Object> flds = setFields();
     if (roots != null) flds.put(Catalog.DatasetRoots, roots);
-    if (catScans != null) flds.put(Catalog.CatalogScan, catScans);
+    // if (catScans != null) flds.put(Catalog.CatalogScan, catScans);
     return new ConfigCatalog(baseURI, name, flds, datasetBuilders);
   }
 

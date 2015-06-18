@@ -138,6 +138,10 @@ public class TestEsgCats {
       f.format("    dataRootFc=%d%n", dataRootFc);
       f.format("    dataRootScan=%d%n", dataRootScan);
       f.format("    dataRootDir=%d%n", dataRootDir);
+      f.format("DatasetExt.total_count %d%n", DatasetExt.total_count);
+      f.format("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
+      float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
+      f.format("DatasetExt.avg_nbytes %5.0f%n", avg);
       counters.show(f);
       System.out.printf("%s%n", f);
     }
@@ -206,6 +210,9 @@ public class TestEsgCats {
         if (stat2.catrefs % 100 == 0) System.out.printf("%d ", stat2.catrefs);
         if (stat2.catrefs % 1000 == 0) System.out.printf("%n");
       }
+
+      public void finish() {}
+
     }, 1000 * 100);
 
     catalogWatcher.processEvents(); // this will loop forever, how to interrupt?

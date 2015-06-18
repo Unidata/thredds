@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import thredds.client.catalog.Catalog;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
+import thredds.server.catalog.CatalogScan;
 import thredds.server.catalog.DatasetScan;
 
 import java.io.IOException;
@@ -96,16 +97,15 @@ public class CatalogManager {
   }
 
   private Catalog makeDynamicCatalog(String path, URI baseURI) throws IOException {
-    String workPath = path;
 
     // Make sure this is a dynamic catalog request.
-    if (!path.endsWith("/catalog.xml") && !path.endsWith("/latest.xml"))
-      return null;
+    //if (!path.endsWith("catalog.xml") && !path.endsWith("/latest.xml"))
+    //  return null;
 
     // strip off the filename
-    int pos = workPath.lastIndexOf("/");
-    if (pos >= 0)
-      workPath = workPath.substring(0, pos);
+    int pos = path.lastIndexOf("/");
+    String workPath = (pos >= 0) ? path.substring(0, pos) : path;
+    String filename = (pos > 0) ? path.substring(pos+1) : path;
 
     // now look through the data roots for a maximal match
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(workPath);
@@ -123,17 +123,26 @@ public class CatalogManager {
         return fc.makeCatalog(match.remaining, path, baseURI);
     }
 
-    if (path.endsWith("/latest.xml")) return null; // latest is not handled here  LOOK are you sure ??
+    // if (path.endsWith("/latest.xml")) return null; // latest is not handled here  LOOK are you sure ??
 
     DatasetScan dscan = match.dataRoot.getDatasetScan();
     if (dscan != null) {
-      if (log.isDebugEnabled())
-        log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
+      if (log.isDebugEnabled()) log.debug("makeDynamicCatalog(): Calling DatasetScan.makeCatalogForDirectory( " + baseURI + ", " + path + ").");
       Catalog cat = dscan.makeCatalogForDirectory(workPath, baseURI);
 
-      if (null == cat) {
-        log.error("makeDynamicCatalog(): makeCatalogForDirectory failed = " + workPath);
-      }
+      if (null == cat)
+        log.error("makeDynamicCatalog(): DatasetScan.makeCatalogForDirectory failed = " + workPath);
+
+      return cat;
+    }
+
+    CatalogScan catScan = match.dataRoot.getCatalogScan();
+    if (catScan != null) {
+      if (log.isDebugEnabled()) log.debug("makeDynamicCatalog(): Calling CatalogScan.makeCatalogForDirectory( " + baseURI + ", " + path + ").");
+      Catalog cat = catScan.makeCatalog(match.remaining, filename, baseURI, ccc);
+
+      if (null == cat)
+        log.error("makeDynamicCatalog(): CatalogScan.makeCatalogForDirectory failed = " + workPath);
 
       return cat;
     }

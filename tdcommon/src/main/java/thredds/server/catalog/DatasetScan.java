@@ -74,8 +74,8 @@ public class DatasetScan extends CatalogRef {
   private final CompositeMFileFilter fileFilters;
   private final CompositeMFileFilter dirFilters;
 
-  public DatasetScan(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders,
-                     DatasetScanConfig config) {
+  public DatasetScan(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders,
+                     List<DatasetBuilder> datasetBuilders, DatasetScanConfig config) {
     super(parent, name, xlink, flds, accessBuilders, datasetBuilders);
     this.config = config;
 
@@ -148,12 +148,14 @@ public class DatasetScan extends CatalogRef {
   public Catalog makeCatalogForDirectory(String orgPath, URI baseURI) throws IOException {
 
     // Get the dataset location.
-    String dataDirReletive = translatePathToLocation(orgPath);
+    String dataDirReletive = translatePathToReletiveLocation(orgPath, config.path);
     if (dataDirReletive == null) {
       String tmpMsg = "makeCatalogForDirectory(): Requesting path <" + orgPath + "> must start with \"" + config.path + "\".";
       log.error(tmpMsg);
       return null;
     }
+    if (!dataDirReletive.endsWith("/"))
+      dataDirReletive += "/";
     String parentPath = (dataDirReletive.length() > 1) ? config.path + "/" + dataDirReletive : config.path + "/";
     String parentId = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive : this.getId() + "/";
 
@@ -219,27 +221,6 @@ public class DatasetScan extends CatalogRef {
 
     // make the catalog
     return catBuilder.makeCatalog();
-  }
-
-  private String translatePathToLocation(String dsPath) {
-    if (dsPath == null) return null;
-    if (dsPath.length() == 0) return null;
-
-    if (dsPath.startsWith("/"))
-      dsPath = dsPath.substring(1);
-
-    if (!dsPath.startsWith(config.path))
-      return null;
-
-    // remove the matching part, the rest is the "data directory"
-    String dataDir = dsPath.substring(config.path.length());
-    if (dataDir.startsWith("/"))
-      dataDir = dataDir.substring(1);
-
-    if (!dataDir.endsWith("/"))
-      dataDir = dataDir + "/";
-
-    return dataDir;
   }
 
   ///////////////////////
@@ -433,7 +414,7 @@ public class DatasetScan extends CatalogRef {
    * @param orgPath    the part of the baseURI that is the path
    * @param baseURI the base URL for the catalog, used to resolve relative URLs.
    * @return the resolver catalog for this path (uses version 1.1) or null if build unsuccessful.
-   */
+   *
   public Catalog makeLatestResolvedCatalog(String orgPath, URI baseURI) throws IOException {
 
     // Get the dataset path.
@@ -494,7 +475,7 @@ public class DatasetScan extends CatalogRef {
 
     // make the catalog
     return catBuilder.makeCatalog();
-  }
+  }  */
 
 
 }

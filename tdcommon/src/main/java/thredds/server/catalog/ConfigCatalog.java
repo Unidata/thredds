@@ -62,7 +62,11 @@ public class ConfigCatalog extends Catalog {
   }
 
   public List<CatalogScan> getCatalogScans() {
-    return (List<CatalogScan>) getLocalFieldAsList(Catalog.CatalogScan);
+    List<CatalogScan> result = new ArrayList<>();
+    for (Dataset ds : getDatasets())
+      if (ds instanceof CatalogScan)
+        result.add((CatalogScan) ds);
+    return result;
   }
 
 }

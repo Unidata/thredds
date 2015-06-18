@@ -35,6 +35,7 @@ package thredds.core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import thredds.client.catalog.Access;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
@@ -42,10 +43,12 @@ import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
 import thredds.server.catalog.tracker.CatalogWatcher;
+import thredds.server.catalog.tracker.DatasetExt;
 import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.Counters;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 
@@ -67,7 +70,7 @@ import java.util.*;
 public class ConfigCatalogInitialization {
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName());
   static private final String ERROR = "*** ERROR: ";
-  static private final boolean show = false;
+  static private final boolean show = true;
 
   @Autowired
   private TdsContext tdsContext;  // used for  getContentDirectory, contextPath
@@ -88,6 +91,9 @@ public class ConfigCatalogInitialization {
   private DebugCommands debugCommands;
 
   ///////////////////////////////////////////////////////
+  private boolean useEsgfMode;
+  private boolean skipTestDataDir = true;
+
   private List<String> rootCatalogKeys;    // needed ??
   private File rootFile;
   private String contextPath;
@@ -115,13 +121,18 @@ public class ConfigCatalogInitialization {
     this.callback = callback;
     this.maxDatasets = maxDatasets;
 
+    skipTestDataDir = true;
     readRootCatalog(rootCatalog);
   }
 
   // called from TdsInit
-  public void init(PreferencesExt prefs) {
-    long lastRead = prefs.getLong("lastRead", 0);
+  public void init(boolean useEsgfMode, PreferencesExt prefs) {
+    callback = new StatCallback();
 
+    long lastRead = prefs.getLong("lastRead", 0);
+    logCatalogInit.info("ConfigCatalogInitializion lastRead=" + CalendarDate.of(lastRead));
+
+    this.useEsgfMode = useEsgfMode;
     this.rootFile = this.tdsContext.getContentDirectory();
     this.contextPath = tdsContext.getContextPath();
 
@@ -142,6 +153,10 @@ public class ConfigCatalogInitialization {
     }
 
     makeDebugActions();
+    prefs.putLong("lastRead", System.currentTimeMillis());
+    logCatalogInit.info("\nConfigCatalogInitializion stats\n" + callback);
+    callback.finish();
+    System.out.printf("%s%n", callback);
   }
 
   // root catalogs are always read
@@ -307,15 +322,13 @@ public class ConfigCatalogInitialization {
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(directory)) {
        for (Path dir : ds) {
          if (Files.isDirectory(dir)) {
-           String dirPathChild = dirPath + dir.getFileName().toString();  // reletive starting from current directory
+           String dirPathChild = dirPath + "/" + dir.getFileName().toString();  // reletive starting from current directory
            readCatsInDirectory(dirPathChild, dir);
          }
        }
      }
 
    }
-
-
 
   /**
    * Finds datasetScan, datasetFmrc
@@ -348,6 +361,10 @@ public class ConfigCatalogInitialization {
       } else if (dataset instanceof FeatureCollectionRef) {
         FeatureCollectionRef fc = (FeatureCollectionRef) dataset;
         addRoot(fc);
+
+      }  else if (dataset instanceof CatalogScan) {
+        CatalogScan catScan = (CatalogScan) dataset;
+        addRoot(catScan);
       }
 
       if (!(dataset instanceof CatalogRef)) {
@@ -405,7 +422,7 @@ public class ConfigCatalogInitialization {
 
     if (droot.getDirLocation() != null) {
       File file = new File(droot.getDirLocation());
-      if (!file.exists()) {
+      if (!skipTestDataDir && !file.exists()) {
         logCatalogInit.error(ERROR + "FeatureCollection = '" + fc.getName() + "' directory= <" + droot.getDirLocation() + "> does not exist\n");
         return false;
       }
@@ -433,7 +450,7 @@ public class ConfigCatalogInitialization {
 
     location = DataRootAlias.translateAlias(location);
     File file = new File(location);
-    if (!file.exists() && (callback == null)) {
+    if (!skipTestDataDir && !file.exists()) {
       logCatalogInit.error(ERROR + "DatasetRootConfig path ='" + path + "' directory= <" + location + "> does not exist");
       return false;
     }
@@ -445,6 +462,41 @@ public class ConfigCatalogInitialization {
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + location + ">");
     return true;
   }
+
+  private boolean addRoot(CatalogScan catScan) {
+    // check for duplicates
+    String path = catScan.getPath();
+
+    if (path == null) {
+      logCatalogInit.error(ERROR + "CatalogScan '"+ catScan.getName() + "' missing the location attribute.");
+      return false;
+    }
+
+    DataRoot droot = dataRootPathMatcher.get(path);
+    if (droot != null) {
+      logCatalogInit.error(ERROR + "already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
+              " wanted to use by CatalogScan =<" + catScan.getName() + ">");
+      return false;
+    }
+
+    // add it
+    droot = new DataRoot(catScan);
+
+    if (droot.getDirLocation() != null) {
+      File file = new File(droot.getDirLocation());
+      if (!skipTestDataDir && !file.exists()) {
+        logCatalogInit.error(ERROR + "FeatureCollection = '" + catScan.getName() + "' directory= <" + droot.getDirLocation() + "> does not exist\n");
+        return false;
+      }
+    }
+
+    dataRootPathMatcher.put(path, droot);
+    if (callback != null) callback.hasDataRoot(droot);
+    logCatalogInit.debug(" added rootPath=<" + path + ">  for feature collection= <" + catScan.getName() + ">");
+    return true;
+  }
+
+
 
   /////////////////////////////////////////////////////
 
@@ -465,7 +517,114 @@ public class ConfigCatalogInitialization {
         e.pw.println(StringUtil2.quoteHtmlContent("\n" + sbuff.toString()));
       }
     };
-    debugHandler.addAction(act);
 
+    act = new DebugCommands.Action("showStatic", "Show catalog initialization stats") {
+      public void doAction(DebugCommands.Event e) {
+        if (callback != null)
+          e.pw.println(StringUtil2.quoteHtmlContent("\n" + callback.toString()));
+        else
+          e.pw.printf("N/A%n");
+      }
+    };
+    debugHandler.addAction(act);
+  }
+
+  /////////////////////////////////////////////////////////
+  static class Stats {
+    int catrefs;
+    int datasets;
+    int dataRoot, dataRootFc, dataRootScan, dataRootDir;
+    int ncml, ncmlOne;
+    int restrict;
+    Counters counters = new Counters();
+
+    public Stats() {
+      counters.add("restrict");
+      counters.add("nAccess");
+      counters.add("serviceType");
+      counters.add("ncmlAggSize");
+    }
+
+    String show(Formatter f) {
+      f.format("   catrefs=%d%n", catrefs);
+      f.format("  datasets=%d%n", datasets);
+      f.format("  restrict=%d%n", restrict);
+      f.format("  ncml=%d ncmlOne=%d%n", ncml, ncmlOne);
+      f.format("  dataRoot=%d%n", dataRoot);
+      f.format("    dataRootFc=%d%n", dataRootFc);
+      f.format("    dataRootScan=%d%n", dataRootScan);
+      f.format("    dataRootDir=%d%n", dataRootDir);
+      f.format("DatasetExt.total_count %d%n", DatasetExt.total_count);
+      f.format("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
+      float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
+      f.format("DatasetExt.avg_nbytes %5.0f%n", avg);
+      counters.show(f);
+      return f.toString();
+    }
+  }
+
+  static class StatCallback implements DatasetTracker.Callback {
+    Stats stat2;
+    long start = System.currentTimeMillis();
+    double took;
+
+    StatCallback() {
+      stat2 = new Stats();
+    }
+
+    @Override
+    public void finish() {
+      took = (System.currentTimeMillis() - start) / 1000.0;
+    }
+
+    @Override
+    public void hasDataRoot(DataRoot dataRoot) {
+      stat2.dataRoot++;
+      if (dataRoot.getFeatureCollection() != null) stat2.dataRootFc++;
+      if (dataRoot.getDatasetScan() != null) stat2.dataRootScan++;
+      if (dataRoot.getDirLocation() != null) stat2.dataRootDir++;
+    }
+
+    @Override
+    public void hasDataset(Dataset ds) {
+      stat2.datasets++;
+      List<Access> access = ds.getAccess();
+      stat2.counters.count("nAccess", access.size());
+      for (Access acc : access)
+        if (acc.getService() != null) stat2.counters.count("serviceType", acc.getService().toString());
+    }
+
+    @Override
+    public void hasNcml(Dataset ds) {
+      stat2.ncml++;
+      org.jdom2.Element netcdfElem = ds.getNcmlElement();
+      org.jdom2.Element agg =  netcdfElem.getChild("aggregation", thredds.client.catalog.Catalog.ncmlNS);
+      if (agg == null) return;
+      List<org.jdom2.Element> nested =  agg.getChildren("netcdf", thredds.client.catalog.Catalog.ncmlNS);
+      if (nested == null) return;
+      if (nested.size() == 1)
+        stat2.ncmlOne++;
+      // look for nested ncml - count how many
+      stat2.counters.count("ncmlAggSize", nested.size());
+    }
+
+    @Override
+    public void hasRestriction(Dataset ds) {
+      stat2.restrict++;
+      String restrict = ds.getRestrictAccess();
+      if (restrict != null) stat2.counters.count("restrict", restrict);
+    }
+
+    @Override
+    public void hasCatalogRef(ConfigCatalog dd) {
+      stat2.catrefs++;
+    }
+
+    @Override
+    public String toString() {
+      Formatter f = new Formatter();
+      System.out.printf("ConfigCatalogInitialization took %f secs%n", took);
+      return stat2.show(f);
+    }
   }
 }

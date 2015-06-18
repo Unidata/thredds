@@ -24,8 +24,9 @@ public class DatasetTrackerMapDB implements DatasetTracker {
   private HTreeMap<String, Externalizable> map;
 
   public boolean init(String pathname, long maxDatasets) {
-    File file = new File(pathname+"/mapdb1.dat");
+    File file = new File(pathname+"/mapdb2.dat");
 
+    // LOOK should we force a recreation each time? maaybe at least have that option
     try {
       DB db = DBMaker.newFileDB(file)
               .transactionDisable()
@@ -88,9 +89,15 @@ public class DatasetTrackerMapDB implements DatasetTracker {
     if (path == null)
       return false;
 
-    DatasetExt dsext = new DatasetExt(dataset, hasNcml);
-    map.put(path, dsext);
-    return true;
+    try {
+      DatasetExt dsext = new DatasetExt(dataset, hasNcml);
+      map.put(path, dsext);
+      return true;
+    } catch (Throwable t) {
+      startupLog.error("MapDB afailed to put DatasetExt", t);
+      //        t.printStackTrace();
+      return false;
+    }
   }
 
   @Override

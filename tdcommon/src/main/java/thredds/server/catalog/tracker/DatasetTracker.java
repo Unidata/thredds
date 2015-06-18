@@ -28,5 +28,6 @@ public interface DatasetTracker extends AutoCloseable {
     void hasNcml(Dataset dd);
     void hasRestriction(Dataset dd);
     void hasCatalogRef(ConfigCatalog dd);
+    void finish();
   }
 }

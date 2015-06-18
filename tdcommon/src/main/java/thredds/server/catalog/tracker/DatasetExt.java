@@ -27,6 +27,7 @@ import java.util.List;
 public class DatasetExt implements Externalizable {
   static public int total_count = 0;
   static public long total_nbytes = 0;
+  static public long catId = 0;
 
   static private final boolean showParsedXML = true;
 
@@ -57,6 +58,7 @@ public class DatasetExt implements Externalizable {
   @Override
   public void writeExternal(ObjectOutput out) throws IOException {
     ConfigCatalogExtProto.Dataset.Builder builder =  ConfigCatalogExtProto.Dataset.newBuilder();
+    builder.setCatId(catId++);
     builder.setName(ds.getName());
     if (ds.getUrlPath() != null)
       builder.setPath(ds.getUrlPath());

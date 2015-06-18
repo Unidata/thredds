@@ -65,7 +65,7 @@ public class Catalog extends DatasetNode {
   static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
   // all of these are catalog only
-  public static final String CatalogScan = "CatalogScan";       // List<CatalogScan>
+  // public static final String CatalogScan = "CatalogScan";       // List<CatalogScan>
   public static final String DatasetHash = "DatasetHash";       // Map<String,Dataset>
   public static final String DatasetRoots = "DatasetRoots";     // List<DatasetRootConfig>
   public static final String Expires = "Expires";               // CalendarDate

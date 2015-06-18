@@ -36,8 +36,13 @@
 <pre>&lt;xsd:element name=&quot;catalog&quot;&gt;  <br />  &lt;xsd:complexType&gt;<br />    &lt;xsd:sequence&gt;<br />      &lt;xsd:element ref=&quot;service&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br />      <strong>&lt;xsd:element ref=&quot;datasetRoot&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br /></strong>      &lt;xsd:element ref=&quot;property&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br />	    &lt;xsd:element ref=&quot;dataset&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br />    &lt;/xsd:sequence&gt;<br /><br />    &lt;xsd:attribute name=&quot;base&quot; type=&quot;xsd:anyURI&quot;/&gt;<br />    &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; /&gt;<br />    &lt;xsd:attribute name=&quot;expires&quot; type=&quot;dateType&quot;/&gt; <br />    &lt;xsd:attribute name=&quot;version&quot; type=&quot;xsd:token&quot; default=&quot;1.2&quot; /&gt; <br />  &lt;/xsd:complexType&gt; <br />&lt;/xsd:element&gt;
 </pre>
 <h3><a name="catalogScan" id="catalogScan"></a>The catalogScan element</h3>
-<pre>&lt;xsd:element&#32;name=&quot;catalogScan&quot;&gt;<br />&#32;&#32;&lt;xsd:complexType&gt;<br />&#32;&#32;&#32;&#32;&lt;xsd:attribute&#32;name=&quot;location&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />&#32;&#32;&#32;&#32;&lt;xsd:attribute&#32;name=&quot;watch&quot;&#32;type=&quot;xsd:boolean&quot;/&gt;<br />&#32;&#32;&lt;/xsd:complexType&gt;<br />&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:element&#32;name=&quot;catalogScan&quot;&gt;<br />&#32;&#32;&lt;xsd:complexType&gt;<br />&#32;&#32;&#32;&#32;&lt;xsd:attribute&#32;name=&quot;path&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />&#32;&#32;&#32;&#32;&lt;xsd:attribute&#32;name=&quot;location&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />  &#32;&#32;&lt;xsd:attribute&#32;name=&quot;watch&quot;&#32;type=&quot;xsd:boolean&quot;/&gt;<br />&#32;&#32;&lt;/xsd:complexType&gt;<br />&lt;/xsd:element&gt;</pre>
 <p>A <strong>catalogScan</strong> element indicates a directory to scan for catalogs (files ending in xml). Optionally, the directory can be watched, and changes will be detected while the TDS is running.</p>
+<ul>
+  <li><strong>path</strong>: the logical URL path</li>
+  <li><strong>location</strong>: the directory to scan. may be an absolute file path, or a path reletive to <strong>${tds.content.root.path}.</strong></li>
+  <li><strong>watch</strong>: true or false, if you want to watch for changes in this directory and all subdirectories.</li>
+</ul>
 <h3><a name="dataset" id="dataset"></a>The dataset element</h3>
 <p>The<strong> <a href="../tutorial/NcML.htm">ncml:netcdf</a></strong> element is specific to server side catalogs, along with the <strong><a href="../reference/RestrictedAccess.html">restrictAccess</a></strong> attribute:</p>
 
@@ -73,7 +78,7 @@
       &lt;/xsd:extension&gt;<br/>    &lt;/xsd:complexContent&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;</pre>
 <p>The <em>datasetScan</em> element generates nested THREDDS catalogs by scanning the directory named in the <em>location</em> attribute, and creating a
   <em>dataset</em> for each file found, and a <em>catalogRef</em> for each subdirectory. The <em>path</em> attribute is used to create the URL for these files and
-  catalogs. The path must be globally unique over all paths for the TDS. Do not put leading or trailing slashes on the path.<br/>
+  catalogs. The path must be globally unique over all paths for the TDS. Do not put leading or trailing slashes on the path. The location must be an absolute path.<br/>
 </p>
 
 <p>A <em>datasetScan</em> element is in the dataset substitutionGroup, so it can

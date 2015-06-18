@@ -45,8 +45,8 @@ import thredds.core.AllowedServices;
 import thredds.core.ConfigCatalogCache;
 import thredds.core.ConfigCatalogInitialization;
 import thredds.core.DatasetManager;
-import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.featurecollection.CollectionUpdater;
+import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
@@ -117,7 +117,8 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
           wasInitialized = true;
           readState();
           readThreddsConfig();
-          configCatalogInitializer.init((PreferencesExt) mainPrefs.node("configCatalog"));
+          boolean useEsgfMode = ThreddsConfig.getBoolean("ESGF.allow", false);
+          configCatalogInitializer.init(useEsgfMode, (PreferencesExt) mainPrefs.node("configCatalog"));
         }
       }
     }
@@ -127,7 +128,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     File prefsDir = new File(tdsContext.getContentDirectory(), "/state/");
     if (!prefsDir.exists()) {
       boolean ok = prefsDir.mkdirs();
-      startupLog.info("TdsInit: makeDir= " + prefsDir.getAbsolutePath()+" ok="+ok);
+      startupLog.info("TdsInit: makeDir= " + prefsDir.getAbsolutePath() + " ok=" + ok);
     }
 
     File prefsFile = new File(prefsDir, "prefs.xml");
@@ -327,8 +328,8 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     ccc.init(null, max);
 
     // Config Dataset Tracker
-    String trackerDir = ThreddsConfig.get("Catalog.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/catalog/").getPath());
-    int trackerMax = ThreddsConfig.getInt("Catalog.maxDatasets", 1000 * 1000);
+    String trackerDir = ThreddsConfig.get("ESGF.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/catalog/").getPath());
+    int trackerMax = ThreddsConfig.getInt("ESGF.maxDatasets", 1000 * 1000);
     try {
       File trackerFile = new File(trackerDir);
       if (!trackerFile.exists()) {
@@ -361,7 +362,6 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     }
   }
 
-
   @Override
   public void destroy() {
     try {
@@ -370,25 +370,25 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
       ioe.printStackTrace();
     }
 
-      // background threads
-      if (timer != null) timer.cancel();
-      FileCache.shutdown();              // this handles background threads for all instances of FileCache
-      if (aggCache != null) aggCache.exit();
-      if (gribCache != null) gribCache.exit();
-      if (cdmrCache != null) cdmrCache.exit();
-      thredds.inventory.bdb.MetadataManager.closeAll(); // LOOK used ??
-      CollectionUpdater.INSTANCE.shutdown();
+    // background threads
+    if (timer != null) timer.cancel();
+    FileCache.shutdown();              // this handles background threads for all instances of FileCache
+    if (aggCache != null) aggCache.exit();
+    if (gribCache != null) gribCache.exit();
+    if (cdmrCache != null) cdmrCache.exit();
+    thredds.inventory.bdb.MetadataManager.closeAll(); // LOOK used ??
+    CollectionUpdater.INSTANCE.shutdown();
 
-      // open files caches
-      RandomAccessFile.shutdown();
-      NetcdfDataset.shutdown();
+    // open files caches
+    RandomAccessFile.shutdown();
+    NetcdfDataset.shutdown();
 
-      // memory caches
-      GribCdmIndex.shutdown();
-      datasetTracker.close();
+    // memory caches
+    GribCdmIndex.shutdown();
+    datasetTracker.close();
 
-      startupLog.info("TdsInit shutdown");
-      MDC.clear();
+    startupLog.info("TdsInit shutdown");
+    MDC.clear();
   }
 
 }

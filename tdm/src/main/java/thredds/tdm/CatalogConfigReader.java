@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * Description
+ * LOOK still needed?
  *
  * @author John
  * @since 12/18/13
@@ -68,7 +68,6 @@ public class CatalogConfigReader {
       return false;
     }
     Element root = doc.getRootElement();
-
 
     // find direct fc elements
     try {
