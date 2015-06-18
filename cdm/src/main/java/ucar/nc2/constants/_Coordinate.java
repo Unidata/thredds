@@ -59,6 +59,6 @@ public class _Coordinate {
   // global attributes
   static public final String _CoordSysBuilder = "_CoordSysBuilder";
 
-  // class not interface, per Bloch item 17
+  // class not interface, per Bloch edition 2 item 19
   private _Coordinate() {} // disable instantiation
 }

@@ -41,7 +41,7 @@ import java.nio.charset.Charset;
  * @author caron
  * @since 12/20/11
  */
-public interface CDM {
+public class CDM {
   public static final String UTF8 = "UTF-8";
   public static final Charset utf8Charset = Charset.forName("UTF-8");
 
@@ -77,4 +77,6 @@ public interface CDM {
   public static final String LON_UNITS = "degrees_east";
   public static final String TIME_INTERVAL = "time_interval";
 
+    // class not interface, per Bloch edition 2 item 19
+  private CDM() {} // disable instantiation
 }

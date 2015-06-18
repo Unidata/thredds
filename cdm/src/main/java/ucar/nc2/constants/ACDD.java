@@ -133,4 +133,6 @@ public class ACDD {
 
   public static final String publisher_project_info = "publisher_project_info";  //  dditional information for the institution that published the data; can include any information as ISO 19139 or free text.
 
+    // class not interface, per Bloch edition 2 item 19
+  private ACDD() {} // disable instantiation
 }

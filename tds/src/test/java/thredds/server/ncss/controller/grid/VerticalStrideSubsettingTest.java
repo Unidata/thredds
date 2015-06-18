@@ -100,8 +100,7 @@ public class VerticalStrideSubsettingTest {
 	
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
-				
-				
+
 		return Arrays.asList( new Object[][]{
 				{SupportedFormat.NETCDF3, new int[][]{ {1,65,93}, {1,65,93} } , GridPathParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), 1 }, //No vertical levels
 				{SupportedFormat.NETCDF3, new int[][]{ {1,1,65,93}, {1,1,65,93} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(1), 1}, //Same vertical level (one level)
@@ -148,8 +147,7 @@ public class VerticalStrideSubsettingTest {
 	
 	// @Test
 	public void shoudGetVerticalStridedSubset() throws Exception{
-				
-		
+
 		mockMvc.perform(requestBuilder)
 		.andExpect( MockMvcResultMatchers.status().isOk() )
 		.andExpect(new ResultMatcher(){
@@ -172,14 +170,7 @@ public class VerticalStrideSubsettingTest {
 				assertArrayEquals(expectedShapes, shapes);				
 			}
 		});
-		
-	
-		
-		
 		//assertEquals(expectedValue, Integer.valueOf( gdsDataset.getDataVariables().size()));
-		
-
-		
 	}
 	
 }	

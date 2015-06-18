@@ -6,6 +6,7 @@ ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
 apply plugin: 'war'
 
 dependencies {
+    compile project(":bufr")
     compile project(":cdm")
     compile project(":clcommon")
     compile project(":grib")
