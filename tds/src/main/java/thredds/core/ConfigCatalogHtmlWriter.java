@@ -37,6 +37,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.DatasetHtmlWriter;
+import thredds.server.catalog.CatalogScan;
+import thredds.server.catalog.DatasetScan;
+import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.TdsContext;
 import thredds.server.viewer.ViewerService;
@@ -256,18 +259,28 @@ public class ConfigCatalogHtmlWriter {
         } catch (URISyntaxException e) {
           log.error(href, e);
         }
+        String folderIcon;
+        if (ds instanceof CatalogScan || ds.hasProperty("CatalogScan"))
+          folderIcon = "cat_folder.png";
+        else if (ds instanceof DatasetScan || ds.hasProperty("DatasetScan"))
+          folderIcon = "scan_folder.png";
+        else if (ds instanceof FeatureCollectionRef)
+          folderIcon = "fc_folder.png";
+        else
+          folderIcon = "folder.png";
+          // folderIcon = htmlConfig.getFolderIconUrl();
 
-        sb.append("<img src='").append(htmlConfig.prepareUrlStringForHtml(htmlConfig.getFolderIconUrl()))
+        sb.append("<img src='").append(htmlConfig.prepareUrlStringForHtml(folderIcon))
                 .append("' alt='").append(htmlConfig.getFolderIconAlt()).append("'> &nbsp;");
         sb.append("<a href='");
         sb.append(StringUtil2.quoteHtmlContent(href));
         sb.append("'><tt>");
         sb.append(name);
-        sb.append("/</tt></a></td>\r\n");
+        sb.append("</tt></a></td>\r\n");
 
       } else { // Not a CatalogRef
         if (ds.hasNestedDatasets())
-          sb.append("<img src='").append(htmlConfig.prepareUrlStringForHtml(htmlConfig.getFolderIconUrl()))
+          sb.append("<img src='").append(htmlConfig.prepareUrlStringForHtml("folder.png"))
                   .append("' alt='").append(htmlConfig.getFolderIconAlt()).append("'> &nbsp;");
 
         // Check if dataset has single resolver service.

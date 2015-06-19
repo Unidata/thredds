@@ -8,6 +8,7 @@ import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.catalog.CatalogScan;
 import thredds.server.catalog.DatasetScan;
+import thredds.server.config.TdsContext;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,6 +22,9 @@ import java.net.URI;
 @Component("CatalogManager")
 public class CatalogManager {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogManager.class);
+
+  @Autowired
+  private TdsContext tdsContext;
 
   @Autowired
   private ConfigCatalogCache ccc;
@@ -139,7 +143,7 @@ public class CatalogManager {
     CatalogScan catScan = match.dataRoot.getCatalogScan();
     if (catScan != null) {
       if (log.isDebugEnabled()) log.debug("makeDynamicCatalog(): Calling CatalogScan.makeCatalogForDirectory( " + baseURI + ", " + path + ").");
-      Catalog cat = catScan.makeCatalog(match.remaining, filename, baseURI, ccc);
+      Catalog cat = catScan.makeCatalog(tdsContext.getContentDirectory(), match.remaining, filename, baseURI, ccc);
 
       if (null == cat)
         log.error("makeDynamicCatalog(): CatalogScan.makeCatalogForDirectory failed = " + workPath);

@@ -23,6 +23,7 @@
         <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>    <!-- server -->
         <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded"/>
+        <xsd:element ref="catalogScan" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
 
       <xsd:attribute name="base" type="xsd:anyURI"/>
@@ -100,7 +101,6 @@
       <xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element ref="ncml:netcdf" minOccurs="0"/>
       <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element ref="catalogScan" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
 
     <xsd:attribute name="name" type="xsd:string" use="required"/>

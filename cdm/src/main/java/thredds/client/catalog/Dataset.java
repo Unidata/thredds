@@ -393,6 +393,10 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (result == null) ? null : result.getValue();
   }
 
+  public boolean hasProperty(String name) {
+    return findProperty(name) != null;
+  }
+
   public List<ThreddsMetadata.Source> getPublishers() {
     return (List<ThreddsMetadata.Source>) getInheritedFieldAsList(Dataset.Publishers);
   }

@@ -195,6 +195,7 @@ public class DatasetScan extends CatalogRef {
         CatalogRefBuilder catref = new CatalogRefBuilder(top);
         catref.setTitle(makeName(mfile));
         catref.setHref(mfile.getName() + "/catalog.xml");
+        catref.addToList(Dataset.Properties, new Property("DatasetScan", "true"));
         top.addDataset(catref);
         ds = catref;
 

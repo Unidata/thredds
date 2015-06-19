@@ -35,16 +35,8 @@ package thredds.client.catalog;
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import thredds.filesystem.MFileOS7;
-import thredds.inventory.MFile;
-import ucar.nc2.util.CloseableIterator;
 
-import java.io.IOException;
 import java.net.URI;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**

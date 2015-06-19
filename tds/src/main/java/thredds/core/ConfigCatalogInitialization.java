@@ -95,7 +95,7 @@ public class ConfigCatalogInitialization {
   private boolean skipTestDataDir = true;
 
   private List<String> rootCatalogKeys;    // needed ??
-  private File rootFile;
+  private File contentRootPath;                   // ${tds.content.root.path}.
   private String contextPath;
   private DatasetTracker.Callback callback;
   private boolean exceedLimit = false;
@@ -109,10 +109,10 @@ public class ConfigCatalogInitialization {
   }
 
   // used from outside of tomcat/spring
-  public ConfigCatalogInitialization(String rootPath, String rootCatalog, DataRootPathMatcher<DataRoot> matcher, DatasetTracker datasetTracker,
+  public ConfigCatalogInitialization(String contentRootPath, String rootCatalog, DataRootPathMatcher<DataRoot> matcher, DatasetTracker datasetTracker,
                                      CatalogWatcher catalogWatcher,
                                      AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
-    this.rootFile = new File(rootPath);
+    this.contentRootPath = new File(contentRootPath);
     this.contextPath = "/thredds";
     this.dataRootPathMatcher = matcher;
     this.datasetTracker = datasetTracker;
@@ -133,7 +133,7 @@ public class ConfigCatalogInitialization {
     logCatalogInit.info("ConfigCatalogInitializion lastRead=" + CalendarDate.of(lastRead));
 
     this.useEsgfMode = useEsgfMode;
-    this.rootFile = this.tdsContext.getContentDirectory();
+    this.contentRootPath = this.tdsContext.getContentDirectory();
     this.contextPath = tdsContext.getContextPath();
 
     rootCatalogKeys = new ArrayList<>();
@@ -161,29 +161,29 @@ public class ConfigCatalogInitialization {
 
   // root catalogs are always read
   // path must be relative to rootDir
-  private void readRootCatalog(String path) throws IOException {
+  private void readRootCatalog(String catalogRelpath) throws IOException {
     if (exceedLimit) return;
 
-    path = StringUtils.cleanPath(path);
-    File f = new File(this.rootFile, path);
-    if (!f.exists()) {
-      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
+    catalogRelpath = StringUtils.cleanPath(catalogRelpath);
+    File catalogFullPath = new File(this.contentRootPath, catalogRelpath);
+    if (!catalogFullPath.exists()) {
+      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + catalogRelpath + "] does not exist in config directory.");
       return;
     }
-    if (show) System.out.printf("initCatalog %s%n", path);
+    if (show) System.out.printf("initCatalog %s%n", catalogRelpath);
 
     // make sure we dont already have it
-    if (pathHash.contains(path)) {
-      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
+    if (pathHash.contains(catalogRelpath)) {
+      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + catalogRelpath + "] already seen, possible loop (skip).");
       return;
     }
-    pathHash.add(path);
+    pathHash.add(catalogRelpath);
     // if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("initCatalog {} -> {}", path, f.getAbsolutePath());
 
     // read it
-    ConfigCatalog cat = readCatalog(path, f.getPath());
+    ConfigCatalog cat = readCatalog(catalogRelpath, catalogFullPath.getPath());
     if (cat == null) {
-      logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + f.getPath() + ">.");
+      logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + catalogFullPath.getPath() + ">.");
       return;
     }
     //ccc.put(path, cat);  // LOOK really ??
@@ -197,7 +197,7 @@ public class ConfigCatalogInitialization {
       List<String> disallowedServices = allowedServices.getDisallowedServices(cat.getServices());
       if (!disallowedServices.isEmpty()) {
         allowedServices.getDisallowedServices(cat.getServices());
-        logCatalogInit.error(ERROR + "initCatalog(): declared services: " + Arrays.toString(disallowedServices.toArray()) + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
+        logCatalogInit.error(ERROR + "initCatalog(): declared services: " + Arrays.toString(disallowedServices.toArray()) + " in catalog: " + catalogFullPath.getPath() + " are disallowed in threddsConfig file");
       }
     }
 
@@ -205,15 +205,15 @@ public class ConfigCatalogInitialization {
     extractDataRoots(cat.getDatasets());
 
     // get the directory path, reletive to the rootDir
-    int pos = path.lastIndexOf("/");
-    String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
+    int pos = catalogRelpath.lastIndexOf("/");
+    String dirPath = (pos > 0) ? catalogRelpath.substring(0, pos + 1) : "";
     processDatasets(dirPath, cat.getDatasets());     // recurse
 
     // look for catalogScans
     for (CatalogScan catScan : cat.getCatalogScans()) {
       if (exceedLimit) return;
       Path relLocation = Paths.get(dirPath, catScan.getLocation());
-      Path absLocation = Paths.get(f.getParent(), catScan.getLocation());
+      Path absLocation = Paths.get(catalogFullPath.getParent(), catScan.getLocation());
       if (catalogWatcher != null) catalogWatcher.registerAll(absLocation);
       readCatsInDirectory(relLocation.toString(), absLocation);
     }
