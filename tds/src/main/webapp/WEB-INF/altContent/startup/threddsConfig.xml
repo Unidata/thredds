@@ -4,8 +4,8 @@
   <!-- all options are commented out in standard install - meaning use default values -->
   <!-- see http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/ThreddsConfigXMLFile.html -->
   <serverInformation>
-    <name>Initial TDS Installation</name>
-    <logoUrl>/thredds/threddsIcon.gif</logoUrl>
+    <name>Initial TDS Installation (please change threddsConfig.xml)</name>
+    <logoUrl>/thredds/threddsIcon.png</logoUrl>
     <logoAltText>Initial TDS Installation</logoAltText>
 
     <abstract>Scientific Data</abstract>
@@ -20,7 +20,7 @@
     <hostInstitution>
       <name>My Group</name>
       <webSite>http://www.my.site/</webSite>
-      <logoUrl>myGroup.gif</logoUrl>
+      <logoUrl>/thredds/myGroup.png</logoUrl>
       <logoAltText>My Group</logoAltText>
     </hostInstitution>
   </serverInformation>
@@ -47,17 +47,19 @@
      * The CSS document given in the "catalogCssUrl" element is used for all pages
      * that are HTML catalog views. The CSS document given in the "standardCssUrl"
      * element is used in all other generated HTML pages.
-     * -->
+
     <standardCssUrl>tds.css</standardCssUrl>
     <catalogCssUrl>tdsCat.css</catalogCssUrl>
     <openDapCssUrl>tdsDap.css</openDapCssUrl>
+     * -->
 
     <!--
      * The Google Analytics Tracking code you would like to use for the
      * webpages associated with THREDDS. This will not track WMS or DAP
      * requests for data, only browsing the catalog.
-    -->
+
     <googleTrackingCode></googleTrackingCode>
+    -->
 
   </htmlSetup>
   

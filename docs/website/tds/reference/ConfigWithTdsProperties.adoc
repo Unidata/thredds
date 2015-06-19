@@ -48,7 +48,7 @@ The Java system properties that TDS uses for configuration are:
 
 |`tds.logo.url`
 |TDS logo URL
-|"threddsIcon.gif"
+|"threddsIcon.png"
 
 |`tds.logo.alt`
 |TDS logo alternate text
@@ -75,7 +75,7 @@ The Java system properties that TDS uses for configuration are:
 === Catalog Substitution
 
 It's possible to define property keys and use them in configuration catalogs. Values for those properties will be
-substituted at runtime. In `${TOMCAT_HOME}/webapps/thredds/WEB-INF/applicationContext-tdsConfig.xml`, you'll find:
+substituted at runtime. In `${TOMCAT_HOME}/webapps/thredds/WEB-INF/applicationContext.xml`, you'll find:
 
 [source,xml]
 ----

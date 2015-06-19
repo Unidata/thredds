@@ -42,8 +42,8 @@ public class CatalogScan extends CatalogRef {
     return watch;
   }
 
-  public CatalogScan(DatasetNode parent, String xlink, String path, String location, String watch, Map<String, Object> flds) {
-    super(parent, path, xlink, flds, null, null);
+  public CatalogScan(DatasetNode parent, String name, String xlink, Map<String, Object> flds, String path, String location, String watch) {
+    super(parent, name, xlink, flds, null, null);
 
     this.path = path;           // could use flds
     this.location = location;

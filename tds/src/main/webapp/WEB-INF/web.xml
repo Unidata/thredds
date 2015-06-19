@@ -29,6 +29,7 @@
 
   <!-- **************************************************************************************** -->
 
+  <!-- filters are done in Spring config  -->
   <filter>
     <filter-name>springDelegatingFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -56,97 +57,6 @@
     <servlet-name>spring</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
-
-  <!-- data services -->
-  <!-- NON-SPRING  controllers and servlets -->
-  <!-- NetCDF/OPeNDAP server
-  <servlet>
-    <display-name>OPeNDAP Server</display-name>
-    <servlet-name>Opendap</servlet-name>
-    <servlet-class>thredds.server.opendap.OpendapServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <display-name>Dap4 Server</display-name>
-    <servlet-name>dap4</servlet-name>
-    <servlet-class>thredds.server.dap4.Dap4Servlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
-  </servlet>   -->
-
-  <!-- Restricted Access (using CAS)
-  <servlet>
-    <servlet-name>RestrictedDataset</servlet-name>
-    <servlet-class>thredds.servlet.restrict.RestrictedDatasetServlet</servlet-class>
-
-    <init-param>
-      <param-name>Authorizer</param-name>
-      <param-value>thredds.servlet.restrict.CASAuthorizer</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>RoleDatabase</param-name>
-      <param-value>C:/Program Files (x86)/Apache Software Foundation/apache-tomcat-5.5.20/conf/tomcat-users.xml</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
-      <param-value>https://localhost:8443/cas/login</param-value>
-    </init-param>
-    <init-param>
-      <param-name>edu.yale.its.tp.cas.client.filter.validateUrl</param-name>
-      <param-value>https://localhost:8443/cas/proxyValidate</param-value>
-    </init-param>
-    <init-param>
-      <param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
-      <param-value>localhost:8080</param-value>
-    </init-param>
-
-    <load-on-startup>2</load-on-startup>
-  </servlet>  -->
-
-
-  <!-- catalog services -->
-
-  <!-- Setup for the CatalogAnnotate servlet. (Attach extra info to a catalog.
-  <servlet>
-    <servlet-name>CatalogAnnotate</servlet-name>
-    <servlet-class>thredds.servlet.CatalogAnnotate</servlet-class>
-  </servlet> -->
-
-  <!-- Setup for the CatalogDL servlet. (Make Digital Library records from a catalog.  -->
-  <!-- servlet>
-    <servlet-name>DLwriter</servlet-name>
-    <servlet-class>thredds.servlet.DLwriterServlet</servlet-class>
-    <load-on-startup>10</load-on-startup>
-  </servlet -->
-
-  <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
-
-  <!-- default servlet
-  <servlet-mapping>
-    <servlet-name>root</servlet-name>
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>root</servlet-name>
-    <url-pattern>*.css</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>root</servlet-name>
-    <url-pattern>*.gif</url-pattern>
-  </servlet-mapping> -->
-
-  <!-- servlet-mapping>
-    <servlet-name>Opendap</servlet-name>
-    <url-pattern>/dodsC/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>dap4</servlet-name>
-    <url-pattern>/dap4/*</url-pattern>
-  </servlet-mapping -->
-
 
   <welcome-file-list>
     <welcome-file>/</welcome-file>

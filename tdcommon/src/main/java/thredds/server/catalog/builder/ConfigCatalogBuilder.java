@@ -91,10 +91,11 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
   }
 
   private CatalogScanBuilder readCatalogScan(DatasetBuilder parent, Element s) {
+    String name = s.getAttributeValue("name");
     String path = s.getAttributeValue("path");
     String location = s.getAttributeValue("location");
     String watch = s.getAttributeValue("watch");
-    return new CatalogScanBuilder(parent, path, location, watch);
+    return new CatalogScanBuilder(parent, name, path, location, watch);
   }
 
   @Override

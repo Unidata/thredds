@@ -28,14 +28,17 @@
     <constructor-arg>
       <list>
         <security:filter-chain pattern="/dap4/**" filters="
+           httpHeadFilter,
            requestQueryFilterAllowAngleBrackets,
            requestCORSFilter,
            requestBracketingLogMessageFilter" />
         <security:filter-chain pattern="/dodsC/**" filters="
+           httpHeadFilter,
            requestQueryFilterAllowAngleBrackets,
            requestCORSFilter,
            requestBracketingLogMessageFilter" />
         <security:filter-chain pattern="/**" filters="
+           httpHeadFilter,
            requestQueryFilter,
            requestCORSFilter,
            requestBracketingLogMessageFilter" />
@@ -43,6 +46,8 @@
     </constructor-arg>
   </bean>
 
+  <!-- Process HEAD requests on all GETS, see http://axelfontaine.com/blog/http-head.html -->
+  <bean id="httpHeadFilter" class="thredds.servlet.filter.HttpHeadFilter" />
   <bean id="requestQueryFilter" class="thredds.servlet.filter.RequestQueryFilter" />
   <bean id="requestQueryFilterAllowAngleBrackets" class="thredds.servlet.filter.RequestQueryFilter">
     <property name="allowAngleBrackets" value="true"/>

@@ -573,6 +573,7 @@
   <!-- scan a directory and read all catalogs. optionally watch for changes while TDS is running -->
   <xsd:element name="catalogScan">
     <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string"/>
       <xsd:attribute name="path" type="xsd:string"/>
       <xsd:attribute name="location" type="xsd:string"/>
       <xsd:attribute name="watch" type="xsd:boolean"/>

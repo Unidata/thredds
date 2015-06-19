@@ -41,14 +41,14 @@ import thredds.client.catalog.Dataset;
 
 public interface ViewerService {
 
-	public List<Viewer>  getViewers();
+	List<Viewer>  getViewers();
 	
-	public Viewer getViewer(String viewer);
+	Viewer getViewer(String viewer);
 	
-	public String getViewerTemplate(String template);
+	String getViewerTemplate(String template);
 	
-	public boolean registerViewer(Viewer v);
+	boolean registerViewer(Viewer v);
 	
-	public void showViewers(Formatter sbuff, Dataset dataset, HttpServletRequest req);
+	void showViewers(Formatter sbuff, Dataset dataset, HttpServletRequest req);
 	
 }
