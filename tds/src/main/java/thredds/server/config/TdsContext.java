@@ -150,6 +150,63 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     this.servletContext = servletContext;
   }
 
+  public void setContentPath(String contentPath) {
+    this.contentPath = contentPath;
+  }
+
+  public void setStartupContentPath(String startupContentPath) {
+    this.startupContentPath = startupContentPath;
+  }
+
+  public void setTdsConfigFileName(String filename) {
+    this.tdsConfigFileName = filename;
+  }
+
+  public String getTdsConfigFileName() {
+    return this.tdsConfigFileName;
+  }
+
+  public void setServerInfo(TdsServerInfo serverInfo) {
+    this.serverInfo = serverInfo;
+  }
+
+  public TdsServerInfo getServerInfo() {
+    return serverInfo;
+  }
+
+  public void setHtmlConfig(HtmlConfig htmlConfig) {
+    this.htmlConfig = htmlConfig;
+  }
+
+  public HtmlConfig getHtmlConfig() {
+    return this.htmlConfig;
+  }
+
+  public WmsConfig getWmsConfig() {
+    return wmsConfig;
+  }
+
+  public void setWmsConfig(WmsConfig wmsConfig) {
+    this.wmsConfig = wmsConfig;
+  }
+
+  public CorsConfig getCorsConfig() { return corsConfig; }
+
+  public void setCorsConfig(CorsConfig corsConfig) {
+      this.corsConfig = corsConfig;
+  }
+
+  public TdsUpdateConfig getTdsUpdateConfig() { return tdsUpdateConfig; }
+
+  public void setTdsUpdateConfig(TdsUpdateConfig tdsUpdateConfig) {
+      this.tdsUpdateConfig = tdsUpdateConfig;
+  }
+  
+  /*
+   * Release tdsContext resources
+   * (non-Javadoc)
+   * @see org.springframework.beans.factory.DisposableBean#destroy()
+   */
   @Override
   public void destroy() {
     logServerStartup.info("TdsContext: shutdownLogging()");
@@ -348,7 +405,54 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
     ThreddsConfig.init(tdsConfigFile.getPath());
 
-    // initialize/populate all of the various config objects
+    this.publicContentDirectory = new File(this.contentDirectory, "public");
+    if (!publicContentDirectory.exists()) {
+      if (!publicContentDirectory.mkdirs()) {
+        String msg = "Couldn't create TDS public directory [" + publicContentDirectory.getPath() + "].";
+        logServerStartup.error("TdsContext.init(): " + msg);
+        throw new IllegalStateException(msg);
+      }
+    }
+    this.publicContentDirSource = new BasicDescendantFileSource(this.publicContentDirectory);
+
+    /* this.iddContentDirectory = new File(this.rootDirectory, this.iddContentPath);
+    this.iddContentPublicDirSource = new BasicDescendantFileSource(this.iddContentDirectory);
+
+    this.motherlodeContentDirectory = new File(this.rootDirectory, this.motherlodeContentPath);
+    this.motherlodeContentPublicDirSource = new BasicDescendantFileSource(this.motherlodeContentDirectory);
+
+
+    for (String curContentRoot : ThreddsConfig.getContentRootList()) {
+      if (curContentRoot.equalsIgnoreCase("idd"))
+        chain.add(this.iddContentPublicDirSource);
+      else if (curContentRoot.equalsIgnoreCase("motherlode"))
+        chain.add(this.motherlodeContentPublicDirSource);
+      else {
+        try {
+          chain.add(new BasicDescendantFileSource(StringUtils.cleanPath(curContentRoot)));
+        } catch (IllegalArgumentException e) {
+          String msg = "Couldn't add content root [" + curContentRoot + "]: " + e.getMessage();
+          logServerStartup.warn("TdsContext.init(): " + msg, e);
+        }
+      }
+    }  */
+
+    List<DescendantFileSource> chain = new ArrayList<>();
+    DescendantFileSource contentMinusPublicSource =
+            new BasicWithExclusionsDescendantFileSource(this.contentDirectory, Collections.singletonList("public"));
+    chain.add(contentMinusPublicSource);
+    this.configSource = new ChainedFileSource(chain);
+    this.publicDocSource = this.publicContentDirSource;
+
+    // ToDo LOOK Find a better way once thredds.catalog2 is used.
+    InvDatasetScan.setContext(contextPath);
+    InvDatasetScan.setCatalogServletName("/catalog");
+    InvDatasetFeatureCollection.setContext(contextPath);
+    // GridServlet.setContextPath( contextPath ); // Won't need when switch GridServlet to use Swing MVC and TdsContext
+
+    jspRequestDispatcher = servletContext.getNamedDispatcher("jsp");
+    defaultRequestDispatcher = servletContext.getNamedDispatcher("default");
+
     TdsConfigMapper tdsConfigMapper = new TdsConfigMapper();
     tdsConfigMapper.setTdsServerInfo(this.serverInfo);
     tdsConfigMapper.setHtmlConfig(this.htmlConfig);
@@ -540,19 +644,32 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     return this.configFileProperty;
   }
 
-  public TdsServerInfo getServerInfo() {
-    return serverInfo;
-  }
 
-  public HtmlConfig getHtmlConfig() {
-    return this.htmlConfig;
-  }
-
-  public WmsConfig getWmsConfig() {
-    return wmsConfig;
-  }
-
-
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("TdsContext{");
+    sb.append("webappName='").append(webappName).append('\'');
+    sb.append("\n  contextPath='").append(contextPath).append('\'');
+    sb.append("\n  webappVersion='").append(webappVersion).append('\'');
+    sb.append("\n  webappVersionBuildDate='").append(webappVersionBuildDate).append('\'');
+    sb.append("\n  contentRootPath='").append(contentRootPath).append('\'');
+    sb.append("\n  contentPath='").append(contentPath).append('\'');
+    sb.append("\n  tdsConfigFileName='").append(tdsConfigFileName).append('\'');
+    sb.append("\n  startupContentPath='").append(startupContentPath).append('\'');
+    sb.append("\n  webinfPath='").append(webinfPath).append('\'');
+    sb.append("\n  rootDirectory=").append(rootDirectory);
+    sb.append("\n  contentDirectory=").append(contentDirectory);
+    sb.append("\n  publicContentDirectory=").append(publicContentDirectory);
+    sb.append("\n  tomcatLogDir=").append(tomcatLogDir);
+    sb.append("\n  startupContentDirectory=").append(startupContentDirectory);
+    sb.append("\n  rootDirSource=").append(rootDirSource);
+    sb.append("\n  contentDirSource=").append(contentDirSource);
+    sb.append("\n  publicContentDirSource=").append(publicContentDirSource);
+    sb.append("\n  startupContentDirSource=").append(startupContentDirSource);
+    sb.append("\n  configSource=").append(configSource);
+    sb.append("\n  publicDocSource=").append(publicDocSource);
+    sb.append('}');
+    return sb.toString();
   /////////////////////////////////////////////////////
 
   // used by MockTdsContextLoader

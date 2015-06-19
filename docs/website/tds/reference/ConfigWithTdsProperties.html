@@ -1,151 +1,194 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-  <title>TDS Reference: TDS Configuration with Properties</title>
-  <link href="../tds.css" rel="stylesheet" type="text/css"/>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>TDS Configuration with Properties</title>
+<link rel="stylesheet" href="./../tds.css">
+<link rel="stylesheet" href="./coderay-asciidoctor.css">
 </head>
-<body>
+<body class="article">
+<div id="header">
 <h1>TDS Configuration with Properties</h1>
-<hr>
-
-<p>A number of TDS configuration settings can be modified with Java system properties. Some of the
-  default values are defined in the TDS default properties file:</p>
-
-<pre>${tomcat_home}/webapps/thredds/WEB-INF/classes/thredds/server/tds.properties</pre>
-
-<p>Modifying the default values in the <code>tds.properties</code> file will change the settings
-  without using Java system properties. However, the TDS default properties file is located in the
-  webapps directory which means it will be overwritten whenever the TDS is upgraded. Any changes
-  made in this way will need to changed again whenever a new TDS is deployed.
-</p>
-
-<p>The TDS configuration settings that can be set with Java system properties include:</p>
-<table width="1037" border="2" cellpadding="2">
-  <tr>
-    <th width="159">Property Name</th>
-    <th width="390">Description</th>
-    <th width="398">Default Value from <code>tds.properties</code> file</th>
-  </tr>
-  <tr>
-    <td>tds.version</td>
-    <td>TDS Full Version Number</td>
-    <td>"4.2.&lt;version&gt;"</td>
-  </tr>
-  <tr>
-    <td>tds.version.brief</td>
-    <td>TDS Short Version Number</td>
-    <td>"4.2"</td>
-  </tr>
-  <tr>
-    <td>tds.version.builddate</td>
-    <td>TDS Build Date</td>
-    <td>"&lt;yyyyMMdd.hhmm&gt;"</td>
-  </tr>
-  <tr>
-    <td>tds.url</td>
-    <td>TDS web page URL</td>
-    <td>"http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html"</td>
-  </tr>
-  <tr>
-    <td>tds.documentation.url</td>
-    <td>TDS Documentation URL</td>
-    <td>"http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html"</td>
-  </tr>
-  <tr>
-    <td>tds.logo.url</td>
-    <td>TDS Logo URL</td>
-    <td>"threddsIcon.gif"</td>
-  </tr>
-  <tr>
-    <td>tds.logo.alt</td>
-    <td>TDS Logo Alternate Text</td>
-    <td>"TDS"</td>
-  </tr>
-  <tr>
-    <td>tds.content.root.path</td>
-    <td>Root path for TDS content/thredds directory</td>
-    <td>"../../content"</td>
-  </tr>
-  <tr>
-    <td>tds.content.path</td>
-    <td>Additional path for TDS content/thredds directory</td>
-    <td>"thredds"</td>
-  </tr>
-  <tr>
-    <td>tds.config.file</td>
-    <td>Name of TDS configuration file (relative path from content/thredds).</td>
-    <td>"threddsConfig.xml"</td>
-  </tr>
-  <tr>
-    <td>tds.content.startup.path</td>
-    <td>&nbsp;</td>
-    <td>&quot;WEB-INF/altContent/startup&quot;</td>
-  </tr>
-  <tr>
-    <td>tds.content.idd.path</td>
-    <td>&nbsp;</td>
-    <td>&quot;WEB-INF/altContent/idd/thredd&quot;</td>
-  </tr>
-  <tr>
-    <td>tds.content.motherlode.path</td>
-    <td>&nbsp;</td>
-    <td>&quot;WEB-INF/altContent/motherlode/thredds&quot;</td>
-  </tr>
-  <tr>
-    <td>tds.install.url</td>
-    <td>&nbsp;</td>
-    <td>&quot;catalog.html&quot;</td>
-  </tr>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_system_properties">System properties</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A number of TDS configuration settings can be set as Java system properties. Default values for some of these
+properties are defined in the TDS properties file:
+<code>${TOMCAT_HOME}/webapps/thredds/WEB-INF/classes/thredds/server/tds.properties</code>.</p>
+</div>
+<div class="paragraph">
+<p>Modifying <code>tds.properties</code> is an alternative means of changing those configuration settings. However,
+<code>tds.properties</code> lives in the <code>${TOMCAT_HOME}/webapps/</code> directory, meaning that it&#8217;ll be overwritten whenever the TDS
+is upgraded. So, if you make any edits to that file, make sure to back them up before deploying a new version of
+<code>thredds.war</code>, and then restore them after depoloyment.</p>
+</div>
+<div class="paragraph">
+<p>The Java system properties that TDS uses for configuration are:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 15%;">
+<col style="width: 44%;">
+<col style="width: 39%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default value from <code>tds.properties</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.content.root.path</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Root path for TDS content directory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>None</strong>. The user <em>must</em> <a href="../UpgradingTo4.6.html">provide this value</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.version</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TDS version number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.version}</code> (actual value substituted during build)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.version.builddate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TDS build date</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${build.timestamp}</code> (actual value substituted during build)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.install.url</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">URL to the top level of the TDS installation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"catalog.html"</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.url</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TDS web page URL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.documentation.url</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TDS documentation URL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"http://www.unidata.ucar.edu/software/thredds/current/tds/reference/index.html"</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.logo.url</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TDS logo URL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"threddsIcon.gif"</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.logo.alt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TDS logo alternate text</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"TDS"</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.content.path</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full path for TDS content directory (relative to <code>tds.content.root.path</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"thredds"</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.content.startup.path</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Location of default startup files. Used if <code>catalog.xml</code> or <code>threddsConfig.xml</code> are missing.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"WEB-INF/altContent/startup"</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.config.file</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of TDS configuration file (relative to <code>tds.content.path</code>).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"threddsConfig.xml"</p></td>
+</tr>
+</tbody>
 </table>
-<h3>Content Root</h3>
-<p><strong>tds.content.root.path</strong> must be found before anything else is done.</p>
-<p>Typical case is that Tomcat is started from {tomcat_home}/bin, and the content root is {tomcat_home}/content/thredds</p>
-<h3>Catalog Substitution</h3>
-<p>Spring /src/main/webapp/WEB-INF/applicationContext-tdsConfig.xml</p>
-<pre>&lt;util:map id=&quot;dataRootLocationAliasExpanders&quot; map-class=&quot;java.util.HashMap&quot;&gt;
-  &lt;entry key=&quot;cdmUnitTest&quot; value=&quot;${tds.dir.cdmUnitTest}&quot;/&gt;
-&lt;/util:map&gt;</pre>
-<p><!--
-tds.content.startup.path=WEB-INF/altContent/startup
-tds.content.idd.path=WEB-INF/altContent/idd/thredds
-tds.content.motherlode.path=WEB-INF/altContent/motherlode/thredds
-
-tds.install.url=catalog.html
---> will find the named property (in this example,<em> tds.dir.cdmUnitTest</em>) and make a map and inject into DataRootHandler class:</p>
-<pre> @Resource(name = &quot;dataRootLocationAliasExpanders&quot;)
- public void setDataRootLocationAliasExpanders(Map&lt;String, String&gt; aliases) {
-   for (String key : aliases.keySet()) {
-     String value = aliases.get(key);
-     if (value == null || value.isEmpty()) continue;
-     StartsWithPathAliasReplacement alias = new StartsWithPathAliasReplacement(&quot;${&quot; + key + &quot;}&quot;, value);
-     dataRootLocationAliasExpanders.add(alias);
-   }
- }</pre>
-<p>if the root starts starts with ${key}, the value is substituted in the following places:</p>
-<ol>
-  <li>when DataRootHandler.addRoot is called</li>
-  <li>The dataRootLocationAliasExpanders are injected into InvCatalogFactory10:
-    <ol>
-      <li>readFeatureCollection() : spec string</li>
-      <li>readDatasetFmrc : location</li>
-      <li>readDatasetRoot : location / dirLocation</li>
-      <li>readDatasetScan : dirLocation</li>
-      <li>readDatasetScanNew : location</li>
-    </ol>
-  </li>
+<div class="sect2">
+<h3 id="_content_root">Content Root</h3>
+<div class="paragraph">
+<p><code>tds.content.root.path</code> must be found before anything else is done. Typically, Tomcat is started from
+<code>${TOMCAT_HOME}/bin</code>, and the content root is <code>${TOMCAT_HOME}/content</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_catalog_substitution">Catalog Substitution</h3>
+<div class="paragraph">
+<p>It&#8217;s possible to define property keys and use them in configuration catalogs. Values for those properties will be
+substituted at runtime. In <code>${TOMCAT_HOME}/webapps/thredds/WEB-INF/applicationContext-tdsConfig.xml</code>, you&#8217;ll find:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;util:map</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dataRootLocationAliasExpanders</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">map-class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">java.util.HashMap</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;entry</span> <span class="attribute-name">key</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">cdmUnitTest</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${unidata.testdata.path}/cdmUnitTest/</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/util:map&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here we&#8217;ve defined a property called <code>cdmUnitTest</code> that will be assigned the value of
+<code>${unidata.testdata.path}/cdmUnitTest/</code>
+<span class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnote_1" title="View footnote.">1</a>]</span> at runtime. You can define more
+by adding additional <code>entry</code> elements to the <code>util:map</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_implementation_details">Implementation Details</h3>
+<div class="paragraph">
+<p>The <code>dataRootLocationAliasExpanders</code> map will be injected into the <code>thredds.servlet.DataRootHandler</code> class by Spring:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Resource</span>(name = <span class="string"><span class="delimiter">&quot;</span><span class="content">dataRootLocationAliasExpanders</span><span class="delimiter">&quot;</span></span>)
+<span class="directive">public</span> <span class="type">void</span> setDataRootLocationAliasExpanders(<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; aliases) {
+  dataRootLocationAliasExpanders = PathAliasReplacementImpl.makePathAliasReplacements(aliases);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a path in a catalog starts with a defined alias, the value will be substituted in the following places:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>when <code>DataRootHandler.addRoot()</code> is called</p>
+</li>
+<li>
+<p>the <code>dataRootLocationAliasExpanders</code> are injected into <code>thredds.catalog.parser.jdom.InvCatalogFactory10</code>:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><code>readFeatureCollection()</code>: spec string</p>
+</li>
+<li>
+<p><code>readDatasetRoot()</code>: location / dirLocation</p>
+</li>
+<li>
+<p><code>readDatasetScan()</code>: dirLocation</p>
+</li>
+<li>
+<p><code>readDatasetScanNew()</code>: location</p>
+</li>
 </ol>
-<p>Note that the FeatureCollectionConfig objects themselves are not modified. Problem here with TDS</p>
-<hr width="100%">
-<address>
-  <img alt="THREDDS" src="../thread.png" height="108" width="110">
-  This document is maintained by Unidata and was last updated November 2013.
-  Send comments to
-  <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
-</address>
-
-<p>&nbsp;</p>
-
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Note: the <code>thredds.featurecollection.FeatureCollectionConfig</code> objects themselves are not modified.
+This is a problem with TDS.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnote_1">
+<a href="#_footnoteref_1">1</a>. <code>unidata.testdata.path</code> is a system property we use internally for testing.
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-06-16 19:48:13 MDT
+</div>
+</div>
 </body>
 </html>
