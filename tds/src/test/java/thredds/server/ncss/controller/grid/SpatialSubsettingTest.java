@@ -34,16 +34,14 @@ package thredds.server.ncss.controller.grid;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -161,20 +159,15 @@ public class SpatialSubsettingTest {
 				assertTrue( !responseBBox.equals(datasetBBOX));				
 			}
 		});
-		
-	
-		
-
-		
 	}
 	
-//	@After
-//	public void tearDown() throws IOException{
-//		
-//		GridDataset gds =gridDataController.getGridDataset();
-//		gds.close();
-//		gds =null;
-//		gridDataController.setGridDataset(null);
-//		
-//	}
+	public static void showRequest(MockHttpServletRequest req) {
+   Formatter f = new Formatter();
+   Enumeration<String> params = req.getParameterNames();
+   while (params.hasMoreElements()) {
+     String name = params.nextElement();
+     f.format(" %s=%s%n", name, req.getParameter(name));
+   }
+   System.out.printf("%s%n%s%n", req.getRequestURI(), f);
+ }
 }

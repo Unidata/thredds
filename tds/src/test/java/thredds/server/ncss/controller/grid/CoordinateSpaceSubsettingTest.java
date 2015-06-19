@@ -95,20 +95,24 @@ public class CoordinateSpaceSubsettingTest {
             .param("maxx", Double.valueOf(projectionRectParams[2]).toString())
             .param("maxy", Double.valueOf(projectionRectParams[3]).toString());
 
+    System.out.printf("Request=%s%n", requestBuilder);
     System.out.printf("%n%s vars=%s%n", pathInfo, varParamVal);
 
     MvcResult mvc = this.mockMvc.perform(requestBuilder).andReturn();
+    SpatialSubsettingTest.showRequest(mvc.getRequest());
     assertEquals(200, mvc.getResponse().getStatus());
 
     // Open the binary response in memory
     NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", mvc.getResponse().getContentAsByteArray());
-    System.out.printf("%s%n", nf);
+    // System.out.printf("%s%n", nf);
     Variable v = nf.findVariable(null, "x");
     assert v != null;
+    System.out.printf("x= ");
     NCdumpW.printArray(v.read());
     System.out.printf("%n");
     v = nf.findVariable(null, "y");
     assert v != null;
+    System.out.printf("y= ");
     NCdumpW.printArray(v.read());
     System.out.printf("%n");
 

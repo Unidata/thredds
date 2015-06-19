@@ -8,8 +8,9 @@ package ucar.nc2.ft2.coverage.grid;
  * @since 6/1/2015
  */
 public class GridCoordAxisHelper {
-  GridCoordAxis axis;
+  enum Mode {min, max, closest} // values is a min, max or closest
 
+  GridCoordAxis axis;
   GridCoordAxisHelper(GridCoordAxis axis) {
     this.axis = axis;
   }
@@ -115,10 +116,10 @@ public class GridCoordAxisHelper {
    * @param target position in this coordinate system
    * @return index of grid point containing it, or -1 if outside grid area
    */
-  public int findCoordElement(double target) {
+  public int findCoordElement(double target, Mode mode) {
     switch (axis.getSpacing()) {
       case regular:
-        return findCoordElementRegular(target, false);
+        return findCoordElementRegular(target, mode, false);
       case irregularPoint:
       case contiguousInterval:
         return findCoordElementContiguous(target, false);
@@ -134,10 +135,10 @@ public class GridCoordAxisHelper {
    * @param target position in this coordinate system
    * @return index of grid point containing it, or best estimate of closest grid interval.
    */
-  public int findCoordElementBounded(double target) {
+  public int findCoordElementBounded(double target, Mode mode) {
       switch (axis.getSpacing()) {
         case regular:
-          return findCoordElementRegular(target, true);
+          return findCoordElementRegular(target, mode, true);
         case irregularPoint:
         case contiguousInterval:
           return findCoordElementContiguous(target, true);
@@ -163,16 +164,32 @@ public class GridCoordAxisHelper {
    * @return the index that is nearest to this point, or -1 if the point is
    * out of range for the axis
    */
-  private int findCoordElementRegular(double coordValue, boolean bounded) {
-    int n = (int) axis.getNcoords();
+  private int findCoordElementRegular(double coordValue, Mode mode, boolean bounded) {
+    int n = axis.getNcoords();
 
     double distance = coordValue - axis.getStartValue();
     double exactNumSteps = distance / axis.getResolution();
-    int index = (int) Math.round(exactNumSteps);
+    int index = -1;
+
+    switch (mode) {
+      case min:
+        index = (int) exactNumSteps;
+        if ((index>0) && (index < n) && axis.getCoord(index) < coordValue) index++; // result >= coordVal
+        break;
+      case max:
+        index = (int) exactNumSteps;  // result <= coordVal
+        break;
+      case closest:
+        index = (int) Math.round(exactNumSteps);
+        break;
+    }
+
     if (index < 0)
       return bounded ? 0 : -1;
     else if (index >= n)
       return bounded ? n - 1 : -1;
+
+
     return index;
   }
 

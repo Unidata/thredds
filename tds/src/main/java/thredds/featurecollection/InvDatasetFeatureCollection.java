@@ -46,6 +46,8 @@ import thredds.server.catalog.FeatureCollectionRef;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.log.LoggerFactory;
@@ -574,7 +576,10 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   }
 
   public GridCoverageDataset getGridCoverage(String matchPath) throws IOException {
-    return null;
+    NetcdfDataset ncd = getNetcdfDataset(matchPath);
+    if (ncd == null) return null;
+    DtCoverageDataset gcd = new DtCoverageDataset(ncd);
+    return new DtCoverageAdapter(gcd);
   }
 
   ///////////////////////////////////////////////////////////////////////////////

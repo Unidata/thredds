@@ -478,8 +478,8 @@ public class GridCoordAxis {
     int count2 = 0;
 
     GridCoordAxisHelper helper = new GridCoordAxisHelper(this);
-    minIndex = helper.findCoordElement(minValue);
-    maxIndex = helper.findCoordElement(maxValue);
+    minIndex = helper.findCoordElementBounded(minValue, GridCoordAxisHelper.Mode.min);
+    maxIndex = helper.findCoordElementBounded(maxValue, GridCoordAxisHelper.Mode.max);
     int count = maxIndex - minIndex + 1;
 
     if (minIndex < 0 )
@@ -532,7 +532,7 @@ public class GridCoordAxis {
     double[] subsetValues;
 
     GridCoordAxisHelper helper = new GridCoordAxisHelper(this);
-    int want_index = helper.findCoordElement(want);
+    int want_index = helper.findCoordElement(want, GridCoordAxisHelper.Mode.closest);
 
     result.setNcoords(1);
     result.setMinIndex(want_index);
