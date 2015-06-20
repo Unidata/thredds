@@ -66,6 +66,24 @@
   <li>Services placed in the root catalog are global and can be referenced in any other config catalog.</li>
   <li>Services placed in any other catalog are local, are used only in that catalog, and override (by name) any global services.</li>
 </ol>
+<h3>Notes</h3>
+<ol>
+  <ol>
+    <ol>
+      <li dir="ltr">
+        <p dir="ltr"><strong id="docs-internal-guid-74d6d37f-0e4a-6c36-63f2-0203f9cac922">If no service elements in catalogs, TDS will generate the standard ones. (default services)</strong></p>
+      </li>
+      <li dir="ltr">
+        <p dir="ltr"><strong id="docs-internal-guid-74d6d37f-0e4a-6c36-63f2-0203f9cac922">Global service configuration (e.g. turn off wcs everywhere, turn on ncss everywhere)</strong></p>
+      </li>
+      <li dir="ltr">
+        <p dir="ltr"><strong id="docs-internal-guid-74d6d37f-0e4a-6c36-63f2-0203f9cac922">Anything defined in top catalog becomes global (e.g. gridFTP - define once and make available globally)</strong></p>
+      </li>
+      <li dir="ltr"><strong id="docs-internal-guid-74d6d37f-0e4a-6c36-63f2-0203f9cac922">Defined services in local catalog override global.</strong></li>
+    </ol>
+  </ol>
+</ol>
+<p>&nbsp;</p>
 <hr />
 <h2><a name="serviceList" id="serviceList">TDS Services</a></h2>
 

@@ -40,8 +40,8 @@ public class TestCoverageClassification {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", GridCoordSys.Type.Grid, 4, 5, 5});  // scalar runtime
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", GridCoordSys.Type.Fmrc, 6, 6, 1}); // ensemble, time-offset
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", GridCoordSys.Type.Fmrc, 4, 5, 1});              // scalar vert
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", GridCoordSys.Type.Curvilinear, 4, 4, 22});  // x,y axis but no projection
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", GridCoordSys.Type.Grid, 3, 3, 4});  // both x,y and lat,lon
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", GridCoordSys.Type.Curvilinear, 4, 6, 22});  // x,y axis but no projection
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", GridCoordSys.Type.Grid, 3, 5, 4});  // both x,y and lat,lon
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", GridCoordSys.Type.Curvilinear, 4, 5, 7});  // GRIB Curvilinear
 
     return result;

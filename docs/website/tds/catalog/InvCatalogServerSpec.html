@@ -39,6 +39,7 @@
 <pre>&lt;xsd:element&#32;name=&quot;catalogScan&quot;&gt;<br />&#32;&#32;&lt;xsd:complexType&gt;<br />&#32;&#32;&#32;&#32;&lt;xsd:attribute&#32;name=&quot;name&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />&#32;&#32;&#32;&#32;&lt;xsd:attribute&#32;name=&quot;path&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />  &#32;&#32;&lt;xsd:attribute&#32;name=&quot;location&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />  &#32;&#32;&lt;xsd:attribute&#32;name=&quot;watch&quot;&#32;type=&quot;xsd:boolean&quot;/&gt;<br />&#32;&#32;&lt;/xsd:complexType&gt;<br />&lt;/xsd:element&gt;</pre>
 <p>A <strong>catalogScan</strong> element indicates a directory to scan for catalogs (files ending in xml). Optionally, the directory can be watched, and changes will be detected while the TDS is running.</p>
 <ul>
+  <li><strong>name: </strong>the name to display in the catalog</li>
   <li><strong>path</strong>: the logical URL path</li>
   <li><strong>location</strong>: the directory to scan. Must be a path reletive to <strong>${tds.content.root.path}.</strong></li>
   <li><strong>watch</strong>: true or false, if you want to watch for changes in this directory and all subdirectories.</li>

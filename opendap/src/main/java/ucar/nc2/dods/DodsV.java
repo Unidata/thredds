@@ -351,7 +351,7 @@ class DodsV implements Comparable {
 
   public boolean isUnsigned() {
     ucar.nc2.Attribute att = findAttributeIgnoreCase(CDM.UNSIGNED);
-    return (att == null) || att.getStringValue().equalsIgnoreCase("false");
+    return (att == null) || att.getStringValue().equalsIgnoreCase("true");
   }
 
   public ucar.nc2.Attribute findAttributeIgnoreCase(String name) {
