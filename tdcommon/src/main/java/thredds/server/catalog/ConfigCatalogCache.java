@@ -30,20 +30,16 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.core;
+package thredds.server.catalog;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
-import thredds.server.catalog.CatalogReader;
-import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
-import thredds.server.config.TdsContext;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
@@ -67,8 +63,8 @@ public class ConfigCatalogCache implements CatalogReader {
   static private final Logger logger = LoggerFactory.getLogger(ConfigCatalogCache.class);
   static private final String ERROR = "*** ERROR ";
 
-  @Autowired
-  private TdsContext tdsContext;  // only needed for rootPath
+  //@Autowired
+  //private TdsContext tdsContext;  // only needed for rootPath
 
   private String rootPath;
   private Cache<String, ConfigCatalog> cache;
@@ -85,7 +81,7 @@ public class ConfigCatalogCache implements CatalogReader {
   }
 
   public void init(String rootPath, int maxSize) {
-    this.rootPath = rootPath == null ? tdsContext.getContentRootPathProperty() +"thredds/" : rootPath;
+    this.rootPath = rootPath;
     this.cache = CacheBuilder.newBuilder()
             .maximumSize(maxSize)
             .recordStats()

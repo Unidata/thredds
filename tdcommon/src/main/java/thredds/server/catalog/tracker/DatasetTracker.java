@@ -15,11 +15,23 @@ import java.io.IOException;
  */
 public interface DatasetTracker extends AutoCloseable {
   boolean init(String dirPath, long maxDatasets) throws IOException;
+  boolean exists(); // detect if database exists
+  boolean reinit(); // throw out all and start again
+
 
   boolean trackDataset(Dataset ds, Callback callback);
+
   String findResourceControl(String path);
   String findNcml(String path);
-  DatasetExt findCatalogExt(String path);
+  DatasetExt findDatasetExt(String path);
+
+  boolean trackDataRoot(DataRootExt ds);
+  DatasetExt findDataRootExt(String path);  // LOOK Needed ?
+  Iterable<DataRootExt> getDataRoots();
+
+  boolean trackCatalog(CatalogExt ds);
+  Iterable<CatalogExt> getCatalogs();
+
   void close();
 
   interface Callback {

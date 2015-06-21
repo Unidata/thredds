@@ -155,7 +155,7 @@ public class TestEsgCats {
 
     long start = System.nanoTime();
 
-    DataRootPathMatcher<DataRoot> dataRootPathMatcher = new DataRootPathMatcher<>();
+    DataRootPathMatcher dataRootPathMatcher = new DataRootPathMatcher();
     DatasetTracker tracker = new DatasetTrackerMapDB();
     // tracker.init("C:\\dev\\github\\thredds50\\tds\\src\\test\\content\\thredds\\cache\\catalog", 1000 * 1000);
     tracker.init("C:/temp/mapDBtest", 1000 * 1000);

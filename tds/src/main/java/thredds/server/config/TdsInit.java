@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.core.AllowedServices;
-import thredds.core.ConfigCatalogCache;
+import thredds.server.catalog.ConfigCatalogCache;
 import thredds.core.ConfigCatalogInitialization;
 import thredds.core.DatasetManager;
 import thredds.featurecollection.CollectionUpdater;
@@ -118,7 +118,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
           readState();
           readThreddsConfig();
           boolean useEsgfMode = ThreddsConfig.getBoolean("ESGF.allow", false);
-          configCatalogInitializer.init(useEsgfMode, (PreferencesExt) mainPrefs.node("configCatalog"));
+          configCatalogInitializer.init(ConfigCatalogInitialization.ReadMode.check, (PreferencesExt) mainPrefs.node("configCatalog"));
         }
       }
     }
@@ -325,7 +325,8 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
     // Config Cat Cache
     max = ThreddsConfig.getInt("Catalog.cacheCatalogs", 100);
-    ccc.init(null, max);
+    String rootPath = tdsContext.getContentRootPathProperty() +"thredds/";
+    ccc.init(rootPath, max);
 
     // Config Dataset Tracker
     String trackerDir = ThreddsConfig.get("ESGF.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/catalog/").getPath());

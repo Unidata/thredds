@@ -60,7 +60,7 @@ public class FeatureCollectionRef extends CatalogRef {
                               thredds.featurecollection.FeatureCollectionConfig config) {
     super(parent, name, xlink, flds, accessBuilders, datasetBuilders);
     this.config = config;
-    this.config.spec = DataRootAlias.translateAlias(this.config.spec); // <collection spec="${cdmUnitTest}/ncss/CONUS_80km_nc/GFS_CONUS_80km_#yyyyMMdd_HHmm#.nc$" />
+    this.config.spec = AliasTranslator.translateAlias(this.config.spec); // <collection spec="${cdmUnitTest}/ncss/CONUS_80km_nc/GFS_CONUS_80km_#yyyyMMdd_HHmm#.nc$" />
 
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, null);
     topDirectoryLocation = specp.getRootDir();

@@ -63,7 +63,7 @@ public class TestDatasetScan {
 
   @Before
   public void setup() {
-    DataRootAlias.addAlias("${cdmUnitTest}", TestDir.cdmUnitTestDir);
+    AliasTranslator.addAlias("${cdmUnitTest}", TestDir.cdmUnitTestDir);
   }
 
   @Test

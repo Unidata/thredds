@@ -73,8 +73,8 @@ public class TestDatasetScanFilter {
     assertTrue( tmpTestDataDir.canRead());
     assertTrue( tmpTestDataDir.canWrite());
 
-    DataRootAlias.addAlias("${tmpDir}", tmpTestDataDir.getPath());
-    DataRootAlias.addAlias("${cdmUnitTest}", TestDir.cdmUnitTestDir);
+    AliasTranslator.addAlias("${tmpDir}", tmpTestDataDir.getPath());
+    AliasTranslator.addAlias("${cdmUnitTest}", TestDir.cdmUnitTestDir);
 
     File tmpTestDir = TestFileDirUtils.addDirectory(tmpTestDataDir, "testDatafilesInDateTimeNestedDirs");
     assertNotNull(tmpTestDir);

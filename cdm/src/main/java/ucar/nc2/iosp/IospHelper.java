@@ -645,6 +645,9 @@ public class IospHelper {
 
     } else if (dataType == DataType.DOUBLE) {
       arr = new double[size];
+
+   } else if (dataType == DataType.STRING) {
+      arr = new String[size];
     }
 
     return arr;

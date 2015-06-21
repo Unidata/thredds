@@ -4,7 +4,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <link rel="stylesheet" href="../tds.css" type="text/css">
 
-  <title>threddsConfig.xml</title></head>
+  <title>threddsConfig.xml</title>
+</head>
 <body>
 <h1>TDS Configuration file</h1>
 
@@ -632,10 +633,19 @@ sum of the maxFiles does not exceed your OS maximum. For better performance, mak
   &lt;cacheCatalogs&gt;100&lt;/cacheCatalogs&gt;
 &lt;/Catalog&gt;</pre>
 <h3><a name="ESGFmode" id="CatalogCaching2">ESGF mode</a></h3>
-<p>ESG/ESGF nodes have special requirements to deal with large numbers of catalogs and datasets. Certain datasets have metadata that need to be quickly accessible. By default, this information is kept in memory. When the number of datasets is very large, this leads to excessive memory use. To solve this problem, we use an off-heap, persistent key-value store. To use ESGF mode, add the following element to <strong>threddsConfig.xml:</strong></p>
+<p>ESG/ESGF nodes have special requirements to deal with large numbers of catalogs and datasets. Certain datasets have metadata that need to be quickly accessible. By default, this information is kept in memory. When the number of catalogs and datasets are very large, this leads to excessive memory use. To solve this problem, we use an off-heap, persistent key-value store. With many catalogs, </p>
+<p>To use ESGF mode and manually trigger  catalogs reading, add the following element to <strong>threddsConfig.xml:</strong></p>
 <pre>
 &lt;ESGF&gt;
   &lt;allow&gt;true&lt;/allow&gt;
+  &lt;reread&gt;trigger&lt;/store&gt;
+
+&lt;/ESGF&gt;</pre>
+<p>All options are:</p>
+<pre>
+&lt;ESGF&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
+  &lt;reread&gt;always&lt;/store&gt;
   &lt;store&gt;MemDB&lt;/store&gt;
   &lt;dir&gt;/tomcat_home/content/thredds/cache/catalog/&lt;/dir&gt;
   &lt;maxDatasets&gt;10000&lt;/maxDatasets&gt;
@@ -643,6 +653,13 @@ sum of the maxFiles does not exceed your OS maximum. For better performance, mak
 <p>where:</p>
 <ul>
   <li><strong>allow</strong>: turns ESGF mode option on or off. Default is off.</li>
+  <li><strong>reread</strong>: 
+    <ul>
+      <li><strong>always</strong>: on  startup, all catalogs are reread. (default). <em>safest, use if there are a small number of catalogs.</em></li>
+      <li><strong>check</strong>: on  startup,  existing catalogs that have changed will be  reread. <em>new catalogs will not necessarily be discovered until triggered</em>. <strong>(is that true?)</strong></li>
+      <li><strong>trigger</strong>: after initial read, catalogs will only be read again if user explicitly triggers it. <em>fastest startup if catalogs rarely change.</em></li>
+    </ul>
+  </li>
   <li><strong>store</strong>: Valid values are <strong>MemDB</strong> or <strong>ChronicleDB</strong>. Default is MemDB.</li>
   <li><strong>dir</strong>: The location where the key-value database is written to disk. Default is <strong>${tds.content.root.path}/thredds/cache/catalog/</strong>. We recommend that you leave the default and use a symbolic link to move it if needed.</li>
   <li><strong>maxDatasets</strong>: ChronicleDB needs to know the maximum number of datasets, MemDB does not. The size of the key/value data store on disk is approximately 200 bytes * maxDatasets.</li>

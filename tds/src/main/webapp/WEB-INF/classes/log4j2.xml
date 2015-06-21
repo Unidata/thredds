@@ -87,6 +87,10 @@
       <appender-ref ref="catalogInit"/>
     </logger>
 
+    <logger name="thredds.server.catalog.DataRootPathMatcher.catalogInit" level="info" additivity="false">
+      <appender-ref ref="catalogInit"/>
+    </logger>
+
     <logger name="thredds.server.config.TdsContext.catalogInit" level="info" additivity="false">
       <appender-ref ref="catalogInit"/>
     </logger>

@@ -36,8 +36,7 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
-import thredds.server.catalog.ConfigCatalog;
-import thredds.server.catalog.DataRootAlias;
+import thredds.server.catalog.AliasTranslator;
 import thredds.server.catalog.DatasetScanConfig;
 import ucar.unidata.util.StringUtil2;
 
@@ -56,35 +55,39 @@ public class DatasetScanConfigBuilder {
   Formatter errlog;
   boolean fatalError;
 
-  DatasetScanConfigBuilder(Formatter errlog) {
+  public DatasetScanConfigBuilder(Formatter errlog) {
     this.errlog = errlog;
   }
 
-  /*
-    <xsd:element name="datasetScan" substitutionGroup="dataset">
-    <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension base="DatasetType">
-          <xsd:sequence>
-            <xsd:element ref="filter" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="namer" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="sort" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="addLatest" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="addProxies" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="addDatasetSize" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="addTimeCoverage" minOccurs="0" maxOccurs="1"/>
-          </xsd:sequence>
+  public boolean hasFatalError() {
+    return fatalError;
+  }
 
-          <xsd:attribute name="path" type="xsd:string" use="required"/>
-          <xsd:attribute name="location" type="xsd:string"/>
-          <xsd:attribute name="addLatest" type="xsd:boolean"/>
-          <xsd:attribute name="filter" type="xsd:string"/> <!-- deprecated : use filter element -->
-        </xsd:extension>
-      </xsd:complexContent>
-    </xsd:complexType>
-  </xsd:element>
-   */
-  protected DatasetScanConfig readDatasetScanConfig(Element dsElem) {
+  /*
+      <xsd:element name="datasetScan" substitutionGroup="dataset">
+      <xsd:complexType>
+        <xsd:complexContent>
+          <xsd:extension base="DatasetType">
+            <xsd:sequence>
+              <xsd:element ref="filter" minOccurs="0" maxOccurs="1"/>
+              <xsd:element ref="namer" minOccurs="0" maxOccurs="1"/>
+              <xsd:element ref="sort" minOccurs="0" maxOccurs="1"/>
+              <xsd:element ref="addLatest" minOccurs="0" maxOccurs="1"/>
+              <xsd:element ref="addProxies" minOccurs="0" maxOccurs="1"/>
+              <xsd:element name="addDatasetSize" minOccurs="0" maxOccurs="1"/>
+              <xsd:element ref="addTimeCoverage" minOccurs="0" maxOccurs="1"/>
+            </xsd:sequence>
+
+            <xsd:attribute name="path" type="xsd:string" use="required"/>
+            <xsd:attribute name="location" type="xsd:string"/>
+            <xsd:attribute name="addLatest" type="xsd:boolean"/>
+            <xsd:attribute name="filter" type="xsd:string"/> <!-- deprecated : use filter element -->
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+    </xsd:element>
+     */
+  public DatasetScanConfig readDatasetScanConfig(Element dsElem) {
     DatasetScanConfig result = new DatasetScanConfig();
 
     result.name = dsElem.getAttributeValue("name");
@@ -99,7 +102,7 @@ public class DatasetScanConfigBuilder {
       errlog.format("ERROR: must specify directory root in location attribute.%n");
       fatalError = true;
     } else {
-      result.scanDir = DataRootAlias.translateAlias(scanDir);
+      result.scanDir = AliasTranslator.translateAlias(scanDir);
       File scanFile = new File(result.scanDir);
       if (!scanFile.exists()) {
         errlog.format("ERROR: directory %s does not exist%n", result.scanDir);

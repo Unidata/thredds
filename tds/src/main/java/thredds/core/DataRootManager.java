@@ -40,13 +40,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
+import thredds.server.catalog.tracker.DataRootExt;
 import thredds.server.config.TdsContext;
 
-import thredds.util.*;
 import thredds.util.filesource.FileSource;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.*;
 
@@ -63,8 +62,6 @@ import java.util.*;
  */
 @Component("DataRootManager")
 public class DataRootManager implements InitializingBean {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootManager.class);
-  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootManager.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   static public final boolean debug = true;
@@ -79,7 +76,7 @@ public class DataRootManager implements InitializingBean {
   private TdsContext tdsContext;
 
   @Autowired
-  private DataRootPathMatcher<DataRoot> dataRootPathMatcher;
+  private DataRootPathMatcher dataRootPathMatcher;
 
   @Autowired
   private DebugCommands debugCommands;
@@ -91,7 +88,7 @@ public class DataRootManager implements InitializingBean {
   @Resource(name = "dataRootLocationAliasExpanders")
   public void setDataRootLocationAliasExpanders(Map<String, String> aliases) {
     for (Map.Entry<String, String> entry : aliases.entrySet())
-      DataRootAlias.addAlias("${" + entry.getKey() + "}", entry.getValue());
+      AliasTranslator.addAlias("${" + entry.getKey() + "}", entry.getValue());
   }
 
   @Override
@@ -100,11 +97,11 @@ public class DataRootManager implements InitializingBean {
     if (fileSource != null) {
       File file = fileSource.getFile("");
       if (file != null)
-        DataRootAlias.addAlias("content", StringUtils.cleanPath(file.getPath())); // LOOK
+        AliasTranslator.addAlias("content", StringUtils.cleanPath(file.getPath())); // LOOK
     }
 
     makeDebugActions();
-    startupLog.info("DataRootManager:" + DataRootAlias.size() +" aliases set ");
+    startupLog.info("DataRootManager:" + AliasTranslator.size() +" aliases set ");
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,13 +113,13 @@ public class DataRootManager implements InitializingBean {
     public DataRoot dataRoot;  // this is the directory that should be substituted for the rootPath
   }
 
-  /**
+  /*
    * Find the location match for a dataRoot.
    * Aliasing has been done.
    *
    * @param path the dataRoot path name
    * @return best DataRoot location or null if no match.
-   */
+   *
   public String findDataRootLocation(String path) {
     if ((path.length() > 0) && (path.charAt(0) == '/'))
       path = path.substring(1);
@@ -137,18 +134,14 @@ public class DataRootManager implements InitializingBean {
    *
    * @param req the request
    * @return the DataRootMatch, or null if not found
-   */
+   *
   private DataRootMatch findDataRootMatch(HttpServletRequest req) {
     String spath = TdsPathUtils.extractPath(req, null);
     return findDataRootMatch(spath);
-  }
+  } */
 
   public DataRootMatch findDataRootMatch(String spath) {
-    if (spath == null)
-      return null;
-    if (spath.startsWith("/"))
-      spath = spath.substring(1);
-    DataRoot dataRoot = dataRootPathMatcher.findLongestMatch(spath);
+    DataRoot dataRoot = findDataRoot(spath);
     if (dataRoot == null)
       return null;
 
@@ -167,7 +160,7 @@ public class DataRootManager implements InitializingBean {
       return null;
     if (spath.startsWith("/"))
       spath = spath.substring(1);
-    return dataRootPathMatcher.findLongestMatch(spath);
+    return dataRootPathMatcher.findDataRoot(spath);
   }
 
   /**
@@ -192,17 +185,19 @@ public class DataRootManager implements InitializingBean {
   // debugging only !!
 
   public void showRoots(Formatter f) {
-    for (Map.Entry<String, DataRoot> entry : dataRootPathMatcher.getValues()) {
+    for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
       f.format(" %s%n", entry.getValue());
     }
   }
 
   public List<FeatureCollectionRef> getFeatureCollections() {
     List<FeatureCollectionRef> result = new ArrayList<>();
-    for (Map.Entry<String, DataRoot> entry : dataRootPathMatcher.getValues()) {
-      DataRoot droot = entry.getValue();
-      if (droot.getFeatureCollection() != null)
-        result.add(droot.getFeatureCollection());
+    for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
+      DataRootExt drootExt = entry.getValue();
+      if (drootExt.getType() != DataRoot.Type.featureCollection) {
+        DataRoot dataRoot = dataRootPathMatcher.findDataRoot(drootExt);
+        result.add(dataRoot.getFeatureCollection());
+      }
     }
     return result;
   }
@@ -225,12 +220,11 @@ public class DataRootManager implements InitializingBean {
     act = new DebugCommands.Action("showDataRoots", "Show data roots") {
       public void doAction(DebugCommands.Event e) {
         synchronized (DataRootManager.this) {
-          for (Map.Entry<String, DataRoot> entry : dataRootPathMatcher.getValues()) {     // LOOK sort
-            DataRoot ds = entry.getValue();
+          for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {     // LOOK sort
+            DataRootExt ds = entry.getValue();
             e.pw.print(" <b>" + ds.getPath() + "</b>");
             String url = DataRootManager.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.getPath() + "/";
-            String type = (ds.getDatasetScan() == null) ? "root" : "scan";
-            e.pw.println(" for " + type + " directory= <a href='" + url + "'>" + ds.getDirLocation() + "</a> ");
+            e.pw.println(" for " + ds.getType() + " directory= <a href='" + url + "'>" + ds.getDirLocation() + "</a> ");
           }
         }
       }

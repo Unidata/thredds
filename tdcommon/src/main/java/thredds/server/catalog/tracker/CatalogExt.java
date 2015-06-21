@@ -16,22 +16,23 @@ public class CatalogExt implements Externalizable {
   static public int total_count = 0;
   static public long total_nbytes = 0;
 
-  private String path;
-  private long id;
+  private String catRelLocation;
 
   public CatalogExt() {
   }
 
-  public CatalogExt(String path, long id) {
-    this.path = path;
-    this.id = id;
+  public CatalogExt(String catRelLocation) {
+    this.catRelLocation = catRelLocation;
+  }
+
+  public String getCatRelLocation() {
+    return catRelLocation;
   }
 
   @Override
   public void writeExternal(ObjectOutput out) throws IOException {
     ConfigCatalogExtProto.Catalog.Builder builder = ConfigCatalogExtProto.Catalog.newBuilder();
-    builder.setPath(path);
-    builder.setId(id);
+    builder.setCatLocation(catRelLocation);
 
     ConfigCatalogExtProto.Catalog index = builder.build();
     byte[] b = index.toByteArray();
@@ -55,7 +56,6 @@ public class CatalogExt implements Externalizable {
       throw new RuntimeException("barf with read size=" + len + " in.available=" + avail);
 
     ConfigCatalogExtProto.Catalog catp = ConfigCatalogExtProto.Catalog.parseFrom(b);
-    this.path = catp.getPath();
-    this.id = catp.getId();
+    this.catRelLocation = catp.getCatLocation();
   }
 }

@@ -7,6 +7,7 @@ import thredds.client.catalog.Catalog;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.catalog.CatalogScan;
+import thredds.server.catalog.ConfigCatalogCache;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.config.TdsContext;
 

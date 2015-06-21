@@ -8,33 +8,127 @@ public final class ConfigCatalogExtProto {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  /**
+   * Protobuf enum {@code DataRootType}
+   *
+   * <pre>
+   * same as DataRoot.Type
+   * </pre>
+   */
+  public enum DataRootType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>datasetRoot = 1;</code>
+     */
+    datasetRoot(0, 1),
+    /**
+     * <code>datasetScan = 2;</code>
+     */
+    datasetScan(1, 2),
+    /**
+     * <code>catalogScan = 3;</code>
+     */
+    catalogScan(2, 3),
+    /**
+     * <code>featureCollection = 4;</code>
+     */
+    featureCollection(3, 4),
+    ;
+
+    /**
+     * <code>datasetRoot = 1;</code>
+     */
+    public static final int datasetRoot_VALUE = 1;
+    /**
+     * <code>datasetScan = 2;</code>
+     */
+    public static final int datasetScan_VALUE = 2;
+    /**
+     * <code>catalogScan = 3;</code>
+     */
+    public static final int catalogScan_VALUE = 3;
+    /**
+     * <code>featureCollection = 4;</code>
+     */
+    public static final int featureCollection_VALUE = 4;
+
+
+    public final int getNumber() { return value; }
+
+    public static DataRootType valueOf(int value) {
+      switch (value) {
+        case 1: return datasetRoot;
+        case 2: return datasetScan;
+        case 3: return catalogScan;
+        case 4: return featureCollection;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<DataRootType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<DataRootType>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<DataRootType>() {
+            public DataRootType findValueByNumber(int number) {
+              return DataRootType.valueOf(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return thredds.server.catalog.tracker.ConfigCatalogExtProto.getDescriptor().getEnumTypes().get(0);
+    }
+
+    private static final DataRootType[] VALUES = values();
+
+    public static DataRootType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int index;
+    private final int value;
+
+    private DataRootType(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:DataRootType)
+  }
+
   public interface CatalogOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required string path = 1;
+    // required string catLocation = 1;
     /**
-     * <code>required string path = 1;</code>
+     * <code>required string catLocation = 1;</code>
      */
-    boolean hasPath();
+    boolean hasCatLocation();
     /**
-     * <code>required string path = 1;</code>
+     * <code>required string catLocation = 1;</code>
      */
-    java.lang.String getPath();
+    java.lang.String getCatLocation();
     /**
-     * <code>required string path = 1;</code>
+     * <code>required string catLocation = 1;</code>
      */
     com.google.protobuf.ByteString
-        getPathBytes();
-
-    // required uint64 id = 2;
-    /**
-     * <code>required uint64 id = 2;</code>
-     */
-    boolean hasId();
-    /**
-     * <code>required uint64 id = 2;</code>
-     */
-    long getId();
+        getCatLocationBytes();
   }
   /**
    * Protobuf type {@code Catalog}
@@ -89,12 +183,7 @@ public final class ConfigCatalogExtProto {
             }
             case 10: {
               bitField0_ |= 0x00000001;
-              path_ = input.readBytes();
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              id_ = input.readUInt64();
+              catLocation_ = input.readBytes();
               break;
             }
           }
@@ -137,20 +226,20 @@ public final class ConfigCatalogExtProto {
     }
 
     private int bitField0_;
-    // required string path = 1;
-    public static final int PATH_FIELD_NUMBER = 1;
-    private java.lang.Object path_;
+    // required string catLocation = 1;
+    public static final int CATLOCATION_FIELD_NUMBER = 1;
+    private java.lang.Object catLocation_;
     /**
-     * <code>required string path = 1;</code>
+     * <code>required string catLocation = 1;</code>
      */
-    public boolean hasPath() {
+    public boolean hasCatLocation() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required string path = 1;</code>
+     * <code>required string catLocation = 1;</code>
      */
-    public java.lang.String getPath() {
-      java.lang.Object ref = path_;
+    public java.lang.String getCatLocation() {
+      java.lang.Object ref = catLocation_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -158,58 +247,37 @@ public final class ConfigCatalogExtProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          path_ = s;
+          catLocation_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>required string path = 1;</code>
+     * <code>required string catLocation = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getPathBytes() {
-      java.lang.Object ref = path_;
+        getCatLocationBytes() {
+      java.lang.Object ref = catLocation_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        path_ = b;
+        catLocation_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    // required uint64 id = 2;
-    public static final int ID_FIELD_NUMBER = 2;
-    private long id_;
-    /**
-     * <code>required uint64 id = 2;</code>
-     */
-    public boolean hasId() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required uint64 id = 2;</code>
-     */
-    public long getId() {
-      return id_;
-    }
-
     private void initFields() {
-      path_ = "";
-      id_ = 0L;
+      catLocation_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasPath()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasId()) {
+      if (!hasCatLocation()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -221,10 +289,7 @@ public final class ConfigCatalogExtProto {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getPathBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeUInt64(2, id_);
+        output.writeBytes(1, getCatLocationBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -237,11 +302,7 @@ public final class ConfigCatalogExtProto {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getPathBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(2, id_);
+          .computeBytesSize(1, getCatLocationBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -359,10 +420,8 @@ public final class ConfigCatalogExtProto {
 
       public Builder clear() {
         super.clear();
-        path_ = "";
+        catLocation_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -394,11 +453,7 @@ public final class ConfigCatalogExtProto {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.path_ = path_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.id_ = id_;
+        result.catLocation_ = catLocation_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -415,24 +470,17 @@ public final class ConfigCatalogExtProto {
 
       public Builder mergeFrom(thredds.server.catalog.tracker.ConfigCatalogExtProto.Catalog other) {
         if (other == thredds.server.catalog.tracker.ConfigCatalogExtProto.Catalog.getDefaultInstance()) return this;
-        if (other.hasPath()) {
+        if (other.hasCatLocation()) {
           bitField0_ |= 0x00000001;
-          path_ = other.path_;
+          catLocation_ = other.catLocation_;
           onChanged();
-        }
-        if (other.hasId()) {
-          setId(other.getId());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
-        if (!hasPath()) {
-          
-          return false;
-        }
-        if (!hasId()) {
+        if (!hasCatLocation()) {
           
           return false;
         }
@@ -458,109 +506,76 @@ public final class ConfigCatalogExtProto {
       }
       private int bitField0_;
 
-      // required string path = 1;
-      private java.lang.Object path_ = "";
+      // required string catLocation = 1;
+      private java.lang.Object catLocation_ = "";
       /**
-       * <code>required string path = 1;</code>
+       * <code>required string catLocation = 1;</code>
        */
-      public boolean hasPath() {
+      public boolean hasCatLocation() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required string path = 1;</code>
+       * <code>required string catLocation = 1;</code>
        */
-      public java.lang.String getPath() {
-        java.lang.Object ref = path_;
+      public java.lang.String getCatLocation() {
+        java.lang.Object ref = catLocation_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          path_ = s;
+          catLocation_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>required string path = 1;</code>
+       * <code>required string catLocation = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getPathBytes() {
-        java.lang.Object ref = path_;
+          getCatLocationBytes() {
+        java.lang.Object ref = catLocation_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          path_ = b;
+          catLocation_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>required string path = 1;</code>
+       * <code>required string catLocation = 1;</code>
        */
-      public Builder setPath(
+      public Builder setCatLocation(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        path_ = value;
+        catLocation_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string path = 1;</code>
+       * <code>required string catLocation = 1;</code>
        */
-      public Builder clearPath() {
+      public Builder clearCatLocation() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        path_ = getDefaultInstance().getPath();
+        catLocation_ = getDefaultInstance().getCatLocation();
         onChanged();
         return this;
       }
       /**
-       * <code>required string path = 1;</code>
+       * <code>required string catLocation = 1;</code>
        */
-      public Builder setPathBytes(
+      public Builder setCatLocationBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        path_ = value;
-        onChanged();
-        return this;
-      }
-
-      // required uint64 id = 2;
-      private long id_ ;
-      /**
-       * <code>required uint64 id = 2;</code>
-       */
-      public boolean hasId() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required uint64 id = 2;</code>
-       */
-      public long getId() {
-        return id_;
-      }
-      /**
-       * <code>required uint64 id = 2;</code>
-       */
-      public Builder setId(long value) {
-        bitField0_ |= 0x00000002;
-        id_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required uint64 id = 2;</code>
-       */
-      public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        id_ = 0L;
+        catLocation_ = value;
         onChanged();
         return this;
       }
@@ -579,75 +594,72 @@ public final class ConfigCatalogExtProto {
   public interface DataRootOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required uint64 catId = 1;
+    // required string urlPath = 1;
     /**
-     * <code>required uint64 catId = 1;</code>
+     * <code>required string urlPath = 1;</code>
      */
-    boolean hasCatId();
+    boolean hasUrlPath();
     /**
-     * <code>required uint64 catId = 1;</code>
+     * <code>required string urlPath = 1;</code>
      */
-    long getCatId();
-
-    // required string path = 2;
+    java.lang.String getUrlPath();
     /**
-     * <code>required string path = 2;</code>
-     */
-    boolean hasPath();
-    /**
-     * <code>required string path = 2;</code>
-     */
-    java.lang.String getPath();
-    /**
-     * <code>required string path = 2;</code>
+     * <code>required string urlPath = 1;</code>
      */
     com.google.protobuf.ByteString
-        getPathBytes();
+        getUrlPathBytes();
 
-    // required string dirLocation = 3;
+    // required string dirLocation = 2;
     /**
-     * <code>required string dirLocation = 3;</code>
+     * <code>required string dirLocation = 2;</code>
      */
     boolean hasDirLocation();
     /**
-     * <code>required string dirLocation = 3;</code>
+     * <code>required string dirLocation = 2;</code>
      */
     java.lang.String getDirLocation();
     /**
-     * <code>required string dirLocation = 3;</code>
+     * <code>required string dirLocation = 2;</code>
      */
     com.google.protobuf.ByteString
         getDirLocationBytes();
 
-    // optional string datasetScan = 4;
+    // required .DataRootType type = 3;
     /**
-     * <code>optional string datasetScan = 4;</code>
+     * <code>required .DataRootType type = 3;</code>
      */
-    boolean hasDatasetScan();
+    boolean hasType();
     /**
-     * <code>optional string datasetScan = 4;</code>
+     * <code>required .DataRootType type = 3;</code>
      */
-    java.lang.String getDatasetScan();
-    /**
-     * <code>optional string datasetScan = 4;</code>
-     */
-    com.google.protobuf.ByteString
-        getDatasetScanBytes();
+    thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType getType();
 
-    // optional string fcConfig = 5;
+    // optional string catLocation = 4;
     /**
-     * <code>optional string fcConfig = 5;</code>
+     * <code>optional string catLocation = 4;</code>
+     *
+     * <pre>
+     * omit for simple dataset root
+     * </pre>
      */
-    boolean hasFcConfig();
+    boolean hasCatLocation();
     /**
-     * <code>optional string fcConfig = 5;</code>
+     * <code>optional string catLocation = 4;</code>
+     *
+     * <pre>
+     * omit for simple dataset root
+     * </pre>
      */
-    java.lang.String getFcConfig();
+    java.lang.String getCatLocation();
     /**
-     * <code>optional string fcConfig = 5;</code>
+     * <code>optional string catLocation = 4;</code>
+     *
+     * <pre>
+     * omit for simple dataset root
+     * </pre>
      */
     com.google.protobuf.ByteString
-        getFcConfigBytes();
+        getCatLocationBytes();
   }
   /**
    * Protobuf type {@code DataRoot}
@@ -700,29 +712,30 @@ public final class ConfigCatalogExtProto {
               }
               break;
             }
-            case 8: {
+            case 10: {
               bitField0_ |= 0x00000001;
-              catId_ = input.readUInt64();
+              urlPath_ = input.readBytes();
               break;
             }
             case 18: {
               bitField0_ |= 0x00000002;
-              path_ = input.readBytes();
+              dirLocation_ = input.readBytes();
               break;
             }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              dirLocation_ = input.readBytes();
+            case 24: {
+              int rawValue = input.readEnum();
+              thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType value = thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(3, rawValue);
+              } else {
+                bitField0_ |= 0x00000004;
+                type_ = value;
+              }
               break;
             }
             case 34: {
               bitField0_ |= 0x00000008;
-              datasetScan_ = input.readBytes();
-              break;
-            }
-            case 42: {
-              bitField0_ |= 0x00000010;
-              fcConfig_ = input.readBytes();
+              catLocation_ = input.readBytes();
               break;
             }
           }
@@ -765,36 +778,20 @@ public final class ConfigCatalogExtProto {
     }
 
     private int bitField0_;
-    // required uint64 catId = 1;
-    public static final int CATID_FIELD_NUMBER = 1;
-    private long catId_;
+    // required string urlPath = 1;
+    public static final int URLPATH_FIELD_NUMBER = 1;
+    private java.lang.Object urlPath_;
     /**
-     * <code>required uint64 catId = 1;</code>
+     * <code>required string urlPath = 1;</code>
      */
-    public boolean hasCatId() {
+    public boolean hasUrlPath() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required uint64 catId = 1;</code>
+     * <code>required string urlPath = 1;</code>
      */
-    public long getCatId() {
-      return catId_;
-    }
-
-    // required string path = 2;
-    public static final int PATH_FIELD_NUMBER = 2;
-    private java.lang.Object path_;
-    /**
-     * <code>required string path = 2;</code>
-     */
-    public boolean hasPath() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required string path = 2;</code>
-     */
-    public java.lang.String getPath() {
-      java.lang.Object ref = path_;
+    public java.lang.String getUrlPath() {
+      java.lang.Object ref = urlPath_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -802,39 +799,39 @@ public final class ConfigCatalogExtProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          path_ = s;
+          urlPath_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>required string path = 2;</code>
+     * <code>required string urlPath = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getPathBytes() {
-      java.lang.Object ref = path_;
+        getUrlPathBytes() {
+      java.lang.Object ref = urlPath_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        path_ = b;
+        urlPath_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    // required string dirLocation = 3;
-    public static final int DIRLOCATION_FIELD_NUMBER = 3;
+    // required string dirLocation = 2;
+    public static final int DIRLOCATION_FIELD_NUMBER = 2;
     private java.lang.Object dirLocation_;
     /**
-     * <code>required string dirLocation = 3;</code>
+     * <code>required string dirLocation = 2;</code>
      */
     public boolean hasDirLocation() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required string dirLocation = 3;</code>
+     * <code>required string dirLocation = 2;</code>
      */
     public java.lang.String getDirLocation() {
       java.lang.Object ref = dirLocation_;
@@ -851,7 +848,7 @@ public final class ConfigCatalogExtProto {
       }
     }
     /**
-     * <code>required string dirLocation = 3;</code>
+     * <code>required string dirLocation = 2;</code>
      */
     public com.google.protobuf.ByteString
         getDirLocationBytes() {
@@ -867,20 +864,44 @@ public final class ConfigCatalogExtProto {
       }
     }
 
-    // optional string datasetScan = 4;
-    public static final int DATASETSCAN_FIELD_NUMBER = 4;
-    private java.lang.Object datasetScan_;
+    // required .DataRootType type = 3;
+    public static final int TYPE_FIELD_NUMBER = 3;
+    private thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType type_;
     /**
-     * <code>optional string datasetScan = 4;</code>
+     * <code>required .DataRootType type = 3;</code>
      */
-    public boolean hasDatasetScan() {
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required .DataRootType type = 3;</code>
+     */
+    public thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType getType() {
+      return type_;
+    }
+
+    // optional string catLocation = 4;
+    public static final int CATLOCATION_FIELD_NUMBER = 4;
+    private java.lang.Object catLocation_;
+    /**
+     * <code>optional string catLocation = 4;</code>
+     *
+     * <pre>
+     * omit for simple dataset root
+     * </pre>
+     */
+    public boolean hasCatLocation() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional string datasetScan = 4;</code>
+     * <code>optional string catLocation = 4;</code>
+     *
+     * <pre>
+     * omit for simple dataset root
+     * </pre>
      */
-    public java.lang.String getDatasetScan() {
-      java.lang.Object ref = datasetScan_;
+    public java.lang.String getCatLocation() {
+      java.lang.Object ref = catLocation_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -888,65 +909,26 @@ public final class ConfigCatalogExtProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          datasetScan_ = s;
+          catLocation_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string datasetScan = 4;</code>
+     * <code>optional string catLocation = 4;</code>
+     *
+     * <pre>
+     * omit for simple dataset root
+     * </pre>
      */
     public com.google.protobuf.ByteString
-        getDatasetScanBytes() {
-      java.lang.Object ref = datasetScan_;
+        getCatLocationBytes() {
+      java.lang.Object ref = catLocation_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        datasetScan_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional string fcConfig = 5;
-    public static final int FCCONFIG_FIELD_NUMBER = 5;
-    private java.lang.Object fcConfig_;
-    /**
-     * <code>optional string fcConfig = 5;</code>
-     */
-    public boolean hasFcConfig() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>optional string fcConfig = 5;</code>
-     */
-    public java.lang.String getFcConfig() {
-      java.lang.Object ref = fcConfig_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          fcConfig_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string fcConfig = 5;</code>
-     */
-    public com.google.protobuf.ByteString
-        getFcConfigBytes() {
-      java.lang.Object ref = fcConfig_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        fcConfig_ = b;
+        catLocation_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -954,26 +936,25 @@ public final class ConfigCatalogExtProto {
     }
 
     private void initFields() {
-      catId_ = 0L;
-      path_ = "";
+      urlPath_ = "";
       dirLocation_ = "";
-      datasetScan_ = "";
-      fcConfig_ = "";
+      type_ = thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType.datasetRoot;
+      catLocation_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasCatId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasPath()) {
+      if (!hasUrlPath()) {
         memoizedIsInitialized = 0;
         return false;
       }
       if (!hasDirLocation()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasType()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -985,19 +966,16 @@ public final class ConfigCatalogExtProto {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeUInt64(1, catId_);
+        output.writeBytes(1, getUrlPathBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getPathBytes());
+        output.writeBytes(2, getDirLocationBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getDirLocationBytes());
+        output.writeEnum(3, type_.getNumber());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getDatasetScanBytes());
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getFcConfigBytes());
+        output.writeBytes(4, getCatLocationBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -1010,23 +988,19 @@ public final class ConfigCatalogExtProto {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(1, catId_);
+          .computeBytesSize(1, getUrlPathBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getPathBytes());
+          .computeBytesSize(2, getDirLocationBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getDirLocationBytes());
+          .computeEnumSize(3, type_.getNumber());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getDatasetScanBytes());
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getFcConfigBytes());
+          .computeBytesSize(4, getCatLocationBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1144,16 +1118,14 @@ public final class ConfigCatalogExtProto {
 
       public Builder clear() {
         super.clear();
-        catId_ = 0L;
+        urlPath_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        path_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         dirLocation_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        type_ = thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType.datasetRoot;
         bitField0_ = (bitField0_ & ~0x00000004);
-        datasetScan_ = "";
+        catLocation_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
-        fcConfig_ = "";
-        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -1185,23 +1157,19 @@ public final class ConfigCatalogExtProto {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.catId_ = catId_;
+        result.urlPath_ = urlPath_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.path_ = path_;
+        result.dirLocation_ = dirLocation_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.dirLocation_ = dirLocation_;
+        result.type_ = type_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.datasetScan_ = datasetScan_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.fcConfig_ = fcConfig_;
+        result.catLocation_ = catLocation_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1218,27 +1186,22 @@ public final class ConfigCatalogExtProto {
 
       public Builder mergeFrom(thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRoot other) {
         if (other == thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRoot.getDefaultInstance()) return this;
-        if (other.hasCatId()) {
-          setCatId(other.getCatId());
-        }
-        if (other.hasPath()) {
-          bitField0_ |= 0x00000002;
-          path_ = other.path_;
+        if (other.hasUrlPath()) {
+          bitField0_ |= 0x00000001;
+          urlPath_ = other.urlPath_;
           onChanged();
         }
         if (other.hasDirLocation()) {
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000002;
           dirLocation_ = other.dirLocation_;
           onChanged();
         }
-        if (other.hasDatasetScan()) {
-          bitField0_ |= 0x00000008;
-          datasetScan_ = other.datasetScan_;
-          onChanged();
+        if (other.hasType()) {
+          setType(other.getType());
         }
-        if (other.hasFcConfig()) {
-          bitField0_ |= 0x00000010;
-          fcConfig_ = other.fcConfig_;
+        if (other.hasCatLocation()) {
+          bitField0_ |= 0x00000008;
+          catLocation_ = other.catLocation_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -1246,15 +1209,15 @@ public final class ConfigCatalogExtProto {
       }
 
       public final boolean isInitialized() {
-        if (!hasCatId()) {
-          
-          return false;
-        }
-        if (!hasPath()) {
+        if (!hasUrlPath()) {
           
           return false;
         }
         if (!hasDirLocation()) {
+          
+          return false;
+        }
+        if (!hasType()) {
           
           return false;
         }
@@ -1280,123 +1243,90 @@ public final class ConfigCatalogExtProto {
       }
       private int bitField0_;
 
-      // required uint64 catId = 1;
-      private long catId_ ;
+      // required string urlPath = 1;
+      private java.lang.Object urlPath_ = "";
       /**
-       * <code>required uint64 catId = 1;</code>
+       * <code>required string urlPath = 1;</code>
        */
-      public boolean hasCatId() {
+      public boolean hasUrlPath() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required uint64 catId = 1;</code>
+       * <code>required string urlPath = 1;</code>
        */
-      public long getCatId() {
-        return catId_;
-      }
-      /**
-       * <code>required uint64 catId = 1;</code>
-       */
-      public Builder setCatId(long value) {
-        bitField0_ |= 0x00000001;
-        catId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required uint64 catId = 1;</code>
-       */
-      public Builder clearCatId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        catId_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      // required string path = 2;
-      private java.lang.Object path_ = "";
-      /**
-       * <code>required string path = 2;</code>
-       */
-      public boolean hasPath() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required string path = 2;</code>
-       */
-      public java.lang.String getPath() {
-        java.lang.Object ref = path_;
+      public java.lang.String getUrlPath() {
+        java.lang.Object ref = urlPath_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          path_ = s;
+          urlPath_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>required string path = 2;</code>
+       * <code>required string urlPath = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getPathBytes() {
-        java.lang.Object ref = path_;
+          getUrlPathBytes() {
+        java.lang.Object ref = urlPath_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          path_ = b;
+          urlPath_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>required string path = 2;</code>
+       * <code>required string urlPath = 1;</code>
        */
-      public Builder setPath(
+      public Builder setUrlPath(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
-        path_ = value;
+  bitField0_ |= 0x00000001;
+        urlPath_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string path = 2;</code>
+       * <code>required string urlPath = 1;</code>
        */
-      public Builder clearPath() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        path_ = getDefaultInstance().getPath();
+      public Builder clearUrlPath() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        urlPath_ = getDefaultInstance().getUrlPath();
         onChanged();
         return this;
       }
       /**
-       * <code>required string path = 2;</code>
+       * <code>required string urlPath = 1;</code>
        */
-      public Builder setPathBytes(
+      public Builder setUrlPathBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
-        path_ = value;
+  bitField0_ |= 0x00000001;
+        urlPath_ = value;
         onChanged();
         return this;
       }
 
-      // required string dirLocation = 3;
+      // required string dirLocation = 2;
       private java.lang.Object dirLocation_ = "";
       /**
-       * <code>required string dirLocation = 3;</code>
+       * <code>required string dirLocation = 2;</code>
        */
       public boolean hasDirLocation() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required string dirLocation = 3;</code>
+       * <code>required string dirLocation = 2;</code>
        */
       public java.lang.String getDirLocation() {
         java.lang.Object ref = dirLocation_;
@@ -1410,7 +1340,7 @@ public final class ConfigCatalogExtProto {
         }
       }
       /**
-       * <code>required string dirLocation = 3;</code>
+       * <code>required string dirLocation = 2;</code>
        */
       public com.google.protobuf.ByteString
           getDirLocationBytes() {
@@ -1426,185 +1356,171 @@ public final class ConfigCatalogExtProto {
         }
       }
       /**
-       * <code>required string dirLocation = 3;</code>
+       * <code>required string dirLocation = 2;</code>
        */
       public Builder setDirLocation(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000004;
+  bitField0_ |= 0x00000002;
         dirLocation_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string dirLocation = 3;</code>
+       * <code>required string dirLocation = 2;</code>
        */
       public Builder clearDirLocation() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         dirLocation_ = getDefaultInstance().getDirLocation();
         onChanged();
         return this;
       }
       /**
-       * <code>required string dirLocation = 3;</code>
+       * <code>required string dirLocation = 2;</code>
        */
       public Builder setDirLocationBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000004;
+  bitField0_ |= 0x00000002;
         dirLocation_ = value;
         onChanged();
         return this;
       }
 
-      // optional string datasetScan = 4;
-      private java.lang.Object datasetScan_ = "";
+      // required .DataRootType type = 3;
+      private thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType type_ = thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType.datasetRoot;
       /**
-       * <code>optional string datasetScan = 4;</code>
+       * <code>required .DataRootType type = 3;</code>
        */
-      public boolean hasDatasetScan() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional string datasetScan = 4;</code>
+       * <code>required .DataRootType type = 3;</code>
        */
-      public java.lang.String getDatasetScan() {
-        java.lang.Object ref = datasetScan_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          datasetScan_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType getType() {
+        return type_;
       }
       /**
-       * <code>optional string datasetScan = 4;</code>
+       * <code>required .DataRootType type = 3;</code>
        */
-      public com.google.protobuf.ByteString
-          getDatasetScanBytes() {
-        java.lang.Object ref = datasetScan_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          datasetScan_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string datasetScan = 4;</code>
-       */
-      public Builder setDatasetScan(
-          java.lang.String value) {
+      public Builder setType(thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-        datasetScan_ = value;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000004;
+        type_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string datasetScan = 4;</code>
+       * <code>required .DataRootType type = 3;</code>
        */
-      public Builder clearDatasetScan() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        datasetScan_ = getDefaultInstance().getDatasetScan();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string datasetScan = 4;</code>
-       */
-      public Builder setDatasetScanBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-        datasetScan_ = value;
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        type_ = thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType.datasetRoot;
         onChanged();
         return this;
       }
 
-      // optional string fcConfig = 5;
-      private java.lang.Object fcConfig_ = "";
+      // optional string catLocation = 4;
+      private java.lang.Object catLocation_ = "";
       /**
-       * <code>optional string fcConfig = 5;</code>
+       * <code>optional string catLocation = 4;</code>
+       *
+       * <pre>
+       * omit for simple dataset root
+       * </pre>
        */
-      public boolean hasFcConfig() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+      public boolean hasCatLocation() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional string fcConfig = 5;</code>
+       * <code>optional string catLocation = 4;</code>
+       *
+       * <pre>
+       * omit for simple dataset root
+       * </pre>
        */
-      public java.lang.String getFcConfig() {
-        java.lang.Object ref = fcConfig_;
+      public java.lang.String getCatLocation() {
+        java.lang.Object ref = catLocation_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          fcConfig_ = s;
+          catLocation_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string fcConfig = 5;</code>
+       * <code>optional string catLocation = 4;</code>
+       *
+       * <pre>
+       * omit for simple dataset root
+       * </pre>
        */
       public com.google.protobuf.ByteString
-          getFcConfigBytes() {
-        java.lang.Object ref = fcConfig_;
+          getCatLocationBytes() {
+        java.lang.Object ref = catLocation_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          fcConfig_ = b;
+          catLocation_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string fcConfig = 5;</code>
+       * <code>optional string catLocation = 4;</code>
+       *
+       * <pre>
+       * omit for simple dataset root
+       * </pre>
        */
-      public Builder setFcConfig(
+      public Builder setCatLocation(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
-        fcConfig_ = value;
+  bitField0_ |= 0x00000008;
+        catLocation_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string fcConfig = 5;</code>
+       * <code>optional string catLocation = 4;</code>
+       *
+       * <pre>
+       * omit for simple dataset root
+       * </pre>
        */
-      public Builder clearFcConfig() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        fcConfig_ = getDefaultInstance().getFcConfig();
+      public Builder clearCatLocation() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        catLocation_ = getDefaultInstance().getCatLocation();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string fcConfig = 5;</code>
+       * <code>optional string catLocation = 4;</code>
+       *
+       * <pre>
+       * omit for simple dataset root
+       * </pre>
        */
-      public Builder setFcConfigBytes(
+      public Builder setCatLocationBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
-        fcConfig_ = value;
+  bitField0_ |= 0x00000008;
+        catLocation_ = value;
         onChanged();
         return this;
       }
@@ -1618,6 +1534,1978 @@ public final class ConfigCatalogExtProto {
     }
 
     // @@protoc_insertion_point(class_scope:DataRoot)
+  }
+
+  public interface DatasetOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required uint64 catId = 1;
+    /**
+     * <code>required uint64 catId = 1;</code>
+     *
+     * <pre>
+     * ??
+     * </pre>
+     */
+    boolean hasCatId();
+    /**
+     * <code>required uint64 catId = 1;</code>
+     *
+     * <pre>
+     * ??
+     * </pre>
+     */
+    long getCatId();
+
+    // required string name = 2;
+    /**
+     * <code>required string name = 2;</code>
+     */
+    boolean hasName();
+    /**
+     * <code>required string name = 2;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>required string name = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    // optional string path = 3;
+    /**
+     * <code>optional string path = 3;</code>
+     */
+    boolean hasPath();
+    /**
+     * <code>optional string path = 3;</code>
+     */
+    java.lang.String getPath();
+    /**
+     * <code>optional string path = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getPathBytes();
+
+    // optional string id = 4;
+    /**
+     * <code>optional string id = 4;</code>
+     */
+    boolean hasId();
+    /**
+     * <code>optional string id = 4;</code>
+     */
+    java.lang.String getId();
+    /**
+     * <code>optional string id = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getIdBytes();
+
+    // optional string restrict = 5;
+    /**
+     * <code>optional string restrict = 5;</code>
+     */
+    boolean hasRestrict();
+    /**
+     * <code>optional string restrict = 5;</code>
+     */
+    java.lang.String getRestrict();
+    /**
+     * <code>optional string restrict = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getRestrictBytes();
+
+    // optional string ncml = 6;
+    /**
+     * <code>optional string ncml = 6;</code>
+     */
+    boolean hasNcml();
+    /**
+     * <code>optional string ncml = 6;</code>
+     */
+    java.lang.String getNcml();
+    /**
+     * <code>optional string ncml = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getNcmlBytes();
+
+    // repeated .Access access = 10;
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> 
+        getAccessList();
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    thredds.server.catalog.tracker.ConfigCatalogExtProto.Access getAccess(int index);
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    int getAccessCount();
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> 
+        getAccessOrBuilderList();
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder getAccessOrBuilder(
+        int index);
+
+    // repeated .Property property = 11;
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> 
+        getPropertyList();
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    thredds.server.catalog.tracker.ConfigCatalogExtProto.Property getProperty(int index);
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    int getPropertyCount();
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> 
+        getPropertyOrBuilderList();
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder getPropertyOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code Dataset}
+   */
+  public static final class Dataset extends
+      com.google.protobuf.GeneratedMessage
+      implements DatasetOrBuilder {
+    // Use Dataset.newBuilder() to construct.
+    private Dataset(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private Dataset(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Dataset defaultInstance;
+    public static Dataset getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Dataset getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Dataset(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              catId_ = input.readUInt64();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              name_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              path_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              id_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              restrict_ = input.readBytes();
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
+              ncml_ = input.readBytes();
+              break;
+            }
+            case 82: {
+              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+                access_ = new java.util.ArrayList<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access>();
+                mutable_bitField0_ |= 0x00000040;
+              }
+              access_.add(input.readMessage(thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.PARSER, extensionRegistry));
+              break;
+            }
+            case 90: {
+              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+                property_ = new java.util.ArrayList<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property>();
+                mutable_bitField0_ |= 0x00000080;
+              }
+              property_.add(input.readMessage(thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+          access_ = java.util.Collections.unmodifiableList(access_);
+        }
+        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+          property_ = java.util.Collections.unmodifiableList(property_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.class, thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Dataset> PARSER =
+        new com.google.protobuf.AbstractParser<Dataset>() {
+      public Dataset parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Dataset(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Dataset> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required uint64 catId = 1;
+    public static final int CATID_FIELD_NUMBER = 1;
+    private long catId_;
+    /**
+     * <code>required uint64 catId = 1;</code>
+     *
+     * <pre>
+     * ??
+     * </pre>
+     */
+    public boolean hasCatId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required uint64 catId = 1;</code>
+     *
+     * <pre>
+     * ??
+     * </pre>
+     */
+    public long getCatId() {
+      return catId_;
+    }
+
+    // required string name = 2;
+    public static final int NAME_FIELD_NUMBER = 2;
+    private java.lang.Object name_;
+    /**
+     * <code>required string name = 2;</code>
+     */
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string name = 2;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string name = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string path = 3;
+    public static final int PATH_FIELD_NUMBER = 3;
+    private java.lang.Object path_;
+    /**
+     * <code>optional string path = 3;</code>
+     */
+    public boolean hasPath() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string path = 3;</code>
+     */
+    public java.lang.String getPath() {
+      java.lang.Object ref = path_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          path_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string path = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPathBytes() {
+      java.lang.Object ref = path_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        path_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string id = 4;
+    public static final int ID_FIELD_NUMBER = 4;
+    private java.lang.Object id_;
+    /**
+     * <code>optional string id = 4;</code>
+     */
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional string id = 4;</code>
+     */
+    public java.lang.String getId() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          id_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string id = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getIdBytes() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        id_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string restrict = 5;
+    public static final int RESTRICT_FIELD_NUMBER = 5;
+    private java.lang.Object restrict_;
+    /**
+     * <code>optional string restrict = 5;</code>
+     */
+    public boolean hasRestrict() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string restrict = 5;</code>
+     */
+    public java.lang.String getRestrict() {
+      java.lang.Object ref = restrict_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          restrict_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string restrict = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getRestrictBytes() {
+      java.lang.Object ref = restrict_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        restrict_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string ncml = 6;
+    public static final int NCML_FIELD_NUMBER = 6;
+    private java.lang.Object ncml_;
+    /**
+     * <code>optional string ncml = 6;</code>
+     */
+    public boolean hasNcml() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional string ncml = 6;</code>
+     */
+    public java.lang.String getNcml() {
+      java.lang.Object ref = ncml_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          ncml_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string ncml = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNcmlBytes() {
+      java.lang.Object ref = ncml_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        ncml_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // repeated .Access access = 10;
+    public static final int ACCESS_FIELD_NUMBER = 10;
+    private java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> access_;
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> getAccessList() {
+      return access_;
+    }
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    public java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> 
+        getAccessOrBuilderList() {
+      return access_;
+    }
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    public int getAccessCount() {
+      return access_.size();
+    }
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access getAccess(int index) {
+      return access_.get(index);
+    }
+    /**
+     * <code>repeated .Access access = 10;</code>
+     */
+    public thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder getAccessOrBuilder(
+        int index) {
+      return access_.get(index);
+    }
+
+    // repeated .Property property = 11;
+    public static final int PROPERTY_FIELD_NUMBER = 11;
+    private java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> property_;
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> getPropertyList() {
+      return property_;
+    }
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    public java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> 
+        getPropertyOrBuilderList() {
+      return property_;
+    }
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    public int getPropertyCount() {
+      return property_.size();
+    }
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property getProperty(int index) {
+      return property_.get(index);
+    }
+    /**
+     * <code>repeated .Property property = 11;</code>
+     */
+    public thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder getPropertyOrBuilder(
+        int index) {
+      return property_.get(index);
+    }
+
+    private void initFields() {
+      catId_ = 0L;
+      name_ = "";
+      path_ = "";
+      id_ = "";
+      restrict_ = "";
+      ncml_ = "";
+      access_ = java.util.Collections.emptyList();
+      property_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasCatId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getAccessCount(); i++) {
+        if (!getAccess(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getPropertyCount(); i++) {
+        if (!getProperty(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt64(1, catId_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getPathBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getIdBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getRestrictBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getNcmlBytes());
+      }
+      for (int i = 0; i < access_.size(); i++) {
+        output.writeMessage(10, access_.get(i));
+      }
+      for (int i = 0; i < property_.size(); i++) {
+        output.writeMessage(11, property_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(1, catId_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getPathBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getIdBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getRestrictBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getNcmlBytes());
+      }
+      for (int i = 0; i < access_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, access_.get(i));
+      }
+      for (int i = 0; i < property_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(11, property_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code Dataset}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements thredds.server.catalog.tracker.ConfigCatalogExtProto.DatasetOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.class, thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.Builder.class);
+      }
+
+      // Construct using thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getAccessFieldBuilder();
+          getPropertyFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        catId_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        path_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        id_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        restrict_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        ncml_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        if (accessBuilder_ == null) {
+          access_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+        } else {
+          accessBuilder_.clear();
+        }
+        if (propertyBuilder_ == null) {
+          property_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000080);
+        } else {
+          propertyBuilder_.clear();
+        }
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_descriptor;
+      }
+
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset getDefaultInstanceForType() {
+        return thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.getDefaultInstance();
+      }
+
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset build() {
+        thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset buildPartial() {
+        thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset result = new thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.catId_ = catId_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.name_ = name_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.path_ = path_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.id_ = id_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.restrict_ = restrict_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.ncml_ = ncml_;
+        if (accessBuilder_ == null) {
+          if (((bitField0_ & 0x00000040) == 0x00000040)) {
+            access_ = java.util.Collections.unmodifiableList(access_);
+            bitField0_ = (bitField0_ & ~0x00000040);
+          }
+          result.access_ = access_;
+        } else {
+          result.access_ = accessBuilder_.build();
+        }
+        if (propertyBuilder_ == null) {
+          if (((bitField0_ & 0x00000080) == 0x00000080)) {
+            property_ = java.util.Collections.unmodifiableList(property_);
+            bitField0_ = (bitField0_ & ~0x00000080);
+          }
+          result.property_ = property_;
+        } else {
+          result.property_ = propertyBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset) {
+          return mergeFrom((thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset other) {
+        if (other == thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.getDefaultInstance()) return this;
+        if (other.hasCatId()) {
+          setCatId(other.getCatId());
+        }
+        if (other.hasName()) {
+          bitField0_ |= 0x00000002;
+          name_ = other.name_;
+          onChanged();
+        }
+        if (other.hasPath()) {
+          bitField0_ |= 0x00000004;
+          path_ = other.path_;
+          onChanged();
+        }
+        if (other.hasId()) {
+          bitField0_ |= 0x00000008;
+          id_ = other.id_;
+          onChanged();
+        }
+        if (other.hasRestrict()) {
+          bitField0_ |= 0x00000010;
+          restrict_ = other.restrict_;
+          onChanged();
+        }
+        if (other.hasNcml()) {
+          bitField0_ |= 0x00000020;
+          ncml_ = other.ncml_;
+          onChanged();
+        }
+        if (accessBuilder_ == null) {
+          if (!other.access_.isEmpty()) {
+            if (access_.isEmpty()) {
+              access_ = other.access_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+            } else {
+              ensureAccessIsMutable();
+              access_.addAll(other.access_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.access_.isEmpty()) {
+            if (accessBuilder_.isEmpty()) {
+              accessBuilder_.dispose();
+              accessBuilder_ = null;
+              access_ = other.access_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+              accessBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getAccessFieldBuilder() : null;
+            } else {
+              accessBuilder_.addAllMessages(other.access_);
+            }
+          }
+        }
+        if (propertyBuilder_ == null) {
+          if (!other.property_.isEmpty()) {
+            if (property_.isEmpty()) {
+              property_ = other.property_;
+              bitField0_ = (bitField0_ & ~0x00000080);
+            } else {
+              ensurePropertyIsMutable();
+              property_.addAll(other.property_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.property_.isEmpty()) {
+            if (propertyBuilder_.isEmpty()) {
+              propertyBuilder_.dispose();
+              propertyBuilder_ = null;
+              property_ = other.property_;
+              bitField0_ = (bitField0_ & ~0x00000080);
+              propertyBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getPropertyFieldBuilder() : null;
+            } else {
+              propertyBuilder_.addAllMessages(other.property_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasCatId()) {
+          
+          return false;
+        }
+        if (!hasName()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getAccessCount(); i++) {
+          if (!getAccess(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getPropertyCount(); i++) {
+          if (!getProperty(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required uint64 catId = 1;
+      private long catId_ ;
+      /**
+       * <code>required uint64 catId = 1;</code>
+       *
+       * <pre>
+       * ??
+       * </pre>
+       */
+      public boolean hasCatId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required uint64 catId = 1;</code>
+       *
+       * <pre>
+       * ??
+       * </pre>
+       */
+      public long getCatId() {
+        return catId_;
+      }
+      /**
+       * <code>required uint64 catId = 1;</code>
+       *
+       * <pre>
+       * ??
+       * </pre>
+       */
+      public Builder setCatId(long value) {
+        bitField0_ |= 0x00000001;
+        catId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 catId = 1;</code>
+       *
+       * <pre>
+       * ??
+       * </pre>
+       */
+      public Builder clearCatId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        catId_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // required string name = 2;
+      private java.lang.Object name_ = "";
+      /**
+       * <code>required string name = 2;</code>
+       */
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string name = 2;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string name = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string name = 2;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string name = 2;</code>
+       */
+      public Builder clearName() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string name = 2;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string path = 3;
+      private java.lang.Object path_ = "";
+      /**
+       * <code>optional string path = 3;</code>
+       */
+      public boolean hasPath() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string path = 3;</code>
+       */
+      public java.lang.String getPath() {
+        java.lang.Object ref = path_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          path_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string path = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPathBytes() {
+        java.lang.Object ref = path_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          path_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string path = 3;</code>
+       */
+      public Builder setPath(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        path_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string path = 3;</code>
+       */
+      public Builder clearPath() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        path_ = getDefaultInstance().getPath();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string path = 3;</code>
+       */
+      public Builder setPathBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        path_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string id = 4;
+      private java.lang.Object id_ = "";
+      /**
+       * <code>optional string id = 4;</code>
+       */
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string id = 4;</code>
+       */
+      public java.lang.String getId() {
+        java.lang.Object ref = id_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          id_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string id = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getIdBytes() {
+        java.lang.Object ref = id_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          id_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string id = 4;</code>
+       */
+      public Builder setId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        id_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string id = 4;</code>
+       */
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        id_ = getDefaultInstance().getId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string id = 4;</code>
+       */
+      public Builder setIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        id_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string restrict = 5;
+      private java.lang.Object restrict_ = "";
+      /**
+       * <code>optional string restrict = 5;</code>
+       */
+      public boolean hasRestrict() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional string restrict = 5;</code>
+       */
+      public java.lang.String getRestrict() {
+        java.lang.Object ref = restrict_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          restrict_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string restrict = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getRestrictBytes() {
+        java.lang.Object ref = restrict_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          restrict_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string restrict = 5;</code>
+       */
+      public Builder setRestrict(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        restrict_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string restrict = 5;</code>
+       */
+      public Builder clearRestrict() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        restrict_ = getDefaultInstance().getRestrict();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string restrict = 5;</code>
+       */
+      public Builder setRestrictBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        restrict_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string ncml = 6;
+      private java.lang.Object ncml_ = "";
+      /**
+       * <code>optional string ncml = 6;</code>
+       */
+      public boolean hasNcml() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional string ncml = 6;</code>
+       */
+      public java.lang.String getNcml() {
+        java.lang.Object ref = ncml_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          ncml_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string ncml = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNcmlBytes() {
+        java.lang.Object ref = ncml_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          ncml_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string ncml = 6;</code>
+       */
+      public Builder setNcml(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        ncml_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string ncml = 6;</code>
+       */
+      public Builder clearNcml() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        ncml_ = getDefaultInstance().getNcml();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string ncml = 6;</code>
+       */
+      public Builder setNcmlBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        ncml_ = value;
+        onChanged();
+        return this;
+      }
+
+      // repeated .Access access = 10;
+      private java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> access_ =
+        java.util.Collections.emptyList();
+      private void ensureAccessIsMutable() {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+          access_ = new java.util.ArrayList<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access>(access_);
+          bitField0_ |= 0x00000040;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.server.catalog.tracker.ConfigCatalogExtProto.Access, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> accessBuilder_;
+
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> getAccessList() {
+        if (accessBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(access_);
+        } else {
+          return accessBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public int getAccessCount() {
+        if (accessBuilder_ == null) {
+          return access_.size();
+        } else {
+          return accessBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access getAccess(int index) {
+        if (accessBuilder_ == null) {
+          return access_.get(index);
+        } else {
+          return accessBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public Builder setAccess(
+          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access value) {
+        if (accessBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAccessIsMutable();
+          access_.set(index, value);
+          onChanged();
+        } else {
+          accessBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public Builder setAccess(
+          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder builderForValue) {
+        if (accessBuilder_ == null) {
+          ensureAccessIsMutable();
+          access_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          accessBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public Builder addAccess(thredds.server.catalog.tracker.ConfigCatalogExtProto.Access value) {
+        if (accessBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAccessIsMutable();
+          access_.add(value);
+          onChanged();
+        } else {
+          accessBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public Builder addAccess(
+          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access value) {
+        if (accessBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAccessIsMutable();
+          access_.add(index, value);
+          onChanged();
+        } else {
+          accessBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public Builder addAccess(
+          thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder builderForValue) {
+        if (accessBuilder_ == null) {
+          ensureAccessIsMutable();
+          access_.add(builderForValue.build());
+          onChanged();
+        } else {
+          accessBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public Builder addAccess(
+          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder builderForValue) {
+        if (accessBuilder_ == null) {
+          ensureAccessIsMutable();
+          access_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          accessBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public Builder addAllAccess(
+          java.lang.Iterable<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> values) {
+        if (accessBuilder_ == null) {
+          ensureAccessIsMutable();
+          super.addAll(values, access_);
+          onChanged();
+        } else {
+          accessBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public Builder clearAccess() {
+        if (accessBuilder_ == null) {
+          access_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+          onChanged();
+        } else {
+          accessBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public Builder removeAccess(int index) {
+        if (accessBuilder_ == null) {
+          ensureAccessIsMutable();
+          access_.remove(index);
+          onChanged();
+        } else {
+          accessBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder getAccessBuilder(
+          int index) {
+        return getAccessFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder getAccessOrBuilder(
+          int index) {
+        if (accessBuilder_ == null) {
+          return access_.get(index);  } else {
+          return accessBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> 
+           getAccessOrBuilderList() {
+        if (accessBuilder_ != null) {
+          return accessBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(access_);
+        }
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder addAccessBuilder() {
+        return getAccessFieldBuilder().addBuilder(
+            thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder addAccessBuilder(
+          int index) {
+        return getAccessFieldBuilder().addBuilder(
+            index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Access access = 10;</code>
+       */
+      public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder> 
+           getAccessBuilderList() {
+        return getAccessFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.server.catalog.tracker.ConfigCatalogExtProto.Access, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> 
+          getAccessFieldBuilder() {
+        if (accessBuilder_ == null) {
+          accessBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              thredds.server.catalog.tracker.ConfigCatalogExtProto.Access, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder>(
+                  access_,
+                  ((bitField0_ & 0x00000040) == 0x00000040),
+                  getParentForChildren(),
+                  isClean());
+          access_ = null;
+        }
+        return accessBuilder_;
+      }
+
+      // repeated .Property property = 11;
+      private java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> property_ =
+        java.util.Collections.emptyList();
+      private void ensurePropertyIsMutable() {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+          property_ = new java.util.ArrayList<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property>(property_);
+          bitField0_ |= 0x00000080;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.server.catalog.tracker.ConfigCatalogExtProto.Property, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> propertyBuilder_;
+
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> getPropertyList() {
+        if (propertyBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(property_);
+        } else {
+          return propertyBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public int getPropertyCount() {
+        if (propertyBuilder_ == null) {
+          return property_.size();
+        } else {
+          return propertyBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property getProperty(int index) {
+        if (propertyBuilder_ == null) {
+          return property_.get(index);
+        } else {
+          return propertyBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public Builder setProperty(
+          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property value) {
+        if (propertyBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePropertyIsMutable();
+          property_.set(index, value);
+          onChanged();
+        } else {
+          propertyBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public Builder setProperty(
+          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder builderForValue) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          property_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          propertyBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public Builder addProperty(thredds.server.catalog.tracker.ConfigCatalogExtProto.Property value) {
+        if (propertyBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePropertyIsMutable();
+          property_.add(value);
+          onChanged();
+        } else {
+          propertyBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public Builder addProperty(
+          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property value) {
+        if (propertyBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePropertyIsMutable();
+          property_.add(index, value);
+          onChanged();
+        } else {
+          propertyBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public Builder addProperty(
+          thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder builderForValue) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          property_.add(builderForValue.build());
+          onChanged();
+        } else {
+          propertyBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public Builder addProperty(
+          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder builderForValue) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          property_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          propertyBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public Builder addAllProperty(
+          java.lang.Iterable<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> values) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          super.addAll(values, property_);
+          onChanged();
+        } else {
+          propertyBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public Builder clearProperty() {
+        if (propertyBuilder_ == null) {
+          property_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000080);
+          onChanged();
+        } else {
+          propertyBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public Builder removeProperty(int index) {
+        if (propertyBuilder_ == null) {
+          ensurePropertyIsMutable();
+          property_.remove(index);
+          onChanged();
+        } else {
+          propertyBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder getPropertyBuilder(
+          int index) {
+        return getPropertyFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder getPropertyOrBuilder(
+          int index) {
+        if (propertyBuilder_ == null) {
+          return property_.get(index);  } else {
+          return propertyBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> 
+           getPropertyOrBuilderList() {
+        if (propertyBuilder_ != null) {
+          return propertyBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(property_);
+        }
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder addPropertyBuilder() {
+        return getPropertyFieldBuilder().addBuilder(
+            thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder addPropertyBuilder(
+          int index) {
+        return getPropertyFieldBuilder().addBuilder(
+            index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Property property = 11;</code>
+       */
+      public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder> 
+           getPropertyBuilderList() {
+        return getPropertyFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.server.catalog.tracker.ConfigCatalogExtProto.Property, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> 
+          getPropertyFieldBuilder() {
+        if (propertyBuilder_ == null) {
+          propertyBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              thredds.server.catalog.tracker.ConfigCatalogExtProto.Property, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder>(
+                  property_,
+                  ((bitField0_ & 0x00000080) == 0x00000080),
+                  getParentForChildren(),
+                  isClean());
+          property_ = null;
+        }
+        return propertyBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:Dataset)
+    }
+
+    static {
+      defaultInstance = new Dataset(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:Dataset)
   }
 
   public interface AccessOrBuilder
@@ -3143,1946 +5031,6 @@ public final class ConfigCatalogExtProto {
     // @@protoc_insertion_point(class_scope:Property)
   }
 
-  public interface DatasetOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-
-    // required uint64 catId = 1;
-    /**
-     * <code>required uint64 catId = 1;</code>
-     */
-    boolean hasCatId();
-    /**
-     * <code>required uint64 catId = 1;</code>
-     */
-    long getCatId();
-
-    // required string name = 2;
-    /**
-     * <code>required string name = 2;</code>
-     */
-    boolean hasName();
-    /**
-     * <code>required string name = 2;</code>
-     */
-    java.lang.String getName();
-    /**
-     * <code>required string name = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getNameBytes();
-
-    // optional string path = 3;
-    /**
-     * <code>optional string path = 3;</code>
-     */
-    boolean hasPath();
-    /**
-     * <code>optional string path = 3;</code>
-     */
-    java.lang.String getPath();
-    /**
-     * <code>optional string path = 3;</code>
-     */
-    com.google.protobuf.ByteString
-        getPathBytes();
-
-    // optional string id = 4;
-    /**
-     * <code>optional string id = 4;</code>
-     */
-    boolean hasId();
-    /**
-     * <code>optional string id = 4;</code>
-     */
-    java.lang.String getId();
-    /**
-     * <code>optional string id = 4;</code>
-     */
-    com.google.protobuf.ByteString
-        getIdBytes();
-
-    // optional string restrict = 5;
-    /**
-     * <code>optional string restrict = 5;</code>
-     */
-    boolean hasRestrict();
-    /**
-     * <code>optional string restrict = 5;</code>
-     */
-    java.lang.String getRestrict();
-    /**
-     * <code>optional string restrict = 5;</code>
-     */
-    com.google.protobuf.ByteString
-        getRestrictBytes();
-
-    // optional string ncml = 6;
-    /**
-     * <code>optional string ncml = 6;</code>
-     */
-    boolean hasNcml();
-    /**
-     * <code>optional string ncml = 6;</code>
-     */
-    java.lang.String getNcml();
-    /**
-     * <code>optional string ncml = 6;</code>
-     */
-    com.google.protobuf.ByteString
-        getNcmlBytes();
-
-    // repeated .Access access = 10;
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> 
-        getAccessList();
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    thredds.server.catalog.tracker.ConfigCatalogExtProto.Access getAccess(int index);
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    int getAccessCount();
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> 
-        getAccessOrBuilderList();
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder getAccessOrBuilder(
-        int index);
-
-    // repeated .Property property = 11;
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> 
-        getPropertyList();
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    thredds.server.catalog.tracker.ConfigCatalogExtProto.Property getProperty(int index);
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    int getPropertyCount();
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> 
-        getPropertyOrBuilderList();
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder getPropertyOrBuilder(
-        int index);
-  }
-  /**
-   * Protobuf type {@code Dataset}
-   */
-  public static final class Dataset extends
-      com.google.protobuf.GeneratedMessage
-      implements DatasetOrBuilder {
-    // Use Dataset.newBuilder() to construct.
-    private Dataset(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
-      super(builder);
-      this.unknownFields = builder.getUnknownFields();
-    }
-    private Dataset(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final Dataset defaultInstance;
-    public static Dataset getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public Dataset getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Dataset(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              catId_ = input.readUInt64();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              name_ = input.readBytes();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              path_ = input.readBytes();
-              break;
-            }
-            case 34: {
-              bitField0_ |= 0x00000008;
-              id_ = input.readBytes();
-              break;
-            }
-            case 42: {
-              bitField0_ |= 0x00000010;
-              restrict_ = input.readBytes();
-              break;
-            }
-            case 50: {
-              bitField0_ |= 0x00000020;
-              ncml_ = input.readBytes();
-              break;
-            }
-            case 82: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-                access_ = new java.util.ArrayList<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access>();
-                mutable_bitField0_ |= 0x00000040;
-              }
-              access_.add(input.readMessage(thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.PARSER, extensionRegistry));
-              break;
-            }
-            case 90: {
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-                property_ = new java.util.ArrayList<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property>();
-                mutable_bitField0_ |= 0x00000080;
-              }
-              property_.add(input.readMessage(thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.PARSER, extensionRegistry));
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-          access_ = java.util.Collections.unmodifiableList(access_);
-        }
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-          property_ = java.util.Collections.unmodifiableList(property_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.class, thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.Builder.class);
-    }
-
-    public static com.google.protobuf.Parser<Dataset> PARSER =
-        new com.google.protobuf.AbstractParser<Dataset>() {
-      public Dataset parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Dataset(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<Dataset> getParserForType() {
-      return PARSER;
-    }
-
-    private int bitField0_;
-    // required uint64 catId = 1;
-    public static final int CATID_FIELD_NUMBER = 1;
-    private long catId_;
-    /**
-     * <code>required uint64 catId = 1;</code>
-     */
-    public boolean hasCatId() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required uint64 catId = 1;</code>
-     */
-    public long getCatId() {
-      return catId_;
-    }
-
-    // required string name = 2;
-    public static final int NAME_FIELD_NUMBER = 2;
-    private java.lang.Object name_;
-    /**
-     * <code>required string name = 2;</code>
-     */
-    public boolean hasName() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required string name = 2;</code>
-     */
-    public java.lang.String getName() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          name_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>required string name = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getNameBytes() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        name_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional string path = 3;
-    public static final int PATH_FIELD_NUMBER = 3;
-    private java.lang.Object path_;
-    /**
-     * <code>optional string path = 3;</code>
-     */
-    public boolean hasPath() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>optional string path = 3;</code>
-     */
-    public java.lang.String getPath() {
-      java.lang.Object ref = path_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          path_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string path = 3;</code>
-     */
-    public com.google.protobuf.ByteString
-        getPathBytes() {
-      java.lang.Object ref = path_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        path_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional string id = 4;
-    public static final int ID_FIELD_NUMBER = 4;
-    private java.lang.Object id_;
-    /**
-     * <code>optional string id = 4;</code>
-     */
-    public boolean hasId() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    /**
-     * <code>optional string id = 4;</code>
-     */
-    public java.lang.String getId() {
-      java.lang.Object ref = id_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string id = 4;</code>
-     */
-    public com.google.protobuf.ByteString
-        getIdBytes() {
-      java.lang.Object ref = id_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional string restrict = 5;
-    public static final int RESTRICT_FIELD_NUMBER = 5;
-    private java.lang.Object restrict_;
-    /**
-     * <code>optional string restrict = 5;</code>
-     */
-    public boolean hasRestrict() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>optional string restrict = 5;</code>
-     */
-    public java.lang.String getRestrict() {
-      java.lang.Object ref = restrict_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          restrict_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string restrict = 5;</code>
-     */
-    public com.google.protobuf.ByteString
-        getRestrictBytes() {
-      java.lang.Object ref = restrict_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        restrict_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional string ncml = 6;
-    public static final int NCML_FIELD_NUMBER = 6;
-    private java.lang.Object ncml_;
-    /**
-     * <code>optional string ncml = 6;</code>
-     */
-    public boolean hasNcml() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
-    }
-    /**
-     * <code>optional string ncml = 6;</code>
-     */
-    public java.lang.String getNcml() {
-      java.lang.Object ref = ncml_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          ncml_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string ncml = 6;</code>
-     */
-    public com.google.protobuf.ByteString
-        getNcmlBytes() {
-      java.lang.Object ref = ncml_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        ncml_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // repeated .Access access = 10;
-    public static final int ACCESS_FIELD_NUMBER = 10;
-    private java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> access_;
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> getAccessList() {
-      return access_;
-    }
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    public java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> 
-        getAccessOrBuilderList() {
-      return access_;
-    }
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    public int getAccessCount() {
-      return access_.size();
-    }
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access getAccess(int index) {
-      return access_.get(index);
-    }
-    /**
-     * <code>repeated .Access access = 10;</code>
-     */
-    public thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder getAccessOrBuilder(
-        int index) {
-      return access_.get(index);
-    }
-
-    // repeated .Property property = 11;
-    public static final int PROPERTY_FIELD_NUMBER = 11;
-    private java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> property_;
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> getPropertyList() {
-      return property_;
-    }
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    public java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> 
-        getPropertyOrBuilderList() {
-      return property_;
-    }
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    public int getPropertyCount() {
-      return property_.size();
-    }
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property getProperty(int index) {
-      return property_.get(index);
-    }
-    /**
-     * <code>repeated .Property property = 11;</code>
-     */
-    public thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder getPropertyOrBuilder(
-        int index) {
-      return property_.get(index);
-    }
-
-    private void initFields() {
-      catId_ = 0L;
-      name_ = "";
-      path_ = "";
-      id_ = "";
-      restrict_ = "";
-      ncml_ = "";
-      access_ = java.util.Collections.emptyList();
-      property_ = java.util.Collections.emptyList();
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-
-      if (!hasCatId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasName()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      for (int i = 0; i < getAccessCount(); i++) {
-        if (!getAccess(i).isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-      }
-      for (int i = 0; i < getPropertyCount(); i++) {
-        if (!getProperty(i).isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeUInt64(1, catId_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getNameBytes());
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getPathBytes());
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getIdBytes());
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getRestrictBytes());
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeBytes(6, getNcmlBytes());
-      }
-      for (int i = 0; i < access_.size(); i++) {
-        output.writeMessage(10, access_.get(i));
-      }
-      for (int i = 0; i < property_.size(); i++) {
-        output.writeMessage(11, property_.get(i));
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(1, catId_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getNameBytes());
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getPathBytes());
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getIdBytes());
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getRestrictBytes());
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, getNcmlBytes());
-      }
-      for (int i = 0; i < access_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(10, access_.get(i));
-      }
-      for (int i = 0; i < property_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(11, property_.get(i));
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
-    }
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
-    }
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code Dataset}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements thredds.server.catalog.tracker.ConfigCatalogExtProto.DatasetOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.class, thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.Builder.class);
-      }
-
-      // Construct using thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getAccessFieldBuilder();
-          getPropertyFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        catId_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        path_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
-        id_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
-        restrict_ = "";
-        bitField0_ = (bitField0_ & ~0x00000010);
-        ncml_ = "";
-        bitField0_ = (bitField0_ & ~0x00000020);
-        if (accessBuilder_ == null) {
-          access_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
-        } else {
-          accessBuilder_.clear();
-        }
-        if (propertyBuilder_ == null) {
-          property_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000080);
-        } else {
-          propertyBuilder_.clear();
-        }
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return thredds.server.catalog.tracker.ConfigCatalogExtProto.internal_static_Dataset_descriptor;
-      }
-
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset getDefaultInstanceForType() {
-        return thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.getDefaultInstance();
-      }
-
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset build() {
-        thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset buildPartial() {
-        thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset result = new thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.catId_ = catId_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.name_ = name_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.path_ = path_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.id_ = id_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.restrict_ = restrict_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000020;
-        }
-        result.ncml_ = ncml_;
-        if (accessBuilder_ == null) {
-          if (((bitField0_ & 0x00000040) == 0x00000040)) {
-            access_ = java.util.Collections.unmodifiableList(access_);
-            bitField0_ = (bitField0_ & ~0x00000040);
-          }
-          result.access_ = access_;
-        } else {
-          result.access_ = accessBuilder_.build();
-        }
-        if (propertyBuilder_ == null) {
-          if (((bitField0_ & 0x00000080) == 0x00000080)) {
-            property_ = java.util.Collections.unmodifiableList(property_);
-            bitField0_ = (bitField0_ & ~0x00000080);
-          }
-          result.property_ = property_;
-        } else {
-          result.property_ = propertyBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset) {
-          return mergeFrom((thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset other) {
-        if (other == thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset.getDefaultInstance()) return this;
-        if (other.hasCatId()) {
-          setCatId(other.getCatId());
-        }
-        if (other.hasName()) {
-          bitField0_ |= 0x00000002;
-          name_ = other.name_;
-          onChanged();
-        }
-        if (other.hasPath()) {
-          bitField0_ |= 0x00000004;
-          path_ = other.path_;
-          onChanged();
-        }
-        if (other.hasId()) {
-          bitField0_ |= 0x00000008;
-          id_ = other.id_;
-          onChanged();
-        }
-        if (other.hasRestrict()) {
-          bitField0_ |= 0x00000010;
-          restrict_ = other.restrict_;
-          onChanged();
-        }
-        if (other.hasNcml()) {
-          bitField0_ |= 0x00000020;
-          ncml_ = other.ncml_;
-          onChanged();
-        }
-        if (accessBuilder_ == null) {
-          if (!other.access_.isEmpty()) {
-            if (access_.isEmpty()) {
-              access_ = other.access_;
-              bitField0_ = (bitField0_ & ~0x00000040);
-            } else {
-              ensureAccessIsMutable();
-              access_.addAll(other.access_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.access_.isEmpty()) {
-            if (accessBuilder_.isEmpty()) {
-              accessBuilder_.dispose();
-              accessBuilder_ = null;
-              access_ = other.access_;
-              bitField0_ = (bitField0_ & ~0x00000040);
-              accessBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getAccessFieldBuilder() : null;
-            } else {
-              accessBuilder_.addAllMessages(other.access_);
-            }
-          }
-        }
-        if (propertyBuilder_ == null) {
-          if (!other.property_.isEmpty()) {
-            if (property_.isEmpty()) {
-              property_ = other.property_;
-              bitField0_ = (bitField0_ & ~0x00000080);
-            } else {
-              ensurePropertyIsMutable();
-              property_.addAll(other.property_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.property_.isEmpty()) {
-            if (propertyBuilder_.isEmpty()) {
-              propertyBuilder_.dispose();
-              propertyBuilder_ = null;
-              property_ = other.property_;
-              bitField0_ = (bitField0_ & ~0x00000080);
-              propertyBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getPropertyFieldBuilder() : null;
-            } else {
-              propertyBuilder_.addAllMessages(other.property_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        if (!hasCatId()) {
-          
-          return false;
-        }
-        if (!hasName()) {
-          
-          return false;
-        }
-        for (int i = 0; i < getAccessCount(); i++) {
-          if (!getAccess(i).isInitialized()) {
-            
-            return false;
-          }
-        }
-        for (int i = 0; i < getPropertyCount(); i++) {
-          if (!getProperty(i).isInitialized()) {
-            
-            return false;
-          }
-        }
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (thredds.server.catalog.tracker.ConfigCatalogExtProto.Dataset) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      // required uint64 catId = 1;
-      private long catId_ ;
-      /**
-       * <code>required uint64 catId = 1;</code>
-       */
-      public boolean hasCatId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required uint64 catId = 1;</code>
-       */
-      public long getCatId() {
-        return catId_;
-      }
-      /**
-       * <code>required uint64 catId = 1;</code>
-       */
-      public Builder setCatId(long value) {
-        bitField0_ |= 0x00000001;
-        catId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required uint64 catId = 1;</code>
-       */
-      public Builder clearCatId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        catId_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      // required string name = 2;
-      private java.lang.Object name_ = "";
-      /**
-       * <code>required string name = 2;</code>
-       */
-      public boolean hasName() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required string name = 2;</code>
-       */
-      public java.lang.String getName() {
-        java.lang.Object ref = name_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          name_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>required string name = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        java.lang.Object ref = name_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          name_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>required string name = 2;</code>
-       */
-      public Builder setName(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        name_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required string name = 2;</code>
-       */
-      public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        name_ = getDefaultInstance().getName();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required string name = 2;</code>
-       */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        name_ = value;
-        onChanged();
-        return this;
-      }
-
-      // optional string path = 3;
-      private java.lang.Object path_ = "";
-      /**
-       * <code>optional string path = 3;</code>
-       */
-      public boolean hasPath() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>optional string path = 3;</code>
-       */
-      public java.lang.String getPath() {
-        java.lang.Object ref = path_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          path_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string path = 3;</code>
-       */
-      public com.google.protobuf.ByteString
-          getPathBytes() {
-        java.lang.Object ref = path_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          path_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string path = 3;</code>
-       */
-      public Builder setPath(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        path_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string path = 3;</code>
-       */
-      public Builder clearPath() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        path_ = getDefaultInstance().getPath();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string path = 3;</code>
-       */
-      public Builder setPathBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        path_ = value;
-        onChanged();
-        return this;
-      }
-
-      // optional string id = 4;
-      private java.lang.Object id_ = "";
-      /**
-       * <code>optional string id = 4;</code>
-       */
-      public boolean hasId() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>optional string id = 4;</code>
-       */
-      public java.lang.String getId() {
-        java.lang.Object ref = id_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string id = 4;</code>
-       */
-      public com.google.protobuf.ByteString
-          getIdBytes() {
-        java.lang.Object ref = id_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          id_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string id = 4;</code>
-       */
-      public Builder setId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-        id_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string id = 4;</code>
-       */
-      public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        id_ = getDefaultInstance().getId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string id = 4;</code>
-       */
-      public Builder setIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-        id_ = value;
-        onChanged();
-        return this;
-      }
-
-      // optional string restrict = 5;
-      private java.lang.Object restrict_ = "";
-      /**
-       * <code>optional string restrict = 5;</code>
-       */
-      public boolean hasRestrict() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>optional string restrict = 5;</code>
-       */
-      public java.lang.String getRestrict() {
-        java.lang.Object ref = restrict_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          restrict_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string restrict = 5;</code>
-       */
-      public com.google.protobuf.ByteString
-          getRestrictBytes() {
-        java.lang.Object ref = restrict_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          restrict_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string restrict = 5;</code>
-       */
-      public Builder setRestrict(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
-        restrict_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string restrict = 5;</code>
-       */
-      public Builder clearRestrict() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        restrict_ = getDefaultInstance().getRestrict();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string restrict = 5;</code>
-       */
-      public Builder setRestrictBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
-        restrict_ = value;
-        onChanged();
-        return this;
-      }
-
-      // optional string ncml = 6;
-      private java.lang.Object ncml_ = "";
-      /**
-       * <code>optional string ncml = 6;</code>
-       */
-      public boolean hasNcml() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
-      }
-      /**
-       * <code>optional string ncml = 6;</code>
-       */
-      public java.lang.String getNcml() {
-        java.lang.Object ref = ncml_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          ncml_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string ncml = 6;</code>
-       */
-      public com.google.protobuf.ByteString
-          getNcmlBytes() {
-        java.lang.Object ref = ncml_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          ncml_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string ncml = 6;</code>
-       */
-      public Builder setNcml(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000020;
-        ncml_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string ncml = 6;</code>
-       */
-      public Builder clearNcml() {
-        bitField0_ = (bitField0_ & ~0x00000020);
-        ncml_ = getDefaultInstance().getNcml();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string ncml = 6;</code>
-       */
-      public Builder setNcmlBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000020;
-        ncml_ = value;
-        onChanged();
-        return this;
-      }
-
-      // repeated .Access access = 10;
-      private java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> access_ =
-        java.util.Collections.emptyList();
-      private void ensureAccessIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
-          access_ = new java.util.ArrayList<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access>(access_);
-          bitField0_ |= 0x00000040;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilder<
-          thredds.server.catalog.tracker.ConfigCatalogExtProto.Access, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> accessBuilder_;
-
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> getAccessList() {
-        if (accessBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(access_);
-        } else {
-          return accessBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public int getAccessCount() {
-        if (accessBuilder_ == null) {
-          return access_.size();
-        } else {
-          return accessBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access getAccess(int index) {
-        if (accessBuilder_ == null) {
-          return access_.get(index);
-        } else {
-          return accessBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public Builder setAccess(
-          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access value) {
-        if (accessBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureAccessIsMutable();
-          access_.set(index, value);
-          onChanged();
-        } else {
-          accessBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public Builder setAccess(
-          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder builderForValue) {
-        if (accessBuilder_ == null) {
-          ensureAccessIsMutable();
-          access_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          accessBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public Builder addAccess(thredds.server.catalog.tracker.ConfigCatalogExtProto.Access value) {
-        if (accessBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureAccessIsMutable();
-          access_.add(value);
-          onChanged();
-        } else {
-          accessBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public Builder addAccess(
-          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access value) {
-        if (accessBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureAccessIsMutable();
-          access_.add(index, value);
-          onChanged();
-        } else {
-          accessBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public Builder addAccess(
-          thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder builderForValue) {
-        if (accessBuilder_ == null) {
-          ensureAccessIsMutable();
-          access_.add(builderForValue.build());
-          onChanged();
-        } else {
-          accessBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public Builder addAccess(
-          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder builderForValue) {
-        if (accessBuilder_ == null) {
-          ensureAccessIsMutable();
-          access_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          accessBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public Builder addAllAccess(
-          java.lang.Iterable<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.Access> values) {
-        if (accessBuilder_ == null) {
-          ensureAccessIsMutable();
-          super.addAll(values, access_);
-          onChanged();
-        } else {
-          accessBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public Builder clearAccess() {
-        if (accessBuilder_ == null) {
-          access_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
-          onChanged();
-        } else {
-          accessBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public Builder removeAccess(int index) {
-        if (accessBuilder_ == null) {
-          ensureAccessIsMutable();
-          access_.remove(index);
-          onChanged();
-        } else {
-          accessBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder getAccessBuilder(
-          int index) {
-        return getAccessFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder getAccessOrBuilder(
-          int index) {
-        if (accessBuilder_ == null) {
-          return access_.get(index);  } else {
-          return accessBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> 
-           getAccessOrBuilderList() {
-        if (accessBuilder_ != null) {
-          return accessBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(access_);
-        }
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder addAccessBuilder() {
-        return getAccessFieldBuilder().addBuilder(
-            thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder addAccessBuilder(
-          int index) {
-        return getAccessFieldBuilder().addBuilder(
-            index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .Access access = 10;</code>
-       */
-      public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder> 
-           getAccessBuilderList() {
-        return getAccessFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          thredds.server.catalog.tracker.ConfigCatalogExtProto.Access, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder> 
-          getAccessFieldBuilder() {
-        if (accessBuilder_ == null) {
-          accessBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              thredds.server.catalog.tracker.ConfigCatalogExtProto.Access, thredds.server.catalog.tracker.ConfigCatalogExtProto.Access.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.AccessOrBuilder>(
-                  access_,
-                  ((bitField0_ & 0x00000040) == 0x00000040),
-                  getParentForChildren(),
-                  isClean());
-          access_ = null;
-        }
-        return accessBuilder_;
-      }
-
-      // repeated .Property property = 11;
-      private java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> property_ =
-        java.util.Collections.emptyList();
-      private void ensurePropertyIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
-          property_ = new java.util.ArrayList<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property>(property_);
-          bitField0_ |= 0x00000080;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilder<
-          thredds.server.catalog.tracker.ConfigCatalogExtProto.Property, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> propertyBuilder_;
-
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> getPropertyList() {
-        if (propertyBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(property_);
-        } else {
-          return propertyBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public int getPropertyCount() {
-        if (propertyBuilder_ == null) {
-          return property_.size();
-        } else {
-          return propertyBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property getProperty(int index) {
-        if (propertyBuilder_ == null) {
-          return property_.get(index);
-        } else {
-          return propertyBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public Builder setProperty(
-          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property value) {
-        if (propertyBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropertyIsMutable();
-          property_.set(index, value);
-          onChanged();
-        } else {
-          propertyBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public Builder setProperty(
-          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder builderForValue) {
-        if (propertyBuilder_ == null) {
-          ensurePropertyIsMutable();
-          property_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          propertyBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public Builder addProperty(thredds.server.catalog.tracker.ConfigCatalogExtProto.Property value) {
-        if (propertyBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropertyIsMutable();
-          property_.add(value);
-          onChanged();
-        } else {
-          propertyBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public Builder addProperty(
-          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property value) {
-        if (propertyBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropertyIsMutable();
-          property_.add(index, value);
-          onChanged();
-        } else {
-          propertyBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public Builder addProperty(
-          thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder builderForValue) {
-        if (propertyBuilder_ == null) {
-          ensurePropertyIsMutable();
-          property_.add(builderForValue.build());
-          onChanged();
-        } else {
-          propertyBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public Builder addProperty(
-          int index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder builderForValue) {
-        if (propertyBuilder_ == null) {
-          ensurePropertyIsMutable();
-          property_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          propertyBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public Builder addAllProperty(
-          java.lang.Iterable<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.Property> values) {
-        if (propertyBuilder_ == null) {
-          ensurePropertyIsMutable();
-          super.addAll(values, property_);
-          onChanged();
-        } else {
-          propertyBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public Builder clearProperty() {
-        if (propertyBuilder_ == null) {
-          property_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000080);
-          onChanged();
-        } else {
-          propertyBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public Builder removeProperty(int index) {
-        if (propertyBuilder_ == null) {
-          ensurePropertyIsMutable();
-          property_.remove(index);
-          onChanged();
-        } else {
-          propertyBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder getPropertyBuilder(
-          int index) {
-        return getPropertyFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder getPropertyOrBuilder(
-          int index) {
-        if (propertyBuilder_ == null) {
-          return property_.get(index);  } else {
-          return propertyBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public java.util.List<? extends thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> 
-           getPropertyOrBuilderList() {
-        if (propertyBuilder_ != null) {
-          return propertyBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(property_);
-        }
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder addPropertyBuilder() {
-        return getPropertyFieldBuilder().addBuilder(
-            thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder addPropertyBuilder(
-          int index) {
-        return getPropertyFieldBuilder().addBuilder(
-            index, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .Property property = 11;</code>
-       */
-      public java.util.List<thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder> 
-           getPropertyBuilderList() {
-        return getPropertyFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          thredds.server.catalog.tracker.ConfigCatalogExtProto.Property, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder> 
-          getPropertyFieldBuilder() {
-        if (propertyBuilder_ == null) {
-          propertyBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              thredds.server.catalog.tracker.ConfigCatalogExtProto.Property, thredds.server.catalog.tracker.ConfigCatalogExtProto.Property.Builder, thredds.server.catalog.tracker.ConfigCatalogExtProto.PropertyOrBuilder>(
-                  property_,
-                  ((bitField0_ & 0x00000080) == 0x00000080),
-                  getParentForChildren(),
-                  isClean());
-          property_ = null;
-        }
-        return propertyBuilder_;
-      }
-
-      // @@protoc_insertion_point(builder_scope:Dataset)
-    }
-
-    static {
-      defaultInstance = new Dataset(true);
-      defaultInstance.initFields();
-    }
-
-    // @@protoc_insertion_point(class_scope:Dataset)
-  }
-
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_Catalog_descriptor;
   private static
@@ -5094,6 +5042,11 @@ public final class ConfigCatalogExtProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_DataRoot_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_Dataset_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Dataset_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_Access_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -5103,11 +5056,6 @@ public final class ConfigCatalogExtProto {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Property_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_Dataset_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_Dataset_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -5118,19 +5066,21 @@ public final class ConfigCatalogExtProto {
   static {
     java.lang.String[] descriptorData = {
       "\n5thredds/server/catalog/tracker/configC" +
-      "atalogExt.proto\"#\n\007Catalog\022\014\n\004path\030\001 \002(\t" +
-      "\022\n\n\002id\030\002 \002(\004\"c\n\010DataRoot\022\r\n\005catId\030\001 \002(\004\022" +
-      "\014\n\004path\030\002 \002(\t\022\023\n\013dirLocation\030\003 \002(\t\022\023\n\013da" +
-      "tasetScan\030\004 \001(\t\022\020\n\010fcConfig\030\005 \001(\t\"U\n\006Acc" +
-      "ess\022\023\n\013serviceName\030\001 \002(\t\022\017\n\007urlPath\030\002 \002(" +
-      "\t\022\023\n\013dataFormatS\030\003 \001(\t\022\020\n\010dataSize\030\004 \001(\004" +
-      "\"\'\n\010Property\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002(" +
-      "\t\"\226\001\n\007Dataset\022\r\n\005catId\030\001 \002(\004\022\014\n\004name\030\002 \002" +
-      "(\t\022\014\n\004path\030\003 \001(\t\022\n\n\002id\030\004 \001(\t\022\020\n\010restrict",
-      "\030\005 \001(\t\022\014\n\004ncml\030\006 \001(\t\022\027\n\006access\030\n \003(\0132\007.A" +
-      "ccess\022\033\n\010property\030\013 \003(\0132\t.PropertyB7\n\036th" +
-      "redds.server.catalog.trackerB\025ConfigCata" +
-      "logExtProto"
+      "atalogExt.proto\"\036\n\007Catalog\022\023\n\013catLocatio" +
+      "n\030\001 \002(\t\"b\n\010DataRoot\022\017\n\007urlPath\030\001 \002(\t\022\023\n\013" +
+      "dirLocation\030\002 \002(\t\022\033\n\004type\030\003 \002(\0162\r.DataRo" +
+      "otType\022\023\n\013catLocation\030\004 \001(\t\"\226\001\n\007Dataset\022" +
+      "\r\n\005catId\030\001 \002(\004\022\014\n\004name\030\002 \002(\t\022\014\n\004path\030\003 \001" +
+      "(\t\022\n\n\002id\030\004 \001(\t\022\020\n\010restrict\030\005 \001(\t\022\014\n\004ncml" +
+      "\030\006 \001(\t\022\027\n\006access\030\n \003(\0132\007.Access\022\033\n\010prope" +
+      "rty\030\013 \003(\0132\t.Property\"U\n\006Access\022\023\n\013servic" +
+      "eName\030\001 \002(\t\022\017\n\007urlPath\030\002 \002(\t\022\023\n\013dataForm",
+      "atS\030\003 \001(\t\022\020\n\010dataSize\030\004 \001(\004\"\'\n\010Property\022" +
+      "\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002(\t*X\n\014DataRoot" +
+      "Type\022\017\n\013datasetRoot\020\001\022\017\n\013datasetScan\020\002\022\017" +
+      "\n\013catalogScan\020\003\022\025\n\021featureCollection\020\004B7" +
+      "\n\036thredds.server.catalog.trackerB\025Config" +
+      "CatalogExtProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5142,31 +5092,31 @@ public final class ConfigCatalogExtProto {
           internal_static_Catalog_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Catalog_descriptor,
-              new java.lang.String[] { "Path", "Id", });
+              new java.lang.String[] { "CatLocation", });
           internal_static_DataRoot_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_DataRoot_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DataRoot_descriptor,
-              new java.lang.String[] { "CatId", "Path", "DirLocation", "DatasetScan", "FcConfig", });
-          internal_static_Access_descriptor =
+              new java.lang.String[] { "UrlPath", "DirLocation", "Type", "CatLocation", });
+          internal_static_Dataset_descriptor =
             getDescriptor().getMessageTypes().get(2);
+          internal_static_Dataset_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_Dataset_descriptor,
+              new java.lang.String[] { "CatId", "Name", "Path", "Id", "Restrict", "Ncml", "Access", "Property", });
+          internal_static_Access_descriptor =
+            getDescriptor().getMessageTypes().get(3);
           internal_static_Access_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Access_descriptor,
               new java.lang.String[] { "ServiceName", "UrlPath", "DataFormatS", "DataSize", });
           internal_static_Property_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_Property_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Property_descriptor,
               new java.lang.String[] { "Name", "Value", });
-          internal_static_Dataset_descriptor =
-            getDescriptor().getMessageTypes().get(4);
-          internal_static_Dataset_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_Dataset_descriptor,
-              new java.lang.String[] { "CatId", "Name", "Path", "Id", "Restrict", "Ncml", "Access", "Property", });
           return null;
         }
       };

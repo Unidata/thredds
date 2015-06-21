@@ -51,12 +51,14 @@ import net.jcip.annotations.Immutable;
 @Immutable
 public class DataRoot {
   private static final boolean show = false;
+  public enum Type {datasetRoot, datasetScan, catalogScan, featureCollection}
 
   private final String path;          // match this path to 1 of the following:
   private final String dirLocation;   // 1) this directory  (not null)
   private final DatasetScan datasetScan;     // 2) the DatasetScan that created this (may be null)
   private final FeatureCollectionRef featCollection; // 3) the FeatureCollection that created this (may be null)
   private final CatalogScan catScan;  // 4) the CatalogScan that created this (may be null)
+  private final Type type;
 
   public DataRoot(FeatureCollectionRef featCollection) {
     this.path = featCollection.getPath();
@@ -64,6 +66,7 @@ public class DataRoot {
     this.datasetScan = null;
     this.catScan = null;
     this.featCollection = featCollection;
+    this.type = Type.featureCollection;
     show();
   }
 
@@ -73,6 +76,7 @@ public class DataRoot {
     this.datasetScan = scan;
     this.catScan = null;
     this.featCollection = null;
+    this.type = Type.datasetScan;
     show();
   }
 
@@ -82,6 +86,7 @@ public class DataRoot {
     this.datasetScan = null;
     this.catScan = catScan;
     this.featCollection = null;
+    this.type = Type.catalogScan;
     show();
   }
 
@@ -91,6 +96,7 @@ public class DataRoot {
     this.datasetScan = null;
     this.catScan = null;
     this.featCollection = null;
+    this.type = Type.datasetRoot;
     show();
   }
 
@@ -104,6 +110,10 @@ public class DataRoot {
 
   public String getDirLocation() {
     return dirLocation;
+  }
+
+  public Type getType() {
+    return type;
   }
 
   public DatasetScan getDatasetScan() {

@@ -110,7 +110,43 @@ return true;
     return ncmlDatasetHash.get(path);
   }
 
-  public DatasetExt findCatalogExt(String path) {
+  @Override
+  public boolean exists() {
+    return false;
+  }
+
+  @Override
+  public boolean reinit() {
+    return false;
+  }
+
+  @Override
+  public DatasetExt findDatasetExt(String path) {
+    return null;
+  }
+
+  @Override
+  public boolean trackDataRoot(DataRootExt ds) {
+    return false;
+  }
+
+  @Override
+  public DatasetExt findDataRootExt(String path) {
+    return null;
+  }
+
+  @Override
+  public Iterable<DataRootExt> getDataRoots() {
+    return null;
+  }
+
+  @Override
+  public boolean trackCatalog(CatalogExt ds) {
+    return false;
+  }
+
+  @Override
+  public Iterable<CatalogExt> getCatalogs() {
     return null;
   }
 

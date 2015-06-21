@@ -12,7 +12,7 @@ import java.util.Map;
  * @author caron
  * @since 4/16/2015
  */
-public class DataRootAlias {
+public class AliasTranslator {
 
   private static Map<String, String> alias = new HashMap<>();
 

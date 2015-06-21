@@ -152,7 +152,7 @@ public class ConfigCatalogHtmlWriter {
       sb.append("' align='left' valign='top'").append(">\n");
     }
 
-    sb.append("Catalog ").append(catname);
+    sb.append(" Catalog ").append(catname);
     sb.append("</h1>");
     sb.append("<HR size='1' noshade='noshade'>");
 
