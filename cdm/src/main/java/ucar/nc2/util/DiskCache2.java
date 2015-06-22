@@ -262,13 +262,24 @@ public class DiskCache2 {
       filename = filename.substring(5);
     Path path = Paths.get(filename).toAbsolutePath(); */
     Path path = f.toPath().toAbsolutePath();
-    return Files.isWritable(path.getParent());
+    //return Files.isWritable(path.getParent());
     /* Path apath = path.toAbsolutePath();
     System.out.printf("%s%n", path.toAbsolutePath());
     File parent = f.getParentFile();
     System.out.printf("%s%n", parent.exists());
     Path p = parent.toPath();
     return Files.isWritable(p);  */
+    try
+    {
+         /*
+          * Create and delete temp file in order to check file permissions 
+          */
+    	return File.createTempFile("nc_", ".tmp", path.getParent().toFile()).delete();
+    }
+    catch(java.io.IOException e)
+    {
+          return false;//Operation is aborted, assuming non-writable path.
+    }
   }
 
   /**
