@@ -137,7 +137,6 @@ public class ConfigCatalogInitialization {
     this.contentRootPath = this.tdsContext.getContentDirectory();
     this.contextPath = tdsContext.getContextPath();
 
-
     boolean databaseOk = datasetTracker.exists(); // detect if tracker database exists
     if (!databaseOk)
       this.readMode = ReadMode.always;
@@ -172,13 +171,16 @@ public class ConfigCatalogInitialization {
   private void readRootCatalogs() {
     rootCatalogKeys = new ArrayList<>();
     rootCatalogKeys.add("catalog.xml"); // always first
-    rootCatalogKeys.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
-    logCatalogInit.info("ConfigCatalogManage: initializing " + rootCatalogKeys.size() + " root catalogs.");
+    // add any others listed in ThreddsConfig
+    for (String location : ThreddsConfig.getRootList("catalogRoot"))
+      rootCatalogKeys.add( location );
+    logCatalogInit.info("ConfigCatalogInit: initializing " + rootCatalogKeys.size() + " root catalogs.");
 
     // all root catalogs are checked
     for (String pathname : rootCatalogKeys) {
       try {
         pathname = StringUtils.cleanPath(pathname);
+        logCatalogInit.info( "Checking catalogRoot = " + pathname);
         checkCatalogToRead(pathname);
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + pathname + "; " + e.getMessage(), e);

@@ -2,7 +2,7 @@ package thredds.servlet.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.OncePerRequestFilter;
-import thredds.server.config.CorsConfig;
+import thredds.server.config.CorsConfigBean;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ import java.io.IOException;
 public class RequestCORSFilter extends OncePerRequestFilter {
 
     @Autowired
-    private CorsConfig corsConfig;
+    private CorsConfigBean corsConfig;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

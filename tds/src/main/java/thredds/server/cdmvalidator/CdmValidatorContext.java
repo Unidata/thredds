@@ -49,7 +49,7 @@ import thredds.util.filesource.*;
 import thredds.server.config.ThreddsConfig;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
-import thredds.server.config.HtmlConfig;
+import thredds.server.config.HtmlConfigBean;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.DiskCache;
 
@@ -80,7 +80,7 @@ public class CdmValidatorContext
 
   private String configFileName;
 
-  private HtmlConfig htmlConfig;
+  private HtmlConfigBean htmlConfig;
 
   private RequestDispatcher defaultRequestDispatcher;
   private RequestDispatcher jspRequestDispatcher;
@@ -317,7 +317,7 @@ public class CdmValidatorContext
      this.webappVersionBuildDate = buildDateString;
    }
 
-  public void setHtmlConfig( HtmlConfig htmlConfig )
+  public void setHtmlConfig( HtmlConfigBean htmlConfig )
   {
     this.htmlConfig = htmlConfig;
   }
@@ -327,7 +327,7 @@ public class CdmValidatorContext
    *
    * @return the HtmlConfig
    */
-  public HtmlConfig getHtmlConfig()
+  public HtmlConfigBean getHtmlConfig()
   {
     return this.htmlConfig;
   }

@@ -112,19 +112,19 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   // set by spring
 
   @Autowired
-  private HtmlConfig htmlConfig;
+  private HtmlConfigBean htmlConfig;
 
   @Autowired
-  private TdsServerInfo serverInfo;
+  private TdsServerInfoBean serverInfo;
 
   @Autowired
-  private WmsConfig wmsConfig;
+  private WmsConfigBean wmsConfig;
 
   @Autowired
-  private CorsConfig corsConfig;
+  private CorsConfigBean corsConfig;
 
   @Autowired
-  private TdsUpdateConfig tdsUpdateConfig;
+  private TdsUpdateConfigBean tdsUpdateConfig;
 
   private ServletContext servletContext;
 
@@ -345,10 +345,9 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       logServerStartup.error("TdsContext.init(): " + msg);
       throw new IllegalStateException(msg);
     }
-
     ThreddsConfig.init(tdsConfigFile.getPath());
 
-    // initialize/populate all of the various config objects
+    // initialize the configuration beans
     TdsConfigMapper tdsConfigMapper = new TdsConfigMapper();
     tdsConfigMapper.setTdsServerInfo(this.serverInfo);
     tdsConfigMapper.setHtmlConfig(this.htmlConfig);
@@ -357,8 +356,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     tdsConfigMapper.setTdsUpdateConfig(this.tdsUpdateConfig);
     tdsConfigMapper.init(this);
 
-    // log current server version in catalogInit, where it is
-    //  most likely to be seen by the user
+    // log current server version in catalogInit, where it is most likely to be seen by the user
     String message = "You are currently running TDS version " + this.getVersionInfo();
     logCatalogInit.info(message);
     // check and log the latest stable and development version information
@@ -535,21 +533,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     return this.contentRootPathProperty;
   }
 
-
   public String getConfigFileProperty() {
     return this.configFileProperty;
-  }
-
-  public TdsServerInfo getServerInfo() {
-    return serverInfo;
-  }
-
-  public HtmlConfig getHtmlConfig() {
-    return this.htmlConfig;
-  }
-
-  public WmsConfig getWmsConfig() {
-    return wmsConfig;
   }
 
 

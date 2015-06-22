@@ -43,10 +43,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.server.config.TdsContext;
+import thredds.server.config.TdsServerInfoBean;
 
 @Controller
 @RequestMapping(value ="/info", method= RequestMethod.GET)
 public class ServerInfoController {
+
+  @Autowired
+  private TdsServerInfoBean serverInfo;
 
   @Autowired
   private TdsContext tdsContext;
@@ -68,7 +72,7 @@ public class ServerInfoController {
 
   private Map<String, Object> getServerInfoModel() {
     Map<String, Object> model = new HashMap<>();
-    model.put("serverInfo", this.tdsContext.getServerInfo());
+    model.put("serverInfo", this.serverInfo);
     model.put("webappName", this.tdsContext.getWebappDisplayName());
     model.put("webappVersion", this.tdsContext.getWebappVersion());
     model.put("webappVersionBuildDate", this.tdsContext.getTdsVersionBuildDate());

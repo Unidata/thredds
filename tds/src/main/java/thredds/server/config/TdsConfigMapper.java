@@ -39,6 +39,8 @@ package thredds.server.config;
  * settings.
  * <p/>
  * called from TdsInit
+ * LOOK im not crazy about this diesign, seems like an extra unnecessary layer?
+ * LOOK could be a Spring component, and autowire beans
  *
  * @author edavis
  * @since 4.1
@@ -50,29 +52,29 @@ class TdsConfigMapper {
   TdsConfigMapper() {
   }
 
-  private TdsServerInfo tdsServerInfo;
-  private HtmlConfig htmlConfig;
-  private WmsConfig wmsConfig;
-  private CorsConfig corsConfig;
-  private TdsUpdateConfig tdsUpdateConfig;
+  private TdsServerInfoBean tdsServerInfo;
+  private HtmlConfigBean htmlConfig;
+  private WmsConfigBean wmsConfig;
+  private CorsConfigBean corsConfig;
+  private TdsUpdateConfigBean tdsUpdateConfig;
 
-  void setTdsServerInfo(TdsServerInfo tdsServerInfo) {
+  void setTdsServerInfo(TdsServerInfoBean tdsServerInfo) {
     this.tdsServerInfo = tdsServerInfo;
   }
 
-  void setHtmlConfig(HtmlConfig htmlConfig) {
+  void setHtmlConfig(HtmlConfigBean htmlConfig) {
     this.htmlConfig = htmlConfig;
   }
 
-  void setWmsConfig(WmsConfig wmsConfig) {
+  void setWmsConfig(WmsConfigBean wmsConfig) {
     this.wmsConfig = wmsConfig;
   }
 
-  void setCorsConfig(CorsConfig corsConfig) {
+  void setCorsConfig(CorsConfigBean corsConfig) {
     this.corsConfig = corsConfig;
   }
 
-  void setTdsUpdateConfig(TdsUpdateConfig tdsUpdateConfig) {
+  void setTdsUpdateConfig(TdsUpdateConfigBean tdsUpdateConfig) {
     this.tdsUpdateConfig = tdsUpdateConfig;
   }
 
@@ -212,7 +214,6 @@ class TdsConfigMapper {
       this.key = key;
       this.alternateKey = alternateKey;
       this.defaultValue = defaultValue;
-
     }
 
     String getDefaultValue() {
@@ -224,7 +225,6 @@ class TdsConfigMapper {
     }
   }
 
-
   private static String getValueFromThreddsConfig(String key, String alternateKey, String defaultValue) {
     String value = ThreddsConfig.get(key, null);
     if (value == null && alternateKey != null)
@@ -232,7 +232,6 @@ class TdsConfigMapper {
     if (value == null)
       value = defaultValue;
     return value;
-
   }
 
   void init(TdsContext tdsContext) {

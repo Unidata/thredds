@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.config.TdsServerInfo;
+import thredds.server.config.TdsServerInfoBean;
 import ucar.unidata.test.util.NeedsContentRoot;
 
 import static org.junit.Assert.assertEquals;
@@ -67,11 +67,10 @@ public class ServerInfoControllerTest{
 
   private void checkModelAndView(ModelAndView mv, String view) {
     assertViewName(mv, view);
-    assertAndReturnModelAttributeOfType(mv, "serverInfo", TdsServerInfo.class);
+    assertAndReturnModelAttributeOfType(mv, "serverInfo", TdsServerInfoBean.class);
     assertAndReturnModelAttributeOfType(mv, "webappVersion", String.class);
     assertAndReturnModelAttributeOfType(mv, "webappName", String.class);
     assertAndReturnModelAttributeOfType(mv, "webappVersionBuildDate", String.class);
   }
-
 
 }

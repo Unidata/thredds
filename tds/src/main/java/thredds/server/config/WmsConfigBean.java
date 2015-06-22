@@ -33,60 +33,60 @@
 
 package thredds.server.config;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-
-import thredds.util.ThreddsConfigReader;
+import org.springframework.stereotype.Component;
 
 /**
- * Read and process the threddsConfig.xml file.
- * You can access the values by calling ThreddsConfig.getXXX(name1.name2), where
- * <pre>
- *  <name1>
- *   <name2>value</name2>
- *  </name1>
- * </pre>
+ * WMS config bean
+ * LOOK doesnt seem to be used in WMS
+ *
+ * @author edavis
+ * @since 4.1
  */
-public final class ThreddsConfig {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
-  private static ThreddsConfigReader reader;
+@Component
+public class WmsConfigBean {
+  private boolean allow;
+  private boolean allowRemote;
+  private String paletteLocationDir;
+  private int maxImageWidth;
+  private int maxImageHeight;
 
-  public static void init( String filename) {
-    reader = new ThreddsConfigReader(filename, log);
+  public boolean isAllow() {
+    return allow;
   }
 
-  static public String get(String paramName, String defValue) {
-    return reader.get(paramName, defValue);
+  public void setAllow(boolean allow) {
+    this.allow = allow;
   }
 
-  static public boolean hasElement(String paramName) {
-    return reader.hasElement(paramName);
+  public boolean isAllowRemote() {
+    return allowRemote;
   }
 
-  static public boolean getBoolean(String paramName, boolean defValue) {
-    return reader.getBoolean(paramName, defValue);
+  public void setAllowRemote(boolean allowRemote) {
+    this.allowRemote = allowRemote;
   }
 
-  static public long getBytes(String paramName, long defValue) {
-    return reader.getBytes(paramName, defValue);
+  public String getPaletteLocationDir() {
+    return paletteLocationDir;
   }
 
-  static public int getInt(String paramName, int defValue) {
-        return reader.getInt(paramName, defValue);
+  public void setPaletteLocationDir(String paletteLocationDir) {
+    this.paletteLocationDir = paletteLocationDir;
   }
 
-  static public long getLong(String paramName, long defValue) {
-            return reader.getLong(paramName, defValue);
+  public int getMaxImageWidth() {
+    return maxImageWidth;
   }
 
-  static public int getSeconds(String paramName, int defValue) {
-    return reader.getSeconds(paramName, defValue);
+  public void setMaxImageWidth(int maxImageWidth) {
+    this.maxImageWidth = maxImageWidth;
   }
 
-
-  static public List<String> getRootList(String elementName) {
-    return reader.getRootList(elementName);
+  public int getMaxImageHeight() {
+    return maxImageHeight;
   }
 
+  public void setMaxImageHeight(int maxImageHeight) {
+    this.maxImageHeight = maxImageHeight;
+  }
 }

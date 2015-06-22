@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class CorsConfig {
+public class CorsConfigBean {
     private boolean enabled;
     private int maxAge;
     private String allowedMethods;

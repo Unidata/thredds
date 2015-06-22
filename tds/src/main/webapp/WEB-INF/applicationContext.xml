@@ -82,9 +82,7 @@
      <entry key="cdmUnitTest" value="${unidata.testdata.path}/cdmUnitTest/"/>
    </util:map>
 
-  <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
-
-  <bean id="htmlConfig" class="thredds.server.config.HtmlConfig">
+  <bean id="htmlConfig" class="thredds.server.config.HtmlConfigBean">
     <property name="webappUrl" value="${tds.url}" />
     <property name="webappDocsUrl" value="${tds.documentation.url}" />
     <property name="webappLogoUrl" value="${tds.logo.url}" />
@@ -92,8 +90,10 @@
     <property name="installUrl" value="${tds.install.url}" />
   </bean>
 
-  <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
-  <bean id="corsConfig" class="thredds.server.config.CorsConfig" />
+  <bean id="corsConfig" class="thredds.server.config.CorsConfigBean" />
+  <bean id="tdsServerInfo" class="thredds.server.config.TdsServerInfoBean" />
+  <bean id="tdsUpdateConfig" class="thredds.server.config.TdsUpdateConfigBean" />
+  <bean id="wmsConfig" class="thredds.server.config.WmsConfigBean" />
 
     <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>

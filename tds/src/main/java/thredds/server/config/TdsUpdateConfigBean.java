@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class TdsUpdateConfig {
+public class TdsUpdateConfigBean {
     // fetch tds version info from Unidata and log it.
     private boolean logVersionInfo;
 

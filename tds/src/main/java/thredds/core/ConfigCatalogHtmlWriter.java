@@ -40,7 +40,7 @@ import thredds.client.catalog.tools.DatasetHtmlWriter;
 import thredds.server.catalog.CatalogScan;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
-import thredds.server.config.HtmlConfig;
+import thredds.server.config.HtmlConfigBean;
 import thredds.server.config.TdsContext;
 import thredds.server.viewer.ViewerService;
 import thredds.util.ContentType;
@@ -87,7 +87,7 @@ public class ConfigCatalogHtmlWriter {
   private TdsContext tdsContext;
 
   @Autowired
-  private HtmlConfig htmlConfig;
+  private HtmlConfigBean htmlConfig;
 
 
   /**

@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import thredds.server.config.HtmlConfig;
+import thredds.server.config.HtmlConfigBean;
 import thredds.server.config.TdsContext;
 import thredds.util.ContentType;
 import ucar.nc2.constants.AxisType;
@@ -53,16 +53,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
 
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
@@ -78,7 +68,7 @@ public class HtmlWriting {
   private TdsContext tdsContext;
 
   @Autowired
-  private HtmlConfig htmlConfig;
+  private HtmlConfigBean htmlConfig;
 
 
   public String getHtmlDoctypeAndOpenTag() {

@@ -21,7 +21,7 @@ public class TdsContextTest {
 	@Autowired
 	private TdsContext tdsContext;
 
-	@Test
+	/* @Test
 	public void testInit() {
 		System.out.printf("%s%n", tdsContext);
 		//All the initialization was done
@@ -29,8 +29,7 @@ public class TdsContextTest {
 		assertNotNull( tdsContext.getServerInfo() );
 		assertNotNull( tdsContext.getHtmlConfig() );
 		assertNotNull( tdsContext.getWmsConfig() );
-		
-	}
+	}  */
 
 	@Test
 	public void testVersionRetrieval() {

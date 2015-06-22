@@ -48,7 +48,7 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.core.ConfigCatalogHtmlWriter;
-import thredds.server.config.HtmlConfig;
+import thredds.server.config.HtmlConfigBean;
 import thredds.server.config.ThreddsConfig;
 import thredds.server.exception.ServiceNotAllowed;
 
@@ -74,7 +74,7 @@ public class RemoteCatalogServiceController {
   private boolean allowRemote = ThreddsConfig.getBoolean("CatalogServices.allowRemote", false);
 
   @Autowired
-  private HtmlConfig htmlConfig;
+  private HtmlConfigBean htmlConfig;
 
   @Autowired
   private ConfigCatalogHtmlWriter writer;
@@ -150,7 +150,7 @@ public class RemoteCatalogServiceController {
 
   }
 
-  public static ModelAndView constructValidationMessageModelAndView(URI uri, String validationMessage, HtmlConfig htmlConfig) {
+  public static ModelAndView constructValidationMessageModelAndView(URI uri, String validationMessage, HtmlConfigBean htmlConfig) {
     Map<String, Object> model = new HashMap<>();
     model.put("catalogUrl", uri);
     model.put("message", validationMessage);
