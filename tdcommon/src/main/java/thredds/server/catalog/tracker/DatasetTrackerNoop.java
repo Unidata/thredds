@@ -54,19 +54,10 @@ public class DatasetTrackerNoop implements DatasetTracker {
   }
 
   @Override
-  public DatasetExt findDatasetExt(String path) {
-    return null;
-  }
-
-  @Override
   public boolean trackDataRoot(DataRootExt ds) {
     return false;
   }
 
-  @Override
-  public DatasetExt findDataRootExt(String path) {
-    return null;
-  }
 
   @Override
   public Iterable<DataRootExt> getDataRoots() {

@@ -11,6 +11,9 @@ import thredds.server.catalog.FeatureCollectionRef;
 
 import java.io.Externalizable;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * org.mapdb.DB implementation of DatasetTracker
@@ -21,43 +24,77 @@ import java.io.File;
 public class DatasetTrackerMapDB implements DatasetTracker {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  private HTreeMap<String, Externalizable> map;
+  private File dbFile;
+  private DB db;
+  private Set<Externalizable> catalogSet;
+  private Set<Externalizable> datarootSet;
+  private HTreeMap<String, Externalizable> datasetMap;
+  private boolean alreadyExists;
 
   public boolean init(String pathname, long maxDatasets) {
-    File file = new File(pathname+"/mapdb2.dat");
+    dbFile = new File(pathname+"/mapdb.dat");
 
-    // LOOK should we force a recreation each time? maaybe at least have that option
     try {
-      DB db = DBMaker.newFileDB(file)
-              .transactionDisable()
-              .mmapFileEnableIfSupported()
-              .closeOnJvmShutdown()
-              .make();
-
-      map = db.getHashMap("datasets");
+      open();
+      startupLog.info("DatasetTrackerMapDB opened success on '"+ dbFile.getAbsolutePath()+ "'");
       return true;
 
     } catch (Throwable e) {
-      startupLog.error("DatasetTrackerMapDB failed on '"+ file.getAbsolutePath()+ "', delete catalog cache and reload ", e);
-      if (file.exists()) {
-        boolean wasDeleted = file.delete();
-        if (!wasDeleted) {
-          startupLog.error("DatasetTrackerMapDB not able to delete {} ", file.getAbsolutePath());
-          throw e;
-        }
-      }
-
-      // try again
-      DB db = DBMaker.newFileDB(file)
-              .transactionDisable()
-              .mmapFileEnableIfSupported()
-              .closeOnJvmShutdown()
-              .make();
-
-      map = db.getHashMap("datasets");
-      return true;
+      startupLog.error("DatasetTrackerMapDB failed on '"+ dbFile.getAbsolutePath()+ "', delete catalog cache and reload ", e);
+      return reinit();
     }
   }
+
+  public void close() {
+    if (db != null) {
+      datasetMap.close();
+      db.close();
+      startupLog.info("DatasetTrackerMapDB closed");
+      db = null;
+    }
+  }
+
+  @Override
+  public boolean exists() {
+    return alreadyExists;
+  }
+
+  @Override
+  public boolean reinit() {
+    if (dbFile.exists()) {
+      boolean wasDeleted = dbFile.delete();
+      if (!wasDeleted) {
+        startupLog.error("DatasetTrackerMapDB not able to delete {} ", dbFile.getAbsolutePath());
+        return false;
+      }
+    }
+
+    try {
+      open();
+      alreadyExists = false;
+      return true;
+
+    } catch (Throwable e) {
+      startupLog.error("DatasetTrackerMapDB failed on '"+ dbFile.getAbsolutePath()+ "', delete catalog cache and reload ", e);
+      return false;
+    }
+  }
+
+  private void open() {
+    DB db = DBMaker.newFileDB(dbFile)
+            .transactionDisable()
+            .mmapFileEnableIfSupported()
+            .closeOnJvmShutdown()
+            .make();
+
+    alreadyExists = db.exists("datasets");  // LOOK ??
+    datasetMap = db.getHashMap("datasets");
+    datarootSet = db.getHashSet("dataroots");
+    catalogSet = db.getHashSet("catalogs");
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // datasets
 
   @Override
   public boolean trackDataset(Dataset dataset, Callback callback) {
@@ -91,7 +128,7 @@ public class DatasetTrackerMapDB implements DatasetTracker {
 
     try {
       DatasetExt dsext = new DatasetExt(dataset, hasNcml);
-      map.put(path, dsext);
+      datasetMap.put(path, dsext);
       return true;
     } catch (Throwable t) {
       startupLog.error("MapDB afailed to put DatasetExt", t);
@@ -102,59 +139,49 @@ public class DatasetTrackerMapDB implements DatasetTracker {
 
   @Override
   public String findResourceControl(String path) {
-    DatasetExt dext = (DatasetExt) map.get(path);
+    DatasetExt dext = (DatasetExt) datasetMap.get(path);
     if (dext == null) return null;
     return dext.getRestrictAccess();
   }
 
   @Override
   public String findNcml(String path) {
-    DatasetExt dext = (DatasetExt) map.get(path);
+    DatasetExt dext = (DatasetExt) datasetMap.get(path);
     if (dext == null) return null;
     return dext.getNcml();
   }
 
+  ////////////////////////////////////////////////////////////////
+  // dataroots
+
   @Override
-  public boolean exists() {
-    return false;
+  public boolean trackDataRoot(DataRootExt dsext) {
+    return datarootSet.add(dsext);
   }
 
   @Override
-  public boolean reinit() {
-    return false;
+  public Iterable<? extends DataRootExt> getDataRoots() {
+    List<DataRootExt> result = new ArrayList<>();
+    for (Externalizable ext : datarootSet)
+      result.add((DataRootExt) ext);
+    return result;
+    //return (Iterable<? extends DataRootExt>) datarootSet;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // catalogs
+
+  @Override
+  public boolean trackCatalog(CatalogExt catext) {
+    return catalogSet.add(catext);
   }
 
   @Override
-  public DatasetExt findDatasetExt(String path) {
-    return null;
-  }
-
-  @Override
-  public boolean trackDataRoot(DataRootExt ds) {
-    return false;
-  }
-
-  @Override
-  public DatasetExt findDataRootExt(String path) {
-    return (DatasetExt) map.get(path);
-  }
-
-  @Override
-  public Iterable<DataRootExt> getDataRoots() {
-    return null;
-  }
-
-  @Override
-  public boolean trackCatalog(CatalogExt ds) {
-    return false;
-  }
-
-  @Override
-  public Iterable<CatalogExt> getCatalogs() {
-    return null;
-  }
-
-  public void close() {
-    map.close();
+  public Iterable<? extends CatalogExt> getCatalogs() {
+    List<CatalogExt> result = new ArrayList<>();
+    for (Externalizable ext : datarootSet)
+    result.add((CatalogExt) ext);
+    return result;
+    //return (Iterable<? extends CatalogExt>) catalogSet;
   }
 }

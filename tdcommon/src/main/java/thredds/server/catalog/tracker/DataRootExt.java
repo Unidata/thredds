@@ -21,7 +21,6 @@ public class DataRootExt implements Externalizable {
 
   static public int total_count = 0;
   static public long total_nbytes = 0;
-  static private final boolean showParsedXML = true;
 
   private String path;
   private String dirLocation;

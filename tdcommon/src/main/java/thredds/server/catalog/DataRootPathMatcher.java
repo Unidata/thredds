@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import thredds.client.catalog.CatalogRef;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Service;
 import thredds.server.catalog.tracker.DataRootExt;
 import thredds.server.catalog.tracker.DatasetTracker;
 import ucar.unidata.util.StringUtil2;
@@ -96,7 +99,7 @@ public class DataRootPathMatcher {
    * @return the value whose key is the longest that matches path, or null if none
    */
   public String findLongestPathMatch( String reqPath) {
-    SortedSet<String> tail = treeSet.tailSet( reqPath);
+    SortedSet<String> tail = treeSet.tailSet(reqPath);
     if (tail.isEmpty()) return null;
     String after = tail.first();
     if (reqPath.startsWith( after)) // common case
@@ -125,7 +128,7 @@ public class DataRootPathMatcher {
     if (path == null) return null;
     DataRootExt dataRootExt = map.get(path);
     if (dataRootExt == null) {
-      logger.error("DataRootPath Matcher inconsistent state");
+      logger.error("DataRootPathMatcher found path {} but not in map", path);
       return null;
     }
     return findDataRoot(dataRootExt);
@@ -135,23 +138,32 @@ public class DataRootPathMatcher {
     DataRoot dataRoot = dataRootExt.getDataRoot();
     if (dataRoot != null) return dataRoot;
 
-    // otherwise must read it in
-    dataRoot = readDataRoot(dataRootExt);
+    // otherwise must read the catalog that its in
+    dataRoot = readDataRootFromCatalog(dataRootExt);
     dataRootExt.setDataRoot(dataRoot);
     return dataRoot;
   }
 
-  public DataRoot readDataRoot( DataRootExt dataRootExt) {
+  private DataRoot readDataRootFromCatalog( DataRootExt dataRootExt) {
 
     try {
       ConfigCatalog cat = ccc.get(dataRootExt.getCatLocation());
+      extractDataRoots(dataRootExt.getCatLocation(), cat.getDatasets());  // will create a new DataRootExt and replace this one in the map
+      DataRootExt dataRootExtNew = map.get(dataRootExt.getPath());
+      if (null == dataRootExtNew) {
+        logger.error("Reading catalog " + dataRootExt.getCatLocation() + " failed to find dataRoot path=" + dataRootExt.getPath());
+        return null;
+      }
+      return dataRootExtNew.getDataRoot();
+
     } catch (IOException e) {
       e.printStackTrace();
+      return null;
     }
-    // LOOK whats next ?
-    return null;
   }
 
+  // take the DataRootExt from cache and put into the in-memory tree
+  // the DataRoot is lazily instantiated
   public void readDataRoots() {
     for (DataRootExt dre : tracker.getDataRoots()) {
       put(dre);
@@ -161,7 +173,41 @@ public class DataRootPathMatcher {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // building up the data roots after reading catalogs
 
-  public boolean addRoot(DatasetScan dscan, String catalogRelPath) {
+  /**
+   * Finds datasetScan, datasetFmrc
+   * Look for duplicate Ids (give message). Dont follow catRefs.
+   *
+   * @param dsList the list of Dataset
+   */
+  public void extractDataRoots(String catalogRelPath, List<Dataset> dsList) {
+
+    for (Dataset dataset : dsList) {
+      if (dataset instanceof DatasetScan) {
+        DatasetScan ds = (DatasetScan) dataset;
+        Service service = ds.getServiceDefault();
+        if (service == null) {
+          logCatalogInit.error(ERROR + "DatasetScan " + ds.getName() + " has no default Service - skipping");  // LOOK needed?
+          continue;
+        }
+        addRoot(ds, catalogRelPath);
+
+      } else if (dataset instanceof FeatureCollectionRef) {
+        FeatureCollectionRef fc = (FeatureCollectionRef) dataset;
+        addRoot(fc, catalogRelPath);
+
+      }  else if (dataset instanceof CatalogScan) {
+        CatalogScan catScan = (CatalogScan) dataset;
+        addRoot(catScan, catalogRelPath);
+      }
+
+      if (!(dataset instanceof CatalogRef)) {
+        // recurse
+        extractDataRoots(catalogRelPath, dataset.getDatasets());
+      }
+    }
+  }
+
+  private boolean addRoot(DatasetScan dscan, String catalogRelPath) {
     String path = dscan.getPath();
 
     if (path == null) {
@@ -189,7 +235,7 @@ public class DataRootPathMatcher {
     return true;
   }
 
-  public boolean addRoot(FeatureCollectionRef fc, String catalogRelPath) {
+  private boolean addRoot(FeatureCollectionRef fc, String catalogRelPath) {
     String path = fc.getPath();
 
     if (path == null) {
@@ -246,7 +292,7 @@ public class DataRootPathMatcher {
     return true;
   }
 
-  public boolean addRoot(CatalogScan catScan, String catalogRelPath) {
+  private boolean addRoot(CatalogScan catScan, String catalogRelPath) {
     String path = catScan.getPath();
 
     if (path == null) {

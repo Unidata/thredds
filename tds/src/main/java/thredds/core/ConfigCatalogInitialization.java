@@ -38,7 +38,6 @@ import org.springframework.util.StringUtils;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.Service;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
@@ -110,9 +109,10 @@ public class ConfigCatalogInitialization {
   }
 
   // used from outside of tomcat/spring
-  public ConfigCatalogInitialization(String contentRootPath, String rootCatalog, DataRootPathMatcher matcher, DatasetTracker datasetTracker,
+  public ConfigCatalogInitialization(ReadMode _readMode, String contentRootPath, String rootCatalog, DataRootPathMatcher matcher, DatasetTracker datasetTracker,
                                      CatalogWatcher catalogWatcher,
                                      AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
+    this.readMode = _readMode;
     this.contentRootPath = new File(contentRootPath);
     this.contextPath = "/thredds";
     this.dataRootPathMatcher = matcher;
@@ -243,7 +243,7 @@ public class ConfigCatalogInitialization {
     }
 
     // look for dataRoots in datasetScans and featureCollections
-    extractDataRoots(cat.getDatasets(), catalogRelPath);
+    dataRootPathMatcher.extractDataRoots(catalogRelPath, cat.getDatasets());
 
     // get the directory path, reletive to the rootDir
     int pos = catalogRelPath.lastIndexOf("/");
@@ -290,7 +290,7 @@ public class ConfigCatalogInitialization {
       if (builder.getErrorMessage().length() > 0)
         logCatalogInit.debug(builder.getErrorMessage());
 
-      datasetTracker.trackCatalog( new CatalogExt(catalogRelPath)); // LOOK absolute vs reletive
+      datasetTracker.trackCatalog(new CatalogExt(catalogRelPath)); // LOOK absolute vs reletive
       return cat;
 
     } catch (Throwable t) {
@@ -307,7 +307,17 @@ public class ConfigCatalogInitialization {
       if (datasetTracker.trackDataset(ds, callback)) countDatasets++;
       if (maxDatasets > 0 && countDatasets > maxDatasets) exceedLimit = true;
 
-      if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollectionRef)) continue;
+      // look for duplicate ids
+      String id = ds.getID();
+      if (id != null) {
+        if (idHash.contains(id)) {
+          logCatalogInit.error(ERROR + "Duplicate id on  '" + ds.getName() + "' id= '" + id + "'");
+        } else {
+          idHash.add(id);
+        }
+      }
+
+      if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollectionRef)) continue;  // LOOK what about CatalogScan ??
 
       if (ds instanceof CatalogRef) { // follow catalog refs
         CatalogRef catref = (CatalogRef) ds;
@@ -371,50 +381,6 @@ public class ConfigCatalogInitialization {
      }
    }
 
-  /**
-   * Finds datasetScan, datasetFmrc
-   * Look for duplicate Ids (give message). Dont follow catRefs.
-   *
-   * @param dsList the list of Dataset
-   */
-  private void extractDataRoots(List<Dataset> dsList, String catalogRelPath) {
-
-    for (Dataset dataset : dsList) {
-      // look for duplicate ids
-      String id = dataset.getID();
-      if (id != null) {
-        if (idHash.contains(id)) {
-          logCatalogInit.error(ERROR + "Duplicate id on  '" + dataset.getName() + "' id= '" + id + "'");
-        } else {
-          idHash.add(id);
-        }
-      }
-
-      if (dataset instanceof DatasetScan) {
-        DatasetScan ds = (DatasetScan) dataset;
-        Service service = ds.getServiceDefault();
-        if (service == null) {
-          logCatalogInit.error(ERROR + "DatasetScan " + ds.getName() + " has no default Service - skipping");  // LOOK needed?
-          continue;
-        }
-        dataRootPathMatcher.addRoot(ds, catalogRelPath);
-
-      } else if (dataset instanceof FeatureCollectionRef) {
-        FeatureCollectionRef fc = (FeatureCollectionRef) dataset;
-        dataRootPathMatcher.addRoot(fc, catalogRelPath);
-
-      }  else if (dataset instanceof CatalogScan) {
-        CatalogScan catScan = (CatalogScan) dataset;
-        dataRootPathMatcher.addRoot(catScan, catalogRelPath);
-      }
-
-      if (!(dataset instanceof CatalogRef)) {
-        // recurse
-        extractDataRoots(dataset.getDatasets(), catalogRelPath);
-      }
-    }
-  }
-
   /////////////////////////////////////////////////////
 
   public void makeDebugActions() {
@@ -434,6 +400,7 @@ public class ConfigCatalogInitialization {
         e.pw.println(StringUtil2.quoteHtmlContent("\n" + sbuff.toString()));
       }
     };
+    debugHandler.addAction(act);
 
     act = new DebugCommands.Action("showStatic", "Show catalog initialization stats") {
       public void doAction(DebugCommands.Event e) {

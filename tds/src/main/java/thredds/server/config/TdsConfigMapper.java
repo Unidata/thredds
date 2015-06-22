@@ -38,7 +38,7 @@ package thredds.server.config;
  * the various servlets. Supports earlier versions (some deprecated) of threddsConfig.xml config
  * settings.
  * <p/>
- * LOOK not actually used ?(see TdsContext) ?
+ * called from TdsInit
  *
  * @author edavis
  * @since 4.1
@@ -110,8 +110,8 @@ class TdsConfigMapper {
   }
 
   enum HtmlConfigMappings {
-    HTML_STANDARD_CSS_URL("htmlSetup.standardCssUrl", null, ""),
-    HTML_CATALOG_CSS_URL("htmlSetup.catalogCssUrl", null, ""),
+    HTML_STANDARD_CSS_URL("htmlSetup.standardCssUrl", null, "tds.css"),
+    HTML_CATALOG_CSS_URL("htmlSetup.catalogCssUrl", null, "tdsCat.css"),
     GOOGLE_TRACKING_CODE("htmlSetup.googleTrackingCode", null, ""),
 
     HTML_FOLDER_ICON_URL("htmlSetup.folderIconUrl", null, "folder.gif"),

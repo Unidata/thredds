@@ -24,7 +24,7 @@ public class DatasetTrackerInMem implements DatasetTracker {
 
   // resource control
   private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
- // private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
+  // private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
   private boolean hasResourceControl = false;
 
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
@@ -47,16 +47,16 @@ public class DatasetTrackerInMem implements DatasetTracker {
     if (dataset instanceof DatasetScan) return false;
     if (dataset instanceof FeatureCollectionRef) return false;
 
-    if (dataset.getNcmlElement()!= null) {
+    if (dataset.getNcmlElement() != null) {
       if (callback != null) callback.hasNcml(dataset);
       // want the string representation
       Element ncmlElem = dataset.getNcmlElement();
-      XMLOutputter xmlOut= new XMLOutputter();
+      XMLOutputter xmlOut = new XMLOutputter();
       String ncml = xmlOut.outputString(ncmlElem);
       System.out.printf("%s%n", ncml);
       ncmlDatasetHash.put(dataset.getUrlPath(), ncml);
     }
-return true;
+    return true;
   }
 
   /**
@@ -117,22 +117,14 @@ return true;
 
   @Override
   public boolean reinit() {
-    return false;
-  }
-
-  @Override
-  public DatasetExt findDatasetExt(String path) {
-    return null;
+    resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
+    ncmlDatasetHash = new HashMap<>();
+    return true;
   }
 
   @Override
   public boolean trackDataRoot(DataRootExt ds) {
     return false;
-  }
-
-  @Override
-  public DatasetExt findDataRootExt(String path) {
-    return null;
   }
 
   @Override

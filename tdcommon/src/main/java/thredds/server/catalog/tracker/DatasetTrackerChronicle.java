@@ -19,17 +19,69 @@ import java.io.IOException;
  * @since 6/8/2015
  */
 public class DatasetTrackerChronicle implements DatasetTracker {
+  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  static private final String datasetName = "/chronicle.datasets.dat";
+  static private final String datarootName = "/dataroots.dat";
+  static private final String catalogName = "/catalogs.dat";
 
-  ChronicleMap<String, Externalizable> map;
+  private boolean alreadyExists;
+  private File dbFile;
+  private long maxDatasets;
+  private ChronicleMap<String, Externalizable> datasetMap;
 
   public boolean init(String pathname, long maxDatasets) throws IOException {
-    File file = new File(pathname+"/chronicle.dat");
+    dbFile = new File(pathname+datasetName);
+    alreadyExists = dbFile.exists();
+    this.maxDatasets = maxDatasets;
 
+    try {
+      open();
+      return true;
+
+    } catch (Throwable e) {
+      startupLog.error("DatasetTrackerChronicle failed on '"+ dbFile.getAbsolutePath()+ "', delete catalog cache and reload ", e);
+      return reinit();
+    }
+  }
+
+  @Override
+  public void close() {
+    if (datasetMap != null) {
+      datasetMap.close();
+      datasetMap = null;
+    }
+  }
+
+  @Override
+  public boolean exists() {
+    return alreadyExists;
+  }
+
+  @Override
+  public boolean reinit() {
+    if (dbFile.exists()) {
+      boolean wasDeleted = dbFile.delete();
+      if (!wasDeleted) {
+        startupLog.error("DatasetTrackerChronicle not able to delete {} ", dbFile.getAbsolutePath());
+        return false;
+      }
+    }
+
+    try {
+      open();
+      alreadyExists = false;
+      return true;
+
+    } catch (Throwable e) {
+      startupLog.error("DatasetTrackerChronicle failed on '"+ dbFile.getAbsolutePath()+ "', delete catalog cache and reload ", e);
+      return false;
+    }
+  }
+
+  private void open() throws IOException {
     ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
              .averageValueSize(200).entries(maxDatasets);
-
-    map = builder.createPersistedTo(file);
-    return true;
+    datasetMap = builder.createPersistedTo(dbFile);
   }
 
   @Override
@@ -63,47 +115,27 @@ public class DatasetTrackerChronicle implements DatasetTracker {
       return false;
 
     DatasetExt dsext = new DatasetExt(dataset, hasNcml);
-    map.put(path, dsext);
+    datasetMap.put(path, dsext);
     return true;
   }
 
   @Override
   public String findResourceControl(String path) {
-    DatasetExt dext = (DatasetExt) map.get(path);
+    DatasetExt dext = (DatasetExt) datasetMap.get(path);
     if (dext == null) return null;
     return dext.getRestrictAccess();
   }
 
   @Override
   public String findNcml(String path) {
-    DatasetExt dext = (DatasetExt) map.get(path);
+    DatasetExt dext = (DatasetExt) datasetMap.get(path);
     if (dext == null) return null;
     return dext.getNcml();
   }
 
   @Override
-  public boolean exists() {
-    return false;
-  }
-
-  @Override
-  public boolean reinit() {
-    return false;
-  }
-
-  @Override
-  public DatasetExt findDatasetExt(String path) {
-    return null;
-  }
-
-  @Override
   public boolean trackDataRoot(DataRootExt ds) {
     return false;
-  }
-
-  @Override
-  public DatasetExt findDataRootExt(String path) {
-    return (DatasetExt) map.get(path);
   }
 
   @Override
@@ -121,7 +153,4 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     return null;
   }
 
-  public void close() {
-    map.close();
-  }
 }

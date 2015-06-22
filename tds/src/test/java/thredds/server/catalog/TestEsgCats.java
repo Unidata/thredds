@@ -163,7 +163,7 @@ public class TestEsgCats {
 
     AllowedServices allowedServices = new AllowedServices();
     String top = "B:/esgf/badc/data1/esgcet/";
-    ConfigCatalogInitialization reader = new ConfigCatalogInitialization(top, "catalogScan.xml",
+    ConfigCatalogInitialization reader = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.check, top, "catalogScan.xml",
             dataRootPathMatcher, tracker, catalogWatcher, allowedServices, new DatasetTracker.Callback() {
 
       @Override

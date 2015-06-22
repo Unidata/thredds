@@ -5,6 +5,7 @@ import thredds.client.catalog.Dataset;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DataRoot;
 
+import java.io.Externalizable;
 import java.io.IOException;
 
 /**
@@ -14,25 +15,27 @@ import java.io.IOException;
  * @since 6/6/2015
  */
 public interface DatasetTracker extends AutoCloseable {
+  // return true on success
   boolean init(String dirPath, long maxDatasets) throws IOException;
+
+  void close();
   boolean exists(); // detect if database exists
   boolean reinit(); // throw out all and start again
 
-
+  // datasets
   boolean trackDataset(Dataset ds, Callback callback);
-
   String findResourceControl(String path);
   String findNcml(String path);
-  DatasetExt findDatasetExt(String path);
+  //DatasetExt findDatasetExt(String path);  // LOOK Needed ?
 
+  // data root
   boolean trackDataRoot(DataRootExt ds);
-  DatasetExt findDataRootExt(String path);  // LOOK Needed ?
-  Iterable<DataRootExt> getDataRoots();
+  Iterable<? extends DataRootExt> getDataRoots();
+  //DatasetExt findDataRootExt(String path);  // LOOK Needed ?
 
+  // catalogs
   boolean trackCatalog(CatalogExt ds);
-  Iterable<CatalogExt> getCatalogs();
-
-  void close();
+  Iterable<? extends CatalogExt> getCatalogs();
 
   interface Callback {
     void hasDataRoot(DataRoot dataRoot);
