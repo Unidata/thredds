@@ -68,13 +68,12 @@ public class DataRootExt implements Externalizable {
     return type;
   }
 
-  /*
-      message DataRoot {
-        required string urlPath = 1;
-        required string dirLocation = 2;  // for simple dataset root
-        required string catLocation = 3;
-      }
-    */
+  /* message DataRoot {
+    required string urlPath = 1;
+    required string dirLocation = 2;
+    required DataRootType type = 3;
+    optional string catLocation = 4;    // omit for simple dataset root
+  } */
   @Override
   public void writeExternal(ObjectOutput out) throws IOException {
     ConfigCatalogExtProto.DataRoot.Builder builder = ConfigCatalogExtProto.DataRoot.newBuilder();
@@ -103,7 +102,7 @@ public class DataRootExt implements Externalizable {
 
     //try {
     if (n != len)
-      throw new RuntimeException("barf with read size=" + len + " in.available=" + avail);
+      throw new RuntimeException("DataRootExt.readExternal failed read size=" + len + " in.available=" + avail);
 
     ConfigCatalogExtProto.DataRoot dsp = ConfigCatalogExtProto.DataRoot.parseFrom(b);
     this.path = dsp.getUrlPath();

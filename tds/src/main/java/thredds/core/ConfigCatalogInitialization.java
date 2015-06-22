@@ -208,6 +208,7 @@ public class ConfigCatalogInitialization {
     catalogRelPath = StringUtils.cleanPath(catalogRelPath);
     File catalogFile = new File(this.contentRootPath, catalogRelPath);
     if (!catalogFile.exists()) {
+      datasetTracker.removeCatalog(catalogRelPath);
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + catalogRelPath + "] does not exist in config directory.");
       return;
     }
@@ -292,7 +293,7 @@ public class ConfigCatalogInitialization {
       if (builder.getErrorMessage().length() > 0)
         logCatalogInit.debug(builder.getErrorMessage());
 
-      datasetTracker.trackCatalog(new CatalogExt(catalogRelPath)); // LOOK absolute vs reletive
+      datasetTracker.trackCatalog(new CatalogExt(0, catalogRelPath)); // LOOK absolute vs reletive
       return cat;
 
     } catch (Throwable t) {

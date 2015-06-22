@@ -386,7 +386,11 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
     // memory caches
     GribCdmIndex.shutdown();
-    datasetTracker.close();
+    try {
+      datasetTracker.close();
+    } catch (IOException e) {
+      e.printStackTrace();    // LOOK
+    }
 
     startupLog.info("TdsInit shutdown");
     MDC.clear();

@@ -91,7 +91,7 @@
   </bean>
 
   <bean id="corsConfig" class="thredds.server.config.CorsConfigBean" />
-  <bean id="tdsServerInfo" class="thredds.server.config.TdsServerInfoBean" />
+  <!-- bean id="tdsServerInfo" class="thredds.server.config.TdsServerInfoBean" / -->
   <bean id="tdsUpdateConfig" class="thredds.server.config.TdsUpdateConfigBean" />
   <bean id="wmsConfig" class="thredds.server.config.WmsConfigBean" />
 

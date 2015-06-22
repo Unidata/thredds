@@ -2,7 +2,8 @@ option java_package = "thredds.server.catalog.tracker";
 option java_outer_classname = "ConfigCatalogExtProto";
 
 message Catalog {
-  required string catLocation = 1;
+  required uint64 catId = 1;    // sequence no
+  required string catLocation = 2;
 }
 
 enum DataRootType {  // same as DataRoot.Type

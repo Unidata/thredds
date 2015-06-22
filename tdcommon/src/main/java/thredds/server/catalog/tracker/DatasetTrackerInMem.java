@@ -142,6 +142,11 @@ public class DatasetTrackerInMem implements DatasetTracker {
     return null;
   }
 
+  @Override
+  public boolean removeCatalog(String relPath) {
+    return false;
+  }
+
   public void close() {
   }
 

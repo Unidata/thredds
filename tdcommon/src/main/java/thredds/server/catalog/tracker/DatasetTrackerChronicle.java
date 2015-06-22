@@ -114,7 +114,7 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     if (path == null)
       return false;
 
-    DatasetExt dsext = new DatasetExt(dataset, hasNcml);
+    DatasetExt dsext = new DatasetExt(0, dataset, hasNcml);
     datasetMap.put(path, dsext);
     return true;
   }
@@ -151,6 +151,11 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   @Override
   public Iterable<CatalogExt> getCatalogs() {
     return null;
+  }
+
+  @Override
+  public boolean removeCatalog(String relPath) {
+    return false;
   }
 
 }

@@ -18,7 +18,7 @@ public interface DatasetTracker extends AutoCloseable {
   // return true on success
   boolean init(String dirPath, long maxDatasets) throws IOException;
 
-  void close();
+  void close() throws IOException;
   boolean exists(); // detect if database exists
   boolean reinit(); // throw out all and start again
 
@@ -35,6 +35,7 @@ public interface DatasetTracker extends AutoCloseable {
 
   // catalogs
   boolean trackCatalog(CatalogExt ds);
+  boolean removeCatalog(String relPath);
   Iterable<? extends CatalogExt> getCatalogs();
 
   interface Callback {

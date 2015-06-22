@@ -70,6 +70,11 @@ public class DatasetTrackerNoop implements DatasetTracker {
   }
 
   @Override
+  public boolean removeCatalog(String relPath) {
+    return false;
+  }
+
+  @Override
   public Iterable<CatalogExt> getCatalogs() {
     return null;
   }

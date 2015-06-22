@@ -39,7 +39,7 @@ package thredds.server.config;
  * settings.
  * <p/>
  * called from TdsInit
- * LOOK im not crazy about this diesign, seems like an extra unnecessary layer?
+ * LOOK im not crazy about this design, seems like an extra unnecessary layer?
  * LOOK could be a Spring component, and autowire beans
  *
  * @author edavis

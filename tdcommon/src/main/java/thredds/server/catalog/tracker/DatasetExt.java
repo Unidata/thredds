@@ -27,10 +27,10 @@ import java.util.List;
 public class DatasetExt implements Externalizable {
   static public int total_count = 0;
   static public long total_nbytes = 0;
-  static public long catId = 0;
 
   static private final boolean showParsedXML = true;
 
+  long catId;
   Dataset ds;
   String ncml;
 
@@ -45,7 +45,8 @@ public class DatasetExt implements Externalizable {
   public DatasetExt() {
   }
 
-  public DatasetExt(Dataset delegate, boolean useNcml) {
+  public DatasetExt(long catId, Dataset delegate, boolean useNcml) {
+    this.catId = catId;
     this.ds = delegate;
     // want the string representation
     Element ncmlElem = delegate.getNcmlElement();
@@ -57,8 +58,8 @@ public class DatasetExt implements Externalizable {
 
   @Override
   public void writeExternal(ObjectOutput out) throws IOException {
-    ConfigCatalogExtProto.Dataset.Builder builder =  ConfigCatalogExtProto.Dataset.newBuilder();
-    builder.setCatId(catId++);
+    ConfigCatalogExtProto.Dataset.Builder builder = ConfigCatalogExtProto.Dataset.newBuilder();
+    builder.setCatId(catId);
     builder.setName(ds.getName());
     if (ds.getUrlPath() != null)
       builder.setPath(ds.getUrlPath());
@@ -94,33 +95,34 @@ public class DatasetExt implements Externalizable {
     //System.out.printf(" read size = %d%n", b.length);
 
     //try {
-      if (n != len)
-        throw new RuntimeException("barf with read size="+len+" in.available=" + avail);
+    if (n != len)
+      throw new RuntimeException("barf with read size=" + len + " in.available=" + avail);
 
     ConfigCatalogExtProto.Dataset dsp = ConfigCatalogExtProto.Dataset.parseFrom(b);
-      DatasetBuilder dsb = new DatasetBuilder(null);
-      dsb.setName(dsp.getName());
-      if (dsp.hasRestrict())
-        dsb.put(Dataset.RestrictAccess, dsp.getRestrict());
+    DatasetBuilder dsb = new DatasetBuilder(null);
+    this.catId = dsp.getCatId(); // LOOK could add to dataset
+    dsb.setName(dsp.getName());
+    if (dsp.hasRestrict())
+      dsb.put(Dataset.RestrictAccess, dsp.getRestrict());
 
-      if (dsp.hasNcml()) {
-        org.jdom2.Document doc;
-        try {
-          SAXBuilder builder = new SAXBuilder();
-          doc = builder.build(dsp.getNcml());
-        } catch (JDOMException e) {
-          throw new IOException(e.getMessage());
-        }
-        Element ncmlElem = doc.getRootElement();
-
-        if (showParsedXML) {
-          XMLOutputter xmlOut = new XMLOutputter();
-          ncml = xmlOut.outputString(ncmlElem);
-          System.out.println("*** ConfigCatalogExtProto/ncmlElem = \n" + xmlOut.outputString(ncmlElem) + "\n*******");
-        }
-
-        dsb.put(Dataset.Ncml, ncmlElem);
+    if (dsp.hasNcml()) {
+      org.jdom2.Document doc;
+      try {
+        SAXBuilder builder = new SAXBuilder();
+        doc = builder.build(dsp.getNcml());
+      } catch (JDOMException e) {
+        throw new IOException(e.getMessage());
       }
+      Element ncmlElem = doc.getRootElement();
+
+      if (showParsedXML) {
+        XMLOutputter xmlOut = new XMLOutputter();
+        ncml = xmlOut.outputString(ncmlElem);
+        System.out.println("*** ConfigCatalogExtProto/ncmlElem = \n" + xmlOut.outputString(ncmlElem) + "\n*******");
+      }
+
+      dsb.put(Dataset.Ncml, ncmlElem);
+    }
 
       /* if (dsp.hasId())
         dsb.put(Dataset.Id, dsp.getId());
@@ -133,7 +135,7 @@ public class DatasetExt implements Externalizable {
       if (dsp.getPropertyCount() > 0)
         dsb.put(Dataset.Properties, parseProperty(dsp.getPropertyList()));  */
 
-      this.ds = dsb.makeDataset(null);
+    this.ds = dsb.makeDataset(null);
 
     //} catch (Throwable e) {
     //  System.out.printf("barf with read size=%d in.available=%d%n", len, avail);
@@ -141,22 +143,22 @@ public class DatasetExt implements Externalizable {
     //}
   }
 
-  private ConfigCatalogExtProto.Property buildProperty( Property p) {
-    ConfigCatalogExtProto.Property.Builder builder =  ConfigCatalogExtProto.Property.newBuilder();
-    builder.setName( p.getName());
+  private ConfigCatalogExtProto.Property buildProperty(Property p) {
+    ConfigCatalogExtProto.Property.Builder builder = ConfigCatalogExtProto.Property.newBuilder();
+    builder.setName(p.getName());
     builder.setValue(p.getValue());
     return builder.build();
   }
 
-  private List<Property> parseProperty( List<ConfigCatalogExtProto.Property> ps) {
+  private List<Property> parseProperty(List<ConfigCatalogExtProto.Property> ps) {
     List<Property> result = new ArrayList<>();
     for (ConfigCatalogExtProto.Property p : ps)
-      result.add(new Property( p.getName(), p.getValue()));
+      result.add(new Property(p.getName(), p.getValue()));
     return result;
   }
 
-  private ConfigCatalogExtProto.Access buildAccess( Access a) {
-    ConfigCatalogExtProto.Access.Builder builder =  ConfigCatalogExtProto.Access.newBuilder();
+  private ConfigCatalogExtProto.Access buildAccess(Access a) {
+    ConfigCatalogExtProto.Access.Builder builder = ConfigCatalogExtProto.Access.newBuilder();
     builder.setServiceName(a.getService().getName());
     builder.setUrlPath(a.getUrlPath());
     builder.setDataSize(a.getDataSize());
@@ -165,7 +167,7 @@ public class DatasetExt implements Externalizable {
     return builder.build();
   }
 
-  private AccessBuilder parseAccess( DatasetBuilder dsb, ConfigCatalogExtProto.Access ap) {
+  private AccessBuilder parseAccess(DatasetBuilder dsb, ConfigCatalogExtProto.Access ap) {
     return new AccessBuilder(dsb, ap.getUrlPath(), null, /* ap.getServiceName(), */ ap.getDataFormatS(), ap.getDataSize());
   }
 

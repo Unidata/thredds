@@ -19,6 +19,6 @@
  <!-- Handler Mapping -->
  <!-- tell spring that tds.properties gets read in first and overrides anything else -->
 
- <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
+ <!-- bean id="serverInfo" class="thredds.server.config.TdsServerInfo" / -->
 
 </beans>

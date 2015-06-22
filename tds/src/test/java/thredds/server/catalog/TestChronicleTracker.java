@@ -75,7 +75,7 @@ public class TestChronicleTracker {
           if (countDs[0] % chunk10 == 0) System.out.printf("%n");
           String key = dd.getId();
           if (key != null) {
-            DatasetExt dsext = new DatasetExt(dd, true);
+            DatasetExt dsext = new DatasetExt(0, dd, true);
             map.put(key, dsext);
           }
         }

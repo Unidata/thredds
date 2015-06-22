@@ -112,7 +112,7 @@ public class TestMapDBTracker {
                return;
              }
 
-             DatasetExt dsext = new DatasetExt(dd, true);
+             DatasetExt dsext = new DatasetExt(0, dd, true);
              map.put(key, dsext);
            }
          }

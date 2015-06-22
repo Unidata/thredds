@@ -115,17 +115,35 @@ public final class ConfigCatalogExtProto {
   public interface CatalogOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required string catLocation = 1;
+    // required uint64 catId = 1;
     /**
-     * <code>required string catLocation = 1;</code>
+     * <code>required uint64 catId = 1;</code>
+     *
+     * <pre>
+     * sequence no
+     * </pre>
+     */
+    boolean hasCatId();
+    /**
+     * <code>required uint64 catId = 1;</code>
+     *
+     * <pre>
+     * sequence no
+     * </pre>
+     */
+    long getCatId();
+
+    // required string catLocation = 2;
+    /**
+     * <code>required string catLocation = 2;</code>
      */
     boolean hasCatLocation();
     /**
-     * <code>required string catLocation = 1;</code>
+     * <code>required string catLocation = 2;</code>
      */
     java.lang.String getCatLocation();
     /**
-     * <code>required string catLocation = 1;</code>
+     * <code>required string catLocation = 2;</code>
      */
     com.google.protobuf.ByteString
         getCatLocationBytes();
@@ -181,8 +199,13 @@ public final class ConfigCatalogExtProto {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
+              catId_ = input.readUInt64();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
               catLocation_ = input.readBytes();
               break;
             }
@@ -226,17 +249,41 @@ public final class ConfigCatalogExtProto {
     }
 
     private int bitField0_;
-    // required string catLocation = 1;
-    public static final int CATLOCATION_FIELD_NUMBER = 1;
-    private java.lang.Object catLocation_;
+    // required uint64 catId = 1;
+    public static final int CATID_FIELD_NUMBER = 1;
+    private long catId_;
     /**
-     * <code>required string catLocation = 1;</code>
+     * <code>required uint64 catId = 1;</code>
+     *
+     * <pre>
+     * sequence no
+     * </pre>
      */
-    public boolean hasCatLocation() {
+    public boolean hasCatId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required string catLocation = 1;</code>
+     * <code>required uint64 catId = 1;</code>
+     *
+     * <pre>
+     * sequence no
+     * </pre>
+     */
+    public long getCatId() {
+      return catId_;
+    }
+
+    // required string catLocation = 2;
+    public static final int CATLOCATION_FIELD_NUMBER = 2;
+    private java.lang.Object catLocation_;
+    /**
+     * <code>required string catLocation = 2;</code>
+     */
+    public boolean hasCatLocation() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string catLocation = 2;</code>
      */
     public java.lang.String getCatLocation() {
       java.lang.Object ref = catLocation_;
@@ -253,7 +300,7 @@ public final class ConfigCatalogExtProto {
       }
     }
     /**
-     * <code>required string catLocation = 1;</code>
+     * <code>required string catLocation = 2;</code>
      */
     public com.google.protobuf.ByteString
         getCatLocationBytes() {
@@ -270,6 +317,7 @@ public final class ConfigCatalogExtProto {
     }
 
     private void initFields() {
+      catId_ = 0L;
       catLocation_ = "";
     }
     private byte memoizedIsInitialized = -1;
@@ -277,6 +325,10 @@ public final class ConfigCatalogExtProto {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
+      if (!hasCatId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasCatLocation()) {
         memoizedIsInitialized = 0;
         return false;
@@ -289,7 +341,10 @@ public final class ConfigCatalogExtProto {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getCatLocationBytes());
+        output.writeUInt64(1, catId_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getCatLocationBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -302,7 +357,11 @@ public final class ConfigCatalogExtProto {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getCatLocationBytes());
+          .computeUInt64Size(1, catId_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getCatLocationBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -420,8 +479,10 @@ public final class ConfigCatalogExtProto {
 
       public Builder clear() {
         super.clear();
-        catLocation_ = "";
+        catId_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000001);
+        catLocation_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -453,6 +514,10 @@ public final class ConfigCatalogExtProto {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
+        result.catId_ = catId_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
         result.catLocation_ = catLocation_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -470,8 +535,11 @@ public final class ConfigCatalogExtProto {
 
       public Builder mergeFrom(thredds.server.catalog.tracker.ConfigCatalogExtProto.Catalog other) {
         if (other == thredds.server.catalog.tracker.ConfigCatalogExtProto.Catalog.getDefaultInstance()) return this;
+        if (other.hasCatId()) {
+          setCatId(other.getCatId());
+        }
         if (other.hasCatLocation()) {
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
           catLocation_ = other.catLocation_;
           onChanged();
         }
@@ -480,6 +548,10 @@ public final class ConfigCatalogExtProto {
       }
 
       public final boolean isInitialized() {
+        if (!hasCatId()) {
+          
+          return false;
+        }
         if (!hasCatLocation()) {
           
           return false;
@@ -506,16 +578,65 @@ public final class ConfigCatalogExtProto {
       }
       private int bitField0_;
 
-      // required string catLocation = 1;
-      private java.lang.Object catLocation_ = "";
+      // required uint64 catId = 1;
+      private long catId_ ;
       /**
-       * <code>required string catLocation = 1;</code>
+       * <code>required uint64 catId = 1;</code>
+       *
+       * <pre>
+       * sequence no
+       * </pre>
        */
-      public boolean hasCatLocation() {
+      public boolean hasCatId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required string catLocation = 1;</code>
+       * <code>required uint64 catId = 1;</code>
+       *
+       * <pre>
+       * sequence no
+       * </pre>
+       */
+      public long getCatId() {
+        return catId_;
+      }
+      /**
+       * <code>required uint64 catId = 1;</code>
+       *
+       * <pre>
+       * sequence no
+       * </pre>
+       */
+      public Builder setCatId(long value) {
+        bitField0_ |= 0x00000001;
+        catId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 catId = 1;</code>
+       *
+       * <pre>
+       * sequence no
+       * </pre>
+       */
+      public Builder clearCatId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        catId_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // required string catLocation = 2;
+      private java.lang.Object catLocation_ = "";
+      /**
+       * <code>required string catLocation = 2;</code>
+       */
+      public boolean hasCatLocation() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string catLocation = 2;</code>
        */
       public java.lang.String getCatLocation() {
         java.lang.Object ref = catLocation_;
@@ -529,7 +650,7 @@ public final class ConfigCatalogExtProto {
         }
       }
       /**
-       * <code>required string catLocation = 1;</code>
+       * <code>required string catLocation = 2;</code>
        */
       public com.google.protobuf.ByteString
           getCatLocationBytes() {
@@ -545,36 +666,36 @@ public final class ConfigCatalogExtProto {
         }
       }
       /**
-       * <code>required string catLocation = 1;</code>
+       * <code>required string catLocation = 2;</code>
        */
       public Builder setCatLocation(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
         catLocation_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string catLocation = 1;</code>
+       * <code>required string catLocation = 2;</code>
        */
       public Builder clearCatLocation() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         catLocation_ = getDefaultInstance().getCatLocation();
         onChanged();
         return this;
       }
       /**
-       * <code>required string catLocation = 1;</code>
+       * <code>required string catLocation = 2;</code>
        */
       public Builder setCatLocationBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
         catLocation_ = value;
         onChanged();
         return this;
@@ -5066,21 +5187,21 @@ public final class ConfigCatalogExtProto {
   static {
     java.lang.String[] descriptorData = {
       "\n5thredds/server/catalog/tracker/configC" +
-      "atalogExt.proto\"\036\n\007Catalog\022\023\n\013catLocatio" +
-      "n\030\001 \002(\t\"b\n\010DataRoot\022\017\n\007urlPath\030\001 \002(\t\022\023\n\013" +
-      "dirLocation\030\002 \002(\t\022\033\n\004type\030\003 \002(\0162\r.DataRo" +
-      "otType\022\023\n\013catLocation\030\004 \001(\t\"\226\001\n\007Dataset\022" +
-      "\r\n\005catId\030\001 \002(\004\022\014\n\004name\030\002 \002(\t\022\014\n\004path\030\003 \001" +
-      "(\t\022\n\n\002id\030\004 \001(\t\022\020\n\010restrict\030\005 \001(\t\022\014\n\004ncml" +
-      "\030\006 \001(\t\022\027\n\006access\030\n \003(\0132\007.Access\022\033\n\010prope" +
-      "rty\030\013 \003(\0132\t.Property\"U\n\006Access\022\023\n\013servic" +
-      "eName\030\001 \002(\t\022\017\n\007urlPath\030\002 \002(\t\022\023\n\013dataForm",
-      "atS\030\003 \001(\t\022\020\n\010dataSize\030\004 \001(\004\"\'\n\010Property\022" +
-      "\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002(\t*X\n\014DataRoot" +
-      "Type\022\017\n\013datasetRoot\020\001\022\017\n\013datasetScan\020\002\022\017" +
-      "\n\013catalogScan\020\003\022\025\n\021featureCollection\020\004B7" +
-      "\n\036thredds.server.catalog.trackerB\025Config" +
-      "CatalogExtProto"
+      "atalogExt.proto\"-\n\007Catalog\022\r\n\005catId\030\001 \002(" +
+      "\004\022\023\n\013catLocation\030\002 \002(\t\"b\n\010DataRoot\022\017\n\007ur" +
+      "lPath\030\001 \002(\t\022\023\n\013dirLocation\030\002 \002(\t\022\033\n\004type" +
+      "\030\003 \002(\0162\r.DataRootType\022\023\n\013catLocation\030\004 \001" +
+      "(\t\"\226\001\n\007Dataset\022\r\n\005catId\030\001 \002(\004\022\014\n\004name\030\002 " +
+      "\002(\t\022\014\n\004path\030\003 \001(\t\022\n\n\002id\030\004 \001(\t\022\020\n\010restric" +
+      "t\030\005 \001(\t\022\014\n\004ncml\030\006 \001(\t\022\027\n\006access\030\n \003(\0132\007." +
+      "Access\022\033\n\010property\030\013 \003(\0132\t.Property\"U\n\006A" +
+      "ccess\022\023\n\013serviceName\030\001 \002(\t\022\017\n\007urlPath\030\002 ",
+      "\002(\t\022\023\n\013dataFormatS\030\003 \001(\t\022\020\n\010dataSize\030\004 \001" +
+      "(\004\"\'\n\010Property\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 " +
+      "\002(\t*X\n\014DataRootType\022\017\n\013datasetRoot\020\001\022\017\n\013" +
+      "datasetScan\020\002\022\017\n\013catalogScan\020\003\022\025\n\021featur" +
+      "eCollection\020\004B7\n\036thredds.server.catalog." +
+      "trackerB\025ConfigCatalogExtProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5092,7 +5213,7 @@ public final class ConfigCatalogExtProto {
           internal_static_Catalog_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Catalog_descriptor,
-              new java.lang.String[] { "CatLocation", });
+              new java.lang.String[] { "CatId", "CatLocation", });
           internal_static_DataRoot_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_DataRoot_fieldAccessorTable = new

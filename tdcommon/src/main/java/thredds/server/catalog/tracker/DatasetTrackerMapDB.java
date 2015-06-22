@@ -11,9 +11,7 @@ import thredds.server.catalog.FeatureCollectionRef;
 
 import java.io.Externalizable;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
 
 /**
  * org.mapdb.DB implementation of DatasetTracker
@@ -24,14 +22,17 @@ import java.util.Set;
 public class DatasetTrackerMapDB implements DatasetTracker {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
+  private String pathname;
   private File dbFile;
   private DB db;
-  private Set<Externalizable> catalogSet;
-  private Set<Externalizable> datarootSet;
   private HTreeMap<String, Externalizable> datasetMap;
   private boolean alreadyExists;
 
+  CatalogTracker catTracker;
+  DataRootTracker dataRootTracker;
+
   public boolean init(String pathname, long maxDatasets) {
+    this.pathname = pathname;
     dbFile = new File(pathname+"/mapdb.dat");
 
     try {
@@ -45,9 +46,19 @@ public class DatasetTrackerMapDB implements DatasetTracker {
     }
   }
 
-  public void close() {
+  public void close() throws IOException {
+    if (catTracker != null) {
+      catTracker.save();
+      catTracker = null;
+    }
+
+    if (dataRootTracker != null) {
+      dataRootTracker.save();
+      dataRootTracker = null;
+    }
+
     if (db != null) {
-      datasetMap.close();
+     datasetMap.close();
       db.close();
       startupLog.info("DatasetTrackerMapDB closed");
       db = null;
@@ -81,7 +92,7 @@ public class DatasetTrackerMapDB implements DatasetTracker {
   }
 
   private void open() {
-    DB db = DBMaker.newFileDB(dbFile)
+    db = DBMaker.newFileDB(dbFile)
             .transactionDisable()
             .mmapFileEnableIfSupported()
             .closeOnJvmShutdown()
@@ -89,8 +100,9 @@ public class DatasetTrackerMapDB implements DatasetTracker {
 
     alreadyExists = db.exists("datasets");  // LOOK ??
     datasetMap = db.getHashMap("datasets");
-    datarootSet = db.getHashSet("dataroots");
-    catalogSet = db.getHashSet("catalogs");
+
+    catTracker = new CatalogTracker(pathname+"/catTracker.dat");
+    dataRootTracker = new DataRootTracker(pathname+"/datarootTracker.dat");
   }
 
   ////////////////////////////////////////////////////////////////
@@ -127,7 +139,7 @@ public class DatasetTrackerMapDB implements DatasetTracker {
       return false;
 
     try {
-      DatasetExt dsext = new DatasetExt(dataset, hasNcml);
+      DatasetExt dsext = new DatasetExt(0, dataset, hasNcml);
       datasetMap.put(path, dsext);
       return true;
     } catch (Throwable t) {
@@ -156,16 +168,12 @@ public class DatasetTrackerMapDB implements DatasetTracker {
 
   @Override
   public boolean trackDataRoot(DataRootExt dsext) {
-    return datarootSet.add(dsext);
+    return dataRootTracker.trackDataRoot(dsext);
   }
 
   @Override
   public Iterable<? extends DataRootExt> getDataRoots() {
-    List<DataRootExt> result = new ArrayList<>();
-    for (Externalizable ext : datarootSet)
-      result.add((DataRootExt) ext);
-    return result;
-    //return (Iterable<? extends DataRootExt>) datarootSet;
+    return dataRootTracker.getDataRoots();
   }
 
   ////////////////////////////////////////////////////////////////
@@ -173,15 +181,16 @@ public class DatasetTrackerMapDB implements DatasetTracker {
 
   @Override
   public boolean trackCatalog(CatalogExt catext) {
-    return catalogSet.add(catext);
+    return catTracker.trackCatalog(catext);
+  }
+
+  @Override
+  public boolean removeCatalog(String relPath) {
+    return catTracker.removeCatalog(relPath);
   }
 
   @Override
   public Iterable<? extends CatalogExt> getCatalogs() {
-    List<CatalogExt> result = new ArrayList<>();
-    for (Externalizable ext : datarootSet)
-    result.add((CatalogExt) ext);
-    return result;
-    //return (Iterable<? extends CatalogExt>) catalogSet;
+    return catTracker.getCatalogs();
   }
 }
