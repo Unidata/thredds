@@ -32,6 +32,7 @@
  */
 package ucar.nc2.util;
 
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
@@ -58,13 +59,28 @@ import java.net.URLDecoder;
  * @author jcaron
  */
 public class DiskCache2 {
+  private static org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  static private Timer timer;
+
+  /** Be sure to call this when your application exits, otherwise the process may not die. */
+  static public void exit() {
+    if (timer != null)
+      timer.cancel();
+    timer = null;
+  }
+
+  static private synchronized void startTimer() {
+    if (timer  == null)
+      timer = new Timer("DiskCache2");
+  }
+
+  /////////////////////////////////////////////////////////////
 
   public enum CachePathPolicy {
     OneDirectory,
     NestedDirectory,
     NestedTruncate }
 
-  private static org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
 
   private CachePathPolicy cachePathPolicy = CachePathPolicy.NestedDirectory;
   private boolean alwaysUseCache = false;
@@ -73,7 +89,6 @@ public class DiskCache2 {
 
   private String root;
   private int persistMinutes, scourEveryMinutes;
-  private Timer timer;
   private boolean fail = false;
 
   /**
@@ -140,25 +155,12 @@ public class DiskCache2 {
     setRootDirectory(root);
 
     if (!fail && scourEveryMinutes > 0) {
-      timer = new Timer("DiskCache-"+root);
+      startTimer();
       Calendar c = Calendar.getInstance(); // contains current startup time
       c.add(Calendar.MINUTE, scourEveryMinutes);
       timer.scheduleAtFixedRate(new CacheScourTask(), c.getTime(), (long) 1000 * 60 * scourEveryMinutes);
     }
 
-  }
-
-  /** Be sure to call this when your application exits, otherwise the scour thread may not die. */
-  public void exit() {
-    if (timer != null)
-      timer.cancel();
-  }
-
-  /** Optionally set a logger. Each time a scour is done, a messsage is written to it.
-   * @param cacheLog use this logger
-   */
-  public void setLogger(org.slf4j.Logger cacheLog) {
-    this.cacheLog = cacheLog;
   }
 
   /*
@@ -456,7 +458,7 @@ public class DiskCache2 {
    * @param sbuff status messages here, may be null
    * @param isRoot delete empty directories, bit not root directory
    */
-  public void cleanCache(File dir, StringBuilder sbuff, boolean isRoot) {
+  public void cleanCache(File dir, Formatter sbuff, boolean isRoot) {
     long now = System.currentTimeMillis();
     File[] files = dir.listFiles();
     if (files == null) {
@@ -468,9 +470,11 @@ public class DiskCache2 {
       long duration = now - dir.lastModified();
       duration /= 1000 * 60; // minutes
       if (duration > persistMinutes) {
-        boolean ret = dir.delete();
+        boolean ok = dir.delete();
+        if (!ok)
+          cacheLog.error("Unable to delete file " + dir.getAbsolutePath());
         if (sbuff != null)
-          sbuff.append(" deleted ").append(ret).append(dir.getPath()).append(" last= ").append(new Date(dir.lastModified())).append("\n");
+          sbuff.format(" deleted %s %s lastModified= %s%n", ok, dir.getPath(), CalendarDate.of(dir.lastModified()));
       }
       return;
     }
@@ -483,10 +487,11 @@ public class DiskCache2 {
         long duration = now - file.lastModified();
         duration /= 1000 * 60; // minutes
         if (duration > persistMinutes) {
-          boolean ret = file.delete();
-          // assert ret;
+          boolean ok = file.delete();
+          if (!ok)
+            cacheLog.error("Unable to delete file " + file.getAbsolutePath());
           if (sbuff != null)
-            sbuff.append(" deleted ").append(file.getPath()).append(" last= ").append(new Date(file.lastModified())).append("\n");
+            sbuff.format(" deleted %s %s lastModified= %s%n", ok, file.getPath(), CalendarDate.of(file.lastModified()));
         }
       }
     }
@@ -496,10 +501,10 @@ public class DiskCache2 {
     CacheScourTask( ) { }
 
     public void run() {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append("DiskCache2 scour on directory= ").append(root).append("\n");
-      cleanCache( new File(root), sbuff, true);
-      sbuff.append("----------------------\n");
+      Formatter sbuff = new Formatter();
+      sbuff.format("DiskCache2 scour on directory= %s%n", root);
+      cleanCache(new File(root), sbuff, true);
+      sbuff.format("----------------------%n");
       if (cacheLog != null) cacheLog.info(sbuff.toString());
     }
   }

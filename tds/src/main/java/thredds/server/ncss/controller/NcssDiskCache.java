@@ -85,7 +85,7 @@ public final class NcssDiskCache {
     return contextPath + cachePath + "/";
   }
 
-    // for unit tests until i can figure out how wire correctly
+    // for unit tests until i can figure out how to wire correctly
   public NcssDiskCache(String cachePath) {
     this.cachePath = cachePath;
     this.diskCache = new DiskCache2(cachePath, false, 0, 0);

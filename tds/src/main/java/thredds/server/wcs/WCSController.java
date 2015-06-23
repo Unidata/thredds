@@ -124,14 +124,6 @@ public class WCSController {
     logServerStartup.info("WCS service - init done - ");
   }
 
-  @PreDestroy
-  public void destroy() {
-    logServerStartup.info("WCSServlet.destroy() start: ");
-    if (diskCache != null)
-      diskCache.exit();
-    logServerStartup.info("WCSServlet.destroy() done:");
-  }
-
   @RequestMapping("**")
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 

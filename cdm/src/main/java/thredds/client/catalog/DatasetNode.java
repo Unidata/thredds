@@ -78,7 +78,7 @@ public class DatasetNode {
 
   public List<Dataset> getDatasets() {
     List<Dataset> datasets = (List<Dataset>) flds.get(Dataset.Datasets);
-    return datasets == null ? new ArrayList<Dataset>(0) : datasets;
+    return datasets == null ? new ArrayList<>(0) : datasets;
   }
 
   public Dataset findDatasetByName(String name) {

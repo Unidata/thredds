@@ -5,8 +5,8 @@ configure(javaProjects) {
     apply plugin: 'java'
     apply plugin: 'provided-base'  // Gives us the "provided" configuration.
 
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
 
     // These will only run when we execute the "publish" task, NOT "assemble".

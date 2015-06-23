@@ -58,6 +58,17 @@
   <li>    Attribute(String&#32;name,&#32;List&#32;values) -&gt; Attribute(String&#32;name,&#32;List&#32;values,&#32;boolean&#32;isUnsigned) </li>
   <li>StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;boolean isUnsigned, Number&#32;val  ) -&gt; StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;Number&#32;val  ) -&gt; </li>
 </ul>
+<h3>Miscellaneous</h3>
+<ul>
+  <li><strong>DiskCache2</strong>: 
+    <ul>
+      <li>now has one cleanup thread for all instances of <em>DiskCache</em>. </li>
+      <li>The <em>DiskCache2.exit()</em> method is now static and needs only be called once.</li>
+      <li><em>DiskCache2.setLogger()</em> is removed.</li>
+      <li><em>DiskCache2.cleanCache(File&#32;dir,&#32;StringBuffer&#32;sbuff,&#32;boolean&#32;isRoot)</em> is now    <em>DiskCache2.cleanCache(File&#32;dir,&#32;Formatter&#32;sbuff,&#32;boolean&#32;isRoot)</em>;</li>
+    </ul>
+  </li>
+</ul>
 <h2>Catalog Schema changes</h2>
 <p>Schema version is now 1.2</p>
 <h3>Client Catalogs</h3>

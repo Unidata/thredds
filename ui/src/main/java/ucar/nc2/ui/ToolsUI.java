@@ -6294,6 +6294,7 @@ public class ToolsUI extends JPanel {
     if (cache != null)
       cache.clearCache(true);
     FileCache.shutdown(); // shutdown threads
+    DiskCache2.exit(); // shutdown threads
     MetadataManager.closeAll(); // shutdown bdb
 
     System.exit(0);

@@ -100,8 +100,8 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
   @Autowired
   private AllowedServices allowedServices;
 
-  private DiskCache2 aggCache, gribCache, cdmrCache;
-  private Timer timer;
+  // private DiskCache2 aggCache, gribCache, cdmrCache;
+  private Timer cdmDiskCacheTimer;
   private boolean wasInitialized;
 
   private XMLStore store;
@@ -109,7 +109,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
-    if (event instanceof ContextRefreshedEvent) {  // startup
+    if (event != null) {  // startup
       startupLog.info("TdsInit {}", event);
       startupLog.info("TdsInit getContentRootPathAbsolute= " + tdsContext.getContentRootPathProperty());
       synchronized (this) {
@@ -117,7 +117,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
           wasInitialized = true;
           readState();
           readThreddsConfig();
-          boolean useEsgfMode = ThreddsConfig.getBoolean("ESGF.allow", false);
+          // boolean useEsgfMode = ThreddsConfig.getBoolean("ESGF.allow", false);
           configCatalogInitializer.init(ConfigCatalogInitialization.ReadMode.check, (PreferencesExt) mainPrefs.node("configCatalog"));
         }
       }
@@ -227,15 +227,15 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     if (scourSecs > 0) {
       Calendar c = Calendar.getInstance(); // contains current startup time
       c.add(Calendar.SECOND, scourSecs / 2); // starting in half the scour time
-      timer = new Timer("CdmDiskCache");
-      timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
+      cdmDiskCacheTimer = new Timer("CdmDiskCache");
+      cdmDiskCacheTimer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
     }
 
     // persist joinExisting aggregations. default every 24 hours, delete stuff older than 90 days
     dir = ThreddsConfig.get("AggregationCache.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/agg/").getPath());
     scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
     maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
-    aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
+    DiskCache2 aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
     Aggregation.setPersistenceCache(aggCache);
     startupLog.info("TdsInit:  AggregationCache= " + dir + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs);
 
@@ -246,7 +246,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     String gribIndexPolicy = ThreddsConfig.get("GribIndex.policy", null);
     int gribIndexScourSecs = ThreddsConfig.getSeconds("GribIndex.scour", 0);
     int gribIndexMaxAgeSecs = ThreddsConfig.getSeconds("GribIndex.maxAge", 90 * 24 * 60 * 60);
-    gribCache = new DiskCache2(gribIndexDir, false, gribIndexMaxAgeSecs / 60, gribIndexScourSecs / 60);
+    DiskCache2 gribCache = new DiskCache2(gribIndexDir, false, gribIndexMaxAgeSecs / 60, gribIndexScourSecs / 60);
     gribCache.setPolicy(gribIndexPolicy);
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
     gribCache.setNeverUseCache(gribIndexNeverUse);
@@ -255,12 +255,12 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
     // LOOK is this used ??
     // 4.3.16
-    dir = ThreddsConfig.get("CdmRemote.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
+    /* dir = ThreddsConfig.get("CdmRemote.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
     scourSecs = ThreddsConfig.getSeconds("CdmRemote.scour", 30 * 60);
     maxAgeSecs = ThreddsConfig.getSeconds("CdmRemote.maxAge", 60 * 60);
-    cdmrCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
-    //CdmrFeatureController.setDiskCache(cdmrCache);
-    startupLog.info("TdsInit:  CdmRemote= " + dir + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs);
+    DiskCache2 cdmrCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
+    CdmrFeatureController.setDiskCache(cdmrCache);
+    startupLog.info("TdsInit:  CdmRemote= " + dir + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs); */
 
 
     // turn back on for 4.6 needed for FMRC
@@ -363,24 +363,29 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     }
   }
 
+  /*
+  http://stackoverflow.com/questions/24660408/how-can-i-get-intellij-debugger-to-allow-my-apps-shutdown-hooks-to-run?lq=1
+  "Unfortunately, you can't use breakpoints in your shutdown hook body when you use Stop button: these breakpoints are silently ignored."
+   */
   @Override
   public void destroy() {
+    System.out.printf("TdsInit.destroy() is called");
     try {
       store.save();
     } catch (IOException ioe) {
       ioe.printStackTrace();
+      startupLog.error("Prefs save failed", ioe);
     }
 
     // background threads
-    if (timer != null) timer.cancel();
+    if (cdmDiskCacheTimer != null)
+      cdmDiskCacheTimer.cancel();
     FileCache.shutdown();              // this handles background threads for all instances of FileCache
-    if (aggCache != null) aggCache.exit();
-    if (gribCache != null) gribCache.exit();
-    if (cdmrCache != null) cdmrCache.exit();
-    thredds.inventory.bdb.MetadataManager.closeAll(); // LOOK used ??
+    DiskCache2.exit();                // this handles background threads for all instances of DiskCache2
+    thredds.inventory.bdb.MetadataManager.closeAll();
     CollectionUpdater.INSTANCE.shutdown();
 
-    // open files caches
+    // open file caches
     RandomAccessFile.shutdown();
     NetcdfDataset.shutdown();
 
@@ -388,8 +393,9 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     GribCdmIndex.shutdown();
     try {
       datasetTracker.close();
-    } catch (IOException e) {
-      e.printStackTrace();    // LOOK
+    } catch (IOException ioe) {
+      ioe.printStackTrace();    // LOOK
+      startupLog.error("datasetTracker close failed", ioe);
     }
 
     startupLog.info("TdsInit shutdown");

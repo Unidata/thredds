@@ -253,7 +253,7 @@ public class ConfigCatalogInitialization {
     }
 
     // look for dataRoots in datasetScans and featureCollections
-    dataRootPathMatcher.extractDataRoots(catalogRelPath, cat.getDatasets());
+    dataRootPathMatcher.extractDataRoots(catalogRelPath, cat.getDatasets(), true);
 
     // get the directory path, reletive to the rootDir
     int pos = catalogRelPath.lastIndexOf("/");
