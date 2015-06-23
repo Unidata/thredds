@@ -35,13 +35,9 @@ package ucar.httpservices;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
@@ -109,15 +105,10 @@ import static ucar.httpservices.HTTPSession.*;
  * the session was constructed with a specified URL, then any
  * url specified to HTTMethod (via the factory or via
  * execute()) must be "compatible" with the session URL). The
- * term "compatible" basically means that the session url, as a
- * string, must be a prefix of the specified method url.  This
+ * term "compatible" basically means that the session url's host+port
+ * is the same as that of the specified method url.  This
  * maintains the semantics of the Session but allows
  * flexibility in accessing data from the server.
- * <p/>
- * As an example, the session url might be
- * "http://motherlode.ucar.edu" and the method url might be a
- * more specific URL such as
- * http://motherlode.ucar.edu/path/file.nc.dds.
  * <p/>
  * <u>One-Shot Operation:</u>
  * A reasonably common use case is when a client
@@ -163,10 +154,10 @@ public class HTTPMethod implements AutoCloseable
 
     protected HTTPSession session = null;
     protected boolean localsession = false;
-    protected String legalurl = null;
+    protected String methodurl = null;
     protected List<Header> headers = new ArrayList<Header>();
     protected HttpEntity content = null;
-    protected HTTPSession.Methods methodclass = null;
+    protected HTTPSession.Methods methodkind = null;
     protected HTTPMethodStream methodstream = null; // wrapper for strm
     protected boolean closed = false;
     protected HttpRequestBase request = null;
@@ -187,11 +178,19 @@ public class HTTPMethod implements AutoCloseable
         this(m, null, url);
     }
 
+    public HTTPMethod(HTTPSession.Methods m, HTTPSession session)
+            throws HTTPException
+    {
+        this(m,session,session.getSessionURL());
+    }
+
     public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String url)
-        throws HTTPException
+                    throws HTTPException
     {
         if(url == null && session != null)
-            url = session.getURL();
+            url = session.getSessionURL();
+        if(url == null)
+            throw new HTTPException("HTTPMethod: cannot find usable url");
         try {
             new URL(url);
         } catch (MalformedURLException mue) {
@@ -207,10 +206,10 @@ public class HTTPMethod implements AutoCloseable
 
         url = HTTPSession.removeprincipal(url);
 
-        this.legalurl = url;
+        this.methodurl = url;
         this.session.addMethod(this);
 
-        this.methodclass = m;
+        this.methodkind = m;
     }
 
     protected HttpRequestBase
@@ -219,24 +218,24 @@ public class HTTPMethod implements AutoCloseable
     {
         HttpRequestBase method = null;
 
-        if(this.legalurl == null)
-            throw new HTTPException("Malformed url: " + this.legalurl);
+        if(this.methodurl == null)
+            throw new HTTPException("Malformed url: " + this.methodurl);
 
-        switch (this.methodclass) {
+        switch (this.methodkind) {
         case Put:
-            method = new HttpPut(this.legalurl);
+            method = new HttpPut(this.methodurl);
             break;
         case Post:
-            method = new HttpPost(this.legalurl);
+            method = new HttpPost(this.methodurl);
             break;
         case Get:
-            method = new HttpGet(this.legalurl);
+            method = new HttpGet(this.methodurl);
             break;
         case Head:
-            method = new HttpHead(this.legalurl);
+            method = new HttpHead(this.methodurl);
             break;
         case Options:
-            method = new HttpOptions(this.legalurl);
+            method = new HttpOptions(this.methodurl);
             break;
         default:
             break;
@@ -246,7 +245,7 @@ public class HTTPMethod implements AutoCloseable
 
     protected void setcontent(HttpRequestBase request)
     {
-        switch (this.methodclass) {
+        switch (this.methodkind) {
         case Put:
             if(this.content != null)
                 ((HttpPut) request).setEntity(this.content);
@@ -269,10 +268,10 @@ public class HTTPMethod implements AutoCloseable
     {
         if(closed)
             throw new HTTPException("HTTPMethod: attempt to execute closed method");
-        if(this.legalurl == null)
+        if(this.methodurl == null)
             throw new HTTPException("HTTPMethod: no url specified");
-        if(!localsession && !sessionCompatible(this.legalurl))
-            throw new HTTPException("HTTPMethod: session incompatible url: " + this.legalurl);
+        if(!localsession && !sessionCompatible(this.methodurl))
+            throw new HTTPException("HTTPMethod: session incompatible url: " + this.methodurl);
 
         if(this.request != null)
             this.request.releaseConnection();
@@ -667,12 +666,19 @@ public class HTTPMethod implements AutoCloseable
      */
     protected boolean sessionCompatible(String other)
     {
-        // Remove any trailing constraint
-        String sessionurl = HTTPSession.getCanonicalURL(this.session.getURL());
-        if(sessionurl == null) return true; // always compatible
-        other = HTTPSession.getCanonicalURL(other);
-        return compatibleURL(sessionurl, other);
+        try {
+            return sessionCompatible(HTTPAuthScope.urlToScope(other));
+        } catch (HTTPException e) {
+            return false;
+        }
     }
+
+    protected boolean sessionCompatible(AuthScope other)
+        {
+            // Remove any trailing constraint
+            if(session.getRealm() == null) return true; // always compatible
+            return compatibleURL(session.getRealm(), other);
+        }
 
     /**
      * Handle authentication.
@@ -688,12 +694,12 @@ public class HTTPMethod implements AutoCloseable
     setAuthentication()
         throws HTTPException
     {
-        String surl = session.getURL();
+        String surl = session.getSessionURL();
         // Creat a authscope from the url
         AuthScope scope;
-        String[] principalp = new String[1];
+        String[] principalp = new String[]{null};
         if(surl == null)
-            scope = HTTPAuthScope.ANY;
+            scope = session.getRealm();
         else
             scope = HTTPAuthScope.urlToScope(HTTPAuthPolicy.BASIC, surl, principalp);
 
@@ -714,11 +720,11 @@ public class HTTPMethod implements AutoCloseable
      * Currently, it is assumed that two urls are compatible if and only if
      * they have the same host and port
      */
-    static protected boolean compatibleURL(String u1, String u2)
+    /*static protected boolean compatibleURL(String u1, String u2)
     {
         if(u1 == u2) return true;
-        if(u1 == null) return false;
-        if(u2 == null) return false;
+        if((u1 == null) ^ (u2 == null))
+	    return false;
 
         try {
             URL url1 = new URL(u1);
@@ -728,7 +734,16 @@ public class HTTPMethod implements AutoCloseable
         } catch (MalformedURLException mue) {
             return false;
         }
-    }
+    } */
+
+    static protected boolean compatibleURL(AuthScope a1, AuthScope a2)
+        {
+            if(a1 == a2) return true;
+            if((a1 == null) ^ (a2 == null))
+    	        return false;
+            return a1.getHost().equals(a2.getHost())
+                        && a1.getPort() == a2.getPort();
+        }
 
     //////////////////////////////////////////////////
     // debug interface

@@ -37,14 +37,15 @@ package ucar.httpservices;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.util.LangUtils;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Locale;
-
+import java.net.URL;
 
 import static org.apache.http.auth.AuthScope.*;
-import static ucar.httpservices.HTTPAuthScope.*;
 
 
 /**
@@ -63,13 +64,13 @@ abstract public class HTTPAuthScope
     public static final String ANY_PRINCIPAL = null;
 
     public static final AuthScope ANY
-        = new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, ANY_SCHEME);
+            = new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, ANY_SCHEME);
 
     //////////////////////////////////////////////////	
     // URL Decomposition
 
     static URI decompose(String suri)
-        throws HTTPException
+            throws HTTPException
     {
         try {
             URI uri = new URI(suri);
@@ -96,16 +97,16 @@ abstract public class HTTPAuthScope
         if(a1 == null || a2 == null)
             throw new NullPointerException();
         if(a1.getScheme() != ANY_SCHEME && a2.getScheme() != ANY_SCHEME
-            && !a1.getScheme().equals(a2.getScheme()))
+                && !a1.getScheme().equals(a2.getScheme()))
             return false;
         if(a1.getHost() != ANY_HOST && a2.getHost() != ANY_HOST
-            && !a1.getHost().equals(a2.getHost()))
+                && !a1.getHost().equals(a2.getHost()))
             return false;
         if(a1.getPort() != ANY_PORT && a2.getPort() != ANY_PORT
-            && a1.getPort() != a2.getPort())
+                && a1.getPort() != a2.getPort())
             return false;
         if(a1.getRealm() != ANY_REALM && a2.getRealm() != ANY_REALM
-            && !a1.getRealm().equals(a2.getRealm()))
+                && !a1.getRealm().equals(a2.getRealm()))
             return false;
         return true;
     }
@@ -114,8 +115,8 @@ abstract public class HTTPAuthScope
     {
         if(a2 == null ^ a1 == null)
             return false;
-	if(a1 == a2)
-	    return true;
+        if(a1 == a2)
+            return true;
         // So it turns out that AuthScope#equals does not
         // test port values correctly, so we need to fix here.
         if(true) {
@@ -150,28 +151,55 @@ abstract public class HTTPAuthScope
 
     static public AuthScope
     urlToScope(String authscheme, String surl, String[] principalp)
-        throws HTTPException
+            throws HTTPException
     {
-        URI uri = HTTPAuthScope.decompose(surl);
-        AuthScope scope = new AuthScope(uri.getHost(),
-            uri.getPort(),
-            ANY_REALM,
-            authscheme);
-        if(principalp != null)
-            principalp[0] = uri.getUserInfo();
-        return scope;
+        try {
+            URI uri = HTTPAuthScope.decompose(surl);
+            AuthScope scope = new AuthScope(uri.getHost(),
+                    uri.getPort(),
+                    HTTPUtil.makerealm(uri.toURL()),
+                    authscheme);
+            if(principalp != null)
+                principalp[0] = uri.getUserInfo();
+            return scope;
+        } catch (MalformedURLException mue) {
+            throw new HTTPException(mue);
+        }
     }
+
+    static public AuthScope
+    urlToScope(String surl)
+            throws HTTPException
+    {
+        return urlToScope(ANY_SCHEME, surl, null);
+    }
+
+    static public URL
+    scopeToURL(AuthScope scope)
+            throws HTTPException
+    {
+        try {
+            String scheme = scope.getScheme();
+            if(scheme == null || scheme.length() == 0)
+                scheme = "http";
+            URL url = new URL(scheme, scope.getHost(), scope.getPort(), "");
+            return url;
+        } catch (MalformedURLException mue) {
+            throw new HTTPException(mue);
+        }
+    }
+
 
     static public boolean
     wildcardMatch(String p1, String p2)
     {
-        if((p1 == null ^ p2 == null)|| (p1 == p2))
+        if((p1 == null ^ p2 == null) || (p1 == p2))
             return true;
         return (p1.equals(p2));
     }
 
     static public void serializeScope(AuthScope scope, ObjectOutputStream oos)
-        throws IOException
+            throws IOException
     {
         oos.writeObject(scope.getHost());
         oos.writeInt(scope.getPort());
@@ -180,7 +208,7 @@ abstract public class HTTPAuthScope
     }
 
     static public AuthScope deserializeScope(ObjectInputStream oos)
-        throws IOException, ClassNotFoundException
+            throws IOException, ClassNotFoundException
     {
         String host = (String) oos.readObject();
         int port = oos.readInt();
