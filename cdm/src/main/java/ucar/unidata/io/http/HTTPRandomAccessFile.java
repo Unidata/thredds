@@ -82,7 +82,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     boolean needtest = true;
 
     try (
-      HTTPMethod method = HTTPFactory.Head(session)) {
+      HTTPMethod method = HTTPFactory.Head(session,url)) {
 
       doConnect(method);
 
@@ -202,7 +202,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     if (debug) System.out.println(" HTTPRandomAccessFile bytes=" + pos + "-" + end + ": ");
 
-    try (HTTPMethod method = HTTPFactory.Get(session)) {
+    try (HTTPMethod method = HTTPFactory.Get(session,url)) {
       method.setFollowRedirects(true);
       method.setRequestHeader("Range", "bytes=" + pos + "-" + end);
       doConnect(method);

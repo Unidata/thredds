@@ -111,7 +111,7 @@ public class TestState extends UnitTestCommon
 
         // Check that session close closes methods and streams
         // and transitively until stream close
-        method = HTTPFactory.Get(session);
+        method = HTTPFactory.Get(session,TESTSOURCE1);
         methodcount = session.getMethodcount();
         assertTrue(methodcount == 1);
         status = method.execute();

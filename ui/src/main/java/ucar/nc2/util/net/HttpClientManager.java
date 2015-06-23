@@ -34,16 +34,17 @@
 package ucar.nc2.util.net;
 
 import org.apache.http.Header;
-import org.apache.http.entity.StringEntity;
-
-import java.io.*;
-import java.util.zip.InflaterInputStream;
-import java.util.zip.GZIPInputStream;
-
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.entity.StringEntity;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;
-import ucar.httpservices.*;
+
+import java.io.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 /**
  * Convenience routines that wrap HTTPSession.
@@ -86,27 +87,28 @@ public class HttpClientManager
      */
     @Urlencoded
     public static String getContentAsString(String urlencoded)
-        throws IOException
+            throws IOException
     {
-        return getContentAsString(null,urlencoded);
+        return getContentAsString(null, urlencoded);
     }
 
     /**
      * Get the content from a url. For large returns, its better to use getResponseAsStream.
      *
-     * @param session   use this session, if null, create a new one
+     * @param session    use this session, if null, create a new one
      * @param urlencoded url as a String
      * @return contents of url as a String
      * @throws java.io.IOException on error
      */
-    @Urlencoded @Deprecated
+    @Urlencoded
+    @Deprecated
     public static String getContentAsString(HTTPSession session, String urlencoded) throws IOException
     {
         HTTPSession useSession = session;
         try {
             if(useSession == null)
-                useSession = HTTPFactory.newSession();
-            HTTPMethod m = HTTPFactory.Get(useSession,urlencoded);
+                useSession = HTTPFactory.newSession(urlencoded);
+            HTTPMethod m = HTTPFactory.Get(useSession, urlencoded);
             m.execute();
             return m.getResponseAsString();
         } finally {
@@ -125,69 +127,79 @@ public class HttpClientManager
      */
     public static int putContent(String urlencoded, String content) throws IOException
     {
-            try (HTTPMethod m = HTTPFactory.Put(urlencoded)) {
+        try (HTTPMethod m = HTTPFactory.Put(urlencoded)) {
 
-                m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
-                m.execute();
+            m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
+            m.execute();
 
-                int resultCode = m.getStatusCode();
+            int resultCode = m.getStatusCode();
 
-                // followRedirect wont work for PUT
-                if(resultCode == 302) {
-                    String redirectLocation;
-                    Header locationHeader = m.getResponseHeader("location");
-                    if(locationHeader != null) {
-                        redirectLocation = locationHeader.getValue();
-                        resultCode = putContent(redirectLocation, content);
-                    }
+            // followRedirect wont work for PUT
+            if(resultCode == 302) {
+                String redirectLocation;
+                Header locationHeader = m.getResponseHeader("location");
+                if(locationHeader != null) {
+                    redirectLocation = locationHeader.getValue();
+                    resultCode = putContent(redirectLocation, content);
                 }
-                return resultCode;
             }
+            return resultCode;
+        }
     }
 
     //////////////////////
 
-    static public String getUrlContentsAsString(String urlencoded, int maxKbytes) throws IOException {
-        return getUrlContentsAsString(null,urlencoded,maxKbytes);
+    static public String getUrlContentsAsString(String urlencoded, int maxKbytes) throws IOException
+    {
+        return getUrlContentsAsString(null, urlencoded, maxKbytes);
     }
 
     @Deprecated
-    static public String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes) throws IOException {
+    static public String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes) throws IOException
+    {
         HTTPSession useSession = session;
         try {
-            if(useSession == null) { useSession = HTTPFactory.newSession(urlencoded); }
+            if(useSession == null) {
+                useSession = HTTPFactory.newSession(urlencoded);
+            }
 
-            try (HTTPMethod m = HTTPFactory.Get(useSession,urlencoded)) {
+            try (HTTPMethod m = HTTPFactory.Get(useSession, urlencoded)) {
                 m.setFollowRedirects(true);
                 m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
                 int status = m.execute();
-                if (status != 200) {
+                if(status != 200) {
                     throw new RuntimeException("failed status = " + status);
                 }
 
                 String charset = m.getResponseCharSet();
-                if (charset == null) charset = "UTF-8";
+                if(charset == null) charset = "UTF-8";
 
                 // check for deflate and gzip compression
                 Header h = m.getResponseHeader("content-encoding");
                 String encoding = (h == null) ? null : h.getValue();
 
-                if (encoding != null && encoding.equals("deflate")) {
+                if(encoding != null && encoding.equals("deflate")) {
                     byte[] body = m.getResponseAsBytes();
                     InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
-                    if (useSession != null) {useSession.close();}
+                    if(useSession != null) {
+                        useSession.close();
+                    }
                     return readContents(is, charset, maxKbytes);
 
-                } else if (encoding != null && encoding.equals("gzip")) {
+                } else if(encoding != null && encoding.equals("gzip")) {
                     byte[] body = m.getResponseAsBytes();
                     InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
-                    if (useSession != null) {useSession.close();}
+                    if(useSession != null) {
+                        useSession.close();
+                    }
                     return readContents(is, charset, maxKbytes);
 
                 } else {
                     byte[] body = m.getResponseAsBytes(maxKbytes * 1000);
-                    if (useSession != null) {useSession.close();}
+                    if(useSession != null) {
+                        useSession.close();
+                    }
                     return new String(body, charset);
                 }
             }
@@ -205,9 +217,9 @@ public class HttpClientManager
     }
 
     static public void copyUrlContentsToFile(String urlencoded, File file)
-        throws IOException
+            throws IOException
     {
-        copyUrlContentsToFile(null,urlencoded,file);
+        copyUrlContentsToFile(null, urlencoded, file);
     }
 
     @Deprecated
@@ -229,7 +241,7 @@ public class HttpClientManager
             }
 
             String charset = m.getResponseCharSet();
-            if (charset == null) charset = "UTF-8";
+            if(charset == null) charset = "UTF-8";
 
             // check for deflate and gzip compression
             Header h = m.getResponseHeader("content-encoding");
@@ -254,48 +266,51 @@ public class HttpClientManager
     }
 
     static public long appendUrlContentsToFile(String urlencoded, File file, long start, long end)
-        throws IOException
+            throws IOException
     {
-        return appendUrlContentsToFile(null,urlencoded,file,start,end);
+        return appendUrlContentsToFile(null, urlencoded, file, start, end);
     }
 
     @Deprecated
     static public long appendUrlContentsToFile(HTTPSession session, String urlencoded, File file, long start, long end)
-        throws IOException {
+            throws IOException
+    {
         HTTPSession useSession = session;
         long nbytes = 0;
 
         try {
-          if(useSession == null) { useSession = HTTPFactory.newSession(urlencoded); }
-
-          try(HTTPMethod m = HTTPFactory.Get(useSession, urlencoded)) {
-            m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-            m.setRequestHeader("Range", "bytes=" + start + "-" + end);
-
-            int status = m.execute();
-            if ((status != 200) && (status != 206)) {
-              throw new RuntimeException("failed status = " + status);
+            if(useSession == null) {
+                useSession = HTTPFactory.newSession(urlencoded);
             }
 
-            String charset = m.getResponseCharSet();
-            if (charset == null) charset = "UTF-8";
+            try (HTTPMethod m = HTTPFactory.Get(useSession, urlencoded)) {
+                m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+                m.setRequestHeader("Range", "bytes=" + start + "-" + end);
 
-            // check for deflate and gzip compression
-            Header h = m.getResponseHeader("content-encoding");
-            String encoding = (h == null) ? null : h.getValue();
+                int status = m.execute();
+                if((status != 200) && (status != 206)) {
+                    throw new RuntimeException("failed status = " + status);
+                }
 
-            if (encoding != null && encoding.equals("deflate")) {
-              InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
-              nbytes = IO.appendToFile(is, file.getPath());
-            } else if (encoding != null && encoding.equals("gzip")) {
-              InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
-              nbytes = IO.appendToFile(is, file.getPath());
-            } else {
-              nbytes = IO.appendToFile(m.getResponseAsStream(), file.getPath());
+                String charset = m.getResponseCharSet();
+                if(charset == null) charset = "UTF-8";
+
+                // check for deflate and gzip compression
+                Header h = m.getResponseHeader("content-encoding");
+                String encoding = (h == null) ? null : h.getValue();
+
+                if(encoding != null && encoding.equals("deflate")) {
+                    InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
+                    nbytes = IO.appendToFile(is, file.getPath());
+                } else if(encoding != null && encoding.equals("gzip")) {
+                    InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
+                    nbytes = IO.appendToFile(is, file.getPath());
+                } else {
+                    nbytes = IO.appendToFile(m.getResponseAsStream(), file.getPath());
+                }
             }
-          }
         } finally {
-            if (session == null && useSession != null) {
+            if(session == null && useSession != null) {
                 // close use session if we created it inside this method
                 useSession.close();
             }
