@@ -21,21 +21,26 @@ import java.io.IOException;
 public class DatasetTrackerChronicle implements DatasetTracker {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private final String datasetName = "/chronicle.datasets.dat";
-  static private final String datarootName = "/dataroots.dat";
-  static private final String catalogName = "/catalogs.dat";
 
   private boolean alreadyExists;
+  private boolean changed;
+  private String pathname;
   private File dbFile;
   private long maxDatasets;
   private ChronicleMap<String, Externalizable> datasetMap;
 
+  private CatalogTracker catalogTracker;
+  private DataRootTracker dataRootTracker;
+
   public boolean init(String pathname, long maxDatasets) throws IOException {
+    this.pathname = pathname;
     dbFile = new File(pathname+datasetName);
     alreadyExists = dbFile.exists();
     this.maxDatasets = maxDatasets;
 
     try {
       open();
+      startupLog.info("DatasetTrackerChronicle opened success on '" + dbFile.getAbsolutePath() + "'");
       return true;
 
     } catch (Throwable e) {
@@ -45,11 +50,39 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   }
 
   @Override
-  public void save() {
+  public void save() throws IOException {
+    try {
+      if (catalogTracker != null)
+        catalogTracker.save();
+
+      if (dataRootTracker != null)
+        dataRootTracker.save();
+
+    } catch (IOException ioe) {
+      startupLog.error("Saving tracker info", ioe);
+    }
+
+    // LOOK just a guess
+    if (changed) {
+      datasetMap.close();
+      ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
+              .averageValueSize(200).entries(maxDatasets);
+      datasetMap = builder.createPersistedTo(dbFile);
+    }
   }
 
   @Override
-  public void close() {
+  public void close() throws IOException {
+    if (catalogTracker != null) {
+      catalogTracker.save();
+      catalogTracker = null;
+    }
+
+    if (dataRootTracker != null) {
+      dataRootTracker.save();
+      dataRootTracker = null;
+    }
+
     if (datasetMap != null) {
       datasetMap.close();
       datasetMap = null;
@@ -70,6 +103,8 @@ public class DatasetTrackerChronicle implements DatasetTracker {
         return false;
       }
     }
+    catalogTracker.reinit();
+    dataRootTracker.reinit();
 
     try {
       open();
@@ -86,6 +121,9 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
              .averageValueSize(200).entries(maxDatasets);
     datasetMap = builder.createPersistedTo(dbFile);
+
+    catalogTracker = new CatalogTracker(pathname);
+    dataRootTracker = new DataRootTracker(pathname);
   }
 
   @Override
@@ -118,6 +156,7 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     if (path == null)
       return false;
 
+    changed = true;
     DatasetExt dsext = new DatasetExt(0, dataset, hasNcml);
     datasetMap.put(path, dsext);
     return true;
@@ -137,29 +176,35 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     return dext.getNcml();
   }
 
+  ////////////////////////////////////////////////////////////////
+  // dataroots
+
   @Override
-  public boolean trackDataRoot(DataRootExt ds) {
-    return false;
+  public boolean trackDataRoot(DataRootExt dsext) {
+    return dataRootTracker.trackDataRoot(dsext);
   }
 
   @Override
-  public Iterable<DataRootExt> getDataRoots() {
-    return null;
+  public Iterable<? extends DataRootExt> getDataRoots() {
+    return dataRootTracker.getDataRoots();
   }
 
-  @Override
-  public boolean trackCatalog(CatalogExt ds) {
-    return false;
-  }
+  ////////////////////////////////////////////////////////////////
+  // catalogs
 
   @Override
-  public Iterable<CatalogExt> getCatalogs() {
-    return null;
+  public boolean trackCatalog(CatalogExt catext) {
+    return catalogTracker.trackCatalog(catext);
   }
 
   @Override
   public boolean removeCatalog(String relPath) {
-    return false;
+    return catalogTracker.removeCatalog(relPath);
+  }
+
+  @Override
+  public Iterable<? extends CatalogExt> getCatalogs() {
+    return catalogTracker.getCatalogs();
   }
 
 }

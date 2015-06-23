@@ -67,7 +67,7 @@ import java.util.*;
 public class ConfigCatalogInitialization {
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName());
   static private final String ERROR = "*** ERROR: ";
-  static private final boolean show = true;
+  static private final boolean show = false;
 
   @Autowired
   private TdsContext tdsContext;  // used for  getContentDirectory, contextPath
@@ -100,7 +100,7 @@ public class ConfigCatalogInitialization {
   private DatasetTracker.Callback callback;
   private boolean exceedLimit = false;
   private long countDatasets = 0;
-  private long maxDatasets; // 1000 * 1000;  // LOOK debuging only
+  private long maxDatasets = 1000 * 1000;  // LOOK debuging only
 
   Set<String> catPathHash = new HashSet<>();       // Hash of paths, to look for duplicates LOOK maybe tracker should do this
   Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
@@ -129,7 +129,7 @@ public class ConfigCatalogInitialization {
   public void init(ReadMode _readMode, PreferencesExt prefs) {
     if (readMode != null)
        this.readMode = _readMode;
-    long lastRead = prefs.getLong("lastRead", 0);
+    lastRead = prefs.getLong("lastRead", 0);
     logCatalogInit.info("ConfigCatalogInitializion lastRead=" + CalendarDate.of(lastRead));
     long start = System.currentTimeMillis();
 
@@ -164,7 +164,13 @@ public class ConfigCatalogInitialization {
       System.out.printf("%s%n", callback);
     }
 
-    datasetTracker.save();
+    try {
+      datasetTracker.save();
+    } catch (IOException e) {
+      e.printStackTrace();   // LOOK
+      logCatalogInit.error("datasetTracker.save() failed", e);
+    }
+
     long took = System.currentTimeMillis() - start;
     logCatalogInit.info("ConfigCatalogInitializion finished took={} msecs", took);
   }

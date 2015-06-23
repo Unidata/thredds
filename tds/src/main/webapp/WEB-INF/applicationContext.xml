@@ -114,7 +114,7 @@
   <bean id="TdsInit" class="thredds.server.config.TdsInit" />   <!-- must declare here in order to get destroy() to be called -->
   <bean id="pathMatcher" class="thredds.server.catalog.DataRootPathMatcher" />
   <bean id="ConfigCatalogCache" class="thredds.server.catalog.ConfigCatalogCache" />
-  <bean id="DatasetTracker" class="thredds.server.catalog.tracker.DatasetTrackerMapDB" />
+  <bean id="DatasetTracker" class="thredds.server.catalog.tracker.DatasetTrackerChronicle" />
   <bean id="CatalogWatcher" class="thredds.server.catalog.tracker.CatalogWatcher">
     <constructor-arg ref="DatasetTracker" />
   </bean>

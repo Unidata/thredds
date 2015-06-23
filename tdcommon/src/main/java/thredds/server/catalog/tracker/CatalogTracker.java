@@ -10,12 +10,13 @@ import java.util.*;
  * @since 6/22/2015
  */
 public class CatalogTracker {
+  private static final String dbname = "/catTracker.dat";
   String filepath;
   Set<String> catalogs;
   boolean changed;
 
-  public CatalogTracker(String filepath) {
-    this.filepath = filepath;
+  public CatalogTracker(String pathname) {
+    this.filepath = pathname + dbname;
     File file = new File(filepath);
     if (!file.exists() || readCatalogs() <= 0) {
       changed = true;

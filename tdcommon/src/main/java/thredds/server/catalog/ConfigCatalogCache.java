@@ -128,12 +128,7 @@ public class ConfigCatalogCache implements CatalogReader {
     }
        */
 
-      return cache.get(catKey, new Callable<ConfigCatalog>() {
-        @Override
-        public ConfigCatalog call() throws IOException {
-          return readCatalog(rootPath + catKey);
-        }
-      });
+      return cache.get(catKey, () -> readCatalog(rootPath + catKey));
 
     } catch (ExecutionException e) {
       Throwable c = e.getCause();

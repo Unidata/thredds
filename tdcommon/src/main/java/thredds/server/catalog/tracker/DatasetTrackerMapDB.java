@@ -50,13 +50,12 @@ public class DatasetTrackerMapDB implements DatasetTracker {
   @Override
   public void save() {
     try {
-      if (catalogTracker != null) {
+      if (catalogTracker != null)
         catalogTracker.save();
-      }
 
-      if (dataRootTracker != null) {
+      if (dataRootTracker != null)
         dataRootTracker.save();
-      }
+
     } catch (IOException ioe) {
       startupLog.error("Saving tracker info", ioe);
     }
@@ -116,15 +115,15 @@ public class DatasetTrackerMapDB implements DatasetTracker {
   private void open() {
     db = DBMaker.newFileDB(dbFile)       // LOOK might also turn on cache
             .transactionDisable()
-            .mmapFileEnableIfSupported()
+            // .mmapFileEnableIfSupported()
             .closeOnJvmShutdown()
             .make();
 
     alreadyExists = db.exists("datasets");  // LOOK ??
     datasetMap = db.getHashMap("datasets");
 
-    catalogTracker = new CatalogTracker(pathname+"/catTracker.dat");
-    dataRootTracker = new DataRootTracker(pathname+"/datarootTracker.dat");
+    catalogTracker = new CatalogTracker(pathname);
+    dataRootTracker = new DataRootTracker(pathname);
   }
 
   ////////////////////////////////////////////////////////////////

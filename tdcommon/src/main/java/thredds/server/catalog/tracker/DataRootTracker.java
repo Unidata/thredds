@@ -11,12 +11,13 @@ import java.util.Set;
  * @since 6/22/2015
  */
 public class DataRootTracker {
+  private static final String dbname = "/datarootTracker.dat";
   String filepath;
   Set<DataRootExt> dataRoots;
   boolean changed;
 
-  public DataRootTracker(String filepath) {
-    this.filepath = filepath;
+  public DataRootTracker(String pathname) {
+    this.filepath = pathname +dbname ;
     File file = new File(filepath);
     if (!file.exists() || readDataRoots() <= 0) {
       dataRoots = new HashSet<>();
