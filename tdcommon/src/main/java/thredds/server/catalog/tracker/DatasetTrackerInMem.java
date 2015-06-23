@@ -147,7 +147,11 @@ public class DatasetTrackerInMem implements DatasetTracker {
     return false;
   }
 
+  @Override
   public void close() {
   }
 
+  @Override
+  public void save() {
+  }
 }

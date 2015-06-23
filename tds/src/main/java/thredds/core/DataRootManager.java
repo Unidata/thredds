@@ -206,21 +206,13 @@ public class DataRootManager implements InitializingBean {
     DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
     DebugCommands.Action act;
 
-    act = new DebugCommands.Action("showDataRootPaths", "Show data roots paths") {
-      public void doAction(DebugCommands.Event e) {
-        synchronized (DataRootManager.this) {
-          for (String drPath : dataRootPathMatcher.getKeys()) {
-            e.pw.println(" <b>" + drPath + "</b>");
-          }
-        }
-      }
-    };
-    debugHandler.addAction(act);
-
     act = new DebugCommands.Action("showDataRoots", "Show data roots") {
       public void doAction(DebugCommands.Event e) {
         synchronized (DataRootManager.this) {
-          for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {     // LOOK sort
+          List<Map.Entry<String, DataRootExt>> list = new ArrayList<>(dataRootPathMatcher.getValues());
+          Collections.sort(list, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));    // java 8 lambda, baby
+
+          for (Map.Entry<String, DataRootExt> entry : list) {
             DataRootExt ds = entry.getValue();
             e.pw.print(" <b>" + ds.getPath() + "</b>");
             String url = DataRootManager.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.getPath() + "/";

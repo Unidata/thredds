@@ -100,7 +100,7 @@ public class ConfigCatalogInitialization {
   private DatasetTracker.Callback callback;
   private boolean exceedLimit = false;
   private long countDatasets = 0;
-  private long maxDatasets;
+  private long maxDatasets; // 1000 * 1000;  // LOOK debuging only
 
   Set<String> catPathHash = new HashSet<>();       // Hash of paths, to look for duplicates LOOK maybe tracker should do this
   Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
@@ -159,11 +159,12 @@ public class ConfigCatalogInitialization {
 
     if (callback != null) {
       prefs.putLong("lastRead", System.currentTimeMillis()); // LOOK do we need to distinguish between lastReadAlways and lastReadCheck ??
-      logCatalogInit.info("\nConfigCatalogInitializion stats\n" + callback);
       callback.finish();
+      logCatalogInit.info("\nConfigCatalogInitializion stats\n" + callback);
       System.out.printf("%s%n", callback);
     }
 
+    datasetTracker.save();
     long took = System.currentTimeMillis() - start;
     logCatalogInit.info("ConfigCatalogInitializion finished took={} msecs", took);
   }
@@ -209,7 +210,7 @@ public class ConfigCatalogInitialization {
     File catalogFile = new File(this.contentRootPath, catalogRelPath);
     if (!catalogFile.exists()) {
       datasetTracker.removeCatalog(catalogRelPath);
-      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + catalogRelPath + "] does not exist in config directory.");
+      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + catalogRelPath + "] does not exist.");
       return;
     }
     long lastModified = catalogFile.lastModified();
@@ -283,7 +284,7 @@ public class ConfigCatalogInitialization {
     ConfigCatalogBuilder builder = new ConfigCatalogBuilder();
     try {
       // read the catalog
-      logCatalogInit.info("\n-------readCatalog(): full path=" + catalogFullPath + "; path=" + catalogRelPath+ "; uri=" + uri);
+      logCatalogInit.info("-------readCatalog(): path=" + catalogRelPath);
       ConfigCatalog cat = (ConfigCatalog) builder.buildFromLocation(catalogFullPath, uri);
       if (builder.hasFatalError()) {
         logCatalogInit.error(ERROR + "   invalid catalog -- " + builder.getErrorMessage());
@@ -320,7 +321,8 @@ public class ConfigCatalogInitialization {
         }
       }
 
-      if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollectionRef)) continue;  // LOOK what about CatalogScan ??
+      if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollectionRef)) continue;
+      if ((ds instanceof CatalogScan && readMode != ReadMode.always)) continue;  // LOOK what about CatalogScan ??
 
       if (ds instanceof CatalogRef) { // follow catalog refs
         CatalogRef catref = (CatalogRef) ds;
@@ -510,7 +512,7 @@ public class ConfigCatalogInitialization {
     @Override
     public String toString() {
       Formatter f = new Formatter();
-      System.out.printf("ConfigCatalogInitialization took %f secs%n", took);
+      f.format("ConfigCatalogInitialization took %f secs%n", took);
       return stat2.show(f);
     }
   }

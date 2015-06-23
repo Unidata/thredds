@@ -41,12 +41,12 @@ import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
+import thredds.server.catalog.tracker.CatalogExt;
 import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.servlet.DatasetSource;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.restrict.Authorizer;
 import thredds.util.TdsPathUtils;
-
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -54,8 +54,8 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.cache.FileFactory;
 
@@ -64,18 +64,21 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Provides an API to obtain the various Dataset objects, given the request Path.
- *
+ * <p>
  * Need to rethink return type - using null to mean many things
  *
- *  @author caron
-  * @since 1/23/2015
+ * @author caron
+ * @since 1/23/2015
  */
 @Component
-public class DatasetManager implements InitializingBean  {
+public class DatasetManager implements InitializingBean {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetManager.class);
   static final boolean debugResourceControl = false;
 
@@ -101,7 +104,7 @@ public class DatasetManager implements InitializingBean  {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    TdsRequestedDataset.setDatasetManager( this);      // LOOK why not autowire this ?  maybe because static ??
+    TdsRequestedDataset.setDatasetManager(this);      // LOOK why not autowire this ?  maybe because static ??
     makeDebugActions();
   }
 
@@ -150,7 +153,7 @@ public class DatasetManager implements InitializingBean  {
 
     // HEY LOOK datascan below has its own Ncml
     // look for a dataset (non scan, non fmrc) that has an ncml element
-    String ncml= datasetTracker.findNcml(reqPath);
+    String ncml = datasetTracker.findNcml(reqPath);
     if (ncml != null) {
       // if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found NcmlDataset= " + ds);
       //String cacheName = ds.getUniqueID(); // LOOK use reqPath !!
@@ -275,7 +278,7 @@ public class DatasetManager implements InitializingBean  {
 
       InvDatasetFeatureCollection fc = featureCollectionCache.get(featCollection);
       FeatureDatasetPoint fd = fc.getPointDataset(match.remaining);
-      if (fd == null) throw new IllegalArgumentException("Not a Point Dataset "+fc.getName());
+      if (fd == null) throw new IllegalArgumentException("Not a Point Dataset " + fc.getName());
       return fd;
     }
 
@@ -327,7 +330,7 @@ public class DatasetManager implements InitializingBean  {
       return new DtCoverageAdapter(gds);
 
     gds.close();
-    throw new IllegalArgumentException("Not a Grid Dataset "+gds.getName());
+    throw new IllegalArgumentException("Not a Grid Dataset " + gds.getName());
   }
 
 
@@ -415,21 +418,22 @@ public class DatasetManager implements InitializingBean  {
   ///////////////////////////////////////////////////////////////////////////////////////////////
   // debugging
   public InvDatasetFeatureCollection openFeatureCollection(FeatureCollectionRef ftCollection) throws IOException {
-      return featureCollectionCache.get(ftCollection);
+    return featureCollectionCache.get(ftCollection);
   }
 
   void makeDebugActions() {
-     /* DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
-     DebugCommands.Action act;
+    DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
+    DebugCommands.Action act;
 
-     act = new DebugCommands.Action("showNcml", "Show ncml datasets") {
-       public void doAction(DebugCommands.Event e) {
-         for (Object key : ncmlDatasetHash.keySet()) {
-           e.pw.println(" url=" + key);
-         }
-       }
-     };
-     debugHandler.addAction(act);  */
-   }
+    act = new DebugCommands.Action("showCatalogExt", "Show known catalogs") {
+      public void doAction(DebugCommands.Event e) {
+        for (CatalogExt catExt : datasetTracker.getCatalogs()) {
+          e.pw.println(catExt.getCatRelLocation());
+        }
+      }
+    };
+    debugHandler.addAction(act);
+
+  }
 
 }

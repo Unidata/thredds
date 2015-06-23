@@ -106,6 +106,7 @@ public class ConfigCatalogCache implements CatalogReader {
   }
 
   public ConfigCatalog getFromAbsolutePath(String catalogFullPath) throws IOException {
+    catalogFullPath = StringUtil2.substitute(catalogFullPath, "\\", "/"); // nasty microsnot
     if (catalogFullPath.startsWith(rootPath)) {
       String catKey = catalogFullPath.substring(rootPath.length());
       // if (catKey.startsWith("/")) catKey = catKey.substring(1);

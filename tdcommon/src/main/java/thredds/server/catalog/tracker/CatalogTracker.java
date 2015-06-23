@@ -1,10 +1,7 @@
 package thredds.server.catalog.tracker;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Description
@@ -15,64 +12,76 @@ import java.util.Set;
 public class CatalogTracker {
   String filepath;
   Set<String> catalogs;
+  boolean changed;
 
   public CatalogTracker(String filepath) {
     this.filepath = filepath;
     File file = new File(filepath);
-    if (!file.exists() || readCatalogs() <= 0)
+    if (!file.exists() || readCatalogs() <= 0) {
+      changed = true;
       catalogs = new HashSet<>();
+    }
+  }
+
+  void reinit() {
+    File file = new File(filepath);
+    if (file.exists()) {
+       boolean wasDeleted = file.delete();
+       if (!wasDeleted) {
+         throw new IllegalStateException("DatasetTrackerMapDB not able to delete "+ filepath);
+       }
+     }
+    changed = true;
+    catalogs = new HashSet<>();
   }
 
   // catalogs
   boolean trackCatalog(CatalogExt cat) {
+    changed = true;
     return catalogs.add(cat.getCatRelLocation());
   }
 
   boolean removeCatalog(String relPath) {
+    changed = true;
     return catalogs.remove(relPath);
   }
 
-  Iterable<? extends CatalogExt> getCatalogs() {
+  Iterable<? extends CatalogExt> getCatalogs() {  // LOOK random order, can we sort?
     List<CatalogExt> result = new ArrayList<>();
     for (String relPath : catalogs) {
       CatalogExt ext = new CatalogExt(0, relPath);
       result.add(ext);
     }
+    Collections.sort(result, (o1, o2) -> o1.getCatRelLocation().compareTo(o2.getCatRelLocation()));    // java 8 lambda, baby
     return result;
   }
 
   int readCatalogs() {
     catalogs = new HashSet<>();
     int count = 0;
-    try (ObjectInput in = new ObjectInputStream(new FileInputStream(filepath))) {
+    try (DataInputStream in = new DataInputStream(new FileInputStream(filepath))) {
       while (in.available() > 0) {
         CatalogExt ext = new CatalogExt();
         ext.readExternal(in);
         catalogs.add(ext.getCatRelLocation());
         count++;
       }
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-      return 0;
 
     } catch (IOException e) {
       e.printStackTrace();
       return 0;
-
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-      return 0;
     }
-
     return count;
   }
 
   void save() throws IOException {
-    try (ObjectOutput out = new ObjectOutputStream(new FileOutputStream(filepath))) {
+    if (!changed) return;
+    try (DataOutputStream out = new DataOutputStream(new FileOutputStream(filepath))) {
       for (String relPath : catalogs) {
         CatalogExt ext = new CatalogExt(0, relPath);
         ext.writeExternal(out);
       }
     }
+    changed = false;
   }
 }

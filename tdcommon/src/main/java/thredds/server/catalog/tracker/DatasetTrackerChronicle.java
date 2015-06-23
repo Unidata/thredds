@@ -45,6 +45,10 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   }
 
   @Override
+  public void save() {
+  }
+
+  @Override
   public void close() {
     if (datasetMap != null) {
       datasetMap.close();

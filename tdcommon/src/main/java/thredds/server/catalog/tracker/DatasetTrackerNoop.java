@@ -44,6 +44,10 @@ public class DatasetTrackerNoop implements DatasetTracker {
   }
 
   @Override
+  public void save() {
+  }
+
+  @Override
   public boolean exists() {
     return false;
   }

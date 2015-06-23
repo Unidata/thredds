@@ -1,14 +1,9 @@
 /* Copyright */
 package thredds.server.catalog.tracker;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.server.catalog.DataRoot;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.*;
 
 /**
  * Externalized DataRoot.
@@ -16,11 +11,10 @@ import java.io.ObjectOutput;
  * @author caron
  * @since 6/16/2015
  */
-public class DataRootExt implements Externalizable {
-  static private final Logger logger = LoggerFactory.getLogger(DataRootExt.class);
-
+public class DataRootExt implements Comparable<DataRootExt> {
   static public int total_count = 0;
   static public long total_nbytes = 0;
+  static private final boolean debug = false;
 
   private String path;
   private String dirLocation;
@@ -74,13 +68,12 @@ public class DataRootExt implements Externalizable {
     required DataRootType type = 3;
     optional string catLocation = 4;    // omit for simple dataset root
   } */
-  @Override
-  public void writeExternal(ObjectOutput out) throws IOException {
+  public void writeExternal(DataOutputStream out) throws IOException {
     ConfigCatalogExtProto.DataRoot.Builder builder = ConfigCatalogExtProto.DataRoot.newBuilder();
     builder.setUrlPath(path);
     builder.setDirLocation(dirLocation);
-    builder.setType(convertDataRootType(dataRoot.getType()));
-    if (dataRoot.getType() != DataRoot.Type.datasetRoot)
+    builder.setType(convertDataRootType(type));
+    if (type != DataRoot.Type.datasetRoot)
       builder.setCatLocation(catLocation);
 
     ConfigCatalogExtProto.DataRoot index = builder.build();
@@ -90,12 +83,16 @@ public class DataRootExt implements Externalizable {
 
     total_count++;
     total_nbytes += b.length + 4;
+    if (debug) System.out.printf(" %d: DataRootExt.writeExternal len=%d total=%d%n", total_count, b.length, total_nbytes);
   }
 
-  @Override
-  public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+  private static int nrecordsRead = 0;
+
+  public void readExternal(DataInputStream in) throws IOException {
     int avail = in.available();
     int len = in.readInt();
+    if (debug) System.out.printf(" %d: DataRootExt.readExternal len=%d%n", nrecordsRead++, len);
+
     byte[] b = new byte[len];
     int n = in.read(b);
     //System.out.printf(" read size = %d%n", b.length);
@@ -144,4 +141,8 @@ public class DataRootExt implements Externalizable {
    }
 
 
+  @Override
+  public int compareTo(DataRootExt o) {
+    return path.compareTo( o.getPath());
+  }
 }

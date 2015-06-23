@@ -122,9 +122,7 @@ public class ViewerServiceImpl implements ViewerService {
         } else {
           String viewerLinkHtml = viewer.getViewerLinkHtml(dataset, req);
           if (viewerLinkHtml != null) {
-            out.format("  <li> ");
-            out.format(viewerLinkHtml);
-            out.format("</li>\n");
+            out.format("  <li> %s</li>\r\n", viewerLinkHtml);
           }
         }
       }

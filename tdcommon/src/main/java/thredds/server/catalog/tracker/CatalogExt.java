@@ -1,10 +1,7 @@
 /* Copyright */
 package thredds.server.catalog.tracker;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.*;
 
 /**
  * Describe
@@ -12,7 +9,7 @@ import java.io.ObjectOutput;
  * @author caron
  * @since 6/16/2015
  */
-public class CatalogExt implements Externalizable {
+public class CatalogExt {
   static public int total_count = 0;
   static public long total_nbytes = 0;
 
@@ -40,8 +37,7 @@ public class CatalogExt implements Externalizable {
     required string catLocation = 2;
   } */
 
-  @Override
-  public void writeExternal(ObjectOutput out) throws IOException {
+  public void writeExternal(DataOutputStream out) throws IOException {
     ConfigCatalogExtProto.Catalog.Builder builder = ConfigCatalogExtProto.Catalog.newBuilder();
     builder.setCatId(catId);
     builder.setCatLocation(catRelLocation);
@@ -55,8 +51,7 @@ public class CatalogExt implements Externalizable {
     total_nbytes += b.length + 4;
   }
 
-  @Override
-  public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+  public void readExternal(DataInputStream in) throws IOException {
     int avail = in.available();
     int len = in.readInt();
     byte[] b = new byte[len];

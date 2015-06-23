@@ -18,6 +18,7 @@ public interface DatasetTracker extends AutoCloseable {
   // return true on success
   boolean init(String dirPath, long maxDatasets) throws IOException;
 
+  void save();
   void close() throws IOException;
   boolean exists(); // detect if database exists
   boolean reinit(); // throw out all and start again

@@ -27,9 +27,10 @@ public class DatasetTrackerMapDB implements DatasetTracker {
   private DB db;
   private HTreeMap<String, Externalizable> datasetMap;
   private boolean alreadyExists;
+  private boolean changed;
 
-  CatalogTracker catTracker;
-  DataRootTracker dataRootTracker;
+  private CatalogTracker catalogTracker;
+  private DataRootTracker dataRootTracker;
 
   public boolean init(String pathname, long maxDatasets) {
     this.pathname = pathname;
@@ -46,10 +47,28 @@ public class DatasetTrackerMapDB implements DatasetTracker {
     }
   }
 
+  @Override
+  public void save() {
+    try {
+      if (catalogTracker != null) {
+        catalogTracker.save();
+      }
+
+      if (dataRootTracker != null) {
+        dataRootTracker.save();
+      }
+    } catch (IOException ioe) {
+      startupLog.error("Saving tracker info", ioe);
+    }
+
+    // LOOK not sure how to flush mapDB
+    db.commit();
+  }
+
   public void close() throws IOException {
-    if (catTracker != null) {
-      catTracker.save();
-      catTracker = null;
+    if (catalogTracker != null) {
+      catalogTracker.save();
+      catalogTracker = null;
     }
 
     if (dataRootTracker != null) {
@@ -58,7 +77,8 @@ public class DatasetTrackerMapDB implements DatasetTracker {
     }
 
     if (db != null) {
-     datasetMap.close();
+      datasetMap.close();
+      if (changed) db.compact();  // ?? LOOK maybe put into admin/debug ?
       db.close();
       startupLog.info("DatasetTrackerMapDB closed");
       db = null;
@@ -79,6 +99,8 @@ public class DatasetTrackerMapDB implements DatasetTracker {
         return false;
       }
     }
+    catalogTracker.reinit();
+    dataRootTracker.reinit();
 
     try {
       open();
@@ -92,7 +114,7 @@ public class DatasetTrackerMapDB implements DatasetTracker {
   }
 
   private void open() {
-    db = DBMaker.newFileDB(dbFile)
+    db = DBMaker.newFileDB(dbFile)       // LOOK might also turn on cache
             .transactionDisable()
             .mmapFileEnableIfSupported()
             .closeOnJvmShutdown()
@@ -101,7 +123,7 @@ public class DatasetTrackerMapDB implements DatasetTracker {
     alreadyExists = db.exists("datasets");  // LOOK ??
     datasetMap = db.getHashMap("datasets");
 
-    catTracker = new CatalogTracker(pathname+"/catTracker.dat");
+    catalogTracker = new CatalogTracker(pathname+"/catTracker.dat");
     dataRootTracker = new DataRootTracker(pathname+"/datarootTracker.dat");
   }
 
@@ -138,6 +160,7 @@ public class DatasetTrackerMapDB implements DatasetTracker {
     if (path == null)
       return false;
 
+    changed = true;
     try {
       DatasetExt dsext = new DatasetExt(0, dataset, hasNcml);
       datasetMap.put(path, dsext);
@@ -181,16 +204,16 @@ public class DatasetTrackerMapDB implements DatasetTracker {
 
   @Override
   public boolean trackCatalog(CatalogExt catext) {
-    return catTracker.trackCatalog(catext);
+    return catalogTracker.trackCatalog(catext);
   }
 
   @Override
   public boolean removeCatalog(String relPath) {
-    return catTracker.removeCatalog(relPath);
+    return catalogTracker.removeCatalog(relPath);
   }
 
   @Override
   public Iterable<? extends CatalogExt> getCatalogs() {
-    return catTracker.getCatalogs();
+    return catalogTracker.getCatalogs();
   }
 }
