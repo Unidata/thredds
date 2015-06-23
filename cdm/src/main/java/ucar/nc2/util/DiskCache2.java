@@ -34,13 +34,9 @@ package ucar.nc2.util;
 
 import ucar.unidata.util.StringUtil2;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
+import java.io.*;
 import java.net.URLDecoder;
+import java.util.*;
 
 /**
  * Manages a place on disk to persistently cache files, which are deleted when the last modified date exceeds a certain time.
@@ -254,21 +250,18 @@ public class DiskCache2 {
     return f;
   }
 
-  // File.canWrite() appears to be flaky on some systems
-  // will java 7 help ??
   private static boolean canWrite(File f) {
-    /* String filename = f.getPath();
-    if (filename.startsWith("file:"))
-      filename = filename.substring(5);
-    Path path = Paths.get(filename).toAbsolutePath(); */
-    Path path = f.toPath().toAbsolutePath();
-    return Files.isWritable(path.getParent());
-    /* Path apath = path.toAbsolutePath();
-    System.out.printf("%s%n", path.toAbsolutePath());
-    File parent = f.getParentFile();
-    System.out.printf("%s%n", parent.exists());
-    Path p = parent.toPath();
-    return Files.isWritable(p);  */
+    try {
+      if (f.isDirectory()) {
+        File.createTempFile("check", null, f).delete();
+      } else {
+        new FileOutputStream(f).close();
+      }
+    } catch (IOException | SecurityException e) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
