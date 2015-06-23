@@ -155,15 +155,17 @@ public class TestEsgCats {
 
     long start = System.nanoTime();
 
-    DataRootPathMatcher dataRootPathMatcher = new DataRootPathMatcher();
-    DatasetTracker tracker = new DatasetTrackerMapDB();
+    DatasetTracker tracker = new DatasetTrackerNoop();
     // tracker.init("C:\\dev\\github\\thredds50\\tds\\src\\test\\content\\thredds\\cache\\catalog", 1000 * 1000);
-    tracker.init("C:/temp/mapDBtest", 1000 * 1000);
+    tracker.init("C:/temp/mapDBtest", -1);
     CatalogWatcher catalogWatcher = new CatalogWatcher(tracker);
 
+    DataRootPathMatcher dataRootPathMatcher = new DataRootPathMatcher();
+    dataRootPathMatcher.setTracker(tracker);
+
     AllowedServices allowedServices = new AllowedServices();
-    String top = "B:/esgf/badc/data1/esgcet/";
-    ConfigCatalogInitialization reader = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.check, top, "catalogScan.xml",
+    String top = "B:/esgf/gfdl/";
+    ConfigCatalogInitialization reader = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.check, top, "catalog.xml",
             dataRootPathMatcher, tracker, catalogWatcher, allowedServices, new DatasetTracker.Callback() {
 
       @Override

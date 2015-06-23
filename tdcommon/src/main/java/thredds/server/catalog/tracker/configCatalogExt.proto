@@ -18,6 +18,7 @@ message DataRoot {
   required string dirLocation = 2;
   required DataRootType type = 3;
   optional string catLocation = 4;    // omit for simple dataset root
+  optional string name = 5;           //omit for simple dataset root
 }
 
 message Dataset {

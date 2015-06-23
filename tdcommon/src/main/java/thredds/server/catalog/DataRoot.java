@@ -55,6 +55,7 @@ public class DataRoot {
 
   private final String path;          // match this path to 1 of the following:
   private final String dirLocation;   // 1) this directory  (not null)
+  private final String name;   // 1) this directory  (not null)
   private final DatasetScan datasetScan;     // 2) the DatasetScan that created this (may be null)
   private final FeatureCollectionRef featCollection; // 3) the FeatureCollection that created this (may be null)
   private final CatalogScan catScan;  // 4) the CatalogScan that created this (may be null)
@@ -67,6 +68,7 @@ public class DataRoot {
     this.catScan = null;
     this.featCollection = featCollection;
     this.type = Type.featureCollection;
+    this.name = featCollection.getCollectionName();
     show();
   }
 
@@ -77,6 +79,7 @@ public class DataRoot {
     this.catScan = null;
     this.featCollection = null;
     this.type = Type.datasetScan;
+    this.name = scan.getName();
     show();
   }
 
@@ -87,6 +90,7 @@ public class DataRoot {
     this.catScan = catScan;
     this.featCollection = null;
     this.type = Type.catalogScan;
+    this.name = catScan.getName();
     show();
   }
 
@@ -97,6 +101,7 @@ public class DataRoot {
     this.catScan = null;
     this.featCollection = null;
     this.type = Type.datasetRoot;
+    this.name = null;
     show();
   }
 
@@ -126,6 +131,10 @@ public class DataRoot {
 
   public FeatureCollectionRef getFeatureCollection() {
     return featCollection;
+  }
+
+  public String getName() {
+    return name;
   }
 
   // used by PathMatcher

@@ -781,6 +781,33 @@ public final class ConfigCatalogExtProto {
      */
     com.google.protobuf.ByteString
         getCatLocationBytes();
+
+    // optional string name = 5;
+    /**
+     * <code>optional string name = 5;</code>
+     *
+     * <pre>
+     *omit for simple dataset root
+     * </pre>
+     */
+    boolean hasName();
+    /**
+     * <code>optional string name = 5;</code>
+     *
+     * <pre>
+     *omit for simple dataset root
+     * </pre>
+     */
+    java.lang.String getName();
+    /**
+     * <code>optional string name = 5;</code>
+     *
+     * <pre>
+     *omit for simple dataset root
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
   }
   /**
    * Protobuf type {@code DataRoot}
@@ -857,6 +884,11 @@ public final class ConfigCatalogExtProto {
             case 34: {
               bitField0_ |= 0x00000008;
               catLocation_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              name_ = input.readBytes();
               break;
             }
           }
@@ -1056,11 +1088,67 @@ public final class ConfigCatalogExtProto {
       }
     }
 
+    // optional string name = 5;
+    public static final int NAME_FIELD_NUMBER = 5;
+    private java.lang.Object name_;
+    /**
+     * <code>optional string name = 5;</code>
+     *
+     * <pre>
+     *omit for simple dataset root
+     * </pre>
+     */
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string name = 5;</code>
+     *
+     * <pre>
+     *omit for simple dataset root
+     * </pre>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string name = 5;</code>
+     *
+     * <pre>
+     *omit for simple dataset root
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       urlPath_ = "";
       dirLocation_ = "";
       type_ = thredds.server.catalog.tracker.ConfigCatalogExtProto.DataRootType.datasetRoot;
       catLocation_ = "";
+      name_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1098,6 +1186,9 @@ public final class ConfigCatalogExtProto {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(4, getCatLocationBytes());
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getNameBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1122,6 +1213,10 @@ public final class ConfigCatalogExtProto {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(4, getCatLocationBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getNameBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1247,6 +1342,8 @@ public final class ConfigCatalogExtProto {
         bitField0_ = (bitField0_ & ~0x00000004);
         catLocation_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -1291,6 +1388,10 @@ public final class ConfigCatalogExtProto {
           to_bitField0_ |= 0x00000008;
         }
         result.catLocation_ = catLocation_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.name_ = name_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1323,6 +1424,11 @@ public final class ConfigCatalogExtProto {
         if (other.hasCatLocation()) {
           bitField0_ |= 0x00000008;
           catLocation_ = other.catLocation_;
+          onChanged();
+        }
+        if (other.hasName()) {
+          bitField0_ |= 0x00000010;
+          name_ = other.name_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -1642,6 +1748,104 @@ public final class ConfigCatalogExtProto {
   }
   bitField0_ |= 0x00000008;
         catLocation_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string name = 5;
+      private java.lang.Object name_ = "";
+      /**
+       * <code>optional string name = 5;</code>
+       *
+       * <pre>
+       *omit for simple dataset root
+       * </pre>
+       */
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional string name = 5;</code>
+       *
+       * <pre>
+       *omit for simple dataset root
+       * </pre>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string name = 5;</code>
+       *
+       * <pre>
+       *omit for simple dataset root
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string name = 5;</code>
+       *
+       * <pre>
+       *omit for simple dataset root
+       * </pre>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string name = 5;</code>
+       *
+       * <pre>
+       *omit for simple dataset root
+       * </pre>
+       */
+      public Builder clearName() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string name = 5;</code>
+       *
+       * <pre>
+       *omit for simple dataset root
+       * </pre>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        name_ = value;
         onChanged();
         return this;
       }
@@ -5188,20 +5392,21 @@ public final class ConfigCatalogExtProto {
     java.lang.String[] descriptorData = {
       "\n5thredds/server/catalog/tracker/configC" +
       "atalogExt.proto\"-\n\007Catalog\022\r\n\005catId\030\001 \002(" +
-      "\004\022\023\n\013catLocation\030\002 \002(\t\"b\n\010DataRoot\022\017\n\007ur" +
+      "\004\022\023\n\013catLocation\030\002 \002(\t\"p\n\010DataRoot\022\017\n\007ur" +
       "lPath\030\001 \002(\t\022\023\n\013dirLocation\030\002 \002(\t\022\033\n\004type" +
       "\030\003 \002(\0162\r.DataRootType\022\023\n\013catLocation\030\004 \001" +
-      "(\t\"\226\001\n\007Dataset\022\r\n\005catId\030\001 \002(\004\022\014\n\004name\030\002 " +
-      "\002(\t\022\014\n\004path\030\003 \001(\t\022\n\n\002id\030\004 \001(\t\022\020\n\010restric" +
-      "t\030\005 \001(\t\022\014\n\004ncml\030\006 \001(\t\022\027\n\006access\030\n \003(\0132\007." +
-      "Access\022\033\n\010property\030\013 \003(\0132\t.Property\"U\n\006A" +
-      "ccess\022\023\n\013serviceName\030\001 \002(\t\022\017\n\007urlPath\030\002 ",
-      "\002(\t\022\023\n\013dataFormatS\030\003 \001(\t\022\020\n\010dataSize\030\004 \001" +
-      "(\004\"\'\n\010Property\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 " +
-      "\002(\t*X\n\014DataRootType\022\017\n\013datasetRoot\020\001\022\017\n\013" +
-      "datasetScan\020\002\022\017\n\013catalogScan\020\003\022\025\n\021featur" +
-      "eCollection\020\004B7\n\036thredds.server.catalog." +
-      "trackerB\025ConfigCatalogExtProto"
+      "(\t\022\014\n\004name\030\005 \001(\t\"\226\001\n\007Dataset\022\r\n\005catId\030\001 " +
+      "\002(\004\022\014\n\004name\030\002 \002(\t\022\014\n\004path\030\003 \001(\t\022\n\n\002id\030\004 " +
+      "\001(\t\022\020\n\010restrict\030\005 \001(\t\022\014\n\004ncml\030\006 \001(\t\022\027\n\006a" +
+      "ccess\030\n \003(\0132\007.Access\022\033\n\010property\030\013 \003(\0132\t" +
+      ".Property\"U\n\006Access\022\023\n\013serviceName\030\001 \002(\t",
+      "\022\017\n\007urlPath\030\002 \002(\t\022\023\n\013dataFormatS\030\003 \001(\t\022\020" +
+      "\n\010dataSize\030\004 \001(\004\"\'\n\010Property\022\014\n\004name\030\001 \002" +
+      "(\t\022\r\n\005value\030\002 \002(\t*X\n\014DataRootType\022\017\n\013dat" +
+      "asetRoot\020\001\022\017\n\013datasetScan\020\002\022\017\n\013catalogSc" +
+      "an\020\003\022\025\n\021featureCollection\020\004B7\n\036thredds.s" +
+      "erver.catalog.trackerB\025ConfigCatalogExtP" +
+      "roto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5219,7 +5424,7 @@ public final class ConfigCatalogExtProto {
           internal_static_DataRoot_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DataRoot_descriptor,
-              new java.lang.String[] { "UrlPath", "DirLocation", "Type", "CatLocation", });
+              new java.lang.String[] { "UrlPath", "DirLocation", "Type", "CatLocation", "Name", });
           internal_static_Dataset_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_Dataset_fieldAccessorTable = new

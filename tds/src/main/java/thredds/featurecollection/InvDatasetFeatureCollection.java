@@ -50,6 +50,7 @@ import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.log.LoggerFactoryImpl;
 
@@ -512,6 +513,16 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   protected String makeMetadataLink(String datasetName, String metadata) {
     return contextName + "/metadata/" + datasetName + metadata;
+  }
+
+  protected ThreddsMetadata.UriResolved makeUriResolved(URI baseURI, String href) {
+    try {
+      String mapUri = URLnaming.resolve(baseURI.toString(), href);
+      return new ThreddsMetadata.UriResolved(href, new URI(mapUri));
+    } catch (Exception e) {
+      logger.error(" ** Invalid URI= '"+baseURI.toString()+"' href='"+href+"'%n", e);
+      return null;
+    }
   }
 
   // called by DataRootHandler.makeDynamicCatalog()

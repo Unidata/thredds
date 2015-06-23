@@ -195,9 +195,10 @@ public class DatasetBuilder {
   }
 
   // transfer inherited metadata only, always include parents
-  // place directly into flds (not in this.tmi)
+  // place directly into flds (not in this.tmi) LOOK why not into tmi ?? LOOK put into tmi, see what breaks!
   public void transferInheritedMetadata( DatasetNode from) {
-    inheritMetadata(from, flds);
+    ThreddsMetadata tmi = getInheritableMetadata();
+    inheritMetadata(from, tmi.getFlds());
   }
 
   private void inheritMetadata(DatasetNode from, Map<String, Object> toFlds) {

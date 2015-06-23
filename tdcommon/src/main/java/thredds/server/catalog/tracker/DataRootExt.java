@@ -20,6 +20,7 @@ public class DataRootExt implements Comparable<DataRootExt> {
   private String dirLocation;
   private DataRoot.Type type;
   private String catLocation;
+  private String name;
 
   private DataRoot dataRoot;
 
@@ -31,6 +32,7 @@ public class DataRootExt implements Comparable<DataRootExt> {
     this.dataRoot = dataRoot;
     this.dirLocation = dataRoot.getDirLocation();
     this.type = dataRoot.getType();
+    this.name = dataRoot.getName();
     this.catLocation = catLocation;
   }
 
@@ -62,19 +64,25 @@ public class DataRootExt implements Comparable<DataRootExt> {
     return type;
   }
 
+  public String getName() {
+    return name;
+  }
+
   /* message DataRoot {
-    required string urlPath = 1;
-    required string dirLocation = 2;
-    required DataRootType type = 3;
-    optional string catLocation = 4;    // omit for simple dataset root
-  } */
+      required string urlPath = 1;
+      required string dirLocation = 2;
+      required DataRootType type = 3;
+      optional string catLocation = 4;    // omit for simple dataset root
+    } */
   public void writeExternal(DataOutputStream out) throws IOException {
     ConfigCatalogExtProto.DataRoot.Builder builder = ConfigCatalogExtProto.DataRoot.newBuilder();
     builder.setUrlPath(path);
     builder.setDirLocation(dirLocation);
     builder.setType(convertDataRootType(type));
-    if (type != DataRoot.Type.datasetRoot)
+    if (type != DataRoot.Type.datasetRoot) {
       builder.setCatLocation(catLocation);
+      builder.setName(name);
+    }
 
     ConfigCatalogExtProto.DataRoot index = builder.build();
     byte[] b = index.toByteArray();
@@ -107,6 +115,8 @@ public class DataRootExt implements Comparable<DataRootExt> {
     this.type = convertDataRootType( dsp.getType());
     if (dsp.hasCatLocation())
       catLocation = dsp.getCatLocation();
+    if (dsp.hasName())
+      name = dsp.getName();
   }
 
   ////////////////////////////

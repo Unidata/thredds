@@ -182,7 +182,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     String tpath = config.path + "/" + COLLECTION;
     ThreddsMetadata tmi = result.getInheritableMetadata();  // LOOK should we be allowed to modify this ??
-    tmi.set(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(tpath, VARIABLES), catURI));
+    tmi.set(Dataset.VariableMapLinkURI, makeUriResolved(catURI, makeMetadataLink(tpath, VARIABLES)));
     tmi.set(Dataset.ServiceName, Virtual_Services_Name);
     tmi.set(Dataset.DataFormatType, fromGc.isGrib1 ? DataFormatType.GRIB1.toString() : DataFormatType.GRIB2.toString());
     tmi.set(Dataset.Properties, Property.convertToProperties(fromGc.getGlobalAttributes()));
@@ -308,7 +308,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       ThreddsMetadata tmi = ds.getInheritableMetadata();
       tmi.set(Dataset.GeospatialCoverage, extractGeospatial(group));
       tmi.set(Dataset.TimeCoverage, new DateRange(group.makeCalendarDateRange()));
-      // tmi.set(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(dpath, VARIABLES), catURI));
+      tmi.set(Dataset.VariableMapLinkURI, makeUriResolved(catURI, makeMetadataLink(dpath, VARIABLES)));
     }
   }
 

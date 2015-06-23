@@ -55,6 +55,11 @@ public class DataRootPathMatcher {
     map = new HashMap<>();
   }
 
+  // debugg8ng - do not use
+  public void setTracker(DatasetTracker tracker) {
+    this.tracker = tracker;
+  }
+
   /**
    * Add a dataRootExt to in-memory tree.
    * @return true if not already exist

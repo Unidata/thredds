@@ -567,7 +567,7 @@ public class CatalogXmlWriter {
     if (varMapLink != null) {
       Element velem = new Element("variableMap", Catalog.defNS);
       velem.setAttribute("title", "variables", Catalog.xlinkNS);
-      velem.setAttribute("href", varMapLink.toString(), Catalog.xlinkNS);
+      velem.setAttribute("href", varMapLink.href, Catalog.xlinkNS);
       elem.addContent(velem);
     }
   }

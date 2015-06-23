@@ -194,12 +194,23 @@ public class DataRootManager implements InitializingBean {
     List<FeatureCollectionRef> result = new ArrayList<>();
     for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
       DataRootExt drootExt = entry.getValue();
-      if (drootExt.getType() != DataRoot.Type.featureCollection) {
+      if (drootExt.getType() == DataRoot.Type.featureCollection) {
         DataRoot dataRoot = dataRootPathMatcher.findDataRoot(drootExt);
         result.add(dataRoot.getFeatureCollection());
       }
     }
     return result;
+  }
+
+  public FeatureCollectionRef findFeatureCollection(String collectionName) {
+    for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
+      DataRootExt drootExt = entry.getValue();
+      if (drootExt.getType() == DataRoot.Type.featureCollection && drootExt.getName().equals(collectionName)) {
+        DataRoot dataRoot = dataRootPathMatcher.findDataRoot(drootExt);
+        return dataRoot.getFeatureCollection();
+      }
+    }
+    return null;
   }
 
   public void makeDebugActions() {

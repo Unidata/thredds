@@ -86,7 +86,7 @@ public class AdminCollectionController {
   DebugCommands debugCommands;
 
   @Autowired
-  DataRootManager matcher;
+  DataRootManager dataRootManager;
 
   @Autowired
   private TdsContext tdsContext;
@@ -104,12 +104,8 @@ public class AdminCollectionController {
     act = new DebugCommands.Action("showCollection", "Show Collections") {
       public void doAction(DebugCommands.Event e) {
         // get sorted list of collections
-        List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
-        Collections.sort(fcList, new Comparator<FeatureCollectionRef>() {
-          public int compare(FeatureCollectionRef o1, FeatureCollectionRef o2) {
-            return o1.getName().compareTo(o2.getName());
-          }
-        });
+        List<FeatureCollectionRef> fcList = dataRootManager.getFeatureCollections();
+        Collections.sort(fcList, (o1, o2) -> o1.getName().compareTo(o2.getName()));
 
         for (FeatureCollectionRef fc : fcList) {
           String uriParam = Escape.uriParam(fc.getCollectionName());
@@ -194,12 +190,8 @@ public class AdminCollectionController {
     PrintWriter pw = res.getWriter();
 
     // get sorted list of collections
-    List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
-    Collections.sort(fcList, new Comparator<FeatureCollectionRef>() {
-      public int compare(FeatureCollectionRef o1, FeatureCollectionRef o2) {
-        return o1.getCollectionName().compareTo(o2.getCollectionName());
-      }
-    });
+    List<FeatureCollectionRef> fcList = dataRootManager.getFeatureCollections();
+    Collections.sort(fcList, (o1, o2) -> o1.getCollectionName().compareTo(o2.getCollectionName()));
 
     for (FeatureCollectionRef fc : fcList) {
       String uriParam = Escape.uriParam(fc.getCollectionName());
@@ -219,13 +211,11 @@ public class AdminCollectionController {
     PrintWriter pw = res.getWriter();
 
     // get sorted list of collections
-    List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
-    Collections.sort(fcList, new Comparator<FeatureCollectionRef>() {
-      public int compare(FeatureCollectionRef o1, FeatureCollectionRef o2) {
-        int compareType = o1.getConfig().type.toString().compareTo(o1.getConfig().type.toString());
-        if (compareType != 0) return compareType;
-        return o1.getCollectionName().compareTo(o2.getCollectionName());
-      }
+    List<FeatureCollectionRef> fcList = dataRootManager.getFeatureCollections();
+    Collections.sort(fcList, (o1, o2) -> {
+      int compareType = o1.getConfig().type.toString().compareTo(o1.getConfig().type.toString());
+      if (compareType != 0) return compareType;
+      return o1.getCollectionName().compareTo(o2.getCollectionName());
     });
 
     pw.printf("%s, %s, %s, %s, %s, %s, %s, %s%n", "collection", "type", "group", "nrecords", "ndups", "%", "nmiss", "%");
@@ -260,11 +250,7 @@ public class AdminCollectionController {
     }
 
     String collectName = StringUtil2.unescape(req.getParameter(COLLECTION)); // this is the collection name
-    List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
-    FeatureCollectionRef want = null;
-    for (FeatureCollectionRef fc : fcList) {
-      if (fc.getCollectionName().equalsIgnoreCase(collectName)) want = fc;
-    }
+    FeatureCollectionRef want = dataRootManager.findFeatureCollection(collectName);
 
     if (want == null) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -296,11 +282,8 @@ public class AdminCollectionController {
     PrintWriter pw = res.getWriter();
 
     String collectName = StringUtil2.unescape(req.getParameter(COLLECTION)); // this is the collection name
-    List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
-    FeatureCollectionRef want = null;
-    for (FeatureCollectionRef fc : fcList) {
-      if (fc.getCollectionName().equalsIgnoreCase(collectName)) want = fc;
-    }
+    FeatureCollectionRef want = dataRootManager.findFeatureCollection(collectName);
+
     if (want == null) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
       pw.append("NOT FOUND");
