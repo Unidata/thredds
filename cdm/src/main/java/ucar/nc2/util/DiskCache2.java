@@ -36,6 +36,7 @@ import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.net.URLDecoder;
+import java.nio.file.*;
 import java.util.*;
 
 /**
@@ -250,12 +251,26 @@ public class DiskCache2 {
     return f;
   }
 
-  private static boolean canWrite(File f) {
+  /**
+   * Returns {@code true} if we can write to the file.
+   *
+   * @param f a file. It may be a regular file or a directory. It may even be non-existent, in which case the
+   *          writability of the file's parent dir is tested.
+   * @return {@code true} if we can write to the file.
+   */
+  public static boolean canWrite(File f) {
+    Path path = f.toPath().toAbsolutePath();
+
     try {
-      if (f.isDirectory()) {
-        File.createTempFile("check", null, f).delete();
+      if (Files.isDirectory(path)) {
+        // Try to create a file within the directory to determine if it's writable.
+        Files.delete(Files.createTempFile(path, "check", null));
+      } else if (Files.isRegularFile(path)) {
+        // Try to open the file for writing in append mode.
+        Files.newOutputStream(path, StandardOpenOption.APPEND).close();
       } else {
-        new FileOutputStream(f).close();
+        // File does not exist. See if it's parent directory exists and is writeable.
+        Files.delete(Files.createTempFile(path.getParent(), "check", null));
       }
     } catch (IOException | SecurityException e) {
       return false;
