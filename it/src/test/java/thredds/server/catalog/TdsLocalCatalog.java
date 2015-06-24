@@ -45,7 +45,7 @@ import java.io.IOException;
  * Test catalog utilities
  */
 @Category(NeedsCdmUnitTest.class)
-public class TestTdsLocal {
+public class TdsLocalCatalog {
   public static boolean showValidationMessages = false;
 
   public static Catalog open(String catalogName) throws IOException {
@@ -66,7 +66,7 @@ public class TestTdsLocal {
 
   @Test
   public void readCatalog() {
-    Catalog mainCat = null;
+    Catalog mainCat;
     try {
       mainCat = open(null);
       assert mainCat != null;

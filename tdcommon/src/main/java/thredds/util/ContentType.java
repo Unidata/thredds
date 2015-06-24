@@ -85,6 +85,6 @@ public enum ContentType {
   }
 
   public String getContentHeader() {
-    return (charset == null) ? name : name + "; charset=" + charset;
+    return (charset == null) ? name : name + ";charset=" + charset;
   }
 }

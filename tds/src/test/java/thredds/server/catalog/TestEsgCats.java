@@ -158,13 +158,14 @@ public class TestEsgCats {
     DatasetTracker tracker = new DatasetTrackerNoop();
     // tracker.init("C:\\dev\\github\\thredds50\\tds\\src\\test\\content\\thredds\\cache\\catalog", 1000 * 1000);
     tracker.init("C:/temp/mapDBtest", -1);
-    CatalogWatcher catalogWatcher = new CatalogWatcher(tracker);
+    CatalogWatcher catalogWatcher = new CatalogWatcher(tracker, false);
 
     DataRootPathMatcher dataRootPathMatcher = new DataRootPathMatcher();
     dataRootPathMatcher.setTracker(tracker);
 
     AllowedServices allowedServices = new AllowedServices();
     String top = "B:/esgf/gfdl/";
+    long maxDatasets = -1;
     ConfigCatalogInitialization reader = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.check, top, "catalog.xml",
             dataRootPathMatcher, tracker, catalogWatcher, allowedServices, new DatasetTracker.Callback() {
 
@@ -215,10 +216,10 @@ public class TestEsgCats {
 
       public void finish() {}
 
-    }, 1000 * 100);
+    }, maxDatasets);
 
-    catalogWatcher.processEvents(); // this will loop forever, how to interrupt?
-    catalogWatcher.close();
+   // catalogWatcher.processEvents(); // this will loop forever, how to interrupt?
+   // catalogWatcher.close();
     tracker.close();
 
     long now = System.nanoTime();

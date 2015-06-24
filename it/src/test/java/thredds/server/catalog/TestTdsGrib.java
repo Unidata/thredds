@@ -34,7 +34,7 @@ public class TestTdsGrib {
   @Test
   public void testGribLatest() throws IOException {
     String catalog = "/catalog/grib/NDFD/CONUS_5km/catalog.xml";
-    Catalog cat = TestTdsLocal.open(catalog);
+    Catalog cat = TdsLocalCatalog.open(catalog);
 
     Dataset ds = cat.findDatasetByID("latest.xml");
     assert (ds != null) : "cant find dataset 'dataset=latest.xml'";
@@ -65,7 +65,7 @@ public class TestTdsGrib {
   @Test
   public void testGribCatRefs() throws IOException {
     String catalog = "/catalog/grib/NDFD/CONUS_5km/catalog.xml";
-    Catalog cat = TestTdsLocal.open(catalog);
+    Catalog cat = TdsLocalCatalog.open(catalog);
 
     Set<String> ss = new HashSet<>();
     for (Service s : cat.getServices()) {

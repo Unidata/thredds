@@ -53,7 +53,7 @@ public class TestCatalogMapping {
   public void testRead() throws IOException {
 
     if (catPath.endsWith(".xml")) {
-      Catalog cat = TestTdsLocal.open(catPath);
+      Catalog cat = TdsLocalCatalog.open(catPath);
       assert cat != null;
 
     }  else {

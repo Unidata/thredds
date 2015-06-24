@@ -47,7 +47,7 @@ import java.util.List;
 public class TestTdsDatasetScan {
   @Test
   public void testSort() throws IOException {
-    Catalog cat = TestTdsLocal.open("catalog/scanCdmUnitTests/tds/ncep/catalog.xml");
+    Catalog cat = TdsLocalCatalog.open("catalog/scanCdmUnitTests/tds/ncep/catalog.xml");
 
     Dataset last = null;
     for (Dataset ds : cat.getDatasets()) {
@@ -59,7 +59,7 @@ public class TestTdsDatasetScan {
 
   @Test
   public void testLatest() throws IOException {
-    Catalog cat = TestTdsLocal.open("catalog/testGFSfmrc/files/latest.xml");
+    Catalog cat = TdsLocalCatalog.open("catalog/testGFSfmrc/files/latest.xml");
     List<Dataset> dss = cat.getDatasets();
     assert (dss.size() == 1);
 
@@ -79,7 +79,7 @@ public class TestTdsDatasetScan {
 
   @Test
   public void testHarvest() throws IOException {
-    Catalog cat = TestTdsLocal.open("catalog/testEnhanced/catalog.xml");
+    Catalog cat = TdsLocalCatalog.open("catalog/testEnhanced/catalog.xml");
     assert cat != null;
     List<Dataset> topList = cat.getDatasets();
     assert topList.size() == 1;
@@ -92,7 +92,7 @@ public class TestTdsDatasetScan {
     Dataset nested = dss.get(0);
     assert !nested.isHarvest();
 
-    cat = TestTdsLocal.open("/catalog.xml");
+    cat = TdsLocalCatalog.open("/catalog.xml");
     Dataset ds = cat.findDatasetByID("testDataset");
     assert ds != null;
     assert !ds.isHarvest();
@@ -100,7 +100,7 @@ public class TestTdsDatasetScan {
 
   @Test
   public void testNestedDirs() throws IOException {
-    Catalog cat = TestTdsLocal.open("catalog/station/profiler/wind/06min/catalog.xml");
+    Catalog cat = TdsLocalCatalog.open("catalog/station/profiler/wind/06min/catalog.xml");
 
     List<Dataset> topList = cat.getDatasets();
     assert topList.size() == 1;
@@ -145,7 +145,7 @@ public class TestTdsDatasetScan {
 
   @Test
   public void testEncodingWithBlanks() throws IOException {
-    Catalog cat = TestTdsLocal.open("catalog/scanCdmUnitTests/encoding/catalog.xml");
+    Catalog cat = TdsLocalCatalog.open("catalog/scanCdmUnitTests/encoding/catalog.xml");
 
     List<Dataset> ds = cat.getDatasets();
     assert ds.size() == 1;

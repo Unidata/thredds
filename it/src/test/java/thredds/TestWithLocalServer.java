@@ -36,6 +36,13 @@
 package thredds;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
+import org.junit.Assert;
+import org.junit.Test;
+import thredds.util.ContentType;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 
 /**
  * Describe
@@ -49,4 +56,28 @@ public class TestWithLocalServer {
   public static String withPath(String path) {
     return server + StringUtils.stripStart(path, "/\\");  // Remove leading slashes from path.
   }
+
+  public static String testWithHttpGet(String endpoint, ContentType expectContentType) {
+    System.out.printf("testOpenXml req = '%s'%n", endpoint);
+
+    try (HTTPSession session = new HTTPSession(endpoint)) {
+      HTTPMethod method = HTTPFactory.Get(session);
+      int statusCode = method.execute();
+      Assert.assertEquals(200, statusCode);
+
+      String response = method.getResponseAsString();
+      assert response.length() > 0;
+
+      Header header = method.getResponseHeader(ContentType.HEADER);
+      Assert.assertEquals(expectContentType.getContentHeader(), header.getValue());
+
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      assert false;
+    }
+
+    return null;
+  }
+
 }

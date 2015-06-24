@@ -50,6 +50,7 @@ import thredds.client.catalog.ThreddsMetadata;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.catalog.writer.ThreddsMetadataExtractor;
 import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.unidata.util.StringUtil2;
@@ -74,8 +75,9 @@ public class MetadataController {
 
     if (result.hasErrors())
       throw new BindException(result);
+    String path = TdsPathUtils.extractPath(req, "metadata");
 
-    try (GridDataset gridDataset = TdsRequestedDataset.getGridDataset(req, res, null)) {
+    try (GridDataset gridDataset = TdsRequestedDataset.getGridDataset(req, res, path)) {
       if (gridDataset == null)
         return null;
 
@@ -86,18 +88,16 @@ public class MetadataController {
 
       boolean wantXML = (params.getAccept() != null) && params.getAccept().equalsIgnoreCase("XML");
 
+      HttpHeaders responseHeaders = new HttpHeaders();
       String strResponse;
       if (wantXML) {
         strResponse = writeXML(vars);
-        res.setContentType(ContentType.xml.getContentHeader());
+        responseHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
+       //responseHeaders.set(Constants.Content_Disposition, Constants.setContentDispositionValue(datasetPath, ".xml"));
       } else {
         strResponse = writeHTML(vars);
-        res.setContentType(ContentType.html.getContentHeader());
+        responseHeaders.set(ContentType.HEADER, ContentType.html.getContentHeader());
       }
-
-      HttpHeaders responseHeaders = new HttpHeaders();
-      responseHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
-      //responseHeaders.set(Constants.Content_Disposition, Constants.setContentDispositionValue(datasetPath, ".xml"));
       return new ResponseEntity<>(strResponse, responseHeaders, HttpStatus.OK);
     }
 

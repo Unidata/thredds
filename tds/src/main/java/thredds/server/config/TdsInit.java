@@ -42,11 +42,12 @@ import org.springframework.stereotype.Component;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.core.AllowedServices;
-import thredds.server.catalog.ConfigCatalogCache;
 import thredds.core.ConfigCatalogInitialization;
 import thredds.core.DatasetManager;
 import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.InvDatasetFeatureCollection;
+import thredds.server.catalog.ConfigCatalogCache;
+import thredds.server.catalog.tracker.CatalogWatcher;
 import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
@@ -96,6 +97,10 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
   @Autowired
   private ConfigCatalogInitialization configCatalogInitializer;
+
+
+  @Autowired
+  private CatalogWatcher catalogWatcher;
 
   @Autowired
   private AllowedServices allowedServices;
@@ -325,7 +330,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
     // Config Cat Cache
     max = ThreddsConfig.getInt("Catalog.cacheCatalogs", 100);
-    String rootPath = tdsContext.getContentRootPathProperty() +"thredds/";
+    String rootPath = tdsContext.getContentRootPathProperty() + "thredds/";
     ccc.init(rootPath, max);
 
     // Config Dataset Tracker
@@ -370,6 +375,8 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
   @Override
   public void destroy() {
     System.out.printf("TdsInit.destroy() is called");
+
+    // prefs
     try {
       store.save();
     } catch (IOException ioe) {
@@ -385,6 +392,12 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     thredds.inventory.bdb.MetadataManager.closeAll();
     CollectionUpdater.INSTANCE.shutdown();
 
+    try {
+      catalogWatcher.close();
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      startupLog.error("catalogWatcher close failed", ioe);
+    }
     // open file caches
     RandomAccessFile.shutdown();
     NetcdfDataset.shutdown();

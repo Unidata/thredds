@@ -117,6 +117,7 @@
   <bean id="DatasetTracker" class="thredds.server.catalog.tracker.DatasetTrackerChronicle" />
   <bean id="CatalogWatcher" class="thredds.server.catalog.tracker.CatalogWatcher">
     <constructor-arg ref="DatasetTracker" />
+    <constructor-arg value="false" />    <!-- disable -->
   </bean>
   <bean id="ConfigCatalogInitialization" class="thredds.core.ConfigCatalogInitialization" />
 

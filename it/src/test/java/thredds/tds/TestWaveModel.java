@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
-import thredds.server.catalog.TestTdsLocal;
+import thredds.server.catalog.TdsLocalCatalog;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -38,7 +38,7 @@ public class TestWaveModel extends TestCase {
 
   public void testNcml() throws IOException, InvalidRangeException {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/catalog.xml";
-    Catalog cat = TestTdsLocal.open(catalog);
+    Catalog cat = TdsLocalCatalog.open(catalog);
 
     Dataset ds = cat.findDatasetByID("swan_oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_best.ncd");
     assert (ds != null) : "cant find dataset 'swan_oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_best.ncd'";
@@ -69,7 +69,7 @@ public class TestWaveModel extends TestCase {
 
   public void testOffset() throws IOException, InvalidRangeException, ParseException {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/offset/catalog.xml";
-    Catalog cat = TestTdsLocal.open(catalog);
+    Catalog cat = TdsLocalCatalog.open(catalog);
 
     Dataset ds = cat.findDatasetByID("swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr");
     assert (ds != null) : "cant find dataset 'swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr'";

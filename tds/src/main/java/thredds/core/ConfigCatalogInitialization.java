@@ -100,7 +100,7 @@ public class ConfigCatalogInitialization {
   private DatasetTracker.Callback callback;
   private boolean exceedLimit = false;
   private long countDatasets = 0;
-  private long maxDatasets = 1000 * 1000;  // LOOK debuging only
+  private long maxDatasets; //  = 1000 * 1000;
 
   Set<String> catPathHash = new HashSet<>();       // Hash of paths, to look for duplicates LOOK maybe tracker should do this
   Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates

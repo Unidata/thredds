@@ -46,7 +46,7 @@ import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
-import thredds.server.catalog.TestTdsLocal;
+import thredds.server.catalog.TdsLocalCatalog;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -121,7 +121,7 @@ public class TestTdsDodsServer {
    */
 
   private void testSingleDataset() throws IOException {
-    Catalog cat = TestTdsLocal.open(null);
+    Catalog cat = TdsLocalCatalog.open(null);
 
     Dataset ds = cat.findDatasetByID("testDataset2");
     assert (ds != null) : "cant find dataset 'testDataset'";

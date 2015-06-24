@@ -30,7 +30,7 @@ public class TestTdsFmrc {
   @Test
   public void testFmrcBest() throws IOException {
     String catalog = "/catalog/testNAMfmrc/catalog.xml";
-    Catalog cat = TestTdsLocal.open(catalog);
+    Catalog cat = TdsLocalCatalog.open(catalog);
 
     Dataset ds = cat.findDatasetByID("testNAMfmrc/NAM_FMRC_best.ncd");
     assert (ds != null) : "cant find dataset 'testNAMfmrc/NAM_FMRC_best.ncd'";
@@ -78,7 +78,7 @@ public class TestTdsFmrc {
   @Test
   public void testFmrcCatRefs() throws IOException {
     String catalog = "/catalog/testNAMfmrc/catalog.xml";
-    Catalog cat = TestTdsLocal.open(catalog);
+    Catalog cat = TdsLocalCatalog.open(catalog);
     Dataset top = cat.getDatasets().get(0);
 
     for (Dataset ds : top.getDatasets()) {

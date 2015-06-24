@@ -36,7 +36,7 @@ import org.junit.Test;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
-import thredds.server.catalog.TestTdsLocal;
+import thredds.server.catalog.TdsLocalCatalog;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
@@ -54,7 +54,7 @@ public class TestTdsNcml {
 
   @Test
   public void testNcMLinDataset() throws IOException {
-    Catalog cat = TestTdsLocal.open(null);
+    Catalog cat = TdsLocalCatalog.open(null);
 
     Dataset ds = cat.findDatasetByID("ExampleNcMLModified");
     assert (ds != null) : "cant find dataset 'ExampleNcMLModified'";
@@ -89,7 +89,7 @@ public class TestTdsNcml {
   }
 
   public void testNcMLinDatasetScan() throws IOException {
-    Catalog cat = TestTdsLocal.open(null);
+    Catalog cat = TdsLocalCatalog.open(null);
 
     Dataset parent = cat.findDatasetByID("ModifyDatasetScan");
     assert (parent != null) : "cant find dataset 'ModifyDatasetScan'";

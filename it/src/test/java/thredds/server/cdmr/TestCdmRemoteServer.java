@@ -36,7 +36,7 @@ import org.junit.Test;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
-import thredds.server.catalog.TestTdsLocal;
+import thredds.server.catalog.TdsLocalCatalog;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
@@ -52,7 +52,7 @@ public class TestCdmRemoteServer {
 
   @Test
   public void testSingleDataset() throws IOException {
-    Catalog cat = TestTdsLocal.open(null);
+    Catalog cat = TdsLocalCatalog.open(null);
 
     Dataset ds = cat.findDatasetByID("testDataset2");
     assert (ds != null) : "cant find dataset 'testDataset2'";
@@ -100,7 +100,7 @@ public class TestCdmRemoteServer {
   }
 
   public void utestUrlReading() throws IOException {
-    Catalog cat = TestTdsLocal.open(null);
+    Catalog cat = TdsLocalCatalog.open(null);
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, 0, null, new CatalogCrawler.Listener() {
 
       @Override

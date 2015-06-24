@@ -1,15 +1,12 @@
 /* Copyright */
 package thredds.server.catalog;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
+import thredds.util.ContentType;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.util.Arrays;
@@ -38,6 +35,7 @@ public class TestTdsFCcatalogs {
             {"testNAMfmrc/runs/catalog", "?dataset=testNAMfmrc/runs/NAM_FMRC_RUN_2006-09-26T00:00:00Z"},
     });
   }
+  private static final boolean show = false;
 
   String path, query;
 
@@ -50,38 +48,17 @@ public class TestTdsFCcatalogs {
   @Test
   public void testOpenXml() {
     String endpoint = TestWithLocalServer.withPath("catalog/"+path+".xml"+query);
-    System.out.printf("testOpenXml req = '%s'%n", endpoint);
-
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
-      Assert.assertEquals(200, statusCode);
-
-      String response = method.getResponseAsString();
-      assert response.length() > 0;
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      assert false;
-    }
+    String response = TestWithLocalServer.testWithHttpGet(endpoint, ContentType.xml);
+    if (show)
+      System.out.printf("%s%n", response);
   }
 
   @Test
   public void testOpenHtml() {
     String endpoint = TestWithLocalServer.withPath("catalog/"+path+".html"+query);
-    System.out.printf("testOpenHtml req = '%s'%n", endpoint);
-
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
-
-      Assert.assertEquals(200, statusCode);
-      String response = method.getResponseAsString();
-      assert response.length() > 0;
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      assert false;
-    }
+    String response = TestWithLocalServer.testWithHttpGet(endpoint, ContentType.html);
+    if (show)
+      System.out.printf("%s%n", response);
   }
+
 }

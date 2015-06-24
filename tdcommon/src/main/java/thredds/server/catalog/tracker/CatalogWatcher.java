@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Put a watch on directories for when catalogs change
+ * Put a watch on directories for when catalogs change. not used yet
  *
  * @author caron
  * @since 6/9/2015
@@ -20,6 +20,7 @@ public class CatalogWatcher implements AutoCloseable {
 
   private final WatchService watcher;
   private final DatasetTracker tracker;
+  private final boolean enable;
   private final Map<WatchKey, Path> keys;
   private boolean recursive = true;
   private boolean trace = true;
@@ -29,8 +30,9 @@ public class CatalogWatcher implements AutoCloseable {
     return (WatchEvent<T>) event;
   }
 
-  public CatalogWatcher(DatasetTracker tracker) throws IOException {
+  public CatalogWatcher(DatasetTracker tracker, boolean enable) throws IOException {
     this.tracker = tracker;
+    this.enable = enable;
     this.watcher = FileSystems.getDefault().newWatchService();
     this.keys = new HashMap<>();
 
@@ -42,6 +44,8 @@ public class CatalogWatcher implements AutoCloseable {
    * Register the given directory with the WatchService
    */
   public void register(Path dir) throws IOException {
+    if (!enable) return;
+
     WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
     if (trace) {
       Path prev = keys.get(key);
@@ -61,6 +65,8 @@ public class CatalogWatcher implements AutoCloseable {
    * WatchService.
    */
   public void registerAll(final Path start) throws IOException {
+    if (!enable) return;
+
     // register directory and sub-directories
     Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
       @Override
@@ -76,6 +82,8 @@ public class CatalogWatcher implements AutoCloseable {
    * Process all events for keys queued to the watcher
    */
   public void processEvents() {
+    if (!enable) return;
+
     for (; ; ) {
 
       // wait for key to be signalled
