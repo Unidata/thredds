@@ -1,17 +1,14 @@
 netcdf dods://remotetest.unidata.ucar.edu/dts/test.02 {
   variables:
-    byte b(25);
-      :_Unsigned = "true";
+    ubyte b(25);
 
     int i32(25);
 
-    int ui32(25);
-      :_Unsigned = "true";
+    uint ui32(25);
 
     short i16(25);
 
-    short ui16(25);
-      :_Unsigned = "true";
+    ushort ui16(25);
 
     float f32(25);
 
