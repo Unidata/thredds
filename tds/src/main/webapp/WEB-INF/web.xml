@@ -423,29 +423,22 @@
   </error-page>
 
   <!-- ++++++++++ Setup security restrictions ++++++++++ -->
-  <!-- Default is to not allow DELETE, PUT, POST -->
+  <!-- Do not allow anything but GET  -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>not allowed</web-resource-name>
-      <url-pattern>/*</url-pattern>
-      <http-method>DELETE</http-method>
-      <http-method>PUT</http-method>
-      <!-- http-method>POST</http-method -->
+      <url-pattern>/</url-pattern>
+      <http-method-omission>GET</http-method-omission>
     </web-resource-collection>
     <auth-constraint/>
   </security-constraint>
 
-  <!-- This allows "remote configuration":
-    /thredds/admin/debug gives access to various debug and status info.
-    /thredds/admin/content/ -> "{tomcat_home}/content/thredds/"
-    /thredds/admin/root/ -> "{tomcat_home}/webapps/thredds/" DISABLED
-    /thredds/admin/dataDir/path -> "{dataRoot(path)}/webapps/thredds/"  DISABLED
-   -->
+
+  <!-- tdsConfig with HTTPS needed for /admin access  -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>sensitive read access</web-resource-name>
       <url-pattern>/admin/*</url-pattern>
-      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsConfig</role-name>
@@ -455,11 +448,12 @@
     </user-data-constraint>
   </security-constraint>
 
+  <!-- tdsTrigger with HTTPS needed for /admin/trigger  -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>allow feature collection rescan to be triggered externally</web-resource-name>
       <url-pattern>/admin/collection/trigger</url-pattern>
-      <!-- http-method>GET</http-method -->
+      <url-pattern>/admin/trigger</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsTrigger</role-name>
@@ -473,11 +467,11 @@
     /thredds/admin/log gives access to logs.
    -->
 
+  <!-- tdsMonitor with HTTPS needed for access to logs  -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>sensitive read access</web-resource-name>
       <url-pattern>/admin/log/*</url-pattern>
-      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsMonitor</role-name>
@@ -487,28 +481,11 @@
     </user-data-constraint>
   </security-constraint>
 
-  <!-- Setup security restrictions on THREDDS server HTTP POST capabilities in CatalogGen. -->
-  <!-- security-constraint>
-    <web-resource-collection>
-      <web-resource-name>cataloggen configuration</web-resource-name>
-      <url-pattern>/cataloggen/admin/*</url-pattern>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>tdsConfig</role-name>
-    </auth-constraint>
-    <user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint>
-  </security-constraint-->
-
-  <!-- default restricted access uses DIGEST, but not HTTPS -->
+  <!-- default restricted access dataset uses DIGEST, but not HTTPS -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>restricted access datasets</web-resource-name>
       <url-pattern>/restrictedAccess/*</url-pattern>
-      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>restrictedDatasetUser</role-name>
