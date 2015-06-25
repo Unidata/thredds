@@ -54,12 +54,12 @@
   will be matched to the second datasetRoot, and so refers to the file <strong>Q:/smaug/floober/dataset3.nc</strong>.</p>
 <h3><a name="catalogScan" id="catalogScan"></a>The catalogScan element</h3>
 <pre>&lt;xsd:element&#32;name=&quot;catalogScan&quot;&gt;<br />&#32;&#32;&lt;xsd:complexType&gt;<br />&#32;&#32;&#32;&#32;&lt;xsd:attribute&#32;name=&quot;name&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />&#32;&#32;&#32;&#32;&lt;xsd:attribute&#32;name=&quot;path&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />  &#32;&#32;&lt;xsd:attribute&#32;name=&quot;location&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />  &#32;&#32;&lt;xsd:attribute&#32;name=&quot;watch&quot;&#32;type=&quot;xsd:boolean&quot;/&gt;<br />&#32;&#32;&lt;/xsd:complexType&gt;<br />&lt;/xsd:element&gt;</pre>
-<p>A <strong>catalogScan</strong> element indicates a directory to scan for catalogs (files ending in xml). Optionally, the directory can be watched, and changes will be detected while the TDS is running. CatalogScan must be at the top level of the catalog (not nested in a dataset). If using this element, do not name any of your catalogs &quot;catalogScan.xml&quot;.</p>
+<p>A <strong>catalogScan</strong> element indicates a top directory to scan for catalogs (files ending in xml). Subdirectories will also be scanned. Optionally, the directory can be watched, and changes will be detected while the TDS is running. CatalogScan must be at the top level of the catalog (not nested in a dataset). If using this element, do not name any of your catalogs &quot;catalogScan.xml&quot;.</p>
 <ul>
   <li><strong>name: </strong>the name to display in the catalog</li>
   <li><strong>path</strong>: the logical URL path</li>
-  <li><strong>location</strong>: the directory to scan. Must be a path reletive to <strong>${tds.content.root.path}.</strong></li>
-  <li><strong>watch</strong>: true or false, if you want to watch for changes in this directory and all subdirectories.</li>
+  <li><strong>location</strong>: the top directory to scan (and all subdirectories). Must be a path reletive to <strong>${tds.content.root.path}.</strong> </li>
+  <li><strong>watch</strong>: true or false, if you want to watch for changes in this directory and all subdirectories. (NOT IMPLEMENTED)</li>
 </ul>
 <hr style="width: 100%; height: 2px;"/>
 <h3><a name="dataset" id="dataset"></a>The dataset element</h3>

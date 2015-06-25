@@ -33,12 +33,17 @@
 
 package thredds.server.config;
 
+import org.slf4j.Logger;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.core.AllowedServices;
@@ -52,6 +57,9 @@ import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.util.LoggerFactorySpecial;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -65,11 +73,13 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * A Singleton class to initialize and shutdown the CDM/TDS
@@ -81,10 +91,17 @@ import java.util.TimerTask;
 
 @Component("TdsInit")
 public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
-  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  static private final Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  static private final Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(TdsInit.class.getName() + ".catalogInit");
 
   @Autowired
   private TdsContext tdsContext;
+
+  @Autowired
+  TdsConfigMapper tdsConfigMapper;
+
+  @Autowired
+  private TdsUpdateConfigBean tdsUpdateConfig;
 
   @Autowired
   private DatasetManager datasetManager;
@@ -98,14 +115,12 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
   @Autowired
   private ConfigCatalogInitialization configCatalogInitializer;
 
-
   @Autowired
   private CatalogWatcher catalogWatcher;
 
   @Autowired
   private AllowedServices allowedServices;
 
-  // private DiskCache2 aggCache, gribCache, cdmrCache;
   private Timer cdmDiskCacheTimer;
   private boolean wasInitialized;
 
@@ -115,21 +130,28 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
     if (event != null) {  // startup
-      startupLog.info("TdsInit {}", event);
-      startupLog.info("TdsInit getContentRootPathAbsolute= " + tdsContext.getContentRootPathProperty());
       synchronized (this) {
         if (!wasInitialized) {
           wasInitialized = true;
+          startupLog.info("TdsInit {}", event);
+          startupLog.info("TdsInit getContentRootPathAbsolute= " + tdsContext.getContentRootPathProperty());
+
           readState();
+          initThreddsConfig();
           readThreddsConfig();
-          // boolean useEsgfMode = ThreddsConfig.getBoolean("ESGF.allow", false);
-          configCatalogInitializer.init(ConfigCatalogInitialization.ReadMode.check, (PreferencesExt) mainPrefs.node("configCatalog"));
+          logVersionMessage();
+
+          // read catalogs
+          String readModeS = ThreddsConfig.get("ConfigCatalog.reread", "always");
+          ConfigCatalogInitialization.ReadMode readMode =  ConfigCatalogInitialization.ReadMode.get(readModeS);
+          if (readMode == null) readMode = ConfigCatalogInitialization.ReadMode.always;
+          configCatalogInitializer.init(readMode, (PreferencesExt) mainPrefs.node("configCatalog"));
         }
       }
     }
   }
 
-  public void readState() {
+  private void readState() {
     File prefsDir = new File(tdsContext.getContentDirectory(), "/state/");
     if (!prefsDir.exists()) {
       boolean ok = prefsDir.mkdirs();
@@ -145,8 +167,42 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     }
   }
 
+  private void initThreddsConfig() {
+    // read in persistent user-defined params from threddsConfig.xml
+    File tdsConfigFile = new File(tdsContext.getContentDirectory(), tdsContext.getConfigFileProperty());
+    if (!tdsConfigFile.exists()) {
+      startupLog.warn("TDS configuration file '{}' doesn't exist, using all defaults ", tdsConfigFile.getAbsolutePath());
+      return;
+    }
+    ThreddsConfig.init(tdsConfigFile.getPath());
+  }
 
-  public void readThreddsConfig() {
+  private void logVersionMessage() {
+
+    // log current server version in catalogInit, where it is most likely to be seen by the user
+    String version = tdsContext.getVersionInfo();
+    String message = "You are currently running TDS version " + version;
+    logCatalogInit.info(message);
+
+    // check and log the latest stable and development version information
+    //  only if it is OK according to the threddsConfig file.
+    if (tdsUpdateConfig.isLogVersionInfo()) {
+      Map<String, String> latestVersionInfo = tdsUpdateConfig.getLatestVersionInfo(version);
+      if (!latestVersionInfo.isEmpty()) {
+        logCatalogInit.info("Latest Available TDS Version Info:");
+        for (Map.Entry entry : latestVersionInfo.entrySet()) {
+          message = "latest " + entry.getKey() + " version = " + entry.getValue();
+          startupLog.info("TdsContext: " + message);
+          logCatalogInit.info("    " + message);
+        }
+        logCatalogInit.info("");
+      }
+    }
+  }
+
+  private void readThreddsConfig() {
+    // initialize the tds configuration beans
+    tdsConfigMapper.init(tdsContext);
 
     // prefer cdmRemote when available
     DataFactory.setPreferCdm(true);
@@ -329,13 +385,13 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     //RandomAccessFile.setDebugLeaks(true);
 
     // Config Cat Cache
-    max = ThreddsConfig.getInt("Catalog.cacheCatalogs", 100);
+    max = ThreddsConfig.getInt("ConfigCatalog.keepInMemory", 100);
     String rootPath = tdsContext.getContentRootPathProperty() + "thredds/";
     ccc.init(rootPath, max);
 
     // Config Dataset Tracker
-    String trackerDir = ThreddsConfig.get("ESGF.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/catalog/").getPath());
-    int trackerMax = ThreddsConfig.getInt("ESGF.maxDatasets", 1000 * 1000);
+    String trackerDir = ThreddsConfig.get("ConfigCatalog.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/catalog/").getPath());
+    int trackerMax = ThreddsConfig.getInt("ConfigCatalog.maxDatasets", 10 * 1000);
     try {
       File trackerFile = new File(trackerDir);
       if (!trackerFile.exists()) {

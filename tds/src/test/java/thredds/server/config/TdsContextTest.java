@@ -19,7 +19,10 @@ import static org.junit.Assert.assertNotNull;
 public class TdsContextTest {
 
 	@Autowired
-	private TdsContext tdsContext;
+ private TdsUpdateConfigBean tdsUpdateConfig;
+
+	@Autowired
+ private TdsContext tdsContext;
 
 	/* @Test
 	public void testInit() {
@@ -35,7 +38,10 @@ public class TdsContextTest {
 	public void testVersionRetrieval() {
 		String stableKey = "stable";
 		String devKey = "development";
-		Map<String, String> latestVersionInfo = tdsContext.getLatestVersionInfo();
+		String version = tdsContext.getVersionInfo();
+
+		Map<String, String> latestVersionInfo = tdsUpdateConfig.getLatestVersionInfo(version);
+
 		// is not empty
 		assert(!latestVersionInfo.isEmpty());
 		// contains the stable key and the stable version is not empty

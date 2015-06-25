@@ -33,57 +33,50 @@
 
 package thredds.server.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 /**
  * Centralize the mapping of threddsConfig.xml configuration settings to the data objects used by
  * the various servlets. Supports earlier versions (some deprecated) of threddsConfig.xml config
  * settings.
  * <p/>
  * called from TdsInit
- * LOOK im not crazy about this design, seems like an extra unnecessary layer?
- * LOOK could be a Spring component, and autowire beans
  *
  * @author edavis
  * @since 4.1
  */
+@Component
 class TdsConfigMapper {
-  // ToDo Consider moving to Spring-like configuration.
   // ToDo Not yet using ThreddsConfig.get<type>() methods.
 
-  TdsConfigMapper() {
-  }
-
+  @Autowired
   private TdsServerInfoBean tdsServerInfo;
+  @Autowired
   private HtmlConfigBean htmlConfig;
+  @Autowired
   private WmsConfigBean wmsConfig;
+  @Autowired
   private CorsConfigBean corsConfig;
+  @Autowired
   private TdsUpdateConfigBean tdsUpdateConfig;
 
-  void setTdsServerInfo(TdsServerInfoBean tdsServerInfo) {
-    this.tdsServerInfo = tdsServerInfo;
-  }
-
-  void setHtmlConfig(HtmlConfigBean htmlConfig) {
-    this.htmlConfig = htmlConfig;
-  }
-
-  void setWmsConfig(WmsConfigBean wmsConfig) {
-    this.wmsConfig = wmsConfig;
-  }
-
-  void setCorsConfig(CorsConfigBean corsConfig) {
-    this.corsConfig = corsConfig;
-  }
-
-  void setTdsUpdateConfig(TdsUpdateConfigBean tdsUpdateConfig) {
-    this.tdsUpdateConfig = tdsUpdateConfig;
+  // static so can be called from static enum classes
+  private static String getValueFromThreddsConfig(String key, String alternateKey, String defaultValue) {
+    String value = ThreddsConfig.get(key, null);
+    if (value == null && alternateKey != null)
+      value = ThreddsConfig.get(alternateKey, null);
+    if (value == null)
+      value = defaultValue;
+    return value;
   }
 
   enum ServerInfoMappings {
     SERVER_NAME("serverInformation.name", "htmlSetup.installName", "Initial TDS Installation"),
     SERVER_LOGO_URL("serverInformation.logoUrl", "htmlSetup.installLogoUrl", "threddsIcon.png"),
     SERVER_LOGO_ALT_TEXT("serverInformation.logoAltText", "htmlSetup.installLogoAlt", "Initial TDS Installation"),
-    SERVER_ABSTRACT("serverInformation.abstract", null, ""),
-    SERVER_KEYWORDS("serverInformation.keywords", null, ""),
+    SERVER_ABSTRACT("serverInformation.abstract", null, "Scientific Data"),
+    SERVER_KEYWORDS("serverInformation.keywords", null, "meteorology, atmosphere, climate, ocean, earth science"),
     SERVER_CONTACT_NAME("serverInformation.contact.name", null, ""),
     SERVER_CONTACT_ORGANIZATION("serverInformation.contact.organization", null, ""),
     SERVER_CONTACT_EMAIL("serverInformation.contact.email", null, ""),
@@ -94,7 +87,7 @@ class TdsConfigMapper {
     SERVER_HOST_INSTITUTION_LOGO_ALT_TEXT("serverInformation.hostInstitution.logoAltText", "htmlSetup.hostInstLogoAlt", "");
 
     private String key;
-    private String alternateKey;
+    private String alternateKey;  // deprecated
     private String defaultValue;
 
     ServerInfoMappings(String key, String alternateKey, String defaultValue) {
@@ -109,7 +102,26 @@ class TdsConfigMapper {
     String getValueFromThreddsConfig() {
       return TdsConfigMapper.getValueFromThreddsConfig(this.key, this.alternateKey, this.defaultValue);
     }
+
+    static void load(TdsServerInfoBean info) {
+      info.setName(SERVER_NAME.getValueFromThreddsConfig());
+      info.setLogoUrl(SERVER_LOGO_URL.getValueFromThreddsConfig());
+      info.setLogoAltText(SERVER_LOGO_ALT_TEXT.getValueFromThreddsConfig());
+      info.setSummary(SERVER_ABSTRACT.getValueFromThreddsConfig());
+      info.setKeywords(SERVER_KEYWORDS.getValueFromThreddsConfig());
+
+      info.setContactName(SERVER_CONTACT_NAME.getValueFromThreddsConfig());
+      info.setContactOrganization(SERVER_CONTACT_ORGANIZATION.getValueFromThreddsConfig());
+      info.setContactEmail(SERVER_CONTACT_EMAIL.getValueFromThreddsConfig());
+      info.setContactPhone(SERVER_CONTACT_PHONE.getValueFromThreddsConfig());
+
+      info.setHostInstitutionName(SERVER_HOST_INSTITUTION_NAME.getValueFromThreddsConfig());
+      info.setHostInstitutionWebSite(SERVER_HOST_INSTITUTION_WEBSITE.getValueFromThreddsConfig());
+      info.setHostInstitutionLogoUrl(SERVER_HOST_INSTITUTION_LOGO_URL.getValueFromThreddsConfig());
+      info.setHostInstitutionLogoAltText(SERVER_HOST_INSTITUTION_LOGO_ALT_TEXT.getValueFromThreddsConfig());
+    }
   }
+
 
   enum HtmlConfigMappings {
     HTML_STANDARD_CSS_URL("htmlSetup.standardCssUrl", null, "tds.css"),
@@ -137,6 +149,30 @@ class TdsConfigMapper {
 
     String getValueFromThreddsConfig() {
       return TdsConfigMapper.getValueFromThreddsConfig(this.key, this.alternateKey, this.defaultValue);
+    }
+
+    static void load(HtmlConfigBean htmlConfig, TdsContext tdsContext, TdsServerInfoBean serverInfo) {
+      htmlConfig.init(tdsContext.getWebappDisplayName(), tdsContext.getWebappVersion(), tdsContext.getTdsVersionBuildDate(), tdsContext.getContextPath());
+
+      htmlConfig.setInstallName(serverInfo.getName());
+      htmlConfig.setInstallLogoUrl(serverInfo.getLogoUrl());
+      htmlConfig.setInstallLogoAlt(serverInfo.getLogoAltText());
+
+      htmlConfig.setHostInstName(serverInfo.getHostInstitutionName());
+      htmlConfig.setHostInstUrl(serverInfo.getHostInstitutionWebSite());
+      htmlConfig.setHostInstLogoUrl(serverInfo.getHostInstitutionLogoUrl());
+      htmlConfig.setHostInstLogoAlt(serverInfo.getHostInstitutionLogoAltText());
+
+      htmlConfig.setPageCssUrl(HTML_STANDARD_CSS_URL.getValueFromThreddsConfig());
+      htmlConfig.setCatalogCssUrl(HTML_CATALOG_CSS_URL.getValueFromThreddsConfig());
+      htmlConfig.setGoogleTrackingCode(GOOGLE_TRACKING_CODE.getValueFromThreddsConfig());
+
+      htmlConfig.setFolderIconUrl(HTML_FOLDER_ICON_URL.getValueFromThreddsConfig());
+      htmlConfig.setFolderIconAlt(HTML_FOLDER_ICON_ALT.getValueFromThreddsConfig());
+      htmlConfig.setDatasetIconUrl(HTML_DATASET_ICON_URL.getValueFromThreddsConfig());
+      htmlConfig.setDatasetIconAlt(HTML_DATASET_ICON_ALT.getValueFromThreddsConfig());
+
+      htmlConfig.setUseRemoteCatalogService(Boolean.parseBoolean(HTML_USE_REMOTE_CAT_SERVICE.getValueFromThreddsConfig()));
     }
   }
 
@@ -166,6 +202,25 @@ class TdsConfigMapper {
 
     String getValueFromThreddsConfig() {
       return TdsConfigMapper.getValueFromThreddsConfig(this.key, this.alternateKey, this.defaultValue);
+    }
+
+    static void load(WmsConfigBean wmsConfig) {
+      wmsConfig.setAllow(Boolean.parseBoolean(WMS_ALLOW.getValueFromThreddsConfig()));
+      wmsConfig.setAllowRemote(Boolean.parseBoolean(WMS_ALLOW_REMOTE.getValueFromThreddsConfig()));
+      wmsConfig.setPaletteLocationDir(WMS_PALETTE_LOCATION_DIR.getValueFromThreddsConfig());
+
+      try {
+        wmsConfig.setMaxImageWidth(Integer.parseInt(WMS_MAXIMUM_IMAGE_WIDTH.getValueFromThreddsConfig()));
+      } catch (NumberFormatException e) {
+        // If the given maxImageWidth value is not a number, try the default value.
+        wmsConfig.setMaxImageWidth(Integer.parseInt(WMS_MAXIMUM_IMAGE_WIDTH.getDefaultValue()));
+      }
+      try {
+        wmsConfig.setMaxImageHeight(Integer.parseInt(WMS_MAXIMUM_IMAGE_HEIGHT.getValueFromThreddsConfig()));
+      } catch (NumberFormatException e) {
+        // If the given maxImageHeight value is not a number, try the default value.
+        wmsConfig.setMaxImageHeight(Integer.parseInt(WMS_MAXIMUM_IMAGE_HEIGHT.getDefaultValue()));
+      }
     }
   }
 
@@ -197,6 +252,18 @@ class TdsConfigMapper {
     String getValueFromThreddsConfig() {
       return TdsConfigMapper.getValueFromThreddsConfig(this.key, this.alternateKey, this.defaultValue);
     }
+
+    static void load(CorsConfigBean corsConfig) {
+       corsConfig.setEnabled(Boolean.parseBoolean(CORS_ENABLED.getValueFromThreddsConfig()));
+       try {
+         corsConfig.setMaxAge(Integer.parseInt(CORS_MAXIMUM_AGE.getValueFromThreddsConfig()));
+       } catch (NumberFormatException e) {
+         corsConfig.setMaxAge(Integer.parseInt(CORS_MAXIMUM_AGE.getDefaultValue()));
+       }
+       corsConfig.setAllowedHeaders(CORS_ALLOWED_HEADERS.getValueFromThreddsConfig());
+       corsConfig.setAllowedMethods(CORS_ALLOWED_METHODS.getValueFromThreddsConfig());
+       corsConfig.setAllowedOrigin(CORS_ALLOWED_ORIGIN.getValueFromThreddsConfig());
+     }
   }
 
   enum TdsUpdateConfigMappings {
@@ -223,100 +290,23 @@ class TdsConfigMapper {
     String getValueFromThreddsConfig() {
       return TdsConfigMapper.getValueFromThreddsConfig(this.key, this.alternateKey, this.defaultValue);
     }
+
+    static void load(TdsUpdateConfigBean tdsUpdateConfig) {
+      tdsUpdateConfig.setLogVersionInfo(Boolean.parseBoolean(TDSUPDAATE_LOGVERSIONINFO.getValueFromThreddsConfig()));
+    }
   }
 
-  private static String getValueFromThreddsConfig(String key, String alternateKey, String defaultValue) {
-    String value = ThreddsConfig.get(key, null);
-    if (value == null && alternateKey != null)
-      value = ThreddsConfig.get(alternateKey, null);
-    if (value == null)
-      value = defaultValue;
-    return value;
+  /////////////////////////////////////////////////////////////////////
+
+  TdsConfigMapper() {
   }
 
   void init(TdsContext tdsContext) {
-    setupServerInfo();
-    setupHtmlConfig(tdsContext);
-    setupWmsConfig();
-    setupCorsConfig();
-    setupTdsUpdateConfig();
+    ServerInfoMappings.load(tdsServerInfo);
+    HtmlConfigMappings.load(htmlConfig, tdsContext, tdsServerInfo);
+    WmsConfigMappings.load(wmsConfig);
+    CorsConfigMappings.load(corsConfig);
+    TdsUpdateConfigMappings.load(tdsUpdateConfig);
   }
 
-  private void setupServerInfo() {
-    this.tdsServerInfo.setName(ServerInfoMappings.SERVER_NAME.getValueFromThreddsConfig());
-    this.tdsServerInfo.setLogoUrl(ServerInfoMappings.SERVER_LOGO_URL.getValueFromThreddsConfig());
-    this.tdsServerInfo.setLogoAltText(ServerInfoMappings.SERVER_LOGO_ALT_TEXT.getValueFromThreddsConfig());
-    this.tdsServerInfo.setSummary(ServerInfoMappings.SERVER_ABSTRACT.getValueFromThreddsConfig());
-    this.tdsServerInfo.setKeywords(ServerInfoMappings.SERVER_KEYWORDS.getValueFromThreddsConfig());
-
-    this.tdsServerInfo.setContactName(ServerInfoMappings.SERVER_CONTACT_NAME.getValueFromThreddsConfig());
-    this.tdsServerInfo.setContactOrganization(ServerInfoMappings.SERVER_CONTACT_ORGANIZATION.getValueFromThreddsConfig());
-    this.tdsServerInfo.setContactEmail(ServerInfoMappings.SERVER_CONTACT_EMAIL.getValueFromThreddsConfig());
-    this.tdsServerInfo.setContactPhone(ServerInfoMappings.SERVER_CONTACT_PHONE.getValueFromThreddsConfig());
-
-    this.tdsServerInfo.setHostInstitutionName(ServerInfoMappings.SERVER_HOST_INSTITUTION_NAME.getValueFromThreddsConfig());
-    this.tdsServerInfo.setHostInstitutionWebSite(ServerInfoMappings.SERVER_HOST_INSTITUTION_WEBSITE.getValueFromThreddsConfig());
-    this.tdsServerInfo.setHostInstitutionLogoUrl(ServerInfoMappings.SERVER_HOST_INSTITUTION_LOGO_URL.getValueFromThreddsConfig());
-    this.tdsServerInfo.setHostInstitutionLogoAltText(ServerInfoMappings.SERVER_HOST_INSTITUTION_LOGO_ALT_TEXT.getValueFromThreddsConfig());
-  }
-
-  private void setupHtmlConfig(TdsContext tdsContext) {
-    this.htmlConfig.init(tdsContext.getWebappDisplayName(), tdsContext.getWebappVersion(),
-            tdsContext.getTdsVersionBuildDate(), tdsContext.getContextPath());
-
-    this.htmlConfig.setInstallName(this.tdsServerInfo.getName());
-    this.htmlConfig.setInstallLogoUrl(this.tdsServerInfo.getLogoUrl());
-    this.htmlConfig.setInstallLogoAlt(this.tdsServerInfo.getLogoAltText());
-
-    this.htmlConfig.setHostInstName(this.tdsServerInfo.getHostInstitutionName());
-    this.htmlConfig.setHostInstUrl(this.tdsServerInfo.getHostInstitutionWebSite());
-    this.htmlConfig.setHostInstLogoUrl(this.tdsServerInfo.getHostInstitutionLogoUrl());
-    this.htmlConfig.setHostInstLogoAlt(this.tdsServerInfo.getHostInstitutionLogoAltText());
-
-    this.htmlConfig.setPageCssUrl(HtmlConfigMappings.HTML_STANDARD_CSS_URL.getValueFromThreddsConfig());
-    this.htmlConfig.setCatalogCssUrl(HtmlConfigMappings.HTML_CATALOG_CSS_URL.getValueFromThreddsConfig());
-    this.htmlConfig.setGoogleTrackingCode(HtmlConfigMappings.GOOGLE_TRACKING_CODE.getValueFromThreddsConfig());
-
-    this.htmlConfig.setFolderIconUrl(HtmlConfigMappings.HTML_FOLDER_ICON_URL.getValueFromThreddsConfig());
-    this.htmlConfig.setFolderIconAlt(HtmlConfigMappings.HTML_FOLDER_ICON_ALT.getValueFromThreddsConfig());
-    this.htmlConfig.setDatasetIconUrl(HtmlConfigMappings.HTML_DATASET_ICON_URL.getValueFromThreddsConfig());
-    this.htmlConfig.setDatasetIconAlt(HtmlConfigMappings.HTML_DATASET_ICON_ALT.getValueFromThreddsConfig());
-
-    this.htmlConfig.setUseRemoteCatalogService(Boolean.parseBoolean(HtmlConfigMappings.HTML_USE_REMOTE_CAT_SERVICE.getValueFromThreddsConfig()));
-  }
-
-  private void setupWmsConfig() {
-    this.wmsConfig.setAllow(Boolean.parseBoolean(WmsConfigMappings.WMS_ALLOW.getValueFromThreddsConfig()));
-    this.wmsConfig.setAllowRemote(Boolean.parseBoolean(WmsConfigMappings.WMS_ALLOW_REMOTE.getValueFromThreddsConfig()));
-    this.wmsConfig.setPaletteLocationDir(WmsConfigMappings.WMS_PALETTE_LOCATION_DIR.getValueFromThreddsConfig());
-
-    try {
-      this.wmsConfig.setMaxImageWidth(Integer.parseInt(WmsConfigMappings.WMS_MAXIMUM_IMAGE_WIDTH.getValueFromThreddsConfig()));
-    } catch (NumberFormatException e) {
-      // If the given maxImageWidth value is not a number, try the default value.
-      this.wmsConfig.setMaxImageWidth(Integer.parseInt(WmsConfigMappings.WMS_MAXIMUM_IMAGE_WIDTH.getDefaultValue()));
-    }
-    try {
-      this.wmsConfig.setMaxImageHeight(Integer.parseInt(WmsConfigMappings.WMS_MAXIMUM_IMAGE_HEIGHT.getValueFromThreddsConfig()));
-    } catch (NumberFormatException e) {
-      // If the given maxImageHeight value is not a number, try the default value.
-      this.wmsConfig.setMaxImageHeight(Integer.parseInt(WmsConfigMappings.WMS_MAXIMUM_IMAGE_HEIGHT.getDefaultValue()));
-    }
-  }
-
-  private void setupCorsConfig() {
-    this.corsConfig.setEnabled(Boolean.parseBoolean(CorsConfigMappings.CORS_ENABLED.getValueFromThreddsConfig()));
-    try {
-      this.corsConfig.setMaxAge(Integer.parseInt(CorsConfigMappings.CORS_MAXIMUM_AGE.getValueFromThreddsConfig()));
-    } catch (NumberFormatException e) {
-      this.corsConfig.setMaxAge(Integer.parseInt(CorsConfigMappings.CORS_MAXIMUM_AGE.getDefaultValue()));
-    }
-    this.corsConfig.setAllowedHeaders(CorsConfigMappings.CORS_ALLOWED_HEADERS.getValueFromThreddsConfig());
-    this.corsConfig.setAllowedMethods(CorsConfigMappings.CORS_ALLOWED_METHODS.getValueFromThreddsConfig());
-    this.corsConfig.setAllowedOrigin(CorsConfigMappings.CORS_ALLOWED_ORIGIN.getValueFromThreddsConfig());
-  }
-
-  private void setupTdsUpdateConfig() {
-    this.tdsUpdateConfig.setLogVersionInfo(Boolean.parseBoolean(TdsUpdateConfigMappings.TDSUPDAATE_LOGVERSIONINFO.getValueFromThreddsConfig()));
-  }
 }

@@ -82,7 +82,6 @@ import java.util.*;
 @Component("TdsContext")
 public final class TdsContext implements ServletContextAware, InitializingBean, DisposableBean {
   private final Logger logServerStartup = LoggerFactory.getLogger("serverStartup");
-  private final Logger logCatalogInit = LoggerFactory.getLogger(TdsContext.class.getName() + ".catalogInit");
 
   /////////////////
   // Properties from tds.properties
@@ -107,24 +106,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
   @Value("${tds.content.root.path}")
   private String contentRootPathProperty; // wants a trailing slash
-
-  ////////////////////////////////////
-  // set by spring
-
-  @Autowired
-  private HtmlConfigBean htmlConfig;
-
-  @Autowired
-  private TdsServerInfoBean serverInfo;
-
-  @Autowired
-  private WmsConfigBean wmsConfig;
-
-  @Autowired
-  private CorsConfigBean corsConfig;
-
-  @Autowired
-  private TdsUpdateConfigBean tdsUpdateConfig;
 
   private ServletContext servletContext;
 
@@ -333,100 +314,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     // Log4jWebConfigurer.initLogging( servletContext );
     logServerStartup.info("TdsContext version= " + getVersionInfo());
     logServerStartup.info("TdsContext intialized logging in " + logDir.getPath());
-
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    // read in persistent user-defined params from threddsConfig.xml
-
-    File tdsConfigFile = contentDirSource.getFile(this.getConfigFileProperty());
-    if (tdsConfigFile == null) {
-      tdsConfigFile = new File(contentDirSource.getRootDirectory(), this.getConfigFileProperty());
-      String msg = "TDS configuration file doesn't exist: " + tdsConfigFile;
-      logServerStartup.error("TdsContext.init(): " + msg);
-      throw new IllegalStateException(msg);
-    }
-    ThreddsConfig.init(tdsConfigFile.getPath());
-
-    // initialize the configuration beans
-    TdsConfigMapper tdsConfigMapper = new TdsConfigMapper();
-    tdsConfigMapper.setTdsServerInfo(this.serverInfo);
-    tdsConfigMapper.setHtmlConfig(this.htmlConfig);
-    tdsConfigMapper.setWmsConfig(this.wmsConfig);
-    tdsConfigMapper.setCorsConfig(this.corsConfig);
-    tdsConfigMapper.setTdsUpdateConfig(this.tdsUpdateConfig);
-    tdsConfigMapper.init(this);
-
-    // log current server version in catalogInit, where it is most likely to be seen by the user
-    String message = "You are currently running TDS version " + this.getVersionInfo();
-    logCatalogInit.info(message);
-    // check and log the latest stable and development version information
-    //  only if it is OK according to the threddsConfig file.
-    if (this.tdsUpdateConfig.isLogVersionInfo()) {
-      Map<String, String> latestVersionInfo = getLatestVersionInfo();
-      if (!latestVersionInfo.isEmpty()) {
-        logCatalogInit.info("Latest Available TDS Version Info:");
-        for (Map.Entry entry : latestVersionInfo.entrySet()) {
-          message = "latest " + entry.getKey() + " version = " + entry.getValue();
-          logServerStartup.info("TdsContext: " + message);
-          logCatalogInit.info("    " + message);
-        }
-        logCatalogInit.info("");
-      }
-    }
-  }
-
-
-  /**
-   * Retrieve the latest stable and development versions
-   * available from Unidata. Needs to connect to
-   * http://www.unidata.ucar.edu in order to get the
-   * latest version numbers. The propose is to easily let users
-   * know if the version of TDS they are running is out of
-   * date, as this information is recorded in the
-   * serverStartup.log file.
-   *
-   * @return A hashmap containing versionTypes as key (i.e.
-   * "stable", "development") and their corresponding
-   * version numbers (i.e. 4.5.2)
-   */
-  public Map<String, String> getLatestVersionInfo() {
-    int socTimeout = 1; // http socket timeout in seconds
-    int connectionTimeout = 3; // http connection timeout in seconds
-    Map<String, String> latestVersionInfo = new HashMap<>();
-
-    String versionUrl = "http://www.unidata.ucar.edu/software/thredds/latest.xml";
-    try {
-      try (HTTPMethod method = HTTPFactory.Get(versionUrl)) {
-        HTTPSession httpClient = method.getSession();
-        httpClient.setSoTimeout(socTimeout * 1000);
-        httpClient.setConnectionTimeout(connectionTimeout * 1000);
-        httpClient.setUserAgent("TDS_" + getVersionInfo().replace(" ", ""));
-        method.execute();
-        InputStream responseIs = method.getResponseBodyAsStream();
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document dom = db.parse(responseIs);
-        Element docEle = dom.getDocumentElement();
-        NodeList versionElements = docEle.getElementsByTagName("version");
-        if(versionElements != null && versionElements.getLength() > 0) {
-          for(int i = 0;i < versionElements.getLength();i++) {
-            //get the version element
-            Element versionElement = (Element) versionElements.item(i);
-            String verType = versionElement.getAttribute("name");
-            String verStr = versionElement.getAttribute("value");
-            latestVersionInfo.put(verType, verStr);
-          }
-        }
-      }
-    } catch (IOException e) {
-      logServerStartup.warn("TdsContext - Could not get latest version information from Unidata.");
-    } catch (ParserConfigurationException e) {
-      logServerStartup.error("TdsContext - Error configuring latest version xml parser" + e.getMessage() + ".");
-    } catch (SAXException e) {
-      logServerStartup.error("TdsContext - Could not parse latest version information.");
-    }
-    return latestVersionInfo;
   }
 
   @Override

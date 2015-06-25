@@ -88,7 +88,14 @@ public class ConfigCatalogInitialization {
   private DebugCommands debugCommands;
 
   ///////////////////////////////////////////////////////
-  public enum ReadMode {always, check, trigger}
+  public enum ReadMode {always, check, trigger;
+    static public ReadMode get(String name) {
+      for (ReadMode mode : values()) {
+        if (mode.name().equalsIgnoreCase(name)) return mode;
+      }
+      return null;
+    }
+  }
 
   private long lastRead = -1;
   private ReadMode readMode = ReadMode.check;
@@ -161,7 +168,7 @@ public class ConfigCatalogInitialization {
       prefs.putLong("lastRead", System.currentTimeMillis()); // LOOK do we need to distinguish between lastReadAlways and lastReadCheck ??
       callback.finish();
       logCatalogInit.info("\nConfigCatalogInitializion stats\n" + callback);
-      System.out.printf("%s%n", callback);
+      // System.out.printf("%s%n", callback);
     }
 
     try {
