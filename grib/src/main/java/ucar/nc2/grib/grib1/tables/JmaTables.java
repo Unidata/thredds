@@ -35,12 +35,10 @@ package ucar.nc2.grib.grib1.tables;
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribStatType;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +88,17 @@ public class JmaTables extends Grib1Customizer {
         end = p2;
         break;
 
-      /* Temporal variance of N uninitialized analyses (P1 = 0) or instantaneous forecasts (P1 > 0);
+      /* 130: Average of N forecast products; valid time of the first product ranges between R + P1 and R + P2, where R is reference time given in octets 13 to 17,
+        then subsequent products have valid time range at interval of P2 - P1; thus all N products cover continuous time span; products have reference times at
+        intervals of P2 - P1, beginning at the given reference time
+       */
+      case 130:
+        isInterval = true;
+        start = p1;
+        end = (n > 0) ? p1 + n * (p2 - p1) : p2;  // prob n >= 1
+        break;
+
+       /* Temporal variance of N uninitialized analyses (P1 = 0) or instantaneous forecasts (P1 > 0);
           each product has valid time at the reference time + P1;
           products have reference times at intervals of P2, beginning at the given reference time;
           unit of measurement is square of that in Code Table 2 */ // LOOK
@@ -113,6 +121,8 @@ public class JmaTables extends Grib1Customizer {
     switch (timeRangeIndicator) {
       case 129:
         return "Temporal variance of N forecasts at 24 hour intervals";
+      case 130:
+        return "Average of N forecast products at intervals of P1 - P2";
       case 131:
         return "Temporal variance of N forecasts at intervals of P1 - P2";
       case 132:
@@ -126,6 +136,9 @@ public class JmaTables extends Grib1Customizer {
   @Override
   public GribStatType getStatType(int timeRangeIndicator) {
     switch (timeRangeIndicator) {
+      case 130:
+        return GribStatType.Average;
+
       case 129:
       case 131:
       case 132:
