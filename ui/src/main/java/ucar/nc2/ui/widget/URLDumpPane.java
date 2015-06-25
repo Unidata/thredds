@@ -263,16 +263,16 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(" " + key + ": " + value);
   }  */
 
-  private HTTPMethod processMethod (HTTPSession httpclient, Command cmd) throws HTTPException, UnsupportedEncodingException {
+  private HTTPMethod processMethod (HTTPSession httpclient, String url, Command cmd) throws HTTPException, UnsupportedEncodingException {
       HTTPMethod m = null;
       if (cmd == Command.GET)
-          m = HTTPFactory.Get(httpclient);
+          m = HTTPFactory.Get(httpclient,url);
       else if (cmd == Command.HEAD)
-          m = HTTPFactory.Head(httpclient);
+          m = HTTPFactory.Head(httpclient,url);
       else if (cmd == Command.OPTIONS)
-          m = HTTPFactory.Options(httpclient);
+          m = HTTPFactory.Options(httpclient,url);
       else if (cmd == Command.PUT) {
-          m = HTTPFactory.Put(httpclient);
+          m = HTTPFactory.Put(httpclient,url);
           m.setRequestContent(new StringEntity(ta.getText())); // was  setRequestContentAsString(ta.getText());
       }
 
@@ -302,7 +302,7 @@ public class URLDumpPane extends TextHistoryPane {
 
       //urlString = URLnaming.escapeQuery(urlString);
       if (cmd == Command.GET)
-          m = HTTPFactory.Get(httpclient);
+          m = HTTPFactory.Get(httpclient,urlString);
       else if (cmd == Command.HEAD)
           m = HTTPFactory.Head(httpclient);
       else if (cmd == Command.OPTIONS)

@@ -34,11 +34,15 @@
 package ucar.httpservices;
 
 import org.apache.http.*;
+import org.apache.http.auth.AuthScope;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.http.auth.AuthScope.*;
 
 abstract public class HTTPUtil
 {
@@ -177,5 +181,25 @@ abstract public class HTTPUtil
         }
         return bytes.toByteArray();
     }
+
+    static public String makerealm(URL url)
+    {
+        return makerealm(url.getHost(), url.getPort());
+    }
+
+    static public String makerealm(AuthScope scope)
+    {
+        return makerealm(scope.getHost(), scope.getPort());
+    }
+
+    static public String makerealm(String host, int port)
+    {
+        if(host == null) host = ANY_HOST;
+        if(host == ANY_HOST)
+            return ANY_REALM;
+        String sport = (port <= 0 || port == ANY_PORT) ? "" : String.format("%d", port);
+        return host + sport;
+    }
+
 
 }

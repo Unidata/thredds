@@ -203,7 +203,7 @@ public class WmsViewer extends JPanel {
 
     HTTPMethod method;
     try (HTTPSession session = HTTPFactory.newSession(url)) {
-      method = HTTPFactory.Get(session);
+      method = HTTPFactory.Get(session,url);
       int statusCode = method.execute();
 
       info.format(" Status = %d %s%n",method.getStatusCode(),method.getStatusText());
