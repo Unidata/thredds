@@ -65,9 +65,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * Provides an API to obtain the various Dataset objects, given the request Path.
@@ -155,9 +153,6 @@ public class DatasetManager implements InitializingBean {
     // look for a dataset (non scan, non fmrc) that has an ncml element
     String ncml = datasetTracker.findNcml(reqPath);
     if (ncml != null) {
-      // if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found NcmlDataset= " + ds);
-      //String cacheName = ds.getUniqueID(); // LOOK use reqPath !!
-
       NetcdfFile ncfile = NetcdfDataset.acquireFile(new NcmlFileFactory(ncml), null, reqPath, -1, null, null);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
       return ncfile;
@@ -190,7 +185,6 @@ public class DatasetManager implements InitializingBean {
       boolean doCache = true; // hack in a "no cache" option
       org.jdom2.Element netcdfElem = null; // find ncml if it exists
       if (match.dataRoot != null) {
-        // doCache = match.dataRoot.isCache();  LOOK
         DatasetScan dscan = match.dataRoot.getDatasetScan();
         // if (dscan == null) dscan = match.dataRoot.getDatasetRootProxy();  // no ncml possible in getDatasetRootProxy
         if (dscan != null)

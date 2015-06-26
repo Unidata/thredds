@@ -11,8 +11,8 @@
 <hr>
 <h2>Requirements</h2>
 <ul>
-  <li>Java 8 is now required (?)</li>
-  <li>Tomcat 7 (servlet 3.0)</li>
+  <li>Java 8 is now required</li>
+  <li>Tomcat 8 (servlet 3.1)</li>
   <li>On the command line when starting up Tomcat, you must specify <strong>-Dtds.content.root.path=&lt;content root&gt;</strong> where &lt;content root&gt; points to the top of the content directory. Note that this is<strong> ${tomcat}/content/</strong>, not<strong> ${tomcat}/content/thredds/</strong>. Dont forget the trailing slash. For example: 
     <pre>-Dtds.content.root.path=/opt/tomcat-home/content/</pre>
   </li>
@@ -95,9 +95,9 @@
 </ul>
 <h3>Standard Services</h3>
 <ul>
-  <li>Services no longer need to be specified in each configuration catalog, but can be placed in the root catalog and referenced in any other config catalog.</li>
-  <li>For backwards compatibility, one can still define services in  config catalogs other than root, and these wwill take precedence.</li>
-  <li>The TDS provides global, standard service elements, which know which services are appropriate for each Feature Type.</li>
+  <li>The TDS provides standard service elements, which know which services are appropriate for each Feature Type.</li>
+  <li>User defined services in the root catalog are global and can be referenced by name in any other config catalog. </li>
+  <li>User defined services  in non-root catalogs are local to that catalog and override (by name) any global services.</li>
   <li>Standard service  details are <a href="reference/Services.html">here</a></li>
 </ul>
 <h2>ThreddsConfig.xml</h2>

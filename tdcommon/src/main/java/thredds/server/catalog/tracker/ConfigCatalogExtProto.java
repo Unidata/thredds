@@ -147,6 +147,16 @@ public final class ConfigCatalogExtProto {
      */
     com.google.protobuf.ByteString
         getCatLocationBytes();
+
+    // optional bool isRoot = 3 [default = false];
+    /**
+     * <code>optional bool isRoot = 3 [default = false];</code>
+     */
+    boolean hasIsRoot();
+    /**
+     * <code>optional bool isRoot = 3 [default = false];</code>
+     */
+    boolean getIsRoot();
   }
   /**
    * Protobuf type {@code Catalog}
@@ -207,6 +217,11 @@ public final class ConfigCatalogExtProto {
             case 18: {
               bitField0_ |= 0x00000002;
               catLocation_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              isRoot_ = input.readBool();
               break;
             }
           }
@@ -316,9 +331,26 @@ public final class ConfigCatalogExtProto {
       }
     }
 
+    // optional bool isRoot = 3 [default = false];
+    public static final int ISROOT_FIELD_NUMBER = 3;
+    private boolean isRoot_;
+    /**
+     * <code>optional bool isRoot = 3 [default = false];</code>
+     */
+    public boolean hasIsRoot() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional bool isRoot = 3 [default = false];</code>
+     */
+    public boolean getIsRoot() {
+      return isRoot_;
+    }
+
     private void initFields() {
       catId_ = 0L;
       catLocation_ = "";
+      isRoot_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -346,6 +378,9 @@ public final class ConfigCatalogExtProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getCatLocationBytes());
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBool(3, isRoot_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -362,6 +397,10 @@ public final class ConfigCatalogExtProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, getCatLocationBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, isRoot_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -483,6 +522,8 @@ public final class ConfigCatalogExtProto {
         bitField0_ = (bitField0_ & ~0x00000001);
         catLocation_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        isRoot_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -519,6 +560,10 @@ public final class ConfigCatalogExtProto {
           to_bitField0_ |= 0x00000002;
         }
         result.catLocation_ = catLocation_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.isRoot_ = isRoot_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -542,6 +587,9 @@ public final class ConfigCatalogExtProto {
           bitField0_ |= 0x00000002;
           catLocation_ = other.catLocation_;
           onChanged();
+        }
+        if (other.hasIsRoot()) {
+          setIsRoot(other.getIsRoot());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -697,6 +745,39 @@ public final class ConfigCatalogExtProto {
   }
   bitField0_ |= 0x00000002;
         catLocation_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional bool isRoot = 3 [default = false];
+      private boolean isRoot_ ;
+      /**
+       * <code>optional bool isRoot = 3 [default = false];</code>
+       */
+      public boolean hasIsRoot() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional bool isRoot = 3 [default = false];</code>
+       */
+      public boolean getIsRoot() {
+        return isRoot_;
+      }
+      /**
+       * <code>optional bool isRoot = 3 [default = false];</code>
+       */
+      public Builder setIsRoot(boolean value) {
+        bitField0_ |= 0x00000004;
+        isRoot_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool isRoot = 3 [default = false];</code>
+       */
+      public Builder clearIsRoot() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        isRoot_ = false;
         onChanged();
         return this;
       }
@@ -5391,22 +5472,22 @@ public final class ConfigCatalogExtProto {
   static {
     java.lang.String[] descriptorData = {
       "\n5thredds/server/catalog/tracker/configC" +
-      "atalogExt.proto\"-\n\007Catalog\022\r\n\005catId\030\001 \002(" +
-      "\004\022\023\n\013catLocation\030\002 \002(\t\"p\n\010DataRoot\022\017\n\007ur" +
-      "lPath\030\001 \002(\t\022\023\n\013dirLocation\030\002 \002(\t\022\033\n\004type" +
-      "\030\003 \002(\0162\r.DataRootType\022\023\n\013catLocation\030\004 \001" +
-      "(\t\022\014\n\004name\030\005 \001(\t\"\226\001\n\007Dataset\022\r\n\005catId\030\001 " +
-      "\002(\004\022\014\n\004name\030\002 \002(\t\022\014\n\004path\030\003 \001(\t\022\n\n\002id\030\004 " +
-      "\001(\t\022\020\n\010restrict\030\005 \001(\t\022\014\n\004ncml\030\006 \001(\t\022\027\n\006a" +
-      "ccess\030\n \003(\0132\007.Access\022\033\n\010property\030\013 \003(\0132\t" +
-      ".Property\"U\n\006Access\022\023\n\013serviceName\030\001 \002(\t",
-      "\022\017\n\007urlPath\030\002 \002(\t\022\023\n\013dataFormatS\030\003 \001(\t\022\020" +
-      "\n\010dataSize\030\004 \001(\004\"\'\n\010Property\022\014\n\004name\030\001 \002" +
-      "(\t\022\r\n\005value\030\002 \002(\t*X\n\014DataRootType\022\017\n\013dat" +
-      "asetRoot\020\001\022\017\n\013datasetScan\020\002\022\017\n\013catalogSc" +
-      "an\020\003\022\025\n\021featureCollection\020\004B7\n\036thredds.s" +
-      "erver.catalog.trackerB\025ConfigCatalogExtP" +
-      "roto"
+      "atalogExt.proto\"D\n\007Catalog\022\r\n\005catId\030\001 \002(" +
+      "\004\022\023\n\013catLocation\030\002 \002(\t\022\025\n\006isRoot\030\003 \001(\010:\005" +
+      "false\"p\n\010DataRoot\022\017\n\007urlPath\030\001 \002(\t\022\023\n\013di" +
+      "rLocation\030\002 \002(\t\022\033\n\004type\030\003 \002(\0162\r.DataRoot" +
+      "Type\022\023\n\013catLocation\030\004 \001(\t\022\014\n\004name\030\005 \001(\t\"" +
+      "\226\001\n\007Dataset\022\r\n\005catId\030\001 \002(\004\022\014\n\004name\030\002 \002(\t" +
+      "\022\014\n\004path\030\003 \001(\t\022\n\n\002id\030\004 \001(\t\022\020\n\010restrict\030\005" +
+      " \001(\t\022\014\n\004ncml\030\006 \001(\t\022\027\n\006access\030\n \003(\0132\007.Acc" +
+      "ess\022\033\n\010property\030\013 \003(\0132\t.Property\"U\n\006Acce",
+      "ss\022\023\n\013serviceName\030\001 \002(\t\022\017\n\007urlPath\030\002 \002(\t" +
+      "\022\023\n\013dataFormatS\030\003 \001(\t\022\020\n\010dataSize\030\004 \001(\004\"" +
+      "\'\n\010Property\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002(\t" +
+      "*X\n\014DataRootType\022\017\n\013datasetRoot\020\001\022\017\n\013dat" +
+      "asetScan\020\002\022\017\n\013catalogScan\020\003\022\025\n\021featureCo" +
+      "llection\020\004B7\n\036thredds.server.catalog.tra" +
+      "ckerB\025ConfigCatalogExtProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5418,7 +5499,7 @@ public final class ConfigCatalogExtProto {
           internal_static_Catalog_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Catalog_descriptor,
-              new java.lang.String[] { "CatId", "CatLocation", });
+              new java.lang.String[] { "CatId", "CatLocation", "IsRoot", });
           internal_static_DataRoot_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_DataRoot_fieldAccessorTable = new

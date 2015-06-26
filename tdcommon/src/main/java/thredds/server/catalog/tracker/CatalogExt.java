@@ -4,7 +4,7 @@ package thredds.server.catalog.tracker;
 import java.io.*;
 
 /**
- * Describe
+ * Persisted catalog info
  *
  * @author caron
  * @since 6/16/2015
@@ -13,13 +13,15 @@ public class CatalogExt {
   static public int total_count = 0;
   static public long total_nbytes = 0;
 
-  private long catId;
+  private boolean isRoot;
+  private long catId;         // LOOK not used
   private String catRelLocation;
 
   public CatalogExt() {
   }
 
-  public CatalogExt(long catId, String catRelLocation) {
+  public CatalogExt(long catId, String catRelLocation, boolean isRoot) {
+    this.isRoot = isRoot;
     this.catId = catId;
     this.catRelLocation = catRelLocation;
   }
@@ -32,15 +34,21 @@ public class CatalogExt {
     return catId;
   }
 
+  public boolean isRoot() {
+    return isRoot;
+  }
+
   /* message Catalog {
     required uint64 catId = 1;    // sequence no
     required string catLocation = 2;
+    optional bool isRoot = 3 [default = false];
   } */
 
   public void writeExternal(DataOutputStream out) throws IOException {
     ConfigCatalogExtProto.Catalog.Builder builder = ConfigCatalogExtProto.Catalog.newBuilder();
     builder.setCatId(catId);
     builder.setCatLocation(catRelLocation);
+    builder.setIsRoot(isRoot);
 
     ConfigCatalogExtProto.Catalog index = builder.build();
     byte[] b = index.toByteArray();
@@ -65,5 +73,6 @@ public class CatalogExt {
     ConfigCatalogExtProto.Catalog catp = ConfigCatalogExtProto.Catalog.parseFrom(b);
     this.catId = catp.getCatId();
     this.catRelLocation = catp.getCatLocation();
+    this.isRoot = catp.getIsRoot();
   }
 }

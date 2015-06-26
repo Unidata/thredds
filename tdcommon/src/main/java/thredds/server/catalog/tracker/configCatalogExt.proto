@@ -4,6 +4,7 @@ option java_outer_classname = "ConfigCatalogExtProto";
 message Catalog {
   required uint64 catId = 1;    // sequence no
   required string catLocation = 2;
+  optional bool isRoot = 3 [default = false];
 }
 
 enum DataRootType {  // same as DataRoot.Type

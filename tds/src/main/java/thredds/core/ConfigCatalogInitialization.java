@@ -85,10 +85,13 @@ public class ConfigCatalogInitialization {
   private AllowedServices allowedServices;
 
   @Autowired
+  private ConfigCatalogCache ccc;
+
+  @Autowired
   private DebugCommands debugCommands;
 
   ///////////////////////////////////////////////////////
-  public enum ReadMode {always, check, trigger;
+  public enum ReadMode {always, check, triggerOnly;
     static public ReadMode get(String name) {
       for (ReadMode mode : values()) {
         if (mode.name().equalsIgnoreCase(name)) return mode;
@@ -129,7 +132,7 @@ public class ConfigCatalogInitialization {
     this.callback = callback;
     this.maxDatasets = maxDatasets;
 
-    checkCatalogToRead(rootCatalog);
+    checkCatalogToRead(rootCatalog, true);
   }
 
   // called from TdsInit
@@ -156,10 +159,10 @@ public class ConfigCatalogInitialization {
         break;
       case check:
         callback = new StatCallback();
-        dataRootPathMatcher.readDataRoots();  // do first so can override
+        dataRootPathMatcher.readDataRoots();  // do first so can override if catalogs changed
         checkExistingCatalogs();
         break;
-      case trigger:
+      case triggerOnly:
         dataRootPathMatcher.readDataRoots();
         break;
     }
@@ -195,7 +198,7 @@ public class ConfigCatalogInitialization {
       try {
         pathname = StringUtils.cleanPath(pathname);
         logCatalogInit.info( "Checking catalogRoot = " + pathname);
-        checkCatalogToRead(pathname);
+        checkCatalogToRead(pathname, true);
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + pathname + "; " + e.getMessage(), e);
       }
@@ -208,7 +211,7 @@ public class ConfigCatalogInitialization {
       try {
         logCatalogInit.info("\n**************************************\nCatalog init " + pathname + "[" + CalendarDate.present() + "]");
         pathname = StringUtils.cleanPath(pathname);
-        checkCatalogToRead(pathname);
+        checkCatalogToRead(pathname, catalogExt.isRoot());
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + pathname + "; " + e.getMessage(), e);
       }
@@ -216,7 +219,7 @@ public class ConfigCatalogInitialization {
   }
 
   // catalogRelpath must be relative to rootDir
-  private void checkCatalogToRead(String catalogRelPath) throws IOException {
+  private void checkCatalogToRead(String catalogRelPath, boolean isRoot) throws IOException {
     if (exceedLimit) return;
 
     catalogRelPath = StringUtils.cleanPath(catalogRelPath);
@@ -227,7 +230,7 @@ public class ConfigCatalogInitialization {
       return;
     }
     long lastModified = catalogFile.lastModified();
-    if (readMode != ReadMode.always && lastModified < lastRead) return; // nothing to do
+    if (!isRoot && readMode != ReadMode.always && lastModified < lastRead) return; // skip catalogs that havent changed
     if (show) System.out.printf("initCatalog %s%n", catalogRelPath);
 
     // make sure we dont already have it
@@ -244,7 +247,13 @@ public class ConfigCatalogInitialization {
       logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + catalogFile.getPath() + ">.");
       return;
     }
-    //ccc.put(path, cat);  // LOOK really ??
+    datasetTracker.trackCatalog(new CatalogExt(0, catalogRelPath, isRoot));
+
+    if (isRoot) {
+      ccc.put(catalogRelPath, cat);
+      allowedServices.addGlobalServices(cat.getServices());
+    }
+
     if (callback != null) callback.hasCatalogRef(cat);
 
     // look for datasetRoots
@@ -307,7 +316,6 @@ public class ConfigCatalogInitialization {
       if (builder.getErrorMessage().length() > 0)
         logCatalogInit.debug(builder.getErrorMessage());
 
-      datasetTracker.trackCatalog(new CatalogExt(0, catalogRelPath)); // LOOK absolute vs reletive
       return cat;
 
     } catch (Throwable t) {
@@ -362,7 +370,7 @@ public class ConfigCatalogInitialization {
             path = dirPath + href;  // reletive starting from current directory
           }
 
-          checkCatalogToRead(path); // LOOK
+          checkCatalogToRead(path, false);
         }
 
       } else {
@@ -383,7 +391,7 @@ public class ConfigCatalogInitialization {
           // path must be relative to rootDir
           String filename = p.getFileName().toString();
           String path = dirPath.length() == 0 ? filename :  dirPath + "/" + filename;  // reletive starting from current directory
-          checkCatalogToRead(path); // LOOK
+          checkCatalogToRead(path, false);
         }
       }
     }

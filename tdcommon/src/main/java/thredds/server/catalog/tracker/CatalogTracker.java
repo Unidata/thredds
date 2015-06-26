@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Description
+ * Track the list of catalogs
  *
  * @author John
  * @since 6/22/2015
@@ -47,7 +47,7 @@ public class CatalogTracker {
     return catalogs.remove(relPath);
   }
 
-  Iterable<? extends CatalogExt> getCatalogs() {  // LOOK random order, can we sort?
+  Iterable<? extends CatalogExt> getCatalogs() {  // LOOK random order, should we sort?
     List<CatalogExt> result = new ArrayList<>();
     for (String relPath : catalogs) {
       CatalogExt ext = new CatalogExt(0, relPath);

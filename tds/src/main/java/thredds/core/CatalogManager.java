@@ -165,7 +165,7 @@ public class CatalogManager {
     List<Service> services = new ArrayList<>(cat.getServices());
     for (String name : serviceNames) {
       if (cat.hasService(name)) continue;
-      Service s = globalServices.findService(name);
+      Service s = globalServices.findGlobalService(name);
       if (s != null) services.add(s);
     }
     if (services.isEmpty()) return cat;
@@ -191,7 +191,7 @@ public class CatalogManager {
     Set<Service> services = new HashSet<>();
     for (String name : serviceNames) {
       if (cat.hasService(name)) continue;
-      Service s = globalServices.findService(name);
+      Service s = globalServices.findGlobalService(name);
       if (s != null) services.add(s);
     }
     if (services.isEmpty()) return;

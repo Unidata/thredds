@@ -51,6 +51,7 @@ import java.util.*;
 @Component
 public class AllowedServices {
   static private final Logger logServerStartup = LoggerFactory.getLogger("serverStartup");
+  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger("catalogInit");
 
   private static class AllowedService {
     StandardService ss;
@@ -70,6 +71,7 @@ public class AllowedServices {
   private Map<StandardService, AllowedService> allowed = new HashMap<>();
   private List<String> allowedGridServiceNames;
   private List<Service> allowedGrid = new ArrayList<>();
+  private Map<String, Service> globalServices = new HashMap<>();
 
   // see WEB-INF/tdsGlobalConfig.xml
   public void setAllow(Map<String, Boolean> map) {
@@ -124,8 +126,19 @@ public class AllowedServices {
     return !s.allowed? null : makeService(s.ss);
   }
 
-  public Service findService(String name) {   // LOOK
-    return null;
+  public void addGlobalServices(List<Service> services) {
+    for (Service s : services) {
+      Service got = globalServices.get(s.getName());
+      if (got != null) {
+        logCatalogInit.error("Already have a global service {} trying to add {}", got, s);
+      } else {
+        globalServices.put(s.getName(), s);
+      }
+    }
+  }
+
+  public Service findGlobalService(String name) {
+    return globalServices.get(name);
   }
 
   /////////////////////////////////////////////

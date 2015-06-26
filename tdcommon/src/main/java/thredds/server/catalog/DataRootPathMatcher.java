@@ -26,7 +26,7 @@ import java.util.*;
  */
 public class DataRootPathMatcher {
   static private final Logger logger = LoggerFactory.getLogger(DataRootPathMatcher.class);
-  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootPathMatcher.class.getName()+".initCatalog");
+  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger("catalogInit");
   static private final boolean debug = false;
   static private final String ERROR = "*** ERROR: ";
   static private boolean skipTestDataDir = true;
