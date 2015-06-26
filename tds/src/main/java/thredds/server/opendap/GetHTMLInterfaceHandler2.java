@@ -160,8 +160,6 @@ public class GetHTMLInterfaceHandler2
                             + "<body>\n"
                             + "<p><h2 align='center'>OPeNDAP Dataset Access Form</h2>\n"
                             + "<hr>\n"
-                            + "<font size=-1>Tested on Netscape 4.61 and Internet Explorer 5.00.</font>\n"
-                            + "<hr>\n"
                             + "<form action=\"\">\n"
                             + "<table>\n"
             );
