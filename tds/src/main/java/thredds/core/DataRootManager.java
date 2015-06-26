@@ -75,7 +75,7 @@ public class DataRootManager implements InitializingBean {
   @Autowired
   private TdsContext tdsContext;
 
-  @Autowired
+  // this may be swapped out when catalogs are reread, so cant be spring managed
   private DataRootPathMatcher dataRootPathMatcher;
 
   @Autowired
@@ -102,6 +102,10 @@ public class DataRootManager implements InitializingBean {
 
     makeDebugActions();
     startupLog.info("DataRootManager:" + AliasTranslator.size() +" aliases set ");
+  }
+
+  public synchronized void setDataRootPathMatcher(DataRootPathMatcher dataRootPathMatcher) {
+    this.dataRootPathMatcher = dataRootPathMatcher;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,6 +164,8 @@ public class DataRootManager implements InitializingBean {
       return null;
     if (spath.startsWith("/"))
       spath = spath.substring(1);
+
+    // LOOK seems safe to swap dataRootPathMatcher without synchronizing
     return dataRootPathMatcher.findDataRoot(spath);
   }
 
@@ -184,13 +190,13 @@ public class DataRootManager implements InitializingBean {
   ////////////////////////////////////////////////////////////////////////////////////////////
   // debugging only !!
 
-  public void showRoots(Formatter f) {
+  public synchronized void showRoots(Formatter f) {
     for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
       f.format(" %s%n", entry.getValue());
     }
   }
 
-  public List<FeatureCollectionRef> getFeatureCollections() {
+  public synchronized List<FeatureCollectionRef> getFeatureCollections() {
     List<FeatureCollectionRef> result = new ArrayList<>();
     for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
       DataRootExt drootExt = entry.getValue();
@@ -202,7 +208,7 @@ public class DataRootManager implements InitializingBean {
     return result;
   }
 
-  public FeatureCollectionRef findFeatureCollection(String collectionName) {
+  public synchronized FeatureCollectionRef findFeatureCollection(String collectionName) {
     for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
       DataRootExt drootExt = entry.getValue();
       if (drootExt.getType() == DataRoot.Type.featureCollection && drootExt.getName().equals(collectionName)) {
@@ -214,7 +220,7 @@ public class DataRootManager implements InitializingBean {
   }
 
   public void makeDebugActions() {
-    DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
+    DebugCommands.Category debugHandler = debugCommands.findCategory("Catalogs");
     DebugCommands.Action act;
 
     act = new DebugCommands.Action("showDataRoots", "Show data roots") {

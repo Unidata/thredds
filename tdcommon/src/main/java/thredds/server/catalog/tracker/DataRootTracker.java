@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Description
+ * Track the list of dataRoots.
+ * Used to check if any have changed, without having to read the catalog tree.
  *
  * @author John
  * @since 6/22/2015
@@ -16,16 +17,17 @@ public class DataRootTracker {
   Set<DataRootExt> dataRoots;
   boolean changed;
 
-  public DataRootTracker(String pathname) {
+  public DataRootTracker(String pathname, boolean startOver) {
     this.filepath = pathname +dbname ;
     File file = new File(filepath);
-    if (!file.exists() || readDataRoots() <= 0) {
+    if (startOver) reinit();
+    if (!file.exists() || startOver || readDataRoots() <= 0) {
       dataRoots = new HashSet<>();
       changed = true;
     }
   }
 
-  void reinit() {
+  private void reinit() {
     File file = new File(filepath);
     if (file.exists()) {
        boolean wasDeleted = file.delete();
@@ -37,7 +39,7 @@ public class DataRootTracker {
     changed = true;
   }
 
-  boolean trackDataRoot(DataRootExt ds) {
+  public boolean trackDataRoot(DataRootExt ds) {
     changed = true;
     return dataRoots.add(ds);
   }
@@ -47,11 +49,11 @@ public class DataRootTracker {
     return dataRoots.remove(ds);
   }
 
-  Iterable<? extends DataRootExt> getDataRoots() {
+  public Iterable<? extends DataRootExt> getDataRoots() {
     return dataRoots;
   }
 
-  int readDataRoots() {
+  private int readDataRoots() {
     dataRoots = new HashSet<>();
     int count = 0;
     try (DataInputStream in = new DataInputStream(new FileInputStream(filepath))) {
@@ -69,7 +71,7 @@ public class DataRootTracker {
     return count;
   }
 
-  void save() throws IOException {
+  public void save() throws IOException {
     if (!changed) return;
     try (DataOutputStream out = new DataOutputStream(new FileOutputStream(filepath))) {
       for (DataRootExt ext : dataRoots) {

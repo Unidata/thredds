@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Service;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
@@ -57,8 +58,7 @@ import java.nio.file.*;
 import java.util.*;
 
 /**
- * Reads in the Config catalogs on startup.
- * Manges any changes while running.
+ * Reads in the Config catalogs on startup, and if triggered.
  *
  * @author caron
  * @since 3/21/2015
@@ -67,25 +67,25 @@ import java.util.*;
 public class ConfigCatalogInitialization {
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName());
   static private final String ERROR = "*** ERROR: ";
-  static private final boolean show = false;
+  static private final boolean show = true;
 
   @Autowired
   private TdsContext tdsContext;  // used for  getContentDirectory, contextPath
 
-  @Autowired
-  private DataRootPathMatcher dataRootPathMatcher;
-
-  @Autowired
-  private DatasetTracker datasetTracker;
-
-  @Autowired
-  private CatalogWatcher catalogWatcher;
+  //@Autowired
+  //private CatalogWatcher catalogWatcher;
 
   @Autowired
   private AllowedServices allowedServices;
 
   @Autowired
   private ConfigCatalogCache ccc;
+
+  @Autowired
+  private DataRootManager dataRootManager;
+
+  @Autowired
+  private DatasetManager datasetManager;
 
   @Autowired
   private DebugCommands debugCommands;
@@ -101,91 +101,154 @@ public class ConfigCatalogInitialization {
   }
 
   private long lastRead = -1;
-  private ReadMode readMode = ReadMode.check;
+  private long trackerNumber = 1;
+  private ReadMode defaultReadMode = ReadMode.check;
+  private PreferencesExt prefs;
 
   private List<String> rootCatalogKeys;           // needed ??
   private File contentRootPath;                   // ${tds.content.root.path}.
   private String contextPath;                     // thredds
 
+   // on reread, construct new objects, so cant be spring beans
+  private DataRootPathMatcher dataRootPathMatcher;
+  private DataRootTracker dataRootTracker; // dataRootTracker wired into dataRootPathMatcher
+  private CatalogTracker catalogTracker;  // catalogTracker is not shared with anyone else - used only during catalog reading / updating.
+  private DatasetTracker datasetTracker;
+
+  private String trackerDir;              // the tracker "databases" are kept in this directory
+  private long maxDatasetsToTrack;              // the tracker "databases" are kept in this directory
+
+  // debugging
   private DatasetTracker.Callback callback;
   private boolean exceedLimit = false;
   private long countDatasets = 0;
   private long maxDatasets; //  = 1000 * 1000;
 
-  Set<String> catPathHash = new HashSet<>();       // Hash of paths, to look for duplicates LOOK maybe tracker should do this
-  Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
+  Set<String> catPathHash;       // Hash of paths, to look for duplicates LOOK maybe tracker should do this
+  Set<String> idHash;         // Hash of ids, to look for duplicates
 
   public ConfigCatalogInitialization() {
   }
 
+  public void setTrackerDir(String trackerDir) {
+    this.trackerDir = trackerDir;
+  }
+
+  public void setMaxDatasetToTrack(long maxDatasets) {
+    this.maxDatasetsToTrack = maxDatasets;
+  }
+
   // used from outside of tomcat/spring
-  public ConfigCatalogInitialization(ReadMode _readMode, String contentRootPath, String rootCatalog, DataRootPathMatcher matcher, DatasetTracker datasetTracker,
-                                     CatalogWatcher catalogWatcher,
+  public ConfigCatalogInitialization(ReadMode readMode, String contentRootPath, String trackerDir, DatasetTracker datasetTracker,
                                      AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
-    this.readMode = _readMode;
     this.contentRootPath = new File(contentRootPath);
     this.contextPath = "/thredds";
-    this.dataRootPathMatcher = matcher;
+    this.trackerDir = trackerDir != null ? trackerDir : contentRootPath + "cache/catalogs";
     this.datasetTracker = datasetTracker;
-    this.catalogWatcher = catalogWatcher;
     this.allowedServices = allowedServices;
     this.callback = callback;
     this.maxDatasets = maxDatasets;
 
-    checkCatalogToRead(rootCatalog, true);
+    File trackerFile = new File(this.trackerDir);
+    if (!trackerFile.exists()) {
+      boolean ok = trackerFile.mkdirs();
+      System.out.printf("ConfigCatalogInitialization make tracker directory '%s' make ok = %s%n", this.trackerDir, ok);
+    }
+
+    reread(readMode, true);
   }
 
   // called from TdsInit
-  public void init(ReadMode _readMode, PreferencesExt prefs) {
-    if (readMode != null)
-       this.readMode = _readMode;
+  public void init(ReadMode readMode, PreferencesExt prefs) {
+    if (readMode == null)
+      readMode = defaultReadMode;
+    this.prefs = prefs;
+
     lastRead = prefs.getLong("lastRead", 0);
+    trackerNumber = prefs.getLong("trackerNumber", 1);
     logCatalogInit.info("ConfigCatalogInitializion lastRead=" + CalendarDate.of(lastRead));
-    long start = System.currentTimeMillis();
 
     makeDebugActions();
     this.contentRootPath = this.tdsContext.getContentDirectory();
     this.contextPath = tdsContext.getContextPath();
 
-    boolean databaseOk = datasetTracker.exists(); // detect if tracker database exists
-    if (!databaseOk)
-      this.readMode = ReadMode.always;
+    reread(readMode, true);
+  }
 
-    switch (this.readMode) {
+  // called from init() and from trigger controller
+  public synchronized void reread(ReadMode readMode, boolean isStartup) {
+    long start = System.currentTimeMillis();
+    logCatalogInit.info("ConfigCatalogInitializion readMode={} isStartup={}", readMode, isStartup);
+    catPathHash = new HashSet<>();
+    idHash = new HashSet<>();
+    if (!isStartup && readMode == ReadMode.always) trackerNumber++;  // must write a new database if TDS is already running and rereading all
+
+    this.datasetTracker = new DatasetTrackerChronicle(trackerDir, maxDatasetsToTrack, trackerNumber);
+    boolean databaseAlreadyExists = datasetTracker.exists(); // detect if tracker database exists
+    if (!databaseAlreadyExists) {
+      readMode = ReadMode.always;
+      logCatalogInit.info("ConfigCatalogInitializion datasetTracker database does not exist, change mode to=" + readMode);
+    }
+
+    callback = new StatCallback(readMode);
+    switch (readMode) {
       case always:
-        callback = new StatCallback();
-        datasetTracker.reinit();
-        readRootCatalogs();
+        if (databaseAlreadyExists) this.datasetTracker.reinit();
+        this.catalogTracker = new CatalogTracker(trackerDir, true);
+        this.dataRootTracker = new DataRootTracker(trackerDir, true);
+        this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);  // starting over
+        readRootCatalogs(readMode);
         break;
+
       case check:
-        callback = new StatCallback();
-        dataRootPathMatcher.readDataRoots();  // do first so can override if catalogs changed
-        checkExistingCatalogs();
+        this.catalogTracker = new CatalogTracker(trackerDir, false);        // use existing catalog list
+        this.dataRootTracker = new DataRootTracker(trackerDir, false);      // use existing data roots
+        this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);
+        readRootCatalogs(readMode);           // read just roots to get global services
+        checkExistingCatalogs(readMode);
         break;
+
       case triggerOnly:
-        dataRootPathMatcher.readDataRoots();
+        this.catalogTracker = new CatalogTracker(trackerDir, false);               // use existing catalog list
+        this.dataRootTracker = new DataRootTracker(trackerDir, false);             // use existing data roots
+        this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);
+        readRootCatalogs(readMode);           // read just roots to get global services
         break;
     }
 
-    if (callback != null) {
-      prefs.putLong("lastRead", System.currentTimeMillis()); // LOOK do we need to distinguish between lastReadAlways and lastReadCheck ??
-      callback.finish();
-      logCatalogInit.info("\nConfigCatalogInitializion stats\n" + callback);
-      // System.out.printf("%s%n", callback);
+    lastRead = System.currentTimeMillis();
+    if (prefs != null) {
+      prefs.putLong("lastRead", lastRead); // LOOK do we need to distinguish between lastReadAlways and lastReadCheck ??
+      prefs.putLong("trackerNumber", trackerNumber);
     }
+    callback.finish();
+    logCatalogInit.info("\nConfigCatalogInitializion stats\n" + callback);
 
     try {
       datasetTracker.save();
+      catalogTracker.save();
+      dataRootTracker.save();
     } catch (IOException e) {
       e.printStackTrace();   // LOOK
       logCatalogInit.error("datasetTracker.save() failed", e);
+    }
+
+    // heres where we may be doing a switcheroo in a running TDS
+    if (dataRootManager != null)
+      dataRootManager.setDataRootPathMatcher(dataRootPathMatcher);
+    if (datasetManager != null)
+      datasetManager.setDatasetTracker(datasetTracker);
+
+    // cleanup old version of the database
+    if (!isStartup && readMode == ReadMode.always) {
+      DatasetTrackerChronicle.cleanupBefore(trackerDir, trackerNumber);
     }
 
     long took = System.currentTimeMillis() - start;
     logCatalogInit.info("ConfigCatalogInitializion finished took={} msecs", took);
   }
 
-  private void readRootCatalogs() {
+  private void readRootCatalogs(ReadMode readMode) {
     rootCatalogKeys = new ArrayList<>();
     rootCatalogKeys.add("catalog.xml"); // always first
     // add any others listed in ThreddsConfig
@@ -198,20 +261,20 @@ public class ConfigCatalogInitialization {
       try {
         pathname = StringUtils.cleanPath(pathname);
         logCatalogInit.info( "Checking catalogRoot = " + pathname);
-        checkCatalogToRead(pathname, true);
+        checkCatalogToRead(readMode, pathname, true);
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + pathname + "; " + e.getMessage(), e);
       }
     }
   }
 
-  private void checkExistingCatalogs() {
-    for (CatalogExt catalogExt : datasetTracker.getCatalogs()) {
+  private void checkExistingCatalogs(ReadMode readMode) {
+    for (CatalogExt catalogExt : catalogTracker.getCatalogs()) {
       String pathname = catalogExt.getCatRelLocation();
       try {
         logCatalogInit.info("\n**************************************\nCatalog init " + pathname + "[" + CalendarDate.present() + "]");
         pathname = StringUtils.cleanPath(pathname);
-        checkCatalogToRead(pathname, catalogExt.isRoot());
+        checkCatalogToRead(readMode, pathname, catalogExt.isRoot());
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + pathname + "; " + e.getMessage(), e);
       }
@@ -219,18 +282,19 @@ public class ConfigCatalogInitialization {
   }
 
   // catalogRelpath must be relative to rootDir
-  private void checkCatalogToRead(String catalogRelPath, boolean isRoot) throws IOException {
+  private void checkCatalogToRead(ReadMode readMode, String catalogRelPath, boolean isRoot) throws IOException {
     if (exceedLimit) return;
 
     catalogRelPath = StringUtils.cleanPath(catalogRelPath);
     File catalogFile = new File(this.contentRootPath, catalogRelPath);
     if (!catalogFile.exists()) {
-      datasetTracker.removeCatalog(catalogRelPath);
+      catalogTracker.removeCatalog(catalogRelPath);
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + catalogRelPath + "] does not exist.");
       return;
     }
     long lastModified = catalogFile.lastModified();
     if (!isRoot && readMode != ReadMode.always && lastModified < lastRead) return; // skip catalogs that havent changed
+    if (!isRoot && readMode != ReadMode.triggerOnly) return;                    // skip non-root catalogs for trigger only
     if (show) System.out.printf("initCatalog %s%n", catalogRelPath);
 
     // make sure we dont already have it
@@ -247,11 +311,13 @@ public class ConfigCatalogInitialization {
       logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + catalogFile.getPath() + ">.");
       return;
     }
-    datasetTracker.trackCatalog(new CatalogExt(0, catalogRelPath, isRoot));
+    catalogTracker.trackCatalog(new CatalogExt(0, catalogRelPath, isRoot));
 
     if (isRoot) {
-      ccc.put(catalogRelPath, cat);
+      if (ccc != null) ccc.put(catalogRelPath, cat);
       allowedServices.addGlobalServices(cat.getServices());
+      if (readMode == ReadMode.triggerOnly) return;                    // thats all we need
+
     }
 
     if (callback != null) callback.hasCatalogRef(cat);
@@ -274,15 +340,15 @@ public class ConfigCatalogInitialization {
     // get the directory path, reletive to the rootDir
     int pos = catalogRelPath.lastIndexOf("/");
     String dirPath = (pos > 0) ? catalogRelPath.substring(0, pos + 1) : "";
-    processDatasets(dirPath, cat.getDatasets());     // recurse
+    processDatasets(readMode, dirPath, cat.getDatasets());     // recurse
 
     // look for catalogScans
     for (CatalogScan catScan : cat.getCatalogScans()) {
       if (exceedLimit) return;
       Path relLocation = Paths.get(dirPath, catScan.getLocation());
       Path absLocation = Paths.get(catalogFile.getParent(), catScan.getLocation());
-      if (catalogWatcher != null) catalogWatcher.registerAll(absLocation);
-      readCatsInDirectory(relLocation.toString(), absLocation);
+      // if (catalogWatcher != null) catalogWatcher.registerAll(absLocation);
+      readCatsInDirectory(readMode, relLocation.toString(), absLocation);
     }
   }
 
@@ -325,7 +391,7 @@ public class ConfigCatalogInitialization {
   }
 
   // dirPath = the directory path, reletive to the rootDir
-  private void processDatasets(String dirPath, List<Dataset> datasets) throws IOException {
+  private void processDatasets(ReadMode readMode, String dirPath, List<Dataset> datasets) throws IOException {
     if (exceedLimit) return;
 
     for (Dataset ds : datasets) {
@@ -370,18 +436,18 @@ public class ConfigCatalogInitialization {
             path = dirPath + href;  // reletive starting from current directory
           }
 
-          checkCatalogToRead(path, false);
+          checkCatalogToRead(readMode, path, false);
         }
 
       } else {
         // recurse through nested datasets
-        processDatasets(dirPath, ds.getDatasets());
+        processDatasets(readMode, dirPath, ds.getDatasets());
       }
     }
   }
 
   // dirPath is the directory relative to rootDir, directory is absolute
-  private void readCatsInDirectory(String dirPath, Path directory) throws IOException {
+  private void readCatsInDirectory(ReadMode readMode, String dirPath, Path directory) throws IOException {
     if (exceedLimit) return;
 
      // do any catalogs first
@@ -391,7 +457,7 @@ public class ConfigCatalogInitialization {
           // path must be relative to rootDir
           String filename = p.getFileName().toString();
           String path = dirPath.length() == 0 ? filename :  dirPath + "/" + filename;  // reletive starting from current directory
-          checkCatalogToRead(path, false);
+          checkCatalogToRead(readMode, path, false);
         }
       }
     }
@@ -401,19 +467,29 @@ public class ConfigCatalogInitialization {
        for (Path dir : ds) {
          if (Files.isDirectory(dir)) {
            String dirPathChild = dirPath + "/" + dir.getFileName().toString();  // reletive starting from current directory
-           readCatsInDirectory(dirPathChild, dir);
+           readCatsInDirectory(readMode, dirPathChild, dir);
          }
        }
      }
    }
 
-  /////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public void makeDebugActions() {
-    DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
+    DebugCommands.Category debugHandler = debugCommands.findCategory("Catalogs");
     DebugCommands.Action act;
 
-    act = new DebugCommands.Action("showStatic", "Show root catalogs") {
+     act = new DebugCommands.Action("showCatalogExt", "Show known catalogs") {
+       public void doAction(DebugCommands.Event e) {
+         for (CatalogExt catExt : catalogTracker.getCatalogs()) {
+           e.pw.println(catExt.getCatRelLocation());
+         }
+       }
+     };
+     debugHandler.addAction(act);
+
+
+    act = new DebugCommands.Action("showRoots", "Show root catalogs") {
       public void doAction(DebugCommands.Event e) {
         StringBuilder sbuff = new StringBuilder();
         synchronized (ConfigCatalogInitialization.this) {
@@ -428,7 +504,7 @@ public class ConfigCatalogInitialization {
     };
     debugHandler.addAction(act);
 
-    act = new DebugCommands.Action("showStatic", "Show catalog initialization stats") {
+    act = new DebugCommands.Action("showStats", "Show catalog initialization stats") {
       public void doAction(DebugCommands.Event e) {
         if (callback != null)
           e.pw.println(StringUtil2.quoteHtmlContent("\n" + callback.toString()));
@@ -474,11 +550,13 @@ public class ConfigCatalogInitialization {
   }
 
   static class StatCallback implements DatasetTracker.Callback {
+    ReadMode readMode;
     Stats stat2;
     long start = System.currentTimeMillis();
     double took;
 
-    StatCallback() {
+    StatCallback(ReadMode readMode) {
+      this.readMode = readMode;
       stat2 = new Stats();
     }
 
@@ -533,7 +611,7 @@ public class ConfigCatalogInitialization {
     @Override
     public String toString() {
       Formatter f = new Formatter();
-      f.format("ConfigCatalogInitialization took %f secs%n", took);
+      f.format("ConfigCatalogInitialization started %s took %f secs using readMode %s%n", CalendarDate.of(start), took, readMode);
       return stat2.show(f);
     }
   }

@@ -15,8 +15,8 @@ import java.io.IOException;
  * @since 6/6/2015
  */
 public interface DatasetTracker extends AutoCloseable {
-  // return true on success
-  boolean init(String dirPath, long maxDatasets) throws IOException;
+  /* return true on success
+  boolean init(String dirPath, long maxDatasets) throws IOException;  */
 
   void save() throws IOException;
   void close() throws IOException;
@@ -28,16 +28,6 @@ public interface DatasetTracker extends AutoCloseable {
   String findResourceControl(String path);
   String findNcml(String path);
   //DatasetExt findDatasetExt(String path);  // LOOK Needed ?
-
-  // data root
-  boolean trackDataRoot(DataRootExt ds);
-  Iterable<? extends DataRootExt> getDataRoots();
-  //DatasetExt findDataRootExt(String path);  // LOOK Needed ?
-
-  // catalogs
-  boolean trackCatalog(CatalogExt ds);
-  boolean removeCatalog(String relPath);
-  Iterable<? extends CatalogExt> getCatalogs();
 
   interface Callback {
     void hasDataRoot(DataRoot dataRoot);

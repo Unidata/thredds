@@ -41,7 +41,6 @@ import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
-import thredds.server.catalog.tracker.CatalogExt;
 import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.servlet.DatasetSource;
 import thredds.servlet.ServletUtil;
@@ -90,15 +89,13 @@ public class DatasetManager implements InitializingBean {
   private Authorizer restrictedDatasetAuthorizer;
 
   @Autowired
-  private DatasetTracker datasetTracker;
-
-  @Autowired
   private DebugCommands debugCommands;
+
+  private DatasetTracker datasetTracker;
 
   // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
   // possible change to one global hash table request
   private ArrayList<DatasetSource> datasetSources = new ArrayList<>();
-
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -106,8 +103,18 @@ public class DatasetManager implements InitializingBean {
     makeDebugActions();
   }
 
-  public DatasetManager() {
+  public void setDatasetTracker(DatasetTracker datasetTracker) {
+    if (this.datasetTracker != null)
+      try {
+        this.datasetTracker.close();
+      } catch (IOException e) {
+        log.error("Cant close datasetTracker ", e);
+      }
 
+    this.datasetTracker = datasetTracker;
+  }
+
+  public DatasetManager() {
   }
 
   void reinit() {
@@ -416,17 +423,17 @@ public class DatasetManager implements InitializingBean {
   }
 
   void makeDebugActions() {
-    DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
+    DebugCommands.Category debugHandler = debugCommands.findCategory("Catalogs");
     DebugCommands.Action act;
 
-    act = new DebugCommands.Action("showCatalogExt", "Show known catalogs") {
+/*    act = new DebugCommands.Action("showCatalogExt", "Show known catalogs") {
       public void doAction(DebugCommands.Event e) {
         for (CatalogExt catExt : datasetTracker.getCatalogs()) {
           e.pw.println(catExt.getCatRelLocation());
         }
       }
     };
-    debugHandler.addAction(act);
+    debugHandler.addAction(act);  */
 
   }
 

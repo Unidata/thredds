@@ -4,27 +4,29 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Track the list of catalogs
+ * Track the list of catalogs.
+ * Used to check if any have changed, without having to read the catalog tree.
  *
  * @author John
  * @since 6/22/2015
  */
 public class CatalogTracker {
   private static final String dbname = "/catTracker.dat";
-  String filepath;
-  Set<String> catalogs;
-  boolean changed;
+  private String filepath;
+  private Set<CatalogExt> catalogs;
+  private boolean changed;
 
-  public CatalogTracker(String pathname) {
+  public CatalogTracker(String pathname, boolean startOver) {
     this.filepath = pathname + dbname;
     File file = new File(filepath);
-    if (!file.exists() || readCatalogs() <= 0) {
+    if (startOver) reinit();
+    if (!file.exists() || startOver || readCatalogs() <= 0) {
       changed = true;
       catalogs = new HashSet<>();
     }
   }
 
-  void reinit() {
+  private void reinit() {
     File file = new File(filepath);
     if (file.exists()) {
        boolean wasDeleted = file.delete();
@@ -37,34 +39,33 @@ public class CatalogTracker {
   }
 
   // catalogs
-  boolean trackCatalog(CatalogExt cat) {
+  public boolean trackCatalog(CatalogExt cat) {
     changed = true;
-    return catalogs.add(cat.getCatRelLocation());
+    return catalogs.add(cat);
   }
 
-  boolean removeCatalog(String relPath) {
+  public boolean removeCatalog(String relPath) {
     changed = true;
     return catalogs.remove(relPath);
   }
 
-  Iterable<? extends CatalogExt> getCatalogs() {  // LOOK random order, should we sort?
+  // return sorted catalogs
+  public Iterable<? extends CatalogExt> getCatalogs() {
     List<CatalogExt> result = new ArrayList<>();
-    for (String relPath : catalogs) {
-      CatalogExt ext = new CatalogExt(0, relPath);
+    for (CatalogExt ext : catalogs)
       result.add(ext);
-    }
     Collections.sort(result, (o1, o2) -> o1.getCatRelLocation().compareTo(o2.getCatRelLocation()));    // java 8 lambda, baby
     return result;
   }
 
-  int readCatalogs() {
+  private int readCatalogs() {
     catalogs = new HashSet<>();
     int count = 0;
     try (DataInputStream in = new DataInputStream(new FileInputStream(filepath))) {
       while (in.available() > 0) {
         CatalogExt ext = new CatalogExt();
         ext.readExternal(in);
-        catalogs.add(ext.getCatRelLocation());
+        catalogs.add(ext);
         count++;
       }
 
@@ -75,11 +76,10 @@ public class CatalogTracker {
     return count;
   }
 
-  void save() throws IOException {
+  public void save() throws IOException {
     if (!changed) return;
     try (DataOutputStream out = new DataOutputStream(new FileOutputStream(filepath))) {
-      for (String relPath : catalogs) {
-        CatalogExt ext = new CatalogExt(0, relPath);
+      for (CatalogExt ext : catalogs) {
         ext.writeExternal(out);
       }
     }

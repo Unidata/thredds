@@ -123,31 +123,6 @@ public class DatasetTrackerInMem implements DatasetTracker {
   }
 
   @Override
-  public boolean trackDataRoot(DataRootExt ds) {
-    return false;
-  }
-
-  @Override
-  public Iterable<DataRootExt> getDataRoots() {
-    return null;
-  }
-
-  @Override
-  public boolean trackCatalog(CatalogExt ds) {
-    return false;
-  }
-
-  @Override
-  public Iterable<CatalogExt> getCatalogs() {
-    return null;
-  }
-
-  @Override
-  public boolean removeCatalog(String relPath) {
-    return false;
-  }
-
-  @Override
   public void close() {
   }
 

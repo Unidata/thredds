@@ -40,10 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.core.AllowedServices;
@@ -52,14 +49,10 @@ import thredds.core.DatasetManager;
 import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.catalog.ConfigCatalogCache;
-import thredds.server.catalog.tracker.CatalogWatcher;
-import thredds.server.catalog.tracker.DatasetTracker;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.util.LoggerFactorySpecial;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
+
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -73,12 +66,8 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -110,13 +99,10 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
   private ConfigCatalogCache ccc;
 
   @Autowired
-  private DatasetTracker datasetTracker;
-
-  @Autowired
   private ConfigCatalogInitialization configCatalogInitializer;
 
-  @Autowired
-  private CatalogWatcher catalogWatcher;
+  //@Autowired
+  //private CatalogWatcher catalogWatcher;
 
   @Autowired
   private AllowedServices allowedServices;
@@ -392,19 +378,14 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     // Config Dataset Tracker
     String trackerDir = ThreddsConfig.get("ConfigCatalog.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/catalog/").getPath());
     int trackerMax = ThreddsConfig.getInt("ConfigCatalog.maxDatasets", 10 * 1000);
-    try {
-      File trackerFile = new File(trackerDir);
-      if (!trackerFile.exists()) {
-        boolean ok = trackerFile.mkdir();
-        startupLog.info("TdsInit: tracker directory {} make ok = {}", trackerDir, ok);
-      }
-
-      if (!datasetTracker.init(trackerDir, trackerMax))
-        throw new IllegalStateException("Cant start datasetTracker");
-
-    } catch (IOException e) {
-      startupLog.error("Error initializing dataset tracker " + datasetTracker.getClass().getName(), e);
+    File trackerDirFile = new File(trackerDir);
+    if (!trackerDirFile.exists()) {
+      boolean ok = trackerDirFile.mkdirs();
+      startupLog.info("TdsInit: tracker directory {} make ok = {}", trackerDir, ok);
     }
+    configCatalogInitializer.setTrackerDir(trackerDir);
+    configCatalogInitializer.setMaxDatasetToTrack(trackerMax);
+
 
     startupLog.info("TdsInit complete");
   }
@@ -448,24 +429,20 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     thredds.inventory.bdb.MetadataManager.closeAll();
     CollectionUpdater.INSTANCE.shutdown();
 
-    try {
+    /* try {
       catalogWatcher.close();
     } catch (IOException ioe) {
       ioe.printStackTrace();
       startupLog.error("catalogWatcher close failed", ioe);
-    }
+    } */
+
     // open file caches
     RandomAccessFile.shutdown();
     NetcdfDataset.shutdown();
 
     // memory caches
     GribCdmIndex.shutdown();
-    try {
-      datasetTracker.close();
-    } catch (IOException ioe) {
-      ioe.printStackTrace();    // LOOK
-      startupLog.error("datasetTracker close failed", ioe);
-    }
+    datasetManager.setDatasetTracker(null);
 
     startupLog.info("TdsInit shutdown");
     MDC.clear();

@@ -1,15 +1,13 @@
 /* Copyright */
 package thredds.server.catalog;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
 import thredds.server.catalog.tracker.DataRootExt;
-import thredds.server.catalog.tracker.DatasetTracker;
+import thredds.server.catalog.tracker.DataRootTracker;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
@@ -41,30 +39,26 @@ public class DataRootPathMatcher {
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  @Autowired
-  private DatasetTracker tracker;
-
-  @Autowired
   private ConfigCatalogCache ccc;
+  private DataRootTracker tracker;
 
-  private final TreeSet<String> treeSet;    // this should be in-memory for speed
-  private final Map<String, DataRootExt> map;         // this could be turned into an off-heap cache if needed, with persistence.
+  private final TreeSet<String> treeSet = new TreeSet<>( new PathComparator());    // this should be in-memory for speed
+  private final Map<String, DataRootExt> map = new HashMap<>();         // this could be turned into an off-heap cache if needed, with persistence.
 
-  public DataRootPathMatcher() {
-    treeSet = new TreeSet<>( new PathComparator());
-    map = new HashMap<>();
-  }
-
-  // debugg8ng - do not use
-  public void setTracker(DatasetTracker tracker) {
+  public DataRootPathMatcher(ConfigCatalogCache ccc, DataRootTracker tracker) {
+    this.ccc = ccc;
     this.tracker = tracker;
+
+    for (DataRootExt dre : tracker.getDataRoots()) {
+      put(dre);
+    }
   }
 
   /**
    * Add a dataRootExt to in-memory tree.
    * @return true if not already exist
    */
-  public boolean put(DataRootExt dateRootExt) {
+  private boolean put(DataRootExt dateRootExt) {
     map.put(dateRootExt.getPath(), dateRootExt);
     return treeSet.add(dateRootExt.getPath());
   }
@@ -80,14 +74,6 @@ public class DataRootPathMatcher {
 
   public DataRootExt get(String  path) {
     return map.get(path);
-  }
-
-  /**
-   * Get an iterator over the dataRoot paths, in sorted order. debug
-   * @return iterator
-   */
-  public Iterable<String> getKeys() {
-    return treeSet;
   }
 
   /**
@@ -150,7 +136,6 @@ public class DataRootPathMatcher {
   }
 
   private DataRoot readDataRootFromCatalog( DataRootExt dataRootExt) {
-
     try {
       ConfigCatalog cat = ccc.get(dataRootExt.getCatLocation());
       extractDataRoots(dataRootExt.getCatLocation(), cat.getDatasets(), false);  // will create a new DataRootExt and replace this one in the map
@@ -164,14 +149,6 @@ public class DataRootPathMatcher {
     } catch (IOException e) {
       e.printStackTrace();
       return null;
-    }
-  }
-
-  // take the DataRootExt from cache and put into the in-memory tree
-  // the DataRoot is lazily instantiated
-  public void readDataRoots() {
-    for (DataRootExt dre : tracker.getDataRoots()) {
-      put(dre);
     }
   }
 

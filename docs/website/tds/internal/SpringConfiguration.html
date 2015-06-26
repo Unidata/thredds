@@ -132,7 +132,9 @@
 <h3>Write HTML, XML yourself into a string</h3>
 <ul>
   <li>return a <strong>ResponseEntity&lt;String&gt;</strong> allows  to set headers, return value</li>
-  <li>see <strong>CdmRemoteController.handleCapabilitiesRequest(), MetadataController</strong>  </li>
+  <li>see <strong>CdmRemoteController.handleCapabilitiesRequest(), MetadataController</strong>  
+      <pre>HttpHeaders responseHeaders&#32;=&#32;new&#32;HttpHeaders();<br />responseHeaders.set(ContentType.HEADER,&#32;ContentType.text.getContentHeader());<br />return&#32;new&#32;ResponseEntity&lt;&gt;(resultString,&#32;responseHeaders,&#32;HttpStatus.OK);</pre>
+  </li>
 </ul>
 <h3>Use JSP</h3>
 <ul>

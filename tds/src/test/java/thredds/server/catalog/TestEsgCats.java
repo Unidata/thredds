@@ -155,19 +155,20 @@ public class TestEsgCats {
 
     long start = System.nanoTime();
 
-    DatasetTracker tracker = new DatasetTrackerNoop();
+    DatasetTrackerNoop tracker = new DatasetTrackerNoop();
     // tracker.init("C:\\dev\\github\\thredds50\\tds\\src\\test\\content\\thredds\\cache\\catalog", 1000 * 1000);
     tracker.init("C:/temp/mapDBtest", -1);
-    CatalogWatcher catalogWatcher = new CatalogWatcher(tracker, false);
-
-    DataRootPathMatcher dataRootPathMatcher = new DataRootPathMatcher();
-    dataRootPathMatcher.setTracker(tracker);
+    //CatalogWatcher catalogWatcher = new CatalogWatcher(tracker, false);
 
     AllowedServices allowedServices = new AllowedServices();
     String top = "B:/esgf/gfdl/";
-    long maxDatasets = -1;
-    ConfigCatalogInitialization reader = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.check, top, "catalog.xml",
-            dataRootPathMatcher, tracker, catalogWatcher, allowedServices, new DatasetTracker.Callback() {
+    long maxDatasets = 100;
+
+    //   public ConfigCatalogInitialization(ReadMode readMode, String contentRootPath, String trackerDir, DatasetTracker datasetTracker, CatalogWatcher catalogWatcher,
+    //                                         AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
+
+    ConfigCatalogInitialization reader = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.check, top, null,
+            tracker, allowedServices, new DatasetTracker.Callback() {
 
       @Override
       public void hasDataRoot(DataRoot dataRoot) {
@@ -218,8 +219,6 @@ public class TestEsgCats {
 
     }, maxDatasets);
 
-   // catalogWatcher.processEvents(); // this will loop forever, how to interrupt?
-   // catalogWatcher.close();
     tracker.close();
 
     long now = System.nanoTime();

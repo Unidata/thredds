@@ -2,7 +2,6 @@ package thredds.server.catalog.tracker;
 
 import net.openhft.chronicle.map.ChronicleMap;
 import net.openhft.chronicle.map.ChronicleMapBuilder;
-
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.server.catalog.DatasetScan;
@@ -19,8 +18,21 @@ import java.io.IOException;
  * @since 6/8/2015
  */
 public class DatasetTrackerChronicle implements DatasetTracker {
-  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  static private org.slf4j.Logger catalogInitLog = org.slf4j.LoggerFactory.getLogger("catalogInit");
   static private final String datasetName = "/chronicle.datasets.dat";
+
+  // delete old databases
+  public static void cleanupBefore(String pathname, long trackerNumber) {
+    for (long tnum = trackerNumber - 1; tnum > 0; tnum--) {
+      File oldDatabaseFile = new File(pathname + datasetName + "." + tnum);
+      if (!oldDatabaseFile.exists()) break;
+      if (oldDatabaseFile.delete()) {
+        catalogInitLog.info("DatasetTrackerChronicle deleted {} ", oldDatabaseFile.getAbsolutePath());
+      } else {
+        catalogInitLog.error("DatasetTrackerChronicle not able to delete {} ", oldDatabaseFile.getAbsolutePath());
+      }
+    }
+  }
 
   private boolean alreadyExists;
   private boolean changed;
@@ -29,39 +41,23 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   private long maxDatasets;
   private ChronicleMap<String, Externalizable> datasetMap;
 
-  private CatalogTracker catalogTracker;
-  private DataRootTracker dataRootTracker;
-
-  public boolean init(String pathname, long maxDatasets) throws IOException {
+  public DatasetTrackerChronicle(String pathname, long maxDatasets, long number) {
     this.pathname = pathname;
-    dbFile = new File(pathname+datasetName);
+    dbFile = new File(pathname + datasetName + "." + number);
     alreadyExists = dbFile.exists();
     this.maxDatasets = maxDatasets;
 
     try {
       open();
-      startupLog.info("DatasetTrackerChronicle opened success on '" + dbFile.getAbsolutePath() + "'");
-      return true;
+      catalogInitLog.info("DatasetTrackerChronicle opened success on '" + dbFile.getAbsolutePath() + "'");
 
     } catch (Throwable e) {
-      startupLog.error("DatasetTrackerChronicle failed on '"+ dbFile.getAbsolutePath()+ "', delete catalog cache and reload ", e);
-      return reinit();
+      catalogInitLog.error("DatasetTrackerChronicle failed on '" + dbFile.getAbsolutePath() + "', delete catalog cache and reload ", e);
+      reinit();
     }
   }
 
-  @Override
   public void save() throws IOException {
-    try {
-      if (catalogTracker != null)
-        catalogTracker.save();
-
-      if (dataRootTracker != null)
-        dataRootTracker.save();
-
-    } catch (IOException ioe) {
-      startupLog.error("Saving tracker info", ioe);
-    }
-
     // LOOK just a guess
     if (changed) {
       datasetMap.close();
@@ -71,40 +67,25 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     }
   }
 
-  @Override
   public void close() throws IOException {
-    if (catalogTracker != null) {
-      catalogTracker.save();
-      catalogTracker = null;
-    }
-
-    if (dataRootTracker != null) {
-      dataRootTracker.save();
-      dataRootTracker = null;
-    }
-
     if (datasetMap != null) {
       datasetMap.close();
       datasetMap = null;
     }
   }
 
-  @Override
   public boolean exists() {
     return alreadyExists;
   }
 
-  @Override
   public boolean reinit() {
     if (dbFile.exists()) {
       boolean wasDeleted = dbFile.delete();
       if (!wasDeleted) {
-        startupLog.error("DatasetTrackerChronicle not able to delete {} ", dbFile.getAbsolutePath());
+        catalogInitLog.error("DatasetTrackerChronicle not able to delete {} ", dbFile.getAbsolutePath());
         return false;
       }
     }
-    catalogTracker.reinit();
-    dataRootTracker.reinit();
 
     try {
       open();
@@ -112,22 +93,18 @@ public class DatasetTrackerChronicle implements DatasetTracker {
       return true;
 
     } catch (Throwable e) {
-      startupLog.error("DatasetTrackerChronicle failed on '"+ dbFile.getAbsolutePath()+ "', delete catalog cache and reload ", e);
+      catalogInitLog.error("DatasetTrackerChronicle failed on '" + dbFile.getAbsolutePath() + "', delete catalog cache and reload ", e);
       return false;
     }
   }
 
   private void open() throws IOException {
     ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
-             .averageValueSize(200).entries(maxDatasets);
+            .averageValueSize(200).entries(maxDatasets);
     datasetMap = builder.createPersistedTo(dbFile);
-
-    catalogTracker = new CatalogTracker(pathname);
-    dataRootTracker = new DataRootTracker(pathname);
   }
 
-  @Override
-  public boolean trackDataset(Dataset dataset, Callback callback) {
+  public boolean trackDataset(Dataset dataset, DatasetTracker.Callback callback) {
     if (callback != null) {
       callback.hasDataset(dataset);
       if (dataset.getRestrictAccess() != null) {
@@ -162,49 +139,16 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     return true;
   }
 
-  @Override
   public String findResourceControl(String path) {
     DatasetExt dext = (DatasetExt) datasetMap.get(path);
     if (dext == null) return null;
     return dext.getRestrictAccess();
   }
 
-  @Override
   public String findNcml(String path) {
     DatasetExt dext = (DatasetExt) datasetMap.get(path);
     if (dext == null) return null;
     return dext.getNcml();
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // dataroots
-
-  @Override
-  public boolean trackDataRoot(DataRootExt dsext) {
-    return dataRootTracker.trackDataRoot(dsext);
-  }
-
-  @Override
-  public Iterable<? extends DataRootExt> getDataRoots() {
-    return dataRootTracker.getDataRoots();
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // catalogs
-
-  @Override
-  public boolean trackCatalog(CatalogExt catext) {
-    return catalogTracker.trackCatalog(catext);
-  }
-
-  @Override
-  public boolean removeCatalog(String relPath) {
-    return catalogTracker.removeCatalog(relPath);
-  }
-
-  @Override
-  public Iterable<? extends CatalogExt> getCatalogs() {
-    return catalogTracker.getCatalogs();
   }
 
 }

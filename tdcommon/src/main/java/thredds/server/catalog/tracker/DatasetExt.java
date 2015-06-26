@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TrackedDataset, externalized by ConfigCatalofExtProto
+ * TrackedDataset, externalized by ConfigCatalogExtProto
  *
  * @author caron
  * @since 3/28/2015

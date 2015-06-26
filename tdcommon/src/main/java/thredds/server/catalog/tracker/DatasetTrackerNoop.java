@@ -57,29 +57,4 @@ public class DatasetTrackerNoop implements DatasetTracker {
     return false;
   }
 
-  @Override
-  public boolean trackDataRoot(DataRootExt ds) {
-    return false;
-  }
-
-
-  @Override
-  public Iterable<DataRootExt> getDataRoots() {
-    return null;
-  }
-
-  @Override
-  public boolean trackCatalog(CatalogExt ds) {
-    return false;
-  }
-
-  @Override
-  public boolean removeCatalog(String relPath) {
-    return false;
-  }
-
-  @Override
-  public Iterable<CatalogExt> getCatalogs() {
-    return null;
-  }
 }

@@ -29,9 +29,6 @@ public class DatasetTrackerMapDB implements DatasetTracker {
   private boolean alreadyExists;
   private boolean changed;
 
-  private CatalogTracker catalogTracker;
-  private DataRootTracker dataRootTracker;
-
   public boolean init(String pathname, long maxDatasets) {
     this.pathname = pathname;
     dbFile = new File(pathname+"/mapdb.dat");
@@ -49,32 +46,11 @@ public class DatasetTrackerMapDB implements DatasetTracker {
 
   @Override
   public void save() {
-    try {
-      if (catalogTracker != null)
-        catalogTracker.save();
-
-      if (dataRootTracker != null)
-        dataRootTracker.save();
-
-    } catch (IOException ioe) {
-      startupLog.error("Saving tracker info", ioe);
-    }
-
     // LOOK not sure how to flush mapDB
     db.commit();
   }
 
   public void close() throws IOException {
-    if (catalogTracker != null) {
-      catalogTracker.save();
-      catalogTracker = null;
-    }
-
-    if (dataRootTracker != null) {
-      dataRootTracker.save();
-      dataRootTracker = null;
-    }
-
     if (db != null) {
       datasetMap.close();
       if (changed) db.compact();  // ?? LOOK maybe put into admin/debug ?
@@ -98,8 +74,6 @@ public class DatasetTrackerMapDB implements DatasetTracker {
         return false;
       }
     }
-    catalogTracker.reinit();
-    dataRootTracker.reinit();
 
     try {
       open();
@@ -121,9 +95,6 @@ public class DatasetTrackerMapDB implements DatasetTracker {
 
     alreadyExists = db.exists("datasets");  // LOOK ??
     datasetMap = db.getHashMap("datasets");
-
-    catalogTracker = new CatalogTracker(pathname);
-    dataRootTracker = new DataRootTracker(pathname);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -185,34 +156,4 @@ public class DatasetTrackerMapDB implements DatasetTracker {
     return dext.getNcml();
   }
 
-  ////////////////////////////////////////////////////////////////
-  // dataroots
-
-  @Override
-  public boolean trackDataRoot(DataRootExt dsext) {
-    return dataRootTracker.trackDataRoot(dsext);
-  }
-
-  @Override
-  public Iterable<? extends DataRootExt> getDataRoots() {
-    return dataRootTracker.getDataRoots();
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // catalogs
-
-  @Override
-  public boolean trackCatalog(CatalogExt catext) {
-    return catalogTracker.trackCatalog(catext);
-  }
-
-  @Override
-  public boolean removeCatalog(String relPath) {
-    return catalogTracker.removeCatalog(relPath);
-  }
-
-  @Override
-  public Iterable<? extends CatalogExt> getCatalogs() {
-    return catalogTracker.getCatalogs();
-  }
 }
