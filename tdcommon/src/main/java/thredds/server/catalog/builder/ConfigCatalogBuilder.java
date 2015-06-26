@@ -35,6 +35,7 @@ package thredds.server.catalog.builder;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Service;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -100,7 +101,7 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
 
   @Override
   protected DatasetBuilder readCatalogRef(DatasetBuilder parent, Element catRefElem) {
-    DatasetBuilder catref = super.readCatalogRef( parent, catRefElem);
+    DatasetBuilder catref = super.readCatalogRef(parent, catRefElem);
 
     String useRemoteCatalogService = catRefElem.getAttributeValue("useRemoteCatalogService");
     if (useRemoteCatalogService != null) {
@@ -153,6 +154,20 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     if (roots != null) flds.put(Catalog.DatasetRoots, roots);
     // if (catScans != null) flds.put(Catalog.CatalogScan, catScans);
     return new ConfigCatalog(baseURI, name, flds, datasetBuilders);
+  }
+
+
+  static public ConfigCatalog makeCatalogWithServices(ConfigCatalog cc, List<Service> services) {
+    Map<String, Object> flds = new HashMap<>();
+
+    for (Map.Entry<String, Object> entry : cc.getFldIterator()) {
+      flds.put(entry.getKey(), entry.getValue());
+    }
+    flds.put(Catalog.Services, services);
+
+    //   public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
+
+    return new ConfigCatalog(cc.getBaseURI(), cc.getName(), flds, null);
   }
 
 }

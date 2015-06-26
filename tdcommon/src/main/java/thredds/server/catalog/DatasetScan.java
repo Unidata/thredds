@@ -145,7 +145,7 @@ public class DatasetScan extends CatalogRef {
    * @param baseURI  the base URL for the catalog, used to resolve relative URLs.
    * @return the catalog for this path or null if build unsuccessful.
    */
-  public Catalog makeCatalogForDirectory(String orgPath, URI baseURI) throws IOException {
+  public CatalogBuilder makeCatalogForDirectory(String orgPath, URI baseURI) throws IOException {
 
     // Get the dataset location.
     String dataDirReletive = translatePathToReletiveLocation(orgPath, config.path);
@@ -221,7 +221,7 @@ public class DatasetScan extends CatalogRef {
       top.addDataset(makeLatestProxy(top, parentId));
 
     // make the catalog
-    return catBuilder.makeCatalog();
+    return catBuilder;
   }
 
   ///////////////////////

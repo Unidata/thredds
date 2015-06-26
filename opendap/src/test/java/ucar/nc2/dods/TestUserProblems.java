@@ -85,9 +85,7 @@ public class TestUserProblems {
     DODSNetcdfFile.setDebugFlags(new DebugFlagsImpl("DODS/serverCall"));
   		/* The temperature is recorded */
     String testfile = "http://nomads.ncdc.noaa.gov/thredds/dodsC/cfsr1hr/200912/tmp2m.gdas.200912.grb2";
-    NetcdfFile ncfile = null;
-    try {
-      ncfile = NetcdfDataset.openFile(testfile, null);
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(testfile, null)) {
       System.out.printf("The GRIB file %s, temperature is displayed.", testfile);
       System.out.println();
 
@@ -112,12 +110,8 @@ public class TestUserProblems {
 
     } catch (IOException ioe) {
       System.out.println("trying to open " + testfile + " " + ioe);
-    } finally {
-      if (null != ncfile) try {
-        ncfile.close();
-      } catch (IOException ioe) {
-        System.out.println("trying to close " + testfile + " " + ioe);
-      }
+      // getting 403 on 2 GB request
+      assert true;
     }
     System.out.println("---- End of File ----");
   }

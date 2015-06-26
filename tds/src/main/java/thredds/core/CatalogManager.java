@@ -4,15 +4,26 @@ package thredds.core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Service;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.catalog.CatalogScan;
+import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.ConfigCatalogCache;
 import thredds.server.catalog.DatasetScan;
+import thredds.server.catalog.builder.ConfigCatalogBuilder;
 import thredds.server.config.TdsContext;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Provides an API to find a catalog from its path. Handles static and dynamic catalogs.
@@ -36,6 +47,9 @@ public class CatalogManager {
   @Autowired
   private DataRootManager dataRootManager;
 
+  @Autowired
+  private AllowedServices globalServices;
+
   ///////////////////////////////////////////////////////////
 
   /**
@@ -57,51 +71,28 @@ public class CatalogManager {
     if (workPath.startsWith("/"))
       workPath = workPath.substring(1);
 
-    // check cache for quick hit
-    Catalog catalog = ccc.getIfPresent(workPath);
-    if (catalog != null) return catalog;
-
     // Check if its a dataRoot.
-    catalog = makeDynamicCatalog(workPath, baseURI);
-    if (catalog != null) return catalog;
+    Object dyno = makeDynamicCatalog(workPath, baseURI);
+    if (dyno != null) {
+      if (dyno instanceof CatalogBuilder) {
+        CatalogBuilder catBuilder = (CatalogBuilder) dyno;
+        addGlobalServices(catBuilder);
+        return catBuilder.makeCatalog();
+      } else {
+        ConfigCatalog configCatalog = (ConfigCatalog) dyno;
+        return addGlobalServices(configCatalog);
+      }
+    }
 
     // check cache and read if needed
-    catalog = ccc.get(workPath);
-
-    /* its a static catalog that needs to be read
-    if (reread) {
-      File catFile = this.tdsContext.getConfigFileSource().getFile(workPath);
-      if (catFile != null) {
-        String catalogFullPath = catFile.getPath();
-        logCatalogInit.info("**********\nReading catalog {} at {}\n", catalogFullPath, CalendarDate.present());
-
-        InvCatalogFactory factory = getCatalogFactory(true);
-        Catalog reReadCat = readCatalog(factory, workPath, catalogFullPath);
-
-        if (reReadCat != null) {
-          catalog = reReadCat;
-          if (staticCache) { // a static catalog has been updated
-            synchronized (this) {
-              reReadCat.setStatic(true);
-              staticCatalogHash.put(workPath, reReadCat);
-            }
-          }
-        }
-
-      } else {
-        logCatalogInit.error(ERROR + "Static catalog does not exist that we expected = " + workPath);
-      }
-    }  */
-
-
-    // Check for proxy dataset resolver catalog.
-    //if (catalog == null && this.isProxyDatasetResolver(workPath))
-    //  catalog = (Catalog) this.getProxyDatasetResolverCatalog(workPath, baseURI);
-
-    return catalog;
+    ConfigCatalog configCatalog = ccc.get(workPath);
+    if (configCatalog == null) return null;
+    return addGlobalServices(configCatalog);
   }
 
-  private Catalog makeDynamicCatalog(String path, URI baseURI) throws IOException {
+  // barfola on the return type
+  private Object makeDynamicCatalog(String path, URI baseURI) throws IOException {
+  // private CatalogBuilder makeDynamicCatalog(String path, URI baseURI) throws IOException {
 
     // Make sure this is a dynamic catalog request.
     //if (!path.endsWith("catalog.xml") && !path.endsWith("/latest.xml"))
@@ -117,7 +108,7 @@ public class CatalogManager {
     if (match == null)
       return null;
 
-    // look for the feature Collection
+    // Feature Collection
     if (match.dataRoot.getFeatureCollection() != null) {
       InvDatasetFeatureCollection fc = featureCollectionCache.get(match.dataRoot.getFeatureCollection());
 
@@ -130,10 +121,11 @@ public class CatalogManager {
 
     // if (path.endsWith("/latest.xml")) return null; // latest is not handled here  LOOK are you sure ??
 
+    // DatasetScan
     DatasetScan dscan = match.dataRoot.getDatasetScan();
     if (dscan != null) {
       if (log.isDebugEnabled()) log.debug("makeDynamicCatalog(): Calling DatasetScan.makeCatalogForDirectory( " + baseURI + ", " + path + ").");
-      Catalog cat = dscan.makeCatalogForDirectory(workPath, baseURI);
+      CatalogBuilder cat = dscan.makeCatalogForDirectory(workPath, baseURI);
 
       if (null == cat)
         log.error("makeDynamicCatalog(): DatasetScan.makeCatalogForDirectory failed = " + workPath);
@@ -141,10 +133,15 @@ public class CatalogManager {
       return cat;
     }
 
+    // CatalogScan
     CatalogScan catScan = match.dataRoot.getCatalogScan();
     if (catScan != null) {
+      if (!filename.equalsIgnoreCase(CatalogScan.CATSCAN)) { // its an actual catalog
+        return catScan.getCatalog(tdsContext.getContentDirectory(), match.remaining, filename, ccc);
+      }
+
       if (log.isDebugEnabled()) log.debug("makeDynamicCatalog(): Calling CatalogScan.makeCatalogForDirectory( " + baseURI + ", " + path + ").");
-      Catalog cat = catScan.makeCatalog(tdsContext.getContentDirectory(), match.remaining, filename, baseURI, ccc);
+      CatalogBuilder cat = catScan.makeCatalogFromDirectory(tdsContext.getContentDirectory(), match.remaining, baseURI);
 
       if (null == cat)
         log.error("makeDynamicCatalog(): CatalogScan.makeCatalogForDirectory failed = " + workPath);
@@ -152,7 +149,63 @@ public class CatalogManager {
       return cat;
     }
 
-    log.warn("makeDynamicCatalog(): No FeatureCollection or DatasetScan for =" + workPath + " request path= " + path);
+    log.warn("makeDynamicCatalog() failed for =" + workPath + " request path= " + path);
     return null;
   }
+
+  /////////////////////////////////////////////////////
+  // rigamorole to modify invariant catalogs; we may need to add global services
+
+  private Catalog addGlobalServices(ConfigCatalog cat) {
+    Set<String> serviceNames = new HashSet<>();
+    for (Dataset ds : cat.getDatasets())
+      findServices(ds, serviceNames);
+    if (serviceNames.isEmpty()) return cat;
+
+    List<Service> services = new ArrayList<>(cat.getServices());
+    for (String name : serviceNames) {
+      if (cat.hasService(name)) continue;
+      Service s = globalServices.findService(name);
+      if (s != null) services.add(s);
+    }
+    if (services.isEmpty()) return cat;
+
+    return ConfigCatalogBuilder.makeCatalogWithServices(cat, services);
+  }
+
+  private void findServices(Dataset ds, Set<String> serviceNames) {
+    String sname = (String) ds.get(Dataset.ServiceName);
+    if (sname != null)
+      serviceNames.add(sname);
+    for (Dataset nested : ds.getDatasets())
+      findServices(nested, serviceNames);
+  }
+
+  //////////////////////////
+  private void addGlobalServices(CatalogBuilder cat) {
+    Set<String> serviceNames = new HashSet<>();
+    for (DatasetBuilder ds : cat.getDatasets())
+      findServices(ds, serviceNames);
+    if (serviceNames.isEmpty()) return;
+
+    Set<Service> services = new HashSet<>();
+    for (String name : serviceNames) {
+      if (cat.hasService(name)) continue;
+      Service s = globalServices.findService(name);
+      if (s != null) services.add(s);
+    }
+    if (services.isEmpty()) return;
+
+    for (Service s : services)
+      cat.addService(s);
+  }
+
+  private void findServices(DatasetBuilder ds, Set<String> serviceNames) {
+    String sname = (String) ds.get(Dataset.ServiceName);
+    if (sname != null)
+      serviceNames.add(sname);
+    for (DatasetBuilder nested : ds.getDatasets())
+      findServices(nested, serviceNames);
+  }
+
 }

@@ -1,12 +1,10 @@
 /* Copyright */
 package thredds.server.catalog;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.CatalogRef;
-import thredds.client.catalog.Dataset;
-import thredds.client.catalog.Service;
+import thredds.client.catalog.*;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Array;
 import ucar.nc2.constants.FeatureType;
@@ -14,6 +12,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.units.DateType;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
@@ -82,6 +81,32 @@ public class TestTdsGrib {
         assert name.length() > 0 : "name is empty";
       }
     }
+  }
+
+  @Test
+  public void testOneFilePartition() throws IOException {
+    String catalog = "/catalog/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/catalog.xml";
+    Catalog cat = TdsLocalCatalog.open(catalog);
+    Assert.assertEquals(1, cat.getDatasets().size());
+
+    Dataset top = cat.getDatasets().get(0);
+    Assert.assertTrue(0 < top.getDataSize());
+
+    DateType dt =  top.getLastModifiedDate();
+    Assert.assertNotNull(dt);
+    Assert.assertEquals("modified", dt.getType());
+    Assert.assertTrue(dt.getCalendarDate().getMillis() > 0);
+
+    Service all = top.getServiceDefault();
+    Assert.assertNotNull(all);
+    Assert.assertEquals(ServiceType.Compound, all.getType());
+
+    boolean gotHttp = false;
+    for (Service s : all.getNestedServices()) {
+      if (s.getType() == ServiceType.HTTPServer)
+        gotHttp = true;
+    }
+    Assert.assertTrue(gotHttp);
   }
 
 }

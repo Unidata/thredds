@@ -1,8 +1,6 @@
 /* Copyright */
 package thredds.server.catalog;
 
-import thredds.server.catalog.ConfigCatalog;
-
 import java.io.IOException;
 
 /**

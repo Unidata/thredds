@@ -63,9 +63,6 @@ public class ConfigCatalogCache implements CatalogReader {
   static private final Logger logger = LoggerFactory.getLogger(ConfigCatalogCache.class);
   static private final String ERROR = "*** ERROR ";
 
-  //@Autowired
-  //private TdsContext tdsContext;  // only needed for rootPath
-
   private String rootPath;
   private Cache<String, ConfigCatalog> cache;
 

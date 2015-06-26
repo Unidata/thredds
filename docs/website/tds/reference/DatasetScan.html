@@ -9,7 +9,7 @@
 <h1>Configuring TDS with DatasetScan</h1>
 <hr>
 <p>The <strong>datasetScan</strong> element allows you to serve all files in a directory tree. The files must be homogenous enough that the same metadata can be applied to all of them.</p>
-<p>See <a href="../catalog/InvCatalogServerSpec.html#datasetScan_Element">Server Catalog Spec</a> for formal defition of the XM:L.</p>
+<p>See <a href="../catalog/InvCatalogServerSpec.html#datasetScan_Element">Server Catalog Spec</a> for formal definition of the XML.</p>
 
 <h2>Example</h2>
 
@@ -184,73 +184,6 @@
   <li>in the above, we use a &quot;\&quot; to escape the &quot;.&quot; character, to require a literal &quot;.&quot; character. Note that only one backslash is neeeded. (Inside a Java String, one needs to use &quot;\\&quot;, but not here in the catalog).</li>
 </ul>
 <p>[<a href="#sample3">Sample config catalog 3</a>]</p>
-<h2><a name="Naming_Datasets"></a>Naming Datasets</h2>
-
-If no namer
-element is specified, all datasets are named with the corresponding
-file
-name. By adding a namer element, you can specify more human readable
-dataset names. The following namer looks for datasets named "GFS" or
-"NCEP" and renames them with the corresponding replace string:<br>
-
-
-<pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="GFS" replaceString="NCEP GFS model data" /&gt;<br>  &lt;regExpOnName regExp="NCEP" replaceString="NCEP model data"/&gt;<br>&lt;/namer&gt;</pre>
-
-
-<p>More complex renaming is possible as well. The namer uses a <a href="http://www.regular-expressions.info/">regular expression</a> match on the dataset name.
-  If the match succeeds, any regular expression <a href="http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#cg">capturing groups</a> are used
-  in the replacement string.</p>
-
-
-<p>A capturing group is a part of a regular expression enclosed in
-  parenthesis. When a regular expression with a capturing group is
-  applied to a string, the substring that matches the capturing group is
-  saved for later use. The captured strings can then be substituted into
-  another string in place of capturing group references,"$n", where "n"
-  is an integer indicating a particular capturing group. (The capturing
-  groups are numbered according to the order in which they appear in the
-  match string.) For example, the regular expression "Hi (.*), how are
-  (.*)?" when applied to the
-  string "Hi Fred, how are you?" would capture the strings "Fred" and
-  "you". Following that with a capturing group replacement in the string
-  "$2 are $1." would result in the string "you are Fred."</p>
-
-
-<p>Here's an example namer:</p>
-
-
-<pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})"<br>                replaceString="NCEP GFS 191km Alaska $1-$2-$3 $4:$5:00 GMT"/&gt;<br>&lt;/namer</pre>
-
-
-<p>the regular expression has five capturing groups</p>
-
-
-<ol>
-
-
-  <li>The first capturing group, "([0-9]{4})",&nbsp; captures four digits, in this case the year.<br>
-  </li>
-  <li>The second capturing group, "([0-9]{2})", captures two digits, in this case the month.<br>
-  </li>
-  <li>The third capturing group, "([0-9]{2})", captures two digits, in this case the day of the month.<br>
-  </li>
-  <li>The fourth capturing group, "([0-9]{2})", captures two digits, in this case the hour of the day.</li>
-  <li>The fifth capturing group, "([0-9]{2})", captures two digits, in this case the minutes of the hour.</li>
-</ol>
-
-
-When applied to the dataset name
-"GFS_Alaska_191km_20051011_0000.grib1",&nbsp; the
-strings
-"2005", "10", "11", "00", and "00" are captured. After replacing the
-capturing group references in the replaceString attribute value, we get
-the name "NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT".
-So, when cataloged, this dataset would end up as something like this:<br>
-
-
-<pre>&lt;dataset name="NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT"<br>        &nbsp;urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/&gt;<strong></strong></pre>
-
-
 <h2><a name="Sorting_Datasets"></a>Sorting Datasets</h2>
 <p>Datasets at each collection level are listed
   in ascending order by name. With a sort element you can specify that they
@@ -260,7 +193,7 @@ So, when cataloged, this dataset would end up as something like this:<br>
 <p>Note that the  sort is done before renaming.</p>
 
 <h2><a name="Adding_Proxy_Datasets"></a>Adding a Link to the &quot;Latest&quot; Dataset</h2>
-<p>For real-time data you may want to have a special link that points to the &quot;latest&quot; data in the collection. Here, latest is simply means the last filename in a  list sorted by name, so its only the latest if the time stamp is in the filename and the name  sorts correctly by time.</p>
+<p>For real-time data you may want to have a special link that points to the &quot;latest&quot; data in the collection. Here, latest  means the last filename in a  list sorted by name, so its only the latest if the time stamp is in the filename and the name  sorts correctly by time.</p>
 <p>The simplest way to enable this is to add the attribute <em>addLatest=&quot;true&quot;</em> to the <strong>datasetScan</strong> element. In this case, the default values are used:  <strong>name</strong>  =
 "latest.xml",  <strong>top</strong> = "true", and  <strong>serviceName</strong> = "latest".</p>
 
@@ -290,7 +223,7 @@ So, when cataloged, this dataset would end up as something like this:<br>
   "latest.xml", the <strong>top</strong> attribute defaults to "true", and the <strong>serviceName</strong> attribute defaults to "latest".</p>
 
 
-<p>While you wouldnt put two latest datasest in the same scan, the example shows both: </p>
+<p>While you wouldn't put two latest datasest in the same scan, the example shows both: </p>
 
 <pre>
 &lt;service name="latest" type="Resolver" base="" /&gt;
@@ -357,7 +290,52 @@ So, when cataloged, this dataset would end up as something like this:<br>
 
 <p>A variation is the addition of the <strong>datasetPathMatchPattern</strong> attribute. It can be used instead of the <strong>datasetNameMatchPattern</strong>
   attribute and changes the target of the match from the dataset name to the dataset path. If both attributes are used, the
-  <strong>datasetNameMatchPattern</strong> attribute takes precedence.<br>
+<strong>datasetNameMatchPattern</strong> attribute takes precedence.</p>
+<h2><a name="Naming_Datasets"></a>Naming Datasets</h2>
+If no namer
+element is specified, all datasets are named with the corresponding
+file
+name. By adding a namer element, you can specify more human readable
+dataset names. The following namer looks for datasets named "GFS" or
+"NCEP" and renames them with the corresponding replace string:<br>
+<pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="GFS" replaceString="NCEP GFS model data" /&gt;<br>  &lt;regExpOnName regExp="NCEP" replaceString="NCEP model data"/&gt;<br>&lt;/namer&gt;</pre>
+<p>More complex renaming is possible as well. The namer uses a <a href="http://www.regular-expressions.info/">regular expression</a> match on the dataset name.
+  If the match succeeds, any regular expression <a href="http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#cg">capturing groups</a> are used
+  in the replacement string.</p>
+<p>A capturing group is a part of a regular expression enclosed in
+  parenthesis. When a regular expression with a capturing group is
+  applied to a string, the substring that matches the capturing group is
+  saved for later use. The captured strings can then be substituted into
+  another string in place of capturing group references,"$n", where "n"
+  is an integer indicating a particular capturing group. (The capturing
+  groups are numbered according to the order in which they appear in the
+  match string.) For example, the regular expression "Hi (.*), how are
+  (.*)?" when applied to the
+  string "Hi Fred, how are you?" would capture the strings "Fred" and
+  "you". Following that with a capturing group replacement in the string
+  "$2 are $1." would result in the string "you are Fred."</p>
+<p>Here's an example namer:</p>
+<pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})"<br>                replaceString="NCEP GFS 191km Alaska $1-$2-$3 $4:$5:00 GMT"/&gt;<br>&lt;/namer</pre>
+<p>the regular expression has five capturing groups</p>
+<ol>
+  <li>The first capturing group, "([0-9]{4})",&nbsp; captures four digits, in this case the year.<br>
+  </li>
+  <li>The second capturing group, "([0-9]{2})", captures two digits, in this case the month.<br>
+  </li>
+  <li>The third capturing group, "([0-9]{2})", captures two digits, in this case the day of the month.<br>
+  </li>
+  <li>The fourth capturing group, "([0-9]{2})", captures two digits, in this case the hour of the day.</li>
+  <li>The fifth capturing group, "([0-9]{2})", captures two digits, in this case the minutes of the hour.</li>
+</ol>
+When applied to the dataset name
+"GFS_Alaska_191km_20051011_0000.grib1",&nbsp; the
+strings
+"2005", "10", "11", "00", and "00" are captured. After replacing the
+capturing group references in the replaceString attribute value, we get
+the name "NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT".
+So, when cataloged, this dataset would end up as something like this:<br>
+<pre>&lt;dataset name="NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT"<br>        &nbsp;urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/&gt;<strong></strong></pre>
+<p><br>
 </p>
 <hr size="2" width="100%">
 <h2>Sample Config Files</h2>

@@ -50,6 +50,7 @@ import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.File;
@@ -238,6 +239,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         if (onlyOneFile) {
           parentCatalog.addService(orgService);
           tmi.set(Dataset.ServiceName, this.orgService.getName());
+          MFile mfile = fromGc.getFile(0);
+          result.put(Dataset.DataSize, mfile.getLength());
+          if (mfile.getLastModified() > 0) {
+            CalendarDate cdate = CalendarDate.of(mfile.getLastModified());
+            result.put(Dataset.Dates, new DateType(cdate).setType("modified"));
+          }
         }
         result.put(Dataset.UrlPath, pathStart);
 
@@ -355,7 +362,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       ds.put(Dataset.UrlPath, lpath);
       ds.put(Dataset.Id, lpath);
       ds.put(Dataset.DataSize, mfile.getLength());
-      // ds.tm.setXXXX(mfile.getLastModified());
+      if (mfile.getLastModified() > 0) {
+        CalendarDate cdate = CalendarDate.of(mfile.getLastModified());
+        ds.put(Dataset.Dates, new DateType(cdate).setType("modified"));
+      }
       filesParent.addDataset(ds);
     }
   }
@@ -376,7 +386,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   // called by DataRootHandler.makeDynamicCatalog() when a catref is requested
   // see top javadoc for possible URLs
   @Override
-  public Catalog makeCatalog(String match, String reqPath, URI catURI) throws IOException {
+  public CatalogBuilder makeCatalog(String match, String reqPath, URI catURI) throws IOException {
     StateGrib localState = (StateGrib) checkState();
     if (localState == null) return null; // not ready yet maybe
 
@@ -384,8 +394,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       // case 0
       if ((match == null) || (match.length() == 0)) {
-        CatalogBuilder catb = makeCatalogTop(catURI, localState);  // top catalog : uses state.top previously made in checkState()
-        return catb.makeCatalog();
+        return makeCatalogTop(catURI, localState);  // top catalog : uses state.top previously made in checkState()
       }
 
       // case 1
@@ -403,7 +412,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return null;
   }
 
-  private Catalog makeCatalogFromPartition(PartitionCollectionImmutable pc, String[] paths, int idx, URI catURI) throws IOException {
+  private CatalogBuilder makeCatalogFromPartition(PartitionCollectionImmutable pc, String[] paths, int idx, URI catURI) throws IOException {
     if (paths.length < idx + 1) return null;
     PartitionCollectionImmutable.Partition pcp = pc.getPartitionByName(paths[idx]);
     if (pcp == null) return null;
@@ -427,7 +436,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
-  private Catalog makeCatalogFromCollection(GribCollectionImmutable fromGc, String parentCollectionName, URI catURI) throws IOException { // }, URISyntaxException {
+  private CatalogBuilder makeCatalogFromCollection(GribCollectionImmutable fromGc, String parentCollectionName, URI catURI) throws IOException { // }, URISyntaxException {
     Catalog parentCatalog = parent.getParentCatalog();
 
     CatalogBuilder result = new CatalogBuilder();
@@ -439,7 +448,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     DatasetBuilder ds = makeDatasetFromCollection(catURI, false, result, parentCollectionName, fromGc);
     result.addDataset(ds);
 
-    return result.makeCatalog();
+    return result;
   }
 
   /////////////////////////////////////
@@ -453,7 +462,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   // path/latest.xml
   @Override
-  public Catalog makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
+  public CatalogBuilder makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
     StateGrib localState = (StateGrib) checkState();
     if (!(localState.gribCollection instanceof PartitionCollectionImmutable)) return null;
 

@@ -108,7 +108,13 @@ public class Catalog extends DatasetNode {
 
   public List<Service> getServices() {
     List<Service> services = (List<Service>) flds.get(Catalog.Services);
-    return services == null ? new ArrayList<Service>(0) : services;
+    return services == null ? new ArrayList<>(0) : services;
+  }
+
+  public boolean hasService(String name) {
+    for (Service s : getServices())
+      if (s.getName().equalsIgnoreCase(name)) return true;
+    return false;
   }
 
   public Service findService(String serviceName)  {

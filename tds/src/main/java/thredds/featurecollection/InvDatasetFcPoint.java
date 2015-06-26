@@ -81,7 +81,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public Catalog makeCatalog(String match, String orgPath, URI catURI) throws IOException {
+  public CatalogBuilder makeCatalog(String match, String orgPath, URI catURI) throws IOException {
     logger.debug("FcPoint make catalog for " + match + " " + catURI);
     State localState = checkState();
 
@@ -89,7 +89,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       if ((match == null) || (match.length() == 0)) {
         CatalogBuilder main = makeCatalogTop(catURI, localState);
         main.addService(virtualService);
-        return main.makeCatalog();
+        return main;
 
       } else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files)) {
         return makeCatalogFiles(catURI, localState, datasetCollection.getFilenames(), true);

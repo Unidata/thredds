@@ -35,6 +35,7 @@ package thredds.server.catalog;
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Service;
 import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.unidata.util.StringUtil2;
 

@@ -191,6 +191,18 @@ public class CatalogBuilder {
     datasetBuilders.add(d);
   }
 
+  public Iterable<DatasetBuilder> getDatasets() {
+    if (datasetBuilders != null) return datasetBuilders;
+    return new ArrayList<>(0);
+  }
+
+  public boolean hasService(String name) {
+    if (services == null) return false;
+    for (Service s : services)
+      if (s.getName().equalsIgnoreCase(name)) return true;
+    return false;
+  }
+
   public Catalog makeCatalog() {
     Map<String, Object> flds = setFields();
     return new Catalog(baseURI, name, flds, datasetBuilders);

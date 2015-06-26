@@ -124,6 +124,9 @@ public class AllowedServices {
     return !s.allowed? null : makeService(s.ss);
   }
 
+  public Service findService(String name) {   // LOOK
+    return null;
+  }
 
   /////////////////////////////////////////////
   // used by old-style config catalogs for error checking and messages

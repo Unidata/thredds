@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class CatalogScan extends CatalogRef {
   static private final Logger logger = LoggerFactory.getLogger(CatalogScan.class);
-  static private final String CATSCAN = "catalogScan.xml";
+  static public final String CATSCAN = "catalogScan.xml";
 
   private final String path, location, watch;
 
@@ -50,24 +50,21 @@ public class CatalogScan extends CatalogRef {
     this.watch = watch;
   }
 
-  public Catalog makeCatalog(File baseDir, String matchRemaining, String filename, URI baseURI, CatalogReader reader) throws IOException {
+  // when we have a real catalog  (filename != CATSCAN)
+  public ConfigCatalog getCatalog(File baseDir, String matchRemaining, String filename, CatalogReader reader) throws IOException {
+    String relLocation = (matchRemaining.length() > 1) ? location + "/" + matchRemaining : location;
+    File absLocation = new File(baseDir, relLocation);
+    ConfigCatalog cc = reader.getFromAbsolutePath(absLocation + "/" + filename);
+    if (cc == null)
+      logger.warn("Cant find catalog from scan: " + absLocation + "/" + filename);
+    return cc;
+  }
 
-    /* Get the dataset reletive location.
-    String reletiveLocation = translatePathToReletiveLocation(workPath, path);
-    if (reletiveLocation == null) {
-      String tmpMsg = "makeCatalogForDirectory(): Requesting path <" + workPath + "> must start with \"" + path + "\".";
-      logger.error(tmpMsg);
-      return null;
-    } */
-    //String parentPath = (reletiveLocation.length() > 1) ? path + "/" + reletiveLocation : path + "/";
-    //String parentId = (reletiveLocation.length() > 1) ? this.getId() + "/" + reletiveLocation : this.getId() + "/";
+  // when we have a catalog built from a directory (filename == CATSCAN)
+  public CatalogBuilder makeCatalogFromDirectory(File baseDir, String matchRemaining, URI baseURI) throws IOException {
     String relLocation = (matchRemaining.length() > 1) ? location + "/" + matchRemaining : location;
     String name = (matchRemaining.length() > 1) ? getName() + "/" + matchRemaining : getName();
     File absLocation = new File( baseDir, relLocation);
-    // it must be an actual catalog
-    if (!filename.equalsIgnoreCase(CATSCAN)) {
-      return reader.getFromAbsolutePath(absLocation + "/" + filename);  // LOOK key is wrong; ccc wants reletive path (!)
-    }
 
     // it must be a directory
     Path wantDir = absLocation.toPath();
@@ -78,8 +75,6 @@ public class CatalogScan extends CatalogRef {
     CatalogBuilder catBuilder = new CatalogBuilder();
     catBuilder.setBaseURI(baseURI);
     assert this.getParentCatalog() != null;
-    //for (Service s : this.getParentCatalog().getServices())
-    //  catBuilder.addService(s);
 
     DatasetBuilder top = new DatasetBuilder(null);
     top.transferMetadata(this, true);
@@ -119,8 +114,7 @@ public class CatalogScan extends CatalogRef {
       }
     }
 
-    // make the catalog
-    return catBuilder.makeCatalog();
+    return catBuilder;
   }
 
 }

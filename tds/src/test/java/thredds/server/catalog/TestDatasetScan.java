@@ -88,11 +88,11 @@ public class TestDatasetScan {
     DatasetScanConfig config = dss.getConfig();
     System.out.printf("%s%n", config);
 
-    Catalog scanCat = dss.makeCatalogForDirectory("scanCdmUnitTests", cat.getBaseURI());
+    Catalog scanCat = dss.makeCatalogForDirectory("scanCdmUnitTests", cat.getBaseURI()).makeCatalog();
     assert scanCat != null;
     System.out.printf("%n%s%n",  writer.writeXML( scanCat ));
 
-    scanCat = dss.makeCatalogForDirectory("scanCdmUnitTests/ncss/test", cat.getBaseURI());
+    scanCat = dss.makeCatalogForDirectory("scanCdmUnitTests/ncss/test", cat.getBaseURI()).makeCatalog();
     System.out.printf("%s%n",  writer.writeXML( scanCat ));
   }
 
@@ -110,7 +110,7 @@ public class TestDatasetScan {
     DatasetScanConfig config = dss.getConfig();
     System.out.printf("%s%n", config);
 
-    Catalog scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min", cat.getBaseURI());
+    Catalog scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min", cat.getBaseURI()).makeCatalog();
     assert scanCat != null;
 
     CatalogXmlWriter writer = new CatalogXmlWriter();
@@ -125,7 +125,7 @@ public class TestDatasetScan {
     String name1 = list.get(1).getName();
     assert name0.compareTo(name1) > 0;
 
-    scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min/20131102", cat.getBaseURI());
+    scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min/20131102", cat.getBaseURI()).makeCatalog();
     assert scanCat != null;
     if (showCats) System.out.printf("%n%s%n", writer.writeXML(scanCat));
 
@@ -154,7 +154,7 @@ public class TestDatasetScan {
     DatasetScanConfig config = dss.getConfig();
     System.out.printf("%s%n", config);
 
-    Catalog scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min/20131102", cat.getBaseURI());
+    Catalog scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min/20131102", cat.getBaseURI()).makeCatalog();
     assert scanCat != null;
 
     CatalogXmlWriter writer = new CatalogXmlWriter();
@@ -192,7 +192,7 @@ public class TestDatasetScan {
     DatasetScanConfig config = dss.getConfig();
     System.out.printf("%s%n", config);
 
-    Catalog scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min/20131102", cat.getBaseURI());
+    Catalog scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min/20131102", cat.getBaseURI()).makeCatalog();
     assert scanCat != null;
 
     CatalogXmlWriter writer = new CatalogXmlWriter();

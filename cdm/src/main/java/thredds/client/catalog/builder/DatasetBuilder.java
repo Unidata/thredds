@@ -168,6 +168,11 @@ public class DatasetBuilder {
     return new Dataset(parent, name, flds, accessBuilders, datasetBuilders);
   }
 
+  public Iterable<DatasetBuilder> getDatasets() {
+    if (datasetBuilders != null) return datasetBuilders;
+    return new ArrayList<>(0);
+  }
+
   /////////////////////////////////////////////////////////////////////////////
 
   // transfer all metadata, optionally also inheritable metadata from parents

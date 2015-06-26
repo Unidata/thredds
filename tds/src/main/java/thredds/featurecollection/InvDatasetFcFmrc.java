@@ -138,7 +138,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
 
   @Override
-  public Catalog makeCatalog(String match, String orgPath, URI catURI) throws IOException {
+  public CatalogBuilder makeCatalog(String match, String orgPath, URI catURI) throws IOException {
     logger.debug("FMRC make catalog for " + match + " " + catURI);
     State localState = checkState();
 
@@ -146,7 +146,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       if ((match == null) || (match.length() == 0)) {
         CatalogBuilder main = makeCatalogTop(catURI, localState);
         main.addService(virtualService);
-        return main.makeCatalog();
+        return main;
       } else if (match.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs))
         return makeCatalogRuns(catURI, localState);
 
@@ -194,34 +194,34 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     return result;
   }
 
-  private Catalog makeCatalogRuns(URI catURI, State localState) throws IOException {
+  private CatalogBuilder makeCatalogRuns(URI catURI, State localState) throws IOException {
     CatalogBuilder runCatalog = makeCatalog(catURI, localState, RUN_TITLE);
     DatasetBuilder top = runCatalog.getTop();
 
     for (DatasetBuilder ds : makeRunDatasets(top))
       top.addDataset(ds);
 
-    return runCatalog.makeCatalog();
+    return runCatalog;
   }
 
-  private Catalog makeCatalogOffsets(URI catURI, State localState) throws IOException {
+  private CatalogBuilder makeCatalogOffsets(URI catURI, State localState) throws IOException {
     CatalogBuilder offCatalog = makeCatalog(catURI, localState, OFFSET_TITLE);
     DatasetBuilder top = offCatalog.getTop();
 
     for (DatasetBuilder ds : makeOffsetDatasets(top))
       top.addDataset(ds);
 
-    return offCatalog.makeCatalog();
+    return offCatalog;
   }
 
-  private Catalog makeCatalogForecasts(URI catURI, State localState) throws IOException {
+  private CatalogBuilder makeCatalogForecasts(URI catURI, State localState) throws IOException {
     CatalogBuilder offCatalog = makeCatalog(catURI, localState, OFFSET_TITLE);
     DatasetBuilder top = offCatalog.getTop();
 
     for (DatasetBuilder ds : makeOffsetDatasets(top))
       top.addDataset(ds);
 
-    return offCatalog.makeCatalog();
+    return offCatalog;
   }
 
   private List<DatasetBuilder> makeRunDatasets(DatasetBuilder parent) throws IOException {

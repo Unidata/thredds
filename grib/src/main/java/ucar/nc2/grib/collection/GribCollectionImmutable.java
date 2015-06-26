@@ -907,6 +907,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return indexFile.length();
   }
 
+  public MFile getFile(int fileno) {
+    return fileMap.get(fileno);
+  }
+
   public String getFilename(int fileno) {
     return fileMap.get(fileno).getPath();
   }

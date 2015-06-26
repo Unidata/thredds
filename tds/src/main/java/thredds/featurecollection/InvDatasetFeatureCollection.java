@@ -419,7 +419,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
    * @param catURI  the base URI for the catalog to be made, used to resolve relative URLs.
    * @return containing catalog
    */
-  abstract public Catalog makeCatalog(String match, String orgPath, URI catURI) throws IOException;
+  abstract public CatalogBuilder makeCatalog(String match, String orgPath, URI catURI) throws IOException;
 
   abstract protected DatasetBuilder makeDatasetTop(URI catURI, State localState) throws IOException;
 
@@ -449,7 +449,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   }
 
   // this catalog lists the individual files comprising the collection.
-  protected Catalog makeCatalogFiles(URI catURI, State localState, List<String> filenames, boolean addLatest) throws IOException {
+  protected CatalogBuilder makeCatalogFiles(URI catURI, State localState, List<String> filenames, boolean addLatest) throws IOException {
     Catalog parentCatalog = parent.getParentCatalog();
 
     CatalogBuilder result = new CatalogBuilder();
@@ -508,7 +508,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
       top.addDataset(ds);
     }
 
-    return result.makeCatalog();
+    return result;
   }
 
   protected String makeMetadataLink(String datasetName, String metadata) {
@@ -526,7 +526,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   }
 
   // called by DataRootHandler.makeDynamicCatalog()
-  public Catalog makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
+  public CatalogBuilder makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
     checkState();
 
     Catalog parentCatalog = parent.getParentCatalog();
@@ -559,7 +559,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     top.put(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(lpath, VARIABLES), catURI));
     top.put(Dataset.DataSize, mfile.getLength());
 
-    return result.makeCatalog();
+    return result;
   }
 
   /////////////////////////////////////////////////////////////////////////
