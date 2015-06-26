@@ -423,16 +423,15 @@
   </error-page>
 
   <!-- ++++++++++ Setup security restrictions ++++++++++ -->
-  <!-- Do not allow anything but GET  -->
+  <!-- Do not allow anything but GET  LOOK doesnt work
   <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>not allowed</web-resource-name>
-      <url-pattern>/</url-pattern>
-      <http-method-omission>GET</http-method-omission>
-    </web-resource-collection>
-    <auth-constraint/>
-  </security-constraint>
-
+      <display-name>Deny all HTTP methods except GET</display-name>
+      <web-resource-collection>
+          <url-pattern>/</url-pattern>
+          <http-method-omission>GET</http-method-omission>
+      </web-resource-collection>
+      <auth-constraint/>
+  </security-constraint -->
 
   <!-- tdsConfig with HTTPS needed for /admin access  -->
   <security-constraint>
