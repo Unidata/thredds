@@ -42,6 +42,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.DeflateDecompressingEntity;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
@@ -942,7 +943,14 @@ public class HTTPSession implements AutoCloseable
     execute(HttpRequestBase request)
             throws IOException
     {
-        HttpResponse response = sessionClient.execute(request, this.execcontext);
+        try {
+	    Class cl = sessionClient.getClass();
+	    Method m = cl.getMethod(HttpUriRequest.class,HttpContext.class);
+	} catch (Throwable t) {
+	    t.printStackTrace();
+	    throw new IOException(t);
+	}
+	HttpResponse response = sessionClient.execute(request,this.execcontext);
         return response;
     }
 
