@@ -73,7 +73,10 @@ public class AdminDirDisplayController {
     String path = TdsPathUtils.extractPath(req, "/admin/dir");
 
     File file = null;
-    if (path.startsWith("content/")) {
+    if (path.startsWith("catalogs/")) {
+      file = new File(tdsContext.getContentDirectory(), path.substring(9));
+
+    } else if (path.startsWith("content/")) {
       // Check in content/thredds directory (which includes content/thredds/public).
       file = new File(tdsContext.getContentDirectory(), path.substring(8));
       // If not found, check in content/thredds and altContent (but not content/thredds/public).
