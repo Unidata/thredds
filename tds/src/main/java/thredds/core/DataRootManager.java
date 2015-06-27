@@ -191,7 +191,10 @@ public class DataRootManager implements InitializingBean {
   // debugging only !!
 
   public synchronized void showRoots(Formatter f) {
-    for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
+    List<Map.Entry<String, DataRootExt>> list = new ArrayList<>(dataRootPathMatcher.getValues());
+    Collections.sort(list, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));    // java 8 lambda, baby
+
+    for (Map.Entry<String, DataRootExt> entry : list) {
       f.format(" %s%n", entry.getValue());
     }
   }
@@ -232,7 +235,7 @@ public class DataRootManager implements InitializingBean {
           for (Map.Entry<String, DataRootExt> entry : list) {
             DataRootExt ds = entry.getValue();
             e.pw.print(" <b>" + ds.getPath() + "</b>");
-            String url = DataRootManager.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.getPath() + "/";
+            String url = DataRootManager.this.tdsContext.getContextPath() + "/admin/dir/dataDir/" + ds.getPath() + "/";
             e.pw.println(" for " + ds.getType() + " directory= <a href='" + url + "'>" + ds.getDirLocation() + "</a> ");
           }
         }

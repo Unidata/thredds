@@ -611,7 +611,7 @@ public class ConfigCatalogInitialization {
     @Override
     public String toString() {
       Formatter f = new Formatter();
-      f.format("ConfigCatalogInitialization started %s took %f secs using readMode %s%n", CalendarDate.of(start), took, readMode);
+      f.format("ConfigCatalogInitialization started %s took %f secs using readMode=%s%n", CalendarDate.of(start), took, readMode);
       return stat2.show(f);
     }
   }

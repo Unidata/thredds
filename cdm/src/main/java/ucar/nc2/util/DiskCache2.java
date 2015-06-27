@@ -62,7 +62,7 @@ public class DiskCache2 {
   private static org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private Timer timer;
 
-  /** Be sure to call this when your application exits, otherwise the process may not die. */
+  /** Be sure to call this when your application exits, otherwise your process may not exit without being killed. */
   static public void exit() {
     if (timer != null)
       timer.cancel();
@@ -124,6 +124,7 @@ public class DiskCache2 {
   }
 
   private DiskCache2() {}
+
   /**
    * Create a cache on disk. Use default policy (CachePathPolicy.OneDirectory)
    * @param root the root directory of the cache. Must be writeable.
@@ -159,6 +160,7 @@ public class DiskCache2 {
       Calendar c = Calendar.getInstance(); // contains current startup time
       c.add(Calendar.MINUTE, scourEveryMinutes);
       timer.scheduleAtFixedRate(new CacheScourTask(), c.getTime(), (long) 1000 * 60 * scourEveryMinutes);
+      cacheLog.info("Started a DiskCache2 scour task on {} every {} minutes for files older than {} minutes", root, scourEveryMinutes, persistMinutes);
     }
 
   }
@@ -310,7 +312,6 @@ public class DiskCache2 {
     return result;
   }
 
-
   /**
    * Set the cache path policy
    * @param cachePathPolicy one of:
@@ -334,28 +335,6 @@ public class DiskCache2 {
   public void setCachePathPolicy(CachePathPolicy cachePathPolicy, String cachePathPolicyParam) {
     this.cachePathPolicy = cachePathPolicy;
     this.cachePathPolicyParam = cachePathPolicyParam;
-  }
-
-  /**
-   * @deprecated use setCachePathPolicy(CachePathPolicy cachePathPolicy, String cachePathPolicyParam)
-   */
-  public void setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) {
-    setPolicy(cachePathPolicy);
-    this.cachePathPolicyParam = cachePathPolicyParam;
-  }
-
-  /**
-   * @deprecated use setCachePathPolicy(CachePathPolicy cachePathPolicy)
-   */
-  public void setPolicy(int cachePathPolicy) {
-    switch (cachePathPolicy) {
-      case 0 : setPolicy(CachePathPolicy.OneDirectory);
-        break;
-      case 1 : setPolicy(CachePathPolicy.NestedDirectory);
-        break;
-      case 2 : setPolicy(CachePathPolicy.NestedTruncate);
-        break;
-    }
   }
 
   public void setPolicy(String policy) {
@@ -431,7 +410,7 @@ public class DiskCache2 {
   }
 
   /**
-   * Show cache contents.
+   * Show cache contents, for debugging.
    * @param pw write to this PrintStream.
    */
   public void showCache(PrintStream pw) {
@@ -505,7 +484,7 @@ public class DiskCache2 {
       sbuff.format("DiskCache2 scour on directory= %s%n", root);
       cleanCache(new File(root), sbuff, true);
       sbuff.format("----------------------%n");
-      if (cacheLog != null) cacheLog.info(sbuff.toString());
+      if (cacheLog != null) cacheLog.debug(sbuff.toString());
     }
   }
 
@@ -523,43 +502,5 @@ public class DiskCache2 {
     sb.append('}');
     return sb.toString();
   }
-
-  /* debug
-  static void make(DiskCache2 dc, String filename) throws IOException {
-    File want = dc.getCacheFile(filename);
-    if (want == null) return;
-    System.out.println("make=" + want.getPath() + "; exists = " + want.exists());
-    if (!want.exists())
-      want.createNewFile();
-    System.out.println(" canRead= " + want.canRead() + " canWrite = " + canWrite(want) + " lastMod = " + new Date(want.lastModified()));
-    System.out.println(" original=" + EscapeStrings.urlDecode(filename));
-  }
-
-  static void testCanWrite(String filename) throws IOException {
-    File want = new File(filename);
-    Path p = want.toPath(); // see if we can write into this directory
-    boolean isWriteable = Files.isWritable(p);
-
-    Path p2 = want.getParentFile().toPath();
-    boolean isWriteable2 = Files.isWritable(p2);
-
-    System.out.printf("%s %s canWrite %s%n", isWriteable, isWriteable2, filename);
-  }
-
-  /* debug
-  static public void main(String[] args) throws IOException {
-    DiskCache2 dc = new DiskCache2("C:/TEMP/test/", false, 0, 0);
-    dc.setRootDirectory("C:/temp/chill/");
-
-    testCanWrite("C:/temp/wms.xml");
-    testCanWrite("C:/temp/junk.txt");
-    testCanWrite("C:/some/enchanted/evening/joots+3478.txt");
-    testCanWrite("C:/Users/mschmidt/test.txt");
-
-    dc.showCache( System.out);
-    StringBuilder sbuff = new StringBuilder();
-    dc.cleanCache(new File( dc.getRootDirectory()), sbuff, true);
-    System.out.println(sbuff);
-  }  */
 
 }

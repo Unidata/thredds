@@ -65,7 +65,9 @@
       <li>now has one cleanup thread for all instances of <em>DiskCache</em>. </li>
       <li>The <em>DiskCache2.exit()</em> method is now static and needs only be called once.</li>
       <li><em>DiskCache2.setLogger()</em> is removed.</li>
+      <li>logging of routine cache cleanup is at the debug level</li>
       <li><em>DiskCache2.cleanCache(File&#32;dir,&#32;StringBuffer&#32;sbuff,&#32;boolean&#32;isRoot)</em> is now    <em>DiskCache2.cleanCache(File&#32;dir,&#32;Formatter&#32;sbuff,&#32;boolean&#32;isRoot)</em>;</li>
+      <li>deprecated methods removed:        <em>setCachePathPolicy(int&#32;cachePathPolicy,&#32;String&#32;cachePathPolicyParam) ,        setPolicy(int&#32;cachePathPolicy)      </em></li>
     </ul>
   </li>
 </ul>

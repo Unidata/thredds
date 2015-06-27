@@ -142,11 +142,6 @@ public class DataRoot {
     return path;
   }
 
-  // debug
-  public String toString2() {
-    return path + "," + dirLocation;
-  }
-
   /**
    * Instances which have same path are equal.
    */

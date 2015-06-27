@@ -79,7 +79,7 @@
   </bean>
 
    <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
-     <entry key="cdmUnitTest" value="${unidata.testdata.path}/cdmUnitTest/"/>
+     <entry key="cdmUnitTest" value="${unidata.testdata.path}/cdmUnitTest"/>
    </util:map>
 
   <bean id="htmlConfig" class="thredds.server.config.HtmlConfigBean">

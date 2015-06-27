@@ -40,6 +40,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,6 +51,7 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.core.DataRootManager;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
+import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 
 /**
@@ -59,10 +63,7 @@ import thredds.util.TdsPathUtils;
 @Controller
 @RequestMapping(value="/admin/log", method=RequestMethod.GET)
 public class AdminLogController {
-	
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private File accessLogDirectory;
-  private List<File> accessLogFiles = new ArrayList<File>(10);
 
   @Autowired
   private TdsContext tdsContext;
@@ -70,22 +71,14 @@ public class AdminLogController {
   @Autowired
   private DataRootManager matcher;
 
-  public void setAccessLogDirectory(String accessLogDirectory) {
-    this.accessLogDirectory = new File(accessLogDirectory);
-    init();
-  }
+  @RequestMapping("/dataroots.txt")
+  protected ResponseEntity<String> showRoots() throws Exception {
+    Formatter f = new Formatter();
+    matcher.showRoots(f);
 
-  private void init() {
-    File[] files = accessLogDirectory.listFiles(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return name.startsWith("access.");
-      }
-    });
-    if (files == null) return;
-
-    for (File f : files) {
-      accessLogFiles.add(f);
-    }
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
+    return new ResponseEntity<>(f.toString(), responseHeaders, HttpStatus.OK);
   }
 
   @RequestMapping( "**")
@@ -93,7 +86,7 @@ public class AdminLogController {
     String path = TdsPathUtils.extractPath(req, "/admin/log");
 
     File file = null;
-    if (path.equals("/access/current")) {
+    if (path.equals("access/current")) {
 
       File dir = tdsContext.getTomcatLogDirectory();
       File[] files = dir.listFiles(new FilenameFilter() {
@@ -110,22 +103,22 @@ public class AdminLogController {
       Collections.sort(fileList);
       file = (File) fileList.get(fileList.size() - 1); // last one
 
-    } else if (path.equals("/access/")) {
+    } else if (path.equals("access/")) {
       showFiles(tdsContext.getTomcatLogDirectory(), "access", res);
 
-    } else if (path.startsWith("/access/")) {
-      file = new File(tdsContext.getTomcatLogDirectory(), path.substring(8));
+    } else if (path.startsWith("access/")) {
+      file = new File(tdsContext.getTomcatLogDirectory(), path.substring(7));
       ServletUtil.returnFile(req, res, file, "text/plain");
       return null;
 
-    } else if (path.equals("/thredds/current")) {
+    } else if (path.equals("thredds/current")) {
       file = new File(tdsContext.getContentDirectory(), "logs/threddsServlet.log");
 
-    } else if (path.equals("/thredds/")) {
+    } else if (path.equals("thredds/")) {
       showFiles(new File(tdsContext.getContentDirectory(),"logs"), "thredds", res);
 
-    } else if (path.startsWith("/thredds/")) {
-      file = new File(tdsContext.getContentDirectory(), "logs/" + path.substring(9));
+    } else if (path.startsWith("thredds/")) {
+      file = new File(tdsContext.getContentDirectory(), "logs/" + path.substring(8));
       ServletUtil.returnFile(req, res, file, "text/plain");
       return null;
 
@@ -144,17 +137,10 @@ public class AdminLogController {
       return null;
   }
 
-  @RequestMapping("/dataroots.txt")
-  protected String showRoots() throws Exception {
-    Formatter f = new Formatter();
-    matcher.showRoots(f);
-    return f.toString();
-  }
-
   private void showFiles(File dir, final String filter, HttpServletResponse res) throws IOException {
     File[] files = dir.listFiles(new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        return name.startsWith(filter);
+        return name.contains(filter);
       }
     });
 

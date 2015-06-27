@@ -155,4 +155,9 @@ public class DataRootExt implements Comparable<DataRootExt> {
   public int compareTo(DataRootExt o) {
     return path.compareTo( o.getPath());
   }
+
+  @Override
+  public String toString() {
+    return path + "," + dirLocation + "," + type;
+  }
 }
