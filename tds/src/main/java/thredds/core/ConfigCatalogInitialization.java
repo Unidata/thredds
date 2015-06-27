@@ -187,7 +187,7 @@ public class ConfigCatalogInitialization {
     boolean databaseAlreadyExists = datasetTracker.exists(); // detect if tracker database exists
     if (!databaseAlreadyExists) {
       readMode = ReadMode.always;
-      logCatalogInit.info("ConfigCatalogInitializion datasetTracker database does not exist, change mode to=" + readMode);
+      logCatalogInit.info("ConfigCatalogInitializion datasetTracker database does not exist, set readMode to=" + readMode);
     }
 
     callback = new StatCallback(readMode);
@@ -294,7 +294,7 @@ public class ConfigCatalogInitialization {
     }
     long lastModified = catalogFile.lastModified();
     if (!isRoot && readMode != ReadMode.always && lastModified < lastRead) return; // skip catalogs that havent changed
-    if (!isRoot && readMode != ReadMode.triggerOnly) return;                    // skip non-root catalogs for trigger only
+    if (!isRoot && readMode == ReadMode.triggerOnly) return;                    // skip non-root catalogs for trigger only
     if (show) System.out.printf("initCatalog %s%n", catalogRelPath);
 
     // make sure we dont already have it
@@ -409,7 +409,7 @@ public class ConfigCatalogInitialization {
       }
 
       if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollectionRef)) continue;
-      if ((ds instanceof CatalogScan && readMode != ReadMode.always)) continue;  // LOOK what about CatalogScan ??
+      if (ds instanceof CatalogScan) continue;
 
       if (ds instanceof CatalogRef) { // follow catalog refs
         CatalogRef catref = (CatalogRef) ds;
