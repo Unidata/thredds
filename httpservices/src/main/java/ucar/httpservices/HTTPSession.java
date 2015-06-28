@@ -60,6 +60,7 @@ import org.apache.http.protocol.HttpContext;
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.lang.reflect.Method;
 import java.net.*;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
@@ -945,7 +946,7 @@ public class HTTPSession implements AutoCloseable
     {
         try {
 	    Class cl = sessionClient.getClass();
-	    Method m = cl.getMethod(HttpUriRequest.class,HttpContext.class);
+	    Method m = cl.getMethod("execute",HttpUriRequest.class,HttpContext.class);
 	} catch (Throwable t) {
 	    t.printStackTrace();
 	    throw new IOException(t);

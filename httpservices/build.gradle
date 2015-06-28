@@ -4,6 +4,7 @@ dependencies {
     compile libraries["jcip-annotations"]
     compile libraries["httpclient"]
     compile libraries["httpcore"]
+    compile libraries["httpmime"]
 
     compile libraries["slf4j-api"]
 }
