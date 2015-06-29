@@ -185,7 +185,14 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     downloadService = allowedServices.getStandardService(StandardService.httpServer);
 
     orgService = parent.getServiceDefault();
-    if (orgService == null) orgService = allowedServices.getStandardServices( fcType.getFeatureType());
+    if (orgService == null) {
+      String orgServiceName = parent.getServiceNameDefault();
+      if (orgServiceName != null)
+        orgService = allowedServices.findGlobalService(orgServiceName);
+    }
+    if (orgService == null) {
+      orgService = allowedServices.getStandardServices( fcType.getFeatureType());
+    }
 
     if (orgService.getType() != ServiceType.Compound) {
       virtualService = orgService;
@@ -300,7 +307,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   // call this first time a request comes in. LOOK could be at construction time i think
   protected void firstInit() {
-    makeDefaultServices();
+    // makeDefaultServices();
   }
 
   /**

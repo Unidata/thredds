@@ -40,6 +40,7 @@ import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * Test catalog utilities
@@ -47,6 +48,20 @@ import java.io.IOException;
 @Category(NeedsCdmUnitTest.class)
 public class TdsLocalCatalog {
   public static boolean showValidationMessages = false;
+
+  public static Catalog openFromURI(URI uri) throws IOException {
+    String catPath = uri.toString();
+    CatalogBuilder builder = new CatalogBuilder();
+    Catalog cat = builder.buildFromLocation(catPath, null);
+    if (builder.hasFatalError()) {
+      System.out.println("Validate failed "+ catPath+" = \n<"+ builder.getErrorMessage()+">");
+      assert false : builder.getErrorMessage();
+    } else if (showValidationMessages)
+      System.out.println("Validate ok "+ catPath+" = \n<"+ builder.getErrorMessage()+">");
+
+    return cat;
+  }
+
 
   public static Catalog open(String catalogName) throws IOException {
     if (catalogName == null) catalogName = "/catalog.xml";

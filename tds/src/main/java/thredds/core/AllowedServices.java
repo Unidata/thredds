@@ -165,6 +165,7 @@ public class AllowedServices {
   }
 
   public Service findGlobalService(String name) {
+    if (name == null) return null;
     return globalServices.get(name);
   }
 

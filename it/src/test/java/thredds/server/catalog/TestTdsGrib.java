@@ -113,49 +113,108 @@ public class TestTdsGrib {
   // work with catalogs with service elements removed
 
   @Test
-  public void testDefaultServices() throws IOException {
-    String catalog = "/catalog/grib5/NDFD/CONUS_5km/catalog.xml";
+  public void testDefaultGribServices() throws IOException {
+    String catalog = "/catalog/grib5/NDFD/CONUS_5km/catalog.xml";  // no service name, should use GRID default
     Catalog cat = TdsLocalCatalog.open(catalog);
-
-    Set<String> ss = new HashSet<>();
-    for (Service s : cat.getServices()) {
-      assert !ss.contains(s.getName()) : "already has "+s;
-      ss.add(s.getName());
-    }
+    testCat(cat, 10, true, null, 0);
 
     Dataset top = cat.getDatasets().get(0);
+    Assert.assertTrue(!top.hasAccess());
     for (Dataset ds : top.getDatasets()) {
-      if (ds instanceof CatalogRef) {
+      if (!(ds instanceof CatalogRef)) {
+        Assert.assertTrue(ds.hasAccess());
+
+      } else {
         CatalogRef catref = (CatalogRef) ds;
-        String name =  catref.getName();
-        assert name != null : "name is null";
-        assert name.length() > 0 : "name is empty";
+        Catalog cat2 = TdsLocalCatalog.openFromURI(catref.getURI());
+        testCat(cat2, 10, false, "GridServices", 11);
+        break;
       }
     }
+
   }
 
   @Test
   public void testGlobalServices() throws IOException {
-    String catalog = "/catalog/gribCollection5/GFS_CONUS_80km/catalog.xml";
+    String catalog = "/catalog/gribCollection5/GFS_CONUS_80km/catalog.xml"; // serviceName ="all" from root catalog
     Catalog cat = TdsLocalCatalog.open(catalog);
-
-    Set<String> ss = new HashSet<>();
-    for (Service s : cat.getServices()) {
-      assert !ss.contains(s.getName()) : "already has "+s;
-      ss.add(s.getName());
-    }
+    testCat(cat, 8, true, null, 0);
 
     Dataset top = cat.getDatasets().get(0);
+    Assert.assertTrue(!top.hasAccess());
     for (Dataset ds : top.getDatasets()) {
-      if (ds instanceof CatalogRef) {
+      if (!(ds instanceof CatalogRef)) {
+        Assert.assertTrue(ds.hasAccess());
+
+      } else {
         CatalogRef catref = (CatalogRef) ds;
-        String name =  catref.getName();
-        assert name != null : "name is null";
-        assert name.length() > 0 : "name is empty";
+        Catalog cat2 = TdsLocalCatalog.openFromURI(catref.getURI());
+        testCat(cat2, 8, false, "all", 9);
+        break;
       }
     }
+
   }
 
+  @Test
+  public void testUserDefinedServices() throws IOException {
+    String catalog = "/catalog/restrictCollection5/GFS_CONUS_80km/catalog.xml"; // serviceName ="cdmremoteOnly" from local catalog
+    Catalog cat = TdsLocalCatalog.open(catalog);
+    Service localServices = cat.findService("cdmremoteOnly");
+    Assert.assertNotNull(localServices);
+    Assert.assertEquals(ServiceType.CdmRemote, localServices.getType());
+
+    Service resolverService = cat.findService("Resolver");
+    Assert.assertNotNull(resolverService);
+    Assert.assertEquals(ServiceType.Resolver, resolverService.getType());
+
+    Dataset top = cat.getDatasets().get(0);
+    Assert.assertTrue(!top.hasAccess());
+    for (Dataset ds : top.getDatasets()) {
+      if (!(ds instanceof CatalogRef)) {
+        Assert.assertTrue(ds.hasAccess());
+
+      } else {
+        CatalogRef catref = (CatalogRef) ds;
+        Catalog cat2 = TdsLocalCatalog.openFromURI(catref.getURI());
+        localServices = cat2.findService("cdmremoteOnly");
+        Assert.assertNotNull(localServices);
+        Assert.assertEquals(ServiceType.CdmRemote, localServices.getType());
+        Assert.assertNull(cat2.findService("Resolver"));
+        break;
+      }
+    }
+   }
+
+  private void testCat(Catalog cat, int virtCount, boolean hasResolver, String orgName, int orgCount) throws IOException {
+    Service virtualServices = cat.findService("VirtualServices");
+    Assert.assertNotNull(virtualServices);
+    Assert.assertEquals(ServiceType.Compound, virtualServices.getType());
+    Assert.assertNotNull(virtualServices.getNestedServices());
+    Assert.assertEquals(virtCount, virtualServices.getNestedServices().size());
+    for (Service sn : virtualServices.getNestedServices())
+      Assert.assertNotEquals(ServiceType.HTTPServer, sn.getType());
+
+    if (hasResolver) {
+      Service resolverService = cat.findService("Resolver");
+      Assert.assertNotNull(resolverService);
+      Assert.assertEquals(ServiceType.Resolver, resolverService.getType());
+    } else {
+      Assert.assertNull(cat.findService("Resolver"));
+    }
+
+    if (orgName != null) {
+      Service orgServices = cat.findService(orgName);
+      Assert.assertNotNull(orgServices);
+      Assert.assertEquals(ServiceType.Compound, orgServices.getType());
+      Assert.assertNotNull(orgServices.getNestedServices());
+      Assert.assertEquals(orgCount, orgServices.getNestedServices().size());
+      boolean hasFileServer = false;
+      for (Service sn : orgServices.getNestedServices())
+        if( ServiceType.HTTPServer == sn.getType()) hasFileServer = true;
+      Assert.assertTrue(hasFileServer);
+    }
+  }
 
 }
 
