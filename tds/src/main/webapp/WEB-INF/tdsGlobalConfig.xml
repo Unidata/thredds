@@ -12,6 +12,7 @@
         <entry key="httpServer" value="true"/>
         <entry key="resolver" value="true"/>
         <entry key="netcdfSubsetGrid" value="true"/>
+        <entry key="netcdfSubsetPoint" value="true"/>
         <entry key="opendap" value="true"/>
         <entry key="wcs" value="true"/>
         <entry key="wms" value="true"/>
@@ -27,6 +28,7 @@
         <value>cdmRemote</value>
         <value>cdmrFeatureGrid</value>
         <value>dap4</value>
+        <value>httpServer</value>
         <value>netcdfSubsetGrid</value>
         <value>wms</value>
         <value>wcs</value>
@@ -35,6 +37,17 @@
         <value>uddc</value>
       </list>
     </property>
+
+    <property name="pointServices">
+      <list>
+        <value>opendap</value>
+        <value>cdmRemote</value>
+        <value>dap4</value>
+        <value>httpServer</value>
+        <value>netcdfSubsetPoint</value>
+      </list>
+    </property>
+
 
   </bean>
 

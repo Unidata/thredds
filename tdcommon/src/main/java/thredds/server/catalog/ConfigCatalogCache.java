@@ -98,6 +98,10 @@ public class ConfigCatalogCache implements CatalogReader {
     cache.invalidate(catKey);
   }
 
+  public void invalidateAll() {
+    cache.invalidateAll();
+  }
+
   public ConfigCatalog getIfPresent(String catKey) throws IOException {
     return cache.getIfPresent(catKey);
   }

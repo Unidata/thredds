@@ -180,11 +180,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     result.setName(dsName);
     if (parent != null)
       result.transferInheritedMetadata(parent); // make all inherited metadata local
+    result.addServiceToCatalog(virtualService);
 
     String tpath = config.path + "/" + COLLECTION;
     ThreddsMetadata tmi = result.getInheritableMetadata();  // LOOK should we be allowed to modify this ??
     tmi.set(Dataset.VariableMapLinkURI, makeUriResolved(catURI, makeMetadataLink(tpath, VARIABLES)));
-    tmi.set(Dataset.ServiceName, Virtual_Services_Name);
+    tmi.set(Dataset.ServiceName, virtualService.getName());
     tmi.set(Dataset.DataFormatType, fromGc.isGrib1 ? DataFormatType.GRIB1.toString() : DataFormatType.GRIB2.toString());
     tmi.set(Dataset.Properties, Property.convertToProperties(fromGc.getGlobalAttributes()));
     tmi.set(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
@@ -237,7 +238,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         boolean isFilePartition = config.ptype == FeatureCollectionConfig.PartitionType.file;
         boolean onlyOneFile = isFilePartition && fromGc.getFiles().size() == 1;
         if (onlyOneFile) {
-          parentCatalog.addService(orgService);
+          result.addServiceToCatalog(orgService);
           tmi.set(Dataset.ServiceName, this.orgService.getName());
           MFile mfile = fromGc.getFile(0);
           result.put(Dataset.DataSize, mfile.getLength());
@@ -274,7 +275,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         ds.setName(getDatasetNameLatest(result.getName()));
         ds.put(Dataset.UrlPath, LATEST_DATASET_CATALOG);
         ds.put(Dataset.Id, LATEST_DATASET_CATALOG);
-        ds.put(Dataset.ServiceName, LATEST_SERVICE);
+        ds.addServiceToCatalog(latestService);
+        ds.put(Dataset.ServiceName, latestService.getName());
         result.addDataset(ds);
       }
 
@@ -329,7 +331,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     result.setHref(buildCatalogServiceHref(dpath));  // LOOK could be plain if not PoP ??
     result.put(Dataset.Id, dpath);
     result.put(Dataset.UrlPath, dpath);
-    result.put(Dataset.ServiceName, Virtual_Services_Name);
+    result.addServiceToCatalog(virtualService);
+    result.put(Dataset.ServiceName, virtualService.getName());
 
     return result;
   }
@@ -347,11 +350,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     DatasetBuilder filesParent = new DatasetBuilder(parent);
     filesParent.setName("Raw Files");
+    filesParent.addServiceToCatalog( downloadService);
     ThreddsMetadata tmi = filesParent.getInheritableMetadata();
-    tmi.set(Dataset.ServiceName, Download_Services_Name);
+    tmi.set(Dataset.ServiceName, downloadService.getName());
     parent.addDataset(filesParent);
-    if (parentCatalog != null)
-      parentCatalog.addService( makeDownloadService());
 
     List<MFile> mfiles = new ArrayList<>(fromGc.getFiles());
     Collections.sort(mfiles);
@@ -378,7 +380,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     CatalogBuilder result = super.makeCatalogTop(catURI, localState);
 
     if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest))
-      result.addService( makeLatestService());
+      result.addService( latestService); // not needed ??
 
     return result;
   }
@@ -443,7 +445,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     result.setName(makeCollectionShortName(fromGc.getName()));
     result.setVersion(parentCatalog.getVersion());
     result.setBaseURI(catURI);
-    result.addService(virtualService);
 
     DatasetBuilder ds = makeDatasetFromCollection(catURI, false, result, parentCollectionName, fromGc);
     result.addDataset(ds);

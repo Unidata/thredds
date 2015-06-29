@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.server.config.TdsContext;
+import ucar.nc2.constants.FeatureType;
 
 import java.util.*;
 
@@ -69,8 +70,9 @@ public class AllowedServices {
   private TdsContext tdsContext;
 
   private Map<StandardService, AllowedService> allowed = new HashMap<>();
-  private List<String> allowedGridServiceNames;
-  private List<Service> allowedGrid = new ArrayList<>();
+  private List<String> allowedGridServiceNames, allowedPointServiceNames;
+  private List<Service> allowedGridServices = new ArrayList<>();
+  private List<Service> allowedPointServices = new ArrayList<>();
   private Map<String, Service> globalServices = new HashMap<>();
 
   // see WEB-INF/tdsGlobalConfig.xml
@@ -88,6 +90,10 @@ public class AllowedServices {
     this.allowedGridServiceNames = list;
   }
 
+  public void setPointServices(List<String> list) {
+    this.allowedPointServiceNames = list;
+  }
+
   public void finish() {
     for (String s : allowedGridServiceNames) {
       StandardService service = StandardService.getStandardServiceIgnoreCase(s);
@@ -96,9 +102,21 @@ public class AllowedServices {
       else {
         AllowedService as = allowed.get(service);
         if (as != null && as.allowed)
-          allowedGrid.add( makeService(as.ss));
+          allowedGridServices.add( makeService(as.ss));
       }
     }
+
+    for (String s : allowedPointServiceNames) {
+      StandardService service = StandardService.getStandardServiceIgnoreCase(s);
+      if (service == null)
+        logServerStartup.error("No service named " + s);
+      else {
+        AllowedService as = allowed.get(service);
+        if (as != null && as.allowed)
+          allowedPointServices.add( makeService(as.ss));
+      }
+    }
+
   }
 
   private Service makeService(StandardService ss) {
@@ -110,8 +128,17 @@ public class AllowedServices {
   ////////////////////////////////////////////////
   // public API
 
-  public List<Service> getGridServices() {
-    return allowedGrid;
+  public Service getStandardServices(FeatureType featType) {
+    if (featType.isGridFeatureType()) {
+      return new Service("GridServices", "", ServiceType.Compound.toString(), null, null, Collections.unmodifiableList(allowedGridServices), null);
+    }
+
+    if (featType.isPointFeatureType()) {
+         //   public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
+         return new Service("PointServices", "", ServiceType.Compound.toString(), null, null, Collections.unmodifiableList(allowedPointServices), null);
+     }
+
+    return null;
   }
 
   public boolean isAllowed(StandardService type) {

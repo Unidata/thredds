@@ -224,12 +224,12 @@ public class Tdm {
     System.out.printf("Tdm startup at %s%n", new Date());
 
     List<FeatureCollectionConfig> fcList = new ArrayList<>();
-    CatalogConfigReader reader = new CatalogConfigReader(catalog, aliasHandler);
+    CatalogConfigReader reader = new CatalogConfigReader(contentThreddsDir, catalog, aliasHandler);
     fcList.addAll(reader.getFcList());
 
     // do the catalogRoots
     for (Resource catr : catalogRoots) {
-      CatalogConfigReader r = new CatalogConfigReader(catr, aliasHandler);
+      CatalogConfigReader r = new CatalogConfigReader(contentThreddsDir, catr, aliasHandler);
       fcList.addAll(r.getFcList());
     }
 

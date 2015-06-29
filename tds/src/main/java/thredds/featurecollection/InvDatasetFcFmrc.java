@@ -144,9 +144,8 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
     try {
       if ((match == null) || (match.length() == 0)) {
-        CatalogBuilder main = makeCatalogTop(catURI, localState);
-        main.addService(virtualService);
-        return main;
+        return makeCatalogTop(catURI, localState);
+
       } else if (match.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs))
         return makeCatalogRuns(catURI, localState);
 
@@ -181,7 +180,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     top.setName(name);
 
     ThreddsMetadata tmi = top.getInheritableMetadata();
-    tmi.set(Dataset.ServiceName, Virtual_Services_Name);
+    tmi.set(Dataset.ServiceName, virtualService.getName());
     if (localState.coverage != null) tmi.set(Dataset.GeospatialCoverage, localState.coverage);
     if (localState.dateRange != null) tmi.set(Dataset.TimeCoverage, localState.dateRange);
     if (localState.vars != null) tmi.set(Dataset.VariableGroups, localState.vars);
@@ -295,10 +294,11 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     DatasetBuilder top = new DatasetBuilder(null);
     top.transferInheritedMetadata(parent); // make all inherited metadata local
     top.setName(name);
+    top.addServiceToCatalog(virtualService);
 
     ThreddsMetadata tmi = top.getInheritableMetadata();  // LOOK allow to change ??
     tmi.set(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
-    tmi.set(Dataset.ServiceName, Virtual_Services_Name);
+    tmi.set(Dataset.ServiceName, virtualService.getName());
     if (localState.coverage != null) tmi.set(Dataset.GeospatialCoverage, localState.coverage);
     if (localState.dateRange != null) tmi.set(Dataset.TimeCoverage, localState.dateRange);
     if (localState.vars != null) tmi.set(Dataset.VariableGroups, localState.vars);

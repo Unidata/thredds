@@ -78,16 +78,15 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
 
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
-  static protected final String LATEST_SERVICE = ServiceType.Resolver.toString();
   static protected final String VARIABLES = "?metadata=variableMap";
   static protected final String FILES = "files";
-  static protected final String Virtual_Services_Name = "VirtualServices"; // exclude HTTPServer
-  static protected final String Default_Services_Name = "DefaultServices";
-  static protected final String Download_Services_Name = ServiceType.HTTPServer.toString();
 
-  static final private String catalogServletName = "/catalog";      // LOOK is this really needed?
-  static protected String contextName = "/thredds";                 // LOOK is this really needed?
+  // can be changed
   static protected AllowedServices allowedServices;
+  static protected String contextName = "/thredds";  // set by TdsInit
+  static public void setLoggerFactory(LoggerFactory fac) {
+    loggerFactory = fac;
+  }
 
   // cant use spring wiring because InvDatasetFeatureCollection not a spring component because depends on catalog config
   static public void setContextName(String c) {
@@ -98,11 +97,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   }
 
   static protected String buildCatalogServiceHref(String path) {
-    return contextName + catalogServletName + "/" + path + "/catalog.xml";
-  }
-
-  static public void setLoggerFactory(LoggerFactory fac) {
-    loggerFactory = fac;
+    return contextName + "/catalog/" + path + "/catalog.xml";
   }
 
   static public InvDatasetFeatureCollection factory(FeatureCollectionRef parent, FeatureCollectionConfig config) {
@@ -154,7 +149,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   // not changed after first call
   protected FeatureCollectionRef parent;
-  protected Service orgService, virtualService;
+  protected Service orgService, virtualService, latestService, downloadService;
   protected org.slf4j.Logger logger;
 
   // from the config catalog
@@ -178,10 +173,35 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     this.fcType = config.type;
     this.config = config;
 
+    makeDefaultServices();
+
     // this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
     this.logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection
     this.logger.info("FeatureCollection added = {}", getConfig());
   }
+
+  protected void makeDefaultServices() {
+    latestService = allowedServices.getStandardService(StandardService.resolver);
+    downloadService = allowedServices.getStandardService(StandardService.httpServer);
+
+    orgService = parent.getServiceDefault();
+    if (orgService == null) orgService = allowedServices.getStandardServices( fcType.getFeatureType());
+
+    if (orgService.getType() != ServiceType.Compound) {
+      virtualService = orgService;
+      return;
+    }
+
+    List<Service> nestedOk = new ArrayList<>();
+    for (Service service : orgService.getNestedServices()) {
+      if (service.getType() != ServiceType.HTTPServer) {
+        nestedOk.add(service);
+      }
+    }
+
+    virtualService = new Service("VirtualServices", "", ServiceType.Compound.toString(), null, null, nestedOk, orgService.getProperties());
+  }
+
 
   //////////////////////////////////////////////////////
   // probably old school
@@ -272,28 +292,6 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   // localState is synched, may be directly changed
   abstract protected void updateCollection(State localState, CollectionUpdateType force);
 
-  // for gridded data (GRID, FMRC), override in point
-  protected Service makeDefaultServices() {
-    List<Service> nested = new ArrayList<>();
-    for (Service s : allowedServices.getGridServices())
-      nested.add(s);
-    return new Service(Default_Services_Name, "", ServiceType.Compound.toString(), null, null, nested, null);
-  }
-
-  protected Service makeVirtualServices(Service org) {
-    if (org.getType() != ServiceType.Compound) return org;
-
-    List<Service> nestedOk = new ArrayList<>();
-    for (Service service : org.getNestedServices()) {
-      if (service.getType() != ServiceType.HTTPServer) {
-        nestedOk.add(service);
-      }
-    }
-
-    // String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
-    return new Service(Virtual_Services_Name, "", ServiceType.Compound.toString(), null, null, nestedOk, org.getProperties());
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   protected String getCatalogHref(String what) {
@@ -302,8 +300,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   // call this first time a request comes in. LOOK could be at construction time i think
   protected void firstInit() {
-    this.orgService = makeDefaultServices();
-    this.virtualService = makeVirtualServices(this.orgService);
+    makeDefaultServices();
   }
 
   /**
@@ -395,14 +392,6 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected Service makeDownloadService() {
-     return allowedServices.getStandardService(StandardService.httpServer);
-   }
-
-  protected Service makeLatestService() {
-     return allowedServices.getStandardService(StandardService.resolver);
-   }
-
   protected String makeFullName(DatasetNode ds) {
     if (ds.getParent() == null) return ds.getName();
     String parentName = makeFullName( ds.getParent());
@@ -476,7 +465,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
       latest.setName(getLatestFileName());
       latest.put(Dataset.UrlPath, LATEST_DATASET_CATALOG);
       latest.put(Dataset.Id, LATEST_DATASET_CATALOG);
-      latest.put(Dataset.ServiceName, LATEST_SERVICE);
+      latest.put(Dataset.ServiceName, latest.getName());
       top.addDataset(latest);
     }
 

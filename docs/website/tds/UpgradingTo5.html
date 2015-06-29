@@ -72,7 +72,7 @@
   </li>
 </ul>
 <h2>Catalog Schema changes</h2>
-<p>Schema version is now 1.2</p>
+<p>Schema version is now 1.2.</p>
 <h3>Client Catalogs</h3>
 <ul>
   <li><strong>service</strong> elements may not be nested inside of <strong>dataset</strong> elements, they must be directly contained in the <strong>catalog</strong> element.</li>
@@ -101,6 +101,14 @@
   <li>User defined services in the root catalog are global and can be referenced by name in any other config catalog. </li>
   <li>User defined services  in non-root catalogs are local to that catalog and override (by name) any global services.</li>
   <li>Standard service  details are <a href="reference/Services.html">here</a></li>
+</ul>
+<h3>Recommendations for 5.0 catalogs</h3>
+<ul>
+  <li>Put all <strong>datasetRoot</strong> elements in root catalog.</li>
+  <li>Put all <strong>catalogScan</strong> elements in root catalog.</li>
+  <li>Use StandardServices when possible. Annotate your datasets with featureType / dataType.</li>
+  <li>Put all user-defined <strong>service</strong> elements in root catalog.</li>
+  <li>Only use  user-defined <strong>service</strong> elements in non-root catalogs when they are experimental or truly a special case.</li>
 </ul>
 <h2>ThreddsConfig.xml</h2>
 <ul>

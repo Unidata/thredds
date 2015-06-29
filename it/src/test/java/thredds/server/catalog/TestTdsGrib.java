@@ -109,5 +109,53 @@ public class TestTdsGrib {
     Assert.assertTrue(gotHttp);
   }
 
+  ///////////////////////////////////////////////////
+  // work with catalogs with service elements removed
+
+  @Test
+  public void testDefaultServices() throws IOException {
+    String catalog = "/catalog/grib5/NDFD/CONUS_5km/catalog.xml";
+    Catalog cat = TdsLocalCatalog.open(catalog);
+
+    Set<String> ss = new HashSet<>();
+    for (Service s : cat.getServices()) {
+      assert !ss.contains(s.getName()) : "already has "+s;
+      ss.add(s.getName());
+    }
+
+    Dataset top = cat.getDatasets().get(0);
+    for (Dataset ds : top.getDatasets()) {
+      if (ds instanceof CatalogRef) {
+        CatalogRef catref = (CatalogRef) ds;
+        String name =  catref.getName();
+        assert name != null : "name is null";
+        assert name.length() > 0 : "name is empty";
+      }
+    }
+  }
+
+  @Test
+  public void testGlobalServices() throws IOException {
+    String catalog = "/catalog/gribCollection5/GFS_CONUS_80km/catalog.xml";
+    Catalog cat = TdsLocalCatalog.open(catalog);
+
+    Set<String> ss = new HashSet<>();
+    for (Service s : cat.getServices()) {
+      assert !ss.contains(s.getName()) : "already has "+s;
+      ss.add(s.getName());
+    }
+
+    Dataset top = cat.getDatasets().get(0);
+    for (Dataset ds : top.getDatasets()) {
+      if (ds instanceof CatalogRef) {
+        CatalogRef catref = (CatalogRef) ds;
+        String name =  catref.getName();
+        assert name != null : "name is null";
+        assert name.length() > 0 : "name is empty";
+      }
+    }
+  }
+
+
 }
 

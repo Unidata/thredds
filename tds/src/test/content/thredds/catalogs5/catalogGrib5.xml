@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Unit Test Server, GRIB Collections with default services"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <!-- test GRIB collections with no service elements  -->
+  <featureCollection featureType="GRIB1" name="GFS_CONUS_80km" path="gribCollection5/GFS_CONUS_80km">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <documentation type="summary">NCEP GFS Model : AWIPS 202 (I) Grid. National - CONUS (polar stereographic).</documentation>
+    </metadata>
+    <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
+    <gribConfig datasetTypes="Best LatestFile Files"/>
+  </featureCollection>
+
+  <featureCollection name="NDFD-CONUS-5km" featureType="GRIB2" harvest="true" path="grib5/NDFD/CONUS_5km">
+    <collection spec="${cdmUnitTest}/datasets/NDFD-CONUS-5km/.*grib2$" timePartition="file" />
+
+    <gribConfig datasetTypes="TwoD LatestFile Files">
+      <pdsHash>
+        <useGenType>true</useGenType>
+      </pdsHash>
+    </gribConfig>
+  </featureCollection>
+
+  <!-- test restricted GRIB collection  -->
+  <featureCollection featureType="GRIB1" name="GFS_CONUS_80km_restricted" path="restrictCollection5/GFS_CONUS_80km" restrictAccess="tiggeData">
+    <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
+  </featureCollection>
+
+</catalog>

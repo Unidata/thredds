@@ -13,13 +13,15 @@ import thredds.util.AliasHandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * LOOK still needed?
+ * TDM catalog reading.
+ * We use the jdom2 elements directly, dont use CatalogBuilder(s)
  *
  * @author John
  * @since 12/18/13
@@ -36,10 +38,10 @@ public class CatalogConfigReader {
 
   Formatter errlog = new Formatter();
   private AliasHandler aliasHandler;
+  private File rootDir;
 
-  public CatalogConfigReader(Resource catR, AliasHandler aliasHandler) throws IOException {
-    //FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("F:/data/grib/idd/modelsNcep.xml#DGEX-CONUS_12km");
-    //if (config != null) fcList.add(config);
+  public CatalogConfigReader(Path rootPath, Resource catR, AliasHandler aliasHandler) throws IOException {
+    this.rootDir = rootPath.toFile();
     this.aliasHandler = aliasHandler;
     readCatalog(catR);
   }
@@ -48,15 +50,7 @@ public class CatalogConfigReader {
     //String catFilename = catR.getURI().toString();
     //if (catFilename.startsWith("file:/")) catFilename = catFilename.substring("file:/".length());
     File catFile = catR.getFile();
-    String fcName = null;
-
-     /* int pos = catalogAndPath.indexOf("#");
-     if (pos > 0) {
-       catFilename = catalogAndPath.substring(0, pos);
-       fcName = catalogAndPath.substring(pos+1);
-     } else {
-       catFilename = catalogAndPath;
-     }  */
+    //String fcName = null;
 
     //File cat = new File(catFilename);
     org.jdom2.Document doc;
@@ -72,7 +66,7 @@ public class CatalogConfigReader {
     // find direct fc elements
     try {
       List<Element> fcElems = new ArrayList<>();
-      findFeatureCollections(root, fcName, fcElems);
+      findNestedElems(root, "featureCollection", fcElems);
       for (Element fcElem : fcElems) {
         String name = "";
         try {
@@ -81,9 +75,9 @@ public class CatalogConfigReader {
           if (!configBuilder.fatalError) {
             name = config.collectionName;
 
-            // check root dir exists
             if (config.spec != null)
               config.spec = aliasHandler.replaceAlias(config.spec);
+
             CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
             Path rootPath = Paths.get(specp.getRootDir());
             if (!Files.exists(rootPath)) {
@@ -104,13 +98,13 @@ public class CatalogConfigReader {
 
     } catch (Throwable e) {
       e.printStackTrace();
-      log.error("Error reading catalog "+catFile.getPath()+" skipping ", e);
+      log.error("Error reading catalog " + catFile.getPath() + " skipping ", e);
     }
 
     // follow catrefs
     try {
       List<Element> catrefElems = new ArrayList<>();
-      findCatalogRefs(root, catrefElems);
+      findNestedElems(root, "catalogRef", catrefElems);
       for (Element catrefElem : catrefElems) {
         String href = catrefElem.getAttributeValue("href", Catalog.xlinkNS);
         File refCat = new File(catFile.getParent(), href);
@@ -121,7 +115,24 @@ public class CatalogConfigReader {
         }
         readCatalog(catRnested);
       }
+    } catch (IllegalStateException e) {
+      e.printStackTrace();
+      log.error("Error follow catrefs in "+catFile.getPath()+" skipping ", e);
+    }
 
+    // follow catscans
+    try {
+      List<Element> catscanElems = new ArrayList<>();
+      findNestedElems(root, "catalogScan", catscanElems);
+      for (Element catscanElem : catscanElems) {
+        String location = catscanElem.getAttributeValue("location");
+        File catDir = new File(rootDir, location);      // LOOK location reletive to rootDir, could be to current dir
+        if (!catDir.exists()) {
+          log.error("Catalog scan directory {} does not exist", catDir);
+          continue;
+        }
+        readCatsInDirectory(catDir.toPath());
+      }
     } catch (IllegalStateException e) {
       e.printStackTrace();
       log.error("Error follow catrefs in "+catFile.getPath()+" skipping ", e);
@@ -130,25 +141,45 @@ public class CatalogConfigReader {
     return true;
   }
 
-  private void findFeatureCollections(Element parent, String name, List<Element> fcElems) {
-    List<Element> elist = parent.getChildren("featureCollection", Catalog.defNS);
-    if (name == null)
-      fcElems.addAll(elist);
-    else {
-      for (Element elem : elist) {
-        if (name.equals(elem.getAttributeValue("name")))
-          fcElems.add(elem);
+  private void findNamedNestedElems(Element parent, String elementName, String attName, List<Element> result) {
+    List<Element> elist = parent.getChildren(elementName, Catalog.defNS);
+    for (Element elem : elist) {
+      if (attName.equals(elem.getAttributeValue("name")))
+        result.add(elem);
+    }
+
+    for (Element child : parent.getChildren("dataset", Catalog.defNS))
+      findNamedNestedElems(child, elementName, attName, result);
+  }
+
+  private void findNestedElems(Element parent, String elementName, List<Element> result) {
+    List<Element> elist = parent.getChildren(elementName, Catalog.defNS);
+    result.addAll(elist);
+
+    for (Element child : parent.getChildren("dataset", Catalog.defNS))
+      findNestedElems(child, elementName, result);
+  }
+
+  private void readCatsInDirectory(Path catDir) throws IOException {
+
+     // do any catalogs first
+    try (DirectoryStream<Path> ds = Files.newDirectoryStream(catDir, "*.xml")) {
+      for (Path p : ds) {
+        if (!Files.isDirectory(p)) {
+          Resource catRnested = new FileSystemResource(p.toFile());
+          readCatalog(catRnested);
+        }
       }
     }
-    for (Element child : parent.getChildren("dataset", Catalog.defNS))
-      findFeatureCollections(child, name, fcElems);
-  }
 
-  private void findCatalogRefs(Element parent, List<Element> catrefElems) {
-    List<Element> elist = parent.getChildren("catalogRef", Catalog.defNS);
-    catrefElems.addAll(elist);
+    // now recurse into the directories
+    try (DirectoryStream<Path> ds = Files.newDirectoryStream(catDir)) {
+       for (Path dir : ds) {
+         if (Files.isDirectory(dir)) {
+           readCatsInDirectory(dir);
+         }
+       }
+     }
+   }
 
-    for (Element child : parent.getChildren("dataset", Catalog.defNS))
-      findCatalogRefs(child, catrefElems);
-  }
 }

@@ -124,7 +124,7 @@ public class JmaTables extends Grib1Customizer {
       case 129:
         return "Temporal variance of N forecasts at 24 hour intervals";
       case 130:
-        return "Average of N forecast products at intervals of P1 - P2";
+        return "Forecast, 6-hour averaged, then one-month averaged";
       case 131:
         return "Temporal variance of N forecasts at intervals of P1 - P2";
       case 132:

@@ -63,7 +63,7 @@ public class CatalogXmlWriter {
   static public void useBytesForDataSize(boolean b) {
     useBytesForDataSize = b;
   }
-  static private final String version = "1.0.7";
+  static private final String version = "1.2";
 
   ////////////////////////////////////////////////////////////////////////
   private boolean raw = false;

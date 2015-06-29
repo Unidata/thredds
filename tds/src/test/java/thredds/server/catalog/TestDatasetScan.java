@@ -69,7 +69,7 @@ public class TestDatasetScan {
   @Test
   public void testMakeCatalog() throws IOException {
     String filePath = "../tds/src/test/content/thredds/catalog.xml";
-    ConfigCatalog cat = TestServerCatalogs.open("file:" + filePath);
+    ConfigCatalog cat = TestConfigCatalogBuilder.open("file:" + filePath);
     CatalogXmlWriter writer = new CatalogXmlWriter();
     // System.out.printf("%s%n",  writer.writeXML( cat ));
 
@@ -98,7 +98,7 @@ public class TestDatasetScan {
 
   @Test
   public void testReverseSort() throws IOException {
-    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+    ConfigCatalog cat = TestConfigCatalogBuilder.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
 
     Dataset ds = cat.findDatasetByID("NWS/NPN/6min");
     assert ds != null;
@@ -142,7 +142,7 @@ public class TestDatasetScan {
 
   @Test
   public void testTimeCoverage() throws IOException, ParseException {
-    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+    ConfigCatalog cat = TestConfigCatalogBuilder.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
 
     Dataset ds = cat.findDatasetByID("NWS/NPN/6min");
     assert ds != null;
@@ -180,7 +180,7 @@ public class TestDatasetScan {
 
   @Test
   public void testLatest() throws IOException, ParseException {
-    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+    ConfigCatalog cat = TestConfigCatalogBuilder.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
 
     Dataset ds = cat.findDatasetByID("NWS/NPN/6min");
     assert ds != null;

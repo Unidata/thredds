@@ -204,8 +204,17 @@ public class CatalogBuilder {
   }
 
   public Catalog makeCatalog() {
+    setServices(getDatasets());
     Map<String, Object> flds = setFields();
     return new Catalog(baseURI, name, flds, datasetBuilders);
+  }
+
+  private void setServices(Iterable<DatasetBuilder> dsIter) {
+    for (DatasetBuilder dsb : dsIter) {
+      for (Service s : dsb.getServices())
+        addService(s);
+      setServices(dsb.getDatasets()); // recurse
+    }
   }
 
   protected Map<String, Object> setFields() {

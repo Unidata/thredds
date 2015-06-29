@@ -34,6 +34,7 @@ package thredds.client.catalog.builder;
 
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
+import thredds.client.catalog.Service;
 import thredds.client.catalog.ThreddsMetadata;
 
 import java.util.*;
@@ -103,6 +104,7 @@ public class DatasetBuilder {
 
   protected List<AccessBuilder> accessBuilders;
   protected List<DatasetBuilder> datasetBuilders;
+  protected List<Service> services;
 
   public DatasetBuilder(DatasetBuilder parent) {
     this.parent = parent;
@@ -157,6 +159,11 @@ public class DatasetBuilder {
     accessBuilders.add(d);
   }
 
+  public void addServiceToCatalog(Service s) {
+    if (services == null) services = new ArrayList<>();
+    services.add(s);
+  }
+
   public Dataset makeDataset(DatasetNode parent) {  // LOOK whats relationship of parent with this.parent ??
     ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
     if (tmi != null) tmi.finish();
@@ -172,6 +179,12 @@ public class DatasetBuilder {
     if (datasetBuilders != null) return datasetBuilders;
     return new ArrayList<>(0);
   }
+
+  public Iterable<Service> getServices() {
+    if (services != null) return services;
+    return new ArrayList<>(0);
+  }
+
 
   /////////////////////////////////////////////////////////////////////////////
 

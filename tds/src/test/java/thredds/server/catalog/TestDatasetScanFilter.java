@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.inventory.MFile;
 import ucar.unidata.test.util.TestDir;
@@ -133,7 +134,7 @@ public class TestDatasetScanFilter {
 
   @Test
   public void testWildcardFilter() throws IOException {
-    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+    ConfigCatalog cat = TestConfigCatalogBuilder.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
 
     Dataset ds = cat.findDatasetByID("testGridScan");
     assert ds != null;
@@ -175,7 +176,7 @@ public class TestDatasetScanFilter {
 
   @Test
   public void testRegexpFilter() throws IOException {
-    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+    ConfigCatalog cat = TestConfigCatalogBuilder.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
 
     Dataset ds = cat.findDatasetByID("testGridScanReg");
     assert ds != null;
@@ -214,7 +215,7 @@ public class TestDatasetScanFilter {
 
   @Test
   public void testExcludeDir() throws IOException {
-    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+    ConfigCatalog cat = TestConfigCatalogBuilder.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
     CatalogXmlWriter writer = new CatalogXmlWriter();
     System.out.printf("%n%s%n", writer.writeXML(cat));
 
@@ -244,9 +245,19 @@ public class TestDatasetScanFilter {
     assert scanCat.getDatasets().size() == 1;
     root = scanCat.getDatasets().get(0);
     assert root.getDatasets().size() == 3;
+  }
 
-    scanCat = dss.makeCatalogForDirectory("testGridScanReg/testDatafilesInDateTimeNestedDirs/profiles/20131107", cat.getBaseURI()).makeCatalog();
-    assert scanCat == null;
+  @Test
+  public void testExcludeDirFails() throws IOException {
+    ConfigCatalog cat = TestConfigCatalogBuilder.getFromResource("thredds/server/catalog/TestDatasetScan.xml");;
+    assert cat != null;
+
+    Dataset ds = cat.findDatasetByID("testExclude");
+    assert ds != null;
+    assert (ds instanceof DatasetScan);
+    DatasetScan dss = (DatasetScan) ds;
+    CatalogBuilder catb = dss.makeCatalogForDirectory("testGridScanReg/testDatafilesInDateTimeNestedDirs/profiles/20131107", cat.getBaseURI());
+    assert catb == null;
   }
 
   @Test

@@ -72,9 +72,6 @@ public class ConfigCatalogInitialization {
   @Autowired
   private TdsContext tdsContext;  // used for  getContentDirectory, contextPath
 
-  //@Autowired
-  //private CatalogWatcher catalogWatcher;
-
   @Autowired
   private AllowedServices allowedServices;
 
@@ -181,8 +178,9 @@ public class ConfigCatalogInitialization {
     logCatalogInit.info("ConfigCatalogInitializion readMode={} isStartup={}", readMode, isStartup);
     catPathHash = new HashSet<>();
     idHash = new HashSet<>();
-    if (!isStartup && readMode == ReadMode.always) trackerNumber++;  // must write a new database if TDS is already running and rereading all
+    ccc.invalidateAll();
 
+    if (!isStartup && readMode == ReadMode.always) trackerNumber++;  // must write a new database if TDS is already running and rereading all
     this.datasetTracker = new DatasetTrackerChronicle(trackerDir, maxDatasetsToTrack, trackerNumber);
     boolean databaseAlreadyExists = datasetTracker.exists(); // detect if tracker database exists
     if (!databaseAlreadyExists) {
@@ -246,6 +244,10 @@ public class ConfigCatalogInitialization {
 
     long took = System.currentTimeMillis() - start;
     logCatalogInit.info("ConfigCatalogInitializion finished took={} msecs", took);
+
+    // cleanup
+    catPathHash = new HashSet<>();
+    idHash = new HashSet<>();
   }
 
   private void readRootCatalogs(ReadMode readMode) {
@@ -317,7 +319,6 @@ public class ConfigCatalogInitialization {
       if (ccc != null) ccc.put(catalogRelPath, cat);
       allowedServices.addGlobalServices(cat.getServices());
       if (readMode == ReadMode.triggerOnly) return;                    // thats all we need
-
     }
 
     if (callback != null) callback.hasCatalogRef(cat);

@@ -63,13 +63,6 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     return fd;
   }
 
-  // for point data
-  protected Service makeDefaultServices() {
-    List<Service> nested = new ArrayList<>();
-    if (allowedServices.isAllowed(StandardService.netcdfSubsetPoint))
-      nested.add(allowedServices.getStandardService(StandardService.netcdfSubsetPoint));
-    return new Service(Default_Services_Name, "", ServiceType.Compound.toString(), null, null, nested, null);
-  }
 
   @Override
   public void updateCollection(State localState, CollectionUpdateType force) {
@@ -107,10 +100,11 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     DatasetBuilder top = new DatasetBuilder(null);
     top.transferInheritedMetadata(parent); // make all inherited metadata local
     top.setName(name);
+    top.addServiceToCatalog(virtualService);
 
     ThreddsMetadata tmi = top.getInheritableMetadata();
     tmi.set(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
-    tmi.set(Dataset.ServiceName, Virtual_Services_Name);
+    tmi.set(Dataset.ServiceName, virtualService.getName());
     if (localState.coverage != null) tmi.set(Dataset.GeospatialCoverage, localState.coverage);
     if (localState.dateRange != null) tmi.set(Dataset.TimeCoverage, localState.dateRange);
     if (localState.vars != null) tmi.set(Dataset.VariableGroups, localState.vars);

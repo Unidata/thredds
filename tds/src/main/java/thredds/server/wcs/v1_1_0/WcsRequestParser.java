@@ -68,10 +68,8 @@ public class WcsRequestParser {
     Request request; // The Request object to be built and returned.
     Request.Operation operation;
     String datasetPath = TdsPathUtils.extractPath(req, "wcs/");
-    GridDataset dataset = null;
 
-    try {
-      dataset = TdsRequestedDataset.getGridDataset(req, res, null);
+    try (GridDataset dataset = TdsRequestedDataset.getGridDataset(req, res, null)) {
       if (dataset == null) return null;
 
       // GetCapabilities request info
@@ -125,11 +123,6 @@ public class WcsRequestParser {
         throw new WcsException(WcsException.Code.OperationNotSupported, requestParam, "");
 
       return request;
-    } catch (Throwable e) {
-      if (dataset != null)
-        dataset
-                .close();
-      throw new RuntimeException(e);
     }
   }
 

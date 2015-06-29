@@ -212,4 +212,6 @@
   <catalogRef xlink:title="update JoinExisting Agg" xlink:href="catalogUpdateAgg.xml" name=""/>
   <catalogRef xlink:title="Radar Collections" xlink:href="radar/radarCollections.xml" name=""/>
 
+  <catalogScan location="catalogs5" path="catalogs5" name="catalog scan with version 5 features"/>
+
 </catalog>
