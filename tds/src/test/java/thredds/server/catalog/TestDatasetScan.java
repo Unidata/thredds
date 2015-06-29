@@ -39,6 +39,7 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
 import thredds.client.catalog.tools.CatalogXmlWriter;
+import thredds.core.StandardService;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
@@ -52,7 +53,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Describe
+ * Test DatasetScan
  *
  * @author caron
  * @since 1/21/2015
@@ -64,6 +65,8 @@ public class TestDatasetScan {
   @Before
   public void setup() {
     AliasTranslator.addAlias("${cdmUnitTest}", TestDir.cdmUnitTestDir);
+    StandardService ss = StandardService.resolver;
+    DatasetScan.setLatestService(new Service(ss.getType().toString(), ss.getBase(), ss.getType().toString(), null, null, null, null));
   }
 
   @Test
@@ -202,7 +205,7 @@ public class TestDatasetScan {
 
     Service latestService = null;
     for (Service s : scanCat.getServices()) {
-      if (s.getName().equals("latest")) latestService = s;
+      if (s.getName().equalsIgnoreCase("Resolver")) latestService = s;
     }
     assert latestService != null;
 

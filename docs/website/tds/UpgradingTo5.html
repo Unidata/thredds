@@ -89,7 +89,8 @@
 <h3>DatasetScan</h3>
 <ul>
   <li><strong>addID</strong> is no longer needed, ids are always added</li>
-  <li><strong>addDatasetSizeElement</strong> is no longer needed, the dataset size is always added</li>
+  <li><strong>addDatasetSize </strong> is no longer needed, the dataset size is always added</li>
+  <li><strong>service</strong> name is no longer used, it is always <em>Resolver</em>, and the correct service is automatically added. Use <strong>addLatest</strong> attribute for simple case.</li>
   <li><strong>sort: </strong>by default, datasets at each collection level are listed
   in ascending order by filename</li>
   <li><strong>User pluggable classes implementing UserImplType</strong> (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl, crawlableDatasetSorterImpl) are no longer supported. This was never officially released or documented.</li>

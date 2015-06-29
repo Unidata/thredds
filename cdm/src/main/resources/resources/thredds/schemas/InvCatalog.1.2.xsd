@@ -592,7 +592,6 @@
             <xsd:element ref="sort" minOccurs="0" maxOccurs="1"/>          <!-- LOOK ?? -->
             <xsd:element ref="addLatest" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="addProxies" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="addDatasetSize" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="addTimeCoverage" minOccurs="0" maxOccurs="1"/>
           </xsd:sequence>
 

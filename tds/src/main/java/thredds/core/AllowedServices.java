@@ -37,7 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import thredds.client.catalog.*;
+import thredds.client.catalog.Service;
+import thredds.client.catalog.ServiceType;
 import thredds.server.config.TdsContext;
 import ucar.nc2.constants.FeatureType;
 
@@ -45,8 +46,9 @@ import java.util.*;
 
 /**
  * These are the services that the TDS can do.
- * @see "src/main/webapp/WEB-INF/tdsGlobalConfig.xml"
+ *
  * @author caron
+ * @see "src/main/webapp/WEB-INF/tdsGlobalConfig.xml"
  * @since 1/23/2015
  */
 @Component
@@ -70,9 +72,10 @@ public class AllowedServices {
   private TdsContext tdsContext;
 
   private Map<StandardService, AllowedService> allowed = new HashMap<>();
-  private List<String> allowedGridServiceNames, allowedPointServiceNames;
+  private List<String> allowedGridServiceNames, allowedPointServiceNames, allowedRadialServiceNames;
   private List<Service> allowedGridServices = new ArrayList<>();
   private List<Service> allowedPointServices = new ArrayList<>();
+  private List<Service> allowedRadialServices = new ArrayList<>();
   private Map<String, Service> globalServices = new HashMap<>();
 
   // see WEB-INF/tdsGlobalConfig.xml
@@ -94,6 +97,10 @@ public class AllowedServices {
     this.allowedPointServiceNames = list;
   }
 
+  public void setRadialServices(List<String> list) {
+    this.allowedRadialServiceNames = list;
+  }
+
   public void finish() {
     for (String s : allowedGridServiceNames) {
       StandardService service = StandardService.getStandardServiceIgnoreCase(s);
@@ -102,7 +109,7 @@ public class AllowedServices {
       else {
         AllowedService as = allowed.get(service);
         if (as != null && as.allowed)
-          allowedGridServices.add( makeService(as.ss));
+          allowedGridServices.add(makeService(as.ss));
       }
     }
 
@@ -113,10 +120,20 @@ public class AllowedServices {
       else {
         AllowedService as = allowed.get(service);
         if (as != null && as.allowed)
-          allowedPointServices.add( makeService(as.ss));
+          allowedPointServices.add(makeService(as.ss));
       }
     }
 
+    for (String s : allowedRadialServiceNames) {
+      StandardService service = StandardService.getStandardServiceIgnoreCase(s);
+      if (service == null)
+        logServerStartup.error("No service named " + s);
+      else {
+        AllowedService as = allowed.get(service);
+        if (as != null && as.allowed)
+          allowedRadialServices.add(makeService(as.ss));
+      }
+    }
   }
 
   private Service makeService(StandardService ss) {
@@ -130,7 +147,7 @@ public class AllowedServices {
 
   public Service getStandardServices(String featTypeName) {
     FeatureType ft = FeatureType.getType(featTypeName);
-    return (ft == null) ? null :  getStandardServices(ft);
+    return (ft == null) ? null : getStandardServices(ft);
   }
 
   public Service getStandardServices(FeatureType featType) {
@@ -139,9 +156,12 @@ public class AllowedServices {
     }
 
     if (featType.isPointFeatureType()) {
-         //   public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
-         return new Service("PointServices", "", ServiceType.Compound.toString(), null, null, Collections.unmodifiableList(allowedPointServices), null);
-     }
+      return new Service("PointServices", "", ServiceType.Compound.toString(), null, null, Collections.unmodifiableList(allowedPointServices), null);
+    }
+
+    if (featType == FeatureType.RADIAL) {
+      return new Service("RadiaalServices", "", ServiceType.Compound.toString(), null, null, Collections.unmodifiableList(allowedRadialServices), null);
+    }
 
     return null;
   }
@@ -155,7 +175,7 @@ public class AllowedServices {
   public Service getStandardService(StandardService type) {
     AllowedService s = allowed.get(type);
     if (s == null) return null;
-    return !s.allowed? null : makeService(s.ss);
+    return !s.allowed ? null : makeService(s.ss);
   }
 
   public void addGlobalServices(List<Service> services) {
@@ -204,13 +224,13 @@ public class AllowedServices {
 
   private AllowedService findByService(Service service) {
     for (AllowedService entry : allowed.values()) {
-       if (entry.ss.type == service.getType()) {
-         if (entry.ss.type == ServiceType.NetcdfSubset) { // have to special case this
-           if (!service.getBase().startsWith( entry.ss.base)) continue; // keep going
-         }
-         return entry; // otherwise we found it
-       }
-     }
+      if (entry.ss.type == service.getType()) {
+        if (entry.ss.type == ServiceType.NetcdfSubset) { // have to special case this
+          if (!service.getBase().startsWith(entry.ss.base)) continue; // keep going
+        }
+        return entry; // otherwise we found it
+      }
+    }
     return null;
   }
 

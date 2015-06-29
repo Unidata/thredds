@@ -45,6 +45,21 @@
         <value>dap4</value>
         <value>httpServer</value>
         <value>netcdfSubsetPoint</value>
+        <value>iso</value>
+        <value>ncml</value>
+        <value>uddc</value>
+      </list>
+    </property>
+
+    <property name="radialServices">
+      <list>
+        <value>opendap</value>
+        <value>cdmRemote</value>
+        <value>dap4</value>
+        <value>httpServer</value>
+        <value>iso</value>
+        <value>ncml</value>
+        <value>uddc</value>
       </list>
     </property>
 

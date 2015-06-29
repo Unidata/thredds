@@ -217,7 +217,7 @@ So, when cataloged, this dataset would end up  like this (note that only the nam
 
 <h3><a name="addProxies_Element" id="addProxies_Element"></a>addProxies Element<br/>
 </h3>
-<pre>&lt;xsd:element name=&quot;addProxies&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:sequence&gt;<br/>      &lt;xsd:element name=&quot;simpleLatest&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>      &lt;xsd:element name=&quot;latestComplete&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;lastModifiedLimit&quot; type=&quot;xsd:float&quot;/&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>    &lt;/xsd:sequence&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;<br/></pre>
+<pre>&lt;xsd:element name=&quot;addProxies&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:sequence&gt;<br/>      &lt;xsd:element name=&quot;simpleLatest&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;  &lt;!-- not used --&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>      &lt;xsd:element name=&quot;latestComplete&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;  &lt;!-- not used --&gt;<br/>          &lt;xsd:attribute name=&quot;lastModifiedLimit&quot; type=&quot;xsd:float&quot;/&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>    &lt;/xsd:sequence&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;<br/></pre>
 <p>The <em>addProxies</em> element<strong></strong> provides a place for
   describing proxy datasets to be added to each collection
   dataset under a datasetScan.<br/>
@@ -228,12 +228,11 @@ So, when cataloged, this dataset would end up  like this (note that only the nam
   the scanned collection. The first type of proxy dataset, specified by
   the <em>simpleLatest</em> element, adds a dataset that proxies the existing dataset whose name is
   lexigraphically greatest. This dataset will be the &quot;latest&quot; if the
-  dataset name contains a timestamp. The <em>simpleLatest</em> element may contain a <em>name</em> attribute which is used as the name of the proxy dataset, the <em>serviceName</em>
-  attribute that references the <em>service</em> element that is to be referenced by the resulting proxy dataset, and the <em>top</em> attribute which indicates if
+  dataset name contains a timestamp. The <em>simpleLatest</em> element may contain a <em>name</em> attribute which is used as the name of the proxy dataset, and the <em>top</em> attribute which indicates if
   the proxy dataset should appear at the top
   or bottom of the list of dataset in this collection. Default behavior
   in the TDS if any these attributes are missing is to name the dataset
-  &quot;latest.xml&quot;, reference the &quot;latest&quot; service, and place the dataset at
+  &quot;latest.xml&quot;, and place the dataset at
   the top of the collection.<br/>
 </p>
 

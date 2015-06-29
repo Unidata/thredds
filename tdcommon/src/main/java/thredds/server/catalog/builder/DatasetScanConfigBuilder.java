@@ -365,14 +365,6 @@ public class DatasetScanConfigBuilder {
             }
           }
 
-          // Get the latest service name.
-          String serviceName = curChildElem.getAttributeValue("serviceName");
-          if (serviceName == null) {
-            errlog.format("WARN: readDatasetScanAddProxies(): no service name given in latestComplete.%n");
-            continue;
-          }
-
-
           // Get lastModifed limit.
           String lastModLimitVal = curChildElem.getAttributeValue("lastModifiedLimit");
           long lastModLimit;
@@ -388,7 +380,7 @@ public class DatasetScanConfigBuilder {
             if (isResolverString.equalsIgnoreCase("false"))
               isResolver = false;
 
-          return new DatasetScanConfig.AddLatest(latestName, serviceName, latestOnTop, isResolver, lastModLimit);
+          return new DatasetScanConfig.AddLatest(latestName, latestOnTop, isResolver, lastModLimit);
         }
       }
     }
@@ -401,7 +393,6 @@ public class DatasetScanConfigBuilder {
     // Default values is simpleLatestElem is null.
     String latestName = "latest.xml";
     boolean latestOnTop = true;
-    String latestServiceName = "latest";
     boolean isResolver = true;
 
     // If simpleLatestElem exists, read values.
@@ -421,11 +412,6 @@ public class DatasetScanConfigBuilder {
         }
       }
 
-      // Get the latest service name.
-      String tmpLatestServiceName = simpleLatestElem.getAttributeValue("serviceName");
-      if (tmpLatestServiceName != null)
-        latestServiceName = tmpLatestServiceName;
-
       // Get isResolver.
       String isResolverString = simpleLatestElem.getAttributeValue("isResolver");
       if (isResolverString != null)
@@ -433,7 +419,7 @@ public class DatasetScanConfigBuilder {
           isResolver = false;
     }
 
-    return new DatasetScanConfig.AddLatest(latestName, latestServiceName, latestOnTop, isResolver, -1);
+    return new DatasetScanConfig.AddLatest(latestName, latestOnTop, isResolver, -1);
   }
 
 /*

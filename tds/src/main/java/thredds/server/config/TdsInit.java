@@ -46,9 +46,11 @@ import thredds.client.catalog.tools.DataFactory;
 import thredds.core.AllowedServices;
 import thredds.core.ConfigCatalogInitialization;
 import thredds.core.DatasetManager;
+import thredds.core.StandardService;
 import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.catalog.ConfigCatalogCache;
+import thredds.server.catalog.DatasetScan;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.util.LoggerFactorySpecial;
@@ -231,6 +233,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
     allowedServices.finish(); // finish when we know everything is wired
     InvDatasetFeatureCollection.setAllowedServices(allowedServices);
+    DatasetScan.setLatestService(allowedServices.getStandardService(StandardService.resolver));
 
     /* <Netcdf4Clibrary>
        <libraryPath>C:/cdev/lib/</libraryPath>

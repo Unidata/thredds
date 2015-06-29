@@ -45,8 +45,10 @@ import java.util.regex.Pattern;
 
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Service;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
+import thredds.core.StandardService;
 import thredds.inventory.MFile;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
@@ -96,6 +98,9 @@ public class TestDatasetScanFilter {
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131107_0014.nc");
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131108_0016.nc");
 
+    StandardService ss = StandardService.resolver;
+
+    DatasetScan.setLatestService(new Service(ss.getType().toString(), ss.getBase(), ss.getType().toString(), null, null, null, null));
   }
 
   /* public void createEtaDirWithCvsAndDotGitDirs( File targetDir) {

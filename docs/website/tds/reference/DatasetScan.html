@@ -195,9 +195,9 @@
 <h2><a name="Adding_Proxy_Datasets"></a>Adding a Link to the &quot;Latest&quot; Dataset</h2>
 <p>For real-time data you may want to have a special link that points to the &quot;latest&quot; data in the collection. Here, latest  means the last filename in a  list sorted by name, so its only the latest if the time stamp is in the filename and the name  sorts correctly by time.</p>
 <p>The simplest way to enable this is to add the attribute <em>addLatest=&quot;true&quot;</em> to the <strong>datasetScan</strong> element. In this case, the default values are used:  <strong>name</strong>  =
-"latest.xml",  <strong>top</strong> = "true", and  <strong>serviceName</strong> = "latest".</p>
+"latest.xml",  <strong>top</strong> = "true"".</p>
 
-<p>The <strong>addProxies</strong> element allows more control over how latest is displayed. The <strong>simpleLatest</strong> element allows you to change the default values <strong>(name, top, serviceName</strong>). The <strong>latestComplete</strong> element adds the ability to exclude files which have changed within a specified amount of time, eg to exclude files that are still being written.</p>
+<p>The <strong>addProxies</strong> element allows more control over how latest is displayed. The <strong>simpleLatest</strong> element allows you to change the default values <strong>(name, top</strong>). The <strong>latestComplete</strong> element adds the ability to exclude files which have changed within a specified amount of time, eg to exclude files that are still being written.</p>
 <p>Example:</p>
 
 
@@ -206,21 +206,20 @@
 &lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver" &gt;
   &lt;addProxies&gt;
     &lt;simpleLatest/&gt;
-    &lt;latestComplete name="<strong>latestComplete.xml</strong>" top="true" serviceName="latest" lastModifiedLimit="60000" /&gt;
+    &lt;latestComplete name="<strong>latestComplete.xml</strong>" top="true" lastModifiedLimit="60000" /&gt;
   &lt;/addProxies&gt;
 &lt;/datasetScan&gt;
 </pre>
 
 
-<p>The <strong>latestComplete</strong> element includes a <strong>name</strong> attribute which provides the name of the proxy dataset, the
-  <strong>serviceName</strong> attribute that references the service used by the proxy dataset, the <strong>top</strong>
+<p>The <strong>latestComplete</strong> element includes a <strong>name</strong> attribute which provides the name of the proxy dataset, the <strong>top</strong>
   attribute which indicates if the proxy dataset should appear at the top
   or bottom of the list of datasets in this collection, and the <strong>lastModifiedLimit</strong> which sets a time period  in millisecs which the dataset must not have been modified..</p>
 
 
 <p>The <strong>simpleLatest</strong> element allows for the same attributes as the <strong>latestComplete</strong> element minus the
   <strong>lastModifiedLimit</strong> attribute. In this case, all the attributes have default values: the <strong>name</strong> attribute defaults to
-  "latest.xml", the <strong>top</strong> attribute defaults to "true", and the <strong>serviceName</strong> attribute defaults to "latest".</p>
+  "latest.xml", the <strong>top</strong> attribute defaults to "true".</p>
 
 
 <p>While you wouldn't put two latest datasest in the same scan, the example shows both: </p>

@@ -67,6 +67,11 @@ import java.util.*;
 @Immutable
 public class DatasetScan extends CatalogRef {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetScan.class);
+  static private Service latestService;
+
+  static public void setLatestService(Service _latestService) {
+    latestService = _latestService;
+  }
 
   private final DatasetScanConfig config;
   private final AddTimeCoverageEnhancer addTimeCoverage;
@@ -402,7 +407,8 @@ public class DatasetScan extends CatalogRef {
     proxy.setName(config.addLatest.latestName);
     proxy.put(Dataset.UrlPath, config.addLatest.latestName);
     proxy.put(Dataset.Id, parentId + config.addLatest.latestName);
-    proxy.put(Dataset.ServiceName, config.addLatest.latestServiceName);
+    proxy.put(Dataset.ServiceName, latestService.getName());
+    proxy.addServiceToCatalog(latestService);
     return proxy;
   }
 

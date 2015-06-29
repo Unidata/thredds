@@ -102,21 +102,19 @@ public class DatasetScanConfig {
   }
 
   public static class AddLatest {
-    String latestName, latestServiceName;
+    String latestName;
     boolean latestOnTop, isResolver;
     long lastModLimit;
 
     public AddLatest() {
       latestName = "latest.xml";
       latestOnTop = true;
-      latestServiceName = "latest";
       isResolver = true;
       lastModLimit = -1;
     }
 
-    public AddLatest(String latestName, String latestServiceName, boolean latestOnTop, boolean isResolver, long lastModLimit) {
+    public AddLatest(String latestName, boolean latestOnTop, boolean isResolver, long lastModLimit) {
       this.latestName = latestName;
-      this.latestServiceName = latestServiceName;
       this.latestOnTop = latestOnTop;
       this.isResolver = isResolver;
       this.lastModLimit = lastModLimit;
