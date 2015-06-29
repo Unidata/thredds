@@ -62,7 +62,6 @@ import java.util.*;
 /**
  * Builds client Catalogs using JDOM2
  * Non validating.
- * If you want validation, consider calling saxBuilder.setEntityResolver();
  *
  * @author caron
  * @since 1/8/2015
@@ -75,9 +74,8 @@ public class CatalogBuilder {
   }
 
   //////////////////////////////////////////////////////////////////////////////////
-
-  // protected String location; // read from where?
-  private Map<String, Service> serviceMap = new HashMap<>();
+  // used when reading from XML
+  private Map<String, Service> serviceMap = new HashMap<>(); // LOOK why not instead of services ?
   protected Formatter errlog = new Formatter();
   protected boolean fatalError = false;
 
@@ -156,6 +154,16 @@ public class CatalogBuilder {
   protected List<Service> services;
   protected List<DatasetBuilder> datasetBuilders;
 
+  public CatalogBuilder() {}
+
+  public CatalogBuilder(Catalog from) {
+    this.name = from.getName();
+    this.expires = from.getExpires();
+    this.baseURI = from.getBaseURI();
+    this.properties = from.getProperties();
+    this.services = from.getServices();  // ??
+  }
+
   public void setName(String name) {
     this.name = name;
   }
@@ -191,17 +199,7 @@ public class CatalogBuilder {
     datasetBuilders.add(d);
   }
 
-  public Iterable<DatasetBuilder> getDatasets() {
-    if (datasetBuilders != null) return datasetBuilders;
-    return new ArrayList<>(0);
-  }
-
-  public boolean hasService(String name) {
-    if (services == null) return false;
-    for (Service s : services)
-      if (s.getName().equalsIgnoreCase(name)) return true;
-    return false;
-  }
+  ////////////////////////////////////////////////////////////////
 
   public Catalog makeCatalog() {
     setServices(getDatasets());
@@ -209,6 +207,7 @@ public class CatalogBuilder {
     return new Catalog(baseURI, name, flds, datasetBuilders);
   }
 
+  // pull services out of the datasets and into the catalog
   private void setServices(Iterable<DatasetBuilder> dsIter) {
     for (DatasetBuilder dsb : dsIter) {
       for (Service s : dsb.getServices())
@@ -228,10 +227,27 @@ public class CatalogBuilder {
     return flds;
   }
 
+  ///////////////////////////////////////////////////////////
+  // get
+
   public DatasetBuilder getTop() {
     if (datasetBuilders == null) return null;
     return datasetBuilders.get(0);
   }
+
+  public Iterable<DatasetBuilder> getDatasets() {
+    if (datasetBuilders != null) return datasetBuilders;
+    return new ArrayList<>(0);
+  }
+
+  public boolean hasService(String name) {
+    if (services == null) return false;
+    for (Service s : services)
+      if (s.getName().equalsIgnoreCase(name)) return true;
+    return false;
+  }
+
+
 
   /////////////////////////////////////////////////////////////////////
   // JDOM

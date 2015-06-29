@@ -51,6 +51,12 @@ public class CatalogRefBuilder extends DatasetBuilder {
     super(parent);
   }
 
+  public CatalogRefBuilder(DatasetBuilder parent, CatalogRef from) {
+    super(parent, from);
+    this.title = from.getName();
+    this.href = from.getXlinkHref();
+  }
+
   public void setTitle(String title) {
     this.title = title;
   }

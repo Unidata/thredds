@@ -58,6 +58,14 @@ public class AccessBuilder {
     this.dataSize = dataSize;
   }
 
+  public AccessBuilder(DatasetBuilder dataset, Access from) {
+    this.dataset = dataset;
+    this.urlPath = from.getUrlPath();
+    this.service = from.getService();
+    this.dataFormatS = from.getDataFormatName();
+    this.dataSize = from.getDataSize();
+  }
+
   public Access makeAccess(Dataset dataset) {
     return new Access(dataset, urlPath, service, dataFormatS, dataSize);
   }

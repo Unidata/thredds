@@ -98,7 +98,7 @@ public class DatasetBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  protected DatasetBuilder parent;
+  protected DatasetBuilder parent;  // null when its a top level dataset
   protected String name;
   protected Map<String, Object> flds = new HashMap<>(10);
 
@@ -110,8 +110,25 @@ public class DatasetBuilder {
     this.parent = parent;
   }
 
+  // turn a Dataset back into a DatasetBuilder so it mutable
+  public DatasetBuilder(DatasetBuilder parent, Dataset from) {
+    this.parent = parent;
+    this.name = from.getName();
+    for (Map.Entry<String, Object> entry : from.getFldIterator()) {
+      if (!entry.getKey().equals(Dataset.Datasets) && !entry.getKey().equals(Dataset.Access)) // set seperately
+        this.flds.put(entry.getKey(), entry.getValue());
+    }
+  }
+
   public DatasetBuilder getParent() {
     return parent;
+  }
+
+  public Object getInherited(String fldName) {
+    Object value = flds.get(fldName);
+    if (value != null) return value;
+    if (parent != null) return parent.getInherited(fldName);
+    return null;
   }
 
   public Object get(String fldName) {

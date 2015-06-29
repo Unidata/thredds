@@ -156,18 +156,4 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     return new ConfigCatalog(baseURI, name, flds, datasetBuilders);
   }
 
-
-  static public ConfigCatalog makeCatalogWithServices(ConfigCatalog cc, List<Service> services) {
-    Map<String, Object> flds = new HashMap<>();
-
-    for (Map.Entry<String, Object> entry : cc.getFldIterator()) {
-      flds.put(entry.getKey(), entry.getValue());
-    }
-    flds.put(Catalog.Services, services);
-
-    //   public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
-
-    return new ConfigCatalog(cc.getBaseURI(), cc.getName(), flds, null);
-  }
-
 }

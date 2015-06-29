@@ -69,7 +69,7 @@ public class Catalog extends DatasetNode {
   public static final String DatasetHash = "DatasetHash";       // Map<String,Dataset>
   public static final String DatasetRoots = "DatasetRoots";     // List<DatasetRootConfig>
   public static final String Expires = "Expires";               // CalendarDate
-  public static final String Services = "Services";             // List<Service>
+  public static final String Services = "Services";             // List<Service>  (LOOK what about using Map ?)
   public static final String Version = "Version";               // String
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -137,12 +137,25 @@ public class Catalog extends DatasetNode {
 
   public List<Property> getProperties() {
     List<Property> properties = (List<Property>) flds.get(Dataset.Properties);
-    return properties == null ? new ArrayList<Property>(0) : properties;
+    return properties == null ? new ArrayList<>(0) : properties;
   }
 
   public Dataset findDatasetByID( String id) {
     Map<String, Dataset> datasetMap = (Map<String, Dataset>) flds.get(Catalog.DatasetHash);
     return datasetMap == null ? null : datasetMap.get(id);
+  }
+
+  // get all datasets contained directly in this catalog
+  public Iterable<Dataset> getAllDatasets() {
+    List<Dataset> all = new ArrayList<>();
+    addAll(this, all);
+    return all;
+  }
+
+  private void addAll(DatasetNode node, List<Dataset> all) {
+    all.addAll(node.getDatasets());
+    for (DatasetNode nested : node.getDatasets())
+      addAll(nested, all);
   }
 
   /**

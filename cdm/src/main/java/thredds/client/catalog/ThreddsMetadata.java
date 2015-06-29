@@ -50,7 +50,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 /**
- * Thredds Metadata. Immutable after finishing
+ * Thredds Metadata. Immutable after calling finish.
  *
  * @author John
  * @since 1/10/2015

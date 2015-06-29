@@ -50,6 +50,11 @@ public class FeatureCollectionRefBuilder extends DatasetBuilder {
     this.config = config;
   }
 
+  public FeatureCollectionRefBuilder(DatasetBuilder parent, FeatureCollectionRef from) {
+    super(parent, from);
+    this.config = from.getConfig();
+  }
+
   public FeatureCollectionRef makeDataset(DatasetNode parent) {
     String xlink = "/thredds/catalog/"+config.path+"/catalog.xml";   // LOOK hardcoded thredds, need context ??
     return new FeatureCollectionRef(parent, name, xlink, flds, accessBuilders, datasetBuilders, config);

@@ -22,6 +22,14 @@ public class CatalogScanBuilder extends DatasetBuilder {
     this.watch = watch;
   }
 
+  public CatalogScanBuilder(DatasetBuilder parent, CatalogScan from) {
+    super(parent, from);
+    this.name = from.getName();
+    this.path = from.getPath();
+    this.location = from.getLocation();
+    this.watch = from.getWatch();
+  }
+
   public CatalogScan makeDataset(DatasetNode parent) {
     String xlink = "/thredds/catalog/"+path+"/catalogScan.xml";   // LOOK hardcoded thredds, need context, or make it reletive ??
     return new CatalogScan(parent, name, xlink, flds, path, location, watch);

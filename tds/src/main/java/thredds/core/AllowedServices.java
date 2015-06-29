@@ -128,6 +128,11 @@ public class AllowedServices {
   ////////////////////////////////////////////////
   // public API
 
+  public Service getStandardServices(String featTypeName) {
+    FeatureType ft = FeatureType.getType(featTypeName);
+    return (ft == null) ? null :  getStandardServices(ft);
+  }
+
   public Service getStandardServices(FeatureType featType) {
     if (featType.isGridFeatureType()) {
       return new Service("GridServices", "", ServiceType.Compound.toString(), null, null, Collections.unmodifiableList(allowedGridServices), null);

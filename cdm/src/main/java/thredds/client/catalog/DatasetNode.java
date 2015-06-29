@@ -76,6 +76,7 @@ public class DatasetNode {
     return name;
   }
 
+  // get the top level datasets
   public List<Dataset> getDatasets() {
     List<Dataset> datasets = (List<Dataset>) flds.get(Dataset.Datasets);
     return datasets == null ? new ArrayList<>(0) : datasets;
