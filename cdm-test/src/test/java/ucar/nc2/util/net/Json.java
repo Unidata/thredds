@@ -2,7 +2,7 @@
    See the LICENSE file for more information.
 */
 
-package ucar.nc2.util;
+package ucar.nc2.util.net;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;
