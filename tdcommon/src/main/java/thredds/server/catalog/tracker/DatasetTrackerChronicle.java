@@ -107,12 +107,16 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   public boolean trackDataset(Dataset dataset, DatasetTracker.Callback callback) {
     if (callback != null) {
       callback.hasDataset(dataset);
-      if (dataset.getRestrictAccess() != null) {
-        callback.hasRestriction(dataset);
-      }
-      if (dataset.getNcmlElement() != null) {
+      boolean track = false;
+       if (dataset.getRestrictAccess() != null) {
+         callback.hasRestriction(dataset);
+         track = true;
+       }
+      if (dataset.getNcmlElement()!= null) {
         callback.hasNcml(dataset);
+        track = true;
       }
+      if (track) callback.hasTrackedDataset(dataset);
     }
 
     boolean hasRestrict = dataset.getRestrictAccess() != null;

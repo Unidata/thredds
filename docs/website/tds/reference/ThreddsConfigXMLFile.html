@@ -635,13 +635,29 @@ sum of the maxFiles does not exceed your OS maximum. For better performance, mak
   <li><strong>reread</strong>:
     <ul>
       <li><strong>always</strong>: on  startup, all catalogs are read. (default). <em>safest, use if there are a small number of catalogs. </em></li>
-      <li><strong>check</strong>: on  startup,  catalogs that have changed will be  reread. <em>new catalogs will not necessarily be discovered until triggered</em>. <strong>(is that true? what about catalogScan?)</strong></li>
+      <li><strong>check</strong>: on  startup,  catalogs that have changed will be  reread.</li>
       <li><strong>trigger</strong>: after initial read, config catalogs will only be read again if user explicitly triggers it. <em>fastest startup if catalogs rarely change.</em></li>
     </ul>
   </li>
   <li><strong>dir</strong>: The location where the database is written. Default is <strong>${tds.content.root.path}/thredds/cache/catalog/</strong>. We recommend that you leave the default and use a symbolic link to move it if needed.</li>
-  <li><strong>maxDatasets</strong>: The database needs to know the maximum number of datasets. The size of the key/value data store on disk is approximately 200 bytes * maxDatasets.</li>
+  <li><strong>maxDatasets</strong>: The maximum number of datasets. </li>
 </ul>
+<p>Several files will be created in the directory, including one  large memory-mapped  file about 500 bytes * maxDatasets. These files are the persistent catalog cache, and can be deleted (when the TDS is stopped), which forces a complete read of the configuration catalogs the next time TDS starts up. </p>
+<p>If the maximum number of datasets increases over the limit you have already set, shut down TDS, delete the catalog cache files, change  <strong>maxDatasets</strong> in <em>threddsConfig.xml</em>, and restart. The catalogs will be reread.</p>
+<p>Windows may have problems with memory-mapped  large files (&gt; 4 GBytes, thus &gt; 7M datastes), and so Linux is preferred for large installations. </p>
+<h3>User Triggering</h3>
+<p>You must have <a href="RemoteManagement.html">Remote Managenment</a> enabled (enable SSL in Tomcat, and login as a user with the <strong>tdsConfig</strong> user-role).</p>
+<p>From Admin page <strong>https://server/thredds/admin/debug</strong>:</p>
+<ul>
+  <li>    <a href="https://localhost:8443/thredds/admin/debug?Catalogs/reinit">Read all catalogs</a>     </li>
+  <li><a href="https://localhost:8443/thredds/admin/debug?Catalogs/recheck">Read changed catalogs</a>  </li>
+</ul>
+<p>From a program or script, an authenticated user can make a GET HTTP call to:</p>
+<ul>
+  <li><strong>https://server/thredds/admin/catalog?req=readAll</strong></li>
+  <li><strong>https://server/thredds/admin/catalog?req=</strong><strong>readChanged</strong></li>
+</ul>
+<p>&nbsp;</p>
 <h3>Watch Mode (NOT IMPLEMENTED YET)</h3>
 <p>In this mode, the TDS will not read all catalogs in when starting. but will only read in root catalogs and catalogs that have changed. If using <strong>catalogScan</strong>, the catalogScan directories will be watched and any changes made while TDS is running will be detected.</p>
 <p>To use this mode, the following conditions must be met:</p>

@@ -257,7 +257,7 @@ public class DataRootPathMatcher {
     return true;
   }
 
-  public boolean addRoot(DatasetRootConfig config, String catalogRelPath) {
+  public boolean addRoot(DatasetRootConfig config, String catalogRelPath, boolean checkDups) {
     String path = config.getPath();
 
     if (path == null) {
@@ -265,11 +265,13 @@ public class DataRootPathMatcher {
       return false;
     }
 
-    DataRootExt dre = get(path); // check for duplicates
-    if (dre != null) {
+    if (checkDups) {
+      DataRootExt dre = get(path); // check for duplicates
+      if (dre != null) {
         logCatalogInit.error(ERROR + "DatasetRoot trying to add duplicate dataRoot =<" + path + ">  already mapped to directory= <" + dre.getDirLocation() + ">" +
                 " wanted to map to =<" + config.getLocation() + "> in catalog " + catalogRelPath);
-      return false;
+        return false;
+      }
     }
 
     // translate and check for existance

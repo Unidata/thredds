@@ -44,9 +44,9 @@ public class CatalogTracker {
     return catalogs.add(cat);
   }
 
-  public boolean removeCatalog(String relPath) {
+  public boolean removeCatalog(CatalogExt cat) {
     changed = true;
-    return catalogs.remove(relPath);
+    return catalogs.remove(cat);
   }
 
   // return sorted catalogs

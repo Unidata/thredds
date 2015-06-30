@@ -107,36 +107,95 @@
 <ul>
   <li>Put all <strong>datasetRoot</strong> elements in root catalog.</li>
   <li>Put all <strong>catalogScan</strong> elements in root catalog.</li>
-  <li>Use StandardServices when possible. Annotate your datasets with featureType / dataType.</li>
+  <li>Use StandardServices when possible. Annotate your datasets with <strong>featureType</strong> / <strong>dataType</strong>.</li>
   <li>Put all user-defined <strong>service</strong> elements in root catalog.</li>
   <li>Only use  user-defined <strong>service</strong> elements in non-root catalogs when they are experimental or truly a special case.</li>
 </ul>
 <h2>ThreddsConfig.xml</h2>
 <ul>
-  <li>Control over Catalog Caching is different, now you  control how many catalogs are cached, rather than turning caching on or off. So the following is no longer used, see <a href="reference/ThreddsConfigXMLFile.html#CatalogCaching">here</a> for the new syntax:
-<pre>
+  <li>You no longer turn catalog caching on or off, but you  can control how many catalogs are cached (see <a href="reference/ThreddsConfigXMLFile.html#CatalogCaching">here</a> for the new syntax).So the following is no longer used:
+    <pre>
 &lt;Catalog&gt;
   &lt;cache&gt;false&lt;/cache&gt;
 &lt;/Catalog&gt;
 </pre></li>
 </ul>
-<h2>New Features in version 5</h2>
-<ul>
-  <li>TDS  
-    <ul>
-      <li>catalogScan, watch for changes</li>
-      <li>catalogs are cached off heap, solving ESG/ESGF problems</li>
-      <li>services can be globally managed</li>
-      <li>datasetScan has new defaults</li>
+<h2>Recomendations for ESGF<a name="ESGF"></a></h2>
+<ol>
+  <li>You must determine the number of datasets that are contained in all of your catalogs. To  get a report, enable <a href="reference/RemoteManagement.html">Remote Management</a>, and from <strong>https://server/thredds/admin/debug</strong>, select <em>makeCatalogReport</em>. This may take 10-20 minutes, depending on the numbers of catalogs.</li>
+  <li>Add the <a href="reference/ThreddsConfigXMLFile.html#CatalogCaching">ConfigCatalog</a> element to threddsConfig.xml:</li>
+<blockquote>
+<pre>
+&lt;ConfigCatalog&gt;
+  &lt;keepInMemory&gt;100&lt;/keepInMemory&gt;
+  &lt;reread&gt;check&lt;/reread&gt;
+  &lt;dir&gt;/tomcat_home/content/thredds/cache/catalog/&lt;/dir&gt;
+  &lt;maxDatasets&gt;1000000&lt;/maxDatasets&gt;
+&lt;/ConfigCatalog&gt;
+</pre>
+  <p>where:</p>
+  <ul>
+    <li><strong>keepInMemory:</strong> using the default value of 100 is probably good enough. </li>
+    <li><strong>reread: </strong>use value of <em>check</em> to only read changed catalogs when restarting TDS.</li>
+    <li><strong>dir</strong> is where the catalog cache files are kept. Use the default directory (or symlink to another place) unless you have a good reason to change.</li>
+    <li><strong>maxDatasets</strong>: this is the number you found in step 1. Typical values for ESGF are 1 - 7 million. This is a maximum, so its ok to make it bigger than you need. </li>
     </ul>
+</blockquote>
+  <li>Here are some additional, optional changes you can make to increase maintainability:
+    <ol>
+      <li>Place all <strong>datasetRoot</strong> elements in the top catalog</li>
+      <li>Place all <strong>service</strong> elements in the root catalog (<em>catalog.xml</em>). These can be referencced from any catalog. </li>
+      <li>Remove <strong>service</strong> selements from non-root catalogs.</li>
+      <li>Add a <strong><a href="catalog/InvCatalogServerSpec.html#catalogScan">catalogScan</a></strong> element to the root catalog, replacing the  list of catalogRefs listing all the other catalogs.
+        <ul>
+          <li>This assumes that other catalogs live in a subdirectory under the root, for example<strong> ${tds.content.root.path}/thredds/esgcet/</strong>.</li>
+        </ul>
+      </li>
+    </ol>
   </li>
-</ul>
+</ol>
+For example:
+<pre>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;catalog name=&quot;ESGF Master Catalog&quot; version=&quot;1.2&quot;
+		xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
+      xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+      xsi:schemaLocation=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd&quot;&gt;
+      
+ &lt;datasetRoot location=&quot;/esg/data&quot; path=&quot;esg_testroot&quot;/&gt; 
+ &lt;datasetRoot location=&quot;/esg/arc/data/&quot; path=&quot;esg_obs4MIPs&quot;/&gt;
+ &lt;datasetRoot location=&quot;/esg/cordex/data/&quot; path=&quot;esg_cordex&quot;/&gt;
+ &lt;datasetRoot location=&quot;/esg/specs/data/&quot; path=&quot;esg_specs&quot;/&gt;
+
+ &lt;service base=&quot;/thredds/dodsC/&quot; desc=&quot;OpenDAP&quot; name=&quot;gridded&quot; serviceType=&quot;OpenDAP&quot;&gt;
+  &lt;property name=&quot;requires_authorization&quot; value=&quot;false&quot;/&gt;
+  &lt;property name=&quot;application&quot; value=&quot;Web Browser&quot;/&gt;
+ &lt;/service&gt;
+
+ &lt;service base=&quot;&quot; name=&quot;fileservice&quot; serviceType=&quot;Compound&quot;&gt;
+  &lt;service base=&quot;/thredds/fileServer/&quot; desc=&quot;HTTPServer&quot; name=&quot;HTTPServer&quot; serviceType=&quot;HTTPServer&quot;&gt;
+    &lt;property name=&quot;requires_authorization&quot; value=&quot;true&quot;/&gt;
+    &lt;property name=&quot;application&quot; value=&quot;Web Browser&quot;/&gt;
+    &lt;property name=&quot;application&quot; value=&quot;Web Script&quot;/&gt;
+  &lt;/service&gt;
+  &lt;service base=&quot;gsiftp://cmip-bdm1.badc.rl.ac.uk/&quot; desc=&quot;GridFTP&quot; name=&quot;GridFTPServer&quot; serviceType=&quot;GridFTP&quot;&gt;
+    &lt;property name=&quot;requires_authorization&quot; value=&quot;true&quot;/&gt; 
+    &lt;property name=&quot;application&quot; value=&quot;DataMover-Lite&quot;/&gt;
+  &lt;/service&gt;
+  &lt;service base=&quot;/thredds/dodsC/&quot; desc=&quot;OpenDAP&quot; name=&quot;OpenDAPFiles&quot; serviceType=&quot;OpenDAP&quot;&gt;
+    &lt;property name=&quot;requires_authorization&quot; value=&quot;false&quot;/&gt;
+    &lt;property name=&quot;application&quot; value=&quot;Web Browser&quot;/&gt;
+  &lt;/service&gt;
+ &lt;/service&gt;
+
+ &lt;catalogScan name=&quot;ESGF catalogs&quot; path=&quot;esgcet&quot; location=&quot;esgcet&quot; /&gt;
+
+&lt;/catalog&gt;</pre>
 <p>&nbsp;</p>
 <hr>
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated June 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated June 30, 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 

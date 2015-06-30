@@ -16,9 +16,11 @@ public class DataRootTracker {
   String filepath;
   Set<DataRootExt> dataRoots;
   boolean changed;
+  DatasetTracker.Callback callback;
 
-  public DataRootTracker(String pathname, boolean startOver) {
+  public DataRootTracker(String pathname, boolean startOver, DatasetTracker.Callback callback) {
     this.filepath = pathname +dbname ;
+    this.callback = callback ;
     File file = new File(filepath);
     if (startOver) reinit();
     if (!file.exists() || startOver || readDataRoots() <= 0) {
@@ -41,6 +43,7 @@ public class DataRootTracker {
 
   public boolean trackDataRoot(DataRootExt ds) {
     changed = true;
+    if (callback != null) callback.hasDataRoot(ds);
     return dataRoots.add(ds);
   }
 

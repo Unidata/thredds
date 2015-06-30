@@ -135,11 +135,11 @@ public class ConfigCatalogInitialization {
   }
 
   // used from outside of tomcat/spring
-  public ConfigCatalogInitialization(ReadMode readMode, String contentRootPath, String trackerDir, DatasetTracker datasetTracker,
+  public ConfigCatalogInitialization(ReadMode readMode, File contentRootPath, String trackerDir, DatasetTracker datasetTracker,
                                      AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
-    this.contentRootPath = new File(contentRootPath);
+    this.contentRootPath = contentRootPath;
     this.contextPath = "/thredds";
-    this.trackerDir = trackerDir != null ? trackerDir : contentRootPath + "cache/catalogs";
+    this.trackerDir = trackerDir != null ? trackerDir : new File(contentRootPath, "cache/catalogs").getPath();
     this.datasetTracker = datasetTracker;
     this.allowedServices = allowedServices;
     this.callback = callback;
@@ -177,29 +177,31 @@ public class ConfigCatalogInitialization {
     logCatalogInit.info("ConfigCatalogInitializion readMode={} isStartup={}", readMode, isStartup);
     catPathMap = new HashSet<>();
     fcNameMap = new HashMap<>();
-    ccc.invalidateAll();
+    if (ccc != null) ccc.invalidateAll();
 
     if (!isStartup && readMode == ReadMode.always) trackerNumber++;  // must write a new database if TDS is already running and rereading all
-    this.datasetTracker = new DatasetTrackerChronicle(trackerDir, maxDatasetsToTrack, trackerNumber);
+    if (this.datasetTracker == null)
+      this.datasetTracker = new DatasetTrackerChronicle(trackerDir, maxDatasetsToTrack, trackerNumber);
     boolean databaseAlreadyExists = datasetTracker.exists(); // detect if tracker database exists
     if (!databaseAlreadyExists) {
       readMode = ReadMode.always;
       logCatalogInit.info("ConfigCatalogInitializion datasetTracker database does not exist, set readMode to=" + readMode);
     }
 
-    callback = new StatCallback(readMode);
+    if (this.callback == null)
+      this.callback = new StatCallback(readMode);
     switch (readMode) {
       case always:
         if (databaseAlreadyExists) this.datasetTracker.reinit();
         this.catalogTracker = new CatalogTracker(trackerDir, true);
-        this.dataRootTracker = new DataRootTracker(trackerDir, true);
+        this.dataRootTracker = new DataRootTracker(trackerDir, true, callback);
         this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);  // starting over
         readRootCatalogs(readMode);
         break;
 
       case check:
         this.catalogTracker = new CatalogTracker(trackerDir, false);        // use existing catalog list
-        this.dataRootTracker = new DataRootTracker(trackerDir, false);      // use existing data roots
+        this.dataRootTracker = new DataRootTracker(trackerDir, false, callback);      // use existing data roots
         this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);
         readRootCatalogs(readMode);           // read just roots to get global services
         checkExistingCatalogs(readMode);
@@ -207,7 +209,7 @@ public class ConfigCatalogInitialization {
 
       case triggerOnly:
         this.catalogTracker = new CatalogTracker(trackerDir, false);               // use existing catalog list
-        this.dataRootTracker = new DataRootTracker(trackerDir, false);             // use existing data roots
+        this.dataRootTracker = new DataRootTracker(trackerDir, false, callback);             // use existing data roots
         this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);
         readRootCatalogs(readMode);           // read just roots to get global services
         break;
@@ -271,6 +273,8 @@ public class ConfigCatalogInitialization {
 
   private void checkExistingCatalogs(ReadMode readMode) {
     for (CatalogExt catalogExt : catalogTracker.getCatalogs()) {
+      if (catalogExt.isRoot()) continue; // already read in
+
       String pathname = catalogExt.getCatRelLocation();
       try {
         logCatalogInit.info("\n**************************************\nCatalog init " + pathname + "[" + CalendarDate.present() + "]");
@@ -326,7 +330,7 @@ public class ConfigCatalogInitialization {
 
     // look for datasetRoots
     for (DatasetRootConfig p : cat.getDatasetRoots())
-      dataRootPathMatcher.addRoot(p, catalogRelPath);
+      dataRootPathMatcher.addRoot(p, catalogRelPath, readMode == ReadMode.always); // check for duplicates on complete reread
 
     if (callback == null) {   // LOOK
       List<String> disallowedServices = allowedServices.getDisallowedServices(cat.getServices());
@@ -337,7 +341,7 @@ public class ConfigCatalogInitialization {
     }
 
     // look for dataRoots in datasetScans and featureCollections
-    dataRootPathMatcher.extractDataRoots(catalogRelPath, cat.getDatasets(), true, fcNameMap);
+    dataRootPathMatcher.extractDataRoots(catalogRelPath, cat.getDatasets(), readMode == ReadMode.always, fcNameMap);
 
     // get the directory path, reletive to the rootDir
     int pos = catalogRelPath.lastIndexOf("/");
@@ -520,8 +524,8 @@ public class ConfigCatalogInitialization {
   /////////////////////////////////////////////////////////
   static class Stats {
     int catrefs;
-    int datasets;
-    int dataRoot, dataRootFc, dataRootScan, dataRootDir;
+    int datasets, trackedDatasets;
+    int dataRoot, dataRootFc, datasetScan, datasetRoot, catalogScan;
     int ncml, ncmlOne;
     int restrict;
     Counters counters = new Counters();
@@ -534,30 +538,35 @@ public class ConfigCatalogInitialization {
     }
 
     String show(Formatter f) {
-      f.format("   catrefs=%d%n", catrefs);
-      f.format("  datasets=%d%n", datasets);
-      f.format("  restrict=%d%n", restrict);
-      f.format("  ncml=%d ncmlOne=%d%n", ncml, ncmlOne);
-      f.format("  dataRoot=%d%n", dataRoot);
-      f.format("    dataRootFc=%d%n", dataRootFc);
-      f.format("    dataRootScan=%d%n", dataRootScan);
-      f.format("    dataRootDir=%d%n", dataRootDir);
+      f.format("         catalogs=%d%n", catrefs);
+      f.format("         datasets=%d%n", datasets);
+      f.format("  trackedDatasets=%d%n", trackedDatasets);
+      f.format("           restrict=%d%n", restrict);
+      f.format("            hasNcml=%d%n%n", ncml);
+
+      f.format("      dataRoot=%d%n", dataRoot);
+      f.format("    featCollect=%d%n", dataRootFc);
+      f.format("    datasetScan=%d%n", datasetScan);
+      f.format("    catalogScan=%d%n", catalogScan);
+      f.format("    datasetRoot=%d%n%n", datasetRoot);
+
       f.format("DatasetExt.total_count %d%n", DatasetExt.total_count);
       f.format("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
       float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
       f.format("DatasetExt.avg_nbytes %5.0f%n", avg);
+
       counters.show(f);
       return f.toString();
     }
   }
 
-  static class StatCallback implements DatasetTracker.Callback {
+  static public class StatCallback implements DatasetTracker.Callback {
     ReadMode readMode;
     Stats stat2;
     long start = System.currentTimeMillis();
     double took;
 
-    StatCallback(ReadMode readMode) {
+    public StatCallback(ReadMode readMode) {
       this.readMode = readMode;
       stat2 = new Stats();
     }
@@ -568,11 +577,22 @@ public class ConfigCatalogInitialization {
     }
 
     @Override
-    public void hasDataRoot(DataRoot dataRoot) {
+    public void hasDataRoot(DataRootExt dataRoot) {
       stat2.dataRoot++;
-      if (dataRoot.getFeatureCollection() != null) stat2.dataRootFc++;
-      if (dataRoot.getDatasetScan() != null) stat2.dataRootScan++;
-      if (dataRoot.getDirLocation() != null) stat2.dataRootDir++;
+      switch (dataRoot.getType()) {
+        case featureCollection:
+          stat2.dataRootFc++;
+          break;
+        case catalogScan:
+          stat2.catalogScan++;
+          break;
+        case datasetScan:
+          stat2.datasetScan++;
+          break;
+        case datasetRoot:
+          stat2.datasetRoot++;
+          break;
+      }
     }
 
     @Override
@@ -582,6 +602,11 @@ public class ConfigCatalogInitialization {
       stat2.counters.count("nAccess", access.size());
       for (Access acc : access)
         if (acc.getService() != null) stat2.counters.count("serviceType", acc.getService().toString());
+    }
+
+    @Override
+    public void hasTrackedDataset(Dataset ds) {
+      stat2.trackedDatasets++;
     }
 
     @Override

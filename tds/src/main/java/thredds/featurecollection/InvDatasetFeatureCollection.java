@@ -209,7 +209,6 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     virtualService = new Service("VirtualServices", "", ServiceType.Compound.toString(), null, null, nestedOk, orgService.getProperties());
   }
 
-
   //////////////////////////////////////////////////////
   // probably old school
 

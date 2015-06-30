@@ -5,7 +5,7 @@
   <!-- see http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/ThreddsConfigXMLFile.html -->
   <serverInformation>
     <name>Initial TDS Installation</name>
-    <logoUrl>/thredds/threddsIcon.gif</logoUrl>
+    <logoUrl>/thredds/threddsIcon.png</logoUrl>
     <logoAltText>Initial TDS Installation</logoAltText>
 
     <abstract>Scientific Data</abstract>
@@ -209,24 +209,12 @@
   </NCISO>
   -->
 
-  <!-- CatalogGen service is off by default.
-  <CatalogGen>
-    <allow>false</allow>
-  </CatalogGen>
-   -->
-
   <!-- DLwriter service is off by default.
        As is support for operating on remote catalogs.
   <DLwriter>
     <allow>false</allow>
     <allowRemote>false</allowRemote>
   </DLwriter>
-   -->
-
-  <!-- DqcService is off by default.
-  <DqcService>
-    <allow>false</allow>
-  </DqcService>
    -->
 
   <!--
@@ -238,6 +226,15 @@
    Add a DataSource - essentially an IOSP with access to Servlet request parameters
    <datasetSource>my.package.DatsetSourceImpl</datasetSource>
    -->
+   
+  <!-- ConfigCatalog caching
+  <ConfigCatalog>
+    <keepInMemory>100</keepInMemory>
+    <reread>always</reread>
+    <dir>/tomcat_home/content/thredds/cache/catalog/</dir>
+    <maxDatasets>10000</maxDatasets>
+  </ConfigCatalog
+  -->
 
 
 </threddsConfig>

@@ -7,6 +7,7 @@ import thredds.core.*;
 import thredds.server.catalog.tracker.*;
 import ucar.nc2.util.Counters;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
 import java.util.Formatter;
@@ -113,41 +114,6 @@ public class TestEsgCats {
     }
   }   */
 
-  static class Stats2 {
-    int catrefs;
-    int datasets;
-    int dataRoot, dataRootFc, dataRootScan, dataRootDir;
-    int ncml, ncmlOne;
-    int restrict;
-    Counters counters = new Counters();
-
-    public Stats2() {
-      counters.add("restrict");
-      counters.add("nAccess");
-      counters.add("serviceType");
-      counters.add("ncmlAggSize");
-    }
-
-    void show() {
-      Formatter f = new Formatter();
-      f.format("   catrefs=%d%n", catrefs);
-      f.format("  datasets=%d%n", datasets);
-      f.format("  restrict=%d%n", restrict);
-      f.format("  ncml=%d ncmlOne=%d%n", ncml, ncmlOne);
-      f.format("  dataRoot=%d%n", dataRoot);
-      f.format("    dataRootFc=%d%n", dataRootFc);
-      f.format("    dataRootScan=%d%n", dataRootScan);
-      f.format("    dataRootDir=%d%n", dataRootDir);
-      f.format("DatasetExt.total_count %d%n", DatasetExt.total_count);
-      f.format("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
-      float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
-      f.format("DatasetExt.avg_nbytes %5.0f%n", avg);
-      counters.show(f);
-      System.out.printf("%s%n", f);
-    }
-  }
-
-  static Stats2 stat2 = new Stats2();
 
   public static void main(String[] args) throws IOException, SecurityException  {
     StringBufferInputStream inputStream = new StringBufferInputStream(".level= SEVERE");
@@ -157,84 +123,27 @@ public class TestEsgCats {
 
     DatasetTrackerNoop tracker = new DatasetTrackerNoop();
     // tracker.init("C:\\dev\\github\\thredds50\\tds\\src\\test\\content\\thredds\\cache\\catalog", 1000 * 1000);
-    tracker.init("C:/temp/mapDBtest", -1);
-    //CatalogWatcher catalogWatcher = new CatalogWatcher(tracker, false);
+    // tracker.init("C:/temp/mapDBtest", -1);
+    DatasetTracker.Callback callback = new ConfigCatalogInitialization.StatCallback(ConfigCatalogInitialization.ReadMode.always);
+
 
     AllowedServices allowedServices = new AllowedServices();
-    String top = "B:/esgf/gfdl/";
+    File contentDir = new File("B:/esgf/gfdl/");
     long maxDatasets = 100;
 
     //   public ConfigCatalogInitialization(ReadMode readMode, String contentRootPath, String trackerDir, DatasetTracker datasetTracker, CatalogWatcher catalogWatcher,
     //                                         AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
 
-    ConfigCatalogInitialization reader = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.check, top, null,
-            tracker, allowedServices, new DatasetTracker.Callback() {
+    ConfigCatalogInitialization reader = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.check, contentDir, null,
+            tracker, allowedServices, callback, maxDatasets);
 
-      @Override
-      public void hasDataRoot(DataRoot dataRoot) {
-        stat2.dataRoot++;
-        if (dataRoot.getFeatureCollection() != null) stat2.dataRootFc++;
-        if (dataRoot.getDatasetScan() != null) stat2.dataRootScan++;
-        if (dataRoot.getDirLocation() != null) stat2.dataRootDir++;
-      }
-
-      @Override
-      public void hasDataset(Dataset ds) {
-        stat2.datasets++;
-        List<Access> access = ds.getAccess();
-        stat2.counters.count("nAccess", access.size());
-        for (Access acc : access)
-          if (acc.getService() != null) stat2.counters.count("serviceType", acc.getService().toString());
-      }
-
-      @Override
-      public void hasNcml(Dataset ds) {
-        stat2.ncml++;
-        org.jdom2.Element netcdfElem = ds.getNcmlElement();
-        org.jdom2.Element agg =  netcdfElem.getChild("aggregation", thredds.client.catalog.Catalog.ncmlNS);
-        if (agg == null) return;
-        List<org.jdom2.Element> nested =  agg.getChildren("netcdf", thredds.client.catalog.Catalog.ncmlNS);
-        if (nested == null) return;
-        if (nested.size() == 1)
-          stat2.ncmlOne++;
-        // look for nested ncml - count how many
-        stat2.counters.count("ncmlAggSize", nested.size());
-      }
-
-      @Override
-      public void hasRestriction(Dataset ds) {
-        stat2.restrict++;
-        String restrict = ds.getRestrictAccess();
-        if (restrict != null) stat2.counters.count("restrict", restrict);
-      }
-
-      @Override
-      public void hasCatalogRef(ConfigCatalog dd) {
-        stat2.catrefs++;
-        if (stat2.catrefs % 100 == 0) System.out.printf("%d ", stat2.catrefs);
-        if (stat2.catrefs % 1000 == 0) System.out.printf("%n");
-      }
-
-      public void finish() {}
-
-    }, maxDatasets);
-
+    callback.finish();
     tracker.close();
 
     long now = System.nanoTime();
     long took = now - start;
-    System.out.printf("%nRead EsgCats %s took %d msecs%n", top, took / 1000 / 1000);
-    float avg_time = ((float) took) / stat2.catrefs / 1000;
-    System.out.printf(" microsecs / catalog %8.3f%n", avg_time);
-    float avg_time2 = ((float) took) / stat2.datasets / 100;
-    System.out.printf(" microsecs / dataset %8.3f%n", avg_time2);
-
-    stat2.show();
-
-    System.out.printf("DatasetExt.total_count %d%n", DatasetExt.total_count);
-    System.out.printf("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
-    float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
-    System.out.printf("DatasetExt.avg_nbytes %5.0f%n", avg);
+    System.out.printf("%nRead EsgCats %s took %d msecs%n", contentDir.getPath(), took / 1000 / 1000);
+    System.out.printf("%s%n", callback);
   }
 
 }

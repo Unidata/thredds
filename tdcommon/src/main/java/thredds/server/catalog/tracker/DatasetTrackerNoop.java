@@ -1,3 +1,4 @@
+/* Copyright */
 package thredds.server.catalog.tracker;
 
 import thredds.client.catalog.Dataset;
@@ -10,21 +11,21 @@ import thredds.client.catalog.Dataset;
  */
 public class DatasetTrackerNoop implements DatasetTracker {
 
-  public boolean init(String dirPath, long maxDatasets) {
-    return true;
-  }
-
   @Override
   public boolean trackDataset(Dataset ds, Callback callback) {
-    if (callback != null) callback.hasDataset(ds);
+    if (callback == null) return false;
 
+    callback.hasDataset(ds);
+    boolean track = false;
      if (ds.getRestrictAccess() != null) {
-       if (callback != null) callback.hasRestriction(ds);
+       callback.hasRestriction(ds);
+       track = true;
      }
-
     if (ds.getNcmlElement()!= null) {
-      if (callback != null) callback.hasNcml(ds);
+      callback.hasNcml(ds);
+      track = true;
     }
+    if (track) callback.hasTrackedDataset(ds);
 
     return false;
   }
@@ -49,12 +50,12 @@ public class DatasetTrackerNoop implements DatasetTracker {
 
   @Override
   public boolean exists() {
-    return false;
+    return true;
   }
 
   @Override
   public boolean reinit() {
-    return false;
+    return true;
   }
 
 }

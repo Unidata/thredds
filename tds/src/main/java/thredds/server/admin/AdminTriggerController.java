@@ -1,10 +1,6 @@
 /* Copyright */
 package thredds.server.admin;
 
-import com.coverity.security.Escape;
-import org.quartz.JobKey;
-import org.quartz.TriggerKey;
-import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,27 +8,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+
+import thredds.core.AllowedServices;
 import thredds.core.ConfigCatalogInitialization;
-import thredds.core.DataRootManager;
-import thredds.core.DatasetManager;
-import thredds.featurecollection.CollectionUpdater;
-import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.server.catalog.FeatureCollectionRef;
+import thredds.server.catalog.tracker.DatasetTracker;
+import thredds.server.catalog.tracker.DatasetTrackerNoop;
 import thredds.server.config.TdsContext;
 import thredds.util.ContentType;
-import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
 
 /**
- * Describe
+ * Catalog trigger controller
  *
  * @author caron
  * @since 6/26/2015
@@ -46,6 +34,9 @@ public class AdminTriggerController {
     DebugCommands debugCommands;
 
     @Autowired
+    private TdsContext tdsContext;  // used for  getContentDirectory, contextPath
+
+    @Autowired
     private ConfigCatalogInitialization catInit;
 
     @PostConstruct
@@ -53,6 +44,14 @@ public class AdminTriggerController {
 
       DebugCommands.Category debugHandler = debugCommands.findCategory("Catalogs");
       DebugCommands.Action act;
+
+      act = new DebugCommands.Action("reportStats", "Make Catalog Report") {
+        public void doAction(DebugCommands.Event e) {
+          // look background thread
+          e.pw.printf("%n%s%n", makeReport());
+        }
+      };
+      debugHandler.addAction(act);
 
       act = new DebugCommands.Action("reinit", "Read all catalogs") {
         public void doAction(DebugCommands.Event e) {
@@ -73,7 +72,7 @@ public class AdminTriggerController {
       debugHandler.addAction(act);
     }
 
-    @RequestMapping(value = "/catalog", method = RequestMethod.GET, params = "req=all")
+    @RequestMapping(value = "/catalog", method = RequestMethod.GET, params = "req=readAll")
     protected ResponseEntity<String> handleReadAll() throws Exception {
       catInit.reread(ConfigCatalogInitialization.ReadMode.always, false);
 
@@ -84,7 +83,7 @@ public class AdminTriggerController {
     }
 
 
-  @RequestMapping(value = "/catalog", method = RequestMethod.GET, params = "req=changed")
+  @RequestMapping(value = "/catalog", method = RequestMethod.GET, params = "req=readChanged")
   protected ResponseEntity<String> handleReadChanged() throws Exception {
     catInit.reread(ConfigCatalogInitialization.ReadMode.check, false);
 
@@ -92,6 +91,26 @@ public class AdminTriggerController {
     responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
     String result = "Reading changed catalogs";
     return new ResponseEntity<>(result, responseHeaders, HttpStatus.OK);
+  }
+
+  private String makeReport() {
+    DatasetTrackerNoop tracker = new DatasetTrackerNoop();
+    AllowedServices allowedServices = new AllowedServices();
+    DatasetTracker.Callback callback = new ConfigCatalogInitialization.StatCallback(ConfigCatalogInitialization.ReadMode.always);
+
+    //   public ConfigCatalogInitialization(ReadMode readMode, String contentRootPath, String trackerDir, DatasetTracker datasetTracker,
+    //                                     AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets)
+
+    try {
+      ConfigCatalogInitialization ccInit = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.always,
+              tdsContext.getContentDirectory(), null, tracker, allowedServices, callback, -1);
+      callback.finish();
+      return callback.toString();
+
+    } catch (IOException e) {
+      log.error("AdminTrigerController makeReport failed", e);
+      return e.getMessage();
+    }
   }
 
 }

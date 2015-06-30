@@ -3,9 +3,6 @@ package thredds.server.catalog.tracker;
 
 import thredds.client.catalog.Dataset;
 import thredds.server.catalog.ConfigCatalog;
-import thredds.server.catalog.DataRoot;
-
-import java.io.Externalizable;
 import java.io.IOException;
 
 /**
@@ -30,8 +27,9 @@ public interface DatasetTracker extends AutoCloseable {
   //DatasetExt findDatasetExt(String path);  // LOOK Needed ?
 
   interface Callback {
-    void hasDataRoot(DataRoot dataRoot);
+    void hasDataRoot(DataRootExt dataRoot);
     void hasDataset(Dataset dd);
+    void hasTrackedDataset(Dataset dd);
     void hasNcml(Dataset dd);
     void hasRestriction(Dataset dd);
     void hasCatalogRef(ConfigCatalog dd);
