@@ -39,7 +39,7 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPFormBuilder;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.Json;
+import ucar.nc2.util.Json;
 
 import java.util.Map;
 
