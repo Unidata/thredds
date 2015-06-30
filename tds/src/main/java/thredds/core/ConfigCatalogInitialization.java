@@ -38,7 +38,6 @@ import org.springframework.util.StringUtils;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.Service;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
@@ -121,8 +120,8 @@ public class ConfigCatalogInitialization {
   private long countDatasets = 0;
   private long maxDatasets; //  = 1000 * 1000;
 
-  Set<String> catPathHash;       // Hash of paths, to look for duplicates LOOK maybe tracker should do this
-  Set<String> idHash;         // Hash of ids, to look for duplicates
+  Set<String> catPathMap;    // Hash of paths, to look for duplicate catalogPaths
+  Map<String, String> fcNameMap;         // Hash of ids, to look for duplicates
 
   public ConfigCatalogInitialization() {
   }
@@ -176,8 +175,8 @@ public class ConfigCatalogInitialization {
   public synchronized void reread(ReadMode readMode, boolean isStartup) {
     long start = System.currentTimeMillis();
     logCatalogInit.info("ConfigCatalogInitializion readMode={} isStartup={}", readMode, isStartup);
-    catPathHash = new HashSet<>();
-    idHash = new HashSet<>();
+    catPathMap = new HashSet<>();
+    fcNameMap = new HashMap<>();
     ccc.invalidateAll();
 
     if (!isStartup && readMode == ReadMode.always) trackerNumber++;  // must write a new database if TDS is already running and rereading all
@@ -227,7 +226,7 @@ public class ConfigCatalogInitialization {
       catalogTracker.save();
       dataRootTracker.save();
     } catch (IOException e) {
-      e.printStackTrace();   // LOOK
+      // e.printStackTrace();
       logCatalogInit.error("datasetTracker.save() failed", e);
     }
 
@@ -246,8 +245,8 @@ public class ConfigCatalogInitialization {
     logCatalogInit.info("ConfigCatalogInitializion finished took={} msecs", took);
 
     // cleanup
-    catPathHash = new HashSet<>();
-    idHash = new HashSet<>();
+    catPathMap = null;
+    fcNameMap = null;
   }
 
   private void readRootCatalogs(ReadMode readMode) {
@@ -300,11 +299,13 @@ public class ConfigCatalogInitialization {
     if (show) System.out.printf("initCatalog %s%n", catalogRelPath);
 
     // make sure we dont already have it
-    if (catPathHash.contains(catalogRelPath)) {
+    if (catPathMap.contains(catalogRelPath)) {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + catalogRelPath + "] already seen, possible loop (skip).");
       return;
     }
-    catPathHash.add(catalogRelPath);
+    catPathMap.add(catalogRelPath);
+    Set<String> idSet = new HashSet<>();  // look for unique ids
+
     // if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("initCatalog {} -> {}", path, f.getAbsolutePath());
 
     // read it
@@ -336,12 +337,12 @@ public class ConfigCatalogInitialization {
     }
 
     // look for dataRoots in datasetScans and featureCollections
-    dataRootPathMatcher.extractDataRoots(catalogRelPath, cat.getDatasets(), true);
+    dataRootPathMatcher.extractDataRoots(catalogRelPath, cat.getDatasets(), true, fcNameMap);
 
     // get the directory path, reletive to the rootDir
     int pos = catalogRelPath.lastIndexOf("/");
     String dirPath = (pos > 0) ? catalogRelPath.substring(0, pos + 1) : "";
-    processDatasets(readMode, dirPath, cat.getDatasets());     // recurse
+    processDatasets(readMode, dirPath, cat.getDatasets(), idSet);     // recurse
 
     // look for catalogScans
     for (CatalogScan catScan : cat.getCatalogScans()) {
@@ -363,7 +364,7 @@ public class ConfigCatalogInitialization {
   private ConfigCatalog readCatalog(String catalogRelPath, String catalogFullPath)  {
     URI uri;
     try {
-      // uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
+      // uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // needed ?
       uri = new URI(this.contextPath + "/catalog/" + catalogRelPath);
     } catch (URISyntaxException e) {
       logCatalogInit.error(ERROR + "readCatalog(): URISyntaxException=" + e.getMessage());
@@ -392,7 +393,7 @@ public class ConfigCatalogInitialization {
   }
 
   // dirPath = the directory path, reletive to the rootDir
-  private void processDatasets(ReadMode readMode, String dirPath, List<Dataset> datasets) throws IOException {
+  private void processDatasets(ReadMode readMode, String dirPath, List<Dataset> datasets, Set<String> idMap) throws IOException {
     if (exceedLimit) return;
 
     for (Dataset ds : datasets) {
@@ -402,10 +403,10 @@ public class ConfigCatalogInitialization {
       // look for duplicate ids
       String id = ds.getID();
       if (id != null) {
-        if (idHash.contains(id)) {
+        if (idMap.contains(id)) {
           logCatalogInit.error(ERROR + "Duplicate id on  '" + ds.getName() + "' id= '" + id + "'");
         } else {
-          idHash.add(id);
+          idMap.add(id);
         }
       }
 
@@ -442,7 +443,7 @@ public class ConfigCatalogInitialization {
 
       } else {
         // recurse through nested datasets
-        processDatasets(readMode, dirPath, ds.getDatasets());
+        processDatasets(readMode, dirPath, ds.getDatasets(), idMap);
       }
     }
   }

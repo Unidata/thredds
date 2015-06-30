@@ -114,7 +114,7 @@ public class TestTdsGrib {
 
   @Test
   public void testDefaultGribServices() throws IOException {
-    String catalog = "/catalog/grib5/NDFD/CONUS_5km/catalog.xml";  // no service name, should use GRID default
+    String catalog = "/catalog/grib.v5/NDFD/CONUS_5km/catalog.xml";  // no service name, should use GRID default
     Catalog cat = TdsLocalCatalog.open(catalog);
     testCat(cat, 10, true, null, 0);
 
@@ -136,7 +136,7 @@ public class TestTdsGrib {
 
   @Test
   public void testGlobalServices() throws IOException {
-    String catalog = "/catalog/gribCollection5/GFS_CONUS_80km/catalog.xml"; // serviceName ="all" from root catalog
+    String catalog = "/catalog/gribCollection.v5/GFS_CONUS_80km/catalog.xml"; // serviceName ="all" from root catalog
     Catalog cat = TdsLocalCatalog.open(catalog);
     testCat(cat, 8, true, null, 0);
 
@@ -158,7 +158,7 @@ public class TestTdsGrib {
 
   @Test
   public void testUserDefinedServices() throws IOException {
-    String catalog = "/catalog/restrictCollection5/GFS_CONUS_80km/catalog.xml"; // serviceName ="cdmremoteOnly" from local catalog
+    String catalog = "/catalog/restrictCollection.v5/GFS_CONUS_80km/catalog.xml"; // serviceName ="cdmremoteOnly" from local catalog
     Catalog cat = TdsLocalCatalog.open(catalog);
     Service localServices = cat.findService("cdmremoteOnly");
     Assert.assertNotNull(localServices);

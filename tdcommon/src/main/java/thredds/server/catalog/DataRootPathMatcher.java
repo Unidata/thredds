@@ -138,7 +138,7 @@ public class DataRootPathMatcher {
   private DataRoot readDataRootFromCatalog( DataRootExt dataRootExt) {
     try {
       ConfigCatalog cat = ccc.get(dataRootExt.getCatLocation());
-      extractDataRoots(dataRootExt.getCatLocation(), cat.getDatasets(), false);  // will create a new DataRootExt and replace this one in the map
+      extractDataRoots(dataRootExt.getCatLocation(), cat.getDatasets(), false, null);  // will create a new DataRootExt and replace this one in the map
       DataRootExt dataRootExtNew = map.get(dataRootExt.getPath());
       if (null == dataRootExtNew) {
         logger.error("Reading catalog " + dataRootExt.getCatLocation() + " failed to find dataRoot path=" + dataRootExt.getPath());
@@ -161,7 +161,7 @@ public class DataRootPathMatcher {
    *
    * @param dsList the list of Dataset
    */
-  public void extractDataRoots(String catalogRelPath, List<Dataset> dsList, boolean checkDups) {
+  public void extractDataRoots(String catalogRelPath, List<Dataset> dsList, boolean checkDups, Map<String, String> idMap) {
 
     for (Dataset dataset : dsList) {
       if (dataset instanceof DatasetScan) {
@@ -177,6 +177,14 @@ public class DataRootPathMatcher {
         FeatureCollectionRef fc = (FeatureCollectionRef) dataset;
         addRoot(fc, catalogRelPath, checkDups);
 
+        if (idMap != null) {
+          String catWithSameFc = idMap.get(fc.getCollectionName());
+          if (catWithSameFc != null)
+            logCatalogInit.warn("*** ERROR: Duplicate featureCollection name {} in catalogs '{}' and '{}'", fc.getCollectionName(), catalogRelPath, catWithSameFc);
+          else
+            idMap.put(fc.getCollectionName(), catalogRelPath);
+        }
+
       } else if (dataset instanceof CatalogScan) {
         CatalogScan catScan = (CatalogScan) dataset;
         addRoot(catScan, catalogRelPath, checkDups);
@@ -184,7 +192,7 @@ public class DataRootPathMatcher {
 
       if (!(dataset instanceof CatalogRef)) {
         // recurse
-        extractDataRoots(catalogRelPath, dataset.getDatasets(), checkDups);
+        extractDataRoots(catalogRelPath, dataset.getDatasets(), checkDups, idMap);
       }
     }
   }
