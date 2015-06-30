@@ -287,6 +287,7 @@ public class HTTPSession implements AutoCloseable
 
     static PoolingClientConnectionManager connmgr;
 
+
     // Define a set of settings to hold all the
     // settable values; there will be one
     // instance for global and one for local.
@@ -360,16 +361,6 @@ public class HTTPSession implements AutoCloseable
     static synchronized public int getGlobalThreadCount()
     {
         return connmgr.getMaxTotal();
-    }
-
-    static synchronized public List<Cookie> getGlobalCookies()
-    {
-        // Must be better way to do this.
-        AbstractHttpClient client = new DefaultHttpClient(connmgr);
-        //coverity[RESOURCE_LEAK]
-        List<Cookie> cookies = client.getCookieStore().getCookies();
-        client = null;
-        return cookies;
     }
 
     // Timeouts
@@ -944,13 +935,6 @@ public class HTTPSession implements AutoCloseable
     execute(HttpRequestBase request)
             throws IOException
     {
-        try {
-	    Class cl = sessionClient.getClass();
-	    Method m = cl.getMethod("execute",HttpUriRequest.class,HttpContext.class);
-	} catch (Throwable t) {
-	    t.printStackTrace();
-	    throw new IOException(t);
-	}
 	HttpResponse response = sessionClient.execute(request,this.execcontext);
         return response;
     }
