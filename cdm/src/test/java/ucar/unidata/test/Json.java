@@ -2,8 +2,7 @@
    See the LICENSE file for more information.
 */
 
-package ucar.nc2.util;
-
+package ucar.unidata.test;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;
