@@ -89,6 +89,9 @@ public class Tdm {
   @Qualifier("fcTriggerEventBus")
   private EventBus eventBus;
 
+  @Autowired
+  CollectionUpdater collectionUpdater;
+
   private Path contentDir;
   private Path contentThreddsDir;
   private Path contentTdmDir;
@@ -230,6 +233,7 @@ public class Tdm {
 
   void start() throws IOException {
     System.out.printf("Tdm startup at %s%n", new Date());
+    collectionUpdater.setTdm(true);
     eventBus.register(this);
 
     List<FeatureCollectionConfig> fcList = new ArrayList<>();
@@ -258,7 +262,7 @@ public class Tdm {
         System.out.printf(" %s%n", makeTriggerUrl(name));
 
       executor.shutdown();
-      CollectionUpdater.INSTANCE.shutdown();
+      collectionUpdater.shutdown();
       return;
     }
 
@@ -274,7 +278,7 @@ public class Tdm {
 
       // now wire for events
       fcMap.put(config.getCollectionName(), new Listener(config, logger));
-      CollectionUpdater.INSTANCE.scheduleTasks(config, logger);
+      collectionUpdater.scheduleTasks(config, logger);
     }
 
      /* show whats up
@@ -476,7 +480,6 @@ public class Tdm {
       Map<String, String> aliases = (Map<String, String>) springContext.getBean("dataRootLocationAliasExpanders");
       List<PathAliasReplacement> aliasExpanders = PathAliasReplacementImpl.makePathAliasReplacements(aliases);
       driver.setPathAliasReplacements(aliasExpanders);
-      CollectionUpdater.INSTANCE.setTdm(true);
 
       String contentDir = System.getProperty("tds.content.root.path");
       if (contentDir == null) contentDir = "../content";

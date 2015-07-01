@@ -80,7 +80,7 @@ import java.util.*;
  * @since Feb 20, 2009
  */
 
-@Component("TdsInit")
+@Component
 public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
   static private final Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private final Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(TdsInit.class.getName() + ".catalogInit");
@@ -102,6 +102,9 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
   @Autowired
   private ConfigCatalogInitialization configCatalogInitializer;
+
+  @Autowired
+  CollectionUpdater collectionUpdater;
 
   //@Autowired
   //private CatalogWatcher catalogWatcher;
@@ -430,7 +433,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     FileCache.shutdown();              // this handles background threads for all instances of FileCache
     DiskCache2.exit();                // this handles background threads for all instances of DiskCache2
     thredds.inventory.bdb.MetadataManager.closeAll();
-    CollectionUpdater.INSTANCE.shutdown();
+    collectionUpdater.shutdown();
 
     /* try {
       catalogWatcher.close();

@@ -78,7 +78,7 @@ that can be used inside of a <strong>dataset</strong> element can be used inside
   <li>A date will be extracted from the  filename, and the files will then be sorted by date. Important if the lexigraphic ordering is different that the date order.</li>
   <li>Partitioning will happen at the file level.</li>
   <li>Only include files whose lastModified date is more than 5 minutes old. This is to exclude files that are actively being created.</li>
-  <li>Instruct the  TDS to use the collection index if it already exists, without testing if its up-to-date, and also to allow external triggers. These are the defaults.</li>
+  <li>Instruct the  TDS to use the collection index if it already exists, without testing if its up-to-date, and also to allow external triggers. </li>
   <li>Instruct the TDM to examine all the files to detect if they have changed since the index was written. Rescan every 15 minutes.</li>
   <li>(GRIB specific) Show the <em>TwoD</em> and <em>Best</em> datasets, as well as a link to the <em>latest</em> partition.</li>
 </ol>
@@ -264,10 +264,10 @@ The XML Schema definition for the <em>protoDataset</em> element:
 
 <p> where: </p>
 <ol>
-  <li><strong>startup</strong>: [<em>never</em> | <em>nocheck</em> | <em>testIndexOnly</em> | <em>test</em> | <em>always</em>] The collection is always read in on server startup. This attribute controls whether the collection index is tested and rebuilt.
+  <li><strong>startup</strong>: [<em>never</em> | <em>nocheck</em> | <em>testIndexOnly</em> | <em>test</em> | <em>always</em>] The collection may be read in on server startup, and tested whether it is up to date.
     <ul>
-      <li>If &quot;<em>never</em>&quot;, the collection index is always used and must exist. Use this for very large collections that you dont want to inadvertently scan.</li>
-      <li>If &quot;<em>nocheck</em>&quot;, the collection index is  used if it exists, without checking whether its up-to-date. <strong>This is the default.</strong></li>
+      <li>If &quot;<em>never</em>&quot;, the collection  is  used as it is. The collection index must already exist. Use this for very large collections that you dont want to inadvertently scan. <strong>This is the default in version 5.</strong></li>
+      <li>If &quot;<em>nocheck</em>&quot;, the collection index is  used if it exists, without checking whether its up-to-date. If it doesnt exist, build it.</li>
       <li>If
       &quot;<em>testIndexOnly</em>&quot;, the collection index is  used if it exists and it is newer than all of its immediate children. (<strong>experimental</strong>)</li>
       <li>If
@@ -280,8 +280,7 @@ The XML Schema definition for the <em>protoDataset</em> element:
     wait until the scan is finished and a new collection is built (if needed), and so is called <em>synchronous updating</em>. <em><strong>This option will be
   ignored if you are using the rescan attribute or if you have a tdm element.</strong></em></li>
   <li><strong>rescan</strong>: uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the
-    collection should be rescanned in a background task. This is called <em>asynchronous updating</em>.
-  </li>
+    collection should be rescanned in a background task, and testsed to see if it has changed. This is called <em>asynchronous updating</em>.  </li>
   <li><strong>trigger</strong>: if set to &quot;allow&quot; (default), then external triggering will be allowed. This allows
     collections to be updated by an external program (or person using a browser) sending an explicit &quot;trigger&quot; URL to the server.
   This URL is protected by HTTPS, so you must <a href="#trigger">enable triggers</a><a href="../RemoteManagement.html"></a> for this to work. Set this to &quot;false&quot; to disable triggering.</li>

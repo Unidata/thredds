@@ -249,8 +249,8 @@ public class FeatureCollectionConfig {
     public String rescan;
     public boolean triggerOk = true;
     public boolean userDefined = false;
-    public CollectionUpdateType startupType = CollectionUpdateType.nocheck;   // what to do on startup. same as updateType, except may be overridden on the command line
-    public CollectionUpdateType updateType = CollectionUpdateType.nocheck;    // what to do on rescan
+    public CollectionUpdateType startupType = CollectionUpdateType.never;   // same as updateType, except may be overridden on the command line, for startup only
+    public CollectionUpdateType updateType = CollectionUpdateType.never;    // this is what the user entered in config
     public String deleteAfter = null; // not implemented yet
 
     public UpdateConfig() { // defaults

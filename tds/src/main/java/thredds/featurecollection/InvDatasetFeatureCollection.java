@@ -113,7 +113,6 @@ public abstract class InvDatasetFeatureCollection {
       result = new InvDatasetFcPoint(parent, config);
     }
 
-    //result.finishConstruction(); // stuff that shouldnt be done in a constructor
     return result;
   }
 

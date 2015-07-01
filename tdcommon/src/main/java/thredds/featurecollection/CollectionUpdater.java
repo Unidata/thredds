@@ -56,10 +56,9 @@ import java.util.Date;
  */
 @ThreadSafe
 @Component
-public enum CollectionUpdater {
-  INSTANCE;   // Singleton cf Bloch p 18
+public class CollectionUpdater {
+  static private final org.slf4j.Logger fcLogger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
 
-  static private final org.slf4j.Logger startupLogger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
   static private final String COLLECTION_NAME = "collectionName";
   static private final String EVENT_BUS = "eventBus";
   static private final String LOGGER = "logger";
@@ -83,7 +82,7 @@ public enum CollectionUpdater {
     return isTdm;
   }
 
-  private CollectionUpdater() {
+  public CollectionUpdater() {
     try {
       scheduler = StdSchedulerFactory.getDefaultScheduler();
       scheduler.start();
@@ -104,17 +103,20 @@ public enum CollectionUpdater {
    */
   public void scheduleTasks(FeatureCollectionConfig config, Logger logger) {
     if (disabled || failed) return;
+    if (logger == null) logger = fcLogger;
 
     FeatureCollectionConfig.UpdateConfig updateConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
-    if (updateConfig == null) return;
+    if (updateConfig == null || updateConfig.updateType == CollectionUpdateType.never) return;
 
     String collectionName = config.getCollectionName();
+
+    // prob dont need to set a job if theres no chron job ?
 
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(EVENT_BUS, eventBus);
     map.put(COLLECTION_NAME, collectionName);
-    if (logger != null) map.put(LOGGER, logger);
+    map.put(LOGGER, logger);
     JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
             .withIdentity(collectionName, "UpdateCollection")
             .storeDurably()
@@ -125,10 +127,10 @@ public enum CollectionUpdater {
       if(!scheduler.checkExists(updateJob.getKey())) {
       	scheduler.addJob(updateJob, false);
       } else {
-        if (logger != null) logger.warn("scheduler failed to add updateJob for " + updateJob.getKey() +". Another Job exists with that identification." );
+        logger.warn("scheduler failed to add updateJob for " + updateJob.getKey() +". Another Job exists with that identification." );
       }
     } catch (Throwable e) {
-      if (logger != null)logger.error("scheduler failed to add updateJob for " + config, e);
+      logger.error("scheduler failed to add updateJob for " + config, e);
       return;
     }
 
@@ -146,9 +148,9 @@ public enum CollectionUpdater {
 
       try {
         scheduler.scheduleJob(startupTrigger);
-        if (logger != null) logger.info("scheduleJob startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.collectionName, runTime);
+        logger.info("scheduleJob startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.collectionName, runTime);
       } catch (Throwable e) {
-        if (logger != null) logger.error("scheduleJob failed to schedule startup Job for " + config, e);
+        logger.error("scheduleJob failed to schedule startup Job for " + config, e);
         return;
       }
     }
@@ -166,9 +168,9 @@ public enum CollectionUpdater {
 
       try {
     		scheduler.scheduleJob(rescanTrigger);
-        if (logger != null)logger.info("scheduleJob recurring scan for '{}' cronExpr={}", config.collectionName, updateConfig.rescan);
+        logger.info("scheduleJob recurring scan for '{}' cronExpr={}", config.collectionName, updateConfig.rescan);
       } catch (Throwable e) {
-        if (logger != null)logger.error("scheduleJob failed to schedule cron Job", e);
+        logger.error("scheduleJob failed to schedule cron Job", e);
         // e.printStackTrace();
       }
     }
@@ -206,7 +208,7 @@ public enum CollectionUpdater {
     try {
       scheduler.shutdown(true);
     } catch (Throwable e) {
-      startupLogger.error("Scheduler failed to shutdown", e);
+      fcLogger.error("Scheduler failed to shutdown", e);
       scheduler = null;
       //e.printStackTrace();
     }
@@ -246,7 +248,7 @@ public enum CollectionUpdater {
 
       try {
         eventBus.post( new CollectionUpdateEvent(type, collectionName));
-        startupLogger.debug("CollectionUpdate {} on {}", type, collectionName);
+        fcLogger.debug("CollectionUpdate {} on {}", type, collectionName);
 
       } catch (Throwable e) {
         if (loggerfc != null) loggerfc.error("UpdateCollectionJob.execute "+groupName+" failed collection=" + collectionName, e);

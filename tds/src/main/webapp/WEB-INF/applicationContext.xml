@@ -93,9 +93,9 @@
   <bean id="wmsConfig" class="thredds.server.config.WmsConfigBean" />
 
   <!-- Typically we use Spring wiring when we need to share instances. Also using @Component scanning -->
-  <bean id="tdsInit" class="thredds.server.config.TdsInit" />   <!-- must declare here in order to get destroy() to be called -->
+  <!-- bean id="tdsInit" class="thredds.server.config.TdsInit" />
   <bean id="configCatalogInitialization" class="thredds.core.ConfigCatalogInitialization" />
-  <bean id="configCatalogCache" class="thredds.server.catalog.ConfigCatalogCache" />
+  <bean id="configCatalogCache" class="thredds.server.catalog.ConfigCatalogCache" / -->
 
   <bean id="fcTriggerEventBus" class="com.google.common.eventbus.AsyncEventBus">
     <constructor-arg value="fcTriggerEventBus" />
@@ -106,7 +106,7 @@
   </bean>
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
-  <bean id="authorizer" class="thredds.servlet.restrict.TomcatAuthorizer">
+  <bean id="restrictedDatasetAuthorizer" class="thredds.servlet.restrict.TomcatAuthorizer">
     <property name="useSSL" value="false" />
     <property name="sslPort" value="8443" />
   </bean>

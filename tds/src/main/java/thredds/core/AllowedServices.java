@@ -102,6 +102,7 @@ public class AllowedServices {
   }
 
   public void finish() {
+    List<Service> result = new ArrayList<>();
     for (String s : allowedGridServiceNames) {
       StandardService service = StandardService.getStandardServiceIgnoreCase(s);
       if (service == null)
@@ -109,11 +110,12 @@ public class AllowedServices {
       else {
         AllowedService as = allowed.get(service);
         if (as != null && as.allowed)
-          allowedGridServices.add(makeService(as.ss));
+          result.add(makeService(as.ss));
       }
     }
-    allowedGridServices = Collections.unmodifiableList(allowedGridServices);
+    allowedGridServices = Collections.unmodifiableList(result);
 
+    result = new ArrayList<>();
     for (String s : allowedPointServiceNames) {
       StandardService service = StandardService.getStandardServiceIgnoreCase(s);
       if (service == null)
@@ -121,11 +123,12 @@ public class AllowedServices {
       else {
         AllowedService as = allowed.get(service);
         if (as != null && as.allowed)
-          allowedPointServices.add(makeService(as.ss));
+          result.add(makeService(as.ss));
       }
     }
-    allowedPointServices = Collections.unmodifiableList(allowedPointServices);
+    allowedPointServices = Collections.unmodifiableList(result);
 
+    result = new ArrayList<>();
     for (String s : allowedRadialServiceNames) {
       StandardService service = StandardService.getStandardServiceIgnoreCase(s);
       if (service == null)
@@ -133,10 +136,10 @@ public class AllowedServices {
       else {
         AllowedService as = allowed.get(service);
         if (as != null && as.allowed)
-          allowedRadialServices.add(makeService(as.ss));
+          result.add(makeService(as.ss));
       }
     }
-    allowedRadialServices = Collections.unmodifiableList(allowedRadialServices);
+    allowedRadialServices = Collections.unmodifiableList(result);
   }
 
   private Service makeService(StandardService ss) {
@@ -155,15 +158,15 @@ public class AllowedServices {
 
   public Service getStandardServices(FeatureType featType) {
     if (featType.isGridFeatureType()) {
-      return new Service("GridServices", "", ServiceType.Compound.toString(), null, null, Collections.unmodifiableList(allowedGridServices), null);
+      return new Service("GridServices", "", ServiceType.Compound.toString(), null, null, allowedGridServices, null);
     }
 
     if (featType.isPointFeatureType()) {
-      return new Service("PointServices", "", ServiceType.Compound.toString(), null, null, Collections.unmodifiableList(allowedPointServices), null);
+      return new Service("PointServices", "", ServiceType.Compound.toString(), null, null, allowedPointServices, null);
     }
 
     if (featType == FeatureType.RADIAL) {
-      return new Service("RadialServices", "", ServiceType.Compound.toString(), null, null, Collections.unmodifiableList(allowedRadialServices), null);
+      return new Service("RadialServices", "", ServiceType.Compound.toString(), null, null, allowedRadialServices, null);
     }
 
     return null;

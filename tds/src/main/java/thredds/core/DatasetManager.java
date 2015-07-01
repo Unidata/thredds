@@ -35,6 +35,7 @@ package thredds.core;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
@@ -86,11 +87,13 @@ public class DatasetManager implements InitializingBean {
   private FeatureCollectionCache featureCollectionCache;
 
   @Autowired
+  @Qualifier("restrictedDatasetAuthorizer")
   private Authorizer restrictedDatasetAuthorizer;
 
   @Autowired
   private DebugCommands debugCommands;
 
+  // injected by catalogInitializer, when catalogs are reread
   private DatasetTracker datasetTracker;
 
   // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)

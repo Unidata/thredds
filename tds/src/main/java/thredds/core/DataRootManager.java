@@ -75,7 +75,7 @@ public class DataRootManager implements InitializingBean {
   @Autowired
   private TdsContext tdsContext;
 
-  // this may be swapped out when catalogs are reread, so cant be spring managed
+  // injected by catalogInitializer, when catalogs are reread, so cant be spring managed
   private DataRootPathMatcher dataRootPathMatcher;
 
   @Autowired

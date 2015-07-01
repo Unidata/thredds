@@ -100,6 +100,9 @@ public class AdminCollectionController {
   @Qualifier("fcTriggerEventBus")
   private EventBus eventBus;
 
+  @Autowired
+  CollectionUpdater collectionUpdater;
+
   @PostConstruct
   public void afterPropertiesSet() {
     //this.tdsContext = _tdsContext;
@@ -128,9 +131,9 @@ public class AdminCollectionController {
     };
     debugHandler.addAction(act);
 
-    act = new DebugCommands.Action("sched", "Show scheduler") {
+    act = new DebugCommands.Action("sched", "Show FeatureCollection update scheduler") {
       public void doAction(DebugCommands.Event e) {
-        org.quartz.Scheduler scheduler = CollectionUpdater.INSTANCE.getScheduler();
+        org.quartz.Scheduler scheduler = collectionUpdater.getScheduler();
         if (scheduler == null) return;
 
         try {

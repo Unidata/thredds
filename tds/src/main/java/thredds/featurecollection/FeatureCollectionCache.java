@@ -33,6 +33,9 @@ public class FeatureCollectionCache implements InitializingBean {
   @Qualifier("fcTriggerEventBus")
   private EventBus eventBus;
 
+  @Autowired
+  CollectionUpdater collectionUpdater;
+
   private Cache<String, InvDatasetFeatureCollection> cache;
 
   public FeatureCollectionCache() {
@@ -85,6 +88,7 @@ public class FeatureCollectionCache implements InitializingBean {
     try {
       InvDatasetFeatureCollection result = InvDatasetFeatureCollection.factory(fcr, fcr.getConfig());
       eventBus.register(result);
+      collectionUpdater.scheduleTasks(fcr.getConfig(), null);  // use default logger
       return result;
 
     } catch (Throwable t) {

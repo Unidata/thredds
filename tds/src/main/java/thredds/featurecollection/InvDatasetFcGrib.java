@@ -137,7 +137,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         localState.gribCollection.showStatusSummary(f, type);
       else
         localState.gribCollection.showStatus(f);
-
     }
   }
 
