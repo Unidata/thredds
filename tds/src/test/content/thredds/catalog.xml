@@ -5,6 +5,7 @@
          xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 
   <service name="latest" serviceType="Resolver" base=""/>
+  <service name="opendapOnly" serviceType="OpenDAP" base="/thredds/dodsC/"/>
 
   <service name="all" base="" serviceType="compound">
     <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>

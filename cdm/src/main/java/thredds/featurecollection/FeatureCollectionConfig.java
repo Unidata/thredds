@@ -51,23 +51,23 @@ public class FeatureCollectionConfig {
   // static public final String AUX_GRIB_CONFIG = "gribConfig";
   static public final String AUX_CONFIG = "fcConfig";
 
-  static public enum ProtoChoice {
+  public enum ProtoChoice {
     First, Random, Latest, Penultimate, Run
   }
 
-  static public enum FmrcDatasetType {
+  public enum FmrcDatasetType {
     TwoD, Best, Files, Runs, ConstantForecasts, ConstantOffsets
   }
 
-  static public enum PointDatasetType {
+  public enum PointDatasetType {
     cdmrFeature, Files
   }
 
-  static public enum GribDatasetType {
+  public enum GribDatasetType {
     TwoD, Best, Analysis, Files, Latest, LatestFile
   }
 
-  static public enum PartitionType {
+  public enum PartitionType {
     none, directory, file, timePeriod
   }
 

@@ -483,7 +483,8 @@ public abstract class InvDatasetFeatureCollection {
       latest.setName(getLatestFileName());
       latest.put(Dataset.UrlPath, LATEST_DATASET_CATALOG);
       latest.put(Dataset.Id, LATEST_DATASET_CATALOG);
-      latest.put(Dataset.ServiceName, latest.getName());
+      latest.put(Dataset.ServiceName, latestService.getName());
+      latest.addServiceToCatalog(latestService);
       top.addDataset(latest);
     }
 

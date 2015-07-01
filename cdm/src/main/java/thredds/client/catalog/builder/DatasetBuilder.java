@@ -124,11 +124,20 @@ public class DatasetBuilder {
     return parent;
   }
 
-  public Object getInherited(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) return value;
+  private Object getInherited(String fldName) {
+    ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
+    if (tmi != null) {
+      Object value = tmi.getLocalField(fldName);
+      if (value != null) return value;
+    }
     if (parent != null) return parent.getInherited(fldName);
     return null;
+  }
+
+  public Object getFldOrInherited(String fldName) {
+    Object value = flds.get(fldName);
+    if (value != null) return value;
+    return getInherited(fldName);
   }
 
   public Object get(String fldName) {

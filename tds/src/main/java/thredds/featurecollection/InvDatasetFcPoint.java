@@ -123,6 +123,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     if (wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files) && (topDirectory != null)) {
       CatalogRefBuilder filesCat = new CatalogRefBuilder(top);
       filesCat.setName(FILES);
+      filesCat.setTitle(FILES);
       filesCat.setHref(getCatalogHref(FILES));
       top.addDataset(filesCat);
     }

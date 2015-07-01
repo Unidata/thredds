@@ -277,7 +277,7 @@ public class AdminCollectionController {
       return null;
     }
 
-    eventBus.post(new CollectionUpdateEvent(triggerType, collectName));
+    eventBus.post(new CollectionUpdateEvent(triggerType, collectName, "trigger"));
     // CollectionUpdater.INSTANCE.triggerUpdate(collectName, triggerType);
     pw.printf(" TRIGGER SENT%n");
 

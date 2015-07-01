@@ -70,6 +70,7 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   public void close() throws IOException {
     if (datasetMap != null) {
       datasetMap.close();
+      System.out.printf("datasetMap.close() was called%n");
       datasetMap = null;
     }
   }

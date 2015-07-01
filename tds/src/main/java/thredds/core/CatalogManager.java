@@ -176,9 +176,9 @@ public class CatalogManager {
 
     // look for datasets that want to use standard services
     for (DatasetBuilder node : cat.getDatasets()) {
-      String sname = (String) node.getInherited(Dataset.ServiceName);
+      String sname = (String) node.getFldOrInherited(Dataset.ServiceName);
       String urlPath = (String) node.get(Dataset.UrlPath);
-      String ftypeS = (String) node.getInherited(Dataset.FeatureType);
+      String ftypeS = (String) node.getFldOrInherited(Dataset.FeatureType);
       if (sname == null && urlPath != null && ftypeS != null) {
         Service s = globalServices.getStandardServices(ftypeS);
         if (s != null) {
@@ -191,7 +191,7 @@ public class CatalogManager {
 
   private void findServices(Iterable<DatasetBuilder> datasets, Set<String> serviceNames) {
     for (DatasetBuilder ds : datasets) {
-      String sname = (String) ds.get(Dataset.ServiceName);
+      String sname = (String) ds.getFldOrInherited(Dataset.ServiceName);
       if (sname != null)
         serviceNames.add(sname);
       findServices(ds.getDatasets(), serviceNames); // recurse

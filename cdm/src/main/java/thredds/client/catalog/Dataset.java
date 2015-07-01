@@ -217,6 +217,10 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public String getUrlPath() {
     return (String) flds.get(UrlPath);
   }
+  public String getIdOrPath() {
+    String id = getId();
+    return (id != null) ? id : getUrlPath();
+  }
 
   public org.jdom2.Element getNcmlElement() {
     return (org.jdom2.Element) getLocalField(Dataset.Ncml);

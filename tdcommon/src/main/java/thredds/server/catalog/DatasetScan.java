@@ -162,7 +162,9 @@ public class DatasetScan extends CatalogRef {
     if (!dataDirReletive.endsWith("/"))
       dataDirReletive += "/";
     String parentPath = (dataDirReletive.length() > 1) ? config.path + "/" + dataDirReletive : config.path + "/";
-    String parentId = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive : this.getId() + "/";
+    String id = this.getId();
+    if (id == null) id = config.path;
+    String parentId = (dataDirReletive.length() > 1) ? id + "/" + dataDirReletive : id + "/";
 
     // translate any properties         LOOK this should be done at configure time
     //String scanDir = ConfigCatalog.translateAlias(config.scanDir);

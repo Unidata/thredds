@@ -88,7 +88,7 @@ public class Catalog extends DatasetNode {
   private void addDatasetsToHash(List<Dataset> datasets, Map<String, Dataset> datasetMap) {
     if (datasets == null) return;
     for (Dataset ds : datasets) {
-      String id = ds.getId();
+      String id = ds.getIdOrPath();
       if (id != null) datasetMap.put(id, ds);
       addDatasetsToHash(ds.getDatasets(), datasetMap);
     }

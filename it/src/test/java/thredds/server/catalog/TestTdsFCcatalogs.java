@@ -33,6 +33,10 @@ public class TestTdsFCcatalogs {
             {"testGFSfmrc/catalog", "?dataset=testGFSfmrc/GFS_CONUS_80km_nc_best.ncd"},
             {"testNAMfmrc/runs/catalog", ""},
             {"testNAMfmrc/runs/catalog", "?dataset=testNAMfmrc/runs/NAM_FMRC_RUN_2006-09-26T00:00:00Z"},
+
+            {"catalogs5/pointCatalog5", ""},
+            {"testStationScan.v5/catalog", "?dataset=testStationScan.v5/Surface_METAR_20130823_0000.nc"},       // datasetScan
+            {"testStationFeatureCollection.v5/files/catalog", "?dataset=null/Surface_METAR_20130823_0000.nc\""},
     });
   }
   private static final boolean show = false;

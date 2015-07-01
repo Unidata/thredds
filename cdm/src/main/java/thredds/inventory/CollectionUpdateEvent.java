@@ -4,7 +4,7 @@ package thredds.inventory;
 import net.jcip.annotations.Immutable;
 
 /**
- * Describe
+ * Events when a fc should be updated
  *
  * @author caron
  * @since 6/30/2015
@@ -13,10 +13,12 @@ import net.jcip.annotations.Immutable;
 public class CollectionUpdateEvent {
   private final CollectionUpdateType type;
   private final String collectionName;
+  private final String source;
 
-  public CollectionUpdateEvent(CollectionUpdateType type, String collectionName) {
+  public CollectionUpdateEvent(CollectionUpdateType type, String collectionName, String source) {
     this.type = type;
     this.collectionName = collectionName;
+    this.source = source;
   }
 
   public CollectionUpdateType getType() {
@@ -25,5 +27,10 @@ public class CollectionUpdateEvent {
 
   public String getCollectionName() {
     return collectionName;
+  }
+
+  @Override
+  public String toString() {
+    return collectionName+": "+ type + "source='" + source;
   }
 }

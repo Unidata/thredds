@@ -417,7 +417,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
    */
   @Override
   public void destroy() {
-    System.out.printf("TdsInit.destroy() is called");
+    System.out.printf("TdsInit.destroy() is called%n");
 
     // prefs
     try {
@@ -433,7 +433,6 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     FileCache.shutdown();              // this handles background threads for all instances of FileCache
     DiskCache2.exit();                // this handles background threads for all instances of DiskCache2
     thredds.inventory.bdb.MetadataManager.closeAll();
-    collectionUpdater.shutdown();
 
     /* try {
       catalogWatcher.close();
@@ -448,8 +447,9 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
     // memory caches
     GribCdmIndex.shutdown();
-    datasetManager.setDatasetTracker(null);
+    datasetManager.setDatasetTracker(null); // closes the existing tracker
 
+    collectionUpdater.shutdown();
     startupLog.info("TdsInit shutdown");
     MDC.clear();
   }

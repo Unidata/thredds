@@ -35,8 +35,7 @@ package thredds.server.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.Dataset;
+import thredds.client.catalog.*;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
@@ -155,5 +154,26 @@ public class TestTdsDatasetScan {
     assert children.size() == 3 : children.size();
   }
 
+  //////////////////////////////////////////////////////
+  // catalog5
+
+
+  @Test
+  public void testGlobalServices() throws IOException {
+    String catalog = "/catalog/testStationScan.v5/catalog.xml"; // serviceName ="all" from root catalog
+    Catalog cat = TdsLocalCatalog.open(catalog);
+
+    Dataset top = cat.getDatasets().get(0);
+    Assert.assertTrue(!top.hasAccess());
+    Service orgServices = cat.findService("all");
+    Assert.assertNotNull(orgServices);
+    Assert.assertEquals(ServiceType.Compound, orgServices.getType());
+    Assert.assertNotNull(orgServices.getNestedServices());
+    Assert.assertEquals(9, orgServices.getNestedServices().size());
+    boolean hasFileServer = false;
+    for (Service sn : orgServices.getNestedServices())
+      if( ServiceType.HTTPServer == sn.getType()) hasFileServer = true;
+    Assert.assertTrue(hasFileServer);
+  }
 
 }

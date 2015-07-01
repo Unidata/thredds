@@ -63,6 +63,7 @@ public class CollectionUpdater {
   static private final String EVENT_BUS = "eventBus";
   static private final String LOGGER = "logger";
   static private final String UpdateType = "updateType";
+  static private final String Source = "Source";
   static private final long startupWait = 3 * 1000; // 3 secs
   static private boolean disabled = false;
 
@@ -138,6 +139,7 @@ public class CollectionUpdater {
     if (updateConfig.startupType != CollectionUpdateType.never) {
       map = new org.quartz.JobDataMap();
       map.put(UpdateType, updateConfig.startupType);
+      map.put(Source, "startup");
       Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
       SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
               .withIdentity(collectionName, "startup")
@@ -159,6 +161,7 @@ public class CollectionUpdater {
     if (updateConfig.rescan != null) {
         map = new org.quartz.JobDataMap();
         map.put(UpdateType, updateConfig.updateType);
+        map.put(Source, "rescan");
         CronTrigger rescanTrigger = TriggerBuilder.newTrigger()
                 .withIdentity(collectionName, "rescan")
                 .withSchedule(CronScheduleBuilder.cronSchedule(updateConfig.rescan))
@@ -244,10 +247,11 @@ public class CollectionUpdater {
       String collectionName = (String) context.getJobDetail().getJobDataMap().get(COLLECTION_NAME);
       org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
       CollectionUpdateType type= (CollectionUpdateType) context.getTrigger().getJobDataMap().get(UpdateType);
+      String source= (String) context.getTrigger().getJobDataMap().get(Source);
       String groupName = context.getTrigger().getKey().getGroup();
 
       try {
-        eventBus.post( new CollectionUpdateEvent(type, collectionName));
+        eventBus.post( new CollectionUpdateEvent(type, collectionName, source));
         fcLogger.debug("CollectionUpdate {} on {}", type, collectionName);
 
       } catch (Throwable e) {
