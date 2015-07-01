@@ -84,6 +84,7 @@ public class TestFormBuilder extends UnitTestCommon
     {
         setTitle("HTTPFormBuilder test(s)");
         setSystemProperties();
+        prop_visual = true; // force
     }
 
     @Test
