@@ -4,10 +4,12 @@ package thredds.featurecollection;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.Dataset;
 import thredds.server.catalog.FeatureCollectionRef;
@@ -23,12 +25,14 @@ import java.util.concurrent.ExecutionException;
  * @author caron
  * @since 4/2/2015
  */
-@Component("FeatureCollectionCache")
+@Component
 public class FeatureCollectionCache implements InitializingBean {
   static private final Logger logger = LoggerFactory.getLogger(FeatureCollectionCache.class);
 
   @Autowired
-  private TdsContext tdsContext;
+  @Qualifier("fcTriggerEventBus")
+  private EventBus eventBus;
+
   private Cache<String, InvDatasetFeatureCollection> cache;
 
   public FeatureCollectionCache() {
@@ -80,6 +84,7 @@ public class FeatureCollectionCache implements InitializingBean {
   private InvDatasetFeatureCollection makeFeatureCollection(FeatureCollectionRef fcr) throws IOException {
     try {
       InvDatasetFeatureCollection result = InvDatasetFeatureCollection.factory(fcr, fcr.getConfig());
+      eventBus.register(result);
       return result;
 
     } catch (Throwable t) {

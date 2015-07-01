@@ -75,4 +75,20 @@ public class CatalogExt {
     this.catRelLocation = catp.getCatLocation();
     this.isRoot = catp.getIsRoot();
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CatalogExt that = (CatalogExt) o;
+
+    return catRelLocation.equals(that.catRelLocation);
+
+  }
+
+  @Override
+  public int hashCode() {
+    return catRelLocation.hashCode();
+  }
 }

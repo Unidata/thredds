@@ -62,7 +62,7 @@ import java.util.*;
  * @author caron
  * @since 3/21/2015
  */
-@Component("ConfigCatalogInitialization")
+@Component
 public class ConfigCatalogInitialization {
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName());
   static private final String ERROR = "*** ERROR: ";

@@ -32,11 +32,15 @@
  */
 package thredds.featurecollection;
 
+import com.google.common.eventbus.EventBus;
 import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
-import thredds.inventory.CollectionUpdateListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import thredds.inventory.CollectionUpdateEvent;
 import thredds.inventory.CollectionUpdateType;
 
 import java.util.Date;
@@ -51,17 +55,22 @@ import java.util.Date;
  * @since Nov 21, 2010
  */
 @ThreadSafe
+@Component
 public enum CollectionUpdater {
   INSTANCE;   // Singleton cf Bloch p 18
 
   static private final org.slf4j.Logger startupLogger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
-  static private final String DCM_NAME = "dcm";
+  static private final String COLLECTION_NAME = "collectionName";
+  static private final String EVENT_BUS = "eventBus";
   static private final String LOGGER = "logger";
   static private final String UpdateType = "updateType";
   static private final long startupWait = 3 * 1000; // 3 secs
   static private boolean disabled = false;
 
-  // could use Spring DI
+  @Autowired
+  @Qualifier("fcTriggerEventBus")
+  private EventBus eventBus;
+
   private org.quartz.Scheduler scheduler = null;
   private boolean failed = false;
   private boolean isTdm = false;
@@ -85,32 +94,29 @@ public enum CollectionUpdater {
     }
   }
 
+  // debugging
   public org.quartz.Scheduler getScheduler() {
     return scheduler;
   }
 
   /**
-   *
-   * @param config
-   * @param manager CollectionUpdateListener
-   * @param logger
+   * Look at config and decide if tasks need to be started
    */
-  public void scheduleTasks(FeatureCollectionConfig config, CollectionUpdateListener manager, Logger logger) {
+  public void scheduleTasks(FeatureCollectionConfig config, Logger logger) {
     if (disabled || failed) return;
 
     FeatureCollectionConfig.UpdateConfig updateConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
     if (updateConfig == null) return;
 
-    //String jobName = config.name + "-" + Integer.toHexString(config.hashCode());
-    String jobName = manager.getCollectionName();
+    String collectionName = config.getCollectionName();
 
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
-    map.put(DCM_NAME, manager);
-    //map.put(UpdateType, updateConfig.updateType);
+    map.put(EVENT_BUS, eventBus);
+    map.put(COLLECTION_NAME, collectionName);
     if (logger != null) map.put(LOGGER, logger);
     JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
-            .withIdentity(jobName, "UpdateCollection")
+            .withIdentity(collectionName, "UpdateCollection")
             .storeDurably()
             .usingJobData(map)
             .build();
@@ -126,13 +132,13 @@ public enum CollectionUpdater {
       return;
     }
 
-    // startup
+    // task to run the job on startup
     if (updateConfig.startupType != CollectionUpdateType.never) {
       map = new org.quartz.JobDataMap();
       map.put(UpdateType, updateConfig.startupType);
       Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
       SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
-              .withIdentity(jobName, "startup")
+              .withIdentity(collectionName, "startup")
               .startAt(runTime)
               .forJob(updateJob)
               .usingJobData(map)
@@ -147,12 +153,12 @@ public enum CollectionUpdater {
       }
     }
 
-    // rescan
+    // task to run the job periodically, with rescan
     if (updateConfig.rescan != null) {
         map = new org.quartz.JobDataMap();
         map.put(UpdateType, updateConfig.updateType);
         CronTrigger rescanTrigger = TriggerBuilder.newTrigger()
-                .withIdentity(jobName, "rescan")
+                .withIdentity(collectionName, "rescan")
                 .withSchedule(CronScheduleBuilder.cronSchedule(updateConfig.rescan))
                 .forJob(updateJob)
                 .usingJobData(map)
@@ -167,7 +173,7 @@ public enum CollectionUpdater {
       }
     }
 
-    // updating the proto dataset
+    /* updating the proto dataset
     FeatureCollectionConfig.ProtoConfig pconfig = config.protoConfig;
     if (pconfig.change != null) {
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
@@ -191,7 +197,7 @@ public enum CollectionUpdater {
         if (logger != null)logger.error("cronExecutor failed to schedule RereadProtoJob", e);
         // e.printStackTrace();
       }
-    }
+    } */
 
   }
 
@@ -206,7 +212,7 @@ public enum CollectionUpdater {
     }
   }
 
-  // Called by TDS collectionController when trigger is received externally
+  /* Called by TDS collectionController when trigger is received externally
   public void triggerUpdate(String collectionName, CollectionUpdateType triggerType) {
     JobDataMap map = new org.quartz.JobDataMap();
     map.put(UpdateType, triggerType);
@@ -224,7 +230,7 @@ public enum CollectionUpdater {
       startupLogger.error("triggerUpdate failed", e);
       // e.printStackTrace();
     }
-  }
+  } */
 
   // do the work in a separate thread
   public static class UpdateCollectionJob implements org.quartz.Job {
@@ -232,22 +238,23 @@ public enum CollectionUpdater {
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-      CollectionUpdateListener manager = (CollectionUpdateListener) context.getJobDetail().getJobDataMap().get(DCM_NAME);
+      EventBus eventBus = (EventBus) context.getJobDetail().getJobDataMap().get(EVENT_BUS);
+      String collectionName = (String) context.getJobDetail().getJobDataMap().get(COLLECTION_NAME);
       org.slf4j.Logger loggerfc = (org.slf4j.Logger) context.getJobDetail().getJobDataMap().get(LOGGER);
       CollectionUpdateType type= (CollectionUpdateType) context.getTrigger().getJobDataMap().get(UpdateType);
       String groupName = context.getTrigger().getKey().getGroup();
 
       try {
-        manager.sendEvent(type);
-        startupLogger.debug("CollectionUpdate {} on {}", type, manager.getCollectionName());
+        eventBus.post( new CollectionUpdateEvent(type, collectionName));
+        startupLogger.debug("CollectionUpdate {} on {}", type, collectionName);
 
       } catch (Throwable e) {
-        if (loggerfc != null) loggerfc.error("UpdateCollectionJob.execute "+groupName+" failed collection=" + manager.getCollectionName(), e);
+        if (loggerfc != null) loggerfc.error("UpdateCollectionJob.execute "+groupName+" failed collection=" + collectionName, e);
       }
     }
   }
 
-  // disabled LOOK
+  /* disabled LOOK
   public static class ChangeProtoJob implements org.quartz.Job {
     public ChangeProtoJob() {
     }
@@ -263,5 +270,5 @@ public enum CollectionUpdater {
         if (loggerfc != null) loggerfc.error("ChangeProtoJob.execute failed collection=" + manager.getCollectionName(), e);
       }
     }
-  }
+  } */
 }

@@ -55,12 +55,7 @@
   <bean id="requestCORSFilter" class="thredds.servlet.filter.RequestCORSFilter" />
   <bean id="requestBracketingLogMessageFilter" class="thredds.servlet.filter.RequestBracketingLogMessageFilter" />
 
-  
-  <!-- Handler Mapping -->
-  <!--  In Spring 3.2  DefaultAnnotationHandlerMapping was deprecated in favor of   RequestMappingHandlerMapping-->
-  <!--  bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /-->  
-  <!-- bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" / -->
-   
+  <!-- Properties -->
   <!-- tell spring that tds.properties gets read in first and overrides anything else -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <!-- Check system properties before looking in tds.properties. -->
@@ -82,6 +77,10 @@
      <entry key="cdmUnitTest" value="${unidata.testdata.path}/cdmUnitTest"/>
    </util:map>
 
+  <!-- replace threddsConfig.xml when possible (experimental) -->
+  <import resource="tdsGlobalConfig.xml"/>
+
+  <!-- Config Beans -->
   <bean id="htmlConfig" class="thredds.server.config.HtmlConfigBean">
     <property name="webappUrl" value="${tds.url}" />
     <property name="webappDocsUrl" value="${tds.documentation.url}" />
@@ -89,13 +88,30 @@
     <property name="webappLogoAlt" value="${tds.logo.alt}" />
     <property name="installUrl" value="${tds.install.url}" />
   </bean>
-
   <bean id="corsConfig" class="thredds.server.config.CorsConfigBean" />
-  <!-- bean id="tdsServerInfo" class="thredds.server.config.TdsServerInfoBean" / -->
   <bean id="tdsUpdateConfig" class="thredds.server.config.TdsUpdateConfigBean" />
   <bean id="wmsConfig" class="thredds.server.config.WmsConfigBean" />
 
-    <!-- JMX -->
+  <!-- Typically we use Spring wiring when we need to share instances. Also using @Component scanning -->
+  <bean id="tdsInit" class="thredds.server.config.TdsInit" />   <!-- must declare here in order to get destroy() to be called -->
+  <bean id="configCatalogInitialization" class="thredds.core.ConfigCatalogInitialization" />
+  <bean id="configCatalogCache" class="thredds.server.catalog.ConfigCatalogCache" />
+
+  <bean id="fcTriggerEventBus" class="com.google.common.eventbus.AsyncEventBus">
+    <constructor-arg value="fcTriggerEventBus" />
+    <constructor-arg ref="fcTriggerExecutor" />
+  </bean>
+  <bean id="fcTriggerExecutor" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+    <constructor-arg type="int" value="1"/>
+  </bean>
+
+  <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
+  <bean id="authorizer" class="thredds.servlet.restrict.TomcatAuthorizer">
+    <property name="useSSL" value="false" />
+    <property name="sslPort" value="8443" />
+  </bean>
+
+  <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>
   <bean id="netcdfFileCacheMonitor" class="thredds.monitor.NetcdfFileCacheMonitorImpl"/>
   <bean id="fmrcCacheMonitor" class="thredds.monitor.FmrcCacheMonitorImpl"/>
@@ -109,26 +125,5 @@
 			</util:map>
 		</property>
 	</bean> -->
-
-  <!--- thredds 4.6 / 5.0 -->
-  <bean id="TdsInit" class="thredds.server.config.TdsInit" />   <!-- must declare here in order to get destroy() to be called -->
-  <!-- bean id="pathMatcher" class="thredds.server.catalog.DataRootPathMatcher" / -->
-  <bean id="ConfigCatalogCache" class="thredds.server.catalog.ConfigCatalogCache" />
-  <!-- bean id="DatasetTracker" class="thredds.server.catalog.tracker.DatasetTrackerChronicle" / -->
-  <!-- bean id="CatalogWatcher" class="thredds.server.catalog.tracker.CatalogWatcher">
-    <constructor-arg ref="DatasetTracker" />
-    <constructor-arg value="false" />
-  </bean -->
-  <bean id="ConfigCatalogInitialization" class="thredds.core.ConfigCatalogInitialization" />
-
-  <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
-  <!-- bean id="RestrictedDataset" class="thredds.servlet.restrict.RestrictedAccessController" / -->
-  <bean id="Authorizer" class="thredds.servlet.restrict.TomcatAuthorizer">
-    <property name="useSSL" value="false" />
-    <property name="sslPort" value="8443" />
-  </bean>
-
-  <!-- replace threddsConfig.xml (experimental) -->
-  <import resource="tdsGlobalConfig.xml"/>
 
 </beans>

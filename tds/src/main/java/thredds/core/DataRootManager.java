@@ -60,7 +60,7 @@ import java.util.*;
  * @author caron
  * @since 1/23/2015
  */
-@Component("DataRootManager")
+@Component
 public class DataRootManager implements InitializingBean {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 

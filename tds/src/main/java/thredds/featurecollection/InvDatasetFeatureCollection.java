@@ -32,6 +32,7 @@
 
 package thredds.featurecollection;
 
+import com.google.common.eventbus.Subscribe;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ import java.util.*;
  * @since Mar 3, 2010
  */
 @ThreadSafe
-public abstract class InvDatasetFeatureCollection implements CollectionUpdateListener {
+public abstract class InvDatasetFeatureCollection {
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
 
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
@@ -112,7 +113,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
       result = new InvDatasetFcPoint(parent, config);
     }
 
-    result.finishConstruction(); // stuff that shouldnt be done in a constructor
+    //result.finishConstruction(); // stuff that shouldnt be done in a constructor
     return result;
   }
 
@@ -227,11 +228,11 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     if (errs.length() > 0) logger.warn("MFileCollectionManager parse error = {} ", errs);
   }
 
-  // stuff that shouldnt be done in a constructor - eg dont let 'this' escape
+  /* stuff that shouldnt be done in a constructor - eg dont let 'this' escape
   // LOOK maybe not best design to start tasks from here
   // LOOK we want to get notified of events, but no longer initiate changes.
   protected void finishConstruction() {
-    CollectionUpdater.INSTANCE.scheduleTasks(config, this, logger);
+    // CollectionUpdater.INSTANCE.scheduleTasks(config, this, logger);
   }
 
   /////////////////////// CollectionUpdater
@@ -245,6 +246,18 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   public void sendEvent(CollectionUpdateType type) {
     try {
       update(type);
+    } catch (IOException e) {
+      logger.error("Error processing event", e);
+    }
+  }  */
+
+  // called by eventBus
+  @Subscribe
+  public void processEvent(CollectionUpdateEvent event)  {
+    if (!config.collectionName.equals(event.getCollectionName())) return; // not for me
+
+    try {
+      update(event.getType());
     } catch (IOException e) {
       logger.error("Error processing event", e);
     }

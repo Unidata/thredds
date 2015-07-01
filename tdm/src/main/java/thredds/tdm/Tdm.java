@@ -35,9 +35,13 @@
 
 package thredds.tdm;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -80,6 +84,10 @@ public class Tdm {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Tdm.class);
   private static final boolean debug = false;
   private static final boolean debugOpenFiles = false;
+
+  @Autowired
+  @Qualifier("fcTriggerEventBus")
+  private EventBus eventBus;
 
   private Path contentDir;
   private Path contentThreddsDir;
@@ -222,6 +230,7 @@ public class Tdm {
 
   void start() throws IOException {
     System.out.printf("Tdm startup at %s%n", new Date());
+    eventBus.register(this);
 
     List<FeatureCollectionConfig> fcList = new ArrayList<>();
     CatalogConfigReader reader = new CatalogConfigReader(contentThreddsDir, catalog, aliasHandler);
@@ -262,7 +271,10 @@ public class Tdm {
 
       Logger logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection (!!)
       logger.info("FeatureCollection config=" + config);
-      CollectionUpdater.INSTANCE.scheduleTasks(config, new Listener(config, logger), logger); // now wired for events
+
+      // now wire for events
+      fcMap.put(config.getCollectionName(), new Listener(config, logger));
+      CollectionUpdater.INSTANCE.scheduleTasks(config, logger);
     }
 
      /* show whats up
@@ -275,9 +287,22 @@ public class Tdm {
      System.out.printf("%s%n", f.toString()); */
   }
 
+    // called by eventBus
+  @Subscribe
+  public void processEvent(CollectionUpdateEvent event)  {
+    Listener fc = fcMap.get(event.getCollectionName());
+    if (fc == null) {
+      log.error("Unkown colelction name "+ event);
+      return;
+    }
+    fc.processEvent(event.getType());
+  }
+
+  Map<String, Listener> fcMap = new HashMap<>();
+
   // these objects listen for schedule events from quartz.
   // one listener for each fc.
-  private class Listener implements CollectionUpdateListener {
+  private class Listener {
     FeatureCollectionConfig config;
     //MCollection dcm;
     AtomicBoolean inUse = new AtomicBoolean(false);
@@ -288,27 +313,7 @@ public class Tdm {
       this.logger = logger;
     }
 
-    /* old
-    public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
-      if (event.getType() != CollectionManager.TriggerType.update) return;
-
-      // make sure that each collection is only being indexed by one thread at a time
-      if (inUse.get()) {
-        logger.debug("** Update already in progress for {} {}", config.name, event.getType());
-        return;
-      }
-      if (!inUse.compareAndSet(false, true)) return;
-
-      executor.execute(new IndexTask(config, dcm, this, logger));
-    } */
-
-    @Override
-    public String getCollectionName() {
-      return config.collectionName;
-    }
-
-    @Override
-    public void sendEvent(CollectionUpdateType event) {
+    public void processEvent(CollectionUpdateType event) {
       if (!inUse.compareAndSet(false, true)) return; // if already working, skip another execution
       executor.execute(new IndexTask(config, this, event, logger));
     }
@@ -317,7 +322,6 @@ public class Tdm {
   private String makeTriggerUrl(String name) {
     return "thredds/admin/collection/trigger?trigger=never&collection=" + name;
     // return "thredds/admin/collection/trigger?nocheck&collection=" + name;  // LOOK changed to nocheck for triggering 4.3, temp kludge
-
   }
 
   private class IndexTask implements Runnable {

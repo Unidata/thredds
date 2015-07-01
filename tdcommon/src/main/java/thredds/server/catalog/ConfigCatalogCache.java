@@ -57,7 +57,7 @@ import java.util.concurrent.ExecutionException;
  * @author caron
  * @since 3/21/2015
  */
-@Component("ConfigCatalogCache")
+@Component
 @DependsOn("TdsContext")
 public class ConfigCatalogCache implements CatalogReader {
   static private final Logger logger = LoggerFactory.getLogger(ConfigCatalogCache.class);

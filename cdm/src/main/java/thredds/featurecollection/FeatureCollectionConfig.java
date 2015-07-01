@@ -135,6 +135,9 @@ public class FeatureCollectionConfig {
       return new CollectionSpecParser(spec, errlog);
   }
 
+  public String getCollectionName() {
+    return collectionName;
+  }
 
   public boolean isTrigggerOk() {
     return updateConfig.triggerOk || (tdmConfig != null) && tdmConfig.triggerOk;

@@ -43,10 +43,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.coverity.security.Escape;
+import com.google.common.eventbus.EventBus;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -93,6 +95,10 @@ public class AdminCollectionController {
 
   @Autowired
   private DatasetManager datasetManager;
+
+  @Autowired
+  @Qualifier("fcTriggerEventBus")
+  private EventBus eventBus;
 
   @PostConstruct
   public void afterPropertiesSet() {
@@ -268,7 +274,8 @@ public class AdminCollectionController {
       return null;
     }
 
-    CollectionUpdater.INSTANCE.triggerUpdate(collectName, triggerType);
+    eventBus.post(new CollectionUpdateEvent(triggerType, collectName));
+    // CollectionUpdater.INSTANCE.triggerUpdate(collectName, triggerType);
     pw.printf(" TRIGGER SENT%n");
 
     pw.flush();

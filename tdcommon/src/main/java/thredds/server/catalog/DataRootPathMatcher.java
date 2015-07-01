@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.Service;
 import thredds.server.catalog.tracker.DataRootExt;
 import thredds.server.catalog.tracker.DataRootTracker;
 import ucar.unidata.util.StringUtil2;
@@ -166,11 +165,11 @@ public class DataRootPathMatcher {
     for (Dataset dataset : dsList) {
       if (dataset instanceof DatasetScan) {
         DatasetScan ds = (DatasetScan) dataset;
-        Service service = ds.getServiceDefault();
+        /* Service service = ds.getServiceDefault();
         if (service == null) {
           logCatalogInit.error(ERROR + "DatasetScan " + ds.getName() + " has no default Service - skipping");  // LOOK needed?
           continue;
-        }
+        } */
         addRoot(ds, catalogRelPath, checkDups);
 
       } else if (dataset instanceof FeatureCollectionRef) {
