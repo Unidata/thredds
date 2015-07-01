@@ -7,10 +7,7 @@ package ucar.nc2.util.net;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.io.StreamTokenizer.*;
 
@@ -65,6 +62,7 @@ abstract public class Json
             tokens.wordChars('0', '9');
             tokens.wordChars('_', '_');
             tokens.wordChars('-', '-');
+            tokens.wordChars('$', '$');
             Object result = parseR(tokens);
             return result;
         }
@@ -141,7 +139,7 @@ abstract public class Json
                 throws IOException
         {
             assert (tokens.ttype == LBRACE);
-            Map<String, Object> map = new LinkedHashMap<>();
+            Map<String, Object> map = new TreeMap<>();
             loop:
             for(; ; ) {
                 int token = tokens.nextToken();
