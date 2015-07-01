@@ -40,7 +40,12 @@ import ucar.httpservices.HTTPFormBuilder;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.util.UnitTestCommon;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Test HttpFormBuilder
@@ -68,6 +73,11 @@ public class TestFormBuilder extends UnitTestCommon
     static final String EXTRATEXT = "extra";
     static final String BUNDLETEXT = "bundle";
 
+    static final char QUOTE = '"';
+    static final char COLON = ':';
+
+    // Regex patterns
+
     //////////////////////////////////////////////////
     // Instance Variables
 
@@ -76,6 +86,8 @@ public class TestFormBuilder extends UnitTestCommon
     int failcount = 0;
     boolean verbose = true;
     boolean pass = false;
+
+    protected String boundary = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -144,6 +156,9 @@ public class TestFormBuilder extends UnitTestCommon
                     pass = false;
                 }
                 if(pass) {
+                    System.err.println("*********************");
+                    System.err.println(body);
+                    System.err.println("*********************");
                     Object json = Json.parse(body);
                     cleanup(json, true);
                     String text = Json.toString(json);
@@ -218,15 +233,76 @@ public class TestFormBuilder extends UnitTestCommon
             // Now parse and change the body
             String body = (String) map.get("body");
             if(body != null) {
-                String[] lines = body.split("\\r\\n");
-                for(int i = 0; i < lines.length; i++) {
-                    String line = lines[i];
-                    if(line.startsWith("--" + boundary))
-                        lines[i] = "--" + FAKEBOUNDARY;
-                }
-                map.put("body", join(lines, "\n"));
+                Map<String, String> bodymap = parsebody(body);
+                map.put("body", mapjoin(bodymap, "\n"));
             }
         }
+    }
+
+    static final Pattern blockb = Pattern.compile(
+            "--[^\n]*+[\n]", Pattern.DOTALL);
+
+    static final Pattern blockc = Pattern.compile(
+            "Content-Disposition:\\s+form-data;\\s+name="
+                    + "[\"]([^\"]*)[\"]"
+            , Pattern.DOTALL);
+
+    static final Pattern blockf = Pattern.compile(
+            "[;]\\s+filename="
+                    + "[\"]([^\"]*)[\"]"
+                    + "[\n][Cc]ontent-[Tt]ype[:]\\s*([^\n]*)"
+            , Pattern.DOTALL);
+
+    static final Pattern blockx = Pattern.compile(
+            "([^\n]*)[\n]"
+            , Pattern.DOTALL);
+
+
+    protected Map<String, String> parsebody(String body)
+            throws HTTPException
+    {
+        Map<String, String> map = new TreeMap<>();
+        body = body.replace("\r\n", "\n");
+        while(body.length() > 0) {
+            Matcher mb = blockb.matcher(body);
+            if(!mb.lookingAt()) {
+                throw new HTTPException("Missing boundary marker : " + body);
+            }
+            int len = mb.group(0).length();
+            body = body.substring(len);
+            if(body.length() == 0) break; // trailing boundary marker
+            Matcher mc = blockc.matcher(body);
+            if(!mc.lookingAt())
+                throw new HTTPException("Missing Content-type marker : " + body);
+            len = mc.group(0).length();
+            String name = mc.group(1);
+            body = body.substring(len);
+            Matcher mf = blockf.matcher(body);
+            String filename = null;
+            String contenttype = null;
+            if(mf.lookingAt()) {
+                filename = mf.group(1);
+                contenttype = mf.group(2);
+                len = mf.group(0).length();
+                body = body.substring(len);
+            }
+            // Skip the two newlines
+            if(!body.startsWith("\n\n"))
+                throw new HTTPException("Missing newlines");
+            body = body.substring(2);
+            // Extract the pieces
+            String value = null;
+            Matcher mx = blockx.matcher(body);
+            if(mx.lookingAt()) {
+                value = mx.group(1);
+                len = mx.group(0).length();
+                body = body.substring(len);
+            } else {
+                throw new HTTPException("Match failure at : " + body);
+            }
+            map.put(name, value);
+        }
+        return map;
     }
 
     static protected String join(String[] pieces, String sep)
@@ -239,85 +315,58 @@ public class TestFormBuilder extends UnitTestCommon
         return buf.toString();
     }
 
+    static protected String mapjoin(Map<String, String> map, String sep)
+    {
+        StringBuilder buf = new StringBuilder();
+        boolean first = true;
+        for(Map.Entry<String, String> entry : map.entrySet()) {
+            if(!first) buf.append(sep);
+            first = false;
+            buf.append(entry.getKey());
+            buf.append(": ");
+            buf.append(entry.getValue());
+        }
+        return buf.toString();
+    }
+
     static final String expectedSimple =
             "{\n"
-                    + "  \"method\" : \"POST\",\n"
-                    + "  \"uri\" : \"/\",\n"
-                    + "  \"path\" : {\n"
-                    + "    \"name\" : \"/\",\n"
-                    + "    \"query\" : \"\",\n"
-                    + "    \"params\" : {}\n"
-                    + "  },\n"
-                    + "  \"body\" : \"os=Windows+7&organization=UCAR&hardware=Windows&packageVersion=1.0.1&softwarePackage=IDV&description=TestFormBuilder&subject=hello&emailAddress=idv%40ucar.edu&fullName=Mr.+Jones\",\n"
-                    + "  \"ip\" : \"127.0.0.1\",\n"
-                    + "  \"powered-by\" : \"http://httpkit.com\",\n"
-                    + "  \"docs\" : \"http://httpkit.com/echo\"\n"
-                    + "}\n";
-
+            +"  \"body\" : \"os=Windows+7&organization=UCAR&hardware=Windows&packageVersion=1.0.1&softwarePackage=IDV&description=TestFormBuilder&subject=hello&emailAddress=idv%40ucar.edu&fullName=Mr.+Jones\",\n"
+            +"  \"docs\" : \"http://httpkit.com/echo\",\n"
+            +"  \"ip\" : \"127.0.0.1\",\n"
+            +"  \"method\" : \"POST\",\n"
+            +"  \"path\" : {\n"
+            +"    \"name\" : \"/\",\n"
+            +"    \"params\" : {},\n"
+            +"    \"query\" : \"\"\n"
+            +"  },\n"
+            +"  \"powered-by\" : \"http://httpkit.com\",\n"
+            +"  \"uri\" : \"/\"\n"
+            +"}\n";
 
     static final String expectedMultipart =
             "{\n"
+            +"  \"body\" : \"attachmentOne: extra\n"
+            +"attachmentThree: u0001u0002u0000\n"
+            +"attachmentTwo: bundle\n"
+            +"description: TestFormBuilder\n"
+            +"emailAddress: idv@ucar.edu\n"
+            +"fullName: Mr. Jones\n"
+            +"hardware: Windows\n"
+            +"organization: UCAR\n"
+            +"os: Windows 7\n"
+            +"packageVersion: 1.0.1\n"
+            +"softwarePackage: IDV\n"
+            +"subject: hello\",\n"
+            +"  \"docs\" : \"http://httpkit.com/echo\",\n"
+            +"  \"ip\" : \"127.0.0.1\",\n"
             +"  \"method\" : \"POST\",\n"
-            +"  \"uri\" : \"/\",\n"
             +"  \"path\" : {\n"
             +"    \"name\" : \"/\",\n"
-            +"    \"query\" : \"\",\n"
-            +"    \"params\" : {}\n"
+            +"    \"params\" : {},\n"
+            +"    \"query\" : \"\"\n"
             +"  },\n"
-            +"  \"body\" : \"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"os\"\n"
-            +"\n"
-            +"Windows 7\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"organization\"\n"
-            +"\n"
-            +"UCAR\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"attachmentOne\"; filename=\"extra.html\"\n"
-            +"Content-Type: application/octet-stream\n"
-            +"\n"
-            +"extra\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"hardware\"\n"
-            +"\n"
-            +"Windows\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"packageVersion\"\n"
-            +"\n"
-            +"1.0.1\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"softwarePackage\"\n"
-            +"\n"
-            +"IDV\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"attachmentThree\"; filename=\"arbfile\"\n"
-            +"Content-Type: application/octet-stream\n"
-            +"\n"
-            +"u0001u0002u0000\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"attachmentTwo\"; filename=\"bundle.xidv\"\n"
-            +"Content-Type: application/octet-stream\n"
-            +"\n"
-            +"bundle\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"description\"\n"
-            +"\n"
-            +"TestFormBuilder\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"subject\"\n"
-            +"\n"
-            +"hello\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"emailAddress\"\n"
-            +"\n"
-            +"idv@ucar.edu\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\n"
-            +"Content-Disposition: form-data; name=\"fullName\"\n"
-            +"\n"
-            +"Mr. Jones\n"
-            +"--XXXXXXXXXXXXXXXXXXXX\",\n"
-            +"  \"ip\" : \"127.0.0.1\",\n"
             +"  \"powered-by\" : \"http://httpkit.com\",\n"
-            +"  \"docs\" : \"http://httpkit.com/echo\"\n"
+            +"  \"uri\" : \"/\"\n"
             +"}\n";
 }
