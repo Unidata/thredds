@@ -139,7 +139,7 @@ abstract public class Json
                 throws IOException
         {
             assert (tokens.ttype == LBRACE);
-            Map<String, Object> map = new TreeMap<>();
+            Map<String, Object> map = new LinkedHashMap<>();  // Keep insertion order
             loop:
             for(; ; ) {
                 int token = tokens.nextToken();

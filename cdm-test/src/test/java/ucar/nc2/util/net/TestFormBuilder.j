@@ -41,9 +41,7 @@ import ucar.httpservices.HTTPMethod;
 import ucar.nc2.util.UnitTestCommon;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -119,7 +117,7 @@ public class TestFormBuilder extends UnitTestCommon
                 }
                 if(pass) {
                     Object json = Json.parse(body);
-                    cleanup(json, false);
+                    json = cleanup(json, false);
                     String text = Json.toString(json);
                     if(prop_visual)
                         visual(TESTURL, text);
@@ -156,11 +154,8 @@ public class TestFormBuilder extends UnitTestCommon
                     pass = false;
                 }
                 if(pass) {
-                    System.err.println("*********************");
-                    System.err.println(body);
-                    System.err.println("*********************");
                     Object json = Json.parse(body);
-                    cleanup(json, true);
+                    json = cleanup(json, true);
                     String text = Json.toString(json);
                     body = text;
                     if(prop_visual)
@@ -208,10 +203,11 @@ public class TestFormBuilder extends UnitTestCommon
         return builder;
     }
 
-    protected void cleanup(Object o, boolean multipart)
+    protected Map<String,Object> cleanup(Object o, boolean multipart)
             throws HTTPException
     {
         Map<String, Object> map = (Map<String, Object>) o;
+        map = (Map<String,Object>)sort(map);
         Object oh = map.get("headers");
         String boundary = null;
         if(oh != null) {
@@ -237,6 +233,25 @@ public class TestFormBuilder extends UnitTestCommon
                 map.put("body", mapjoin(bodymap, "\n"));
             }
         }
+        return map;
+    }
+
+    protected Object sort(Object o)
+    {
+        if(o instanceof Map) {
+            Map<String, Object> map = (Map<String, Object>) o;
+            map = new TreeMap(map); // Convert the map to sorted order
+            for(Map.Entry<String,Object> entry: map.entrySet())
+                map.put(entry.getKey(),sort(entry.getValue()));
+            return map;
+        } else if(o instanceof List) {
+            List<Object> list = (List)o;
+            List<Object> out = new ArrayList<>();
+            for(int i=0;i<list.size();i++)
+                out.add(sort(list.get(i)));
+            return out;
+        } else
+            return o;
     }
 
     static final Pattern blockb = Pattern.compile(
