@@ -40,8 +40,10 @@ import ucar.httpservices.HTTPFormBuilder;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.util.UnitTestCommon;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,9 +69,10 @@ public class TestFormBuilder extends UnitTestCommon
     static final String SUBJECTENTRY = "hello";
     static final String SOFTWAREPACKAGEENTRY = "IDV";
     static final String VERSIONENTRY = "1.0.1";
-    static final String HARDWAREENTRY = "Windows";
+    static final String HARDWAREENTRY = "x86";
     static final String EXTRATEXT = "extra";
     static final String BUNDLETEXT = "bundle";
+    static final String OSTEXT = System.getProperty("os.name");
 
     static final char QUOTE = '"';
     static final char COLON = ':';
@@ -119,6 +122,7 @@ public class TestFormBuilder extends UnitTestCommon
                     Object json = Json.parse(body);
                     json = cleanup(json, false);
                     String text = Json.toString(json);
+                    text = localize(text, OSTEXT);
                     if(prop_visual)
                         visual(TESTURL, text);
                     String diffs = compare("TestSimple", expectedSimple, text);
@@ -157,6 +161,7 @@ public class TestFormBuilder extends UnitTestCommon
                     Object json = Json.parse(body);
                     json = cleanup(json, true);
                     String text = Json.toString(json);
+                    text = localize(text, OSTEXT);
                     body = text;
                     if(prop_visual)
                         visual(TESTURL, body);
@@ -192,7 +197,7 @@ public class TestFormBuilder extends UnitTestCommon
         builder.add("description", DESCRIPTIONENTRY);
         builder.add("softwarePackage", SOFTWAREPACKAGEENTRY);
         builder.add("packageVersion", VERSIONENTRY);
-        builder.add("os", System.getProperty("os.name"));
+        builder.add("os", OSTEXT);
         builder.add("hardware", HARDWAREENTRY);
 
         if(multipart) {
@@ -203,11 +208,20 @@ public class TestFormBuilder extends UnitTestCommon
         return builder;
     }
 
-    protected Map<String,Object> cleanup(Object o, boolean multipart)
+    protected String localize(String text, String os)
+            throws HTTPException
+    {
+        text = text.replace(os, "<OS NAME>");
+        os = os.replace(' ', '+');
+        text = text.replace(os, "<OS+NAME>");
+        return text;
+    }
+
+    protected Map<String, Object> cleanup(Object o, boolean multipart)
             throws HTTPException
     {
         Map<String, Object> map = (Map<String, Object>) o;
-        map = (Map<String,Object>)sort(map);
+        map = (Map<String, Object>) sort(map);
         Object oh = map.get("headers");
         String boundary = null;
         if(oh != null) {
@@ -241,14 +255,16 @@ public class TestFormBuilder extends UnitTestCommon
         if(o instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) o;
             map = new TreeMap(map); // Convert the map to sorted order
-            for(Map.Entry<String,Object> entry: map.entrySet())
-                map.put(entry.getKey(),sort(entry.getValue()));
+            for(Map.Entry<String, Object> entry : map.entrySet()) {
+                map.put(entry.getKey(), sort(entry.getValue()));
+            }
             return map;
         } else if(o instanceof List) {
-            List<Object> list = (List)o;
+            List<Object> list = (List) o;
             List<Object> out = new ArrayList<>();
-            for(int i=0;i<list.size();i++)
+            for(int i = 0; i < list.size(); i++) {
                 out.add(sort(list.get(i)));
+            }
             return out;
         } else
             return o;
@@ -346,42 +362,42 @@ public class TestFormBuilder extends UnitTestCommon
 
     static final String expectedSimple =
             "{\n"
-            +"  \"body\" : \"os=Windows+7&organization=UCAR&hardware=Windows&packageVersion=1.0.1&softwarePackage=IDV&description=TestFormBuilder&subject=hello&emailAddress=idv%40ucar.edu&fullName=Mr.+Jones\",\n"
-            +"  \"docs\" : \"http://httpkit.com/echo\",\n"
-            +"  \"ip\" : \"127.0.0.1\",\n"
-            +"  \"method\" : \"POST\",\n"
-            +"  \"path\" : {\n"
-            +"    \"name\" : \"/\",\n"
-            +"    \"params\" : {},\n"
-            +"    \"query\" : \"\"\n"
-            +"  },\n"
-            +"  \"powered-by\" : \"http://httpkit.com\",\n"
-            +"  \"uri\" : \"/\"\n"
-            +"}\n";
+                    + "  \"body\" : \"os=<OS+NAME>&organization=UCAR&hardware=x86&packageVersion=1.0.1&softwarePackage=IDV&description=TestFormBuilder&subject=hello&emailAddress=idv%40ucar.edu&fullName=Mr.+Jones\",\n"
+                    + "  \"docs\" : \"http://httpkit.com/echo\",\n"
+                    + "  \"ip\" : \"127.0.0.1\",\n"
+                    + "  \"method\" : \"POST\",\n"
+                    + "  \"path\" : {\n"
+                    + "    \"name\" : \"/\",\n"
+                    + "    \"params\" : {},\n"
+                    + "    \"query\" : \"\"\n"
+                    + "  },\n"
+                    + "  \"powered-by\" : \"http://httpkit.com\",\n"
+                    + "  \"uri\" : \"/\"\n"
+                    + "}\n";
 
     static final String expectedMultipart =
             "{\n"
-            +"  \"body\" : \"attachmentOne: extra\n"
-            +"attachmentThree: u0001u0002u0000\n"
-            +"attachmentTwo: bundle\n"
-            +"description: TestFormBuilder\n"
-            +"emailAddress: idv@ucar.edu\n"
-            +"fullName: Mr. Jones\n"
-            +"hardware: Windows\n"
-            +"organization: UCAR\n"
-            +"os: Windows 7\n"
-            +"packageVersion: 1.0.1\n"
-            +"softwarePackage: IDV\n"
-            +"subject: hello\",\n"
-            +"  \"docs\" : \"http://httpkit.com/echo\",\n"
-            +"  \"ip\" : \"127.0.0.1\",\n"
-            +"  \"method\" : \"POST\",\n"
-            +"  \"path\" : {\n"
-            +"    \"name\" : \"/\",\n"
-            +"    \"params\" : {},\n"
-            +"    \"query\" : \"\"\n"
-            +"  },\n"
-            +"  \"powered-by\" : \"http://httpkit.com\",\n"
-            +"  \"uri\" : \"/\"\n"
-            +"}\n";
+                    + "  \"body\" : \"attachmentOne: extra\n"
+                    + "attachmentThree: u0001u0002u0000\n"
+                    + "attachmentTwo: bundle\n"
+                    + "description: TestFormBuilder\n"
+                    + "emailAddress: idv@ucar.edu\n"
+                    + "fullName: Mr. Jones\n"
+                    + "hardware: x86\n"
+                    + "organization: UCAR\n"
+                    + "os: <OS NAME>\n"
+                    + "packageVersion: 1.0.1\n"
+                    + "softwarePackage: IDV\n"
+                    + "subject: hello\",\n"
+                    + "  \"docs\" : \"http://httpkit.com/echo\",\n"
+                    + "  \"ip\" : \"127.0.0.1\",\n"
+                    + "  \"method\" : \"POST\",\n"
+                    + "  \"path\" : {\n"
+                    + "    \"name\" : \"/\",\n"
+                    + "    \"params\" : {},\n"
+                    + "    \"query\" : \"\"\n"
+                    + "  },\n"
+                    + "  \"powered-by\" : \"http://httpkit.com\",\n"
+                    + "  \"uri\" : \"/\"\n"
+                    + "}\n";
 }
