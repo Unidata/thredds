@@ -239,13 +239,16 @@ public class TestFormBuilder extends UnitTestCommon
             // Remove headers
             map.remove("headers");
         }
-        if(multipart && boundary != null) {
-            // Now parse and change the body
-            String body = (String) map.get("body");
-            if(body != null) {
-                Map<String, String> bodymap = parsebody(body);
+        // Now parse and change the body
+        String body = (String) map.get("body");
+        if(body != null) {
+            if(multipart && boundary != null) {
+                Map<String, String> bodymap = parsemultipartbody(body);
                 map.put("body", mapjoin(bodymap, "\n"));
             }
+        } else {
+	    Map<String, String> bodymap = parsesimplebody(body);
+            map.put("body", mapjoin(bodymap, "&"));
         }
         return map;
     }
@@ -270,6 +273,21 @@ public class TestFormBuilder extends UnitTestCommon
             return o;
     }
 
+    protected Map<String, String> parsesimplebody(String body)
+            throws HTTPException
+    {
+        Map<String, String> map = new TreeMap<>();
+	String[] pieces = body.split("[&]");
+	for(String piece: pieces) {
+	    String[] pair = piece.split("[=]");
+	    if(pair.length == 1) {pair = new String[]{pair[0],""};}
+	    if(pair[0] == null || pair[0].length() == 0)
+                throw new HTTPException("Illegal body : " + body);
+	    map.put(pair[0],pair[1]);
+	}
+	return map;
+    }
+
     static final Pattern blockb = Pattern.compile(
             "--[^\n]*+[\n]", Pattern.DOTALL);
 
@@ -289,7 +307,7 @@ public class TestFormBuilder extends UnitTestCommon
             , Pattern.DOTALL);
 
 
-    protected Map<String, String> parsebody(String body)
+    protected Map<String, String> parsemultipartbody(String body)
             throws HTTPException
     {
         Map<String, String> map = new TreeMap<>();
