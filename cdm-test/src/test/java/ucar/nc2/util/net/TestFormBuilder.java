@@ -244,11 +244,11 @@ public class TestFormBuilder extends UnitTestCommon
         if(body != null) {
             if(multipart && boundary != null) {
                 Map<String, String> bodymap = parsemultipartbody(body);
-                map.put("body", mapjoin(bodymap, "\n"));
+                map.put("body", mapjoin(bodymap, "\n", ": "));
+            } else {
+                Map<String, String> bodymap = parsesimplebody(body);
+                map.put("body", mapjoin(bodymap, "&","="));
             }
-        } else {
-	    Map<String, String> bodymap = parsesimplebody(body);
-            map.put("body", mapjoin(bodymap, "&"));
         }
         return map;
     }
@@ -277,15 +277,17 @@ public class TestFormBuilder extends UnitTestCommon
             throws HTTPException
     {
         Map<String, String> map = new TreeMap<>();
-	String[] pieces = body.split("[&]");
-	for(String piece: pieces) {
-	    String[] pair = piece.split("[=]");
-	    if(pair.length == 1) {pair = new String[]{pair[0],""};}
-	    if(pair[0] == null || pair[0].length() == 0)
+        String[] pieces = body.split("[&]");
+        for(String piece : pieces) {
+            String[] pair = piece.split("[=]");
+            if(pair.length == 1) {
+                pair = new String[]{pair[0], ""};
+            }
+            if(pair[0] == null || pair[0].length() == 0)
                 throw new HTTPException("Illegal body : " + body);
-	    map.put(pair[0],pair[1]);
-	}
-	return map;
+            map.put(pair[0], pair[1]);
+        }
+        return map;
     }
 
     static final Pattern blockb = Pattern.compile(
@@ -364,15 +366,15 @@ public class TestFormBuilder extends UnitTestCommon
         return buf.toString();
     }
 
-    static protected String mapjoin(Map<String, String> map, String sep)
+    static protected String mapjoin(Map<String, String> map, String sep1, String sep2)
     {
         StringBuilder buf = new StringBuilder();
         boolean first = true;
         for(Map.Entry<String, String> entry : map.entrySet()) {
-            if(!first) buf.append(sep);
+            if(!first) buf.append(sep1);
             first = false;
             buf.append(entry.getKey());
-            buf.append(": ");
+            buf.append(sep2);
             buf.append(entry.getValue());
         }
         return buf.toString();
@@ -380,7 +382,7 @@ public class TestFormBuilder extends UnitTestCommon
 
     static final String expectedSimple =
             "{\n"
-                    + "  \"body\" : \"os=<OS+NAME>&organization=UCAR&hardware=x86&packageVersion=1.0.1&softwarePackage=IDV&description=TestFormBuilder&subject=hello&emailAddress=idv%40ucar.edu&fullName=Mr.+Jones\",\n"
+                    + "  \"body\" : \"description=TestFormBuilder&emailAddress=idv%40ucar.edu&fullName=Mr.+Jones&hardware=x86&organization=UCAR&os=<OS+NAME>&packageVersion=1.0.1&softwarePackage=IDV&subject=hello\",\n"
                     + "  \"docs\" : \"http://httpkit.com/echo\",\n"
                     + "  \"ip\" : \"127.0.0.1\",\n"
                     + "  \"method\" : \"POST\",\n"
@@ -419,3 +421,6 @@ public class TestFormBuilder extends UnitTestCommon
                     + "  \"uri\" : \"/\"\n"
                     + "}\n";
 }
+
+
+
