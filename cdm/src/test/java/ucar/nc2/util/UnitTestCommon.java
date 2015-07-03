@@ -7,7 +7,6 @@ package ucar.nc2.util;
 import junit.framework.TestCase;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.Diff;
@@ -15,7 +14,8 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Set;
 
 public class UnitTestCommon extends TestCase
 {
@@ -205,13 +205,21 @@ public class UnitTestCommon extends TestCase
     public void
     visual(String header, String captured)
     {
+       visual(header,captured,'-');
+    }
+
+    public void
+    visual(String header, String captured, char marker)
+    {
         if(!captured.endsWith("\n"))
             captured = captured + "\n";
         // Dump the output for visual comparison
         System.out.println("Testing " + getName() + ": " + header + ":");
-        System.out.println("---------------");
+        StringBuilder sep = new StringBuilder();
+        for(int i=0;i<10;i++) sep.append(marker);
+        System.out.println(sep.toString());
         System.out.print(captured);
-        System.out.println("---------------");
+        System.out.println(sep.toString());
     }
 
     public String compare(String tag, String baseline, String s)
@@ -253,7 +261,7 @@ public class UnitTestCommon extends TestCase
         System.err.print("Checking for sourceurl: " + candidate);
         try {
             try (
-                HTTPMethod method = HTTPFactory.Get(candidate)) {
+                    HTTPMethod method = HTTPFactory.Get(candidate)) {
                 method.execute();
                 String s = method.getResponseAsString();
                 System.err.println(" ; found");
