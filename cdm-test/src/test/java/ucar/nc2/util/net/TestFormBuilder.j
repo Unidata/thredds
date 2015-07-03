@@ -122,7 +122,7 @@ public class TestFormBuilder extends UnitTestCommon
                     Object json = Json.parse(body);
                     json = cleanup(json, false);
                     String text = Json.toString(json);
-                    text = localize(text, OSTEXT);
+                    text = localize(text, OSTEXT, false);
                     if(prop_visual)
                         visual(TESTURL, text);
                     String diffs = compare("TestSimple", expectedSimple, text);
@@ -161,7 +161,7 @@ public class TestFormBuilder extends UnitTestCommon
                     Object json = Json.parse(body);
                     json = cleanup(json, true);
                     String text = Json.toString(json);
-                    text = localize(text, OSTEXT);
+                    text = localize(text, OSTEXT, true);
                     body = text;
                     if(prop_visual)
                         visual(TESTURL, body);
@@ -208,14 +208,15 @@ public class TestFormBuilder extends UnitTestCommon
         return builder;
     }
 
-    protected String localize(String text, String os)
+    protected String localize(String text, String os, boolean multipart)
             throws HTTPException
     {
-	String osplus = os.replace(' ', '+');
-	System.err.printf("localize: %s=>%s\n",osplus,"<OS+NAME>");
-        text = text.replace(osplus, "<OS+NAME>");
-	System.err.printf("localize: %s=>%s\n",os,"<OS NAME>");
-        text = text.replace(os, "<OS NAME>");
+        if(multipart)
+            text = text.replace(os, "<OSNAME>");
+        else {
+            os = os.replace(' ', '+');
+            text = text.replace(os, "<OSNAME>");
+        }
         return text;
     }
 
@@ -384,7 +385,7 @@ public class TestFormBuilder extends UnitTestCommon
 
     static final String expectedSimple =
             "{\n"
-                    + "  \"body\" : \"description=TestFormBuilder&emailAddress=idv%40ucar.edu&fullName=Mr.+Jones&hardware=x86&organization=UCAR&os=<OS+NAME>&packageVersion=1.0.1&softwarePackage=IDV&subject=hello\",\n"
+                    + "  \"body\" : \"description=TestFormBuilder&emailAddress=idv%40ucar.edu&fullName=Mr.+Jones&hardware=x86&organization=UCAR&os=<OSNAME>&packageVersion=1.0.1&softwarePackage=IDV&subject=hello\",\n"
                     + "  \"docs\" : \"http://httpkit.com/echo\",\n"
                     + "  \"ip\" : \"127.0.0.1\",\n"
                     + "  \"method\" : \"POST\",\n"
@@ -407,7 +408,7 @@ public class TestFormBuilder extends UnitTestCommon
                     + "fullName: Mr. Jones\n"
                     + "hardware: x86\n"
                     + "organization: UCAR\n"
-                    + "os: <OS NAME>\n"
+                    + "os: <OSNAME>\n"
                     + "packageVersion: 1.0.1\n"
                     + "softwarePackage: IDV\n"
                     + "subject: hello\",\n"
