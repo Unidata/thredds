@@ -212,7 +212,9 @@ public class TestFormBuilder extends UnitTestCommon
             throws HTTPException
     {
 	String osplus = os.replace(' ', '+');
+	System.err.printf("localize: %s=>%s\n",osplus,"<OS+NAME>");
         text = text.replace(osplus, "<OS+NAME>");
+	System.err.printf("localize: %s=>%s\n",os,"<OS NAME>");
         text = text.replace(os, "<OS NAME>");
         return text;
     }
