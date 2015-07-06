@@ -123,7 +123,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
       byte [] b128 = raf.readBytes(128);
       String radarT = new String(b128);
 
-      if(radarT.contains("CINRAD/SC")) {
+      if(radarT.contains("CINRAD/SC") || radarT.contains("CINRAD/CD")) {
         isSC = true;
         return true;
       }
