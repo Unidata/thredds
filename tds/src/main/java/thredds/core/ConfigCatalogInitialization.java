@@ -165,7 +165,7 @@ public class ConfigCatalogInitialization {
     logCatalogInit.info("ConfigCatalogInitializion lastRead=" + CalendarDate.of(lastRead));
 
     makeDebugActions();
-    this.contentRootPath = this.tdsContext.getContentDirectory();
+    this.contentRootPath = this.tdsContext.getThreddsDirectory();
     this.contextPath = tdsContext.getContextPath();
 
     reread(readMode, true);

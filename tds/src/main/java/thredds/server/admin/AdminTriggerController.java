@@ -103,7 +103,7 @@ public class AdminTriggerController {
 
     try {
       ConfigCatalogInitialization ccInit = new ConfigCatalogInitialization(ConfigCatalogInitialization.ReadMode.always,
-              tdsContext.getContentDirectory(), null, tracker, allowedServices, callback, -1);
+              tdsContext.getThreddsDirectory(), null, tracker, allowedServices, callback, -1);
       callback.finish();
       return callback.toString();
 

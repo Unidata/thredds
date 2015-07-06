@@ -71,15 +71,6 @@ public class FeatureCollectionConfig {
     none, directory, file, timePeriod
   }
 
-  public static void setRegularizeDefault(boolean t) {
-    regularizeDefault = t;
-  }
-
-  public static boolean getRegularizeDefault() {
-    return regularizeDefault;
-  }
-
-  static private boolean regularizeDefault = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
 
   //////////////////////////////////////////////
@@ -96,6 +87,7 @@ public class FeatureCollectionConfig {
   public PointConfig pointConfig = new PointConfig();
   public GribConfig gribConfig = new GribConfig();
   public Element innerNcml = null;
+  public Optional<Boolean> filesSortIncreasing = Optional.empty();
 
   public FeatureCollectionConfig() {
   }
@@ -126,6 +118,23 @@ public class FeatureCollectionConfig {
   public void setFilter(String rootDir, String regExp) {
     this.rootDir = rootDir;
     this.regExp = regExp;
+  }
+
+  public void setFilesSort(Element filesSortElem) {
+    if (filesSortElem == null) return;
+    String increasingS = filesSortElem.getAttributeValue("increasing");
+    if (increasingS != null) {
+      if (increasingS.equalsIgnoreCase("true"))
+        filesSortIncreasing  = Optional.of(true);
+      else if (increasingS.equalsIgnoreCase("false"))
+        filesSortIncreasing  = Optional.of(false);
+    }
+  }
+
+  public boolean getSortFilesAscending() {
+    if (filesSortIncreasing.isPresent()) return filesSortIncreasing.get();
+    if (gribConfig != null && gribConfig.filesSortIncreasing.isPresent()) return gribConfig.filesSortIncreasing.get();
+    return true; // default true
   }
 
   public CollectionSpecParser getCollectionSpecParser(Formatter errlog) {
@@ -330,6 +339,19 @@ public class FeatureCollectionConfig {
     }
   }
 
+  ////////////////////////////////////////////////
+
+    //
+  public static void setRegularizeDefault(boolean t) {
+    regularizeDefault = t;
+  }
+
+  // public static boolean getRegularizeDefault() {
+  //  return regularizeDefault;
+  //}
+
+  static private boolean regularizeDefault = false;
+
   static private Set<FmrcDatasetType> defaultFmrcDatasetTypes =
           Collections.unmodifiableSet(EnumSet.of(FmrcDatasetType.TwoD, FmrcDatasetType.Best, FmrcDatasetType.Files, FmrcDatasetType.Runs));
 
@@ -450,7 +472,7 @@ public class FeatureCollectionConfig {
 
     // late binding
     public String latestNamer, bestNamer;
-    public Boolean filesSortIncreasing = true;
+    private Optional<Boolean> filesSortIncreasing = Optional.empty();
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
 
     public String lookupTablePath, paramTablePath;         // user defined tables
@@ -493,16 +515,27 @@ public class FeatureCollectionConfig {
       if (configElem.getChild("bestNamer", ns) != null)
         bestNamer = configElem.getChild("bestNamer", ns).getAttributeValue("name");
 
+      // old way - filesSort element inside the gribConfig element
       Element filesSortElem = configElem.getChild("filesSort", ns);
       if (filesSortElem != null) {
-        String orderByS = filesSortElem.getAttributeValue("orderBy");     // filename vs date ??
+        //String orderByS = filesSortElem.getAttributeValue("orderBy");     // filename vs date ??
         String increasingS = filesSortElem.getAttributeValue("increasing");
-        if (increasingS != null)
-          filesSortIncreasing = !increasingS.equalsIgnoreCase("false");   // default is true
-        else {
+        if (increasingS != null) {
+          if (increasingS.equalsIgnoreCase("true"))
+            filesSortIncreasing  = Optional.of(true);
+          else if (increasingS.equalsIgnoreCase("false"))
+            filesSortIncreasing  = Optional.of(false);
+
+        } else { // older way
           Element lexigraphicByName = filesSortElem.getChild("lexigraphicByName", ns);
           if (lexigraphicByName != null) {
-            filesSortIncreasing = Boolean.valueOf(lexigraphicByName.getAttributeValue("increasing"));
+            increasingS = lexigraphicByName.getAttributeValue("increasing");
+            if (increasingS != null) {
+              if (increasingS.equalsIgnoreCase("true"))
+               filesSortIncreasing  = Optional.of(true);
+             else if (increasingS.equalsIgnoreCase("false"))
+               filesSortIncreasing  = Optional.of(false);
+            }
           }
         }
       }

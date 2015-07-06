@@ -569,6 +569,15 @@
   <!-- server-side Configuration Catalog elements  -->
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
 
+  <!-- datasetRoot element: associate a url path with a directory location -->
+  <xsd:element name="datasetRoot">
+    <xsd:complexType>
+      <xsd:attribute name="path" type="xsd:string" use="required"/>
+      <xsd:attribute name="location" type="xsd:string" use="required"/>
+      <xsd:attribute name="cache" type="xsd:boolean"/>                  <!-- no not use -->
+    </xsd:complexType>
+  </xsd:element>
+
   <!-- CatalogScan element -->
   <!-- scan a directory and read all catalogs. optionally watch for changes while TDS is running -->
   <xsd:element name="catalogScan">
@@ -587,17 +596,18 @@
       <xsd:complexContent>
         <xsd:extension base="DatasetType">
           <xsd:sequence>
-            <xsd:element ref="filter" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="namer" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="sort" minOccurs="0" maxOccurs="1"/>          <!-- LOOK ?? -->
-            <xsd:element ref="addLatest" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="addProxies" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="addTimeCoverage" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="filter" minOccurs="0"/>
+            <xsd:element ref="namer" minOccurs="0"/>
+            <xsd:element type="fileSortType" name="filesSort" minOccurs="0"/>
+            <xsd:element ref="sort" minOccurs="0"/>           <!-- deprecated, use filesSort -->
+            <xsd:element ref="addLatest" minOccurs="0"/>
+            <xsd:element ref="addProxies" minOccurs="0"/>
+            <xsd:element ref="addTimeCoverage" minOccurs="0"/>
           </xsd:sequence>
 
           <xsd:attribute name="path" type="xsd:string" use="required"/>
           <xsd:attribute name="location" type="xsd:string"/>
-          <xsd:attribute name="addLatest" type="xsd:boolean"/>    <!-- LOOK use again ?? -->
+          <xsd:attribute name="addLatest" type="xsd:boolean"/>
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
@@ -647,7 +657,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="addLatest">
+  <xsd:element name="addLatest">              <!-- use 'latest' attribute for simple case -->
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="simpleLatest" minOccurs="0" maxOccurs="unbounded"/>
@@ -692,15 +702,6 @@
     </xsd:complexType>
   </xsd:element>
 
-  <!-- datasetRoot element: associate a url path with a directory location -->
-  <xsd:element name="datasetRoot">
-    <xsd:complexType>
-      <xsd:attribute name="path" type="xsd:string" use="required"/>
-      <xsd:attribute name="location" type="xsd:string" use="required"/>
-      <xsd:attribute name="cache" type="xsd:boolean"/>                  <!-- no not use -->
-    </xsd:complexType>
-  </xsd:element>
-
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
   <!-- featureCollection element -->
   <xsd:element name="featureCollection" substitutionGroup="dataset">
@@ -715,6 +716,7 @@
             <xsd:element type="fmrcConfigType" name="fmrcConfig" minOccurs="0"/>
             <xsd:element type="pointConfigType" name="pointConfig" minOccurs="0"/>
             <xsd:element type="gribConfigType" name="gribConfig" minOccurs="0"/>
+            <xsd:element type="fileSortType" name="filesSort" minOccurs="0" />
             <xsd:element ref="ncml:netcdf" minOccurs="0"/>
           </xsd:sequence>
           <xsd:attribute name="featureType" type="featureTypeChoice" use="required"/>
@@ -723,6 +725,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:complexType name="fileSortType">
+    <xsd:attribute name="increasing" type="xsd:boolean" use="optional"/>
+  </xsd:complexType>
 
   <xsd:simpleType name="featureTypeChoice">
     <xsd:union memberTypes="xsd:token">
@@ -836,9 +842,9 @@
       <xsd:element name="pdsHash" minOccurs="0" maxOccurs="unbounded">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="useGenType" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="useTableVersion" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="mergeIntv" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="useGenType" minOccurs="0"/>
+            <xsd:element name="useTableVersion" minOccurs="0"/>
+            <xsd:element name="mergeIntv" minOccurs="0"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -885,31 +891,18 @@
          </xsd:complexType>
        </xsd:element>
 
-      <xsd:element name="latestNamer" minOccurs="0" maxOccurs="1">
+      <xsd:element name="latestNamer" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="name" type="xsd:string" use="required"/>
         </xsd:complexType>
       </xsd:element>
 
-      <xsd:element name="bestNamer" minOccurs="0" maxOccurs="1">
+      <xsd:element name="bestNamer" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="name" type="xsd:string" use="required"/>
         </xsd:complexType>
       </xsd:element>
 
-      <xsd:element name="filesSort" minOccurs="0" maxOccurs="1">
-        <xsd:complexType>
-          <xsd:choice>
-            <xsd:element name="lexigraphicByName">
-              <xsd:complexType>
-                <xsd:attribute name="increasing" type="xsd:boolean"/>
-              </xsd:complexType>
-            </xsd:element>
-          </xsd:choice>
-          <xsd:attribute name="orderBy" type="xsd:string" use="optional"/>
-          <xsd:attribute name="increasing" type="xsd:boolean" use="optional"/>
-        </xsd:complexType>
-      </xsd:element>
     </xsd:sequence>
 
     <xsd:attribute name="datasetTypes" type="gribDatasetTypes"/>

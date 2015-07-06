@@ -189,7 +189,7 @@ public class DatasetScan extends CatalogRef {
     if (!Files.isDirectory(p)) throw new FileNotFoundException("Not a directory =" + dataDirComplete);
 
     // scan and sort the directory
-    List<MFile> mfiles = getSortedFiles(p, config.isSortIncreasing);
+    List<MFile> mfiles = getSortedFiles(p, config.getSortFilesAscending());
 
     if (config.addLatest != null && config.addLatest.latestOnTop)
       top.addDataset(makeLatestProxy(top, parentId));

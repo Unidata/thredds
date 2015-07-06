@@ -165,6 +165,7 @@ public class FeatureCollectionConfigBuilder {
     FeatureCollectionConfig config = new FeatureCollectionConfig(name, path, fcType, spec, collectionName, dateFormatMark, olderThan,
             timePartition, innerNcml);
     config.setFilter(rootDir, regExp);
+    config.setFilesSort( featureCollectionElement.getChild("filesSort", Catalog.defNS));
 
     // tds and update elements
     Element tdmElem = featureCollectionElement.getChild("tdm", Catalog.defNS);

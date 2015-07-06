@@ -35,10 +35,10 @@ package thredds.server.catalog;
 import org.jdom2.Element;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * DatasetScan Configuration object
- * Could enclose in a DatasetScan ?
  *
  * @author John
  * @since 1/12/2015
@@ -49,8 +49,8 @@ public class DatasetScanConfig {
   public String scanDir;
   public String restrictAccess;
 
-  public boolean addDatasetSize = true;
-  public boolean isSortIncreasing = true;
+  //public boolean addDatasetSize = true;
+  public Optional<Boolean> isSortIncreasing = Optional.empty();
 
   public Element ncmlElement;
   public List<Filter> filters;
@@ -65,14 +65,19 @@ public class DatasetScanConfig {
             ", path='" + path + '\'' +
             ", scanDir='" + scanDir + '\'' +
             ", restrictAccess='" + restrictAccess + '\'' +
-            ", addDatasetSize=" + addDatasetSize +
-            ", isSortIncreasing=" + isSortIncreasing +
+  //          ", addDatasetSize=" + addDatasetSize +
+            ", isSortIncreasing=" + getSortFilesAscending() +
             ", ncmlElement=" + ncmlElement +
             ", filters=" + filters +
             ", namers=" + namers +
             ", proxies=" + addLatest +
             ", addTimeCoverage=" + addTimeCoverage +
             '}';
+  }
+
+  public boolean getSortFilesAscending() {
+    if (isSortIncreasing.isPresent()) return isSortIncreasing.get();
+    return true; // default true
   }
 
   public static class Filter {

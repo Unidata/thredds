@@ -36,7 +36,7 @@ public class TestTdsFCcatalogs {
 
             {"catalogs5/pointCatalog5", ""},
             {"testStationScan.v5/catalog", "?dataset=testStationScan.v5/Surface_METAR_20130823_0000.nc"},       // datasetScan
-            {"testStationFeatureCollection.v5/files/catalog", "?dataset=null/Surface_METAR_20130823_0000.nc\""},
+            {"testStationFeatureCollection.v5/files/catalog", "?dataset=testStationFeatureCollection.v5/files/Surface_METAR_20060328_0000.nc"}, // point fc
     });
   }
   private static final boolean show = false;

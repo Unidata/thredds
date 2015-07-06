@@ -37,9 +37,11 @@ package thredds;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
+import org.apache.http.client.CredentialsProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.util.ContentType;
+import ucar.httpservices.HTTPAuthScope;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -61,6 +63,31 @@ public class TestWithLocalServer {
     System.out.printf("testOpenXml req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
+      HTTPMethod method = HTTPFactory.Get(session);
+      int statusCode = method.execute();
+      Assert.assertEquals(200, statusCode);
+
+      String response = method.getResponseAsString();
+      assert response.length() > 0;
+
+      Header header = method.getResponseHeader(ContentType.HEADER);
+      Assert.assertEquals(expectContentType.getContentHeader(), header.getValue());
+
+      return response;
+    } catch (Exception e) {
+      e.printStackTrace();
+      assert false;
+    }
+
+    return null;
+  }
+
+
+  public static String testWithHttpGet(CredentialsProvider provider, String endpoint, ContentType expectContentType) {
+    System.out.printf("testOpenXml req = '%s'%n", endpoint);
+
+    try (HTTPSession session = new HTTPSession(endpoint)) {
+      session.setCredentialsProvider(HTTPAuthScope.ANY, provider);
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
       Assert.assertEquals(200, statusCode);

@@ -44,6 +44,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Builder of DatasetScanConfig
@@ -112,7 +113,7 @@ public class DatasetScanConfigBuilder {
 
     result.restrictAccess = dsElem.getAttributeValue("restrictAccess");
 
-       // look for ncml
+    // look for ncml
     Element ncmlElem = dsElem.getChild("netcdf", Catalog.defNS);
     if (ncmlElem != null) {
       ncmlElem.detach();
@@ -127,9 +128,13 @@ public class DatasetScanConfigBuilder {
     Element namerElem = dsElem.getChild("namer", Catalog.defNS);
     result.namers = readDatasetScanNamer(namerElem);
 
-    // Read sort element
+    // Read filesSort or sort element
+    Element filesSortElem = dsElem.getChild("filesSort", Catalog.defNS);
+    if (filesSortElem != null)
+      result.isSortIncreasing = readFilesSort(filesSortElem);
     Element sorterElem = dsElem.getChild("sort", Catalog.defNS);
-    result.isSortIncreasing = readDatasetScanSorter(sorterElem);  // docs: default true
+    if (!result.isSortIncreasing.isPresent() && sorterElem != null)
+      result.isSortIncreasing = readSort(sorterElem);
 
     // Deal with latest
     String addLatestAttribute = dsElem.getAttributeValue("addLatest");
@@ -137,12 +142,12 @@ public class DatasetScanConfigBuilder {
     Element addProxiesElem = dsElem.getChild("addProxies", Catalog.defNS);
     result.addLatest = readDatasetScanAddProxies(addProxiesElem, addLatestElem, addLatestAttribute);
 
-    // Read addDatasetSize element.
+    /* Read addDatasetSize element.
     Element addDsSizeElem = dsElem.getChild("addDatasetSize", Catalog.defNS);
     if (addDsSizeElem != null) {                                               // docs: default true
       if (addDsSizeElem.getTextNormalize().equalsIgnoreCase("false"))
         result.addDatasetSize = false;
-    }
+    } */
 
     // Read addTimeCoverage element.
     Element addTimeCovElem = dsElem.getChild("addTimeCoverage", Catalog.defNS);
@@ -268,18 +273,31 @@ public class DatasetScanConfigBuilder {
     </xsd:complexType>
   </xsd:element>
    */
-  protected boolean readDatasetScanSorter(Element sorterElem) {
-    if (sorterElem == null) return true;
 
+
+  protected Optional<Boolean> readFilesSort(Element sorterElem) {
+    String increasingString = sorterElem.getAttributeValue("increasing");
+    if (increasingString != null) {
+      if (increasingString.equalsIgnoreCase("true"))
+        return Optional.of(true);
+      else if (increasingString.equalsIgnoreCase("false"))
+        return Optional.of(false);
+    }
+    return Optional.empty();
+  }
+
+  protected Optional<Boolean> readSort(Element sorterElem) {
     Element lexSortElem = sorterElem.getChild("lexigraphicByName", Catalog.defNS);
     if (lexSortElem != null) {
-      boolean increasing;
       String increasingString = lexSortElem.getAttributeValue("increasing");
-      increasing = increasingString.equalsIgnoreCase("true");
-      return increasing;
+      if (increasingString != null) {
+        if (increasingString.equalsIgnoreCase("true"))
+          return Optional.of(true);
+        else if (increasingString.equalsIgnoreCase("false"))
+          return Optional.of(false);
+      }
     }
-
-    return true;
+    return Optional.empty();
   }
 
   /*

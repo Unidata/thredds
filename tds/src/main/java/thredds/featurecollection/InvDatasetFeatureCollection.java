@@ -493,7 +493,7 @@ public abstract class InvDatasetFeatureCollection {
     Collections.sort(sortedFilenames, String.CASE_INSENSITIVE_ORDER);
 
     // if not increasing (i.e. we WANT newest file listed first), reverse sort
-    if (this.config.gribConfig != null && !this.config.gribConfig.filesSortIncreasing) {
+    if (!this.config.getSortFilesAscending()) {
       Collections.reverse(sortedFilenames);
     }
 
@@ -506,7 +506,8 @@ public abstract class InvDatasetFeatureCollection {
       String fname = f.substring(topDirectory.length() + 1);
       ds.setName(fname);
 
-      String lpath = getPath() + "/" + FILES + "/" + fname;
+      String lpath = this.configPath + "/" + FILES + "/" + fname;
+      // String lpath = getPath() + "/" + FILES + "/" + fname;
       ds.put(Dataset.UrlPath, lpath);
       ds.put(Dataset.Id, lpath);
       ds.put(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(lpath, VARIABLES), catURI));

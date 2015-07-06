@@ -202,8 +202,8 @@
 </blockquote>
 <hr />
 <h2><a name="schema" id="schema"></a> gribConfig XML Schema</h2>
-<p>The gribConfig schema definition, version 1.07</p>
-<p>see: <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd">http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd</a></p>
+<p>The gribConfig schema definition, version 1.2</p>
+<p>see: <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd">http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd</a></p>
 <blockquote>
   <pre>&lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;
  &lt;xsd:sequence&gt;
@@ -267,23 +267,8 @@
      &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;
-  
-9)&lt;xsd:element name=&quot;filesSort&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;&gt;
-   &lt;xsd:complexType&gt;
-     &lt;xsd:choice&gt;
-       &lt;xsd:element name=&quot;lexigraphicByName&quot;&gt;
-         &lt;xsd:complexType&gt;
-           &lt;xsd:attribute name=&quot;increasing&quot; type=&quot;xsd:boolean&quot;/&gt;
-         &lt;/xsd:complexType&gt;
-       &lt;/xsd:element&gt;
-     &lt;/xsd:choice&gt;
-     &lt;xsd:attribute name=&quot;orderBy&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />     &lt;xsd:attribute name=&quot;increasing&quot; type=&quot;xsd:boolean&quot; use=&quot;required&quot;/&gt;
-    &lt;/xsd:complexType&gt;
-  &lt;/xsd:element&gt;
-  
- &lt;/xsd:sequence&gt;
 
-10) &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;gribDatasetTypes&quot;/&gt;
+9) &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;gribDatasetTypes&quot;/&gt;
 &lt;/xsd:complexType&gt;
 </pre>
   <pre>&lt;xsd:simpleType name=&quot;gribDatasetTypes&quot;&gt;
@@ -307,7 +292,6 @@
     <li><a href="#parameter">parameter</a>: set miscellaneous values</li>
     <li><a href="#gdsName">latestName</a>: Rename the latest file dataset</li>
     <li><a href="#bestNamer">bestNamer</a>: Rename the best file dataset</li>
-    <li><a href="#fileSort">filesSort</a>: sort order of files in the TDS catalog</li>
     <li><a href="#datasetTypes">datasetTypes</a>: which datasets appear in the TDS catalog:</li>
     <ol>
       <li><strong>TwoD:</strong> the full dataset with two time dimensions, reference time and forecast time.</li>

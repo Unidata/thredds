@@ -15,7 +15,6 @@ import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.ConfigCatalogCache;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.config.TdsContext;
-import ucar.nc2.constants.FeatureType;
 
 import java.io.IOException;
 import java.net.URI;
@@ -139,11 +138,11 @@ public class CatalogManager {
     CatalogScan catScan = match.dataRoot.getCatalogScan();
     if (catScan != null) {
       if (!filename.equalsIgnoreCase(CatalogScan.CATSCAN)) { // its an actual catalog
-        return catScan.getCatalog(tdsContext.getContentDirectory(), match.remaining, filename, ccc);
+        return catScan.getCatalog(tdsContext.getThreddsDirectory(), match.remaining, filename, ccc);
       }
 
       if (log.isDebugEnabled()) log.debug("makeDynamicCatalog(): Calling CatalogScan.makeCatalogForDirectory( " + baseURI + ", " + path + ").");
-      CatalogBuilder cat = catScan.makeCatalogFromDirectory(tdsContext.getContentDirectory(), match.remaining, baseURI);
+      CatalogBuilder cat = catScan.makeCatalogFromDirectory(tdsContext.getThreddsDirectory(), match.remaining, baseURI);
 
       if (null == cat)
         log.error("makeDynamicCatalog(): CatalogScan.makeCatalogForDirectory failed = " + workPath);

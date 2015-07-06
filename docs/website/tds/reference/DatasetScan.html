@@ -185,15 +185,15 @@
 </ul>
 <p>[<a href="#sample3">Sample config catalog 3</a>]</p>
 <h2><a name="Sorting_Datasets"></a>Sorting Datasets</h2>
-<p>Datasets at each collection level are listed
-  in ascending order by name. With a sort element you can specify that they
+Datasets at each collection level are listed
+  in ascending order by name. To specify that they
   are to be sorted in reverse
-  order:</p>
-<pre>&lt;sort&gt;<br>  &lt;lexigraphicByName increasing="false" /&gt;<br>&lt;/sort&gt;</pre>
-<p>Note that the  sort is done before renaming.</p>
+  order:
+<pre>&lt;filesSort increasing="false" /&gt;</pre>
+Note that the  sort is done before renaming.
 
 <h2><a name="Adding_Proxy_Datasets"></a>Adding a Link to the &quot;Latest&quot; Dataset</h2>
-<p>For real-time data you may want to have a special link that points to the &quot;latest&quot; data in the collection. Here, latest  means the last filename in a  list sorted by name, so its only the latest if the time stamp is in the filename and the name  sorts correctly by time.</p>
+<p>For real-time data you may want to have a special link that points to the &quot;latest&quot; data in the collection. Here, <em>latest</em> means the last filename in a  list sorted by name, so its only the latest if the time stamp is in the filename and the name  sorts correctly by time.</p>
 <p>The simplest way to enable this is to add the attribute <em>addLatest=&quot;true&quot;</em> to the <strong>datasetScan</strong> element. In this case, the default values are used:  <strong>name</strong>  =
 "latest.xml",  <strong>top</strong> = "true"".</p>
 

@@ -147,7 +147,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
    public List<Partition> getPartitionsSorted() {
     List<Partition> c = new ArrayList<>(partitions);
     Collections.sort(c);
-    if (!this.config.gribConfig.filesSortIncreasing) {
+    if (!this.config.getSortFilesAscending()) {
       Collections.reverse(c);
     }
     return c;

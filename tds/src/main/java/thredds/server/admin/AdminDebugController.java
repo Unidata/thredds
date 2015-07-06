@@ -79,7 +79,7 @@ public class AdminDebugController {
     pw.println("</head>");
     pw.println("<body>");
     pw.println(htmlu.getOldStyleHeader());
-    pw.println("<br><a href='dir/content/logs/'>Show TDS Logs</a>");
+    pw.println("<br><a href='dir/content/thredds/logs/'>Show TDS Logs</a>");
     pw.println("<br><a href='dir/content/tdm/'>Show TDM Logs</a>");
     pw.println("<br><a href='dir/logs/'>Show Tomcat Logs</a>");
     pw.println("<br><a href='dir/catalogs/'>Show Config Catalogs</a>");

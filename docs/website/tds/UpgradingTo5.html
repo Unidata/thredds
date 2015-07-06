@@ -17,6 +17,11 @@
     <pre>-Dtds.content.root.path=/opt/tomcat-home/content/</pre>
   </li>
 </ul>
+<h2>Overview</h2>
+<p>The configuration catalogs and internal state of the TDS has been extensively reworked to be able to scale to large numbers of catalogs, datasets, and internal objects without excessive use of memory. A running TDS can be triggered to reread the configuration catalogs without having to restart. It can be configured to  reread only changed catalogs, for fast incremental updates. Other features have been added to make writing configuration catalogs more maintainable, including the <em>catalogScan</em> element, and default and standard services.</p>
+<p>The other major enhancement is that <em>GridDataset</em> is being replaced by <em>GridCoverage</em>, to better support very large feature collections. The GridCoverage API works only with coordinate values, which solves various intractable problems  that arise when using aray index subsetting on large collections.</p>
+<p>Deprecated classes and methods have been removed, and the module structure and third-party jar use has been improved.</p>
+<p>&nbsp;</p>
 <h2>API Changes</h2>
 <h3>Catalogs</h3>
 <ul>
@@ -90,10 +95,11 @@
 <ul>
   <li><strong>addID</strong> is no longer needed, ids are always added</li>
   <li><strong>addDatasetSize </strong> is no longer needed, the dataset size is always added</li>
-  <li><strong>service</strong> name is no longer used, it is always <em>Resolver</em>, and the correct service is automatically added. Use <strong>addLatest</strong> attribute for simple case.</li>
-  <li><strong>sort: </strong>by default, datasets at each collection level are listed
-  in ascending order by filename</li>
-  <li><strong>User pluggable classes implementing UserImplType</strong> (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl, crawlableDatasetSorterImpl) are no longer supported. This was never officially released or documented.</li>
+  <li>With <strong>addLatest</strong>, the <strong>service</strong> name is no longer used, it is always <em>Resolver</em>, and the correct service is automatically added. Use <strong>addLatest</strong> attribute for simple case.</li>
+  <li><strong>fileSort: </strong>by default, datasets at each collection level are listed
+  in increasing order by filename. To change to decreasing order, use the <em><a href="reference/DatasetScan.html#filesSort">filesSort</a></em> element.</li>
+  <li><strong>sort: </strong>deprecated in favor of <strong>filesSort</strong></li>
+  <li><strong>User pluggable classes implementing UserImplType</strong> (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl, crawlableDatasetSorterImpl) are no longer supported. (This was never officially released or documented).</li>
   <li>DatasetScan details are <a href="catalog/InvCatalogServerSpec.html">here</a></li>
 </ul>
 <h3>Standard Services</h3>
@@ -102,6 +108,16 @@
   <li>User defined services in the root catalog are global and can be referenced by name in any other config catalog. </li>
   <li>User defined services  in non-root catalogs are local to that catalog and override (by name) any global services.</li>
   <li>Standard service  details are <a href="reference/Services.html">here</a></li>
+</ul>
+<h3>FeatureCollections</h3>
+<ul>
+  <li>the  <strong><a href="reference/collections/FeatureCollections.html#update">update</a></strong> element is now <em>startup=&quot;never&quot;</em>, meaning do not update collection on startup, and use existing indices when the collection is accessed.</li>
+  <li>The <strong><a href="reference/collections/FeatureCollections.html#filesSort">fileSort</a></strong> element is now inside the <strong>featureCollection</strong> itself, so it can be processed uniformly for all types of feature collections. When a collection shows a list of files, the files will be sorted by increasing name. To use a decreasing sort, use the element <strong>&lt;filesSort increasing=&quot;false&quot; /&gt;</strong> inside the <strong>featureCollection</strong> element. This supercedes the old way of placing that element in the <strong>&lt;gribConfig&gt;</strong> element, or the older verbose  <strong>lexigraphicByName</strong> element:
+    <pre>  &lt;filesSort&gt;
+    &lt;lexigraphicByName increasing="false" /&gt;  // deprecated
+  &lt;/filesSort&gt;</pre>
+  </li>
+  <li>Feature Collection details are <a href="reference/collections/FeatureCollections.html">here</a> </li>
 </ul>
 <h3>Recommendations for 5.0 catalogs</h3>
 <ul>

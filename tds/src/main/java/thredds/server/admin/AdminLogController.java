@@ -112,13 +112,13 @@ public class AdminLogController {
       return null;
 
     } else if (path.equals("thredds/current")) {
-      file = new File(tdsContext.getContentDirectory(), "logs/threddsServlet.log");
+      file = new File(tdsContext.getThreddsDirectory(), "logs/threddsServlet.log");
 
     } else if (path.equals("thredds/")) {
-      showFiles(new File(tdsContext.getContentDirectory(),"logs"), "thredds", res);
+      showFiles(new File(tdsContext.getThreddsDirectory(),"logs"), "thredds", res);
 
     } else if (path.startsWith("thredds/")) {
-      file = new File(tdsContext.getContentDirectory(), "logs/" + path.substring(8));
+      file = new File(tdsContext.getThreddsDirectory(), "logs/" + path.substring(8));
       ServletUtil.returnFile(req, res, file, "text/plain");
       return null;
 

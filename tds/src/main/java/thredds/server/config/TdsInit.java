@@ -143,7 +143,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
   }
 
   private void readState() {
-    File prefsDir = new File(tdsContext.getContentDirectory(), "/state/");
+    File prefsDir = new File(tdsContext.getThreddsDirectory(), "/state/");
     if (!prefsDir.exists()) {
       boolean ok = prefsDir.mkdirs();
       startupLog.info("TdsInit: makeDir= " + prefsDir.getAbsolutePath() + " ok=" + ok);
@@ -160,7 +160,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
   private void initThreddsConfig() {
     // read in persistent user-defined params from threddsConfig.xml
-    File tdsConfigFile = new File(tdsContext.getContentDirectory(), tdsContext.getConfigFileProperty());
+    File tdsConfigFile = new File(tdsContext.getThreddsDirectory(), tdsContext.getConfigFileProperty());
     if (!tdsConfigFile.exists()) {
       startupLog.warn("TDS configuration file '{}' doesn't exist, using all defaults ", tdsConfigFile.getAbsolutePath());
       return;
@@ -270,7 +270,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     int scourSecs, maxAgeSecs;
 
     // Nj22 disk cache
-    dir = ThreddsConfig.get("DiskCache.dir", new File(tdsContext.getContentDirectory(), "/cache/cdm/").getPath());
+    dir = ThreddsConfig.get("DiskCache.dir", new File(tdsContext.getThreddsDirectory(), "/cache/cdm/").getPath());
     boolean alwaysUse = ThreddsConfig.getBoolean("DiskCache.alwaysUse", false);
     scourSecs = ThreddsConfig.getSeconds("DiskCache.scour", 60 * 60); // default once an hour
     long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);  // default 1 Gbyte
@@ -285,7 +285,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     }
 
     // persist joinExisting aggregations. default every 24 hours, delete stuff older than 90 days
-    dir = ThreddsConfig.get("AggregationCache.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/agg/").getPath());
+    dir = ThreddsConfig.get("AggregationCache.dir", new File(tdsContext.getThreddsDirectory().getPath(), "/cache/agg/").getPath());
     scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
     maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
     DiskCache2 aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
@@ -293,7 +293,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     startupLog.info("TdsInit:  AggregationCache= " + dir + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs);
 
     /* 4.3.15: grib index file placement, using DiskCache2  */
-    String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/grib/").getPath());
+    String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File(tdsContext.getThreddsDirectory().getPath(), "/cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = ThreddsConfig.getBoolean("GribIndex.alwaysUse", false);
     Boolean gribIndexNeverUse = ThreddsConfig.getBoolean("GribIndex.neverUse", false);
     String gribIndexPolicy = ThreddsConfig.get("GribIndex.policy", null);
@@ -324,7 +324,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     if (fcCache == null)
       fcCache = ThreddsConfig.get("FeatureCollection.dir", null);
     if (fcCache == null)
-      fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/cache/collection/");  // cacheDirectory is old way
+      fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getThreddsDirectory().getPath() + "/cache/collection/");  // cacheDirectory is old way
 
     long maxSizeBytes = ThreddsConfig.getBytes("FeatureCollectionCache.maxSize", -1);
     if (maxSizeBytes == -1)
@@ -382,7 +382,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     ccc.init(rootPath, max);
 
     // Config Dataset Tracker
-    String trackerDir = ThreddsConfig.get("ConfigCatalog.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/catalog/").getPath());
+    String trackerDir = ThreddsConfig.get("ConfigCatalog.dir", new File(tdsContext.getThreddsDirectory().getPath(), "/cache/catalog/").getPath());
     int trackerMax = ThreddsConfig.getInt("ConfigCatalog.maxDatasets", 10 * 1000);
     File trackerDirFile = new File(trackerDir);
     if (!trackerDirFile.exists()) {

@@ -349,17 +349,23 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     DatasetBuilder filesParent = new DatasetBuilder(parent);
     filesParent.setName("Raw Files");
-    filesParent.addServiceToCatalog( downloadService);
+    filesParent.addServiceToCatalog(downloadService);
     ThreddsMetadata tmi = filesParent.getInheritableMetadata();
     tmi.set(Dataset.ServiceName, downloadService.getName());
     parent.addDataset(filesParent);
 
     List<MFile> mfiles = new ArrayList<>(fromGc.getFiles());
     Collections.sort(mfiles);
+
+    // if not increasing (i.e. we WANT newest file listed first), reverse sort
+    if (!this.config.getSortFilesAscending()) {
+      Collections.reverse(mfiles);
+    }
+
     for (MFile mfile : mfiles) {
       DatasetBuilder ds = new DatasetBuilder(parent);
       ds.setName(mfile.getName());
-      String lpath = parent.get(Dataset.UrlPath) + "/" + FILES + "/" + mfile.getName();  // LOOK wrong
+      String lpath = parent.get(Dataset.UrlPath) + "/" + FILES + "/" + mfile.getName();
       ds.put(Dataset.UrlPath, lpath);
       ds.put(Dataset.Id, lpath);
       ds.put(Dataset.DataSize, mfile.getLength());

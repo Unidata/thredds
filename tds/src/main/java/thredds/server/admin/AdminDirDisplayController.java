@@ -74,14 +74,14 @@ public class AdminDirDisplayController {
 
     File file = null;
     if (path.startsWith("catalogs/")) {
-      file = new File(tdsContext.getContentDirectory(), path.substring(9));
+      file = new File(tdsContext.getThreddsDirectory(), path.substring(9));
 
     } else if (path.startsWith("content/")) {
       // Check in content/thredds directory (which includes content/thredds/public).
-      file = new File(tdsContext.getContentDirectory(), path.substring(8));
+      file = new File(tdsContext.getContentRootDir(), path.substring(8));
       // If not found, check in content/thredds and altContent (but not content/thredds/public).
-      if ( !file.exists() )
-        file = tdsContext.getCatalogRootDirSource().getFile( path.substring(8));
+      //if ( !file.exists() )
+      //  file = tdsContext.getCatalogRootDirSource().getFile( path.substring(8));
 
     } else if (path.startsWith("logs/")) {
       file = new File(tdsContext.getTomcatLogDirectory(), path.substring(5));
