@@ -34,7 +34,6 @@
 package ucar.httpservices;
 
 import net.jcip.annotations.NotThreadSafe;
-
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -43,27 +42,33 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.DeflateDecompressingEntity;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.AllClientPNames;
-import org.apache.http.client.protocol.*;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.SyncBasicHttpParams;
-import org.apache.http.protocol.*;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HttpContext;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.nio.charset.UnsupportedCharsetException;
+import java.lang.reflect.Method;
 import java.net.*;
-import java.util.*;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import static org.apache.http.auth.AuthScope.*;
-import static ucar.httpservices.HTTPAuthScope.*;
+import static ucar.httpservices.HTTPAuthScope.ANY_PRINCIPAL;
 
 /**
  * A session is encapsulated in an instance of the class
@@ -102,8 +107,7 @@ import static ucar.httpservices.HTTPAuthScope.*;
  * particularly and issue for queries. Especially: ?x[0:5] is legal
  * and the square brackets need not be encoded.
  * <p/>
- * Finally, note that if the session was created with no url then all method
- * constructions must specify a url.
+ * Finally, note that a session cannot be created without a realm (host+port).
  */
 
 @NotThreadSafe
@@ -174,7 +178,7 @@ public class HTTPSession implements AutoCloseable
     // Define a Retry Handler that supports specifiable retries
     // and is optionally verbose.
     static public class RetryHandler
-        implements org.apache.http.client.HttpRequestRetryHandler
+            implements org.apache.http.client.HttpRequestRetryHandler
     {
         static final int DFALTRETRIES = 5;
         static int retries = DFALTRETRIES;
@@ -197,12 +201,12 @@ public class HTTPSession implements AutoCloseable
                     return false;
             }
             if((exception instanceof InterruptedIOException) // Timeout
-                || (exception instanceof UnknownHostException)
-                || (exception instanceof ConnectException) // connection refused
-                || (exception instanceof SSLException)) // ssl handshake problem
+                    || (exception instanceof UnknownHostException)
+                    || (exception instanceof ConnectException) // connection refused
+                    || (exception instanceof SSLException)) // ssl handshake problem
                 return false;
             HttpRequest request
-                = (HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
+                    = (HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
             boolean idempotent = !(request instanceof HttpEntityEnclosingRequest);
             if(idempotent) // Retry if the request is considered idempotent
                 return true;
@@ -235,7 +239,7 @@ public class HTTPSession implements AutoCloseable
     static class GZIPResponseInterceptor implements HttpResponseInterceptor
     {
         public void process(final HttpResponse response, final HttpContext context)
-            throws HttpException, IOException
+                throws HttpException, IOException
         {
             HttpEntity entity = response.getEntity();
             if(entity != null) {
@@ -257,7 +261,7 @@ public class HTTPSession implements AutoCloseable
     static class DeflateResponseInterceptor implements HttpResponseInterceptor
     {
         public void process(final HttpResponse response, final HttpContext context)
-            throws HttpException, IOException
+                throws HttpException, IOException
         {
             HttpEntity entity = response.getEntity();
             if(entity != null) {
@@ -279,9 +283,10 @@ public class HTTPSession implements AutoCloseable
     // Static variables
 
     static public org.slf4j.Logger log
-        = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
+            = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
 
     static PoolingClientConnectionManager connmgr;
+
 
     // Define a set of settings to hold all the
     // settable values; there will be one
@@ -294,11 +299,11 @@ public class HTTPSession implements AutoCloseable
     static {
         connmgr = new PoolingClientConnectionManager();
         connmgr.getSchemeRegistry().register(
-            new Scheme("https", 8443,
-                new CustomSSLProtocolSocketFactory()));
+                new Scheme("https", 8443,
+                        new CustomSSLProtocolSocketFactory()));
         connmgr.getSchemeRegistry().register(
-            new Scheme("https", 443,
-                new CustomSSLProtocolSocketFactory()));
+                new Scheme("https", 443,
+                        new CustomSSLProtocolSocketFactory()));
         globalsettings = new Settings();
         setDefaults(globalsettings);
         setGlobalUserAgent(DFALTUSERAGENT);
@@ -356,16 +361,6 @@ public class HTTPSession implements AutoCloseable
     static synchronized public int getGlobalThreadCount()
     {
         return connmgr.getMaxTotal();
-    }
-
-    static synchronized public List<Cookie> getGlobalCookies()
-    {
-        // Must be better way to do this.
-        AbstractHttpClient client = new DefaultHttpClient(connmgr);
-        //coverity[RESOURCE_LEAK]
-        List<Cookie> cookies = client.getCookieStore().getCookies();
-        client = null;
-        return cookies;
     }
 
     // Timeouts
@@ -518,7 +513,7 @@ public class HTTPSession implements AutoCloseable
     getUrlAsString(String url) throws HTTPException
     {
         try (
-            HTTPMethod m = HTTPFactory.Get(url);) {
+                HTTPMethod m = HTTPFactory.Get(url);) {
             int status = m.execute();
             String content = null;
             if(status == 200) {
@@ -590,10 +585,10 @@ public class HTTPSession implements AutoCloseable
 
         if(keypath != null || trustpath != null) { // define conditionally
             HTTPSSLProvider sslprovider = new HTTPSSLProvider(keypath, keypassword,
-                trustpath, trustpassword);
+                    trustpath, trustpassword);
             setGlobalCredentialsProvider(
-                new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, HTTPAuthPolicy.SSL),
-                sslprovider);
+                    new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, HTTPAuthPolicy.SSL),
+                    sslprovider);
         }
     }
 
@@ -631,35 +626,63 @@ public class HTTPSession implements AutoCloseable
     //////////////////////////////////////////////////
     // Instance variables
 
+
+    // Currently, the granularity of authorization is host+port.
+    protected String sessionURL = null; // This is a real url or one from the scope
+    protected AuthScope realm = null;
+    protected String realmURL = null;
+    protected boolean closed = false;
+
     protected AbstractHttpClient sessionClient = null;
     protected List<ucar.httpservices.HTTPMethod> methodList = new Vector<HTTPMethod>();
     protected HttpContext execcontext = null; // same instance must be used for all methods
     protected String identifier = "Session";
-    protected String legalurl = null;
-    protected boolean closed = false;
     protected Settings localsettings = new Settings();
-    protected HTTPAuthStore authlocal =  HTTPAuthStore.getDefault();
+    protected HTTPAuthStore authlocal = HTTPAuthStore.getDefault();
     // We currently only allow the use of global interceptors
     protected List<Object> intercepts = new ArrayList<Object>(); // current set of interceptors;
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public HTTPSession()
-        throws HTTPException
+    protected HTTPSession()
+            throws HTTPException
     {
-        this(null);
     }
 
-    public HTTPSession(String url)
-        throws HTTPException
+    public HTTPSession(String host, int port)
+            throws HTTPException
     {
-        try {
-            new URL(url);
-        } catch (MalformedURLException mue) {
-            throw new HTTPException("Malformed URL: " + url, mue);
-        }
-        this.legalurl = url;
+        init(new AuthScope(host, port, HTTPUtil.makerealm(host, port)));
+    }
+
+
+    public HTTPSession(String url)
+            throws HTTPException
+    {
+        if(url == null || url.length() == 0)
+            throw new HTTPException("HTTPSession(): empty URL not allowed");
+        // Make sure url has leading protocol
+        String[] pieces = url.split("^[a-zZ-Z0-9+.-]+:");
+        if(pieces.length == 1)
+            url = "http:" + url; // try to make it parseable
+        this.sessionURL = url;
+        init(HTTPAuthScope.urlToScope(ANY_SCHEME,url,null));
+    }
+
+    public HTTPSession(AuthScope scope)
+            throws HTTPException
+    {
+        init(scope);
+    }
+
+    protected  void init (AuthScope scope)
+            throws HTTPException
+    {
+        if(scope == null)
+                    throw new HTTPException("HTTPSession(): empty scope not allowed");
+        this.realm = scope;
+            this.realmURL = HTTPAuthScope.scopeToURL(scope).toString();
         try {
             synchronized (HTTPSession.class) {
                 sessionClient = new DefaultHttpClient(connmgr);
@@ -667,7 +690,7 @@ public class HTTPSession implements AutoCloseable
             if(TESTING) HTTPSession.track(this);
             setInterceptors();
         } catch (Exception e) {
-            throw new HTTPException("url=" + url, e);
+            throw new HTTPException("scope=" + scope, e);
         }
         this.execcontext = new BasicHttpContext();// do we need to modify?
     }
@@ -678,19 +701,23 @@ public class HTTPSession implements AutoCloseable
     synchronized void
     setInterceptors()
     {
-        for(HttpRequestInterceptor hrq : reqintercepts)
+        for(HttpRequestInterceptor hrq : reqintercepts) {
             sessionClient.addRequestInterceptor(hrq);
-        for(HttpResponseInterceptor hrs : rspintercepts)
+        }
+        for(HttpResponseInterceptor hrs : rspintercepts) {
             sessionClient.addResponseInterceptor(hrs);
+        }
     }
 
     synchronized void
     clearInterceptors()
     {
-        for(HttpRequestInterceptor hrq : reqintercepts)
+        for(HttpRequestInterceptor hrq : reqintercepts) {
             clearInterceptor(hrq);
-        for(HttpResponseInterceptor hrs : rspintercepts)
+        }
+        for(HttpResponseInterceptor hrs : rspintercepts) {
             clearInterceptor(hrs);
+        }
     }
 
     synchronized void
@@ -714,8 +741,8 @@ public class HTTPSession implements AutoCloseable
     public void
     setAuthStore(HTTPAuthStore store)
     {
-       if(store == null) store = HTTPAuthStore.getDefault();
-       this.authlocal = store;
+        if(store == null) store = HTTPAuthStore.getDefault();
+        this.authlocal = store;
     }
 
     public Settings getSettings()
@@ -723,9 +750,11 @@ public class HTTPSession implements AutoCloseable
         return localsettings;
     }
 
-    public String getURL()
+    public AuthScope getRealm() {return this.realm;}
+
+    public String getSessionURL()
     {
-        return this.legalurl;
+        return this.sessionURL;
     }
 
     public void setUserAgent(String agent)
@@ -875,7 +904,7 @@ public class HTTPSession implements AutoCloseable
     // Also assume this is a compatible url to the Session url
     public void
     setCredentialsProvider(String surl)
-        throws HTTPException
+            throws HTTPException
     {
         // Try to extract user info
         URI uri = HTTPAuthScope.decompose(surl);
@@ -904,9 +933,9 @@ public class HTTPSession implements AutoCloseable
     // do an actual execution
     protected HttpResponse
     execute(HttpRequestBase request)
-        throws IOException
+            throws IOException
     {
-        HttpResponse response = sessionClient.execute(request, this.execcontext);
+	HttpResponse response = sessionClient.execute(request,this.execcontext);
         return response;
     }
 
@@ -966,12 +995,12 @@ public class HTTPSession implements AutoCloseable
         rq.setPrint(print);
         rs.setPrint(print);
         /* remove any previous */
-        for(int i = reqintercepts.size() - 1;i >= 0;i--) {
+        for(int i = reqintercepts.size() - 1; i >= 0; i--) {
             HttpRequestInterceptor hr = reqintercepts.get(i);
             if(hr instanceof HTTPUtil.InterceptCommon)
                 reqintercepts.remove(i);
         }
-        for(int i = rspintercepts.size() - 1;i >= 0;i--) {
+        for(int i = rspintercepts.size() - 1; i >= 0; i--) {
             HttpResponseInterceptor hr = rspintercepts.get(i);
             if(hr instanceof HTTPUtil.InterceptCommon)
                 rspintercepts.remove(i);

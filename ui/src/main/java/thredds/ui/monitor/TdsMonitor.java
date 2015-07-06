@@ -226,19 +226,26 @@ public class TdsMonitor extends JPanel {
             if (data.wantRoots) {
               String urls = data.getServerPrefix() + "/thredds/admin/log/dataroots.txt";
               File localDir = LogLocalManager.getDirectory(data.server, "");
-              if (!localDir.mkdirs())
-                manage.getTextArea().append("\nmkdirs failed");
+              boolean ok = localDir.mkdirs();
+              // if (!ok) manage.getTextArea().append("\nmkdirs failed");
               File file = new File(localDir, "roots.txt");
               HTTPSession session = HTTPFactory.newSession(urls);
               // session.setCredentialsProvider(provider);
               session.setUserAgent("TdsMonitor");
-              HttpClientManager.copyUrlContentsToFile(session, urls, file);
-              String roots = IO.readFile(file.getPath());
-
               JTextArea ta = manage.getTextArea();
-              ta.append("\nRoots:\n");
-              ta.append(roots);
-              LogCategorizer.setRoots(roots);
+
+              try {
+                HttpClientManager.copyUrlContentsToFile(session, urls, file);
+                String roots = IO.readFile(file.getPath());
+                ta.append("\nRoots:\n");
+                ta.append(roots);
+                LogCategorizer.setRoots(roots);
+
+              } catch (IOException ioe) {
+                StringWriter sw = new StringWriter(5000);
+                ioe.printStackTrace(new PrintWriter(sw));
+                ta.setText(sw.toString());
+              }
             }
 
           } catch (Throwable t) {

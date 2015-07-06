@@ -42,15 +42,17 @@
 package opendap.servlet;
 
 
-import java.io.*;
-import javax.servlet.http.*;
-
-import opendap.dap.*;
-import opendap.dap.parsers.*;
+import opendap.dap.DAP2Exception;
+import opendap.dap.DAS;
+import opendap.dap.DDS;
+import opendap.dap.Util;
+import opendap.dap.parsers.ParseException;
 import opendap.servers.ServerDDS;
 import opendap.servlet.www.jscriptCore;
 import opendap.servlet.www.wwwFactory;
 import opendap.servlet.www.wwwOutPut;
+
+import java.io.*;
 
 /**
  * Default handler for OPeNDAP .html requests. This class is used
@@ -156,8 +158,6 @@ public class GetHTMLInterfaceHandler {
                             + "</head>\n"
                             + "<body>\n"
                             + "<p><h2 align='center'>OPeNDAP Dataset Access Form</h2>\n"
-                            + "<hr>\n"
-                            + "<font size=-1>Tested on Netscape 4.61 and Internet Explorer 5.00.</font>\n"
                             + "<hr>\n"
                             + "<form action=\"\">\n"
                             + "<table>\n"

@@ -91,6 +91,8 @@ public class TestWcsServer {
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
+    System.out.printf("%s%n", xml);
+
     //XPathExpression<Element> xpath = XPathFactory.instance().compile("ns:/WCS_Capabilities/ContentMetadata/CoverageOfferingBrief", Filters.element(), null, NS_WCS);
     XPathExpression<Element> xpath = XPathFactory.instance().compile("//wcs:CoverageOfferingBrief", Filters.element(), null, NS_WCS);
     List<Element> elements = xpath.evaluate(doc);
@@ -102,7 +104,7 @@ public class TestWcsServer {
     XPathExpression<Element> xpath2 =
         XPathFactory.instance().compile("//wcs:CoverageOfferingBrief/wcs:name", Filters.element(), null, NS_WCS);
     Element emt = xpath2.evaluateFirst(doc);
-    assertEquals("Pressure_reduced_to_MSL", emt.getTextTrim());
+    assertEquals("Relative_humidity_height_above_ground", emt.getTextTrim());  // lame
   }
 
   @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=sst")

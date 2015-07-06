@@ -93,9 +93,8 @@ public class TestHTTPSession extends UnitTestCommon
 
         HTTPSession.setGlobalUserAgent(GLOBALAGENT);
         try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
-            HTTPMethod method = HTTPFactory.Get(session);
+            HTTPMethod method = HTTPFactory.Get(session,TESTURL1);
             method.execute();
-
             // Use special interface to access the request
             // Look for the user agent header
             List<Header> agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
@@ -109,7 +108,7 @@ public class TestHTTPSession extends UnitTestCommon
             System.out.println("Test: HTTPSession.setUserAgent(" + SESSIONAGENT + ")");
             HTTPSession.debugReset();
             session.setUserAgent(SESSIONAGENT);
-            method = HTTPFactory.Get(session);
+            method = HTTPFactory.Get(session,TESTURL1);
             method.execute();
 
             // Use special interface to access the request
@@ -139,7 +138,7 @@ public class TestHTTPSession extends UnitTestCommon
             session.setCredentialsProvider(HTTPAuthPolicy.BASIC, bp);
             //session.setAuthorizationPreemptive(true); not implemented
 
-            HTTPMethod method = HTTPFactory.Get(session);
+            HTTPMethod method = HTTPFactory.Get(session,TESTURL1);
             method.execute();
 
             // Use special interface to access the request

@@ -61,7 +61,7 @@ dependencies {
 }
 ----
 
-There are optional modules add support for reading (and sometimes writing) various
+There are optional modules that add support for reading (and sometimes writing) various
 link:formats/FileTypes.html[scientific data formats]. The formats associated with each module are:
 
 * `bufr`: BUFR
