@@ -7,129 +7,35 @@
 <meta name="generator" content="Asciidoctor 1.5.2">
 <title>2015 Training Workshop Schedule : TDS Configuration and Administration</title>
 <style>
+/* general */
 body {
-    font-family: verdana, arial, sans-serif;
-    font-size: 10pt;
-    padding: 0px 10px 0px 10px;
-    margin: 0px 0px 0px 0px;
-    min-width: 600px;
-}
-
-a {
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-small {
-    font-size: 10pt;
+    font-size: 12pt;
 }
 
 code {
-    font-size: 11pt;
-    font-family: "Lucida Console", "Courier New", monospace;
-    white-space: nowrap;
-    color: #708090;
-    font-weight: bold;
+    color: #708090 !important;
 }
 
 h1 {
     font-size: 20pt;
     padding: 15px 0px 10px 80px;
     margin: 10px 0px 30px 0px;
-    background: transparent url('../images/thredds-50x50.png') no-repeat 0px 0px;
-}
-
-h4.synopsis {
-    font-size: 12pt;
-    padding: 0;
-    margin: 10px 0px 50px 0px;
-}
-
-#section {
-    border: 3px solid #CFCFCF;
-    padding: 0px 0px 0px 0px;
-    margin: 20px 0px 60px 0px;
-}
-
-#section h2 {
-    padding: 0px 0px 0px 0px;
-    margin: -18px 0px 0px 0px;
-    color: #9C9C9C;
-    font-size: 16pt;
-}
-
-#section h2 a {
+    background: transparent url('images/thredds-50x50.png') no-repeat 0px 0px;
     border: none;
-    background-color: #FFFFFF;
-    padding: 0px 10px 0px 10px;
-    margin: 0px 10px 0px 10px;
-
 }
 
-#section #subsection {
-    padding: 0px 20px 0px 20px;
-    margin: 20px 18px 40px 18px;
-}
-
-#section #subsection.exercise {
-    background: #EFEFEF url('../images/exercise.gif') no-repeat 0px 0px;
-    border: 3px solid #00B2EE;
-    padding: 20px 15px 10px 100px;
-    margin: -20px 30px 30px 30px;
-}
-
-#section #subsection h3 {
+h3 {
     padding: 0px 0px 0px 0px;
-    margin: 0px 0px 20px -18px;
-    font-size: 14pt;
-    color: #000000;
+    margin: 20px 0px;
+    font-size: 14pt !important;
+    color: #000000 !important;
 }
 
-#section #subsection.exercise h3 {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 20px 0px;
-    font-size: 14pt;
-    color: #000000;
+h4 {
+    border: none !important;
 }
 
-#section #subsection.exercise ol {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 20px;
-}
-
-#section #subsection.exercise ol li {
-    padding: 0px 0px 0px 0px;
-    margin: 10px 0px 5px 0px;
-    font-size: 11pt;
-}
-
-#section #subsection.exercise p {
-    padding: 0px 0px 0px 10px;
-    margin: 5px 0px 0px 0px;
-}
-
-#section #subsection.exercise .exercise_question {
-    background: transparent url('../images/question.gif') no-repeat 10px 0px;
-    padding: 20px 15px 10px 50px;
-    margin: 0px 0px 0px 0px;
-
-}
-
-#section #subsection.exercise .exercise_question p {
-    padding: 0px 0px 0px 10px;
-    margin: -10px 0px 0px 0px;
-}
-
-#section #subsection p {
-    padding: 0px 0px 0px 0px;
-    margin: 10px 0px 10px 0px;
-    font-size: 10pt;
-}
-
-#section #subsection pre {
+pre {
     white-space: pre-wrap;
     position: relative;
     font-family: "Lucida Console", "Courier New", monospace;
@@ -140,140 +46,115 @@ h4.synopsis {
     font-size: 9pt;
 }
 
-#section #subsection ul {
-    list-style-type: none;
+.notice {
+    margin-top: -40px;
+    font-size: 10pt
+}
+
+ul {
+    margin: 0 0 20px 0;
+}
+
+/* breadcrumbs */
+ul#breadcrumbs {
+    list-style: none;
+    font-size: 11px;
+    margin: 0 0 20px 0;
+    padding: 0;
+    color: #696969;
+}
+
+ul#breadcrumbs li {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+ul#breadcrumbs li a {
+    padding: 0px 20px 0px 0px;
+    background: transparent url('images/breadcrumb.png') no-repeat center right;
+}
+
+/* section formatting */
+#section {
+    border: 3px solid #CFCFCF;
+    padding: 30px 30px 10px 30px;
+    margin: 20px 0px 60px 0px;
+}
+
+#section h2 {
     padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
+    margin: -45px 0px 0px -15px;
+    color: #9C9C9C;
+    font-size: 16pt;
 }
 
-#section #subsection ul li {
-    padding: 2px 0px 2px 25px;
-    margin: 10px 0px 0px 0px;
-    font-size: 12pt;
-    background: transparent url('../images/check.gif') no-repeat 0px 0px;
+#section h2 a {
+    text-decoration: none;
+    border: none;
+    background-color: #FFFFFF;
+    padding: 0px 10px 0px 10px;
+    margin: 0px 10px 0px 0px;
 }
 
-#section #subsection ol {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 20px;
+#section h2 a:hover {
+    color: #9C9C9C;
 }
 
-#section #subsection ol li {
-    padding: 0px 0px 0px 0px;
-    margin: 20px 0px 5px 0px;
-    font-size: 12pt;
-}
-
-#section #subsection  ul.little {
-    list-style-type: disc;
-    padding: 10px 0px 0px 0px;
-    margin: 0px 0px 0px 25px;
-}
-
-#section #subsection  ul.little li {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 5px 0px;
-    font-size: 10pt;
-    background-image: none;
-}
-
-#section #subsection ol.little {
-    padding: 10px 0px 0px 0px;
-    margin: 0px 0px 0px 25px;
-}
-
-#section #subsection ol.little li {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 5px 0px;
-    font-size: 10pt;
-    background-image: none;
-}
-
-#section #subsection #expanded {
-    padding: 0px 10px 0px 48px;
-    margin: 0px 0px 10px 18px;
-}
-
-#section #subsection #expanded h4 {
-    font-weight: normal;
-    padding: 0px 0px 0px 35px;
-    margin: 20px 0px 10px 0px;
-    font-size: 12pt;
-}
-
-#section #subsection #expanded ul {
-    list-style-type: disc;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 50px;
-}
-
-#section #subsection #expanded ul li {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 5px 0px;
-    font-size: 10pt;
-    background-image: none;
-}
-
-#section #subsection #expanded p {
-    padding: 10px 0px 10px 10px;
-    margin: 0px 0px 0px 0px;
-}
-
-.troubleshooting {
-    background: transparent url('../images/troubleshooting.gif') no-repeat 0px 0px;
-}
-
-.question {
-    background: transparent url('../images/question.gif') no-repeat 10px 0px;
-}
-
-#section #subsection #note {
+/* right floating boxes */
+#note {
     z-index: 10;
-    border: 1px dashed #CFCFCF;
-    padding: 10px 10px 10px 10px;
+    border: 2px dashed #4682B4;
+    padding: 10px 10px 5px 10px;
     margin: 0px 0px 10px 50px;
     float: right;
     position: relative;
     width: 250px;
-    right: 2px;
+    font-size: 10pt;
 }
 
-#section #subsection #note h4 {
-    padding: 10px 0px 0px 55px;
+#note h4 {
+    padding: 0px 0px 0px 40px;
     margin: 0px 0px 15px 0px;
-    font-size: 12pt;
 }
 
-#section #subsection #note ul {
-    list-style-type: disc;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 20px;
+/* full width boxes */
+#expanded {
+    padding: 5px 5px 5px 45px;
+    margin: 20px 0px 30px 0px;
+    border: 1px dashed #CFCFCF;
+    font-size: 10pt;
+    background-color: #CFCFCF
 }
 
-#section #subsection #note ul li {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 5px 0px;
-    font-size: 9pt;
-    background: none;
+#expanded.exercise {
+    padding: 5px 5px 5px 75px !important;
+    background: transparent url('images/exercise.png') no-repeat 10px 10px;
+    border: 1px solid #4682B4;
 }
 
-#section #subsection #note p {
-    padding: 0px 0px 0px 0px;
-    margin: 5px 0px 5px 0px;
-}
-
+/* floating boxes formatting */
 .info {
-    background: #EFEFEF url('../images/info.gif') no-repeat 10px 5px;
+    background: #FFFFFF url('images/info.png') no-repeat 10px 5px;
 }
 
 .reminder {
-    background: #EFEFEF url('../images/reminder.gif') no-repeat 10px 5px;
+    background: #FFFFFF url('images/reminder.png') no-repeat 10px 5px;
 }
 
 .ahead {
-    background: #EFEFEF url('../images/bulb.gif') no-repeat 10px 5px;
+    background: #FFFFFF url('images/ahead.png') no-repeat 10px 5px;
 }
 
+.troubleshooting {
+    background: transparent url('images/troubleshooting.png') no-repeat 10px 5px;
+}
+
+.question {
+    background: transparent url('images/question.png') no-repeat 10px 10px;
+}
+
+/* table stuff */
 table {
     table-layout: auto;
     border-collapse: separate;
@@ -364,6 +245,42 @@ a.tooltip:hover b em.inner {
 
 .clear {
     clear: both;
+}
+
+/* dialog box*/
+.ui-dialog {
+    text-align: left;
+    font-size: 12pt !important
+}
+
+.ui-dialog h3 {
+    border-bottom: 1px solid #696969;
+    background: transparent url('images/view.png') no-repeat left center;
+    padding-left: 100px;
+}
+
+.ui-dialog ol {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.ui-dialog pre {
+    margin-top: 20px
+}
+
+.ui-dialog-titlebar {
+    display: none;
+}
+
+/* tutorial links */
+.example {
+    display: block;
+    padding: 5px 5px 5px 115px !important;
+    margin: 10px;
+    background: transparent url('images/view.png') no-repeat 10px 2px;
+    font-size: 11pt;
+    color: #0000FF;
+    cursor: pointer;
 }
 
 
@@ -833,7 +750,7 @@ Convention for Data Discovery</a> (Ethan?)</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-07-06 14:48:16 MDT
+Last updated 2015-07-06 14:59:41 MDT
 </div>
 </div>
 </body>
