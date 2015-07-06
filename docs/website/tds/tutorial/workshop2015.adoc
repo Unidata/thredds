@@ -1,4 +1,5 @@
 :stylesheet: ../tds.css
+:stylesheet: tutorial.css
 
 = 2015 Training Workshop Schedule : TDS Configuration and Administration
 
