@@ -152,6 +152,18 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  public void testSeanProblem() throws IOException {
+
+
+    FeatureCollectionConfig config = new FeatureCollectionConfig("gfs_2p5deg", "test/gfs_2p5deg", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null,  null, "file", null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
   public void testEnsembles() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("gefs_ens", "test/gefs_ens", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/ens/.*grib2", null, null,  null, "file", null);

@@ -95,6 +95,7 @@ public class GridAsPointDataTest {
       String next = it.next();
       varParamVal = varParamVal + "," + next;
     }
+    System.out.printf("path=%s vars=%s point=%s%n", pathInfo, varParamVal, point);
 
     //Values for time subsetting
     String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);

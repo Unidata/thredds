@@ -12,7 +12,7 @@ properties are defined in the TDS properties file:
 Modifying `tds.properties` is an alternative means of changing those configuration settings. However,
 `tds.properties` lives in the `${TOMCAT_HOME}/webapps/` directory, meaning that it'll be overwritten whenever the TDS
 is upgraded. So, if you make any edits to that file, make sure to back them up before deploying a new version of
-`thredds.war`, and then restore them after depoloyment.
+`thredds.war`, and then restore them after deployment.
 
 The Java system properties that TDS uses for configuration are:
 
@@ -24,7 +24,7 @@ The Java system properties that TDS uses for configuration are:
 
 |`tds.content.root.path`
 |Root path for TDS content directory
-|*None*. The user _must_ link:../UpgradingTo4.6.html[provide this value].
+|*None*. The user must link:../UpgradingTo4.6.html[provide this value].
 
 |`tds.version`
 |TDS version number

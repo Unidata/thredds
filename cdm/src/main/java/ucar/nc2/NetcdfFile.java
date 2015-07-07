@@ -525,7 +525,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
       buffer_size = default_buffersize;
 
     ucar.unidata.io.RandomAccessFile raf;
-    if (uriString.startsWith("http:")) { // open through URL
+    if (uriString.startsWith("http:") || uriString.startsWith("https:")) { // open through URL
       raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
 
     } else if (uriString.startsWith("nodods:")) { // deprecated use httpserver

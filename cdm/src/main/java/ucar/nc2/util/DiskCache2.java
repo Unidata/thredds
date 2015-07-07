@@ -35,13 +35,10 @@ package ucar.nc2.util;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
+import java.io.*;
 import java.net.URLDecoder;
+import java.nio.file.*;
+import java.util.*;
 
 /**
  * Manages a place on disk to persistently cache files, which are deleted when the last modified date exceeds a certain time.
@@ -258,21 +255,32 @@ public class DiskCache2 {
     return f;
   }
 
-  // File.canWrite() appears to be flaky on some systems
-  // will java 7 help ??
-  private static boolean canWrite(File f) {
-    /* String filename = f.getPath();
-    if (filename.startsWith("file:"))
-      filename = filename.substring(5);
-    Path path = Paths.get(filename).toAbsolutePath(); */
+  /**
+   * Returns {@code true} if we can write to the file.
+   *
+   * @param f a file. It may be a regular file or a directory. It may even be non-existent, in which case the
+   *          writability of the file's parent dir is tested.
+   * @return {@code true} if we can write to the file.
+   */
+  public static boolean canWrite(File f) {
     Path path = f.toPath().toAbsolutePath();
-    return Files.isWritable(path.getParent());
-    /* Path apath = path.toAbsolutePath();
-    System.out.printf("%s%n", path.toAbsolutePath());
-    File parent = f.getParentFile();
-    System.out.printf("%s%n", parent.exists());
-    Path p = parent.toPath();
-    return Files.isWritable(p);  */
+
+    try {
+      if (Files.isDirectory(path)) {
+        // Try to create a file within the directory to determine if it's writable.
+        Files.delete(Files.createTempFile(path, "check", null));
+      } else if (Files.isRegularFile(path)) {
+        // Try to open the file for writing in append mode.
+        Files.newOutputStream(path, StandardOpenOption.APPEND).close();
+      } else {
+        // File does not exist. See if it's parent directory exists and is writeable.
+        Files.delete(Files.createTempFile(path.getParent(), "check", null));
+      }
+    } catch (IOException | SecurityException e) {
+      return false;
+    }
+
+    return true;
   }
 
   /**

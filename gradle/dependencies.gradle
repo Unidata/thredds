@@ -133,6 +133,8 @@ libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.3.6"
 
 libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.3.3"
 
+libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.3.3"
+
 libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
 
 libraries["jcip-annotations"] = "net.jcip:jcip-annotations:1.0"
