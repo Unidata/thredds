@@ -94,6 +94,11 @@ public class CollectionUpdater {
     }
   }
 
+  public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
+  }
+
+
   // debugging
   public org.quartz.Scheduler getScheduler() {
     return scheduler;

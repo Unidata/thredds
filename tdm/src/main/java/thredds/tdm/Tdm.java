@@ -46,6 +46,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
+import org.springframework.stereotype.Component;
 import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
@@ -85,12 +86,9 @@ public class Tdm {
   private static final boolean debug = false;
   private static final boolean debugOpenFiles = false;
 
-  @Autowired
-  @Qualifier("fcTriggerEventBus")
   private EventBus eventBus;
 
-  @Autowired
-  CollectionUpdater collectionUpdater;
+  private CollectionUpdater collectionUpdater;
 
   private Path contentDir;
   private Path contentThreddsDir;
@@ -155,6 +153,12 @@ public class Tdm {
     this.executor = executor;
   }
 
+  void setUpdater(CollectionUpdater collectionUpdater, EventBus eventBus) {
+    this.collectionUpdater = collectionUpdater;
+    this.eventBus = eventBus;
+  }
+
+
   public void setCatalog(Resource catalog) {
     this.catalog = catalog;
   }
@@ -193,6 +197,7 @@ public class Tdm {
     aliasHandler = new AliasHandler(aliasExpanders);
   }
 
+  ////////////////////////////////////////////////////////////////////
   boolean init() {
     System.setProperty("tds.log.dir", contentTdmDir.toString());
 
@@ -481,6 +486,11 @@ public class Tdm {
       List<PathAliasReplacement> aliasExpanders = PathAliasReplacementImpl.makePathAliasReplacements(aliases);
       driver.setPathAliasReplacements(aliasExpanders);
 
+      EventBus eventBus = (EventBus) springContext.getBean("fcTriggerEventBus");
+      CollectionUpdater collectionUpdater = (CollectionUpdater) springContext.getBean("collectionUpdater");
+      collectionUpdater.setEventBus(eventBus);   // Autowiring not working
+      driver.setUpdater(collectionUpdater, eventBus);
+
       String contentDir = System.getProperty("tds.content.root.path");
       if (contentDir == null) contentDir = "../content";
       driver.setContentDir(contentDir);
@@ -501,9 +511,11 @@ public class Tdm {
         if (args[i].equalsIgnoreCase("-contentDir")) {
           driver.setContentDir(args[i + 1]);
           i++;
+
         } else if (args[i].equalsIgnoreCase("-catalog")) {
           Resource cat = new FileSystemResource(args[i + 1]);
           driver.setCatalog(cat);
+
         } else if (args[i].equalsIgnoreCase("-tds")) {
           String tds = args[i + 1];
           if (tds.equalsIgnoreCase("none")) {
@@ -523,14 +535,18 @@ public class Tdm {
           driver.user = split[0];
           driver.pass = split[1];
           driver.sendTriggers = true;
+
         } else if (args[i].equalsIgnoreCase("-nthreads")) {
           int n = Integer.parseInt(args[i + 1]);
           driver.setNThreads(n);
+
         } else if (args[i].equalsIgnoreCase("-showOnly")) {
           driver.setShowOnly(true);
+
         } else if (args[i].equalsIgnoreCase("-log")) {
           logLevel = args[i + 1];
           driver.setLoglevel(logLevel);
+
         } else if (args[i].equalsIgnoreCase("-forceOnStartup")) {
           driver.setForceOnStartup(true);
         }

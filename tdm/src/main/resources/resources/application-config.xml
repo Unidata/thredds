@@ -20,13 +20,18 @@
 
   <bean id="testDriver2" class="thredds.tdm.Tdm">
     <property name="executor" ref="executor"/>
-    <property name="catalog" value="classpath:/resources/indexNomads.xml"/>
+    <!-- property name="catalog" value="classpath:/resources/indexNomads.xml"/>
     <property name="serverNames">
       <list>
         <value>http://localhost:8080/</value>
       </list>
-    </property>
+    </property -->
   </bean>
+
+
+  <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
+    <entry key="cdmUnitTest" value="Q:/cdmUnitTest"/>
+  </util:map>
 
   <bean id="fcTriggerEventBus" class="com.google.common.eventbus.AsyncEventBus">
     <constructor-arg value="fcTriggerEventBus" />
@@ -36,8 +41,6 @@
     <constructor-arg type="int" value="1"/>
   </bean>
 
-  <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
-    <entry key="cdmUnitTest" value="Q:/cdmUnitTest"/>
-  </util:map>
+  <bean id="collectionUpdater" class="thredds.featurecollection.CollectionUpdater" />
 
 </beans>
