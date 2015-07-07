@@ -22,6 +22,7 @@ import javax.swing.*;
 //import java.awt.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class CoverageTable extends JPanel {
   private IndependentWindow infoWindow;
   private NetcdfOutputChooser outChooser;
 
-  public CoverageTable(PreferencesExt prefs) {
+  public CoverageTable(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
 
     gridTable = new BeanTable(GridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false, "GridCoverage", "ucar.nc2.ft2.coverage.GridCoverage", null);
@@ -244,6 +245,11 @@ public class CoverageTable extends JPanel {
       axisTable.setBeans(axisList);
     }
   }  */
+
+  public void showInfo(Formatter result) {
+    if (gridDataset == null) return;
+    gridDataset.toString(result);
+  }
 
   public void setDataset(GridCoverageDataset gds) throws IOException {
     this.gridDataset = gds;

@@ -137,6 +137,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
           ConfigCatalogInitialization.ReadMode readMode =  ConfigCatalogInitialization.ReadMode.get(readModeS);
           if (readMode == null) readMode = ConfigCatalogInitialization.ReadMode.always;
           configCatalogInitializer.init(readMode, (PreferencesExt) mainPrefs.node("configCatalog"));
+          startupLog.info("TdsInit complete");
         }
       }
     }
@@ -391,9 +392,6 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     }
     configCatalogInitializer.setTrackerDir(trackerDir);
     configCatalogInitializer.setMaxDatasetToTrack(trackerMax);
-
-
-    startupLog.info("TdsInit complete");
   }
 
   static private class CacheScourTask extends TimerTask {

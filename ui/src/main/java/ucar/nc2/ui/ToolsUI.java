@@ -5014,7 +5014,7 @@ public class ToolsUI extends JPanel {
 
     CoveragePanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);
-      dsTable = new ucar.nc2.ui.coverage2.CoverageTable(prefs);
+      dsTable = new ucar.nc2.ui.coverage2.CoverageTable(buttPanel, prefs);
       add(dsTable, BorderLayout.CENTER);
 
       AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
@@ -5028,6 +5028,18 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(viewButton);
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          dsTable.showInfo(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
 
       //dsTable.addExtra(buttPanel, fileChooser);
     }

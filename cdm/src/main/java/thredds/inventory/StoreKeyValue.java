@@ -40,12 +40,12 @@ package thredds.inventory;
  */
 public interface StoreKeyValue {
 
-  public byte[] getBytes(String key);
-  public void put(String key, byte[] value);
-  public void close();
+  byte[] getBytes(String key);
+  void put(String key, byte[] value);
+  void close();
 
-  public interface Factory {
-    public StoreKeyValue open(String name);
+  interface Factory {
+    StoreKeyValue open(String name);
   }
 
 }

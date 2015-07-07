@@ -96,7 +96,7 @@ public class FileCache implements FileCacheIF {
    */
   public static synchronized void shutdown() {
     if (exec != null)
-      exec.shutdown();
+      exec.shutdownNow();
     exec = null;
   }
 
@@ -174,7 +174,8 @@ public class FileCache implements FileCacheIF {
   }
 
   private static synchronized ScheduledExecutorService getExec() {
-    if (exec == null) exec = Executors.newSingleThreadScheduledExecutor();
+    if (exec == null)
+      exec = Executors.newSingleThreadScheduledExecutor();
     return exec;
   }
 

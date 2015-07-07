@@ -62,7 +62,7 @@ public class MetadataManager implements StoreKeyValue {
   private static long maxSizeBytes = 0;
   private static int jvmPercent = 2;
   private static Environment myEnv = null;
-  private static List<MetadataManager> openDatabases = new ArrayList<MetadataManager>();
+  private static List<MetadataManager> openDatabases = new ArrayList<>();
   private static boolean readOnly = false;
   private static boolean debug = false;
 
@@ -141,12 +141,12 @@ public class MetadataManager implements StoreKeyValue {
   // this is called on TDS shutdown and reinit
   static synchronized public void closeAll() {
 
-    List<MetadataManager> closeDatabases = new ArrayList<MetadataManager>(openDatabases);
+    List<MetadataManager> closeDatabases = new ArrayList<>(openDatabases);
     for (MetadataManager mm : closeDatabases) {
       if (debug) System.out.println("  close database " + mm.collectionName);
       mm.close();
     }
-    openDatabases = new ArrayList<MetadataManager>(); // empty
+    openDatabases = new ArrayList<>(); // empty
 
     if (myEnv != null) {
       try {
@@ -340,7 +340,7 @@ public class MetadataManager implements StoreKeyValue {
     }
     
     openDatabase();
-    List<DatabaseEntry> result = new ArrayList<DatabaseEntry>();
+    List<DatabaseEntry> result = new ArrayList<>();
     Cursor myCursor = null;
     try {
       myCursor = database.openCursor(null, null);
@@ -372,10 +372,7 @@ public class MetadataManager implements StoreKeyValue {
       }
       logger.info("{} #files deleted = {}", collectionName, countDelete);
 
-    } catch (UnsupportedOperationException e) {
-      logger.error("Trying to delete " + collectionName, e);
-
-    } catch (UnsupportedEncodingException e) {
+    } catch (UnsupportedOperationException | UnsupportedEncodingException e) {
       logger.error("Trying to delete " + collectionName, e);
 
     } finally {
@@ -406,7 +403,7 @@ public class MetadataManager implements StoreKeyValue {
 
   public List<KeyValue> getContent() throws DatabaseException, UnsupportedEncodingException {
     openDatabase();
-    List<KeyValue> result = new ArrayList<KeyValue>();
+    List<KeyValue> result = new ArrayList<>();
     Cursor myCursor = null;
     try {
       myCursor = database.openCursor(null, null);

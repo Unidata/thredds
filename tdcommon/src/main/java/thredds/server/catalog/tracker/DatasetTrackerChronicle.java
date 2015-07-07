@@ -58,13 +58,13 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   }
 
   public void save() throws IOException {
-    // LOOK just a guess
+    /* LOOK just a guess
     if (changed) {
       datasetMap.close();
       ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
               .averageValueSize(200).entries(maxDatasets);
       datasetMap = builder.createPersistedTo(dbFile);
-    }
+    } */
   }
 
   public void close() throws IOException {
