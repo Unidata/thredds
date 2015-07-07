@@ -12,7 +12,10 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Adapt ucar.nc2.dt.GeoGridDataset to ucar.nc2.ft2.coverage.grid.GridCoverageDataset
@@ -61,9 +64,9 @@ public class DtCoverageAdapter extends GridCoverageDataset {
       for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordAxes())
         if (!axisNames.contains(axis.getFullName())) {
           if (axis instanceof CoordinateAxis1D)
-            axes.add(new Axis1D( (CoordinateAxis1D) axis));
+            axes.add(new Axis1D((CoordinateAxis1D) axis));
           else
-            axes.add(new Axis( axis));
+            axes.add(new Axis(axis));
           axisNames.add(axis.getFullName());
         }
     }
@@ -111,7 +114,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
 
           case GridSubset.ensCoord: // double
             CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
-            if (eaxis != null) ens = eaxis.findCoordElement( subset.getDouble(key));
+            if (eaxis != null) ens = eaxis.findCoordElement(subset.getDouble(key));
             break;
         }
       }
@@ -176,7 +179,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
 
       setNcoords(dtCoordAxis.getSize());
       setMinIndex(0);
-      setMaxIndex(dtCoordAxis.getSize()-1);
+      setMaxIndex(dtCoordAxis.getSize() - 1);
 
       setStartValue(dtCoordAxis.getCoordValue(0));
       setEndValue(dtCoordAxis.getCoordValue((int) dtCoordAxis.getSize() - 1));
@@ -235,7 +238,10 @@ public class DtCoverageAdapter extends GridCoverageDataset {
         setDependenceType(DependenceType.independent);
       else if (dtCoordAxis.isScalar())
         setDependenceType(DependenceType.scalar);
-      else {
+      else if (dtCoordAxis instanceof CoordinateAxis2D) {
+        setDependenceType(DependenceType.twoD);
+        setDependsOn(dtCoordAxis.getDimensionsString());
+      } else {
         setDependenceType(DependenceType.dependent);
         setDependsOn(dtCoordAxis.getDimension(0).toString());
       }
@@ -246,7 +252,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
 
       setNcoords(dtCoordAxis.getSize());
       setMinIndex(0);
-      setMaxIndex(dtCoordAxis.getSize()-1);
+      setMaxIndex(dtCoordAxis.getSize() - 1);
 
       /* setStartValue(dtCoordAxis.getCoordValue(0));
       setEndValue(dtCoordAxis.getCoordValue((int) dtCoordAxis.getSize() - 1));

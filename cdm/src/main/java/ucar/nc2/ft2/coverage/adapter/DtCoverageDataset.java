@@ -124,7 +124,7 @@ public class DtCoverageDataset implements AutoCloseable {
     }
   }
 
-  private void makeRanges() {
+  private void makeHorizRanges() {
 
     for (Gridset gset : getGridsets()) {
       DtCoverageCS gcs = gset.getGeoCoordSystem();
@@ -132,15 +132,21 @@ public class DtCoverageDataset implements AutoCloseable {
       ProjectionRect bb = gcs.getBoundingBox();
       if (projBB == null)
         projBB = bb;
-      else
+      else if (bb != null)
         projBB.add(bb);
 
       LatLonRect llbb = gcs.getLatLonBoundingBox();
       if (llbbMax == null)
         llbbMax = llbb;
-      else
+      else if (llbb != null)
         llbbMax.extend(llbb);
+    }
+  }
 
+  private void makeTimeRanges() {
+
+    for (Gridset gset : getGridsets()) {
+      DtCoverageCS gcs = gset.getGeoCoordSystem();
       CalendarDateRange dateRange = gcs.getCalendarDateRange();
       if (dateRange != null) {
         if (dateRangeMax == null)
@@ -177,27 +183,27 @@ public class DtCoverageDataset implements AutoCloseable {
   }
 
   public CalendarDateRange getCalendarDateRange() {
-    if (dateRangeMax == null) makeRanges();
+    if (dateRangeMax == null) makeTimeRanges();
     return dateRangeMax;
   }
 
   public CalendarDate getCalendarDateStart() {
-    if (dateRangeMax == null) makeRanges();
+    if (dateRangeMax == null) makeTimeRanges();
     return (dateRangeMax == null) ? null : dateRangeMax.getStart();
   }
 
   public CalendarDate getCalendarDateEnd() {
-    if (dateRangeMax == null) makeRanges();
+    if (dateRangeMax == null) makeTimeRanges();
     return (dateRangeMax == null) ? null : dateRangeMax.getEnd();
   }
 
   public LatLonRect getBoundingBox() {
-    if (llbbMax == null) makeRanges();
+    if (llbbMax == null) makeHorizRanges();
     return llbbMax;
   }
 
   public ProjectionRect getProjBoundingBox() {
-    if (llbbMax == null) makeRanges();
+    if (llbbMax == null) makeHorizRanges();
     return projBB;
   }
 

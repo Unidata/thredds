@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.util.*;
 
 /**
- * Describe
+ * Helper class to create a DatasetCapabilities XML document
  *
  * @author caron
  * @since 5/7/2015

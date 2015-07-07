@@ -25,6 +25,11 @@ public class CdmrFeatureDataset {
     this.endpoint = endpoint;
   }
 
+  public boolean isCmrfEndpoint() throws IOException {
+    CdmrfReader reader = new CdmrfReader(endpoint);
+    return reader.isCmrfEndpoint();
+  }
+
   public GridCoverageDataset openGridCoverage() throws IOException {
     CdmrfReader reader = new CdmrfReader(endpoint);
     return reader.open();

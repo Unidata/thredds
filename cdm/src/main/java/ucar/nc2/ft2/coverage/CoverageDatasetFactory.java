@@ -26,7 +26,9 @@ public class CoverageDatasetFactory {
 
     } else if (endpoint.startsWith("http:")) {
       CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
-      return reader.openGridCoverage();
+      if (reader.isCmrfEndpoint()) {
+        return reader.openGridCoverage();
+      } // otherwise let it fall through to DtCoverageDataset.open(endpoint)
 
     } else if (endpoint.startsWith("file:")) {
       endpoint = endpoint.substring("file:".length());

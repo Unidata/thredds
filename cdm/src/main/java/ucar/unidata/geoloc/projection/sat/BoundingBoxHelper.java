@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Describe
+ * Helper for finding the ProjectionRect from a LatLonRect
  *
  * @author caron
  * @since 7/29/2014

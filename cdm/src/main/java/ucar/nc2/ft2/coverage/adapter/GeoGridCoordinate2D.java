@@ -6,6 +6,8 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.MAMath;
 
 /**
+ * fork ucar.nc2.dt.grid.GridCoordinate2D for adaption of GridCoverage
+ *
  * 2D Coordinate System has lat(x,y) and lon(x,y).
  * This class implements finding the index (i,j) from (lat, lon) coord.
  * This is for "one-off" computation, not a systematic lookup table for all points in a pixel array.

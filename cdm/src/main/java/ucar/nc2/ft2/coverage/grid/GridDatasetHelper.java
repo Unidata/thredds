@@ -248,7 +248,7 @@ public class GridDatasetHelper {
       // we have to transform latlon to projection coordinates
       ProjectionImpl proj = gds.makeProjection(horizCoordSys.transform);
       if (!(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation) && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
-        LatLonRect bb = gds.getLatLonBoundingBox(); // first clip the request rectangle to the bounding box of the grid
+        LatLonRect bb = gds.getLatLonBoundingBox(); // first clip the request rectangle to the bounding box of the grid LOOK bb may be null
         LatLonRect rect2 = bb.intersect(llbb);
         if (null == rect2)
           throw new InvalidRangeException("Request Bounding box does not intersect Grid ");

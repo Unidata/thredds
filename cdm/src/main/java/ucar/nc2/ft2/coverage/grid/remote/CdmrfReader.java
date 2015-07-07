@@ -37,6 +37,24 @@ public class CdmrfReader {
     this.endpoint = endpoint;
   }
 
+  public boolean isCmrfEndpoint() throws IOException {
+
+    HTTPSession httpClient = HTTPFactory.newSession(endpoint);
+    String url = endpoint + "?req=header";
+
+    // get the header
+    try (HTTPMethod method = HTTPFactory.Head(httpClient, url)) {
+      method.setFollowRedirects(true);
+      if (showRequest) System.out.printf("CdmrFeature request %s %n", url);
+      int statusCode = method.execute();
+
+      return statusCode == 200;
+
+    } catch (Throwable t) {
+      return false;
+    }
+  }
+
   public GridCoverageDataset open() throws IOException {
     long start = System.currentTimeMillis();
 

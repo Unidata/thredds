@@ -198,11 +198,13 @@ public class CFGridCoverageWriter {
 
     if (gds.getLatLonBoundingBox() != null) {
       LatLonRect llbb = gds.getLatLonBoundingBox();
-      // this will replace any existing
-      writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));
-      writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getLatMax()));
-      writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLonMin()));
-      writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getLonMax()));
+      if (llbb != null) {
+        // this will replace any existing
+        writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));
+        writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getLatMax()));
+        writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLonMin()));
+        writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getLonMax()));
+      }
     }
   }
 

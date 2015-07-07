@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * fork ucar.nc2.dt.grid for adaption of GridCoverage
+ * fork ucar.nc2.dt.grid.GridCoordSys for adaption of GridCoverage
  *
  * @author caron
  * @since 5/26/2015
@@ -72,7 +72,7 @@ public class DtCoverageCS {
 
     if (builder.orgProj != null) {
         proj = builder.orgProj.constructCopy();
-        proj.setDefaultMapArea( getBoundingBox());  // LOOK too expensive for 2D
+        // proj.setDefaultMapArea( getBoundingBox());  // LOOK LOOK too expensive for 2D
     }
   }
 
@@ -525,15 +525,15 @@ public class DtCoverageCS {
         return null; // impossible
 
       // x,y may be 2D
-      if (!(horizXaxis instanceof CoordinateAxis1D) || !(horizYaxis instanceof CoordinateAxis1D)) {
-        /*  could try to optimize this - just get cord=ners or something
+      if ((horizXaxis instanceof CoordinateAxis2D) && (horizYaxis instanceof CoordinateAxis2D)) {
+        // could try to optimize this - just get corners or something
         CoordinateAxis2D xaxis2 = (CoordinateAxis2D) horizXaxis;
         CoordinateAxis2D yaxis2 = (CoordinateAxis2D) horizYaxis;
-        MAMath.MinMax
-        */
 
-        mapArea = new ProjectionRect(horizXaxis.getMinValue(), horizYaxis.getMinValue(),
-                horizXaxis.getMaxValue(), horizYaxis.getMaxValue());
+        mapArea = null; // getBBfromCorners(xaxis2, yaxis2);  LOOK LOOK
+
+       // mapArea = new ProjectionRect(horizXaxis.getMinValue(), horizYaxis.getMinValue(),
+       //         horizXaxis.getMaxValue(), horizYaxis.getMaxValue());
 
       } else {
 
@@ -606,6 +606,10 @@ public class DtCoverageCS {
   public LatLonRect getLatLonBoundingBox() {
 
     if (llbb == null) {
+
+      if ((getXHorizAxis() instanceof CoordinateAxis2D) && (getYHorizAxis() instanceof CoordinateAxis2D)) {
+        return null;
+      }
 
       CoordinateAxis horizXaxis = getXHorizAxis();
       CoordinateAxis horizYaxis = getYHorizAxis();

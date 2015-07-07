@@ -42,7 +42,7 @@ import java.util.*;
 /**
  * A CoordinateSystem specifies the coordinates of a Variable's values.
  *
- *  Mathmatically it is a vector function F from index space to Sn:
+ *  Mathematically it is a vector function F from index space to Sn:
  * <pre>
  *  F(i,j,k,...) -> (S1, S2, ...Sn)
  *  where i,j,k are integers, and S is the set of reals (R) or Strings.
@@ -66,8 +66,8 @@ import java.util.*;
  *  axis and a Projection CoordinateTransform will have <i>isGeoReferencing()</i> true.
  *  A CoordinateSystem that has a Height, Pressure, or GeoZ axis will have <i>hasVerticalAxis()</i> true.
  * <p>
- * Further CoordinateSystems specialization is done by "data type specific" clasess such as
- * ucar.nc2.dt.grid.GridCoordSys.
+ * Further CoordinateSystems specialization is done by "data type specific" classes such as
+ * ucar.nc2.ft2.coverage.grid.GridCoordSys.
  *
  * @author caron
  * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System Object Model</a>

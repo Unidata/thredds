@@ -244,6 +244,9 @@ public class GridCoordAxis {
     f.format(" npts: %d [%f,%f] '%s' spacing=%s", ncoords, startValue, endValue, units, spacing);
     if (getResolution() != 0.0)
       f.format(" resolution=%f", resolution);
+    f.format(" %s", getDependenceType());
+    if (getDependsOn() != null)
+      f.format(": %s", getDependsOn());
     f.format("%n");
 
     if (values != null) {

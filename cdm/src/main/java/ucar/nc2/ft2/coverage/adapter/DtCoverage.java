@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * fork ucar.nc2.dt.grid for adaption of GridCoverage
+ * fork ucar.nc2.dt.grid.GeoGrid for adaption of GridCoverage
  * LOOK maybe can only be used for GRID ?
  *
  * @author caron
