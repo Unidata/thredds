@@ -121,10 +121,11 @@ public class DataRootPathMatcher {
       logger.error("DataRootPathMatcher found path {} but not in map", path);
       return null;
     }
-    return findDataRoot(dataRootExt);
+    return convert2DataRoot(dataRootExt);
   }
 
-  public DataRoot findDataRoot( DataRootExt dataRootExt) {
+  // convert a dataRootExt to a dataRoot
+  public DataRoot convert2DataRoot(DataRootExt dataRootExt) {
     DataRoot dataRoot = dataRootExt.getDataRoot();
     if (dataRoot != null) return dataRoot;
 

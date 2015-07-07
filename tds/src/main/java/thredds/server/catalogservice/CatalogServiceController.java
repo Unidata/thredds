@@ -93,9 +93,9 @@ public class CatalogServiceController {
       throw new URISyntaxException(msg, e.getReason());
     }
 
-      /*  If no catalog found, handle as a publicDoc request.
+      // no catalog found
       if (catalog == null)
-        return handlePublicDocumentRequest(request, response, catalogPath); */
+        throw new FileNotFoundException(request.getRequestURI());
 
     // Otherwise, handle catalog as indicated by "command".
     if (params.dataset != null) {

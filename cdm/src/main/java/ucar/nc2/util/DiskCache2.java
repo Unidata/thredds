@@ -61,13 +61,15 @@ public class DiskCache2 {
 
   /** Be sure to call this when your application exits, otherwise your process may not exit without being killed. */
   static public void exit() {
-    if (timer != null)
+    if (timer != null) {
       timer.cancel();
+      System.out.printf("DiskCache2.exit()%n");
+    }
     timer = null;
   }
 
   static private synchronized void startTimer() {
-    if (timer  == null)
+    if (timer == null)
       timer = new Timer("DiskCache2");
   }
 
@@ -76,8 +78,8 @@ public class DiskCache2 {
   public enum CachePathPolicy {
     OneDirectory,
     NestedDirectory,
-    NestedTruncate }
-
+    NestedTruncate
+  }
 
   private CachePathPolicy cachePathPolicy = CachePathPolicy.NestedDirectory;
   private boolean alwaysUseCache = false;
@@ -485,14 +487,12 @@ public class DiskCache2 {
   }
 
   private class CacheScourTask extends TimerTask {
-    CacheScourTask( ) { }
-
+    @Override
     public void run() {
       Formatter sbuff = new Formatter();
       sbuff.format("DiskCache2 scour on directory= %s%n", root);
       cleanCache(new File(root), sbuff, true);
-      sbuff.format("----------------------%n");
-      if (cacheLog != null) cacheLog.debug(sbuff.toString());
+      if (cacheLog.isDebugEnabled()) cacheLog.debug(sbuff.toString());
     }
   }
 

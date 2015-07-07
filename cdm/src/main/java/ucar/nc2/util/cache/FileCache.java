@@ -86,19 +86,29 @@ import ucar.nc2.util.Misc;
 public class FileCache implements FileCacheIF {
   static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
-  static private ScheduledExecutorService exec;
+  // static private ScheduledExecutorService exec;
   static boolean debug = false;
   static boolean debugPrint = false;
   static boolean debugCleanup = false;
+
+  static private Timer timer;
 
   /**
    * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.
    */
   public static synchronized void shutdown() {
-    if (exec != null)
-      exec.shutdownNow();
-    exec = null;
+    if (timer != null) {
+      System.out.printf("FileCache.shutdown called%n");
+      timer.cancel();
+    }
+    timer = null;
   }
+
+  static private synchronized void startTimer() {
+    if (timer == null)
+      timer = new Timer("FileCache");
+  }
+
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -163,7 +173,8 @@ public class FileCache implements FileCacheIF {
     wantsCleanup = period > 0;
 
     if (wantsCleanup) {
-      getExec().scheduleAtFixedRate(new CleanupTask(), period, period, TimeUnit.SECONDS);
+      startTimer();
+      timer.scheduleAtFixedRate(new CleanupTask(), 1000 * period, 1000 * period);
       if (cacheLog.isDebugEnabled())
         cacheLog.debug("FileCache " + name + " cleanup every " + period + " secs");
     }
@@ -171,12 +182,6 @@ public class FileCache implements FileCacheIF {
     if (trackAll)
       track = new ConcurrentHashMap<>(5000);
 
-  }
-
-  private static synchronized ScheduledExecutorService getExec() {
-    if (exec == null)
-      exec = Executors.newSingleThreadScheduledExecutor();
-    return exec;
   }
 
   /**
@@ -312,7 +317,8 @@ public class FileCache implements FileCacheIF {
       cleanup(hardLimit);
 
     } else if (needSoft) {
-      getExec().schedule(new CleanupTask(), 100, TimeUnit.MILLISECONDS); // immediate cleanup in 100 msec
+      startTimer();
+      timer.schedule(new CleanupTask(), 100); // immediate cleanup in 100 msec
       if (debugCleanup) System.out.println("CleanupTask scheduled due to soft limit time=" + new Date());
     }
 
@@ -807,7 +813,7 @@ public class FileCache implements FileCacheIF {
     }
   }
 
-  private class CleanupTask implements Runnable {
+  private class CleanupTask extends TimerTask {
     public void run() {
       if (disabled.get()) return;
       cleanup(softLimit);

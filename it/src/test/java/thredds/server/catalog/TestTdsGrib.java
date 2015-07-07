@@ -109,6 +109,28 @@ public class TestTdsGrib {
     Assert.assertTrue(gotHttp);
   }
 
+  @Test
+  public void testTPanalyis() throws IOException {
+    String catalog = "catalog/HRRR/analysis/catalog.xml";
+    Catalog cat = TdsLocalCatalog.open(catalog);
+    Assert.assertEquals(1, cat.getDatasets().size());
+
+    Dataset full = cat.findDatasetByID("HRRR/analysis/TP");
+    Assert.assertNotNull(full);
+    Assert.assertEquals(10, full.getAccess().size());
+    Assert.assertNull(full.getAccess(ServiceType.Resolver));
+    Assert.assertNull(full.getAccess(ServiceType.HTTPServer));
+    Assert.assertNotNull(full.getAccess(ServiceType.CdmRemote));
+
+    Dataset latest = cat.findDatasetByID("latest.xml");
+    Assert.assertNotNull(latest);
+    Assert.assertEquals(1, latest.getAccess().size());
+    Assert.assertNotNull(latest.getAccess(ServiceType.Resolver));
+    Assert.assertNull(latest.getAccess(ServiceType.HTTPServer));
+    Assert.assertNull(latest.getAccess(ServiceType.CdmRemote));
+  }
+
+
   ///////////////////////////////////////////////////
   // work with catalogs with service elements removed
 

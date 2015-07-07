@@ -33,6 +33,8 @@
 
 package thredds.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -63,6 +65,7 @@ import java.util.*;
 @Component
 public class DataRootManager implements InitializingBean {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  static private final Logger logger = LoggerFactory.getLogger(DataRootManager.class);
 
   static public final boolean debug = true;
 
@@ -204,7 +207,11 @@ public class DataRootManager implements InitializingBean {
     for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
       DataRootExt drootExt = entry.getValue();
       if (drootExt.getType() == DataRoot.Type.featureCollection) {
-        DataRoot dataRoot = dataRootPathMatcher.findDataRoot(drootExt);
+        DataRoot dataRoot = dataRootPathMatcher.convert2DataRoot(drootExt);
+        if (dataRoot == null) {
+          logger.error("Cant find dataRoot {} in DataRootPathMatcher", drootExt);
+          continue;
+        }
         result.add(dataRoot.getFeatureCollection());
       }
     }
@@ -215,7 +222,7 @@ public class DataRootManager implements InitializingBean {
     for (Map.Entry<String, DataRootExt> entry : dataRootPathMatcher.getValues()) {
       DataRootExt drootExt = entry.getValue();
       if (drootExt.getType() == DataRoot.Type.featureCollection && drootExt.getName().equals(collectionName)) {
-        DataRoot dataRoot = dataRootPathMatcher.findDataRoot(drootExt);
+        DataRoot dataRoot = dataRootPathMatcher.convert2DataRoot(drootExt);
         return dataRoot.getFeatureCollection();
       }
     }

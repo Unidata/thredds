@@ -228,6 +228,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         String path = pathStart + "/" + TP_DATASET;
         tp.put(Dataset.UrlPath, path);
         tp.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference, single time Grib Partition"));
+        result.addDataset(tp);
 
         makeDatasetsFromGroups(catURI, tp, groups, isSingleGroup);
 
@@ -379,23 +380,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-  @Override
-  protected CatalogBuilder makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
-    CatalogBuilder result = super.makeCatalogTop(catURI, localState);
-
-    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest))
-      result.addService( latestService); // not needed ??
-
-    return result;
-  }
-
   // called by DataRootHandler.makeDynamicCatalog() when a catref is requested
   // see top javadoc for possible URLs
   @Override
   public CatalogBuilder makeCatalog(String match, String reqPath, URI catURI) throws IOException {
     StateGrib localState = (StateGrib) checkState();
     if (localState == null) return null; // not ready yet maybe
+    if (localState.gribCollection == null) return null; // not ready yet maybe
 
     try {
 
