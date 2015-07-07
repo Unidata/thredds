@@ -113,7 +113,6 @@ configure(fatJarTasks) {
     exclude 'LICENSE'
     exclude 'NOTICE'
     exclude '*.txt'
-    exclude '*.xml'
     exclude 'META-INF/INDEX.LIST'
     exclude 'META-INF/DEPENDENCIES'
     exclude 'META-INF/LICENSE'
@@ -128,6 +127,11 @@ configure(fatJarTasks) {
     append('META-INF/spring.handlers')
     append('META-INF/spring.schemas')
     mergeServiceFiles()
+}
+
+// Exclude *.xml files from all fat jars except tdmFat; we need tdm's log4j2.xml to be included.
+configure(fatJarTasks - buildTdmFat) {
+    exclude '*.xml'
 }
 
 
