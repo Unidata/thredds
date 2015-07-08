@@ -83,7 +83,9 @@ public class WcsRequestParser {
 
 
     TdsRequestedDataset trd = new TdsRequestedDataset(req, "/wcs");
-    try (GridDataset gridDataset = trd.openAsGridDataset(req, res)) {
+    GridDataset gridDataset = null;
+    try {
+      gridDataset = trd.openAsGridDataset(req, res);
       if (gridDataset == null)
         return null;
 
@@ -168,6 +170,10 @@ public class WcsRequestParser {
       throw new thredds.wcs.v1_0_0_1.WcsException(thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Request",
               "Invalid requested operation [" + requestParam + "].");
 
+    } catch (Throwable t) {
+      if (gridDataset != null)
+        gridDataset.close();
+      throw t;
     }
   }
 

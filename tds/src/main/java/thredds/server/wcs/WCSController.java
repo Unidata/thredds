@@ -62,7 +62,7 @@ public class WCSController {
   private TdsContext tdsContext;
 
   private ucar.nc2.util.DiskCache2 diskCache = null;
-  private boolean allow = false, deleteImmediately = true;
+  private boolean allow = true, deleteImmediately = true;
   private boolean allowRemote = false;
   private long maxFileDownloadSize;
 
@@ -79,7 +79,7 @@ public class WCSController {
   @PostConstruct
   public void init() throws ServletException {
 
-    allow = ThreddsConfig.getBoolean("WCS.allow", false);
+    allow = ThreddsConfig.getBoolean("WCS.allow", true);
     logServerStartup.info("WCS:allow= " + allow);
     if (!allow) {
       logServerStartup.info("WCS service not enabled in threddsConfig.xml: ");

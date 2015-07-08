@@ -113,7 +113,7 @@ public class DatasetWriter extends JPanel {
     outputChooser = new NetcdfOutputChooser((Frame)null);
     outputChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
-        writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
+        writeFile((NetcdfOutputChooser.Data) evt.getNewValue());
       }
     });
     outputChooser.addEventListener(new ItemListener() {
@@ -192,7 +192,7 @@ public class DatasetWriter extends JPanel {
 
   ///////////////////////////////////////
 
-  void writeNetcdf(NetcdfOutputChooser.Data data) {
+  void writeFile(NetcdfOutputChooser.Data data) {
     if (ds == null) return;
 
     String filename = data.outputFilename.trim();
@@ -213,18 +213,16 @@ public class DatasetWriter extends JPanel {
 
     if (data.version.isNetdf4format()) {
       if (!Nc4Iosp.isClibraryPresent()) {
-        JOptionPane.showMessageDialog(this, "NetCDF=4 C library is not loaded");
+        JOptionPane.showMessageDialog(this, "NetCDF-4 C library is not loaded");
         return;
       }
     }
 
     WriterTask task = new WriterTask(data);
     ProgressMonitor pm = new ProgressMonitor(task);
-    pm.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("success")) {
-          System.out.printf("%s%n",e.getActionCommand());
-        }
+    pm.addActionListener(e -> {
+      if (e.getActionCommand().equals("success")) {
+        System.out.printf("%s%n",e.getActionCommand());
       }
     });
     pm.start( null, "Writing "+filename, ds.getVariables().size());

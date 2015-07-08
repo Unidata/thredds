@@ -230,7 +230,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   public String getLocation() {
-    return ncd.getLocation();
+    return (ncd != null) ?  ncd.getLocation() : "";
   }
 
   /**

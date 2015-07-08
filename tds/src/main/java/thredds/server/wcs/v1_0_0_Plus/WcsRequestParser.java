@@ -38,7 +38,6 @@ import thredds.servlet.ServletUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import thredds.wcs.v1_0_0_1.WcsException;
 import ucar.nc2.dt.GridDataset;
 
 import java.util.List;
@@ -56,7 +55,7 @@ public class WcsRequestParser {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WcsRequestParser.class);
 
   public static thredds.wcs.v1_0_0_Plus.WcsRequest parseRequest(String version, URI serverURI, HttpServletRequest req, HttpServletResponse res)
-          throws IOException, WcsException {
+          throws IOException, thredds.wcs.v1_0_0_Plus.WcsException {
     // These are handled in WcsServlet. Don't need to validate here.
 //    String serviceParam = ServletUtil.getParameterIgnoreCase( req, "Service" );
 //    String versionParam = ServletUtil.getParameterIgnoreCase( req, "Version" );
@@ -65,7 +64,9 @@ public class WcsRequestParser {
     // General request info
     thredds.wcs.v1_0_0_Plus.WcsRequest.Operation operation;
     TdsRequestedDataset trd = new TdsRequestedDataset(req, "/wcs");
-    try (GridDataset gridDataset = trd.openAsGridDataset(req, res)) {
+    GridDataset gridDataset = null;
+    try {
+      gridDataset = trd.openAsGridDataset(req, res);
       if (gridDataset == null)
         return null;
 
@@ -118,8 +119,10 @@ public class WcsRequestParser {
       } else
         throw new thredds.wcs.v1_0_0_Plus.WcsException(thredds.wcs.v1_0_0_Plus.WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">.");
 
-    } catch (Throwable e) {;
-      throw new RuntimeException(e);
+    } catch (Throwable t) {
+      if (gridDataset != null)
+        gridDataset.close();
+      throw t;
     }
   }
 

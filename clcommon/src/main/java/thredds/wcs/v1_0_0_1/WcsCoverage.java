@@ -244,7 +244,7 @@ public class WcsCoverage
 
         try
         {
-          GridDatatype subset = this.coverage.makeSubset( tRange, zRange, bboxLatLonRect, 1, 1, 1 );
+          GridDatatype subset = this.coverage.makeSubset( tRange, zRange, bboxLatLonRect, 1, 1, 1 );  // LOOK do you need to subset it?
           Array data = subset.readDataSlice( 0, 0, -1, -1 );
 
           GeotiffWriter writer = new GeotiffWriter( tifFile.getPath() );
@@ -257,9 +257,9 @@ public class WcsCoverage
           log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getFullName() + "> along time axis <" + timeRange + ">: " + e.getMessage() );
           throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getFullName() + "]." );
         }
-        catch ( IOException e )
+        catch ( Throwable e )
         {
-          log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.coverage.getFullName() + ">: " + e.getMessage() );
+          log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.coverage.getFullName() + ">: ", e);
           throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getFullName() + "]." );
         }
   
