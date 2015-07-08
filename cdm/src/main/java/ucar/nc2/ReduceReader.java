@@ -51,8 +51,6 @@ import java.util.List;
  * @since 12/16/13
  */
 public class ReduceReader implements ProxyReader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ReduceReader.class);
-
   private Variable orgClient;
   private List<Integer> dims;    // dimension index into original
 
@@ -63,7 +61,7 @@ public class ReduceReader implements ProxyReader {
    */
   ReduceReader(Variable orgClient, List<Integer> dims) {
     this.orgClient = orgClient;
-    this.dims = new ArrayList<Integer>(dims);
+    this.dims = new ArrayList<>(dims);
     Collections.sort(this.dims);
   }
 

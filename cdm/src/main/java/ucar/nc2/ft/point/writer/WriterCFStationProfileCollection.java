@@ -50,7 +50,7 @@ import java.util.*;
 
 /**
  * Write a CF "Discrete Sample" station profile collection file.
- * Example H.3.5. Contiguous ragged array representation of profiles, H.5.3
+ * Example H.3.5. Contiguous ragged array representation of station profiles, H.5.3
  * *
  * @author caron
  * @since 7/14/2014

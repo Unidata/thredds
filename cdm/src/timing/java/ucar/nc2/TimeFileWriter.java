@@ -54,8 +54,13 @@ public class TimeFileWriter {
   public static void timeFileWriter( String location, String fileOut) throws IOException {
     long startTime = System.currentTimeMillis();
 
-    NetcdfFile ds = NetcdfDataset.openFile( location, null);
-    NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ds, fileOut, false, 0);
+    try (NetcdfFile ds = NetcdfDataset.openFile( location, null)) {
+      FileWriter2 writer = new FileWriter2(ds, fileOut, NetcdfFileWriter.Version.netcdf3, null);
+      NetcdfFile ncfileOut = writer.write();
+      ncfileOut.close();
+    }
+
+   // NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ds, fileOut, false, 0);
     long diff = System.currentTimeMillis() - startTime;   // msecs
 
     File result = new File( fileOut);

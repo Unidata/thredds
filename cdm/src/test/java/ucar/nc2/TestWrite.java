@@ -70,14 +70,14 @@ public class TestWrite {
 
     // add a 2D string-valued variable: char names(names, 80)
     Dimension names = writer.addDimension(null, "names", 3);
-    writer.addVariable(null, "names", DataType.CHAR, "names svar_len");
-    writer.addVariable(null, "names2", DataType.CHAR, "names svar_len");
+    Variable namesVar = writer.addVariable(null, "names", DataType.CHAR, "names svar_len");
+    Variable names2Var = writer.addVariable(null, "names2", DataType.CHAR, "names svar_len");
 
     // add a scalar variable
-    writer.addVariable(null, "scalar", DataType.DOUBLE, new ArrayList<Dimension>());
+    Variable scalarVar = writer.addVariable(null, "scalar", DataType.DOUBLE, new ArrayList<>());
 
     // signed byte
-    writer.addVariable(null, "bvar", DataType.BYTE, "lat");
+    Variable bVar = writer.addVariable(null, "bvar", DataType.BYTE, "lat");
 
     // add global attributes
     writer.addGroupAttribute(null, new Attribute("yo", "face"));
@@ -692,76 +692,63 @@ public class TestWrite {
   @Test
   public void testNC3WriteOld() throws IOException {
     String filename = TestLocal.temporaryDataDir + "testWrite.nc";
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false);
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
+    ncfile.setFill(false);
 
     // define dimensions
     Dimension latDim = ncfile.addDimension("lat", 64);
     Dimension lonDim = ncfile.addDimension("lon", 128);
 
     // define Variables
-    ArrayList dims = new ArrayList();
-    dims.add(latDim);
-    dims.add(lonDim);
-
-    ncfile.addVariable("temperature", DataType.DOUBLE, dims);
+    Variable tempVar = ncfile.addVariable("temperature", DataType.DOUBLE, "lat lon");
     ncfile.addVariableAttribute("temperature", "units", "K");
 
     Array data = Array.factory(DataType.INT, new int[]{3}, new int[]{1, 2, 3});
-    ncfile.addVariableAttribute("temperature", "scale", data);
-    ncfile.addVariableAttribute("temperature", "versionD", new Double(1.2));
-    ncfile.addVariableAttribute("temperature", "versionF", new Float(1.2));
-    ncfile.addVariableAttribute("temperature", "versionI", new Integer(1));
-    ncfile.addVariableAttribute("temperature", "versionS", new Short((short) 2));
-    ncfile.addVariableAttribute("temperature", "versionB", new Byte((byte) 3));
+    ncfile.addVariableAttribute(tempVar, new Attribute("scale", data));
+    ncfile.addVariableAttribute("temperature", "versionD", 1.2);
+    ncfile.addVariableAttribute("temperature", "versionF", 1.2f);
+    ncfile.addVariableAttribute("temperature", "versionI", 1);
+    ncfile.addVariableAttribute("temperature", "versionS", (short) 2);
+    ncfile.addVariableAttribute("temperature", "versionB", (byte) 3);
 
     ncfile.addVariableAttribute("temperature", "versionString", "1.2");
 
     // add string-valued variables
     Dimension svar_len = ncfile.addDimension("svar_len", 80);
-    dims = new ArrayList();
-    dims.add(svar_len);
-    ncfile.addVariable("svar", DataType.CHAR, dims);
-    ncfile.addVariable("svar2", DataType.CHAR, dims);
+    Variable sVar = ncfile.addVariable("svar", DataType.CHAR, "svar_len");
+    Variable sVar2 = ncfile.addVariable("svar2", DataType.CHAR, "svar_len");
 
     // string array
     Dimension names = ncfile.addDimension("names", 3);
-    ArrayList dima = new ArrayList();
-    dima.add(names);
-    dima.add(svar_len);
 
-    ncfile.addVariable("names", DataType.CHAR, dima);
-    ncfile.addVariable("names2", DataType.CHAR, dima);
+    Variable namesVar = ncfile.addVariable("names", DataType.CHAR, "names svar_len");
+    Variable names2Var = ncfile.addVariable("names2", DataType.CHAR, "names svar_len");
 
     // how about a scalar variable?
-    ncfile.addVariable("scalar", DataType.DOUBLE, new ArrayList());
+    Variable scalarVar = ncfile.addVariable("scalar", DataType.DOUBLE, "");
 
     // signed byte
-    ncfile.addVariable("bvar", DataType.BYTE, "lat");
+    Variable bVar = ncfile.addVariable("bvar", DataType.BYTE, "lat");
 
     // add global attributes
     ncfile.addGlobalAttribute("yo", "face");
-    ncfile.addGlobalAttribute("versionD", new Double(1.2));
-    ncfile.addGlobalAttribute("versionF", new Float(1.2));
-    ncfile.addGlobalAttribute("versionI", new Integer(1));
-    ncfile.addGlobalAttribute("versionS", new Short((short) 2));
-    ncfile.addGlobalAttribute("versionB", new Byte((byte) 3));
+    ncfile.addGlobalAttribute("versionD", 1.2);
+    ncfile.addGlobalAttribute("versionF", 1.2f);
+    ncfile.addGlobalAttribute("versionI", 1);
+    ncfile.addGlobalAttribute("versionS", (short) 2);
+    ncfile.addGlobalAttribute("versionB", (byte) 3);
 
     // test some errors
     try {
       Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[]{1}, null);
-      ncfile.addGlobalAttribute("versionC", bad);
+      ncfile.addGroupAttribute(null, new Attribute("versionC", bad));
       assert (false);
     } catch (IllegalArgumentException e) {
       assert (true);
     }
 
     // create the file
-    try {
-      ncfile.create();
-    } catch (IOException e) {
-      System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
-      assert (false);
-    }
+    ncfile.create();
 
     // write some data
     ArrayDouble A = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
@@ -776,7 +763,7 @@ public class TestWrite {
 
     int[] origin = new int[2];
     try {
-      ncfile.write("temperature", origin, A);
+      ncfile.write(tempVar, origin, A);
     } catch (IOException e) {
       System.err.println("ERROR writing file");
       assert (false);
@@ -795,7 +782,7 @@ public class TestWrite {
       ac.setChar(ima.set(j), val.charAt(j));
 
     try {
-      ncfile.write("svar", origin1, ac);
+      ncfile.write(sVar, origin1, ac);
     } catch (IOException e) {
       System.err.println("ERROR writing Achar");
       assert (false);
@@ -811,7 +798,7 @@ public class TestWrite {
       barray.setByte(j, (byte) (start + j));
 
     try {
-      ncfile.write("bvar", barray);
+      ncfile.write(bVar, barray);
     } catch (IOException e) {
       System.err.println("ERROR writing bvar");
       assert (false);
@@ -824,7 +811,7 @@ public class TestWrite {
     try {
       ArrayChar ac2 = new ArrayChar.D1(svar_len.getLength());
       ac2.setString("Two pairs of ladies stockings!");
-      ncfile.write("svar2", origin1, ac2);
+      ncfile.write(sVar2, origin1, ac2);
     } catch (IOException e) {
       System.err.println("ERROR writing Achar2");
       assert (false);
@@ -841,7 +828,7 @@ public class TestWrite {
       ac2.setString(ima.set(0), "No pairs of ladies stockings!");
       ac2.setString(ima.set(1), "One pair of ladies stockings!");
       ac2.setString(ima.set(2), "Two pairs of ladies stockings!");
-      ncfile.write("names", origin, ac2);
+      ncfile.write(namesVar, origin, ac2);
     } catch (IOException e) {
       System.err.println("ERROR writing Achar3");
       assert (false);
@@ -857,7 +844,7 @@ public class TestWrite {
       ac2.setString(0, "0 pairs of ladies stockings!");
       ac2.setString(1, "1 pair of ladies stockings!");
       ac2.setString(2, "2 pairs of ladies stockings!");
-      ncfile.write("names2", origin, ac2);
+      ncfile.write(names2Var, origin, ac2);
     } catch (IOException e) {
       System.err.println("ERROR writing Achar4");
       assert (false);
@@ -871,7 +858,7 @@ public class TestWrite {
     try {
       ArrayDouble.D0 datas = new ArrayDouble.D0();
       datas.set(222.333);
-      ncfile.write("scalar", datas);
+      ncfile.write(scalarVar, datas);
     } catch (IOException e) {
       System.err.println("ERROR writing scalar");
       assert (false);

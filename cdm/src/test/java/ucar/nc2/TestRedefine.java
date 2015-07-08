@@ -34,155 +34,142 @@ package ucar.nc2;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 
-public class TestRedefine extends TestCase {
-
-  public TestRedefine( String name) {
-    super(name);
-  }
+public class TestRedefine {
 
   String filename = TestLocal.temporaryDataDir + "testRedefine.nc";
   String filename2 = TestLocal.temporaryDataDir + "testRedefine2.nc";
 
+  @Test
   public void testRedefine() throws IOException, InvalidRangeException {
-    NetcdfFileWriteable file;
-    file = NetcdfFileWriteable.createNew(filename, true);
+    try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
 
-    file.addGlobalAttribute("Conventions", "globulate");
-    file.addGlobalAttribute(CDM.HISTORY, "lava");
-    file.addGlobalAttribute("att8", "12345678");
+      file.addGlobalAttribute("Conventions", "globulate");
+      file.addGlobalAttribute(CDM.HISTORY, "lava");
+      file.addGlobalAttribute("att8", "12345678");
 
-    Dimension time = file.addDimension("time", 4, true, false, false);
-    Dimension dims[] = {time};
+      file.addDimension(null, "time", 4, true, false, false);
 
     /* Add time */
-    file.addVariable("time", DataType.DOUBLE, dims);
-    file.addVariableAttribute("time", "quantity", "time");
-    file.addVariableAttribute("time", "units", "s");
+      file.addVariable("time", DataType.DOUBLE, "time");
+      file.addVariableAttribute("time", "quantity", "time");
+      file.addVariableAttribute("time", "units", "s");
 
     /* Add a dependent variable */
-    file.addVariable("h", DataType.DOUBLE, dims);
-    file.addVariableAttribute("h", "quantity", "Height");
-    file.addVariableAttribute("h", "units", "m");
-    try {
+      file.addVariable("h", DataType.DOUBLE, "time");
+      file.addVariableAttribute("h", "quantity", "Height");
+      file.addVariableAttribute("h", "units", "m");
       file.create();
-    } catch (IOException e) {
-      e.printStackTrace(System.err);
-      fail("IOException on creation");
+
+      double td[] = {1.0, 2.0, 3.0, 4.0};
+      double hd[] = {0.0, 0.1, 0.3, 0.9};
+      ArrayDouble.D1 ta = new ArrayDouble.D1(4);
+      ArrayDouble.D1 ha = new ArrayDouble.D1(4);
+      for (int i = 0; i < 4; i++) {
+        ta.set(i, td[i]);
+        ha.set(i, hd[i]);
+      }
+
+      file.write("time", ta);
+      file.write("h", ha);
+
+      //////////////////////////////////////////
+      file.setRedefineMode(true);
+
+      file.renameGlobalAttribute(CDM.HISTORY, "lamp");
+      file.addGlobalAttribute(CDM.HISTORY, "final");
+      file.deleteGlobalAttribute("Conventions");
+
+      file.addVariableAttribute("h", "units", "meters"); // duplicates existing
+      file.addVariableAttribute("h", "new", "stuff");
+      file.renameVariableAttribute(file.findVariable("time"), "quantity", "quality");
+
+      file.renameVariable("time", "date");
+      file.renameDimension(null, "time", "date");
+
+      /////////////////////////////////////////////////
+      file.setRedefineMode(false);
+
+      Attribute att = file.findGlobalAttribute("Conventions");
+      assert att == null;
+      att = file.findGlobalAttribute(CDM.HISTORY);
+      assert att.getStringValue().equals("final");
+      att = file.findGlobalAttribute("lamp");
+      assert att.getStringValue().equals("lava");
+
+      Variable v = file.findVariable("h");
+      att = v.findAttribute("units");
+      assert att != null;
+      assert att.getStringValue().equals("meters");
+
+      assert file.findVariable("time") == null;
+      v = file.findVariable("date");
+      assert v != null;
+      assert v.getRank() == 1;
+      assert null != v.findAttribute("quality");
+
+      Dimension d = v.getDimension(0);
+      assert d.getShortName().equals("date");
+
+      assert file.findDimension("time") == null;
+      Dimension dim = file.findDimension("date");
+      assert dim != null;
+      assert dim.getShortName().equals("date");
+      assert dim.equals(d);
+      assert dim == d;
     }
 
-    double td[] = {1.0, 2.0, 3.0, 4.0};
-    double hd[] = {0.0, 0.1, 0.3, 0.9};
-    ArrayDouble.D1 ta = new ArrayDouble.D1(4);
-    ArrayDouble.D1 ha = new ArrayDouble.D1(4);
-    for (int i = 0; i < 4; i++) {
-      ta.set(i, td[i]);
-      ha.set(i, hd[i]);
+    try (NetcdfFileWriter file = NetcdfFileWriter.openExisting(filename)) {
+      file.setRedefineMode(true);
+
+      file.addGlobalAttribute("att8", "1234567");
+
+      /////////////////////////////////////////////////
+      boolean rewriteAll = file.setRedefineMode(false);
+      assert !rewriteAll;
+
+      Attribute att = file.findGlobalAttribute("att8");
+      assert att != null;
+      assert att.getStringValue().equals("1234567") : att.getStringValue();
     }
 
-    file.write("time", ta);
-    file.write("h", ha);
+    try (NetcdfFileWriter file = NetcdfFileWriter.openExisting(filename)) {
+      file.setRedefineMode(true);
 
-    //////////////////////////////////////////
-    file.setRedefineMode(true);
+      file.addGlobalAttribute("att8", "123456789");
 
-    file.renameGlobalAttribute(CDM.HISTORY, "lamp");
-    file.addGlobalAttribute(CDM.HISTORY, "final");
-    file.deleteGlobalAttribute("Conventions");
+      /////////////////////////////////////////////////
+      boolean rewritten = file.setRedefineMode(false);
+      assert rewritten;
 
-    file.addVariableAttribute("h", "units", "meters"); // duplicates existing
-    file.addVariableAttribute("h", "new", "stuff");
-    file.renameVariableAttribute("time", "quantity", "quality");
-
-    file.renameVariable("time", "date");
-    file.renameDimension("time", "date");
-
-    /////////////////////////////////////////////////
-    file.setRedefineMode(false);
-
-    Attribute att = file.findGlobalAttribute("Conventions");
-    assert att == null;
-    att = file.findGlobalAttribute(CDM.HISTORY);
-    assert att.getStringValue().equals("final");
-    att = file.findGlobalAttribute("lamp");
-    assert att.getStringValue().equals("lava");
-    
-    Variable v = file.findVariable("h");
-    att = v.findAttribute("units");
-    assert att != null;
-    assert att.getStringValue().equals("meters");
-
-    assert file.findVariable("time") == null;
-    v = file.findVariable("date");
-    assert v != null;
-    assert v.getRank() == 1;
-    assert null != v.findAttribute("quality");
-    
-    Dimension d = v.getDimension(0);
-    assert d.getShortName().equals("date");
-
-    assert file.findDimension("time") == null;
-    Dimension dim = file.findDimension("date");
-    assert dim != null;
-    assert dim.getShortName().equals("date");
-    assert dim.equals(d);
-    assert dim == d;
-
-    file.close();
-
-    file = NetcdfFileWriteable.openExisting(filename, true);
-    file.setRedefineMode(true);
-
-    file.addGlobalAttribute("att8", "1234567");
-
-    /////////////////////////////////////////////////
-    boolean rewriteAll = file.setRedefineMode(false);
-    assert !rewriteAll;
-
-    att = file.findGlobalAttribute("att8");
-    assert att != null;
-    assert att.getStringValue().equals("1234567") : att.getStringValue();
-
-    file.close();
-
-    file = NetcdfFileWriteable.openExisting(filename, true);
-    file.setRedefineMode(true);
-
-    file.addGlobalAttribute("att8", "123456789");
-
-    /////////////////////////////////////////////////
-    rewriteAll = file.setRedefineMode(false);
-    assert rewriteAll;
-
-    att = file.findGlobalAttribute("att8");
-    assert att != null;
-    assert att.getStringValue().equals("123456789") : att.getStringValue();
-
-    file.close();
+      Attribute att = file.findGlobalAttribute("att8");
+      assert att != null;
+      assert att.getStringValue().equals("123456789") : att.getStringValue();
+    }
   }
 
+  @Test
   public void testRewriteHeader3() throws IOException, InvalidRangeException {
-    NetcdfFileWriteable file;
-    file = NetcdfFileWriteable.createNew(filename2, true);
-    file.addGlobalAttribute("att8", "1234567890");
-    file.setExtraHeaderBytes(10);
-    file.create();
+    try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename2)) {
+      file.addGlobalAttribute("att8", "1234567890");
+      file.setExtraHeaderBytes(10);
+      file.create();
 
-    file.setRedefineMode(true);
-    file.addGlobalAttribute("att8", "123456789012345");
-    boolean rewriteAll = file.setRedefineMode(false);
-    assert !rewriteAll;
+      file.setRedefineMode(true);
+      file.addGlobalAttribute("att8", "123456789012345");
+      boolean rewriteAll = file.setRedefineMode(false);
+      assert !rewriteAll;
 
-    Attribute att = file.findGlobalAttribute("att8");
-    assert att != null;
-    assert att.getStringValue().equals("123456789012345") : att.getStringValue();
+      Attribute att = file.findGlobalAttribute("att8");
+      assert att != null;
+      assert att.getStringValue().equals("123456789012345") : att.getStringValue();
 
-    file.close();
+    }
   }
 
 }

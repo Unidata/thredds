@@ -46,12 +46,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.IO;
 import ucar.unidata.test.util.TestDir;
 
-/**
- * Class Description.
- *
- * @author caron
- * @since Jun 16, 2008
- */
 public class TestWriteMiscProblems extends TestCase {
 
   public TestWriteMiscProblems(String name) {
@@ -88,17 +82,14 @@ public class TestWriteMiscProblems extends TestCase {
 
     /* enter define mode */
     String filename = TestLocal.temporaryDataDir + "testCharMultidim.nc";
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, true);
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, true);
 
     /* define dimensions */
     Dimension Time_dim = ncfile.addUnlimitedDimension("Time");
     Dimension DateStrLen_dim = ncfile.addDimension("DateStrLen", DateStrLen_len);
 
     /* define variables */
-    List<Dimension> Times_dimlist = new ArrayList<Dimension>();
-    Times_dimlist.add(Time_dim);
-    Times_dimlist.add(DateStrLen_dim);
-    ncfile.addVariable("Times", DataType.CHAR, Times_dimlist);
+    ncfile.addVariable("Times", DataType.CHAR, "Time DateStrLen");
     ncfile.create();
 
     /* assign variable data */
@@ -136,7 +127,8 @@ public class TestWriteMiscProblems extends TestCase {
 
       ncd.finish();
 
-      NetcdfFile ncdnew = ucar.nc2.FileWriter.writeToFile(ncd, outName, true);
+      FileWriter2 writer = new FileWriter2(ncd, outName, NetcdfFileWriter.Version.netcdf3, null);
+      NetcdfFile ncdnew = writer.write();
       ncdnew.close();
       ncd.close();
 

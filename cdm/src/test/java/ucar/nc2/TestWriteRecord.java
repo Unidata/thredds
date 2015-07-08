@@ -331,53 +331,43 @@ public class TestWriteRecord extends TestCase  {
 
   // make an example writing records
   public void testNC3WriteWithRecord() throws IOException {
-    NetcdfFileWriteable ncfile = new NetcdfFileWriteable(TestLocal.temporaryDataDir + "writeRecordExample.nc", false);
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(TestLocal.temporaryDataDir + "writeRecordExample.nc", false);
 
     // define dimensions, including unlimited
     Dimension latDim = ncfile.addDimension("lat", 64);
     Dimension lonDim = ncfile.addDimension("lon", 128);
-    Dimension timeDim = ncfile.addDimension("time", 0, true, true, false);
+    Dimension timeDim = ncfile.addDimension(null, "time", 0, true, true, false);
 
     // define Variables
-    Dimension[] dim3 = new Dimension[3];
-    dim3[0] = timeDim;
-    dim3[1] = latDim;
-    dim3[2] = lonDim;
 
     // double T(time, lat, lon) ;
     //   T:long_name="surface temperature" ;
     //   T:units = "degC" ;
-    ncfile.addVariable("T", DataType.DOUBLE, dim3);
+    Variable tVar = ncfile.addVariable("T", DataType.DOUBLE, "time lat lon");
     ncfile.addVariableAttribute("T", CDM.LONG_NAME, "surface temperature");
     ncfile.addVariableAttribute("T", "units", "degC");
 
 
     // float lat(lat) ;
     //   lat:units = "degrees_north" ;
-    ncfile.addVariable("lat", DataType.FLOAT, new Dimension[] {latDim});
+    ncfile.addVariable("lat", DataType.FLOAT, "lat");
     ncfile.addVariableAttribute("lat", "units", "degrees_north");
 
     // float lon(lon) ;
     // lon:units = "degrees_east" ;
-    ncfile.addVariable("lon", DataType.FLOAT, new Dimension[] {lonDim});
+    ncfile.addVariable("lon", DataType.FLOAT, "lon");
     ncfile.addVariableAttribute("lon", "units", "degrees_east");
 
     // int time(time) ;
     //   time:units = "hours" ;
-    ncfile.addVariable("time", DataType.INT, new Dimension[] {timeDim});
+    Variable timeVar = ncfile.addVariable("time", DataType.INT, "time");
     ncfile.addVariableAttribute("time", "units", "hours");
 
     //  :title = "Example Data" ;
     ncfile.addGlobalAttribute("title", "Example Data");
 
     // create the file
-    try {
-      ncfile.create();
-    }  catch (IOException e) {
-      System.err.println("ERROR creating file");
-      e.printStackTrace();
-      return;
-    }
+    ncfile.create();
     System.out.println( "ncfile = "+ ncfile);
 
     // now write one record at a time
@@ -399,8 +389,8 @@ public class TestWriteRecord extends TestCase  {
       origin[0] = time;
       timeOrigin[0] = time;
       try {
-        ncfile.write("T", origin, data);
-        ncfile.write("time", timeOrigin, timeData);
+        ncfile.write(tVar, origin, data);
+        ncfile.write(timeVar, timeOrigin, timeData);
       } catch (IOException e) {
         System.err.println("ERROR writing file");
       } catch (InvalidRangeException e) {

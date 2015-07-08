@@ -53,7 +53,7 @@ public class TestWriteRecordStructure extends TestCase  {
   }
 
   public void testWriteRecordStructure() throws IOException, InvalidRangeException {
-    NetcdfFileWriteable writeableFile = NetcdfFileWriteable.createNew(fileName);
+    NetcdfFileWriter writeableFile = NetcdfFileWriter.createNew(fileName, true);
 
     // define dimensions, including unlimited
     Dimension latDim = writeableFile.addDimension("lat", 3);
@@ -61,26 +61,21 @@ public class TestWriteRecordStructure extends TestCase  {
     Dimension timeDim = writeableFile.addUnlimitedDimension("time");
 
     // define Variables
-    Dimension[] dim3 = new Dimension[3];
-    dim3[0] = timeDim;
-    dim3[1] = latDim;
-    dim3[2] = lonDim;
-
-    writeableFile.addVariable("lat", DataType.FLOAT, new Dimension[] {latDim});
+    writeableFile.addVariable("lat", DataType.FLOAT, "lat");
     writeableFile.addVariableAttribute("lat", "units", "degrees_north");
 
-    writeableFile.addVariable("lon", DataType.FLOAT, new Dimension[] {lonDim});
+    writeableFile.addVariable("lon", DataType.FLOAT, "lon");
     writeableFile.addVariableAttribute("lon", "units", "degrees_east");
 
-    writeableFile.addVariable("rh", DataType.INT, dim3);
+    Variable rhVar = writeableFile.addVariable("rh", DataType.INT, "time lat lon");
     writeableFile.addVariableAttribute("rh", CDM.LONG_NAME, "relative humidity");
     writeableFile.addVariableAttribute("rh", "units", "percent");
 
-    writeableFile.addVariable("T", DataType.DOUBLE, dim3);
+    Variable tVar = writeableFile.addVariable("T", DataType.DOUBLE, "time lat lon");
     writeableFile.addVariableAttribute("T", CDM.LONG_NAME, "surface temperature");
     writeableFile.addVariableAttribute("T", "units", "degC");
 
-    writeableFile.addVariable("time", DataType.INT, new Dimension[] {timeDim});
+    Variable timeVar = writeableFile.addVariable("time", DataType.INT, "time");
     writeableFile.addVariableAttribute("time", "units", "hours since 1990-01-01");
 
     // create the file
@@ -116,9 +111,9 @@ public class TestWriteRecordStructure extends TestCase  {
       time_origin[0] = time;
       origin[0] = time;
 
-      writeableFile.write("rh", origin, rhData);
-      writeableFile.write("T", origin, tempData);
-      writeableFile.write("time", time_origin, timeData);
+      writeableFile.write(rhVar, origin, rhData);
+      writeableFile.write(tVar, origin, tempData);
+      writeableFile.write(timeVar, time_origin, timeData);
     }
 
     // all done

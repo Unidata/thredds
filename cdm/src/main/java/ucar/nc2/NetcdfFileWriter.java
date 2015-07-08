@@ -129,6 +129,12 @@ public class NetcdfFileWriter implements AutoCloseable {
     return new NetcdfFileWriter(version, location, false, null);
   }
 
+  static public NetcdfFileWriter createNew(String location, boolean fill) throws IOException {
+    NetcdfFileWriter result = new NetcdfFileWriter(Version.netcdf3, location, false, null);
+    result.setFill(fill);
+    return result;
+  }
+
   /**
    * Create a new Netcdf file, with fill mode true.
    *
@@ -154,7 +160,7 @@ public class NetcdfFileWriter implements AutoCloseable {
   private Version version;
   private boolean isNewFile;
   private boolean isLargeFile;
-  private boolean fill;
+  private boolean fill = true;
   private int extraHeader;
   private long preallocateSize;
   private Map<String,String> varRenameMap = new HashMap<>();
@@ -300,12 +306,20 @@ public class NetcdfFileWriter implements AutoCloseable {
     return ncfile.findVariable(fullNameEscaped);
   }
 
+  public Dimension findDimension(String dimName) {
+    return ncfile.findDimension(dimName);
+  }
+
   public Attribute findGlobalAttribute(String attName) {
     return ncfile.getRootGroup().findAttribute(attName);
   }
 
   ////////////////////////////////////////////
   //// use these calls in define mode
+
+  public Dimension addDimension(String dimName, int length) {
+    return addDimension(null, dimName, length, true, false, false);
+  }
 
   /**
    * Add a shared Dimension to the file. Must be in define mode.
@@ -409,6 +423,14 @@ public class NetcdfFileWriter implements AutoCloseable {
   }
 
 
+  public Attribute addGlobalAttribute(String name, String value) {
+    return addGroupAttribute(null, new Attribute(name, value));
+  }
+
+  public Attribute addGlobalAttribute(String name, Number value) {
+    return addGroupAttribute(null, new Attribute(name, value));
+  }
+
   /**
    * Add a Global attribute to the file. Must be in define mode.
    *
@@ -443,6 +465,10 @@ public class NetcdfFileWriter implements AutoCloseable {
     return td;
   }
 
+  public Attribute deleteGlobalAttribute(String attName) {
+    return deleteGroupAttribute(null, attName);
+  }
+
   /**
    * Delete a group Attribute. Must be in define mode.
    *
@@ -459,6 +485,9 @@ public class NetcdfFileWriter implements AutoCloseable {
     return att;
   }
 
+  public Attribute renameGlobalAttribute(String oldName, String newName) {
+    return renameGroupAttribute(null, oldName, newName);
+  }
   /**
    * Rename a group Attribute. Must be in define mode.
    *
@@ -467,7 +496,7 @@ public class NetcdfFileWriter implements AutoCloseable {
    * @param newName rename to this
    * @return renamed Attribute, or null if not found
    */
-  public Attribute renameGlobalAttribute(Group g, String oldName, String newName) {
+  public Attribute renameGroupAttribute(Group g, String oldName, String newName) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
 
     if (!isValidObjectName(newName)) {
@@ -486,6 +515,10 @@ public class NetcdfFileWriter implements AutoCloseable {
     return att;
   }
 
+  public Variable addVariable(String shortName, DataType dataType, String dimString) {
+    return addVariable(null, shortName, dataType, dimString);
+  }
+
   /**
    * Add a variable to the file. Must be in define mode.
    *
@@ -499,7 +532,6 @@ public class NetcdfFileWriter implements AutoCloseable {
   public Variable addVariable(Group g, String shortName, DataType dataType, String dimString) {
     Group parent = (g == null) ? ncfile.getRootGroup() : g;
     return addVariable(g, null, shortName, dataType, Dimension.makeDimensionsList(parent, dimString));
-
   }
 
   /**
@@ -715,6 +747,13 @@ public class NetcdfFileWriter implements AutoCloseable {
     return v;
   }
 
+  public boolean addVariableAttribute(String varName, String name, String value) {
+    return addVariableAttribute(findVariable(varName), new Attribute(name, value));
+  }
+
+  public boolean addVariableAttribute(String varName, String name, Number value) {
+    return addVariableAttribute(findVariable(varName), new Attribute(name, value));
+  }
   /**
    * Add an attribute to the named Variable. Must be in define mode.
    *
@@ -928,6 +967,9 @@ public class NetcdfFileWriter implements AutoCloseable {
   ////////////////////////////////////////////
   //// use these calls to write data to the file
 
+  public void write(String varname, Array values) throws java.io.IOException, InvalidRangeException {
+    write(findVariable(varname), values);
+  }
   /**
    * Write data to the named variable, origin assumed to be 0. Must not be in define mode.
    *

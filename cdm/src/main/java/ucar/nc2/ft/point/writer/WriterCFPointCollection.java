@@ -86,7 +86,6 @@ public class WriterCFPointCollection extends CFPointWriter {
     // NOOP
   }
 
-
   /////////////////////////////////////////////////////////
   // writing data
 

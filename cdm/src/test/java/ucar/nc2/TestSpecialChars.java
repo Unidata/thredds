@@ -45,12 +45,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.dataset.NetcdfDataset;
 
-/**
- * @author caron
- * @since Aug 7, 2007
- */
 public class TestSpecialChars extends TestCase {
-  private boolean show = false;
 
   public TestSpecialChars( String name) {
     super(name);
@@ -60,20 +55,20 @@ public class TestSpecialChars extends TestCase {
 
   public void testWriteAndRead() throws IOException, InvalidRangeException {
     String filename = TestLocal.temporaryDataDir +"testSpecialChars.nc";
-    NetcdfFileWriteable ncfilew = NetcdfFileWriteable.createNew(filename, true);
+    NetcdfFileWriter ncfilew = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
     ncfilew.addGlobalAttribute("omy", trouble);
 
     ncfilew.addDimension("t", 1);
 
     // define Variables
-    ncfilew.addStringVariable("t",new ArrayList<Dimension>(), trouble.length());
+    Variable tvar = ncfilew.addStringVariable(null, "t", new ArrayList<>(), trouble.length());
     ncfilew.addVariableAttribute("t", "yow", trouble);
 
     ncfilew.create();
 
     Array data = Array.factory(DataType.STRING, new int[0]);
     data.setObject( data.getIndex(), trouble);
-    ncfilew.writeStringData("t", data);
+    ncfilew.writeStringData(tvar, data);
     ncfilew.close();
 
     NetcdfFile ncfile = NetcdfFile.open(filename, null);

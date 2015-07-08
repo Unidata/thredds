@@ -27,6 +27,8 @@ import ucar.nc2.ft2.coverage.grid.GridCoordSys;
 import ucar.nc2.ft2.coverage.grid.GridCoverage;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.util.IO;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,9 +83,9 @@ public class NcssGridController extends AbstractNcssController {
 
       if (!params.hasLatLonPoint()) {
         handleRequestGrid(res, params, datasetPath, gcd);
-      } /* else {
+      } else {
         handleRequestGridAsPoint(res, params, datasetPath, gcd);
-      } */
+      }
     }
   }
 
@@ -109,7 +111,7 @@ public class NcssGridController extends AbstractNcssController {
       }
 
     GridResponder gds = new GridResponder(gcd, datasetPath, ncssDiskCache);
-    File netcdfResult = gds.getResponseFile(params, version);
+    File netcdfResult = gds.getGridResponseFile(params, version);
 
     // filename download attachment
     String suffix = (version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc";
@@ -131,7 +133,7 @@ public class NcssGridController extends AbstractNcssController {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
-  /* void handleRequestGridAsPoint(HttpServletResponse res, NcssParamsBean params, String datasetPath, GridCoverageDataset gcd)
+  void handleRequestGridAsPoint(HttpServletResponse res, NcssParamsBean params, String datasetPath, GridCoverageDataset gcd)
           throws IOException, ParseException, InvalidRangeException, NcssException {
 
     // use the first grid
@@ -151,7 +153,7 @@ public class NcssGridController extends AbstractNcssController {
     GridAsPointResponder pds =  new GridAsPointResponder(gcd, params, ncssDiskCache, format, res.getOutputStream());
     setResponseHeaders(res, pds.getResponseHeaders(gcd, format, datasetPath));
     pds.respond(params);
-  }  */
+  }
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
   public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, NcssException {

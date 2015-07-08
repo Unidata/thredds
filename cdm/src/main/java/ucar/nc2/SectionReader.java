@@ -45,7 +45,6 @@ import java.io.IOException;
  */
 
 class SectionReader implements ProxyReader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SectionReader.class);
   private Section orgSection;   // section of the original
   private Variable orgClient;
 

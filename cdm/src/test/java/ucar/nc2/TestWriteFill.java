@@ -52,61 +52,41 @@ public class TestWriteFill  extends TestCase {
 
   public void testCreateWithFill() throws IOException {
     String filename = TestLocal.temporaryDataDir +"testWriteFill.nc";
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, true);
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
 
     // define dimensions
     Dimension latDim = ncfile.addDimension("lat", 6);
     Dimension lonDim = ncfile.addDimension("lon", 12);
-    Dimension timeDim = ncfile.addDimension("time", 0, true, true, false);
-
-    ArrayList dims = new ArrayList();
-    dims.add( latDim);
-    dims.add( lonDim);
-
-    ArrayList rdims = new ArrayList();
-    rdims.add( timeDim);
-    rdims.add( latDim);
-    rdims.add( lonDim);
+    Dimension timeDim = ncfile.addDimension(null, "time", 0, true, true, false);
 
     // define Variables
-    ncfile.addVariable("temperature", DataType.DOUBLE, dims);
+    ncfile.addVariable("temperature", DataType.DOUBLE, "lat lon");
     ncfile.addVariableAttribute("temperature", "units", "K");
-    ncfile.addVariableAttribute("temperature", "_FillValue", new Double(-999.9));
+    ncfile.addVariableAttribute("temperature", "_FillValue", -999.9);
 
     // define Variables
-    ncfile.addVariable("lat", DataType.DOUBLE, new Dimension[] { latDim});
-    ncfile.addVariable("lon", DataType.FLOAT, new Dimension[] { latDim});
-    ncfile.addVariable("shorty", DataType.SHORT, new Dimension[] { latDim});
+    ncfile.addVariable("lat", DataType.DOUBLE, "lat");
+    ncfile.addVariable("lon", DataType.FLOAT, "lon");
+    ncfile.addVariable("shorty", DataType.SHORT, "lat");
 
-    ncfile.addVariable("rtemperature", DataType.INT, rdims);
+    Variable rtempVar = ncfile.addVariable("rtemperature", DataType.INT, "time lat lon");
     ncfile.addVariableAttribute("rtemperature", "units", "K");
-    ncfile.addVariableAttribute("rtemperature", "_FillValue", new Integer(-9999));
+    ncfile.addVariableAttribute("rtemperature", "_FillValue", -9999);
 
-    ncfile.addVariable("rdefault", DataType.INT, rdims);
+    ncfile.addVariable("rdefault", DataType.INT, "time lat lon");
 
     // add string-valued variables
     Dimension svar_len = ncfile.addDimension("svar_len", 80);
-    dims = new ArrayList();
-    dims.add( svar_len);
-    ncfile.addVariable("svar", DataType.CHAR, dims);
-    ncfile.addVariable("svar2", DataType.CHAR, dims);
+    ncfile.addVariable("svar", DataType.CHAR, "lat lon");
+    ncfile.addVariable("svar2", DataType.CHAR, "lat lon");
 
     // string array
     Dimension names = ncfile.addDimension("names", 3);
-    ArrayList dima = new ArrayList();
-    dima.add(names);
-    dima.add(svar_len);
-
-    ncfile.addVariable("names", DataType.CHAR, dima);
-    ncfile.addVariable("names2", DataType.CHAR, dima);
+    ncfile.addVariable("names", DataType.CHAR, "names svar_len");
+    ncfile.addVariable("names2", DataType.CHAR, "names svar_len");
 
     // create the file
-    try {
-      ncfile.create();
-    }  catch (IOException e) {
-      System.err.println("ERROR creating file "+ncfile.getLocation()+"\n"+e);
-      assert(false);
-    }
+    ncfile.create();
 
     // write some data
     ArrayDouble A = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength()/2);
@@ -121,7 +101,7 @@ public class TestWriteFill  extends TestCase {
 
     int[] origin = new int[3];
     try {
-      ncfile.write("rtemperature", origin, A);
+      ncfile.write(rtempVar, origin, A);
     } catch (IOException e) {
       System.err.println("ERROR writing file");
       assert(false);
@@ -129,6 +109,8 @@ public class TestWriteFill  extends TestCase {
       e.printStackTrace();
       assert(false);
     }
+
+    ncfile.flush();
 
     //////////////////////////////////////////////////////////////////////
     // test reading, checking for fill values
@@ -165,6 +147,8 @@ public class TestWriteFill  extends TestCase {
 
     Variable v = ncfile.findVariable("lat");
     assert (null != v);
+    assert v.getDataType() == DataType.DOUBLE;
+
     Array data = v.read();
     IndexIterator ii = data.getIndexIterator();
     while (ii.hasNext())

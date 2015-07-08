@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.UtilsTestStructureArray;
 import ucar.unidata.test.util.TestDir;
 
@@ -70,10 +71,11 @@ public class TestStructureArray2 extends TestCase {
 
   public void testMA() throws IOException, InvalidRangeException {
     NetcdfFile ncfile = TestDir.openFileLocal("jan.nc");
-    Dimension dim = ncfile.findDimension("time");
+    NetcdfDataset ncd = new NetcdfDataset( ncfile);
+    Dimension dim = ncd.findDimension("time");
     assert dim != null;
 
-    Structure p = new StructurePseudo( ncfile, null, "Psuedo", dim);
+    Structure p = new ucar.nc2.dataset.StructurePseudoDS( ncd, null, "Psuedo", null, dim);
 
     assert( p.getDataType() == DataType.STRUCTURE);
 

@@ -202,12 +202,12 @@ public class TestWriteMisc {
     boolean rewrite = writer.setRedefineMode(true);
     assert !rewrite;
 
-    Attribute newAtt = writer.renameGlobalAttribute(null, "name", "NAM");
+    Attribute newAtt = writer.renameGroupAttribute(null, "name", "NAM");
     System.out.printf("newAtt = %s%n", newAtt);
     assert newAtt != null;
     assert newAtt.getShortName().equals("NAM");
 
-    Attribute newAtt2 = writer.renameGlobalAttribute(null, "NAM", "nameLongerThanYou");
+    Attribute newAtt2 = writer.renameGroupAttribute(null, "NAM", "nameLongerThanYou");
     System.out.printf("newAtt2 = %s%n", newAtt2);
     assert newAtt2 != null;
     assert newAtt2.getShortName().equals("nameLongerThanYou");

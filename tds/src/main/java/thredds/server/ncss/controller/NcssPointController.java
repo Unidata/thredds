@@ -61,18 +61,17 @@ public class NcssPointController extends AbstractNcssController {
       }
 
       FeatureType ft = fd.getFeatureType();
-       if (ft == FeatureType.POINT) {
+      if (ft == FeatureType.POINT) {
         handleRequestDsg(res, params, datasetPath, fd);
       } else if (ft == FeatureType.STATION) {
         handleRequestDsg(res, params, datasetPath, fd);
       } else {
-         throw new NcssException("Dataset Feature Type is " + ft.toString() + " but request is for Points or Stations");
+        throw new NcssException("Dataset Feature Type is " + ft.toString() + " but request is for Points or Stations");
       }
     }
   }
 
-  void handleRequestDsg(HttpServletResponse res, NcssPointParamsBean params, String datasetPath,
-                        FeatureDataset fd) throws Exception {
+  void handleRequestDsg(HttpServletResponse res, NcssPointParamsBean params, String datasetPath, FeatureDataset fd) throws Exception {
     SupportedOperation supportedOp;
     switch (fd.getFeatureType()) {
       case POINT:
@@ -82,8 +81,7 @@ public class NcssPointController extends AbstractNcssController {
         supportedOp = SupportedOperation.STATION_REQUEST;
         break;
       default:
-        throw new UnsupportedOperationException(String.format(
-                "%s format not currently supported for DSG subset writing.", fd.getFeatureType()));
+        throw new UnsupportedOperationException(String.format("%s format not currently supported for DSG subset writing.", fd.getFeatureType()));
     }
 
     SupportedFormat format = supportedOp.getSupportedFormat(params.getAccept());
@@ -95,42 +93,42 @@ public class NcssPointController extends AbstractNcssController {
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
   public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
-     // the forms and dataset description
-     String path = req.getServletPath();
-     boolean wantXML = path.endsWith("/dataset.xml") || path.endsWith("/pointDataset.xml");
-     boolean showPointForm = path.endsWith("/pointDataset.html");
-     String datasetPath = getDatasetPath(req);
+    // the forms and dataset description
+    String path = req.getServletPath();
+    boolean wantXML = path.endsWith("/dataset.xml") || path.endsWith("/pointDataset.xml");
+    boolean showPointForm = path.endsWith("/pointDataset.html");
+    String datasetPath = getDatasetPath(req);
 
-     try (FeatureDatasetPoint fd = TdsRequestedDataset.getPointDataset(req, res, datasetPath)) {
-       if (fd == null) return null; // restricted dataset
-       return ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
-     }
+    try (FeatureDatasetPoint fd = TdsRequestedDataset.getPointDataset(req, res, datasetPath)) {
+      if (fd == null) return null; // restricted dataset
+      return ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
+    }
   }
 
-   @RequestMapping(value = {"**/station.xml"})
-   ModelAndView getStations(HttpServletRequest req, HttpServletResponse res, NcssPointParamsBean params) throws IOException {
+  @RequestMapping(value = {"**/station.xml"})
+  ModelAndView getStations(HttpServletRequest req, HttpServletResponse res, NcssPointParamsBean params) throws IOException {
 
-     String datasetPath = getDatasetPath(req);
-     try (FeatureDatasetPoint fd = TdsRequestedDataset.getPointDataset(req, res, datasetPath)) {
-       if (fd == null) return null;
+    String datasetPath = getDatasetPath(req);
+    try (FeatureDatasetPoint fd = TdsRequestedDataset.getPointDataset(req, res, datasetPath)) {
+      if (fd == null) return null;
 
-       if (fd.getFeatureType() != FeatureType.STATION)
-         throw new java.lang.UnsupportedOperationException("Station list request is only supported for Station features");
+      if (fd.getFeatureType() != FeatureType.STATION)
+        throw new java.lang.UnsupportedOperationException("Station list request is only supported for Station features");
 
-       FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, buildDatasetUrl(datasetPath));
+      FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, buildDatasetUrl(datasetPath));
 
-       String[] stnsList = new String[]{};
-       if (params.getStns() != null)
-         stnsList = params.getStns().toArray(stnsList);
-       else
-         stnsList = null;
+      String[] stnsList = new String[]{};
+      if (params.getStns() != null)
+        stnsList = params.getStns().toArray(stnsList);
+      else
+        stnsList = null;
 
-       LatLonRect llrect = null;
-       if (params.getNorth() != null && params.getSouth() != null && params.getEast() != null && params.getWest() != null)
-         llrect = new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
+      LatLonRect llrect = null;
+      if (params.getNorth() != null && params.getSouth() != null && params.getEast() != null && params.getWest() != null)
+        llrect = new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
 
-       Document doc = xmlWriter.makeStationCollectionDocument(llrect, stnsList);
-       return new ModelAndView("threddsXmlView", "Document", doc);
-     }
-   }
+      Document doc = xmlWriter.makeStationCollectionDocument(llrect, stnsList);
+      return new ModelAndView("threddsXmlView", "Document", doc);
+    }
+  }
 }
