@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid;
+package ucar.nc2.ft2.coverage.grid.writer;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -7,6 +7,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
+import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.*;
 
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Describe
+ * Write CF Compliant Grid file from a GridCoverage
  *
  * @author caron
  * @since 5/8/2015
@@ -109,19 +110,17 @@ public class CFGridCoverageWriter {
     Map<String, Dimension> dimHash = new HashMap<>();
     for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
       if (!(axis.getDependenceType() == GridCoordAxis.DependenceType.independent)) continue;
-      Dimension d = writer.addDimension(null, axis.getName(), (int) axis.getNcoords());
+      Dimension d = writer.addDimension(null, axis.getName(), axis.getNcoords());
       dimHash.put(axis.getName(), d);
 
       Variable v = writer.addVariable(null, axis.getName(), axis.getDataType(), axis.getName());
-      for (Attribute att : axis.getAttributes())
-        v.addAttribute(att);
+      addVariableAttributes(v, axis.getAttributes());
     }
 
     // grids
     for (GridCoverage grid : subsetDataset.getGrids()) {                        // LOOK need to deal with runtime(time), runtime(runtime, time)
       Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), subsetDataset.getIndependentAxisNames(grid));
-      for (Attribute att : grid.getAttributes())
-        v.addAttribute(att);
+      addVariableAttributes(v, grid.getAttributes());
     }
 
     // coordTransforms
@@ -208,6 +207,14 @@ public class CFGridCoverageWriter {
     }
   }
 
+  private void addVariableAttributes(Variable v, List<Attribute> atts) {
+    // global attributes
+    for (Attribute att : atts) {
+      if (att.getShortName().startsWith("_Coordinate")) continue;
+      v.addAttribute(att);
+    }
+  }
+
   private void addCFAnnotations(GridCoverageDataset gds, NetcdfFileWriter writer, boolean addLatLon) {
 
     //Group root = ncfile.getRootGroup();
@@ -229,7 +236,7 @@ public class CFGridCoverageWriter {
       // looking for coordinate transform variables
       for (String ctname : gcs.getTransformNames()) {
         GridCoordTransform ct = gds.findCoordTransform(ctname);
-        if (ct.isHoriz)
+        if (ct.isHoriz())
           newV.addAttribute(new Attribute(CF.GRID_MAPPING, ctname));
       }
     }

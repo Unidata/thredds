@@ -1187,14 +1187,16 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           userAdvice.format("**ERROR Coordinate Variable Alias %s has rank %d%n", v.getFullName(), v.getRank());
         } else {
           Dimension coordDim = v.getGroup().findDimension(coordVarAlias);
-          Dimension vDim = v.getDimension(0);
-          if (!coordDim.equals(vDim)) {
-            parseInfo.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s%n", v.getFullName(), coordVarAlias);
-            userAdvice.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s%n", v.getFullName(), coordVarAlias);
-          } else {
-            isCoordinateAxis = true;
-            addCoordinateVariable(coordDim, this);
-            parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s%n", v.getFullName(), coordVarAlias);
+          if (coordDim != null) {
+            Dimension vDim = v.getDimension(0);
+            if (!coordDim.equals(vDim)) {
+              parseInfo.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s%n", v.getFullName(), coordVarAlias);
+              userAdvice.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s%n", v.getFullName(), coordVarAlias);
+            } else {
+              isCoordinateAxis = true;
+              addCoordinateVariable(coordDim, this);
+              parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s%n", v.getFullName(), coordVarAlias);
+            }
           }
         }
       }

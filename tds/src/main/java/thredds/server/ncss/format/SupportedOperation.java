@@ -43,10 +43,7 @@ import static thredds.server.ncss.format.SupportedFormat.*;
 
 /**
  * An enum of the various operations for netcdf subset service, and what download formats are allowed
- *
- * @author mhermida
  */
-
 @SuppressWarnings("ProblematicWhitespace")
 public enum SupportedOperation {
   DATASET_INFO_REQUEST("Dataset info request", XML_FILE),

@@ -16,8 +16,8 @@ import java.util.*;
 
 /**
  * Helper class for  GridCoverageDataset.
- *  1) groups GridCoverage by GridCoordSys into a Gridsets
- *  2) subsets GridCoverageDataset
+ * 1) groups GridCoverage by GridCoordSys into a Gridsets
+ * 2) subsets GridCoverageDataset
  *
  * @author caron
  * @since 5/8/2015
@@ -92,7 +92,7 @@ public class GridDatasetHelper {
     return ranges;
   }
 
-    /////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////
 
   public static class HorizCoordSys {
     public GridCoordAxis xaxis;
@@ -160,11 +160,11 @@ public class GridDatasetHelper {
     }
 
     result.setCoordSys(coordSys);
-    result.setGrids( grids);
+    result.setGrids(grids);
 
     List<GridCoordTransform> transforms = new ArrayList<>();
     for (String ctName : transformNames) {
-      transforms.add( gds.findCoordTransform(ctName));
+      transforms.add(gds.findCoordTransform(ctName));
     }
     result.setCoordTransforms(transforms);
 
@@ -173,7 +173,7 @@ public class GridDatasetHelper {
       GridCoordAxis orgAxis = gds.findCoordAxis(axisName);
       GridCoordAxis subAxis = subset(orgAxis, subset, result.getCalendar());
       if (subAxis != null) // leave out x, y
-        axes.add( subAxis);
+        axes.add(subAxis);
     }
     subsetHorizAxes(subset, axes);
     result.setCoordAxes(axes);
@@ -211,22 +211,23 @@ public class GridDatasetHelper {
           return orgAxis.subset(cal, date);
 
         CalendarDateRange dateRange = (CalendarDateRange) subset.get(GridSubset.dateRange);
-         if (dateRange != null)
-           return orgAxis.subset(cal, dateRange);
+        if (dateRange != null)
+          return orgAxis.subset(cal, dateRange);
 
-     }
+        return orgAxis.finish(); // otherwise take the entire axis
+    }
 
+    // x,y gets seperately subsetted
     return null;
   }
 
   /**
-   *     if (hasProjectionBB())
-         subset.set(GridSubset.projBB, getProjectionBB());
-       else if (hasLatLonBB())
-         subset.set(GridSubset.latlonBB, getLatLonBoundingBox());
-       if (horizStride != null)
-         subset.set(GridSubset.horizStride, horizStride);
-
+   * if (hasProjectionBB())
+   * subset.set(GridSubset.projBB, getProjectionBB());
+   * else if (hasLatLonBB())
+   * subset.set(GridSubset.latlonBB, getLatLonBoundingBox());
+   * if (horizStride != null)
+   * subset.set(GridSubset.horizStride, horizStride);
    */
   private void subsetHorizAxes(GridSubset subset, List<GridCoordAxis> result) throws InvalidRangeException {
     LatLonRect llbb = (LatLonRect) subset.get(GridSubset.latlonBB);
@@ -259,7 +260,7 @@ public class GridDatasetHelper {
       result.add(horizCoordSys.xaxis.subset(prect.getMinX(), prect.getMaxX()));
       result.add(horizCoordSys.yaxis.subset(prect.getMinY(), prect.getMaxY()));
       return;
-     }
+    }
 
     // otherwise leave originals
     result.add(horizCoordSys.xaxis);

@@ -72,16 +72,8 @@ public final class NcssRequestUtils implements ApplicationContextAware {
   private static ApplicationContext applicationContext;
 
   private NcssRequestUtils() {
-
   }
 
-
-
-  /**
-   * Makes the TdsContext available
-   *
-   * @return TdsContext
-   */
   public static TdsContext getTdsContext() {
     return applicationContext.getBean(TdsContext.class);
   }

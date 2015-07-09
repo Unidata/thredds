@@ -115,7 +115,7 @@ public class NcssPointController extends AbstractNcssController {
       if (fd.getFeatureType() != FeatureType.STATION)
         throw new java.lang.UnsupportedOperationException("Station list request is only supported for Station features");
 
-      FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, buildDatasetUrl(datasetPath));
+      FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fd, buildDatasetUrl(datasetPath));
 
       String[] stnsList = new String[]{};
       if (params.getStns() != null)

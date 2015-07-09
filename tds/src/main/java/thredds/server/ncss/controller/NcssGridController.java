@@ -13,11 +13,9 @@ import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.exception.ServiceNotAllowed;
 import thredds.server.ncss.exception.*;
-import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssGridParamsBean;
-import thredds.server.ncss.params.NcssParamsBean;
 import thredds.util.Constants;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
@@ -27,8 +25,6 @@ import ucar.nc2.ft2.coverage.grid.GridCoordSys;
 import ucar.nc2.ft2.coverage.grid.GridCoverage;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.util.IO;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,9 +35,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Random;
 
 /**
- * Handles all Ncss Grid Requests
+ * Handles NCSS Grid Requests
  * Validation done here, not in Responders
  *
  * @author caron
@@ -94,27 +91,20 @@ public class NcssGridController extends AbstractNcssController {
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
     SupportedFormat sf = SupportedOperation.GRID_REQUEST.getSupportedFormat(params.getAccept());
-    NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
-    if (sf.equals(SupportedFormat.NETCDF4)) {
-      if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4)) {
-        version = NetcdfFileWriter.Version.netcdf4;
-      } else {
-        handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, "NetCDF-4 format not available");
-        return;
-      }
-    }
+    NetcdfFileWriter.Version version = (sf == SupportedFormat.NETCDF3) ? NetcdfFileWriter.Version.netcdf3 : NetcdfFileWriter.Version.netcdf4;
 
-    // all variables have to have the same vertical axis if a vertical coordinate was set.
+    // all variables have to have the same vertical axis if a vertical coordinate was set. LOOK can we relax this ?
     if (params.getVertCoord() != null && !checkVarsHaveSameVertAxis(gcd, params) ) {
         throw new NcssException("The variables requested: " + params.getVar() +
                 " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
       }
 
-    GridResponder gds = new GridResponder(gcd, datasetPath, ncssDiskCache);
+    String responseFile = getResponseFileName(datasetPath, version);
+    GridResponder gds = new GridResponder(gcd, responseFile);
     File netcdfResult = gds.getGridResponseFile(params, version);
 
     // filename download attachment
-    String suffix = (version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc";
+    String suffix = version.getSuffix();
     int pos = datasetPath.lastIndexOf("/");
     String filename = (pos >= 0) ? datasetPath.substring(pos + 1) : datasetPath;
     if (!filename.endsWith(suffix)) {
@@ -133,27 +123,55 @@ public class NcssGridController extends AbstractNcssController {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
-  void handleRequestGridAsPoint(HttpServletResponse res, NcssParamsBean params, String datasetPath, GridCoverageDataset gcd)
-          throws IOException, ParseException, InvalidRangeException, NcssException {
+  private void handleRequestGridAsPoint(HttpServletResponse res, NcssGridParamsBean params, String datasetPath, GridCoverageDataset gcd)
+          throws NcssException, IOException, ParseException, InvalidRangeException {
 
-    // use the first grid
-    String gridName;
-    List<String> wantVars = params.getVar();
-    if (wantVars.size() > 0) gridName = wantVars.get(0);
-    else gridName = gcd.getGrids().get(0).getName();
+    SupportedFormat sf = SupportedOperation.POINT_REQUEST.getSupportedFormat(params.getAccept());
 
-		// Check if the requested point is within boundaries
-    LatLonPoint latlon = new LatLonPointImpl(params.getLatitude(), params.getLongitude());
-    if (!gcd.containsLatLonPoint(gridName, latlon)) {
-			throw new OutOfBoundariesException("Requested Lat/Lon Point (+" + latlon + ") is not contained in the Data. "+
-					"Data Bounding Box = " + gcd.getLatLonBoundingBox().toString2());
-		}
+    if (sf.isStream()) {
+      GridResponder responder = new GridResponder(gcd, "");
+      responder.streamResponse(res.getOutputStream(), params, sf);
 
-    SupportedFormat format = SupportedOperation.POINT_REQUEST.getSupportedFormat(params.getAccept());
-    GridAsPointResponder pds =  new GridAsPointResponder(gcd, params, ncssDiskCache, format, res.getOutputStream());
-    setResponseHeaders(res, pds.getResponseHeaders(gcd, format, datasetPath));
-    pds.respond(params);
+    } else {
+      NetcdfFileWriter.Version version = (sf == SupportedFormat.NETCDF3) ? NetcdfFileWriter.Version.netcdf3 : NetcdfFileWriter.Version.netcdf4;
+      String responseFile = getResponseFileName(datasetPath, version);
+
+      GridResponder responder = new GridResponder(gcd, responseFile);
+      File netcdfResult = responder.getPointResponseFile(params, version);
+
+      // filename download attachment
+      String suffix = version.getSuffix();
+      int pos = datasetPath.lastIndexOf("/");
+      String filename = (pos >= 0) ? datasetPath.substring(pos + 1) : datasetPath;
+      if (!filename.endsWith(suffix)) {
+        filename += suffix;
+      }
+
+      // Headers...
+      HttpHeaders httpHeaders = new HttpHeaders();
+      httpHeaders.set(ContentType.HEADER, sf.getMimeType());
+      httpHeaders.set(Constants.Content_Disposition, Constants.setContentDispositionValue(filename));
+      setResponseHeaders(res, httpHeaders);
+
+      IO.copyFileB(netcdfResult, res.getOutputStream(), 60000);
+      res.flushBuffer();
+      res.getOutputStream().close();
+      res.setStatus(HttpServletResponse.SC_OK);
+    }
   }
+
+  private String getResponseFileName(String requestPathInfo, NetcdfFileWriter.Version version) {
+    Random random = new Random(System.currentTimeMillis());
+    int randomInt = random.nextInt();
+
+    String filename = NcssRequestUtils.getFileNameForResponse(requestPathInfo, version);
+    String pathname = Integer.toString(randomInt) + "/" + filename;
+    File ncFile = ncssDiskCache.getDiskCache().getCacheFile(pathname);
+    if (ncFile == null)
+      throw new IllegalStateException("NCSS misconfigured cache");
+    return ncFile.getPath();
+  }
+  ///////////////////////////////////////////////////////////
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
   public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, NcssException {
@@ -206,25 +224,6 @@ public class NcssGridController extends AbstractNcssController {
 
     return boundaries;
   }  */
-
-  protected SupportedFormat getSupportedFormat(NcssParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException {
-
-    //Checking request format...
-    SupportedFormat sf;
-    if (params.getAccept() == null) {
-      //setting the default format
-      sf = operation.getDefaultFormat();
-      params.setAccept(sf.getFormatName());
-    } else {
-      sf = operation.getSupportedFormat(params.getAccept());
-      if (sf == null) {
-        operation.getSupportedFormat(params.getAccept());
-        throw new UnsupportedResponseFormatException("Requested format: " + params.getAccept() + " is not supported for " + operation.getName().toLowerCase());
-      }
-    }
-
-    return sf;
-  }
 
 
   /**

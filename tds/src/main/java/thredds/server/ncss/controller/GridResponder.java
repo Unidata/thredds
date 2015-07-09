@@ -32,32 +32,19 @@
  */
 package thredds.server.ncss.controller;
 
-import thredds.server.config.ThreddsConfig;
-import thredds.server.exception.RequestTooLargeException;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.exception.OutOfBoundariesException;
 import thredds.server.ncss.format.SupportedFormat;
-import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssGridParamsBean;
-import thredds.server.ncss.view.dsg.DsgSubsetWriter;
-import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.grid.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.nc2.ft2.coverage.grid.writer.CFGridCoverageWriter;
+import ucar.nc2.ft2.coverage.grid.writer.DSGGridCoverageWriter;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * Respond to Grid ncss requests
@@ -67,19 +54,18 @@ class GridResponder {
 
   ///////////////////////////////////////////////////////////////////////////////
   private GridCoverageDataset gcd;
-  private String requestPathInfo;
-  private NcssDiskCache ncssDiskCache;
+  private String responseFilename;
 
-  GridResponder(GridCoverageDataset gcd, String requestPathInfo, NcssDiskCache ncssDiskCache) {
+  GridResponder(GridCoverageDataset gcd, String responseFilename) {
     this.gcd = gcd;
-    this.requestPathInfo = requestPathInfo;
-    this.ncssDiskCache = ncssDiskCache;
+    this.responseFilename = responseFilename;
   }
 
-  File getGridResponseFile(NcssGridParamsBean params, NetcdfFileWriter.Version version) throws NcssException, InvalidRangeException, ParseException, IOException {
+  File getGridResponseFile(NcssGridParamsBean params, NetcdfFileWriter.Version version)
+          throws NcssException, InvalidRangeException, ParseException, IOException {
 
-
-    long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
+    // LOOK maxFileDownloadSize
+    /* long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
     if (maxFileDownloadSize > 0) {
       long estimatedSize = 0; // CFGridWriter2.makeSizeEstimate(gcd, vars, bbox, projRect, horizStride, zRange, dateRange, timeStride, addLatLon);
 
@@ -88,26 +74,38 @@ class GridResponder {
 
       if (estimatedSize > maxFileDownloadSize)
         throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
-    }
+    } */
 
-    Random random = new Random(System.currentTimeMillis());
-    int randomInt = random.nextInt();
-
-    String filename = NcssRequestUtils.getFileNameForResponse(requestPathInfo, version);
-    String pathname = Integer.toString(randomInt) + "/" + filename;
-    File ncFile = ncssDiskCache.getDiskCache().getCacheFile(pathname);
-    if (ncFile == null)
-      throw new IllegalStateException("NCSS misconfigured cache = ");
-    String cacheFilename = ncFile.getPath();
-
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, cacheFilename, null); // default chunking - let user control at some point
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
     GridSubset subset = params.makeSubset(gcd.getCalendar());
     CFGridCoverageWriter.writeFile(gcd, params.getVar(), subset, params.isAddLatLon(), writer);
 
-    return new File(cacheFilename);
+    return new File(responseFilename);
   }
 
-  private Range getZRange(GridCoverageDataset gcd, Double verticalCoord, Integer vertStride, List<String> vars) throws OutOfBoundariesException {
+  File getPointResponseFile(NcssGridParamsBean params, NetcdfFileWriter.Version version)
+          throws NcssException, InvalidRangeException, ParseException, IOException {
+
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
+    GridSubset subset = params.makeSubset(gcd.getCalendar());
+
+    DSGGridCoverageWriter dsgWriter = new DSGGridCoverageWriter(gcd, params.getVar(), subset);
+    dsgWriter.writePointFeatureCollection(writer);
+
+    return new File(responseFilename);
+  }
+
+  void streamResponse(OutputStream out, NcssGridParamsBean params, SupportedFormat sf)
+          throws NcssException, InvalidRangeException, ParseException, IOException {
+
+    GridSubset subset = params.makeSubset(gcd.getCalendar());
+
+    DSGGridCoverageWriter dsgWriter = new DSGGridCoverageWriter(gcd, params.getVar(), subset);
+    dsgWriter.streamResponse(out);
+  }
+
+  /*
+    private Range getZRange(GridCoverageDataset gcd, Double verticalCoord, Integer vertStride, List<String> vars) throws OutOfBoundariesException {
 
     boolean hasVerticalCoord = false;
     Range zRange = null;
@@ -164,43 +162,5 @@ class GridResponder {
 
     return zRange;
   }
-
-  File getPointResponseFile(NcssGridParamsBean params, NetcdfFileWriter.Version version)
-          throws NcssException, InvalidRangeException, ParseException, IOException {
-
-    GridDataset gridDataset = (GridDataset) fd;
-    LatLonPoint point = new LatLonPointImpl(queryParams.getLatitude(), queryParams.getLongitude()); //Check if the point is within boundaries!!
-    checkRequestedVars(gridDataset, queryParams);
-    Map<String, List<String>> groupVars = groupVarsByVertLevels(gridDataset, queryParams);
-
-    // LOOK - shouldnt throw exception if we can help it - just a user error
-    if (!isPointWithinBoundaries(gridDataset, point, groupVars)) {
-      throw new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data. " +
-              "Data Bounding Box = " + gridDataset.getBoundingBox().toString2());
-    }
-
-    List<CalendarDate> wantedDates = getRequestedDates(gridDataset, queryParams);
-
-    //Get point, wDates, groupedVars and vertCoort from params.
-
-    boolean allDone = false;
-    List<String> vars = new ArrayList<>();
-    List<String> keys = new ArrayList<>(groupVars.keySet());
-    for (String key : keys) {
-      vars.addAll(groupVars.get(key));
-    }
-
-    Double vertCoord = queryParams.getVertCoord();
-
-    writer = PointDataWriterFactory.factory(format, out, diskCache);
-    if (writer.header(groupVars, gridDataset, wantedDates, getTimeDimAtts(gridDataset), point, vertCoord)) {
-      boolean allPointsRead = writer.write(groupVars, gridDataset, wantedDates, point, vertCoord);
-      allDone = writer.trailer() && allPointsRead;
-    }
-
-
-    return new File(cacheFilename);
-  }
-
-
+   */
 }
