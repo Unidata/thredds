@@ -30,52 +30,40 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.wcs.v1_0_0_1;
+package thredds.server.wcs.v1_0_0_1;
 
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.ft2.coverage.grid.GridCoordSys;
+import ucar.nc2.ft2.coverage.grid.GridCoverage;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
-public class WcsDataset
-{
-//  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( WcsDataset.class );
 
-  // Dataset specific
+public class WcsDataset {
   private String datasetPath;
   private String datasetName;
-  private GridDataset dataset;
-  private HashMap<String, WcsCoverage> availableCoverages;
+  private GridCoverageDataset dataset;
+  private Map<String, WcsCoverage> availableCoverages;
 
-  public WcsDataset( GridDataset dataset, String datasetPath )
-  {
+  public WcsDataset(GridCoverageDataset dataset, String datasetPath) {
     this.datasetPath = datasetPath;
-    int pos = datasetPath.lastIndexOf( "/" );
-    this.datasetName = ( pos > 0 ) ? datasetPath.substring( pos + 1 ) : datasetPath;
+    int pos = datasetPath.lastIndexOf("/");
+    this.datasetName = (pos > 0) ? datasetPath.substring(pos + 1) : datasetPath;
     this.dataset = dataset;
 
-    this.availableCoverages = new HashMap<String, WcsCoverage>();
+    this.availableCoverages = new HashMap<>();
 
     // ToDo WCS 1.0PlusPlus - compartmentalize coverage to hide GridDatatype vs GridDataset.Gridset ???
     // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
     // This is WCS 1.0 coverage for each parameter
-    for ( GridDatatype curGridDatatype : this.dataset.getGrids() )
-    {
-      GridCoordSystem gcs = curGridDatatype.getCoordinateSystem();
-      if ( !gcs.isRegularSpatial() )
-        continue;
-      this.availableCoverages.put( curGridDatatype.getFullName(), new WcsCoverage( curGridDatatype, this) );
+    for (GridCoverage coverage : this.dataset.getGrids()) {
+      GridCoordSys gcs = dataset.findCoordSys(coverage.getCoordSysName());
+      if (!this.dataset.isRegularSpatial(gcs)) continue;
+      this.availableCoverages.put(coverage.getName(), new WcsCoverage(coverage, gcs, this));
     }
     // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
     // This is WCS 1.1 style coverage for each coordinate system
@@ -88,28 +76,32 @@ public class WcsDataset
     // }
   }
 
-  public String getDatasetPath() { return datasetPath; }
-  public String getDatasetName() { return datasetName; }
-  public GridDataset getDataset() { return dataset; }
+  public String getDatasetPath() {
+    return datasetPath;
+  }
 
-  public void close() throws IOException
-  {
-    if ( this.dataset != null )
+  public String getDatasetName() {
+    return datasetName;
+  }
+
+  public GridCoverageDataset getDataset() {
+    return dataset;
+  }
+
+  public void close() throws IOException {
+    if (this.dataset != null)
       this.dataset.close();
   }
 
-  public boolean isAvailableCoverageName( String fullName )
-  {
-    return availableCoverages.containsKey( fullName );
+  public boolean isAvailableCoverageName(String fullName) {
+    return availableCoverages.containsKey(fullName);
   }
 
-  public WcsCoverage getAvailableCoverage( String fullName )
-  {
-    return availableCoverages.get( fullName );
+  public WcsCoverage getAvailableCoverage(String fullName) {
+    return availableCoverages.get(fullName);
   }
 
-  public Collection<WcsCoverage> getAvailableCoverageCollection()
-  {
-    return Collections.unmodifiableCollection( availableCoverages.values() );
+  public Collection<WcsCoverage> getAvailableCoverageCollection() {
+    return Collections.unmodifiableCollection(availableCoverages.values());
   }
 }

@@ -117,6 +117,9 @@ public class CF {
   public static final String formula_terms = "formula_terms";
 
   // standard_names
+  public static final String ENSEMBLE = "realization";
+  public static final String LATITUDE = "latitude";
+  public static final String LONGITUDE = "longitude";
   public static final String TIME = "time";                               // valid; time, obs time
   public static final String TIME_REFERENCE = "forecast_reference_time";  // the "data time", the time of the analysis from which the forecast was made.
   public static final String TIME_OFFSET = "forecast_period";  // Forecast period is the time interval between the forecast reference time and the validity time. A period is an interval of time,

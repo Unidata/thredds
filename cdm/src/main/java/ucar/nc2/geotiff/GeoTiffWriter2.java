@@ -12,8 +12,7 @@ import ucar.unidata.geoloc.*;
 import java.io.IOException;
 
 /**
- * Not sure where this is used - IDV ??
- *
+ * Not sure where this is used
  * @author caron
  * @since 3/15/13
  */
@@ -23,6 +22,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     super(fileOut);
   }
 
+  // variant on writing a subsetted grid as a geotiff file
+  // seems to handle swath as well ??
   public void writeGrid(String gridDataset_filename, String gridName, int time, int level, boolean greyScale, LatLonRect pt) throws IOException {
     double scaler;
     try (GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(gridDataset_filename)) {
@@ -136,7 +137,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
    * @param llr       _more_
    * @throws IOException _more_
    */
-  void writeSwathGrid(String fileName, String gridName, int time, int level, boolean greyScale, LatLonRect llr) throws IOException {
+  private void writeSwathGrid(String fileName, String gridName, int time, int level, boolean greyScale, LatLonRect llr) throws IOException {
 
     double scaler;
     GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(fileName);
@@ -259,7 +260,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
 
   }
 
-  int getXIndex(Array aAxis, double value, int side) {
+  private int getXIndex(Array aAxis, double value, int side) {
 
     IndexIterator aIter = aAxis.getIndexIterator();
     int count = 0;
@@ -287,7 +288,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
 
 
 
-  int getYIndex(Array aAxis, double value, int side) {
+  private int getYIndex(Array aAxis, double value, int side) {
 
     IndexIterator aIter = aAxis.getIndexIterator();
     int count = 0;
@@ -313,7 +314,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     return count;
   }
 
-  int getLatIndex(Array lat, double value, int side) {
+  private int getLatIndex(Array lat, double value, int side) {
     IndexIterator latIter = lat.getIndexIterator();
     int count = 0;
     int isInd = 0;
@@ -340,7 +341,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     return count;
   }
 
-  int getLonIndex(Array lon, double value, int side) {
+  private int getLonIndex(Array lon, double value, int side) {
     IndexIterator lonIter = lon.getIndexIterator();
     int count = 0;
     int isInd = 0;
@@ -372,8 +373,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     return count;
   }
 
-  Array getYXDataInBox(Array data, int x1, int x2, int y1,
-                              int y2) throws java.io.IOException {
+  private Array getYXDataInBox(Array data, int x1, int x2, int y1, int y2) throws java.io.IOException {
     int rank = data.getRank();
     int[] start = new int[rank];
     int[] shape = new int[rank];
@@ -402,7 +402,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     return dataVolume;
   }
 
-  Array getClippedImageFromInterpolation(Array arr, int x1, int x2, int y1, int y2) {
+  private Array getClippedImageFromInterpolation(Array arr, int x1, int x2, int y1, int y2) {
     int[] srcShape = arr.getShape();
     int rank = arr.getRank();
     int[] start = new int[rank];
@@ -440,7 +440,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     return dataVolume;
   }
 
-  Array getTargetImagerFromSwath(Array lat, Array lon, Array data, double[] swathInfo) {
+  private Array getTargetImagerFromSwath(Array lat, Array lon, Array data, double[] swathInfo) {
     int srcDataHeight = data.getShape()[0];
     int srcDataWidth = data.getShape()[1];
     int BBoxHeight = (int) ((swathInfo[3] - swathInfo[2]) / swathInfo[1] + 0.5);
@@ -483,7 +483,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     return bBoxArray;
   }
 
-  int getIndexOfBBFromLatlonOfOri(double sLat, double sLon,  //LatLon of the start point
+  private int getIndexOfBBFromLatlonOfOri(double sLat, double sLon,  //LatLon of the start point
                                   double latInc, double lonInc,  //The increment in Lat/Lon direction
                                   double curLat, double curLon,  //The current Lat/Lon read from the swath image
                                   int bbHeight, int bbWidth)  //The width and height of target image
@@ -516,7 +516,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
    * @param arr swath array
    * @return regular grid
    */
-  Array interpolation(Array arr) {
+  private Array interpolation(Array arr) {
     int[] orishape = arr.getShape();
     int width = orishape[1];
     int height = orishape[0];
@@ -608,7 +608,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
    * @param lon 2D lon array
    * @return double array for geotiff
    */
-  double[] getSwathLatLonInformation(Array lat, Array lon) {
+  private double[] getSwathLatLonInformation(Array lat, Array lon) {
     // Calculate the increment of latitude and longitude of original swath data
     // Calculate the size of the boundingBox
     // element0: Longitude increment
@@ -739,6 +739,63 @@ public class GeoTiffWriter2 extends GeotiffWriter {
 
     } else {
       return lon;
+    }
+  }
+
+  private Array geoShiftDataAtLon(Array data, Array lon) {
+    int count = 0;
+    int[] shape = data.getShape();
+    Index ima = data.getIndex();
+    Index ilon = lon.getIndex();
+    int[] lonShape = lon.getShape();
+    ArrayFloat adata = new ArrayFloat(new int[]{shape[0], shape[1]});
+    Index imaa = adata.getIndex();
+    IndexIterator lonIter = lon.getIndexIterator();
+
+    LatLonPoint p0 = new LatLonPointImpl(0, lon.getFloat(ilon.set(lonShape[0] - 1)));
+    LatLonPoint pN = new LatLonPointImpl(0, lon.getFloat(ilon.set(0)));
+
+    while (lonIter.hasNext()) {
+      float l = lonIter.getFloatNext();
+      if (l > 180.0) {
+        count++;
+      }
+    }
+
+    //checking if the 0 point and the N point are the same point
+    int spoint = 0;
+    if (p0.getLongitude() == pN.getLongitude()) {
+      spoint = shape[1] - count - 1;
+    } else {
+      spoint = shape[1] - count;
+    }
+
+    if ((count > 0) && (shape[1] > count)) {
+      for (int j = 1; j < shape[1]; j++) {
+        int jj = 0;
+
+        if (j >= count) {
+          jj = j - count;
+        } else {
+          jj = j + spoint;
+        }
+
+        for (int i = 0; i < shape[0]; i++) {
+          float dd = data.getFloat(ima.set(i, jj));
+          adata.setFloat(imaa.set(i, j), dd);
+        }
+      }
+
+      if (p0.getLongitude() == pN.getLongitude()) {
+        for (int i = 0; i < shape[0]; i++) {
+          float dd = adata.getFloat(imaa.set(i, shape[1] - 1));
+          adata.setFloat(imaa.set(i, 0), dd);
+        }
+      }
+      return adata;
+
+    } else {
+      return data;
     }
   }
 }

@@ -153,7 +153,7 @@ public class GridDatasetCapabilities {
  			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
  		}
 
-    Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis.getCoords(), null, false);
+    Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis.getCoordsAsArray(), null, false);
     values.setAttribute("npts", Long.toString(axis.getNcoords()));
     varElem.addContent(values);
 
@@ -210,7 +210,7 @@ public class GridDatasetCapabilities {
   		for (Attribute att : axis.getAttributes())
   			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
 
-  		Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis.getCoords(), null, false);
+  		Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis.getCoordsAsArray(), null, false);
   		values.setAttribute("npts", Long.toString(axis.getNcoords()));
   		varElem.addContent(values);
 

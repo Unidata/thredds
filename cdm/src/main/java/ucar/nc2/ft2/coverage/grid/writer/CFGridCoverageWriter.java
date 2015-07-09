@@ -106,14 +106,26 @@ public class CFGridCoverageWriter {
 
     addGlobalAttributes(subsetDataset, writer);
 
-    // dimensions and independent axes
+    // LOOK need to deal with multiple variables for one axis, eg bounds
     Map<String, Dimension> dimHash = new HashMap<>();
+    String dims;
     for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
-      if (!(axis.getDependenceType() == GridCoordAxis.DependenceType.independent)) continue;
-      Dimension d = writer.addDimension(null, axis.getName(), axis.getNcoords());
-      dimHash.put(axis.getName(), d);
+      if (axis.getDependenceType() == GridCoordAxis.DependenceType.independent) {
+        Dimension d = writer.addDimension(null, axis.getName(), axis.getNcoords());
+        dimHash.put(axis.getName(), d);
+        dims = axis.getName();
 
-      Variable v = writer.addVariable(null, axis.getName(), axis.getDataType(), axis.getName());
+      } else if (axis.getDependenceType() == GridCoordAxis.DependenceType.scalar) {
+        dims = "";
+
+      } else if (axis.getDependenceType() == GridCoordAxis.DependenceType.twoD) {
+        dims = axis.getDependsOn();
+
+      } else {
+        continue; // LOOK WRONG
+      }
+
+      Variable v = writer.addVariable(null, axis.getName(), axis.getDataType(), dims);
       addVariableAttributes(v, axis.getAttributes());
     }
 
@@ -130,7 +142,6 @@ public class CFGridCoverageWriter {
         ctv.addAttribute(att);
     }
 
-
     addCFAnnotations(subsetDataset, writer, addLatLon);
 
     // finish define mode
@@ -140,8 +151,8 @@ public class CFGridCoverageWriter {
     for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
       Variable v = writer.findVariable(axis.getName());
       if (v != null) {
-        System.out.printf("write %s%n", v.getNameAndDimensions());
-        writer.write(v, axis.getCoords());
+        System.out.printf("write axis %s%n", v.getNameAndDimensions());
+        writer.write(v, axis.getCoordsAsArray());
       } else {
         System.out.printf("No variable for %s%n", axis.getName());
       }
@@ -156,6 +167,7 @@ public class CFGridCoverageWriter {
         Variable v = writer.findVariable(grid.getName());
         Array data = grid.readSubset(ranges);
         // Array reshape = data.reshape(v.getShape());
+        System.out.printf("write grid %s%n", v.getNameAndDimensions());
         writer.write(v, data);
       }
 
@@ -248,18 +260,21 @@ public class CFGridCoverageWriter {
           newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
       } */
       if (axis.getAxisType() == AxisType.Lat) {
-        newV.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
-        newV.addAttribute(new Attribute(CF.STANDARD_NAME, "latitude"));
+        newV.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+        newV.addAttribute(new Attribute(CF.STANDARD_NAME, CF.LATITUDE));
       }
       if (axis.getAxisType() == AxisType.Lon) {
-        newV.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
-        newV.addAttribute(new Attribute(CF.STANDARD_NAME, "longitude"));
+        newV.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+        newV.addAttribute(new Attribute(CF.STANDARD_NAME, CF.LONGITUDE));
       }
       if (axis.getAxisType() == AxisType.GeoX) {
-        newV.addAttribute(new Attribute(CF.STANDARD_NAME, "projection_x_coordinate"));
+        newV.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_X_COORDINATE));
       }
       if (axis.getAxisType() == AxisType.GeoY) {
-        newV.addAttribute(new Attribute(CF.STANDARD_NAME, "projection_y_coordinate"));
+        newV.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_Y_COORDINATE));
+      }
+      if (axis.getAxisType() == AxisType.Ensemble) {
+        newV.addAttribute(new Attribute(CF.STANDARD_NAME, CF.ENSEMBLE));
       }
     }
 

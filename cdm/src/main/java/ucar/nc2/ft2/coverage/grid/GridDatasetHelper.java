@@ -1,8 +1,11 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
+import com.google.common.base.*;
+import com.google.common.base.Objects;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -95,23 +98,53 @@ public class GridDatasetHelper {
   /////////////////////////////////////////////////////
 
   public static class HorizCoordSys {
-    public GridCoordAxis xaxis;
-    public GridCoordAxis yaxis;
+    public GridCoordAxis xaxis, yaxis, lataxis, lonaxis;
     public GridCoordTransform transform;
+    public boolean hasProjection, hasLatLon;
 
-    public HorizCoordSys(GridCoordAxis xaxis, GridCoordAxis yaxis, GridCoordTransform transform) {
+    public HorizCoordSys(GridCoordAxis xaxis, GridCoordAxis yaxis, GridCoordAxis lataxis, GridCoordAxis lonaxis, GridCoordTransform transform) {
       this.xaxis = xaxis;
       this.yaxis = yaxis;
+      this.lataxis = lataxis;
+      this.lonaxis = lonaxis;
       this.transform = transform;
+      this.hasProjection = (xaxis != null) && (yaxis != null) && (transform != null);
+      this.hasLatLon = (lataxis != null) && (lonaxis != null);
+      assert hasProjection || hasLatLon : "missing horiz coordinates (x,y,projection or lat,lon)";
+
+      if (hasProjection && hasLatLon) {
+        boolean ok = true;
+        if (!lataxis.getDependsOn().equalsIgnoreCase(lonaxis.getDependsOn())) ok = false;
+        if (lataxis.getDependenceType() != GridCoordAxis.DependenceType.twoD) ok = false;
+        if (lonaxis.getDependenceType() != GridCoordAxis.DependenceType.twoD) ok = false;
+        String dependsOn = lataxis.getDependsOn();
+        if (!dependsOn.contains(xaxis.getName())) ok = false;
+        if (!dependsOn.contains(yaxis.getName())) ok = false;
+        if (!ok) {
+          hasLatLon = false;
+          this.lataxis = null;
+          this.lonaxis = null;
+        }
+      }
     }
 
     // just match on names
     public boolean same(HorizCoordSys that) {
       if (this == that) return true;
+      if (that == null || getClass() != that.getClass()) return false;
+      if (hasProjection != that.hasProjection) return false;
+      if (hasLatLon != that.hasLatLon) return false;
 
-      if (!xaxis.getName().equals(that.xaxis.getName())) return false;
-      if (!yaxis.getName().equals(that.yaxis.getName())) return false;
-      return !(transform != null ? !transform.getName().equals(that.transform.getName()) : that.transform != null);
+      if (hasProjection) {
+        if (!xaxis.getName().equals(that.xaxis.getName())) return false;
+        if (!yaxis.getName().equals(that.yaxis.getName())) return false;
+        if (!transform.getName().equals(that.transform.getName())) return false;
+      }
+      if (hasLatLon) {
+        if (!lataxis.getName().equals(that.lataxis.getName())) return false;
+        if (!lonaxis.getName().equals(that.lonaxis.getName())) return false;
+      }
+      return true;
     }
 
   }
@@ -119,8 +152,10 @@ public class GridDatasetHelper {
   private HorizCoordSys makeHorizCoordSys() {
     HorizCoordSys result = null;
     for (Gridset gridset : gridsets) {
-      GridCoordAxis xaxis = gds.getXAxis(gridset.gcs);
-      GridCoordAxis yaxis = gds.getYAxis(gridset.gcs);
+      GridCoordAxis xaxis = gds.getAxis(gridset.gcs, AxisType.GeoX);
+      GridCoordAxis yaxis = gds.getAxis(gridset.gcs, AxisType.GeoY);
+      GridCoordAxis lataxis = gds.getAxis(gridset.gcs, AxisType.Lat);
+      GridCoordAxis lonaxis = gds.getAxis(gridset.gcs, AxisType.Lon);
       GridCoordTransform hct = null;
 
       for (String ctName : gridset.gcs.getTransformNames()) {
@@ -128,7 +163,7 @@ public class GridDatasetHelper {
         if (ct.isHoriz) hct = ct;
       }
 
-      HorizCoordSys hcs = new HorizCoordSys(xaxis, yaxis, hct);
+      HorizCoordSys hcs = new HorizCoordSys(xaxis, yaxis, lataxis, lonaxis, hct);
       if (result == null) result = hcs;
       else assert result.same(hcs);
     }
@@ -186,19 +221,25 @@ public class GridDatasetHelper {
     return result;
   }
 
+  // LOOK incomplete subsetting
   private GridCoordAxis subset(GridCoordAxis orgAxis, GridSubset subset, ucar.nc2.time.Calendar cal) {
     switch (orgAxis.getAxisType()) {
       case GeoZ:
       case Pressure:
       case Height:
-        Double dval = (subset == null) ? null : subset.getDouble(GridSubset.vertCoord);
-        if (dval == null) return orgAxis.finish();
+        Double dval = subset.getDouble(GridSubset.vertCoord);
+        if (dval != null) {
+          // LOOK problems when vertCoord doesnt match any coordinates in the axes
+          return orgAxis.subsetClosest(dval);
+        }
+        break;
 
-        // LOOK problems when vertCoord doesnt match any coordinates in the axes
-        return orgAxis.subsetClosest(dval);
-
-      case RunTime:
-        return orgAxis.finish();
+      // x,y gets seperately subsetted
+      case GeoX:
+      case GeoY:
+      case Lat:
+      case Lon:
+        return null;
 
       case Time:
         if (subset.isTrue(GridSubset.allTimes))
@@ -213,12 +254,11 @@ public class GridDatasetHelper {
         CalendarDateRange dateRange = (CalendarDateRange) subset.get(GridSubset.dateRange);
         if (dateRange != null)
           return orgAxis.subset(cal, dateRange);
-
-        return orgAxis.finish(); // otherwise take the entire axis
+        break;
     }
 
-    // x,y gets seperately subsetted
-    return null;
+    // otherwise take the entire axis
+    return orgAxis.finish();
   }
 
   /**
@@ -263,8 +303,14 @@ public class GridDatasetHelper {
     }
 
     // otherwise leave originals
-    result.add(horizCoordSys.xaxis);
-    result.add(horizCoordSys.yaxis);
+    if (horizCoordSys.hasProjection) {
+      result.add(horizCoordSys.xaxis);
+      result.add(horizCoordSys.yaxis);
+    }
+    if (horizCoordSys.hasLatLon) {
+      result.add(horizCoordSys.lataxis);
+      result.add(horizCoordSys.lonaxis);
+    }
   }
 
 }

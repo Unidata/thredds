@@ -30,15 +30,19 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.wcs.v1_0_0_1;
+package thredds.server.wcs.v1_0_0_1;
 
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.ft2.coverage.grid.GridCoordAxisTime;
+import ucar.nc2.ft2.coverage.grid.GridCoordSys;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import thredds.wcs.Request;
+import thredds.server.wcs.Request;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represent the incoming WCS 1.0.0 request.
@@ -56,17 +60,12 @@ public abstract class WcsRequest {
   private String version;
 
   // Dataset
-  private WcsDataset dataset;
+  protected WcsDataset wcsDataset;
 
-  WcsRequest(Request.Operation operation, String version, WcsDataset dataset) {
+  WcsRequest(@Nonnull Request.Operation operation, String version, @Nonnull WcsDataset dataset) {
     this.operation = operation;
     this.version = version;
-    this.dataset = dataset;
-
-    if (operation == null)
-      throw new IllegalArgumentException("Non-null operation required.");
-    if (this.dataset == null)
-      throw new IllegalArgumentException("Non-null dataset required.");
+    this.wcsDataset = dataset;
   }
 
   public Request.Operation getOperation() {
@@ -77,13 +76,13 @@ public abstract class WcsRequest {
     return version;
   }
 
-  public WcsDataset getDataset() {
-    return dataset;
+  public WcsDataset getWcsDataset() {
+    return wcsDataset;
   }
 
   protected Element genCoverageOfferingBriefElem(String elemName,
                                                  String covName, String covLabel, String covDescription,
-                                                 GridCoordSystem gridCoordSys) {
+                                                 GridCoordSys gridCoordSys) {
 
     // <CoverageOfferingBrief>
     Element briefElem = new Element(elemName, wcsNS);
@@ -102,7 +101,7 @@ public abstract class WcsRequest {
     briefElem.addContent(new Element("label", wcsNS).addContent(covLabel));
 
     // <CoverageOfferingBrief>/lonLatEnvelope [1]
-    briefElem.addContent(genLonLatEnvelope(gridCoordSys));
+    briefElem.addContent(genLonLatEnvelope(wcsDataset.getDataset(), gridCoordSys));
 
     // ToDo Add keywords capabilities.
     // <CoverageOfferingBrief>/keywords [0..*]  /keywords [1..*] and /type [0..1]
@@ -110,12 +109,12 @@ public abstract class WcsRequest {
     return briefElem;
   }
 
-  protected Element genLonLatEnvelope(GridCoordSystem gcs) {
+  protected Element genLonLatEnvelope(GridCoverageDataset gcd, GridCoordSys gcs) {
     // <CoverageOfferingBrief>/lonLatEnvelope
     Element lonLatEnvelopeElem = new Element("lonLatEnvelope", wcsNS);
     lonLatEnvelopeElem.setAttribute("srsName", "urn:ogc:def:crs:OGC:1.3:CRS84");
 
-    LatLonRect llbb = gcs.getLatLonBoundingBox();
+    LatLonRect llbb = gcd.getLatLonBoundingBox();
     LatLonPoint llpt = llbb.getLowerLeftPoint();
     LatLonPoint urpt = llbb.getUpperRightPoint();
 
@@ -136,11 +135,13 @@ public abstract class WcsRequest {
     lonLatEnvelopeElem.addContent(new Element("pos", gmlNS).addContent(secondPosition));
 
     // <CoverageOfferingBrief>/lonLatEnvelope/gml:timePostion [2]
-    if (gcs.hasTimeAxis()) {
-      DateRange dr = gcs.getDateRange();
+
+    GridCoordAxisTime timeCoord = gcd.getTimeAxis(gcs);
+    if (timeCoord != null) {
+      CalendarDateRange dr = timeCoord.getDateRange();
       if (dr != null) {
-        lonLatEnvelopeElem.addContent(new Element("timePosition", gmlNS).addContent(dr.getStart().toDateTimeStringISO()));
-        lonLatEnvelopeElem.addContent(new Element("timePosition", gmlNS).addContent(dr.getEnd().toDateTimeStringISO()));
+        lonLatEnvelopeElem.addContent(new Element("timePosition", gmlNS).addContent(dr.getStart().toString()));
+        lonLatEnvelopeElem.addContent(new Element("timePosition", gmlNS).addContent(dr.getEnd().toString()));
       }
     }
 

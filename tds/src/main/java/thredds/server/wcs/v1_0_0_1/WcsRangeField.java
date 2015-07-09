@@ -30,66 +30,80 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.wcs.v1_0_0_Plus;
+package thredds.server.wcs.v1_0_0_1;
 
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
-
-import java.util.HashMap;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
-public class WcsDataset
-{
-//  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( WcsDataset.class );
+public class WcsRangeField {
 
-  // Dataset specific
-  private String datasetPath;
-  private String datasetName;
-  private GridDataset dataset;
-  private HashMap<String, WcsCoverage> availableCoverages;
+  private String name;
+  private String label;
+  private String description;
 
-  public WcsDataset( GridDataset dataset, String datasetPath )
-  {
-    this.datasetPath = datasetPath;
-    int pos = datasetPath.lastIndexOf('/');
-    this.datasetName = ( pos > 0 ) ? datasetPath.substring( pos + 1 ) : datasetPath;
-    this.dataset = dataset;
+  private Axis axis;
 
-    this.availableCoverages = new HashMap<String, WcsCoverage>();
+  public WcsRangeField(String name, String label, String description, Axis axis) {
+    if (name == null)
+      throw new IllegalArgumentException("Range name must be non-null.");
+    if (label == null)
+      throw new IllegalArgumentException("Range label must be non-null.");
+    this.name = name;
+    this.label = label;
+    this.description = description;
+    this.axis = axis;
+  }
 
-    for ( GridDataset.Gridset curGridset : this.dataset.getGridsets() )
-    {
-      GridCoordSystem gcs = curGridset.getGeoCoordSystem();
-      if ( ! gcs.isRegularSpatial() )
-        continue;
-      this.availableCoverages.put( gcs.getName(), new WcsCoverage( curGridset, this) );
+  public String getName() {
+    return this.name;
+  }
+
+  public String getLabel() {
+    return this.label;
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+
+  public Axis getAxis() {
+    return axis;
+  }
+
+  public static class Axis {
+    private String name;
+    private String label;
+    private String description;
+    private boolean isNumeric;
+    private List<String> values;
+
+    public Axis(String name, String label, String description, boolean isNumeric, List<String> values) {
+      this.name = name;
+      this.label = label;
+      this.description = description;
+      this.isNumeric = isNumeric;
+      this.values = new ArrayList<String>(values);
     }
-  }
 
-  public String getDatasetPath() { return datasetPath; }
-  public String getDatasetName() { return datasetName; }
-  public GridDataset getDataset() { return dataset; }
+    public String getName() {
+      return this.name;
+    }
 
-  public boolean isAvailableCoverageName( String name )
-  {
-    return availableCoverages.containsKey( name );
-  }
+    public String getLabel() {
+      return this.label;
+    }
 
-  public WcsCoverage getAvailableCoverage( String name )
-  {
-    return availableCoverages.get( name );
-  }
+    public String getDescription() {
+      return this.description;
+    }
 
-  public Collection<WcsCoverage> getAvailableCoverageCollection()
-  {
-    return Collections.unmodifiableCollection( availableCoverages.values() );
+    public boolean isNumeric() {
+      return isNumeric;
+    }
+
+    public List<String> getValues() {
+      return Collections.unmodifiableList(this.values);
+    }
   }
 }

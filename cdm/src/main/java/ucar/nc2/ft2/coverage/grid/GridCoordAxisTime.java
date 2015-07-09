@@ -3,6 +3,7 @@ package ucar.nc2.ft2.coverage.grid;
 
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
@@ -63,6 +64,12 @@ public class GridCoordAxisTime extends GridCoordAxis {
 
   public CalendarDate makeDate(double value) {
     return dateUnit.makeCalendarDate(value);
+  }
+
+  public CalendarDateRange getDateRange() {
+    CalendarDate start = makeDate( getCoordEdge1(0));
+    CalendarDate end = makeDate( getCoordEdgeLast());
+    return CalendarDateRange.of(start, end);
   }
 
 }

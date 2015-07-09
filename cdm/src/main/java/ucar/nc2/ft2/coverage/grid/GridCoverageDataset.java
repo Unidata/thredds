@@ -134,7 +134,7 @@ public class GridCoverageDataset implements AutoCloseable {
   }
 
   public List<GridCoordTransform> getCoordTransforms() {
-    return (coordTransforms != null) ? coordTransforms : new ArrayList<GridCoordTransform>();
+    return (coordTransforms != null) ? coordTransforms : new ArrayList<>();
   }
 
   public void setCoordTransforms(List<GridCoordTransform> coordTransforms) {
@@ -206,12 +206,18 @@ public class GridCoverageDataset implements AutoCloseable {
     return null;
   }
 
+  ////////////////////////////////////////////////
+
   public GridCoordAxis getXAxis(GridCoordSys gcs) {
     for (String axisName : gcs.getAxisNames()) {
        GridCoordAxis axis = findCoordAxis(axisName);
-       if (axis.getAxisType() == AxisType.GeoX || axis.getAxisType() == AxisType.Lon) {
+       if (axis.getAxisType() == AxisType.GeoX)
          return axis;
-       }
+     }
+    for (String axisName : gcs.getAxisNames()) {
+       GridCoordAxis axis = findCoordAxis(axisName);
+       if (axis.getAxisType() == AxisType.Lon)
+         return axis;
      }
     throw new IllegalArgumentException("Cant find X axis for coordsys "+gcs.getName());
   }
@@ -219,9 +225,13 @@ public class GridCoverageDataset implements AutoCloseable {
   public GridCoordAxis getYAxis(GridCoordSys gcs) {
     for (String axisName : gcs.getAxisNames()) {
        GridCoordAxis axis = findCoordAxis(axisName);
-       if (axis.getAxisType() == AxisType.GeoY || axis.getAxisType() == AxisType.Lat) {
+       if (axis.getAxisType() == AxisType.GeoY)
          return axis;
-       }
+     }
+    for (String axisName : gcs.getAxisNames()) {
+       GridCoordAxis axis = findCoordAxis(axisName);
+       if (axis.getAxisType() == AxisType.Lat)
+         return axis;
      }
     throw new IllegalArgumentException("Cant find Y axis for coordsys "+gcs.getName());
   }
@@ -229,9 +239,8 @@ public class GridCoverageDataset implements AutoCloseable {
   public GridCoordAxis getZAxis(GridCoordSys gcs) {
     for (String axisName : gcs.getAxisNames()) {
        GridCoordAxis axis = findCoordAxis(axisName);
-       if (axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.Height || axis.getAxisType() == AxisType.Pressure) {
+       if (axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.Height || axis.getAxisType() == AxisType.Pressure)
          return axis;
-       }
      }
     return null;
   }
@@ -278,6 +287,14 @@ public class GridCoverageDataset implements AutoCloseable {
       sb.append(" ");
     }
     return sb.toString();
+  }
+
+  public boolean isRegularSpatial(GridCoordSys gcs) {
+    GridCoordAxis xaxis = getXAxis(gcs);
+    GridCoordAxis yaxis = getYAxis(gcs);
+    if (xaxis == null || !xaxis.isRegular()) return false;
+    if (yaxis == null || !yaxis.isRegular()) return false;
+    return true;
   }
 
   ///////////////////////////////////////////////////////////////

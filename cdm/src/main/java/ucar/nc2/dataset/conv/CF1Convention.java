@@ -311,10 +311,13 @@ public class CF1Convention extends CSMConvention {
 
     // standard names for X, Y : bug in CDO putting wrong standard name, so check units first (!)
     if (sname != null) {
-      if (sname.equalsIgnoreCase("latitude"))
+      if (sname.equalsIgnoreCase(CF.ENSEMBLE))
+        return AxisType.Ensemble;
+
+      if (sname.equalsIgnoreCase(CF.LATITUDE))
         return AxisType.Lat;
 
-      if (sname.equalsIgnoreCase("longitude"))
+      if (sname.equalsIgnoreCase(CF.LONGITUDE))
         return AxisType.Lon;
 
       if (sname.equalsIgnoreCase(CF.PROJECTION_X_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LONGITUDE))

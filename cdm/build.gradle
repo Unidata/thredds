@@ -6,15 +6,14 @@ dependencies {
     compile project(':udunits')
     compile project(':httpservices')
 
-    //compile libraries["httpcore"]
-    compile libraries["joda-time"]
-    compile libraries["jdom2"]
-    compile libraries["jcip-annotations"]
-    compile libraries["protobuf-java"]
     compile libraries["guava"]
-    compile libraries["jcommander"]
+    compile libraries["jcip-annotations"]
+    compile libraries["jdom2"]
+    compile libraries["joda-time"]
+    compile libraries["jsr305"]
+    compile libraries["protobuf-java"]
 
-    compile libraries["slf4j-api"]
+    compile libraries["jcommander"]
 }
 
 test {

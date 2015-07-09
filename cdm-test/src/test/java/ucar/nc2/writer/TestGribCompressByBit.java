@@ -36,9 +36,6 @@ package ucar.nc2.writer;
 import SevenZip.LzmaAlone;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.tukaani.xz.LZMA2Options;
-import org.tukaani.xz.XZInputStream;
-import org.tukaani.xz.XZOutputStream;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
@@ -69,9 +66,9 @@ import java.util.zip.Inflater;
  */
 public class TestGribCompressByBit {
 
-  static enum Action {floats, floatShaved, rawInts}
-  static enum ExtraAction {entropyB, entropyI}
-  static enum Algorithm {deflate, bzip2, bzip2T, bzipScaled, xy, zip7}
+  enum Action {floats, floatShaved, rawInts}
+  enum ExtraAction {entropyB, entropyI}
+  enum Algorithm {deflate, bzip2, bzip2T, bzipScaled, zip7}
 
   static File outDir;
   static int deflate_level = 3;
@@ -95,7 +92,7 @@ public class TestGribCompressByBit {
         case bzip2: runAlg.add( new ApacheBzip2()); break;
         //case bzip2T: runAlg.add( new ItadakiBzip2()); break;
         case bzipScaled: runAlg.add( new ScaleAndOffset()); break;
-        case xy: runAlg.add( new TukaaniLZMA2()); break;
+        // case xy: runAlg.add( new TukaaniLZMA2()); break;
         case zip7: runAlg.add(new Zip7()); break;
       }
     }
@@ -644,7 +641,7 @@ public class TestGribCompressByBit {
     }
   }
 
-  class TukaaniLZMA2 extends CompressAlgo {
+  /* class TukaaniLZMA2 extends CompressAlgo {
     Algorithm getAlgo() {
       return Algorithm.xy;
     }
@@ -679,7 +676,7 @@ public class TestGribCompressByBit {
        return out.toByteArray();
      }
 
-  }
+  } */
 
   class Zip7 extends CompressAlgo {
     Algorithm getAlgo() {

@@ -53,38 +53,38 @@ import java.util.List;
  * @author caron
  * @since 7/31/2014
  */
-  @RunWith(Parameterized.class)
-  @Category(NeedsCdmUnitTest.class)
-  public class TestGeotiffWrite {
-    static public String topdir = TestDir.cdmUnitTestDir ;
+@RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
+public class TestGeotiffWrite {
+  static public String topdir = TestDir.cdmUnitTestDir;
 
-    @Parameterized.Parameters(name="{0}")
-    public static List<Object[]> getTestParameters() {
-      List<Object[]> result = new ArrayList<>();
+  @Parameterized.Parameters(name = "{0}")
+  public static List<Object[]> getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
 
-      result.add(new Object[]{topdir + "formats/dmsp/F14200307192230.n.OIS", "infraredImagery", new LatLonRect(new LatLonPointImpl(-5, -52.0), new LatLonPointImpl(25, -20.0))});
+    result.add(new Object[]{topdir + "formats/dmsp/F14200307192230.n.OIS", "infraredImagery", new LatLonRect(new LatLonPointImpl(-5, -52.0), new LatLonPointImpl(25, -20.0))});
 
-      // this fails
-      //result.add(new Object[]{topdir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4", "surf_salt_flux", new LatLonRect(new LatLonPointImpl(43, 141), 5, 5)});
+    // this fails
+    //result.add(new Object[]{topdir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4", "surf_salt_flux", new LatLonRect(new LatLonPointImpl(43, 141), 5, 5)});
 
-      return result;
-    }
+    return result;
+  }
 
-
-    String filename, field;
+  String filename, field;
   LatLonRect llbb;
-    public TestGeotiffWrite(String filename, String field, LatLonRect llbb) {
-      this.filename = filename;
-      this.field = field;
-      this.llbb = llbb;
-    }
+
+  public TestGeotiffWrite(String filename, String field, LatLonRect llbb) {
+    this.filename = filename;
+    this.field = field;
+    this.llbb = llbb;
+  }
 
   @Test
   public void testWrite() throws IOException {
 
     File f = new File(filename);
 
-    String fileOut =  TestDir.temporaryLocalDataDir + f.getName();
+    String fileOut = TestDir.temporaryLocalDataDir + f.getName();
     GeoTiffWriter2 writer = new GeoTiffWriter2(fileOut);
     writer.writeGrid(filename, field, 0, 0, true, llbb);
     writer.close();

@@ -204,6 +204,8 @@ public class GridCoordAxis {
     return dependenceType;
   }
 
+  public boolean isScalar() { return dependenceType == DependenceType.scalar; }
+
   public void setDependenceType(DependenceType dependenceType) {
     this.dependenceType = dependenceType;
   }
@@ -367,20 +369,32 @@ public class GridCoordAxis {
   }
 
   public double getCoordEdgeLast() {
-    return getCoordEdge2((int) ncoords - 1);
+    return getCoordEdge2( ncoords - 1);
   }
 
-  public Array getCoords() {
+  public Array getCoordsAsArray() {
     getValues();
-    Array arr = Array.factory(getDataType(), new int[] {(int) ncoords});
+    Array result;
+    switch (dependenceType) {
+      case scalar:
+        result = Array.factory(getDataType(), new int[0]);
+        break;
+      case twoD:
+        result = Array.factory(getDataType(), new int[0]);
+        break;
+      default:
+        result = Array.factory(getDataType(), new int[] { ncoords});
+        break;
+    }
+
     for (int i=0; i< ncoords; i++)
-      arr.setDouble(i, getCoord(i));
-    return arr;
+      result.setDouble(i, getCoord(i));
+    return result;
   }
 
-  public Array getCoordEdge1() {
+ /* public Array getCoordEdge1() {
     getValues();
-    double[] vals = new double[(int) ncoords];
+    double[] vals = new double[ ncoords];
     for (int i=0; i< ncoords; i++)
       vals[i] = getCoordEdge1(i);
     return Array.makeFromJavaArray(vals);
@@ -388,11 +402,11 @@ public class GridCoordAxis {
 
   public Array getCoordEdge2() {
     getValues();
-    double[] vals = new double[(int) ncoords];
+    double[] vals = new double[ ncoords];
     for (int i=0; i< ncoords; i++)
       vals[i] = getCoordEdge2(i);
     return Array.makeFromJavaArray(vals);
-  }
+  } */
 
   public List<NamedObject> getCoordValueNames() {
     getValues();

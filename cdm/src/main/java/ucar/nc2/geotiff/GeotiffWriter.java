@@ -38,19 +38,19 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ft2.coverage.grid.*;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 
 import java.io.IOException;
 
-
 /**
  * Write GeoTIFF files.
  *
  * @author caron, yuan
  */
-public class GeotiffWriter {
+public class GeotiffWriter implements AutoCloseable {
 
   protected GeoTiff geotiff;
   protected short pageNumber = 1;
@@ -64,8 +64,12 @@ public class GeotiffWriter {
     geotiff = new GeoTiff(fileOut);
   }
 
+  public void close() throws IOException {
+    geotiff.close();
+  }
+
   /**
-   * Write Grid data to the geotiff file.
+   * Write GridDatatype data to the geotiff file.
    *
    * @param dataset   grid in contained in this dataset
    * @param grid      data is in this grid
@@ -83,7 +87,7 @@ public class GeotiffWriter {
     CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
     CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
 
-    //latlon coord does not need to be scaled
+    // latlon coord does not need to be scaled
     double scaler = (gcs.isLatLon()) ? 1.0 : 1000.0;
 
     // data must go from top to bottom
@@ -96,14 +100,6 @@ public class GeotiffWriter {
       data = data.flip(0);
       yStart = yaxis.getCoordEdge((int) yaxis.getSize()) * scaler;
     }
-
-    /*  remove - i think unneeded, monotonic lon handled in CoordinateAxis1D. JC 3/18/2013
-     if (gcs.isLatLon()) {
-      Array lon = xaxis.read();
-      data = geoShiftDataAtLon(data, lon);
-      xStart = geoShiftGetXstart(lon, xInc);
-      //xStart = -180.0;
-    }  */
 
     if (!xaxis.isRegular() || !yaxis.isRegular()) {
       throw new IllegalArgumentException("Must be evenly spaced grid = " + grid.getFullName());
@@ -139,7 +135,7 @@ public class GeotiffWriter {
    * @throws IOException              on i/o error
    * @throws IllegalArgumentException if above assumptions not valid
    */
-  void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
+  protected void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc,
                         double yInc, int imageNumber) throws IOException {
 
     int nextStart = 0;
@@ -150,25 +146,32 @@ public class GeotiffWriter {
             && !(gcs.getProjection() instanceof LambertConformal)
             && !(gcs.getProjection() instanceof Stereographic)
             && !(gcs.getProjection() instanceof Mercator)
-            //  && !(gcs.getProjection() instanceof TransverseMercator)
+            //  && !(gcs.getProjection() instanceof TransverseMercator)   LOOK broken ??
             && !(gcs.getProjection() instanceof AlbersEqualAreaEllipse)
             && !(gcs.getProjection() instanceof AlbersEqualArea)) {
       throw new IllegalArgumentException("Unsupported projection = " + gcs.getProjection().getClass().getName());
     }
 
     // write the data first
+    MAMath.MinMax dataMinMax = grid.getMinMaxSkipMissingData(data);
     if (greyScale) {
-      ArrayByte result = replaceMissingValuesAndScale(grid, data);
+      ArrayByte result = replaceMissingValuesAndScale(grid, data, dataMinMax);
       nextStart = geotiff.writeData((byte[]) result.getStorage(), imageNumber);
     } else {
-      ArrayFloat result = replaceMissingValues(grid, data);
+      ArrayFloat result = replaceMissingValues(grid, data, dataMinMax);
       nextStart = geotiff.writeData((float[]) result.getStorage(), imageNumber);
     }
 
     // set the width and the height
-    int elemSize = greyScale ? 1 : 4;
     int height = data.getShape()[0];         // Y
     int width = data.getShape()[1];         // X
+
+    writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, imageNumber, nextStart, dataMinMax, gcs.getProjection());
+  }
+
+  private void writeMetadata(boolean greyScale, double xStart, double yStart, double xInc, double yInc, int height, int width, int imageNumber, int nextStart,
+                     MAMath.MinMax dataMinMax, Projection proj) throws IOException {
+
     geotiff.addTag(new IFDEntry(Tag.ImageWidth, FieldType.SHORT).setValue(width));
     geotiff.addTag(new IFDEntry(Tag.ImageLength, FieldType.SHORT).setValue(height));
 
@@ -190,6 +193,9 @@ public class GeotiffWriter {
         else
           geotiff.addTag( new IFDEntry(Tag.StripOffsets, FieldType.LONG).setValue(nextStart));
         */
+
+    int elemSize = greyScale ? 1 : 4;
+
     int[] soffset = new int[height];
     int[] sbytecount = new int[height];
     if (imageNumber == 1) {
@@ -225,7 +231,6 @@ public class GeotiffWriter {
       geotiff.addTag(new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue(32));  // 32 bits per sample
       geotiff.addTag(new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue(3));  // Sample Format
       geotiff.addTag(new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue(1));
-      MAMath.MinMax dataMinMax = grid.getMinMaxSkipMissingData(data);
       float min = (float) (dataMinMax.min);
       float max = (float) (dataMinMax.max);
       geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, FieldType.FLOAT).setValue(min));
@@ -247,29 +252,25 @@ public class GeotiffWriter {
     // set the transformation from projection to pixel, add tie point tag
     geotiff.setTransform(xStart, yStart, xInc, yInc);
 
-    if (gcs.isLatLon()) {
+    if (proj instanceof LatLonProjection) {
       addLatLonTags();
-    } else if (gcs.getProjection() instanceof LambertConformal) {
-      addLambertConformalTags((LambertConformal) gcs.getProjection(), xStart, yStart);
-    } else if (gcs.getProjection() instanceof Stereographic) {
-      addPolarStereographicTags((Stereographic) gcs.getProjection(), xStart, yStart);
-    } else if (gcs.getProjection() instanceof Mercator) {
-      addMercatorTags((Mercator) gcs.getProjection());
-    } else if (gcs.getProjection() instanceof TransverseMercator) {
-      addTransverseMercatorTags((TransverseMercator) gcs.getProjection());
-    } else if (gcs.getProjection() instanceof AlbersEqualArea) {
-      addAlbersEqualAreaTags((AlbersEqualArea) gcs.getProjection());
-    } else if (gcs.getProjection() instanceof AlbersEqualAreaEllipse) {
-      addAlbersEqualAreaEllipseTags((AlbersEqualAreaEllipse) gcs.getProjection());
+    } else if (proj instanceof LambertConformal) {
+      addLambertConformalTags((LambertConformal) proj, xStart, yStart);
+    } else if (proj instanceof Stereographic) {
+      addPolarStereographicTags((Stereographic) proj, xStart, yStart);
+    } else if (proj instanceof Mercator) {
+      addMercatorTags((Mercator) proj);
+    } else if (proj instanceof TransverseMercator) {
+      addTransverseMercatorTags((TransverseMercator) proj);
+    } else if (proj instanceof AlbersEqualArea) {
+      addAlbersEqualAreaTags((AlbersEqualArea) proj);
+    } else if (proj instanceof AlbersEqualAreaEllipse) {
+      addAlbersEqualAreaEllipseTags((AlbersEqualAreaEllipse) proj);
+    } else {
+      throw new IllegalArgumentException("Unsupported projection = " + proj.getClass().getName());
     }
 
     geotiff.writeMetadata(imageNumber);
-    //geotiff.close();
-
-  }
-
-  public void close() throws IOException {
-    geotiff.close();
   }
 
   /**
@@ -279,8 +280,7 @@ public class GeotiffWriter {
    * @param data input data array
    * @return floating point data array with missing values replaced.
    */
-  private ArrayFloat replaceMissingValues(GridDatatype grid, Array data) {
-    MAMath.MinMax dataMinMax = grid.getMinMaxSkipMissingData(data);
+  private ArrayFloat replaceMissingValues(IsMissingEvaluator grid, Array data, MAMath.MinMax dataMinMax) {
     float minValue = (float) (dataMinMax.min - 1.0);
 
     ArrayFloat floatArray = (ArrayFloat) Array.factory(DataType.FLOAT, data.getShape());
@@ -288,7 +288,7 @@ public class GeotiffWriter {
     IndexIterator floatIter = floatArray.getIndexIterator();
     while (dataIter.hasNext()) {
       float v = dataIter.getFloatNext();
-      if (grid.isMissingData((double) v)) {
+      if (grid.isMissing((double) v)) {
         v = minValue;
       }
       floatIter.setFloatNext(v);
@@ -304,9 +304,7 @@ public class GeotiffWriter {
    * @param data input data array
    * @return byte data array with missing values replaced and data scaled from 1- 255.
    */
-  private ArrayByte replaceMissingValuesAndScale(GridDatatype grid,
-                                                 Array data) {
-    MAMath.MinMax dataMinMax = grid.getMinMaxSkipMissingData(data);
+  private ArrayByte replaceMissingValuesAndScale(IsMissingEvaluator grid, Array data, MAMath.MinMax dataMinMax) {
     double scale = 254.0 / (dataMinMax.max - dataMinMax.min);
 
     ArrayByte byteArray = (ArrayByte) Array.factory(DataType.BYTE, data.getShape());
@@ -316,7 +314,7 @@ public class GeotiffWriter {
     byte bv;
     while (dataIter.hasNext()) {
       double v = dataIter.getDoubleNext();
-      if (grid.isMissingData(v)) {
+      if (grid.isMissing(v)) {
         bv = 0;
       } else {
         int iv = (int) ((v - dataMinMax.min) * scale + 1);
@@ -516,7 +514,7 @@ public class GeotiffWriter {
     }
   }
 
-  // WTF ?? is this the seam crossing ??
+  // LOOK WTF ?? is this the seam crossing ??
   private double geoShiftGetXstart(Array lon, double inc) {
     Index ilon = lon.getIndex();
     int[] lonShape = lon.getShape();
@@ -542,63 +540,70 @@ public class GeotiffWriter {
     return xlon;
   }
 
-  Array geoShiftDataAtLon(Array data, Array lon) {
-    int count = 0;
-    int[] shape = data.getShape();
-    Index ima = data.getIndex();
-    Index ilon = lon.getIndex();
-    int[] lonShape = lon.getShape();
-    ArrayFloat adata = new ArrayFloat(new int[]{shape[0], shape[1]});
-    Index imaa = adata.getIndex();
-    IndexIterator lonIter = lon.getIndexIterator();
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /**
+   * Write GridCoverage data to the geotiff file.
+   *
+   * @param dataset   grid in contained in this dataset
+   * @param coverage  data is in this grid
+   * @param data      2D array in YX order
+   * @param greyScale if true, write greyScale image, else dataSample.
+   * @throws IOException on i/o error
+   */
+  public void writeGrid(GridCoverageDataset dataset, GridCoverage coverage, Array data, boolean greyScale) throws IOException {
 
-    LatLonPoint p0 = new LatLonPointImpl(0, lon.getFloat(ilon.set(lonShape[0] - 1)));
-    LatLonPoint pN = new LatLonPointImpl(0, lon.getFloat(ilon.set(0)));
+    GridCoordSys gcs = dataset.findCoordSys(coverage.getCoordSysName());
+    if (!dataset.isRegularSpatial(gcs))
+      throw new IllegalArgumentException("Must have 1D x and y axes for " + coverage.getName());
 
-    while (lonIter.hasNext()) {
-      float l = lonIter.getFloatNext();
-      if (l > 180.0) {
-        count++;
-      }
+    Projection proj = dataset.getProjection(coverage);
+    GridCoordAxis xaxis = dataset.getXAxis(gcs);
+    GridCoordAxis yaxis = dataset.getYAxis(gcs);
+
+    // latlon coord does not need to be scaled
+    double scaler = (proj instanceof LatLonProjection) ? 1.0 : 1000.0;
+
+    // data must go from top to bottom
+    double xStart = xaxis.getCoordEdge1(0) * scaler;
+    double yStart = yaxis.getCoordEdge1(0) * scaler;
+    double xInc = xaxis.getResolution() * scaler;
+    double yInc = Math.abs(yaxis.getResolution()) * scaler;
+
+    if (yaxis.getCoord(0) < yaxis.getCoord(1)) {
+      data = data.flip(0);
+      yStart = yaxis.getCoordEdgeLast();
     }
 
-    //checking if the 0 point and the N point are the same point
-    int spoint = 0;
-    if (p0.getLongitude() == pN.getLongitude()) {
-      spoint = shape[1] - count - 1;
+    /*  remove - i think unneeded, monotonic lon handled in CoordinateAxis1D. JC 3/18/2013
+     if (gcs.isLatLon()) {
+      Array lon = xaxis.read();
+      data = geoShiftDataAtLon(data, lon);
+      xStart = geoShiftGetXstart(lon, xInc);
+      //xStart = -180.0;
+    }  */
+
+    if (pageNumber > 1) {
+      geotiff.initTags();
+    }
+
+
+    // write the data first
+    int nextStart = 0;
+    MAMath.MinMax dataMinMax = MAMath.getMinMaxSkipMissingData(data, coverage);
+    if (greyScale) {
+      ArrayByte result = replaceMissingValuesAndScale(coverage, data, dataMinMax);
+      nextStart = geotiff.writeData((byte[]) result.getStorage(), pageNumber);
     } else {
-      spoint = shape[1] - count;
+      ArrayFloat result = replaceMissingValues(coverage, data, dataMinMax);
+      nextStart = geotiff.writeData((float[]) result.getStorage(), pageNumber);
     }
 
-    if ((count > 0) && (shape[1] > count)) {
-      for (int j = 1; j < shape[1]; j++) {
-        int jj = 0;
+    // set the width and the height
+    int height = data.getShape()[0];         // Y
+    int width = data.getShape()[1];         // X
 
-        if (j >= count) {
-          jj = j - count;
-        } else {
-          jj = j + spoint;
-        }
-
-        for (int i = 0; i < shape[0]; i++) {
-          float dd = data.getFloat(ima.set(i, jj));
-          adata.setFloat(imaa.set(i, j), dd);
-        }
-      }
-
-      if (p0.getLongitude() == pN.getLongitude()) {
-        for (int i = 0; i < shape[0]; i++) {
-          float dd = adata.getFloat(imaa.set(i, shape[1] - 1));
-          adata.setFloat(imaa.set(i, 0), dd);
-        }
-      }
-      return adata;
-
-    } else {
-      return data;
-    }
+    writeMetadata(greyScale, xStart, yStart, xInc, yInc, height, width, pageNumber, nextStart, dataMinMax, proj);
+    pageNumber++;
   }
-
-
 }
 

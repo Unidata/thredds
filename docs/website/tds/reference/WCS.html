@@ -197,26 +197,26 @@
 <h2>WCS Dataset URLs</h2>
 
 <p>All THREDDS WCS requests start with</p>
-<pre style="margin-left: 40px;">http://servername:8080<strong>/thredds/wcs/</strong> </pre>
+<pre style="margin-left: 40px;">http://servername<strong>/thredds/wcs/</strong> </pre>
 
 <p>The next part of the path indicates which file to use</p>
-<pre style="margin-left: 40px;">http://servername:8080/thredds/wcs/<strong>test/sst.nc</strong> </pre>
+<pre style="margin-left: 40px;">http://servername/thredds/wcs/<strong>test/sst.nc</strong> </pre>
 
 <p>This is typically the URL you will need to pass to a WCS
   client. The
   WCS Client then forms various queries to the THREDDS WCS server for
   that dataset, e.g.:</p>
-<pre style="margin-left: 40px;">http://servername:8080/thredds/wcs/test/sst.nc<strong>?service=WCS&amp;version=1.0.0&amp;request=GetCapabilities</strong></pre>
+<pre style="margin-left: 40px;">http://servername/thredds/wcs/test/sst.nc<strong>?service=WCS&amp;version=1.0.0&amp;request=GetCapabilities</strong></pre>
 
 <h2>Examples</h2>
 
 <p>The following are WCS URLs for our test datasets: </p>
 <ul>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/sst.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/ocean.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/eta.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/RUC.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/sst.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/ocean.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/eta.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/RUC.nc</strong></li>
 </ul>
 <p>Here are example WCS queries for the first dataset: </p>
 <ul>

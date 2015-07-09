@@ -8,7 +8,6 @@ dependencies {
     compile libraries["jdom2"]        // Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP files.
     compile libraries["spring-core"]
     compile libraries["quartz"]
-    compile libraries["mapdb"]
     compile libraries["chronicle-map"]
     compile libraries["openhft-lang"]
 

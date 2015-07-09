@@ -33,8 +33,8 @@
 
 package ucar.nc2.ui.grid;
 
-import thredds.wcs.Request;
-import thredds.wcs.v1_0_0_1.*;
+//import thredds.wcs.Request;
+// import thredds.wcs.v1_0_0_1.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
@@ -114,7 +114,7 @@ public class GeoGridTable extends JPanel {
       }
     });
 
-    csPopup.addAction("WCS DescribeCoverage", new AbstractAction() {
+    /* csPopup.addAction("WCS DescribeCoverage", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
         if (gridDataset.findGridDatatype(vb.getName()) != null) {
@@ -140,7 +140,7 @@ public class GeoGridTable extends JPanel {
           }
         }
       }
-    });
+    }); */
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -181,7 +181,7 @@ public class GeoGridTable extends JPanel {
     });
     buttPanel.add(infoButton);
 
-    JButton wcsButton = new JButton("WCS");
+    /* JButton wcsButton = new JButton("WCS");
     wcsButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (gridDataset != null) {
@@ -212,7 +212,7 @@ public class GeoGridTable extends JPanel {
         }
       }
     });
-    buttPanel.add(wcsButton);
+    buttPanel.add(wcsButton);  */
 
     JButton invButton = new JButton("GridInv");
     invButton.addActionListener(new ActionListener() {

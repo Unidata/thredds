@@ -30,46 +30,39 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.wcs;
+package thredds.server.wcs.v1_0_0_1;
 
-import ucar.nc2.dt.GridDataset;
+import thredds.server.wcs.Request;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
-public class WcsRequestFactory
-{
-  private Request request;
+import java.util.List;
 
-  private String versionString;
-  private Request.Operation operation;
-  private GridDataset dataset;
-  
-  public static WcsRequestFactory newWcsRequestFactory( String versionString,
-                                                        Request.Operation operation,
-                                                        GridDataset dataset )
-  {
-    return new WcsRequestFactory( versionString, operation, dataset);
+public class DescribeCoverageBuilder extends WcsRequestBuilder {
+  private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DescribeCoverageBuilder.class);
+
+  DescribeCoverageBuilder(String versionString, Request.Operation operation, GridCoverageDataset dataset, String datasetPath) {
+    super(versionString, operation, dataset, datasetPath);
   }
 
-  private WcsRequestFactory( String versionString,
-                             Request.Operation operation,
-                             GridDataset dataset )
-  {
-    if ( versionString == null ) throw new IllegalArgumentException( "Version may not be null.");
-    if ( operation == null ) throw new IllegalArgumentException( "Operation may not be null.");
-    if ( dataset == null ) throw new IllegalArgumentException( "Dataset may not be null.");
-    
-    this.versionString = versionString;
-    this.operation = operation;
-    this.dataset = dataset;
+  private List<String> coverageIdList;
+
+  public List<String> getCoverageIdList() {
+    return coverageIdList;
   }
 
-  public Request getRequest()
-  {
-    return request;
+  public DescribeCoverageBuilder setCoverageIdList(List<String> coverageIdList) {
+    this.coverageIdList = coverageIdList;
+    return this;
+  }
+
+  public DescribeCoverage buildDescribeCoverage()
+          throws WcsException {
+    if (this.coverageIdList == null)
+      throw new IllegalStateException("Null coverage list not allowed.");
+    if (this.coverageIdList.isEmpty())
+      throw new IllegalStateException("Empty coverage list not allowed.");
+
+    return new DescribeCoverage(this.getOperation(), this.getVersionString(),
+            this.getWcsDataset(), this.coverageIdList);
   }
 }

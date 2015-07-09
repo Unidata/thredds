@@ -38,20 +38,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 import thredds.servlet.*;
-import thredds.server.wcs.v1_0_0_1.WcsHandler;
 
 import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 import ucar.nc2.util.DiskCache2;
 
 /**
- * Servlet handles serving data via WCS 1.0.
+ * Handles serving data via WCS 1.0.
  */
 @Controller
 @RequestMapping("/wcs")
@@ -66,11 +62,7 @@ public class WCSController {
   private boolean allowRemote = false;
   private long maxFileDownloadSize;
 
-  // ToDo Consider using a SortedMap to contain handlers.
-  private List<VersionHandler> versionHandlers;
-  private List<VersionHandler> experimentalHandlers;
-  private String supportedVersionsString;
-  private VersionHandler latestSupportedVersion;
+  private WcsHandler wcsHandler;
 
   public enum Operation {
     GetCapabilities, DescribeCoverage, GetCoverage
@@ -102,24 +94,9 @@ public class WCSController {
 
     // Version Handlers
     // - Latest non-experimental version supported is "1.0.0"
-    this.latestSupportedVersion = new WcsHandler("1.0.0")
+    this.wcsHandler = new WcsHandler("1.0.0")
             .setDeleteImmediately(deleteImmediately)
             .setDiskCache(diskCache);
-    // - Experimental WCS_Plus handler.
-    VersionHandler wcsPlusVersion = new thredds.server.wcs.v1_0_0_Plus.WcsHandler("1.0.0.11")
-            .setDeleteImmediately(deleteImmediately)
-            .setDiskCache(diskCache);
-
-    // Supported Versions [Note: Make sure to add these in increasing order!]
-    this.versionHandlers = new ArrayList<>();
-    this.versionHandlers.add(this.latestSupportedVersion);  // "1.0.0"
-    for (VersionHandler vh : this.versionHandlers) {
-      supportedVersionsString = (supportedVersionsString == null ? "" : supportedVersionsString + ",") + vh.getVersion().getVersionString();
-    }
-
-    // Experimental Handlers [Requests must match exactly.]
-    this.experimentalHandlers = new ArrayList<>();
-    this.experimentalHandlers.add(wcsPlusVersion);          // "1.0.0.11"
 
     logServerStartup.info("WCS service - init done - ");
   }
@@ -154,201 +131,7 @@ public class WCSController {
       return;
     }
 
-    // Decide on requested version.
-    VersionHandler targetHandler;
-    if (requestParam == null) {
-      this.latestSupportedVersion.handleExceptionReport(res, "MissingParameterValue", "Request", "");
-      return;
-    } else if (requestParam.equalsIgnoreCase(Operation.GetCapabilities.toString())) {
-      if (acceptVersionsParam == null && versionParam == null)
-        targetHandler = this.latestSupportedVersion;
-      else if (acceptVersionsParam != null && versionParam != null) {
-        this.latestSupportedVersion.handleExceptionReport(res, "NoApplicableCode", "", "Request requires one and only one version parameter: either \"Version\" or \"AcceptVersions\".");
-        return;
-      } else if (acceptVersionsParam != null) {
-        // Version negotiation per 1.1.0 spec.
-        targetHandler = getHandlerUsingNegotiation_1_1_0(acceptVersionsParam);
-        if (targetHandler == null) {
-          this.latestSupportedVersion.handleExceptionReport(res, "VersionNegotiationFailed", "AcceptVersions", "The \"AcceptVersions\" parameter value [" + acceptVersionsParam + "[ did not match any supported versions [" + supportedVersionsString + "].");
-          return;
-        }
-      } else if (versionParam != null) {
-        // Version negotiation per 1.0.0 spec.
-        targetHandler = getHandlerUsingNegotiation_1_0_0(versionParam);
-        if (targetHandler == null) {
-          this.latestSupportedVersion.handleExceptionReport(res, "InvalidParameterValue", "Version", "Invale \"Version\" parameter value [" + acceptVersionsParam + "] did not match any supported versions [" + supportedVersionsString + "].");
-          return;
-        }
-      } else {
-        // [[Can't really get here given all the if clauses above.]]
-        // No version specified, use latest supported version.
-        targetHandler = this.latestSupportedVersion;
-      }
-    } else {
-      // Find requested version (no negotiation for "DescribeCoverage" and "GetCoverage" requests).
-      if (!requestParam.equalsIgnoreCase(Operation.DescribeCoverage.toString()) &&
-              !requestParam.equalsIgnoreCase(Operation.GetCoverage.toString())) {
-        this.latestSupportedVersion.handleExceptionReport(res, "InvalidParameterValue", "Request", "Invalid \"Operation\" parameter value [" + requestParam + "].");
-        return;
-      }
-      if (versionParam == null) {
-        this.latestSupportedVersion.handleExceptionReport(res, "InvalidParameterValue", "Version", "Request requires a \"Version\" parameter.");
-        return;
-      } else {
-        // Find matching supported version.
-        targetHandler = getMatchingVersionHandler(versionParam);
-        if (targetHandler == null) {
-          // Find matching "experimental" version.
-          targetHandler = getMatchingExpermimentalVersionHandler(versionParam);
-          if (targetHandler == null) {
-            this.latestSupportedVersion.handleExceptionReport(res, "InvalidParameterValue", "Version", "Invaled \"Version\" parameter value [" + versionParam + "].");
-            return;
-          }
-        }
-      }
-    }
-
-    if (targetHandler == null) {
-      this.latestSupportedVersion.handleExceptionReport(res, "VersionNegotiationFailed", "", "Version negotiation failed.");
-      return;
-    }
-
-    targetHandler.handleKVP(null, req, res);
+    wcsHandler.handleKVP(null, req, res);
   }
 
-  protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    if (!allow) {
-      res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-      return;
-    }
-
-    res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-    res.setHeader("Allow", "GET");
-  }
-
-  /**
-   * Return the VersionHandler appropriate for the given version number
-   * using the WCS 1.0.0 version number negotiation rules.
-   *
-   * @param versionNumber the requested version string
-   * @return the appropriate VersionHandler for the requested version string (as per WCS 1.0 version negotiation).
-   */
-  private VersionHandler getHandlerUsingNegotiation_1_0_0(String versionNumber) {
-    if (versionNumber == null)
-      return null;
-
-    // Parse request version
-    Version reqVersion = null;
-    try {
-      reqVersion = new Version(versionNumber);
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
-
-    // Do version negotiation using list of supported non-experimental version handlers.
-    VersionHandler handler = null;
-    VersionHandler prevVh = null;
-    for (VersionHandler curVh : this.versionHandlers) {
-      int reqCompareCur = reqVersion.compareTo(curVh.getVersion());
-      if (reqCompareCur == 0)
-        // Use matching version handler.
-        return curVh;
-      else if (reqCompareCur < 0) {
-        if (prevVh == null)
-          // Requested version lower than lowest supported version,
-          // so use lowest supported version.
-          return curVh;
-        else
-          // Requested version lower than current version,
-          // so use previous version.
-          return prevVh;
-      } else if (reqCompareCur > 0) {
-        // Requested version greater than current version,
-        // so keep current version around in case it is needed.
-        prevVh = curVh;
-      }
-    }
-
-    if (handler == null) {
-      // Look for exact matches in experimental version handlers.
-      for (VersionHandler curVh : this.experimentalHandlers) {
-        if (reqVersion.equals(curVh.getVersion()))
-          return curVh;
-      }
-
-      // If no exact match on experimental version handlers, revert to
-      // latest supported non-experimental version. [Note: Requested version is
-      // greater than the latest supported non-experimental version, so use
-      // latest supported version (should be same as prevVh).]
-      return this.latestSupportedVersion;
-    }
-
-    return handler;
-  }
-
-  private VersionHandler getHandlerUsingNegotiation_1_1_0(String acceptVersionsParam)
-          throws IOException {
-    VersionHandler handler = null;
-    String acceptableVersions[] = acceptVersionsParam.split(",");
-    for (String curVerString : acceptableVersions) {
-      handler = getMatchingVersionHandler(curVerString);
-      if (handler != null)
-        break;
-    }
-    return handler;
-  }
-
-  /**
-   * Return the VersionHandler that supports the given version number or null
-   * if the given version number is not supported.
-   *
-   * @param versionNumber the requested version string
-   * @return the VersionHandler that supports the requested version string or null.
-   */
-  private VersionHandler getMatchingVersionHandler(String versionNumber) {
-    if (versionNumber == null)
-      return null;
-
-    Version reqVersion = null;
-    try {
-      reqVersion = new Version(versionNumber);
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
-
-    for (VersionHandler curVh : this.versionHandlers) {
-      if (reqVersion.equals(curVh.getVersion()))
-        // Return the matching version.
-        return curVh;
-    }
-
-    return null;
-  }
-
-  /**
-   * Return the "experimental" VersionHandler that supports the given version number or null
-   * if no "experimental" VersionHandler supports the given version number.
-   *
-   * @param versionNumber the requested version string
-   * @return the "experimental" VersionHandler that supports the requested version string or null.
-   */
-  private VersionHandler getMatchingExpermimentalVersionHandler(String versionNumber) {
-    if (versionNumber == null)
-      return null;
-
-    Version reqVersion = null;
-    try {
-      reqVersion = new Version(versionNumber);
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
-
-    for (VersionHandler curVh : this.experimentalHandlers) {
-      if (reqVersion.equals(curVh.getVersion()))
-        // Matching version found.
-        return curVh;
-    }
-
-    return null;
-  }
 }

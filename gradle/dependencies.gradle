@@ -117,17 +117,17 @@ libraries["httpunit"] = "httpunit:httpunit:1.7"
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 
+libraries["bounce"] = "org.bounce:bounce:0.14"
+
 // See https://github.com/coverity/coverity-security-library
 libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
 
 libraries["chronicle-map"] = "net.openhft:chronicle-map:2.1.7"
 libraries["openhft-lang"] = "net.openhft:lang:6.6.4"
 
-libraries["mapdb"] = "org.mapdb:mapdb:1.0.7"
+libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
 
-libraries["bounce"] = "org.bounce:bounce:0.14"
-
-libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"
+libraries["guava"] = "com.google.guava:guava:18.0"
 
 libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.3.6"
 
@@ -135,7 +135,7 @@ libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.3.3"
 
 libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.3.3"
 
-libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
+libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"
 
 libraries["jcip-annotations"] = "net.jcip:jcip-annotations:1.0"
 
@@ -149,6 +149,8 @@ libraries["joda-time"] = "joda-time:joda-time:2.2"
 
 libraries["jsoup"] = "org.jsoup:jsoup:1.7.2"
 
+libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.0"
+
 libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:2.5.0"
 
 libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.0"
@@ -159,11 +161,9 @@ libraries["jcommander"] = "com.beust:jcommander:1.35"
 
 libraries["commons-lang3"] = "org.apache.commons:commons-lang3:3.3.2"
 
-libraries["guava"] = "com.google.guava:guava:18.0"
-
 libraries["jj2000"] = "edu.ucar:jj2000:5.3"
 
-libraries["xz"] = "org.tukaani:xz:1.0"
+// libraries["xz"] = "org.tukaani:xz:1.0"
 
 libraries["jcommon"] = "org.jfree:jcommon:1.0.23"
 
