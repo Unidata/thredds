@@ -175,15 +175,16 @@ abstract public class Json
         }
     }
 
+    static public String toString(Object o) {return toString(o,"");}
 
-    static public String toString(Object o)
+    static public String toString(Object o, String demark)
     {
         StringBuilder buf = new StringBuilder();
-        toStringR(o, buf, 0);
+        toStringR(o, buf, demark, 0);
         return buf.toString();
     }
 
-    static protected void toStringR(Object o, StringBuilder buf, int indent)
+    static protected void toStringR(Object o, StringBuilder buf, String demark, int indent)
     {
         boolean first = true;
         if(o instanceof List) {
@@ -197,7 +198,7 @@ abstract public class Json
                 for(int i=0;i<list.size();i++) {
                     Object e = list.get(i);
                     buf.append(indent(indent));
-                    toStringR(e, buf, indent + 2);
+                    toStringR(e, buf, demark, indent + 2);
                     if(i < list.size()-1) buf.append(",");
                     buf.append("\n");
                 }
@@ -216,12 +217,12 @@ abstract public class Json
                 for(Map.Entry<String, Object> e : map.entrySet()) {
                     buf.append(indent(indent + 2));
                     buf.append(QUOTE);
-                    buf.append(e.getKey());
+                    buf.append(e.getKey().replace("\"","\\\""));
                     buf.append(QUOTE);
                     buf.append(' ');
                     buf.append(COLON);
                     buf.append(' ');
-                    toStringR(e.getValue(), buf, indent + 2);
+                    toStringR(e.getValue(), buf, demark, indent + 2);
                     if(i < map.size() - 1) buf.append(",");
                     buf.append("\n");
                     i++;
@@ -230,10 +231,12 @@ abstract public class Json
                 buf.append(RBRACE);
             }
         } else if((o instanceof Long) || (o instanceof Boolean)) {
+            buf.append(demark);
             buf.append(o.toString());
+            buf.append(demark);
         } else {
             buf.append(QUOTE);
-            buf.append(o.toString());
+            buf.append(o.toString().replace("\"","\\\""));
             buf.append(QUOTE);
         }
     }
