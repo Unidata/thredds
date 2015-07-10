@@ -98,8 +98,8 @@ public class FileCache implements FileCacheIF {
    */
   public static synchronized void shutdown() {
     if (timer != null) {
-      System.out.printf("FileCache.shutdown called%n");
       timer.cancel();
+      System.out.printf("FileCache.shutdown called%n");
     }
     timer = null;
   }

@@ -215,6 +215,7 @@ public class CollectionUpdater {
     if (scheduler == null) return;
     try {
       scheduler.shutdown(true);
+      System.out.printf("Quartz scheduler shutdown%n");
     } catch (Throwable e) {
       fcLogger.error("Scheduler failed to shutdown", e);
       scheduler = null;

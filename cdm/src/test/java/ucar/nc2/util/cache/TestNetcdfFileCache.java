@@ -255,55 +255,63 @@ public class TestNetcdfFileCache {
     Random r = new Random();
     int nfiles = files.size();
 
-    Formatter format = new Formatter(System.out);
-    ConcurrentLinkedQueue<Future> q = new ConcurrentLinkedQueue<>();
-    ExecutorService qexec = Executors.newFixedThreadPool(CONS_THREAD);
-    qexec.submit(new Consumer(q, format));
+    ExecutorService qexec = null;
+    ExecutorService exec = null;
+    try {
+      Formatter format = new Formatter(System.out);
+      ConcurrentLinkedQueue<Future> q = new ConcurrentLinkedQueue<>();
+      qexec = Executors.newFixedThreadPool(CONS_THREAD);
+      qexec.submit(new Consumer(q, format));
 
-    ExecutorService exec = Executors.newFixedThreadPool(PROD_THREAD);
-    for (int i = 0; i < N; i++) {
-      // pick a file at random
-      int findex = r.nextInt(nfiles);
-      String location = files.get(findex);
-      q.add(exec.submit(new CallAcquire(location)));
+      exec = Executors.newFixedThreadPool(PROD_THREAD);
+      for (int i = 0; i < N; i++) {
+        // pick a file at random
+        int findex = r.nextInt(nfiles);
+        String location = files.get(findex);
+        q.add(exec.submit(new CallAcquire(location)));
 
-      if (i % SKIP == 0) {
-        format.format(" %3d qsize= %3d ", i, q.size());
-        cache.showStats(format);
+        if (i % SKIP == 0) {
+          format.format(" %3d qsize= %3d ", i, q.size());
+          cache.showStats(format);
+        }
       }
-    }
 
-    format.format("awaitTermination 10 secs qsize= %3d%n", q.size());
-    cache.showStats(format);
-    exec.awaitTermination(10, TimeUnit.SECONDS);
-    format.format("done qsize= %4d%n", q.size());
-    cache.showStats(format);
+      format.format("awaitTermination 10 secs qsize= %3d%n", q.size());
+      cache.showStats(format);
+      exec.awaitTermination(10, TimeUnit.SECONDS);
+      format.format("done qsize= %4d%n", q.size());
+      cache.showStats(format);
 
-    int total = 0;
-    int total_locks = 0;
-    HashSet<Object> checkUnique = new HashSet<>();
-    map = cache.getCache();
-    for (Object key : map.keySet()) {
-      assert !checkUnique.contains(key);
-      checkUnique.add(key);
-      int locks = 0;
-      FileCache.CacheElement elem = map.get(key);
-      synchronized (elem) {
-        for (FileCache.CacheElement.CacheFile file : elem.list)
-          if (file.isLocked.get()) locks++;
+      int total = 0;
+      int total_locks = 0;
+      HashSet<Object> checkUnique = new HashSet<>();
+      map = cache.getCache();
+      for (Object key : map.keySet()) {
+        assert !checkUnique.contains(key);
+        checkUnique.add(key);
+        int locks = 0;
+        FileCache.CacheElement elem = map.get(key);
+        synchronized (elem) {
+          for (FileCache.CacheElement.CacheFile file : elem.list)
+            if (file.isLocked.get()) locks++;
+        }
+        //System.out.println(" key= "+key+ " size= "+elem.list.size()+" locks="+locks);
+        total_locks += locks;
+        total += elem.list.size();
       }
-      //System.out.println(" key= "+key+ " size= "+elem.list.size()+" locks="+locks);
-      total_locks += locks;
-      total += elem.list.size();
-    }
-    System.out.println(" total=" + total + " total_locks=" + total_locks);
+      System.out.println(" total=" + total + " total_locks=" + total_locks);
 //    assert total_locks == map.keySet().size();
 
-    cache.clearCache(false);
-    format.format("after cleanup qsize= %4d%n", q.size());
-    cache.showStats(format);
+      cache.clearCache(false);
+      format.format("after cleanup qsize= %4d%n", q.size());
+      cache.showStats(format);
 
-    cache.clearCache(true);
+      cache.clearCache(true);
+
+    } finally {
+      if (qexec != null) qexec.shutdownNow();
+      if (exec != null) exec.shutdownNow();
+    }
   }
 
   class Consumer implements Runnable {

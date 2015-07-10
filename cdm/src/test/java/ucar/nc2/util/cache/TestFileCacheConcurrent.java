@@ -95,29 +95,34 @@ public class TestFileCacheConcurrent {
     int nfiles = fileList.size();
     System.out.println(" loaded " + nfiles + " files");
 
-    Random r = new Random();
-    ArrayBlockingQueue q = new ArrayBlockingQueue(MAX_TASKS);
-    ThreadPoolExecutor pool = new ThreadPoolExecutor(CLIENT_THREADS, CLIENT_THREADS, 100, TimeUnit.SECONDS, q);
+    ThreadPoolExecutor pool = null;
+    try {
+      Random r = new Random();
+      ArrayBlockingQueue q = new ArrayBlockingQueue(MAX_TASKS);
+      pool = new ThreadPoolExecutor(CLIENT_THREADS, CLIENT_THREADS, 100, TimeUnit.SECONDS, q);
 
-    int count = 0;
-    while (count < 100) {
-      if (q.remainingCapacity() > NSAME) {
-        // pick a file at random
-        String location = fileList.get(r.nextInt(nfiles));
+      int count = 0;
+      while (count < 100) {
+        if (q.remainingCapacity() > NSAME) {
+          // pick a file at random
+          String location = fileList.get(r.nextInt(nfiles));
 
-        for (int i = 0; i < NSAME; i++) {
-          count++;
-          pool.submit(new CallAcquire(location, r.nextInt(WAIT_MAX)));
+          for (int i = 0; i < NSAME; i++) {
+            count++;
+            pool.submit(new CallAcquire(location, r.nextInt(WAIT_MAX)));
 
-          if (count % PRINT_EVERY == 0) {
-            Formatter f = new Formatter();
-            cache.showStats(f);
-            System.out.printf(" submit %d queue= %d cache= %s%n", count, q.size(), f);
+            if (count % PRINT_EVERY == 0) {
+              Formatter f = new Formatter();
+              cache.showStats(f);
+              System.out.printf(" submit %d queue= %d cache= %s%n", count, q.size(), f);
+            }
           }
+        } else {
+          Thread.sleep(100);
         }
-      } else {
-        Thread.sleep(100);        
       }
+    } finally {
+      if (pool != null) pool.shutdownNow();
     }
 
     /* pool.shutdown(); // Disable new tasks from being submitted

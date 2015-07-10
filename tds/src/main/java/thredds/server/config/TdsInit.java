@@ -33,10 +33,12 @@
 
 package thredds.server.config;
 
+import com.google.common.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -71,6 +73,7 @@ import ucar.util.prefs.XMLStore;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A Singleton class to initialize and shutdown the CDM/TDS
@@ -105,6 +108,10 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
   @Autowired
   CollectionUpdater collectionUpdater;
+
+  @Autowired
+  @Qualifier("fcTriggerExecutor")
+  private ExecutorService executor;  // need this so we can shut it down
 
   //@Autowired
   //private CatalogWatcher catalogWatcher;
@@ -431,6 +438,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     FileCache.shutdown();              // this handles background threads for all instances of FileCache
     DiskCache2.exit();                // this handles background threads for all instances of DiskCache2
     thredds.inventory.bdb.MetadataManager.closeAll();
+    executor.shutdownNow();
 
     /* try {
       catalogWatcher.close();
