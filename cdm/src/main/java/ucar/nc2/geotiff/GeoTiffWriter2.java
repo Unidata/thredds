@@ -12,7 +12,7 @@ import ucar.unidata.geoloc.*;
 import java.io.IOException;
 
 /**
- * Not sure where this is used
+ * This allows writing non-regular data, eg swath data.
  * @author caron
  * @since 3/15/13
  */

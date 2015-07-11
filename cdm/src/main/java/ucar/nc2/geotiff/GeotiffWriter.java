@@ -47,6 +47,7 @@ import java.io.IOException;
 
 /**
  * Write GeoTIFF files.
+ * Regular data only
  *
  * @author caron, yuan
  */
@@ -585,7 +586,6 @@ public class GeotiffWriter implements AutoCloseable {
     if (pageNumber > 1) {
       geotiff.initTags();
     }
-
 
     // write the data first
     int nextStart = 0;

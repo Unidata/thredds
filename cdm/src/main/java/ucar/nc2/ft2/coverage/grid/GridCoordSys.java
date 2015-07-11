@@ -11,6 +11,14 @@ import java.util.*;
    repeated string axes = 2;
    repeated CoordTransform transforms = 3;
    repeated CoordSys components = 4;        // ??
+
+ message CoordSys {
+   required string name = 1;               // must be unique in dataset's CoordSys
+   repeated string axisNames = 2;
+   repeated string transformNames = 3;
+   repeated CoordSys components = 4;        // factor out Horiz, Time ??
+   optional CoverageType coverageType = 5;
+ }
  }
  *
  * @author caron

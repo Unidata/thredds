@@ -118,7 +118,6 @@ class IFDEntry implements Comparable {
     return tag.compareTo( ((IFDEntry)o).tag);
   }
 
-
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("IFDEntry{");
@@ -146,5 +145,33 @@ class IFDEntry implements Comparable {
     return sb.toString();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    IFDEntry ifdEntry = (IFDEntry) o;
+
+    if (count != ifdEntry.count) return false;
+    if (tag != null ? !tag.equals(ifdEntry.tag) : ifdEntry.tag != null) return false;
+    if (type != null ? !type.equals(ifdEntry.type) : ifdEntry.type != null) return false;
+    if (!Arrays.equals(value, ifdEntry.value)) return false;
+    if (!Arrays.equals(valueD, ifdEntry.valueD)) return false;
+    if (valueS != null ? !valueS.equals(ifdEntry.valueS) : ifdEntry.valueS != null) return false;
+    return !(geokeys != null ? !geokeys.equals(ifdEntry.geokeys) : ifdEntry.geokeys != null);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = tag != null ? tag.hashCode() : 0;
+    result = 31 * result + (type != null ? type.hashCode() : 0);
+    result = 31 * result + count;
+    result = 31 * result + (value != null ? Arrays.hashCode(value) : 0);
+    result = 31 * result + (valueD != null ? Arrays.hashCode(valueD) : 0);
+    result = 31 * result + (valueS != null ? valueS.hashCode() : 0);
+    result = 31 * result + (geokeys != null ? geokeys.hashCode() : 0);
+    return result;
+  }
 }
 

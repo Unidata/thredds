@@ -79,9 +79,9 @@ public class TestGridClose extends TestCase {
   }
 
   public void alterExistingFile(String url) throws IOException {
-    NetcdfFileWriteable file = null;
+    NetcdfFileWriter file = null;
     try {
-      file = NetcdfFileWriteable.openExisting(url, false);
+      file = NetcdfFileWriter.openExisting(url);
       file.setRedefineMode(true);
       //Group rootGroup = file.getRootGroup();
       //Group headerDataGroup = new Group(file, rootGroup, "header_data");

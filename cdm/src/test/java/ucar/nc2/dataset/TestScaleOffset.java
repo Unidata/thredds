@@ -45,7 +45,7 @@ public class TestScaleOffset {
   @Test
   public void testWrite() throws Exception {
     System.out.printf("Open %s%n", filename);
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename);
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, true);
 
      // define dimensions
     Dimension latDim = ncfile.addDimension("lat", 200);

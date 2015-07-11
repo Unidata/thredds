@@ -129,7 +129,7 @@ public class TestUnicode {
     System.out.println("normalized= "+showString(helloGreek));
 
     String filename = "C:/data/unicode/helloNorm.nc";
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename);
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, true);
     ucar.nc2.Dimension dim = ncfile.addDimension(helloGreek, 20);
     ncfile.addVariable(helloGreek, DataType.CHAR, helloGreek);
     ncfile.addVariableAttribute(helloGreek, "units", helloGreek);

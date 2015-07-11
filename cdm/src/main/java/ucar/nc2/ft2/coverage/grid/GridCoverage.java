@@ -92,14 +92,14 @@ public abstract class GridCoverage implements IsMissingEvaluator {
     indent.decr();
   }
 
-
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
   // LOOK what is the contract? what order are the values ?? ie what are the coordinates of each point ??
   // public abstract ArrayWithCoordinates readData(GridSubset subset) throws IOException;
 
-  // LOOK what is the contract? what order are the values ?? ie what are the coordinates of each point ??
+  // LOOK what is the contract? what order are the returned values ?? ie what are the coordinates of each point ??
   public abstract Array readData(GridSubset subset) throws IOException;
 
-  // LOOK problem this violates coordinate-only data access
+  // LOOK problem this violates coordinate-only data access. NA with cdmr
   public abstract Array readSubset(List<Range> subset) throws IOException, InvalidRangeException;
 
   @Override

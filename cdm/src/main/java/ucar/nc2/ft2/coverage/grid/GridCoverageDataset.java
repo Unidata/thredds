@@ -10,6 +10,7 @@ import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
 
@@ -182,6 +183,8 @@ public class GridCoverageDataset implements AutoCloseable {
       grid.toString(f, indent);
   }
 
+  ////////////////////////////////////////////////////////////
+
   public GridCoverage findCoverage(String name) {
     for (GridCoverage grid : grids)
       if (grid.getName().equalsIgnoreCase(name)) return grid;
@@ -303,7 +306,7 @@ public class GridCoverageDataset implements AutoCloseable {
     GridCoordSys gcs = findCoordSys(coverage.getCoordSysName());
     for (String ctName : gcs.getTransformNames()) {
       GridCoordTransform ct = findCoordTransform(ctName);
-      if (ct.isHoriz)
+      if (ct != null && ct.isHoriz)
         return makeProjection(ct);
     }
     return new LatLonProjection();

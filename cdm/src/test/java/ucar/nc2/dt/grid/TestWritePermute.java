@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dt.grid;
 
+import com.google.common.collect.Lists;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -45,8 +46,7 @@ public class TestWritePermute extends TestCase {
   private boolean show = false;
 
   public void testWritePermute() throws Exception {
-    NetcdfFileWriteable ncfile = new NetcdfFileWriteable();
-    ncfile.setName(TestDir.cdmLocalTestDataDir+"permuteTest.nc");
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(TestDir.cdmLocalTestDataDir+"permuteTest.nc", true);
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);
@@ -55,61 +55,61 @@ public class TestWritePermute extends TestCase {
     Dimension tDim = ncfile.addDimension("time", 2);
 
     // define Variables
-    ncfile.addVariable("time", double.class, new Dimension[] { tDim } );
+    ncfile.addVariable("time", DataType.DOUBLE, "time" );
     ncfile.addVariableAttribute("time", "units", "secs since 1-1-1 00:00");
 
-    ncfile.addVariable("z", double.class, new Dimension[] { zDim } );
+    ncfile.addVariable("z", DataType.DOUBLE, "z" );
     ncfile.addVariableAttribute("z", "units", "meters");
     ncfile.addVariableAttribute("z", "positive", "up");
 
-    ncfile.addVariable("y", double.class, new Dimension[] { yDim } );
+    ncfile.addVariable("y", DataType.DOUBLE, "y" );
     ncfile.addVariableAttribute("y", "units", "degrees_north");
 
-    ncfile.addVariable("x", double.class, new Dimension[] { xDim } );
+    ncfile.addVariable("x", DataType.DOUBLE, "x" );
     ncfile.addVariableAttribute("x", "units", "degrees_east");
 
-    ncfile.addVariable("tzyx", double.class, new Dimension[] { tDim, zDim, yDim, xDim });
+    ncfile.addVariable("tzyx", DataType.DOUBLE, Lists.newArrayList(tDim, zDim, yDim, xDim));
     ncfile.addVariableAttribute("tzyx", "units", "K");
 
-    ncfile.addVariable("tzxy", double.class, new Dimension[] { tDim, zDim, xDim, yDim });
+    ncfile.addVariable("tzxy", DataType.DOUBLE, Lists.newArrayList( tDim, zDim, xDim, yDim));
     ncfile.addVariableAttribute("tzxy", "units", "K");
 
-    ncfile.addVariable("tyxz", double.class, new Dimension[] { tDim, yDim, xDim, zDim });
+    ncfile.addVariable("tyxz", DataType.DOUBLE, Lists.newArrayList( tDim, yDim, xDim, zDim));
     ncfile.addVariableAttribute("tyxz", "units", "K");
 
-    ncfile.addVariable("txyz", double.class, new Dimension[] { tDim, xDim, yDim, zDim });
+    ncfile.addVariable("txyz", DataType.DOUBLE, Lists.newArrayList( tDim, xDim, yDim, zDim));
     ncfile.addVariableAttribute("txyz", "units", "K");
 
-    ncfile.addVariable("zyxt", double.class, new Dimension[] { zDim, yDim, xDim, tDim });
+    ncfile.addVariable("zyxt", DataType.DOUBLE, Lists.newArrayList( zDim, yDim, xDim, tDim));
     ncfile.addVariableAttribute("zyxt", "units", "K");
 
-    ncfile.addVariable("zxyt", double.class, new Dimension[] { zDim, xDim, yDim, tDim });
+    ncfile.addVariable("zxyt", DataType.DOUBLE, Lists.newArrayList( zDim, xDim, yDim, tDim));
     ncfile.addVariableAttribute("zxyt", "units", "K");
 
-    ncfile.addVariable("yxzt", double.class, new Dimension[] { yDim, xDim, zDim, tDim });
+    ncfile.addVariable("yxzt", DataType.DOUBLE, Lists.newArrayList( yDim, xDim, zDim, tDim));
     ncfile.addVariableAttribute("yxzt", "units", "K");
 
-    ncfile.addVariable("xyzt", double.class, new Dimension[] { xDim, yDim, zDim, tDim });
+    ncfile.addVariable("xyzt", DataType.DOUBLE, Lists.newArrayList( xDim, yDim, zDim, tDim));
     ncfile.addVariableAttribute("xyzt", "units", "K");
 
     // missing one dimension
-    ncfile.addVariable("zyx", double.class, new Dimension[] { zDim, yDim, xDim });
-    ncfile.addVariable("txy", double.class, new Dimension[] { tDim, xDim, yDim });
-    ncfile.addVariable("yxz", double.class, new Dimension[] { yDim, xDim, zDim });
-    ncfile.addVariable("xzy", double.class, new Dimension[] { xDim, zDim, yDim });
-    ncfile.addVariable("yxt", double.class, new Dimension[] { yDim, xDim, tDim });
-    ncfile.addVariable("xyt", double.class, new Dimension[] { xDim, yDim, tDim });
-    ncfile.addVariable("xyz", double.class, new Dimension[] { xDim, yDim, zDim });
+    ncfile.addVariable("zyx", DataType.DOUBLE, Lists.newArrayList(zDim, yDim, xDim));
+    ncfile.addVariable("txy", DataType.DOUBLE, Lists.newArrayList(tDim, xDim, yDim));
+    ncfile.addVariable("yxz", DataType.DOUBLE, Lists.newArrayList(yDim, xDim, zDim));
+    ncfile.addVariable("xzy", DataType.DOUBLE, Lists.newArrayList(xDim, zDim, yDim));
+    ncfile.addVariable("yxt", DataType.DOUBLE, Lists.newArrayList(yDim, xDim, tDim));
+    ncfile.addVariable("xyt", DataType.DOUBLE, Lists.newArrayList(xDim, yDim, tDim));
+    ncfile.addVariable("xyz", DataType.DOUBLE, Lists.newArrayList(xDim, yDim, zDim));
 
     // missing two dimension
-    ncfile.addVariable("yx", double.class, new Dimension[] { yDim, xDim });
-    ncfile.addVariable("xy", double.class, new Dimension[] { xDim, yDim });
-    ncfile.addVariable("yz", double.class, new Dimension[] { yDim, zDim });
-    ncfile.addVariable("xz", double.class, new Dimension[] { xDim, zDim });
-    ncfile.addVariable("yt", double.class, new Dimension[] { yDim, tDim });
-    ncfile.addVariable("xt", double.class, new Dimension[] { xDim, tDim });
-    ncfile.addVariable("ty", double.class, new Dimension[] { tDim, yDim });
-    ncfile.addVariable("tx", double.class, new Dimension[] { tDim, xDim });
+    ncfile.addVariable("yx", DataType.DOUBLE, Lists.newArrayList(yDim, xDim));
+    ncfile.addVariable("xy", DataType.DOUBLE, Lists.newArrayList(xDim, yDim));
+    ncfile.addVariable("yz", DataType.DOUBLE, Lists.newArrayList(yDim, zDim));
+    ncfile.addVariable("xz", DataType.DOUBLE, Lists.newArrayList(xDim, zDim));
+    ncfile.addVariable("yt", DataType.DOUBLE, Lists.newArrayList(yDim, tDim));
+    ncfile.addVariable("xt", DataType.DOUBLE, Lists.newArrayList(xDim, tDim));
+    ncfile.addVariable("ty", DataType.DOUBLE, Lists.newArrayList(tDim, yDim));
+    ncfile.addVariable("tx", DataType.DOUBLE, Lists.newArrayList(tDim, xDim));
 
     // add global attributes
     ncfile.addGlobalAttribute("Convention", "COARDS");
@@ -216,7 +216,7 @@ public class TestWritePermute extends TestCase {
     System.out.println( "*****************Test Write done");
   }
 
-  private void doWrite4( NetcdfFileWriteable ncfile, String varName) throws Exception {
+  private void doWrite4( NetcdfFileWriter ncfile, String varName) throws Exception {
     Variable v = ncfile.findVariable( varName);
     int[] w = getWeights( v);
 
@@ -236,7 +236,7 @@ public class TestWritePermute extends TestCase {
     ncfile.write(varName, aa);
   }
 
-  private void doWrite3( NetcdfFileWriteable ncfile, String varName) throws Exception {
+  private void doWrite3( NetcdfFileWriter ncfile, String varName) throws Exception {
     Variable v = ncfile.findVariable( varName);
     int[] w = getWeights( v);
 
@@ -255,7 +255,7 @@ public class TestWritePermute extends TestCase {
   }
 
 
-  private void doWrite2( NetcdfFileWriteable ncfile, String varName) throws Exception {
+  private void doWrite2( NetcdfFileWriter ncfile, String varName) throws Exception {
     Variable v = ncfile.findVariable( varName);
     int[] w = getWeights( v);
 

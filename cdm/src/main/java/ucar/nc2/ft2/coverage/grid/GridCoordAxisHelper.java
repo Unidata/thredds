@@ -1,109 +1,22 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
+import net.jcip.annotations.Immutable;
+
 /**
- * Describe
+ * Helper class for GridCoordAxis
  *
  * @author caron
  * @since 6/1/2015
  */
+@Immutable
 public class GridCoordAxisHelper {
   enum Mode {min, max, closest} // values is a min, max or closest
 
-  GridCoordAxis axis;
+  private final GridCoordAxis axis;
   GridCoordAxisHelper(GridCoordAxis axis) {
     this.axis = axis;
   }
-
-  /*
-    private void subsetValues(GridCoordAxis result, double minValue, double maxValue) {
-    double[] subsetValues;
-    double resolution = getResolution();
-    int minIndex, maxIndex;
-    double subsetStart, subsetEnd;
-    int count=0, count2=0;
-
-    switch (spacing) {
-
-      case irregularPoint:
-        minIndex = 0;
-        maxIndex = 0;
-        for (double val : getValues()) {  // LOOK linear
-          if (val > maxValue) break;
-          if (val < minValue) minIndex++;
-          maxIndex++;
-        }
-        count = maxIndex - minIndex;
-        if (count == 0)
-          throw new IllegalArgumentException("no points in subset: min > end");
-
-        subsetValues = new double[count];
-        for (int i=minIndex; i<maxIndex; i++) {
-          subsetValues[count2++] = getCoord(i);
-        }
-
-        result.setNvalues(count);
-        result.setMinIndex(minIndex);
-        result.setMaxIndex(maxIndex-1); // need closed interval
-        result.setValues(subsetValues);
-        result.setStartValue(subsetValues[0]);
-        result.setEndValue(subsetValues[subsetValues.length - 1]);
-        break;
-
-      case contiguousInterval:
-        minIndex = -1;
-        count = 0;
-        for (int i=0; i<values.length; i++) {                       // these are edges
-          if (values[i] <= maxValue && values[i+1] >= minValue) {   // count number of intervals that pass
-            count++;
-            if (minIndex < 0) minIndex = i;  // record first one that passes
-          }
-        }
-        if (count == 0)
-          throw new IllegalArgumentException("no points in subset: min > end");
-        maxIndex = minIndex+count-1;
-
-        subsetValues = new double[count+1];            // need npts+1
-        for (int i=minIndex; i<=maxIndex; i++)
-          subsetValues[count2++] = values[i];
-
-        result.setNvalues(count);
-        result.setMinIndex(minIndex);
-        result.setMaxIndex(maxIndex);
-        result.setValues(subsetValues);
-        result.setStartValue(subsetValues[0]);
-        result.setEndValue(subsetValues[subsetValues.length-1]);
-        break;
-
-      case discontiguousInterval:
-        minIndex = -1;
-        count = 0;
-        for (int i=0; i<values.length; i+=2) {                       // these are bounds (low, high)1, (low,high)2, ...
-          if (values[i] <= maxValue && values[i+1] >= minValue) {
-            count++;     // count number of intervals that pass
-            if (minIndex < 0) minIndex = i;  // record first one that passes
-          }
-        }
-        if (count == 0)
-          throw new IllegalArgumentException("no points in subset: min > end");
-        maxIndex = minIndex+count-1;
-
-        subsetValues = new double[2*count];                   // need 2*npts
-        for (int i=minIndex; i<=maxIndex; i+=2) {
-          subsetValues[count2++] = values[i];
-          subsetValues[count2++] = values[i+1];
-        }
-
-        result.setNvalues(count);
-        result.setMinIndex(minIndex);
-        result.setMaxIndex(maxIndex);
-        result.setValues(subsetValues);
-        result.setStartValue(subsetValues[0]);
-        result.setEndValue(subsetValues[subsetValues.length-1]);
-        break;
-    }
-  }
-   */
 
   /**
    * Given a coordinate position, find what grid element contains it.

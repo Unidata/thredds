@@ -341,6 +341,10 @@ public class NetcdfFileWriter implements AutoCloseable {
     return addDimension(null, dimName, 0, true, true, false);
   }
 
+  public Dimension addDimension(String dimName, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
+    return addDimension(null, dimName, length, isShared, isUnlimited, isVariableLength);
+  }
+
   /**
    * Add a Dimension to the file. Must be in define mode.
    *
@@ -422,6 +426,10 @@ public class NetcdfFileWriter implements AutoCloseable {
     return result;
   }
 
+
+  public Attribute addGlobalAttribute(Attribute att) {
+    return addGroupAttribute(null, att);
+  }
 
   public Attribute addGlobalAttribute(String name, String value) {
     return addGroupAttribute(null, new Attribute(name, value));
@@ -532,6 +540,10 @@ public class NetcdfFileWriter implements AutoCloseable {
   public Variable addVariable(Group g, String shortName, DataType dataType, String dimString) {
     Group parent = (g == null) ? ncfile.getRootGroup() : g;
     return addVariable(g, null, shortName, dataType, Dimension.makeDimensionsList(parent, dimString));
+  }
+
+  public Variable addVariable(String shortName, DataType dataType, List<Dimension> dims) {
+    return addVariable(null, shortName, dataType, dims);
   }
 
   /**
@@ -753,6 +765,10 @@ public class NetcdfFileWriter implements AutoCloseable {
 
   public boolean addVariableAttribute(String varName, String name, Number value) {
     return addVariableAttribute(findVariable(varName), new Attribute(name, value));
+  }
+
+  public boolean addVariableAttribute(String varName, Attribute att) {
+    return addVariableAttribute(findVariable(varName), att);
   }
   /**
    * Add an attribute to the named Variable. Must be in define mode.
@@ -983,6 +999,10 @@ public class NetcdfFileWriter implements AutoCloseable {
       throw new IllegalArgumentException("Variable is not owned by this writer.");
 
     write(v, new int[values.getRank()], values);
+  }
+
+  public void write(String varName, int[] origin, Array values) throws java.io.IOException, InvalidRangeException {
+    write(findVariable(varName), origin, values);
   }
 
   /**

@@ -53,7 +53,7 @@ public class TestStandardVar extends TestCase {
   }
 
   public void testWriteStandardVar() throws Exception {
-    NetcdfFileWriteable ncfile = new NetcdfFileWriteable(filename, false);
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false);
 
     // define dimensions
     Dimension latDim = ncfile.addDimension("lat", 2);

@@ -6,10 +6,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
@@ -94,9 +91,9 @@ public class BytePaddingTest
       testFile.delete();
     }
 
-    NetcdfFileWriteable ncfWriteable = NetcdfFileWriteable.createNew( testFile.getPath() );
+    NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew( testFile.getPath(), true );
     Dimension recDim = ncfWriteable.addUnlimitedDimension( "v" );
-    Variable var = ncfWriteable.addVariable( "v", DataType.BYTE, new Dimension[]{recDim} );
+    Variable var = ncfWriteable.addVariable( "v", DataType.BYTE, "v");
     assertEquals( 1, var.getElementSize() );
     ncfWriteable.create();
     
@@ -136,11 +133,11 @@ public class BytePaddingTest
       testFile.delete();
     }
 
-    NetcdfFileWriteable ncfWriteable = NetcdfFileWriteable.createNew( testFile.getPath() );
+    NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew(testFile.getPath(), true);
     Dimension recDim = ncfWriteable.addUnlimitedDimension( "v" );
-    Variable var = ncfWriteable.addVariable( "v", DataType.BYTE, new Dimension[]{recDim} );
+    Variable var = ncfWriteable.addVariable( "v", DataType.BYTE, "v" );
     assertEquals( 1, var.getElementSize() );
-    Variable var2 = ncfWriteable.addVariable( "v2", DataType.BYTE, new Dimension[]{recDim});
+    Variable var2 = ncfWriteable.addVariable( "v2", DataType.BYTE, "v");
     ncfWriteable.create();
 
     N3header.Vinfo vinfo = (N3header.Vinfo) var.getSPobject();
@@ -191,10 +188,10 @@ public class BytePaddingTest
       testFile.delete();
     }
 
-    NetcdfFileWriteable ncfWriteable = NetcdfFileWriteable.createNew( testFile.getPath() );
+    NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew( testFile.getPath(), true );
     Dimension recDim = ncfWriteable.addUnlimitedDimension( "v" );
     Dimension secondDim = ncfWriteable.addDimension( "s", 3 );
-    Variable var = ncfWriteable.addVariable( "v", DataType.BYTE, new Dimension[]{recDim,secondDim} );
+    Variable var = ncfWriteable.addVariable( "v", DataType.BYTE, "v s");
     assertEquals( 1, var.getElementSize() );
     ncfWriteable.create();
 
@@ -234,12 +231,12 @@ public class BytePaddingTest
       testFile.delete();
     }
 
-    NetcdfFileWriteable ncfWriteable = NetcdfFileWriteable.createNew( testFile.getPath() );
+    NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew( testFile.getPath(), true );
     Dimension recDim = ncfWriteable.addUnlimitedDimension( "v" );
     Dimension secondDim = ncfWriteable.addDimension( "s", 3 );
-    Variable var = ncfWriteable.addVariable( "v", DataType.BYTE, new Dimension[]{recDim, secondDim} );
+    Variable var = ncfWriteable.addVariable( "v", DataType.BYTE, "v s" );
     assertEquals( 1, var.getElementSize() );
-    Variable var2 = ncfWriteable.addVariable( "v2", DataType.BYTE, new Dimension[]{recDim} );
+    Variable var2 = ncfWriteable.addVariable( "v2", DataType.BYTE, "v");
     ncfWriteable.create();
 
     N3header.Vinfo vinfo = (N3header.Vinfo) var.getSPobject();
@@ -290,9 +287,9 @@ public class BytePaddingTest
       testFile.delete();
     }
 
-    NetcdfFileWriteable ncfWriteable = NetcdfFileWriteable.createNew( testFile.getPath() );
+    NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew( testFile.getPath(), true );
     Dimension recDim = ncfWriteable.addUnlimitedDimension( "v" );
-    Variable var = ncfWriteable.addVariable( "v", DataType.CHAR, new Dimension[]{recDim} );
+    Variable var = ncfWriteable.addVariable( "v", DataType.CHAR, "v" );
     assertEquals( 1, var.getElementSize() );
     ncfWriteable.create();
 
@@ -333,12 +330,12 @@ public class BytePaddingTest
       testFile.delete();
     }
 
-    NetcdfFileWriteable ncfWriteable = NetcdfFileWriteable.createNew( testFile.getPath() );
+    NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew( testFile.getPath(), true );
     Dimension recDim = ncfWriteable.addUnlimitedDimension( "v" );
     Dimension secondDim = ncfWriteable.addDimension( "s", 3 );
-    Variable var = ncfWriteable.addVariable( "v", DataType.CHAR, new Dimension[]{recDim, secondDim} );
+    Variable var = ncfWriteable.addVariable( "v", DataType.CHAR, "v s" );
     assertEquals( 1, var.getElementSize() );
-    Variable var2 = ncfWriteable.addVariable( "v2", DataType.CHAR, new Dimension[]{recDim} );
+    Variable var2 = ncfWriteable.addVariable( "v2", DataType.CHAR, "v" );
     assertEquals( 1, var2.getElementSize() );
     ncfWriteable.create();
 
@@ -391,9 +388,9 @@ public class BytePaddingTest
       testFile.delete();
     }
 
-    NetcdfFileWriteable ncfWriteable = NetcdfFileWriteable.createNew( testFile.getPath() );
+    NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew( testFile.getPath(), true );
     Dimension recDim = ncfWriteable.addUnlimitedDimension( "v" );
-    Variable var = ncfWriteable.addVariable( "v", DataType.SHORT, new Dimension[]{recDim} );
+    Variable var = ncfWriteable.addVariable( "v", DataType.SHORT, "v" );
     assertEquals( 2, var.getElementSize() );
     ncfWriteable.create();
 
@@ -434,12 +431,12 @@ public class BytePaddingTest
       testFile.delete();
     }
 
-    NetcdfFileWriteable ncfWriteable = NetcdfFileWriteable.createNew( testFile.getPath() );
+    NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew( testFile.getPath(), true );
     Dimension recDim = ncfWriteable.addUnlimitedDimension( "v" );
     Dimension secondDim = ncfWriteable.addDimension( "s", 3 );
-    Variable var = ncfWriteable.addVariable( "v", DataType.SHORT, new Dimension[]{recDim, secondDim} );
+    Variable var = ncfWriteable.addVariable( "v", DataType.SHORT, "v s");
     assertEquals( 2, var.getElementSize() );
-    Variable var2 = ncfWriteable.addVariable( "v2", DataType.SHORT, new Dimension[]{recDim} );
+    Variable var2 = ncfWriteable.addVariable( "v2", DataType.SHORT, "v" );
     assertEquals( 2, var2.getElementSize() );
     ncfWriteable.create();
 
@@ -491,11 +488,11 @@ public class BytePaddingTest
       testFile.delete();
     }
 
-    NetcdfFileWriteable ncfWriteable = NetcdfFileWriteable.createNew( testFile.getPath() );
+    NetcdfFileWriter ncfWriteable = NetcdfFileWriter.createNew( testFile.getPath(), true );
     Dimension d0 = ncfWriteable.addDimension( "X", 5 );
     Dimension d = ncfWriteable.addUnlimitedDimension( "D" );
-    Variable v0 = ncfWriteable.addVariable( "X", DataType.DOUBLE, new Dimension[]{d0} );
-    Variable v = ncfWriteable.addVariable( "V", DataType.BYTE, new Dimension[]{d} );
+    Variable v0 = ncfWriteable.addVariable( "X", DataType.DOUBLE, "X");
+    Variable v = ncfWriteable.addVariable( "V", DataType.BYTE, "D" );
     assertEquals( 1, v.getElementSize() );
     ncfWriteable.create();
 

@@ -33,6 +33,7 @@
 package ucar.nc2.geotiff;
 
 import ucar.nc2.constants.CDM;
+import ucar.nc2.util.CompareNetcdf2;
 
 import java.nio.*;
 import java.nio.channels.*;
@@ -94,6 +95,8 @@ public class GeoTiff implements AutoCloseable {
   void addTag(IFDEntry ifd) {
     tags.add(ifd);
   }
+
+  List<IFDEntry> getTags() { return tags; }
 
   void deleteTag(IFDEntry ifd) {
     tags.remove(ifd);
@@ -689,6 +692,10 @@ public class GeoTiff implements AutoCloseable {
     StringWriter sw = new StringWriter(5000);
     showInfo(new PrintWriter(sw));
     return sw.toString();
+  }
+
+  public void compare(GeoTiff other, Formatter f) {
+    CompareNetcdf2.compareLists(tags, other.getTags(), f);
   }
 
 

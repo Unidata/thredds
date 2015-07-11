@@ -1003,16 +1003,15 @@ public class TestWrite {
     String filename = TestLocal.temporaryDataDir + "foo.nc";
     //File tempFile = File.createTempFile("foo", "nc");
     //tempFile.deleteOnExit();
-    NetcdfFileWriteable ncWriteable = NetcdfFileWriteable.createNew(filename, false);
-    Array result1;
+    Array timeData;
 
-    try {
+    try (NetcdfFileWriter ncWriteable = NetcdfFileWriter.createNew(filename, false)) {
       Dimension timeDim = ncWriteable.addUnlimitedDimension("time");
-      ncWriteable.addVariable("time", DataType.INT, new Dimension[]{timeDim});
+      ncWriteable.addVariable("time", DataType.INT, "time");
       ncWriteable.addVariableAttribute("time", "units", "hours since 1990-01-01");
       ncWriteable.create();
 
-      Array timeData = Array.factory(DataType.INT, new int[]{1});
+      timeData = Array.factory(DataType.INT, new int[]{1});
       int[] time_origin = new int[]{0};
 
       for (int time = 0; time < 10; time++) {
@@ -1022,20 +1021,16 @@ public class TestWrite {
       }
 
       // Prints "0 12 24 36 48 60 72 84 96 108", the expected result.
-      result1 = ncWriteable.readSection("time");
-      System.out.println(result1);
-    } finally {
-      ncWriteable.close();
+      //result1 = ncWriteable.readSection("time");
+      //System.out.println(result1);
     }
 
-    NetcdfFile ncFile = NetcdfFile.open(filename);
-    try {
+    try (NetcdfFile ncFile = NetcdfFile.open(filename)) {
       // Prints "0 0 12 0 24 0 36 0 48 0".
       Array result2 = ncFile.readSection("time");
       System.out.println(result2);
-      ucar.unidata.test.util.CompareNetcdf.compareData(result1, result2);
-    } finally {
-      ncFile.close();
+      ucar.unidata.test.util.CompareNetcdf.compareData(timeData, result2);
+
     }
   }
 

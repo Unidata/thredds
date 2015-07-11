@@ -17,6 +17,7 @@ public class GridSubset {
   public static final String projBB = "projBB";         // value = ProjRect
   public static final String horizStride = "horizStride";  // value = Integer
   public static final String vertCoord = "vertCoord";   // value = double
+  public static final String vertIndex = "vertIndex";   // value = integer
   public static final String dateRange = "dateRange";   // value = CalendarDateRange
   public static final String date = "time";             // value = CalendarDate
   public static final String timeWindow = "timeWindow"; // value = TimeDuration
@@ -35,8 +36,9 @@ public class GridSubset {
     return req.keySet();
   }
 
-  public void set(String key, Object value) {
+  public GridSubset set(String key, Object value) {
     req.put(key, value);
+    return this;
   }
 
   public Object get(String key) {
@@ -54,6 +56,15 @@ public class GridSubset {
     Double dval;
     if (val instanceof Double) dval = (Double) val;
     else dval = Double.parseDouble((String) val);
+    return dval;
+  }
+
+  public Integer getInteger(String key) {
+    Object val = req.get(key);
+    if (val == null) return null;
+    Integer dval;
+    if (val instanceof Integer) dval = (Integer) val;
+    else dval = Integer.parseInt((String) val);
     return dval;
   }
 

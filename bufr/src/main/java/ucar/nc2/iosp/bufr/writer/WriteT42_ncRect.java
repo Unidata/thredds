@@ -53,7 +53,7 @@ public class WriteT42_ncRect {
 
   WriteT42_ncRect(NetcdfFile bufr, String fileOutName, boolean fill) throws IOException, InvalidRangeException {
 
-    try (NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(fileOutName, fill)) {
+    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(fileOutName, fill)) {
       if (debug) {
         System.out.println("FileWriter write " + bufr.getLocation() + " to " + fileOutName);
       }
@@ -64,7 +64,7 @@ public class WriteT42_ncRect {
         String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
         Attribute useAtt;
         if (att.isArray())
-          useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
+          useAtt = ncfile.addGlobalAttribute(new Attribute(useName, att.getValues()));
         else if (att.isString())
           useAtt = ncfile.addGlobalAttribute(useName, att.getStringValue());
         else
@@ -105,7 +105,7 @@ public class WriteT42_ncRect {
         for (Attribute att : attList) {
           String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
           if (att.isArray())
-            ncfile.addVariableAttribute(varName, useName, att.getValues());
+            newVar.addAttribute(new Attribute(useName, att.getValues()));
           else if (att.isString())
             ncfile.addVariableAttribute(varName, useName, att.getStringValue());
           else
@@ -139,7 +139,7 @@ public class WriteT42_ncRect {
           for (Attribute att : attList) {
             String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
             if (att.isArray())
-              ncfile.addVariableAttribute(varName, useName, att.getValues());
+              newVar.addAttribute(new Attribute( useName, att.getValues()));
             else if (att.isString())
               ncfile.addVariableAttribute(varName, useName, att.getStringValue());
             else
@@ -161,7 +161,7 @@ public class WriteT42_ncRect {
     }
   }
 
-  private double copyVarData(NetcdfFile bufr, NetcdfFileWriteable ncfile, Structure recordStruct) throws IOException, InvalidRangeException {
+  private double copyVarData(NetcdfFile bufr, NetcdfFileWriter ncfile, Structure recordStruct) throws IOException, InvalidRangeException {
     int nrecs = (int) recordStruct.getSize();
     int sdataSize = recordStruct.getElementSize();
 

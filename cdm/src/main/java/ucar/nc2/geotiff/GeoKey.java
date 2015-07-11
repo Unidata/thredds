@@ -333,5 +333,37 @@ class GeoKey  {
     }
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    GeoKey geoKey = (GeoKey) o;
+
+    if (isDouble != geoKey.isDouble) return false;
+    if (isString != geoKey.isString) return false;
+    if (count != geoKey.count) return false;
+    if (id != geoKey.id) return false;
+    if (!Arrays.equals(value, geoKey.value)) return false;
+    if (!Arrays.equals(dvalue, geoKey.dvalue)) return false;
+    if (valueS != null ? !valueS.equals(geoKey.valueS) : geoKey.valueS != null) return false;
+    if (tag != null ? !tag.equals(geoKey.tag) : geoKey.tag != null) return false;
+    return !(tagValue != null ? !tagValue.equals(geoKey.tagValue) : geoKey.tagValue != null);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = (isDouble ? 1 : 0);
+    result = 31 * result + (isString ? 1 : 0);
+    result = 31 * result + count;
+    result = 31 * result + (value != null ? Arrays.hashCode(value) : 0);
+    result = 31 * result + (dvalue != null ? Arrays.hashCode(dvalue) : 0);
+    result = 31 * result + (valueS != null ? valueS.hashCode() : 0);
+    result = 31 * result + (tag != null ? tag.hashCode() : 0);
+    result = 31 * result + (tagValue != null ? tagValue.hashCode() : 0);
+    result = 31 * result + id;
+    return result;
+  }
 }
 

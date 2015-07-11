@@ -36,7 +36,11 @@ package ucar.nc2.geotiff;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+
 import org.junit.runners.Parameterized;
+import ucar.ma2.Array;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -55,7 +59,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGeotiffWrite {
+public class TestGeoTiffWriter2 {
   static public String topdir = TestDir.cdmUnitTestDir;
 
   @Parameterized.Parameters(name = "{0}")
@@ -73,7 +77,7 @@ public class TestGeotiffWrite {
   String filename, field;
   LatLonRect llbb;
 
-  public TestGeotiffWrite(String filename, String field, LatLonRect llbb) {
+  public TestGeoTiffWriter2(String filename, String field, LatLonRect llbb) {
     this.filename = filename;
     this.field = field;
     this.llbb = llbb;
@@ -81,13 +85,12 @@ public class TestGeotiffWrite {
 
   @Test
   public void testWrite() throws IOException {
-
     File f = new File(filename);
-
     String fileOut = TestDir.temporaryLocalDataDir + f.getName();
-    GeoTiffWriter2 writer = new GeoTiffWriter2(fileOut);
-    writer.writeGrid(filename, field, 0, 0, true, llbb);
-    writer.close();
+
+    try (GeoTiffWriter2 writer = new GeoTiffWriter2(fileOut)) {
+      writer.writeGrid(filename, field, 0, 0, true, llbb);
+    }
 
     // read it back in
     try (GeoTiff geotiff = new GeoTiff(fileOut)) {
@@ -96,4 +99,5 @@ public class TestGeotiffWrite {
       //geotiff.testReadData();
     }
   }
+
 }

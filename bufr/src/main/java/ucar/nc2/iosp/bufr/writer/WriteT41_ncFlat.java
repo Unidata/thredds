@@ -54,7 +54,7 @@ public class WriteT41_ncFlat {
 
   public WriteT41_ncFlat(NetcdfFile bufr, String fileOutName, boolean fill) throws IOException, InvalidRangeException {
 
-    try (NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(fileOutName, fill)) {
+    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(fileOutName, fill)) {
       if (debug) {
         System.out.println("FileWriter write " + bufr.getLocation() + " to " + fileOutName);
       }
@@ -65,7 +65,7 @@ public class WriteT41_ncFlat {
         String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
         Attribute useAtt;
         if (att.isArray())
-          useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
+          useAtt = ncfile.addGroupAttribute(null, new Attribute(useName, att.getValues()));
         else if (att.isString())
           useAtt = ncfile.addGlobalAttribute(useName, att.getStringValue());
         else
@@ -97,7 +97,7 @@ public class WriteT41_ncFlat {
           newDims.add(ncfile.addDimension(oldVar.getShortName() + "_strlen", dim.getLength()));
         }
 
-        Variable newVar = ncfile.addVariable(varName, newType, newDims);
+        Variable newVar = ncfile.addVariable(null, varName, newType, newDims);
         if (debug) System.out.println("add var= " + newVar);
 
         // attributes
@@ -105,7 +105,7 @@ public class WriteT41_ncFlat {
         for (Attribute att : attList) {
           String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
           if (att.isArray())
-            ncfile.addVariableAttribute(varName, useName, att.getValues());
+            newVar.addAttribute(new Attribute(useName, att.getValues()));
           else if (att.isString())
             ncfile.addVariableAttribute(varName, useName, att.getStringValue());
           else
@@ -114,7 +114,7 @@ public class WriteT41_ncFlat {
       }
 
       int total_seq = countSeq(recordStruct);
-      Dimension seqD = ncfile.addDimension("seq", total_seq, true, true, false);
+      Dimension seqD = ncfile.addDimension(null, "seq", total_seq, true, true, false);
 
       for (Variable v : recordStruct.getVariables()) {
         if (v.getDataType() != DataType.SEQUENCE) continue;
@@ -130,7 +130,7 @@ public class WriteT41_ncFlat {
             newDims.add(ncfile.addDimension(seqVar.getShortName() + "_strlen", dim.getLength()));
           }
 
-          Variable newVar = ncfile.addVariable(varName, newType, newDims);
+          Variable newVar = ncfile.addVariable(null, varName, newType, newDims);
           if (debug) System.out.println("add var= " + newVar);
 
           // attributes
@@ -138,7 +138,7 @@ public class WriteT41_ncFlat {
           for (Attribute att : attList) {
             String useName = N3iosp.makeValidNetcdfObjectName(att.getShortName());
             if (att.isArray())
-              ncfile.addVariableAttribute(varName, useName, att.getValues());
+              newVar.addAttribute( new Attribute( useName, att.getValues()));
             else if (att.isString())
               ncfile.addVariableAttribute(varName, useName, att.getStringValue());
             else
@@ -192,7 +192,7 @@ public class WriteT41_ncFlat {
   }
 
 
-  private double copyVarData(NetcdfFile bufr, NetcdfFileWriteable ncfile, Structure recordStruct) throws IOException, InvalidRangeException {
+  private double copyVarData(NetcdfFile bufr, NetcdfFileWriter ncfile, Structure recordStruct) throws IOException, InvalidRangeException {
     int nrecs = (int) recordStruct.getSize();
     int sdataSize = recordStruct.getElementSize();
 

@@ -93,7 +93,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
 
     @Override
     public Array readData(GridSubset subset) throws IOException {  // LOOK incomplete
-      GridCS gcs = (GridCS) dtGrid.getCoordinateSystem();
+      DtCoverageCS gcs = dtGrid.getCoordinateSystem();
       int ens = -1;
       int level = -1;
       int time = -1;
@@ -102,20 +102,45 @@ public class DtCoverageAdapter extends GridCoverageDataset {
       for (String key : subset.getKeys()) {
         switch (key) {
 
-          case GridSubset.date: // CalendarDate
-            CoordinateAxis1DTime taxis = gcs.getTimeAxis();
-            if (taxis != null) time = taxis.findTimeIndexFromCalendarDate((CalendarDate) subset.get(key));
-            break;
+          case GridSubset.date: { // CalendarDate
+            CalendarDate cdate = (CalendarDate) subset.get(key);
+            CoordinateAxis taxis = gcs.getTimeAxis();
+            if (taxis != null) {
+              if (taxis instanceof CoordinateAxis1DTime) {
+                CoordinateAxis1DTime time1d = (CoordinateAxis1DTime) taxis;
+                time = time1d.findTimeIndexFromCalendarDate(cdate);
 
-          case GridSubset.vertCoord: // double
+              } else  if (taxis instanceof CoordinateAxis2D) {
+                CoordinateAxis2D time2d = (CoordinateAxis2D) taxis;
+                // time = time2d.findTimeIndexFromCalendarDate(cdate);
+              }
+            }
+            break;
+          }
+
+          case GridSubset.latestTime: {
+            CoordinateAxis taxis = gcs.getTimeAxis();
+            if (taxis != null) time = (int) taxis.getSize() - 1;
+            break;
+          }
+
+          case GridSubset.vertCoord: { // double
             CoordinateAxis1D zaxis = gcs.getVerticalAxis();
             if (zaxis != null) level = zaxis.findCoordElement(subset.getDouble(key));
             break;
+          }
 
-          case GridSubset.ensCoord: // double
+          case GridSubset.vertIndex: {
+            CoordinateAxis1D zaxis = gcs.getVerticalAxis();
+            if (zaxis != null) level = subset.getInteger(key);
+            break;
+          }
+
+          case GridSubset.ensCoord: { // double
             CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
             if (eaxis != null) ens = eaxis.findCoordElement(subset.getDouble(key));
             break;
+          }
         }
       }
       //int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index
@@ -136,7 +161,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
       setName(dtCoordSys.getName());
       for (CoordinateTransform ct : dtCoordSys.getCoordTransforms())
         addTransformName(ct.getName());
-      for (CoordinateAxis axis : dtCoordSys.getCoordAxes()) // LOOK should be just the grid axes
+      for (CoordinateAxis axis : dtCoordSys.getCoordAxes()) // LOOK should be just the grid axes ?
         addAxisName(axis.getFullName());
     }
   }

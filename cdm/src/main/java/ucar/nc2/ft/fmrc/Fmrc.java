@@ -181,7 +181,6 @@ public class Fmrc {
     return fmrcDataset.getForecastOffsets();
   }
 
-  // LOOK : all of these guys could use ehcache
   public GridDataset getDataset2D(NetcdfDataset result) throws IOException {
     checkNeeded( false);
     return fmrcDataset.getNetcdfDataset2D(result);

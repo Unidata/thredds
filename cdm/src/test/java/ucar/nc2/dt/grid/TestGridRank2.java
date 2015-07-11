@@ -46,8 +46,7 @@ public class TestGridRank2 extends TestCase {
   private boolean show = false;
 
   public void testWrite() throws Exception {
-    NetcdfFileWriteable ncfile = new NetcdfFileWriteable();
-    ncfile.setName(TestDir.cdmLocalTestDataDir+"rankTest2.nc");
+    NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(TestDir.cdmLocalTestDataDir+"rankTest2.nc", true);
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);
@@ -58,26 +57,26 @@ public class TestGridRank2 extends TestCase {
     Dimension xtraDim = ncfile.addDimension("extra", 2); // has axis
 
     // define axes
-    ncfile.addVariable("time", double.class, new Dimension[] { tDim } );
+    ncfile.addVariable("time", DataType.DOUBLE, "time");
     ncfile.addVariableAttribute("time", "units", "barf since 1-1-1 00:00"); // bad units
 
-    ncfile.addVariable("z", double.class, new Dimension[] { zDim } );
+    ncfile.addVariable("z", DataType.DOUBLE, "z");
     ncfile.addVariableAttribute("z", "units", "meters");
     ncfile.addVariableAttribute("z", "positive", "up");
 
-    ncfile.addVariable("y", double.class, new Dimension[] { yDim } );
+    ncfile.addVariable("y", DataType.DOUBLE, "y");
     ncfile.addVariableAttribute("y", "units", "degrees_north");
 
-    ncfile.addVariable("x", double.class, new Dimension[] { xDim } );
+    ncfile.addVariable("x", DataType.DOUBLE, "x");
     ncfile.addVariableAttribute("x", "units", "degrees_east");
 
-    ncfile.addVariable("extra", double.class, new Dimension[] { xtraDim } );
+    ncfile.addVariable("extra", DataType.DOUBLE, "extra");
     ncfile.addVariableAttribute("extra", "units", "kg");
 
     // define data variables
-    ncfile.addVariable("badTime", double.class, new Dimension[] { tDim, zDim, yDim, xDim });
-    ncfile.addVariable("wind", double.class, new Dimension[] { windDim, zDim, xDim, yDim });
-    ncfile.addVariable("hasExtra", double.class, new Dimension[] { xtraDim, zDim, xDim, yDim });
+    ncfile.addVariable("badTime", DataType.DOUBLE, "time z y x");
+    ncfile.addVariable("wind", DataType.DOUBLE, "wind z y x");
+    ncfile.addVariable("hasExtra", DataType.DOUBLE, "extra z y x");
 
 
     // add global attributes
@@ -148,7 +147,7 @@ public class TestGridRank2 extends TestCase {
     System.out.println( "*****************Test Write done");
   }
 
-  private void doWrite4( NetcdfFileWriteable ncfile, String varName) throws Exception {
+  private void doWrite4( NetcdfFileWriter ncfile, String varName) throws Exception {
     Variable v = ncfile.findVariable( varName);
     int[] w = getWeights( v);
 
@@ -168,7 +167,7 @@ public class TestGridRank2 extends TestCase {
     ncfile.write(varName, aa);
   }
 
-  private void doWrite3( NetcdfFileWriteable ncfile, String varName) throws Exception {
+  private void doWrite3( NetcdfFileWriter ncfile, String varName) throws Exception {
     Variable v = ncfile.findVariable( varName);
     int[] w = getWeights( v);
 

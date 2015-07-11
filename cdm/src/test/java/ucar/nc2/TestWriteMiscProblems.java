@@ -54,23 +54,21 @@ public class TestWriteMiscProblems extends TestCase {
 
   public void testWriteBigString() throws IOException {
     String filename = TestLocal.temporaryDataDir + "testWriteMisc.nc";
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false);
+    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false)) {
 
-    int len = 120000;
-    ArrayChar.D1 arrayCharD1 = new ArrayChar.D1(len);
-    for (int i = 0; i < len; i++)
-      arrayCharD1.set(i, '1');
-    ncfile.addGlobalAttribute("tooLongChar", arrayCharD1);
+      int len = 120000;
+      ArrayChar.D1 arrayCharD1 = new ArrayChar.D1(len);
+      for (int i = 0; i < len; i++)
+        arrayCharD1.set(i, '1');
+      ncfile.addGlobalAttribute( new Attribute("tooLongChar", arrayCharD1));
 
-    char[] carray = new char[len];
-    for (int i = 0; i < len; i++)
-      carray[i] = '2';
-    String val = new String(carray);
-    ncfile.addGlobalAttribute("tooLongString", val);
-
-
-    ncfile.create();
-    ncfile.close();
+      char[] carray = new char[len];
+      for (int i = 0; i < len; i++)
+        carray[i] = '2';
+      String val = new String(carray);
+      ncfile.addGlobalAttribute("tooLongString", val);
+      ncfile.create();
+    }
   }
 
 
@@ -151,9 +149,9 @@ public class TestWriteMiscProblems extends TestCase {
     if (newFile.exists()) newFile.delete();
     IO.copyFile(orgFile, newFile);
 
-    NetcdfFileWriteable ncfile = null;
+    NetcdfFileWriter ncfile = null;
     try {
-      ncfile = NetcdfFileWriteable.openExisting(path, false);
+      ncfile = NetcdfFileWriter.openExisting(path);
       System.out.println(ncfile);
       
       ncfile.setRedefineMode(true);

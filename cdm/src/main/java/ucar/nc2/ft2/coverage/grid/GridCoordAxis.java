@@ -159,7 +159,7 @@ public class GridCoordAxis {
   }
 
   public double getResolution() {
-    if (resolution == 0.0 && isRegular() && ncoords > 1)
+    if (resolution == 0.0 && isRegular() && ncoords > 1)    // LOOK calc resolution for non regular ??
       resolution = (endValue - startValue) / (ncoords - 1);
     return resolution;
   }
@@ -218,20 +218,6 @@ public class GridCoordAxis {
     this.dependsOn = dependsOn;
   }
 
-  // to override
-  protected double[] readValues() {
-    return null;
-  }
-
-  public double[] getValues() {
-    if (values == null) values = readValues();
-    return values;
-  }
-
-  public void setValues(double[] values) {
-    this.values = values;
-  }
-
   @Override
   public String toString() {
     Formatter f = new Formatter();
@@ -274,9 +260,27 @@ public class GridCoordAxis {
     indent.decr();
   }
 
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // to override
+  protected double[] readValues() {
+    return null;
+  }
+
+  public double[] getValues() {
+    if (values == null) values = readValues();
+    return values;
+  }
+
+  public void setValues(double[] values) {
+    this.values = values;
+  }
+
+
   GridCoordAxis finish() {
     getResolution();
-    getValues();
+    getValues();             // LOOK
     return this;
   }
 
@@ -294,7 +298,7 @@ public class GridCoordAxis {
   public boolean isAscending() {
     switch (spacing) {
       case regular:
-        return resolution > 0;
+        return getResolution() > 0;
 
       case irregularPoint:
         return values[0] <= values[ncoords - 1];
@@ -312,7 +316,7 @@ public class GridCoordAxis {
     switch (spacing) {
       case regular:
         if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
-        return startValue + index * resolution;
+        return startValue + index * getResolution();
 
       case irregularPoint:
         return values[index];
@@ -330,7 +334,7 @@ public class GridCoordAxis {
     switch (spacing) {
       case regular:
         if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
-        return startValue + (index - .5) * resolution;
+        return startValue + (index - .5) * getResolution();
 
       case irregularPoint:
         if (index > 0)
@@ -351,7 +355,7 @@ public class GridCoordAxis {
     switch (spacing) {
       case regular:
         if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
-        return startValue + (index + .5) * resolution;
+        return startValue + (index + .5) * getResolution();
 
       case irregularPoint:
         if (index < ncoords - 1)

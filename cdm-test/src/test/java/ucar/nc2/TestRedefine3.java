@@ -44,7 +44,7 @@ public class TestRedefine3 extends TestCase {
 
   public void testRedefine3() throws IOException, InvalidRangeException {
     String filename = TestDir.temporaryLocalDataDir + "testRedefine3.nc";
-    NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew (filename, false);
+    NetcdfFileWriter ncFile = NetcdfFileWriter.createNew (filename, false);
     ncFile.setExtraHeaderBytes (64*1000);
     Dimension dim = ncFile.addDimension ("time", 100);
 
@@ -53,8 +53,7 @@ public class TestRedefine3 extends TestCase {
     double[] jillData = new double[100];
     for (int i = 0; i < 100; i++) jillData[i] = 2*i;
 
-    Dimension[] dims = new Dimension[] {dim};
-    ncFile.addVariable ("jack", DataType.DOUBLE, dims);
+    ncFile.addVariable ("jack", DataType.DOUBLE, "time");
     ncFile.addVariableAttribute ("jack", "where", "up the hill");
     ncFile.create();
 
@@ -63,7 +62,7 @@ public class TestRedefine3 extends TestCase {
     ncFile.write ("jack", start, Array.factory (DataType.DOUBLE, count, jackData));
 
     ncFile.setRedefineMode (true);
-    ncFile.addVariable ("jill", DataType.DOUBLE, dims);
+    ncFile.addVariable ("jill", DataType.DOUBLE, "time");
     ncFile.addVariableAttribute ("jill", "where", "up the hill");
     ncFile.setRedefineMode (false);
 
