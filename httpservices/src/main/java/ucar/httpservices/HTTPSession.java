@@ -42,7 +42,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.DeflateDecompressingEntity;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
@@ -667,7 +666,7 @@ public class HTTPSession implements AutoCloseable
         if(pieces.length == 1)
             url = "http:" + url; // try to make it parseable
         this.sessionURL = url;
-        init(HTTPAuthScope.urlToScope(ANY_SCHEME,url,null));
+        init(HTTPAuthScope.urlToScope(ANY_SCHEME, url, null));
     }
 
     public HTTPSession(AuthScope scope)
@@ -676,13 +675,13 @@ public class HTTPSession implements AutoCloseable
         init(scope);
     }
 
-    protected  void init (AuthScope scope)
+    protected void init(AuthScope scope)
             throws HTTPException
     {
         if(scope == null)
-                    throw new HTTPException("HTTPSession(): empty scope not allowed");
+            throw new HTTPException("HTTPSession(): empty scope not allowed");
         this.realm = scope;
-            this.realmURL = HTTPAuthScope.scopeToURL(scope).toString();
+        this.realmURL = HTTPAuthScope.scopeToURL(scope).toString();
         try {
             synchronized (HTTPSession.class) {
                 sessionClient = new DefaultHttpClient(connmgr);
@@ -750,7 +749,10 @@ public class HTTPSession implements AutoCloseable
         return localsettings;
     }
 
-    public AuthScope getRealm() {return this.realm;}
+    public AuthScope getRealm()
+    {
+        return this.realm;
+    }
 
     public String getSessionURL()
     {
@@ -935,7 +937,7 @@ public class HTTPSession implements AutoCloseable
     execute(HttpRequestBase request)
             throws IOException
     {
-	HttpResponse response = sessionClient.execute(request,this.execcontext);
+        HttpResponse response = sessionClient.execute(request, this.execcontext);
         return response;
     }
 

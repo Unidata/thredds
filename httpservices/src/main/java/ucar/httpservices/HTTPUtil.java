@@ -39,6 +39,7 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,12 @@ import static org.apache.http.auth.AuthScope.*;
 
 abstract public class HTTPUtil
 {
+
+    //////////////////////////////////////////////////
+    // Constants
+
+    public static final Charset UTF8 = Charset.forName("UTF-8");
+    public static final Charset ASCII = Charset.forName("US-ASCII");
 
     //////////////////////////////////////////////////
     // Interceptors
@@ -199,6 +206,38 @@ abstract public class HTTPUtil
             return ANY_REALM;
         String sport = (port <= 0 || port == ANY_PORT) ? "" : String.format("%d", port);
         return host + sport;
+    }
+
+
+    static public  File
+    fillTempFile(String base, String content)
+	throws IOException
+    {
+	// Locate a temp directory
+        String tmppath = System.getenv("TEMP");
+        if(tmppath == null || tmppath.length() == 0)
+            tmppath = "/tmp";
+        File tmpdir = new File(tmppath);
+        if(!tmpdir.exists() || !tmpdir.canWrite())
+            throw new IOException("Cannot create temp file: no tmp dir");
+        try {
+	    String suffix;
+	    String prefix;
+	    int index = base.lastIndexOf('.');
+	    if(index < 0) index = base.length();
+	    suffix = base.substring(index,base.length());
+	    prefix = base.substring(0,index);
+	    if(prefix.length() == 0)
+		throw new IOException("Malformed base: "+base);
+            File f = File.createTempFile(prefix, suffix, tmpdir);
+            // Fill with the content
+            FileOutputStream fw = new FileOutputStream(f);
+            fw.write(content.getBytes(UTF8));
+            fw.close();
+	    return f;
+        } catch (IOException e) {
+            throw new IOException("Cannot create temp file",e);
+        }
     }
 
 
