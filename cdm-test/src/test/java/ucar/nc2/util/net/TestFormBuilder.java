@@ -32,7 +32,6 @@
 
 package ucar.nc2.util.net;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import org.apache.http.HttpEntity;
 import org.junit.Test;
 import ucar.httpservices.*;
@@ -215,7 +214,7 @@ public class TestFormBuilder extends UnitTestCommon
             builder.add("attachmentOne", EXTRATEXT.getBytes(HTTPUtil.ASCII), "extra.html");
             // Use Inputstream
             byte[] bytes = BUNDLETEXT.getBytes(HTTPUtil.UTF8);
-            ByteInputStream bis = new ByteInputStream(bytes,bytes.length);
+            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
             builder.add("attachmentTwo", bis, "bundle.xidv");
             if(attach3file != null) {
                 // Use File
