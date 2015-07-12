@@ -1,13 +1,8 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid.writer;
+package ucar.nc2.ft2.coverage.writer;
 
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.ft2.coverage.ArrayWithCoordinates;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.grid.GridCoverage;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageSubset;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.Misc;
 
 import java.io.IOException;
@@ -26,7 +21,7 @@ public class DSGGridCoverageWriter {
 
   private CoverageDataset gcd;
   private List<VarData> varData;
-  private CoverageSubset subset;
+  private SubsetParams subset;
 
   private class VarData {
     Coverage cov;
@@ -39,7 +34,7 @@ public class DSGGridCoverageWriter {
     }
   }
 
-  public DSGGridCoverageWriter(CoverageDataset gcd, List<String> varNames, CoverageSubset subset) throws IOException {
+  public DSGGridCoverageWriter(CoverageDataset gcd, List<String> varNames, SubsetParams subset) throws IOException {
     this.gcd = gcd;
     this.subset = subset;
 

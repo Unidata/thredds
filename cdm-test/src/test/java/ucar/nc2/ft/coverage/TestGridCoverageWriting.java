@@ -12,8 +12,8 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.CoverageSubset;
-import ucar.nc2.ft2.coverage.grid.writer.CFGridCoverageWriter;
+import ucar.nc2.ft2.coverage.SubsetParams;
+import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
@@ -35,12 +35,12 @@ public class TestGridCoverageWriting {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", Lists.newArrayList("P_sfc", "P_trop"), NetcdfFileWriter.Version.netcdf3});
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", Lists.newArrayList("P_sfc", "P_trop"), NetcdfFileWriter.Version.netcdf4});
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", Lists.newArrayList("P_sfc", "P_trop", "T"), NetcdfFileWriter.Version.netcdf3});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", Lists.newArrayList("P_sfc", "P_trop"), NetcdfFileWriter.Version.netcdf3});
+    /* result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", Lists.newArrayList("P_sfc", "P_trop"), NetcdfFileWriter.Version.netcdf4});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", Lists.newArrayList("P_sfc", "P_trop", "T"), NetcdfFileWriter.Version.netcdf3});
 
-    // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", Lists.newArrayList("Surface_pressure_surface"), NetcdfFileWriter.Version.netcdf3});  // scalar runtime
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", Lists.newArrayList("PS", "Temperature"), NetcdfFileWriter.Version.netcdf3});  // both x,y and lat,lon
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", Lists.newArrayList("Surface_pressure_surface"), NetcdfFileWriter.Version.netcdf3});  // scalar runtime
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", Lists.newArrayList("PS", "Temperature"), NetcdfFileWriter.Version.netcdf3});  // both x,y and lat,lon   */
     return result;
   }
 
@@ -60,6 +60,7 @@ public class TestGridCoverageWriting {
     File tempFile = TestDir.getTempFile();
     System.out.printf(" write to %s%n", tempFile.getAbsolutePath());
 
+    // write the file
     try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {
       Assert.assertNotNull(endpoint, gcs);
 
@@ -69,7 +70,7 @@ public class TestGridCoverageWriting {
 
       NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, tempFile.getPath(), null);
 
-      CFGridCoverageWriter.writeFile(gcs, covList, new CoverageSubset(), false, writer);
+      CFGridCoverageWriter.writeFile(gcs, covList, new SubsetParams(), false, writer);
     }
 
     // open the new file as a Coverage

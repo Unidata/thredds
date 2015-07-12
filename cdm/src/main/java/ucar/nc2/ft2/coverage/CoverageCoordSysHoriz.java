@@ -2,17 +2,18 @@
 package ucar.nc2.ft2.coverage;
 
 /**
- * Describe
+ * Horizontal CoordSys.
+ * Must have x,y,proj (or) lat,lon
  *
  * @author caron
  * @since 7/11/2015
  */
-public class HorizCoordSys {
+public class CoverageCoordSysHoriz {
   public CoverageCoordAxis xaxis, yaxis, lataxis, lonaxis;
-  public CoverageCoordTransform transform;
+  public CoverageTransform transform;
   public boolean hasProjection, hasLatLon;
 
-  public HorizCoordSys(CoverageCoordAxis xaxis, CoverageCoordAxis yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageCoordTransform transform) {
+  public CoverageCoordSysHoriz(CoverageCoordAxis xaxis, CoverageCoordAxis yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageTransform transform) {
     this.xaxis = xaxis;
     this.yaxis = yaxis;
     this.lataxis = lataxis;

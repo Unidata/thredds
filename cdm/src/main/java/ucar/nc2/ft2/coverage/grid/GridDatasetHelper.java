@@ -4,7 +4,7 @@ package ucar.nc2.ft2.coverage.grid;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.ft2.coverage.CoverageSubset;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -173,7 +173,7 @@ public class GridDatasetHelper {
 
   // make a subsetted GridCoverageDataset
   // the cool thing is we only have to subset the CoordAxes !!
-  public GridCoverageDataset subset(CoverageSubset subset) throws InvalidRangeException {
+  public GridCoverageDataset subset(SubsetParams subset) throws InvalidRangeException {
     GridCoverageDataset result = new GridCoverageDataset();
 
     result.setName(gds.getName());
@@ -221,12 +221,12 @@ public class GridDatasetHelper {
   }
 
   // LOOK incomplete subsetting
-  private GridCoordAxis subset(GridCoordAxis orgAxis, CoverageSubset subset, ucar.nc2.time.Calendar cal) {
+  private GridCoordAxis subset(GridCoordAxis orgAxis, SubsetParams subset, ucar.nc2.time.Calendar cal) {
     switch (orgAxis.getAxisType()) {
       case GeoZ:
       case Pressure:
       case Height:
-        Double dval = subset.getDouble(CoverageSubset.vertCoord);
+        Double dval = subset.getDouble(SubsetParams.vertCoord);
         if (dval != null) {
           // LOOK problems when vertCoord doesnt match any coordinates in the axes
           return orgAxis.subsetClosest(dval);
@@ -241,16 +241,16 @@ public class GridDatasetHelper {
         return null;
 
       case Time:
-        if (subset.isTrue(CoverageSubset.allTimes))
+        if (subset.isTrue(SubsetParams.allTimes))
           return orgAxis.finish();
-        if (subset.isTrue(CoverageSubset.latestTime))
+        if (subset.isTrue(SubsetParams.latestTime))
           return orgAxis.subsetLatest();
 
-        CalendarDate date = (CalendarDate) subset.get(CoverageSubset.date);
+        CalendarDate date = (CalendarDate) subset.get(SubsetParams.date);
         if (date != null)
           return orgAxis.subset(cal, date);
 
-        CalendarDateRange dateRange = (CalendarDateRange) subset.get(CoverageSubset.dateRange);
+        CalendarDateRange dateRange = (CalendarDateRange) subset.get(SubsetParams.dateRange);
         if (dateRange != null)
           return orgAxis.subset(cal, dateRange);
         break;
@@ -268,9 +268,9 @@ public class GridDatasetHelper {
    * if (horizStride != null)
    * subset.set(GridSubset.horizStride, horizStride);
    */
-  private void subsetHorizAxes(CoverageSubset subset, List<GridCoordAxis> result) throws InvalidRangeException {
-    LatLonRect llbb = (LatLonRect) subset.get(CoverageSubset.latlonBB);
-    ProjectionRect projbb = (ProjectionRect) subset.get(CoverageSubset.projBB);
+  private void subsetHorizAxes(SubsetParams subset, List<GridCoordAxis> result) throws InvalidRangeException {
+    LatLonRect llbb = (LatLonRect) subset.get(SubsetParams.latlonBB);
+    ProjectionRect projbb = (ProjectionRect) subset.get(SubsetParams.projBB);
 
     if (projbb != null) {
       result.add(horizCoordSys.xaxis.subset(projbb.getMinX(), projbb.getMaxX()));

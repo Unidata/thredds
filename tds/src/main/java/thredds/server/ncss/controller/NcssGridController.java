@@ -20,10 +20,7 @@ import thredds.util.Constants;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
-import ucar.nc2.ft2.coverage.grid.GridCoordSys;
-import ucar.nc2.ft2.coverage.grid.GridCoverage;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.IO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,7 +63,7 @@ public class NcssGridController extends AbstractNcssController {
       throw new BindException(validationResult);
 
     String datasetPath = getDatasetPath(req);
-    try (GridCoverageDataset gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
+    try (CoverageDataset gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
       if (gcd == null) return;
 
       Formatter errs = new Formatter();
@@ -86,7 +83,7 @@ public class NcssGridController extends AbstractNcssController {
     }
   }
 
-  private void handleRequestGrid(HttpServletResponse res, NcssGridParamsBean params, String datasetPath, GridCoverageDataset gcd)
+  private void handleRequestGrid(HttpServletResponse res, NcssGridParamsBean params, String datasetPath, CoverageDataset gcd)
           throws IOException, NcssException, ParseException, InvalidRangeException {
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
@@ -123,7 +120,7 @@ public class NcssGridController extends AbstractNcssController {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
-  private void handleRequestGridAsPoint(HttpServletResponse res, NcssGridParamsBean params, String datasetPath, GridCoverageDataset gcd)
+  private void handleRequestGridAsPoint(HttpServletResponse res, NcssGridParamsBean params, String datasetPath, CoverageDataset gcd)
           throws NcssException, IOException, ParseException, InvalidRangeException {
 
     SupportedFormat sf = SupportedOperation.POINT_REQUEST.getSupportedFormat(params.getAccept());
@@ -188,7 +185,7 @@ public class NcssGridController extends AbstractNcssController {
     boolean showPointForm = path.endsWith("/pointDataset.html");
     String datasetPath = getDatasetPath(req);
 
-    try (GridCoverageDataset gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
+    try (CoverageDataset gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
       if (gcd == null) return null; // restricted dataset
       return ncssShowDatasetInfo.showGridForm(gcd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
     }
@@ -230,7 +227,7 @@ public class NcssGridController extends AbstractNcssController {
    * Checks that all the requested vars exist. If "all", fills out the param.vars with all grid names
    * Throws exception if some of the variables in the request are not contained in the dataset
    */
-  private void checkRequestedVars(GridCoverageDataset gcd, NcssGridParamsBean params) throws VariableNotContainedInDatasetException {
+  private void checkRequestedVars(CoverageDataset gcd, NcssGridParamsBean params) throws VariableNotContainedInDatasetException {
 
     // if var == all --> all variables requested
     if (params.getVar().get(0).equalsIgnoreCase("all")) {
@@ -240,15 +237,15 @@ public class NcssGridController extends AbstractNcssController {
 
     // Check vars are contained in the grid
     for (String gridName : params.getVar()) {
-      GridCoverage grid = gcd.findCoverage(gridName);
+      Coverage grid = gcd.findCoverage(gridName);
       if (grid == null)
         throw new VariableNotContainedInDatasetException("Variable: " + gridName + " is not contained in the requested dataset");
     }
   }
 
-  private List<String> getAllGridNames(GridCoverageDataset gcd) {
+  private List<String> getAllGridNames(CoverageDataset gcd) {
     List<String> result = new ArrayList<>();
-    for (GridCoverage var : gcd.getGrids())
+    for (Coverage var : gcd.getCoverages())
       result.add(var.getName());
     return result;
   }
@@ -257,12 +254,11 @@ public class NcssGridController extends AbstractNcssController {
    * Returns true if all the variables have the same vertical axis (if they have an axis).
    * Could be broadened to allow all with same coordinate unites? coordinate value??
    */
-  protected boolean checkVarsHaveSameVertAxis(GridCoverageDataset gcd, NcssGridParamsBean params) throws VariableNotContainedInDatasetException {
+  protected boolean checkVarsHaveSameVertAxis(CoverageDataset gcd, NcssGridParamsBean params) throws VariableNotContainedInDatasetException {
     String zaxisName = null;
     for (String gridName : params.getVar()) {
-      GridCoverage grid = gcd.findCoverage(gridName);
-      GridCoordSys gcs = gcd.findCoordSys(grid.getCoordSysName());
-      GridCoordAxis zaxis = gcd.getZAxis(gcs);
+      Coverage grid = gcd.findCoverage(gridName);
+      CoverageCoordAxis zaxis = grid.getCoordSys().getZAxis();
       if (zaxis != null) {
         if (zaxisName == null)
           zaxisName = zaxis.getName();

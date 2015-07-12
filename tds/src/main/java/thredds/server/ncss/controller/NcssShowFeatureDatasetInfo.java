@@ -47,8 +47,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.ft2.coverage.grid.GridDatasetCapabilities;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.writer.CoverageDatasetCapabilities;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -105,9 +105,9 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  public ModelAndView showGridForm(GridCoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) {
+  public ModelAndView showGridForm(CoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) {
     boolean netcdf4IsAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
-    GridDatasetCapabilities writer = new GridDatasetCapabilities(gcd, "path");
+    CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
 
     if (wantXml) {
       Document datasetDescription = writer.makeDatasetDescription();

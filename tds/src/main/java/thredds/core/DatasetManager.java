@@ -53,9 +53,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.cache.FileFactory;
 
@@ -313,7 +313,7 @@ public class DatasetManager implements InitializingBean {
   }
 
 
-  public GridCoverageDataset openGridCoverage(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+  public CoverageDataset openGridCoverage(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
@@ -321,7 +321,7 @@ public class DatasetManager implements InitializingBean {
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
 
       InvDatasetFeatureCollection fc = featureCollectionCache.get(featCollection);
-      GridCoverageDataset gds = fc.getGridCoverage(match.remaining);
+      CoverageDataset gds = fc.getGridCoverage(match.remaining);
       if (gds == null) throw new FileNotFoundException(reqPath);
       return gds;
     }
@@ -331,7 +331,7 @@ public class DatasetManager implements InitializingBean {
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
     if (gds.getGrids().size() > 0)
-      return new DtCoverageAdapter(gds);
+      return DtCoverageAdapter.factory(gds);
 
     gds.close();
     throw new IllegalArgumentException("Not a Grid Dataset " + gds.getName());

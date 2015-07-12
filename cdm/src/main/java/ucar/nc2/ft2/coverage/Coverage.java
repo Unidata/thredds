@@ -86,7 +86,16 @@ public abstract class Coverage implements IsMissingEvaluator {
 
   ///////////////////////////////////////////////////////////////
 
-
+  public long getSizeInBytes() {
+    long total = 1;
+    for (String axisName : coordSys.getAxisNames()) {
+      CoverageCoordAxis axis = coordSys.getAxis(axisName);
+      if (axis != null)   // LOOK
+        total *= axis.getNcoords();
+    }
+    total *= getDataType().getSize();
+    return total;
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   // LOOK what is the contract? what order are the values ?? ie what are the coordinates of each point ??
@@ -94,7 +103,7 @@ public abstract class Coverage implements IsMissingEvaluator {
   // public abstract ReferencedArray readData(GridSubset subset) throws IOException;
 
   // LOOK what is the contract? what order are the returned values ?? ie what are the coordinates of each point ??
-  public abstract ArrayWithCoordinates readData(CoverageSubset subset) throws IOException;
+  public abstract ArrayWithCoordinates readData(SubsetParams subset) throws IOException;
 
   // LOOK problem this violates coordinate-only data access. NA with cdmr
   // used by CFGridCoverageWriter. this is asking that the coordinates dont change, eg only allow a rectangular subset of the (possibly) bigger grid

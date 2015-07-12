@@ -33,10 +33,7 @@
 package thredds.server.wcs.v1_0_0_1;
 
 import thredds.server.wcs.Request;
-import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
-import ucar.nc2.ft2.coverage.grid.GridCoordAxisTime;
-import ucar.nc2.ft2.coverage.grid.GridCoordSys;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -99,9 +96,9 @@ public class GetCoverage extends WcsRequest {
     if (bbox != null)
       bboxLatLonRect = convertBoundingBox(bbox, coverage.getCoordinateSystem());
 
-    GridCoverageDataset gcd = dataset.getDataset();
-    GridCoordSys gcs = this.coverage.getCoordinateSystem();
-    GridCoordAxisTime timeCoord = gcd.getTimeAxis(gcs);
+    CoverageDataset gcd = dataset.getDataset();
+    CoverageCoordSys gcs = this.coverage.getCoordinateSystem();
+    CoverageCoordAxisTime timeCoord = gcs.getTimeAxis();
     this.timeRange = timeRange;
     if (timeRange != null)
       this.isSingleTimeRequest = timeRange.isPoint();
@@ -112,7 +109,7 @@ public class GetCoverage extends WcsRequest {
     // RESX, RESY, RESZ parameters not needed since the only interpolation method is "NONE".
 
     // Assign and validate PARAMETER ("Vertical") parameter.
-    GridCoordAxis vertCoord = gcd.getZAxis(gcs);
+    CoverageCoordAxis vertCoord = gcs.getZAxis();
     this.rangeSetAxisValueRange = verticalRange;
     if (verticalRange != null)
       this.isSingleVerticalRequest = verticalRange.isSinglePoint();
@@ -161,7 +158,7 @@ public class GetCoverage extends WcsRequest {
             this.timeRange);
   }
 
-  private LatLonRect convertBoundingBox(Request.BoundingBox bbox, GridCoordSys gcs) throws WcsException {
+  private LatLonRect convertBoundingBox(Request.BoundingBox bbox, CoverageCoordSys gcs) throws WcsException {
     if (bbox == null)
       return null;
 

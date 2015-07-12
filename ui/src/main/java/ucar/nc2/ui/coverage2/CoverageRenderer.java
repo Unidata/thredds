@@ -7,7 +7,7 @@ import ucar.ma2.*;
 //import ucar.nc2.ft.cover.Coverage;
 //import ucar.nc2.ft.cover.CoverageCS;
 import ucar.nc2.ft2.coverage.ArrayWithCoordinates;
-import ucar.nc2.ft2.coverage.CoverageSubset;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;
@@ -470,15 +470,15 @@ public class CoverageRenderer {
 
     // get the data slice
       //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
-    CoverageSubset subset = new CoverageSubset();
+    SubsetParams subset = new SubsetParams();
     if (level >= 0 && dataState.zaxis != null) {
       double levelVal = dataState.zaxis.getCoord(level);
-      subset.set(CoverageSubset.vertCoord, levelVal);
+      subset.set(SubsetParams.vertCoord, levelVal);
     }
     if (time >= 0 && dataState.taxis != null) {
       double timeVal = dataState.taxis.getCoord(time);
       CalendarDate date = dataState.taxis.makeDate(timeVal);
-      subset.set(CoverageSubset.date, date);
+      subset.set(SubsetParams.date, date);
     }
 
     try {

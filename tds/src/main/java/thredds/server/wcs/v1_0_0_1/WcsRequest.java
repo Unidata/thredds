@@ -32,9 +32,9 @@
  */
 package thredds.server.wcs.v1_0_0_1;
 
-import ucar.nc2.ft2.coverage.grid.GridCoordAxisTime;
-import ucar.nc2.ft2.coverage.grid.GridCoordSys;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCoordAxisTime;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -82,7 +82,7 @@ public abstract class WcsRequest {
 
   protected Element genCoverageOfferingBriefElem(String elemName,
                                                  String covName, String covLabel, String covDescription,
-                                                 GridCoordSys gridCoordSys) {
+                                                 CoverageCoordSys gridCoordSys) {
 
     // <CoverageOfferingBrief>
     Element briefElem = new Element(elemName, wcsNS);
@@ -109,7 +109,7 @@ public abstract class WcsRequest {
     return briefElem;
   }
 
-  protected Element genLonLatEnvelope(GridCoverageDataset gcd, GridCoordSys gcs) {
+  protected Element genLonLatEnvelope(CoverageDataset gcd, CoverageCoordSys gcs) {
     // <CoverageOfferingBrief>/lonLatEnvelope
     Element lonLatEnvelopeElem = new Element("lonLatEnvelope", wcsNS);
     lonLatEnvelopeElem.setAttribute("srsName", "urn:ogc:def:crs:OGC:1.3:CRS84");
@@ -136,7 +136,7 @@ public abstract class WcsRequest {
 
     // <CoverageOfferingBrief>/lonLatEnvelope/gml:timePostion [2]
 
-    GridCoordAxisTime timeCoord = gcd.getTimeAxis(gcs);
+    CoverageCoordAxisTime timeCoord = (CoverageCoordAxisTime) gcs.getTimeAxis();
     if (timeCoord != null) {
       CalendarDateRange dr = timeCoord.getDateRange();
       if (dr != null) {

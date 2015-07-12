@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid.remote;
+package ucar.nc2.ft2.coverage.remote;
 
 import org.apache.http.Header;
 import ucar.httpservices.HTTPFactory;
@@ -7,9 +7,7 @@ import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
-import ucar.nc2.ft2.coverage.ArrayWithCoordinates;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageSubset;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.util.IO;
@@ -40,7 +38,7 @@ public class CdmrGridCoverage extends Coverage {
   }
 
   @Override
-  public ArrayWithCoordinates readData(CoverageSubset subset) throws IOException {
+  public ArrayWithCoordinates readData(SubsetParams subset) throws IOException {
     if (httpClient == null)
       httpClient = HTTPFactory.newSession(endpoint);
 

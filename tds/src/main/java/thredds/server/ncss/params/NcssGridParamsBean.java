@@ -2,7 +2,7 @@
 package thredds.server.ncss.params;
 
 import thredds.server.ncss.validation.NcssGridRequestConstraint;
-import ucar.nc2.ft2.coverage.CoverageSubset;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -106,38 +106,38 @@ public class NcssGridParamsBean extends NcssParamsBean {
     this.vertCoord = vertCoord;
   }
 
-  public CoverageSubset makeSubset(Calendar cal) {
+  public SubsetParams makeSubset(Calendar cal) {
     // construct the subset
-    CoverageSubset subset = new CoverageSubset();
+    SubsetParams subset = new SubsetParams();
     if (hasProjectionBB())
-      subset.set(CoverageSubset.projBB, getProjectionBB());
+      subset.set(SubsetParams.projBB, getProjectionBB());
     else if (hasLatLonBB())
-      subset.set(CoverageSubset.latlonBB, getLatLonBoundingBox());
+      subset.set(SubsetParams.latlonBB, getLatLonBoundingBox());
     if (horizStride != null)
-      subset.set(CoverageSubset.horizStride, horizStride);
+      subset.set(SubsetParams.horizStride, horizStride);
 
     if (vertCoord != null)
-      subset.set(CoverageSubset.vertCoord, vertCoord);
+      subset.set(SubsetParams.vertCoord, vertCoord);
 
     CalendarDate date = getRequestedDate(cal);
     CalendarDateRange dateRange = getCalendarDateRange(cal);
     if (isAllTimes()) {
-      subset.set(CoverageSubset.allTimes, true);
+      subset.set(SubsetParams.allTimes, true);
       if (timeStride != null)
-        subset.set(CoverageSubset.timeStride, timeStride);
+        subset.set(SubsetParams.timeStride, timeStride);
 
     } else if (date != null) {
-      subset.set(CoverageSubset.date, date);
+      subset.set(SubsetParams.date, date);
       if (timeWindow != null)
-        subset.set(CoverageSubset.timeWindow, timeWindow);
+        subset.set(SubsetParams.timeWindow, timeWindow);
 
     } else if (dateRange != null) {
-      subset.set(CoverageSubset.dateRange, dateRange);
+      subset.set(SubsetParams.dateRange, dateRange);
       if (timeStride != null)
-        subset.set(CoverageSubset.timeStride, timeStride);
+        subset.set(SubsetParams.timeStride, timeStride);
 
     } else {
-      subset.set(CoverageSubset.latestTime, true);
+      subset.set(SubsetParams.latestTime, true);
     }
 
     return subset;

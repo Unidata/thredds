@@ -33,11 +33,10 @@
 package thredds.server.wcs.v1_0_0_1;
 
 import thredds.server.wcs.Request;
-import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.ft2.coverage.grid.writer.CFGridCoverageWriter;
+import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
 import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
@@ -222,7 +221,7 @@ public class WcsCoverage {
 
         try {
           //GridCoverage subset = this.coverage.makeSubset(tRange, zRange, bboxLatLonRect, 1, 1, 1);  // LOOK do you need to subset it?
-          ArrayWithCoordinates array = coverage.readData(new CoverageSubset());
+          ArrayWithCoordinates array = coverage.readData(new SubsetParams());
 
           GeotiffWriter writer = new GeotiffWriter(tifFile.getPath());
           writer.writeGrid(this.wcsDataset.getDataset(), coverage, array.getData(), format == Request.Format.GeoTIFF);
@@ -244,7 +243,7 @@ public class WcsCoverage {
         if (log.isDebugEnabled())
           log.debug("writeCoverageDataToFile(): ncFile=" + outFile.getPath());
 
-        CoverageSubset subset = new CoverageSubset();
+        SubsetParams subset = new SubsetParams();
         NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath());
         /*
          public static long writeFile(GridCoverageDataset gdsOrg, List<String> gridNames,

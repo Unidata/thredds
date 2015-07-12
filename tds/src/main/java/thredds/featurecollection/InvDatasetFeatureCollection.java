@@ -50,7 +50,6 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.log.LoggerFactory;

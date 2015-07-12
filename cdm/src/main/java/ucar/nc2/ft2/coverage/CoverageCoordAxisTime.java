@@ -4,8 +4,6 @@ package ucar.nc2.ft2.coverage;
 import ucar.ma2.DataType;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
-import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;

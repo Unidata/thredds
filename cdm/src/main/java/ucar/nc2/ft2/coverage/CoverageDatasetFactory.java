@@ -2,9 +2,8 @@
 package ucar.nc2.ft2.coverage;
 
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
-import ucar.nc2.ft2.coverage.grid.remote.CdmrFeatureDataset;
+import ucar.nc2.ft2.coverage.remote.CdmrFeatureDataset;
 
 import java.io.IOException;
 

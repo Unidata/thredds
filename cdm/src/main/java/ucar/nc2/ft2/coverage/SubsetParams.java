@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Describes a subset of a GridCoverage.
+ * Describes a subset of a Coverage.
  * Coordinate values only, no indices.
  *
  * @author caron
  * @since 5/6/2015
  */
-public class CoverageSubset {
+public class SubsetParams {
   public static final String latlonBB = "latlonBB";     // value = LatLonRect
   public static final String projBB = "projBB";         // value = ProjRect
   public static final String horizStride = "horizStride";  // value = Integer
@@ -36,7 +36,7 @@ public class CoverageSubset {
     return req.keySet();
   }
 
-  public CoverageSubset set(String key, Object value) {
+  public SubsetParams set(String key, Object value) {
     req.put(key, value);
     return this;
   }

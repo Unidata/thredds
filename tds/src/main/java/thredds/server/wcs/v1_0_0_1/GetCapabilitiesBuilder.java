@@ -33,7 +33,7 @@
 package thredds.server.wcs.v1_0_0_1;
 
 import thredds.server.wcs.Request;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.*;
 
 import java.net.URI;
 
@@ -42,7 +42,7 @@ public class GetCapabilitiesBuilder extends WcsRequestBuilder {
 
   GetCapabilitiesBuilder(String versionString,
                          Request.Operation operation,
-                         GridCoverageDataset dataset,
+                         CoverageDataset dataset,
                          String datasetPath) {
     super(versionString, operation, dataset, datasetPath);
   }

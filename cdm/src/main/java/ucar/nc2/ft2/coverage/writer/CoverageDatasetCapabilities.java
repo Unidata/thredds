@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid;
+package ucar.nc2.ft2.coverage.writer;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -8,6 +8,7 @@ import org.jdom2.output.XMLOutputter;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -23,11 +24,11 @@ import java.util.*;
  * @author caron
  * @since 5/7/2015
  */
-public class GridDatasetCapabilities {
-  private GridCoverageDataset gcd;
+public class CoverageDatasetCapabilities {
+  private CoverageDataset gcd;
  	private String path;
 
- 	public GridDatasetCapabilities(GridCoverageDataset gds, String path) {
+ 	public CoverageDatasetCapabilities(CoverageDataset gds, String path) {
  		this.gcd = gds;
  		this.path = path;
  	}
@@ -75,7 +76,7 @@ public class GridDatasetCapabilities {
      } */
 
  		// coordinate axes
- 		for (GridCoordAxis axis : gcd.getCoordAxes()) {
+ 		for (CoverageCoordAxis axis : gcd.getCoordAxes()) {
  			rootElem.addContent(writeAxis(axis));
  		}
 
@@ -95,13 +96,12 @@ public class GridDatasetCapabilities {
      } */
 
  		// gridSets
-    GridDatasetHelper helper = new GridDatasetHelper(gcd);
- 		for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
- 			rootElem.addContent(writeGridSet(gridset.gcs, gridset.grids, gcd.getProjBoundingBox()));
+ 		for (CoordSysSet gridset : gcd.getCoverageSets()) {
+ 			rootElem.addContent(writeCoverageSet(gridset.getCoordSys(), gridset.getCoverages(), gcd.getProjBoundingBox()));
  		}
 
  		// coordinate transforms
- 		for (GridCoordTransform ct : gcd.getCoordTransforms()) {
+ 		for (CoverageTransform ct : gcd.getCoordTransforms()) {
  			rootElem.addContent(writeCoordTransform(ct));
  		}
 
@@ -135,7 +135,7 @@ public class GridDatasetCapabilities {
  		return doc;
  	}
 
-  private Element writeAxis(GridCoordAxis axis) {
+  private Element writeAxis(CoverageCoordAxis axis) {
 
  		Element varElem = new Element("axis");
  		varElem.setAttribute("name", axis.getName());
@@ -192,7 +192,7 @@ public class GridDatasetCapabilities {
  		rootElement.addContent(elem);
  	}
 
-  private Element writeAxis2(GridCoordAxis axis, String name) {
+  private Element writeAxis2(CoverageCoordAxis axis, String name) {
   		if (axis == null) return null;
 
   		Element varElem = new Element(name);
@@ -240,7 +240,7 @@ public class GridDatasetCapabilities {
  		if (null != path)
  			rootElem.setAttribute("path", path);
 
-    for (GridCoordAxis axis : gcd.getCoordAxes()) {
+    for (CoverageCoordAxis axis : gcd.getCoordAxes()) {
       Element vertAxisElement = writeAxis2(vert, "vert");
 
     }
@@ -251,7 +251,7 @@ public class GridDatasetCapabilities {
 		}
 
  		// its all about grids
- 		List<GridCoverage> grids = gcd.getGrids();
+ 		List<Coverage> grids = gcd.getGrids();
  		Collections.sort(grids, new GridComparator()); // sort by time axis, vert axis, grid name
 
  		CoordinateAxis currentTime = null;
@@ -261,7 +261,7 @@ public class GridDatasetCapabilities {
  		boolean newTime;
 
  		for (int i = 0; i < grids.size(); i++) {
-      GridCoverage grid = grids.get(i);
+      Coverage grid = grids.get(i);
  			GridCoordSystem gcs = grid.getCoordinateSystem();
 
  			CoordinateAxis time = gcs.getTimeAxis();
@@ -470,7 +470,7 @@ public class GridDatasetCapabilities {
 
  	}
 
- 	private Element writeGridSet(GridCoordSys cs, List<GridCoverage> grids, ProjectionRect rect) {
+ 	private Element writeCoverageSet(CoverageCoordSys cs, List<Coverage> grids, ProjectionRect rect) {
  		Element csElem = new Element("gridSet");
  		csElem.setAttribute("name", cs.getName());
 
@@ -505,7 +505,7 @@ public class GridDatasetCapabilities {
  		}
 
  		Collections.sort(grids, new GridCoverageComparator());
- 		for (GridCoverage grid : grids) {
+ 		for (Coverage grid : grids) {
  			csElem.addContent(writeGrid(grid));
  		}
 
@@ -532,10 +532,10 @@ public class GridDatasetCapabilities {
      return csElem;
    } */
 
- 	private Element writeCoordTransform(GridCoordTransform ct) {
+ 	private Element writeCoordTransform(CoverageTransform ct) {
  		Element ctElem = new Element("coordTransform");
  		ctElem.setAttribute("name", ct.getName());
- 		ctElem.setAttribute("transformType", ct.isHoriz ? "Projection" : "Vertical");
+ 		ctElem.setAttribute("transformType", ct.isHoriz() ? "Projection" : "Vertical");
  		for (Attribute param : ct.getAttributes()) {
       Element pElem = NcMLWriter.writeAttribute(param, "parameter", null);
  			ctElem.addContent(pElem);
@@ -543,7 +543,7 @@ public class GridDatasetCapabilities {
  		return ctElem;
  	}
 
- 	private Element writeGrid(GridCoverage grid) {
+ 	private Element writeGrid(Coverage grid) {
  		Element varElem = new Element("grid");
  		varElem.setAttribute("name", grid.getName());
 
@@ -579,8 +579,8 @@ public class GridDatasetCapabilities {
  	}
 
  	// sort by domain size, then name
- 	private static class GridCoverageComparator implements Comparator<GridCoverage> {
- 		public int compare(GridCoverage grid1, GridCoverage grid2) {
+ 	private static class GridCoverageComparator implements Comparator<Coverage> {
+ 		public int compare(Coverage grid1, Coverage grid2) {
  			return grid1.getName().compareTo(grid2.getName());
  		}
  	}

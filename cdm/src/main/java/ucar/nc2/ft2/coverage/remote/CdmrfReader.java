@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid.remote;
+package ucar.nc2.ft2.coverage.remote;
 
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -141,7 +141,7 @@ public class CdmrfReader {
     for (CdmrFeatureProto.CoordSys pgrid : proto.getCoordSysList())
       coordSys.add(decodeCoordSys(pgrid));
 
-    List<CoverageCoordTransform> transforms = new ArrayList<>();
+    List<CoverageTransform> transforms = new ArrayList<>();
     for (CdmrFeatureProto.CoordTransform ptransform : proto.getCoordTransformsList())
       transforms.add(decodeCoordTransform(ptransform));
 
@@ -203,7 +203,7 @@ public class CdmrfReader {
     repeated Attribute params = 3;
   }
    */
-  CoverageCoordTransform decodeCoordTransform(CdmrFeatureProto.CoordTransform proto) {
+  CoverageTransform decodeCoordTransform(CdmrFeatureProto.CoordTransform proto) {
 
     String name = proto.getName();
     AttributeContainerHelper atts = new AttributeContainerHelper(name);
@@ -211,7 +211,7 @@ public class CdmrfReader {
       atts.addAttribute(NcStream.decodeAtt(patt));
 
     //   public CoverageCoordTransform(String name, AttributeContainerHelper attributes, boolean isHoriz) {
-    return new CoverageCoordTransform(name, atts, proto.getIsHoriz());
+    return new CoverageTransform(name, atts, proto.getIsHoriz());
   }
 
   /*

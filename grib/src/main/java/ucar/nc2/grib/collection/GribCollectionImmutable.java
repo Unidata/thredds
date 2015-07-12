@@ -44,7 +44,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribTables;

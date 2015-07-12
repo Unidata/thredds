@@ -11,7 +11,7 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.ft2.coverage.CoverageSubset;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.Parameter;
 
@@ -43,7 +43,7 @@ public class DtCoverageAdapter extends CoverageDataset {
       pcoordSys.add(makeCoordSys(gset.getGeoCoordSystem()));
 
     Set<String> transformNames = new HashSet<>();
-    List<CoverageCoordTransform> transforms = new ArrayList<>();
+    List<CoverageTransform> transforms = new ArrayList<>();
     for (DtCoverageDataset.Gridset gset : proxy.getGridsets()) {
       DtCoverageCS gcs = gset.getGeoCoordSystem();
       for (ucar.nc2.dataset.CoordinateTransform ct : gcs.getCoordTransforms())
@@ -79,19 +79,19 @@ public class DtCoverageAdapter extends CoverageDataset {
   }
 
 
-  private static CoverageCoordTransform makeTransform(ucar.nc2.dataset.CoordinateTransform dt) {
+  private static CoverageTransform makeTransform(ucar.nc2.dataset.CoordinateTransform dt) {
     AttributeContainerHelper atts = new AttributeContainerHelper(dt.getName());
     for (Parameter p : dt.getParameters())
       atts.addAttribute(new Attribute(p));
     //   public CoverageCoordTransform(String name, AttributeContainerHelper attributes, boolean isHoriz) {
-    return new CoverageCoordTransform(dt.getName(), atts, dt.getTransformType() == TransformType.Projection);
+    return new CoverageTransform(dt.getName(), atts, dt.getTransformType() == TransformType.Projection);
   }
 
   ////////////////////////
   private final DtCoverageDataset proxy;
 
   private DtCoverageAdapter(DtCoverageDataset proxy, AttributeContainerHelper atts,
-                            List<CoverageCoordSys> coordSys, List<CoverageCoordTransform> coordTransforms,
+                            List<CoverageCoordSys> coordSys, List<CoverageTransform> coordTransforms,
                             List<CoverageCoordAxis> coordAxes, List<Coverage> coverages) {
 
     super(proxy.getName(), atts, proxy.getBoundingBox(), proxy.getProjBoundingBox(), proxy.getCalendarDateRange(), coordSys, coordTransforms,
@@ -114,7 +114,7 @@ public class DtCoverageAdapter extends CoverageDataset {
     }
 
     @Override
-    public ArrayWithCoordinates readData(CoverageSubset subset) throws IOException {  // LOOK incomplete
+    public ArrayWithCoordinates readData(SubsetParams subset) throws IOException {  // LOOK incomplete
       DtCoverageCS gcs = dtGrid.getCoordinateSystem();
       int ens = -1;
       int level = -1;
@@ -124,7 +124,7 @@ public class DtCoverageAdapter extends CoverageDataset {
       for (String key : subset.getKeys()) {
         switch (key) {
 
-          case CoverageSubset.date: { // CalendarDate
+          case SubsetParams.date: { // CalendarDate
             CalendarDate cdate = (CalendarDate) subset.get(key);
             CoordinateAxis taxis = gcs.getTimeAxis();
             if (taxis != null) {
@@ -140,25 +140,25 @@ public class DtCoverageAdapter extends CoverageDataset {
             break;
           }
 
-          case CoverageSubset.latestTime: {
+          case SubsetParams.latestTime: {
             CoordinateAxis taxis = gcs.getTimeAxis();
             if (taxis != null) time = (int) taxis.getSize() - 1;
             break;
           }
 
-          case CoverageSubset.vertCoord: { // double
+          case SubsetParams.vertCoord: { // double
             CoordinateAxis1D zaxis = gcs.getVerticalAxis();
             if (zaxis != null) level = zaxis.findCoordElement(subset.getDouble(key));
             break;
           }
 
-          case CoverageSubset.vertIndex: {
+          case SubsetParams.vertIndex: {
             CoordinateAxis1D zaxis = gcs.getVerticalAxis();
             if (zaxis != null) level = subset.getInteger(key);
             break;
           }
 
-          case CoverageSubset.ensCoord: { // double
+          case SubsetParams.ensCoord: { // double
             CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
             if (eaxis != null) ens = eaxis.findCoordElement(subset.getDouble(key));
             break;

@@ -256,7 +256,7 @@ public class CoverageTable extends JPanel {
     csTable.setBeans(csList);
 
     List<CoordTransBean> transList = new ArrayList<>();
-    for (CoverageCoordTransform t : gridDataset.getCoordTransforms())
+    for (CoverageTransform t : gridDataset.getCoordTransforms())
       transList.add(new CoordTransBean(t));
     transTable.setBeans(transList);
 
@@ -440,7 +440,7 @@ public class CoverageTable extends JPanel {
   }
 
   public class CoordTransBean {
-    private CoverageCoordTransform gcs;
+    private CoverageTransform gcs;
     String params;
     boolean isHoriz;
 
@@ -448,7 +448,7 @@ public class CoverageTable extends JPanel {
     public CoordTransBean() {
     }
 
-    public CoordTransBean(CoverageCoordTransform gcs) {
+    public CoordTransBean(CoverageTransform gcs) {
       this.gcs = gcs;
       this.isHoriz = gcs.isHoriz();
 

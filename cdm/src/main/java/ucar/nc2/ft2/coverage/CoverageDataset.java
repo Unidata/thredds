@@ -5,7 +5,6 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.LatLonRect;
@@ -23,7 +22,7 @@ import java.util.*;
 @Immutable
 public class CoverageDataset implements AutoCloseable {
 
-  private final List<CoverageSet> coverageSets;
+  private final List<CoordSysSet> coverageSets;
 
   private final String name;
   private final AttributeContainerHelper atts;
@@ -32,14 +31,14 @@ public class CoverageDataset implements AutoCloseable {
   private final CalendarDateRange calendarDateRange;
 
   private final List<CoverageCoordSys> coordSys;
-  private final List<CoverageCoordTransform> coordTransforms;
+  private final List<CoverageTransform> coordTransforms;
   private final List<CoverageCoordAxis> coordAxes;
   private final Map<String, Coverage> coverageMap = new HashMap<>();
 
   private final CoverageCoordSys.Type coverageType;
 
   public CoverageDataset(String name, AttributeContainerHelper atts, LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox,
-                         CalendarDateRange calendarDateRange, List<CoverageCoordSys> coordSys, List<CoverageCoordTransform> coordTransforms,
+                         CalendarDateRange calendarDateRange, List<CoverageCoordSys> coordSys, List<CoverageTransform> coordTransforms,
                          List<CoverageCoordAxis> coordAxes, List<Coverage> coverages, CoverageCoordSys.Type coverageType) {
     this.name = name;
     this.atts = atts;
@@ -54,28 +53,29 @@ public class CoverageDataset implements AutoCloseable {
     this.coverageSets = wireObjectsTogether(coverages);
   }
 
-  private List<CoverageSet> wireObjectsTogether(List<Coverage> coverages) {
-    Map<String, CoverageSet> map = new HashMap<>();
+
+  private List<CoordSysSet> wireObjectsTogether(List<Coverage> coverages) {
+    Map<String, CoordSysSet> map = new HashMap<>();
 
     for (Coverage coverage : coverages) {
       coverageMap.put(coverage.getName(), coverage);
-      CoverageSet gset = map.get(coverage.getCoordSysName());
+      CoordSysSet gset = map.get(coverage.getCoordSysName());
       if (gset == null) {
-        gset = new CoverageSet(findCoordSys(coverage.getCoordSysName()));
+        gset = new CoordSysSet(findCoordSys(coverage.getCoordSysName())); // must use findByName because objects arent wired up yet
         map.put(coverage.getCoordSysName(), gset);
-        gset.getCoordSys().setDataset(this);  // wire this all together
+        gset.getCoordSys().setDataset(this);  // wire dataset into coordSys
       }
       gset.addCoverage(coverage);
-      coverage.setCoordSys(gset.getCoordSys()); // wire this all together
+      coverage.setCoordSys(gset.getCoordSys()); // wire coordSys into coverage
     }
 
         // sort the coordsys
-    List<CoverageSet> csets = new ArrayList<>(map.values());
+    List<CoordSysSet> csets = new ArrayList<>(map.values());
     Collections.sort(csets, (o1, o2) -> o1.getCoordSys().getName().compareTo(o2.getCoordSys().getName()));
 
     // construct the HorizCoordSys
-    Map<String, HorizCoordSys> hcsMap = new HashMap<>();
-    for (CoverageSet cset : csets) {
+    Map<String, CoverageCoordSysHoriz> hcsMap = new HashMap<>();
+    for (CoordSysSet cset : csets) {
       CoverageCoordSys coordsys = cset.getCoordSys();
 
       CoverageCoordAxis xaxis = coordsys.getAxis(AxisType.GeoX);
@@ -83,13 +83,9 @@ public class CoverageDataset implements AutoCloseable {
       CoverageCoordAxis lataxis = coordsys.getAxis(AxisType.Lat);
       CoverageCoordAxis lonaxis = coordsys.getAxis(AxisType.Lon);
 
-      CoverageCoordTransform hct = null;
-      for (String ctName : coordsys.getTransformNames()) {
-        CoverageCoordTransform ct = findCoordTransform(ctName);
-        if (ct.isHoriz()) hct = ct;
-      }
-      HorizCoordSys hcs = new HorizCoordSys(xaxis, yaxis, lataxis, lonaxis, hct);
-      HorizCoordSys old = hcsMap.get(hcs.getName());
+      CoverageTransform hct = coordsys.getHorizTransform();
+      CoverageCoordSysHoriz hcs = new CoverageCoordSysHoriz(xaxis, yaxis, lataxis, lonaxis, hct);
+      CoverageCoordSysHoriz old = hcsMap.get(hcs.getName());
       if (old == null)
         hcsMap.put(hcs.getName(), hcs);
       else
@@ -155,7 +151,7 @@ public class CoverageDataset implements AutoCloseable {
     return coverageType;
   }
 
-  public List<CoverageSet> getCoverageSets() {
+  public List<CoordSysSet> getCoverageSets() {
     return coverageSets;
   }
 
@@ -163,7 +159,7 @@ public class CoverageDataset implements AutoCloseable {
     return coordSys;
   }
 
-  public List<CoverageCoordTransform> getCoordTransforms() {
+  public List<CoverageTransform> getCoordTransforms() {
     return (coordTransforms != null) ? coordTransforms : new ArrayList<>();
   }
 
@@ -193,7 +189,7 @@ public class CoverageDataset implements AutoCloseable {
     for (CoverageCoordSys cs : coordSys)
       cs.toString(f, indent);
     f.format("%s Coordinate Transforms:%n", indent);
-    for (CoverageCoordTransform t : coordTransforms)
+    for (CoverageTransform t : coordTransforms)
       t.toString(f, indent);
     f.format("%s Coordinate Axes:%n", indent);
     for (CoverageCoordAxis a : coordAxes)
@@ -222,8 +218,8 @@ public class CoverageDataset implements AutoCloseable {
     return null;
   }
 
-  public CoverageCoordTransform findCoordTransform(String name) {
-    for (CoverageCoordTransform ct : coordTransforms)
+  public CoverageTransform findCoordTransform(String name) {
+    for (CoverageTransform ct : coordTransforms)
       if (ct.getName().equalsIgnoreCase(name)) return ct;
     return null;
   }
@@ -231,15 +227,4 @@ public class CoverageDataset implements AutoCloseable {
   ////////////////////////////////////////////////
 
 
-  public long getSizeInBytes(Coverage grid) {
-    long total = 1;
-    CoverageCoordSys gcs = findCoordSys(grid.getCoordSysName());
-    for (String axisName : gcs.getAxisNames()) {
-      CoverageCoordAxis axis = findCoordAxis(axisName);
-      if (axis != null)   // LOOK
-        total *= axis.getNcoords();
-    }
-    total *= grid.getDataType().getSize();
-    return total;
-  }
 }

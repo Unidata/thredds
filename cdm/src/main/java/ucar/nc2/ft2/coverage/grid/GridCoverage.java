@@ -4,7 +4,7 @@ package ucar.nc2.ft2.coverage.grid;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.ft2.coverage.ArrayWithCoordinates;
-import ucar.nc2.ft2.coverage.CoverageSubset;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.util.Indent;
 
 import java.io.IOException;
@@ -100,7 +100,7 @@ public abstract class GridCoverage implements IsMissingEvaluator {
   // public abstract ReferencedArray readData(GridSubset subset) throws IOException;
 
   // LOOK what is the contract? what order are the returned values ?? ie what are the coordinates of each point ??
-  public abstract ArrayWithCoordinates readData(CoverageSubset subset) throws IOException;
+  public abstract ArrayWithCoordinates readData(SubsetParams subset) throws IOException;
 
   // LOOK problem this violates coordinate-only data access. NA with cdmr
   // used by CFGridCoverageWriter. this is asking that the coordinates dont change, eg only allow a rectangular subset of the (possibly) bigger grid

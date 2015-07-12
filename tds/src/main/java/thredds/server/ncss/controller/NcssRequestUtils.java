@@ -40,31 +40,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import thredds.server.config.TdsContext;
-import thredds.server.ncss.exception.OutOfBoundariesException;
-import thredds.server.ncss.exception.TimeOutOfWindowException;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.dataset.*;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
-import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
-import ucar.nc2.ft2.coverage.grid.GridCoordSys;
-import ucar.nc2.ft2.coverage.grid.GridCoverage;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public final class NcssRequestUtils implements ApplicationContextAware {
@@ -103,18 +84,18 @@ public final class NcssRequestUtils implements ApplicationContextAware {
     }
   }
 
-  public static GridAsPointDataset buildGridAsPointDataset(GridCoverageDataset gcd, List<String> vars) {
+  public static GridAsPointDataset buildGridAsPointDataset(CoverageDataset gcd, List<String> vars) {
     return null;
   }
 
-  public static Double getTargetLevelForVertCoord(GridCoordAxis zAxis, Double vertLevel) {
+  public static Double getTargetLevelForVertCoord(CoverageCoordAxis zAxis, Double vertLevel) {
     return 0.0;
   }
 
   /**
    * Returns the actual vertical level if the grid has vertical transformation or -9999.9 otherwise
    */
-  public static double getActualVertLevel(GridCoverageDataset gcd, GridCoverage grid, CalendarDate date, LatLonPoint point, double targetLevel) { //} throws IOException, InvalidRangeException {
+  public static double getActualVertLevel(CoverageDataset gcd, Coverage grid, CalendarDate date, LatLonPoint point, double targetLevel) { //} throws IOException, InvalidRangeException {
 
     double actualLevel = -9999.9;
     return actualLevel;

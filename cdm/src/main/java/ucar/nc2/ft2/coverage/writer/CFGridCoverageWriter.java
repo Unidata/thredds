@@ -1,10 +1,9 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid.writer;
+package ucar.nc2.ft2.coverage.writer;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.ft2.coverage.*;
@@ -63,7 +62,7 @@ public class CFGridCoverageWriter {
    * @throws InvalidRangeException
    */
   public static long writeFile(CoverageDataset gdsOrg, List<String> gridNames,
-                               CoverageSubset subset,
+                               SubsetParams subset,
                                boolean addLatLon,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
@@ -83,16 +82,15 @@ public class CFGridCoverageWriter {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  private long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames, CoverageSubset subset, boolean addLatLon, boolean testSizeOnly,
+  private long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subset, boolean addLatLon, boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     // construct the subsetted dataset
-    // GridDatasetHelper helper = new GridDatasetHelper(gdsOrg, gridNames);  LOOK
-    CoverageDataset subsetDataset = gdsOrg; // helper.subset(subset);
+    CoverageDatasetSubset subsetDataset = new CoverageDatasetSubset(gdsOrg, gridNames, subset);
 
     long total_size = 0;
     for (Coverage grid : subsetDataset.getCoverages()) {
-      total_size += subsetDataset.getSizeInBytes(grid);
+      total_size += grid.getSizeInBytes();
     }
 
     if (testSizeOnly)
@@ -136,7 +134,7 @@ public class CFGridCoverageWriter {
     }
 
     // coordTransforms
-    for (CoverageCoordTransform ct : subsetDataset.getCoordTransforms()) {
+    for (CoverageTransform ct : subsetDataset.getCoordTransforms()) {
       Variable ctv = writer.addVariable(null, ct.getName(), DataType.INT, ""); // scaler coordinate transform variable - container for transform info
       for (Attribute att : ct.getAttributes())
         ctv.addAttribute(att);
@@ -158,19 +156,13 @@ public class CFGridCoverageWriter {
       }
     }
 
-
     // write the data to the new file.
-    for (CoverageSet gridset : subsetDataset.getCoverageSets()) {  // LOOK
-      List<Range> ranges = null; // helper.makeSubset(subsetDataset, gridset);
-
-      for (Coverage grid : gridset.getCoverages()) {
+      for (Coverage grid : subsetDataset.getCoverages()) {
         Variable v = writer.findVariable(grid.getName());
-        Array data = grid.readSubset(ranges);
+        Array data = subsetDataset.readSubset(grid);
         // Array reshape = data.reshape(v.getShape());
         System.out.printf("write grid %s%n", v.getNameAndDimensions());
         writer.write(v, data);
-      }
-
     }
 
     //updateGeospatialRanges(writer, llrect );
@@ -190,8 +182,7 @@ public class CFGridCoverageWriter {
     return isLargeFile;
   }
 
-
-  private void addGlobalAttributes(CoverageDataset gds, NetcdfFileWriter writer) {
+  private void addGlobalAttributes(CoverageDatasetSubset gds, NetcdfFileWriter writer) {
     // global attributes
     for (Attribute att : gds.getGlobalAttributes()) {
       if (att.getShortName().equals(CDM.FILE_FORMAT)) continue;
@@ -207,15 +198,14 @@ public class CFGridCoverageWriter {
             "Translated to CF-1.0 Conventions by Netcdf-Java CDM (CFGridCoverageWriter)\n" +
                     "Original Dataset = " + gds.getName() + "; Translation Date = " + CalendarDate.present()));
 
-    if (gds.getLatLonBoundingBox() != null) {
-      LatLonRect llbb = gds.getLatLonBoundingBox();
-      if (llbb != null) {
-        // this will replace any existing
-        writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));
-        writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getLatMax()));
-        writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLonMin()));
-        writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getLonMax()));
-      }
+
+    LatLonRect llbb = gds.getLatLonBoundingBox();
+    if (llbb != null) {
+      // this will replace any existing
+      writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));
+      writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getLatMax()));
+      writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLonMin()));
+      writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getLonMax()));
     }
   }
 
@@ -227,11 +217,11 @@ public class CFGridCoverageWriter {
     }
   }
 
-  private void addCFAnnotations(CoverageDataset gds, NetcdfFileWriter writer, boolean addLatLon) {
+  private void addCFAnnotations(CoverageDatasetSubset gds, NetcdfFileWriter writer, boolean addLatLon) {
 
     //Group root = ncfile.getRootGroup();
     for (Coverage grid : gds.getCoverages()) {
-      CoverageCoordSys gcs = gds.findCoordSys(grid.getCoordSysName());
+      CoverageCoordSys gcs = grid.getCoordSys();
 
       Variable newV = writer.findVariable(grid.getName());
       if (newV == null) {
@@ -246,11 +236,9 @@ public class CFGridCoverageWriter {
       newV.addAttribute(new Attribute(CF.COORDINATES, sbuff.toString()));
 
       // looking for coordinate transform variables
-      for (String ctname : gcs.getTransformNames()) {
-        CoverageCoordTransform ct = gds.findCoordTransform(ctname);
-        if (ct.isHoriz())
-          newV.addAttribute(new Attribute(CF.GRID_MAPPING, ctname));
-      }
+      CoverageTransform ct = gcs.getHorizTransform();
+      if (ct.isHoriz())
+        newV.addAttribute(new Attribute(CF.GRID_MAPPING, ct.getName()));
     }
 
     for (CoverageCoordAxis axis : gds.getCoordAxes()) {

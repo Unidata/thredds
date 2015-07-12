@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid.remote;
+package ucar.nc2.ft2.coverage.remote;
 
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
@@ -88,7 +88,7 @@ public class CdmrfWriter {
     for (CoverageCoordSys gcs : gridDataset.getCoordSys())
       builder.addCoordSys(encodeCoordSys(gcs));
 
-    for (CoverageCoordTransform gct : gridDataset.getCoordTransforms())
+    for (CoverageTransform gct : gridDataset.getCoordTransforms())
       builder.addCoordTransforms(encodeCoordTransform(gct));
 
     for (CoverageCoordAxis axis : gridDataset.getCoordAxes())
@@ -192,7 +192,7 @@ public class CdmrfWriter {
       required string name = 2;
       repeated Attribute params = 3;
     } */
-  CdmrFeatureProto.CoordTransform.Builder encodeCoordTransform(CoverageCoordTransform gct) {
+  CdmrFeatureProto.CoordTransform.Builder encodeCoordTransform(CoverageTransform gct) {
     CdmrFeatureProto.CoordTransform.Builder builder = CdmrFeatureProto.CoordTransform.newBuilder();
     builder.setIsHoriz(gct.isHoriz());
     builder.setName(gct.getName());

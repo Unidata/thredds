@@ -13,11 +13,11 @@ import java.util.List;
  * @since 7/11/2015
  */
 @Immutable
-public class CoverageSet {
+public class CoordSysSet {
   private final CoverageCoordSys coordSys;
   private final List<Coverage> coverages = new ArrayList<>();
 
-  public CoverageSet(CoverageCoordSys coordSys) {
+  public CoordSysSet(CoverageCoordSys coordSys) {
     this.coordSys = coordSys;
   }
 

@@ -38,7 +38,7 @@ import thredds.servlet.ServletUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 
@@ -81,7 +81,7 @@ public class WcsRequestParser {
 
 
     TdsRequestedDataset trd = new TdsRequestedDataset(req, "/wcs");
-    GridCoverageDataset gridDataset = null;
+    CoverageDataset gridDataset = null;
     try {
       gridDataset = trd.openAsGridCoverage(req, res);
       if (gridDataset == null)

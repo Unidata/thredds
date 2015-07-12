@@ -121,9 +121,9 @@ public class TestGeoTiffWriter {
         assert gcd != null;
         Coverage coverage = gcd.findCoverage(field);
         assert coverage != null;
-        data2 = coverage.readData(new CoverageSubset()
-                .set(CoverageSubset.latestTime, true)
-                .set(CoverageSubset.vertIndex, 0));
+        data2 = coverage.readData(new SubsetParams()
+                .set(SubsetParams.latestTime, true)
+                .set(SubsetParams.vertIndex, 0));
 
         try (GeotiffWriter writer = new GeotiffWriter(gridOut2)) {
           writer.writeGrid(gcd, coverage, data2.getData(), true);

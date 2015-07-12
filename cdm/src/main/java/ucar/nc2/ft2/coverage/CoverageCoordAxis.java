@@ -230,6 +230,7 @@ public class CoverageCoordAxis {
    * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
    */
 
+  // LOOK question: is this applicable to anyD or only 1D ??
 
   public boolean isAscending() {
     switch (spacing) {

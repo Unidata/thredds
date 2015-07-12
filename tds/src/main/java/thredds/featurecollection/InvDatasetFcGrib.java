@@ -44,7 +44,7 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDate;
@@ -56,7 +56,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -566,10 +565,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   }
 
-  public GridCoverageDataset getGridCoverage(String matchPath) throws IOException {
+  public CoverageDataset getGridCoverage(String matchPath) throws IOException {
     StateGrib localState = (StateGrib) checkState();
 
-    return (GridCoverageDataset) findDataset(matchPath, localState.gribCollection, new DatasetCreator() {
+    return (CoverageDataset) findDataset(matchPath, localState.gribCollection, new DatasetCreator() {
       @Override
       public Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException {
         return gc.getGridCoverage(ds, group, null, config, null, logger);

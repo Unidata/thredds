@@ -50,23 +50,27 @@ import thredds.server.config.TdsContext;
 import thredds.server.exception.ServiceNotAllowed;
 import thredds.server.ncss.params.NcssGridParamsBean;
 import thredds.servlet.ServletUtil;
+import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageDatasetSubset;
+import ucar.nc2.ft2.coverage.SubsetParams;
+import ucar.nc2.ft2.coverage.remote.CdmrfWriter;
+import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.stream.NcStream;
+import ucar.nc2.stream.NcStreamProto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.*;
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.zip.DeflaterOutputStream;
-
-import thredds.util.ContentType;
-import thredds.util.TdsPathUtils;
-import ucar.ma2.*;
-import ucar.nc2.ft2.coverage.CoverageSubset;
-import ucar.nc2.ft2.coverage.grid.*;
-import ucar.nc2.ft2.coverage.grid.remote.CdmrfWriter;
-import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.stream.NcStream;
-import ucar.nc2.stream.NcStreamProto;
 
 /**
  * Controller for CdmrFeature service.
@@ -111,7 +115,7 @@ public class CdmrGridController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
 
-    try (GridCoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+    try (CoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return;
 
       response.setContentType(ContentType.binary.getContentHeader());
@@ -122,7 +126,6 @@ public class CdmrGridController implements LastModified {
 
       if (showRes)
         System.out.printf(" CdmrFeatureController.getHeader sent, message size=%s%n", size);
-
     }
   }
 
@@ -137,7 +140,7 @@ public class CdmrGridController implements LastModified {
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
     HttpHeaders responseHeaders;
 
-    try (GridCoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+    try (CoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return null;
 
       String text = gridCoverageDataset.toString();
@@ -171,25 +174,21 @@ public class CdmrGridController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
 
-    try (GridCoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+    try (CoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return;
 
       response.setContentType(ContentType.binary.getContentHeader());
       response.setHeader("Content-Description", "ncstream");
 
-          // construct the subsetted dataset
-      CoverageSubset subset = qb.makeSubset(gridCoverageDataset.getCalendar());
-      GridDatasetHelper helper = new GridDatasetHelper(gridCoverageDataset, qb.getVar());  // LOOK only one var ??
-      GridCoverageDataset subsetDataset = helper.subset(subset);
+      // construct the subsetted dataset
+      SubsetParams subset = qb.makeSubset(gridCoverageDataset.getCalendar());
+      CoverageDatasetSubset subsetDataset = new CoverageDatasetSubset(gridCoverageDataset, qb.getVar(), subset);
 
-     // write the data to the stream
-      for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
-        List<Range> ranges = helper.makeSubset(subsetDataset, gridset);
-
-        for (GridCoverage grid : gridset.grids) {
-          Array data = grid.readSubset(ranges);
-          sendData(grid, data, out, true);
-        }
+      // write the data to the stream
+      // write the data to the new file.
+      for (Coverage grid : subsetDataset.getCoverages()) {
+        Array data = subsetDataset.readSubset(grid);
+        sendData(grid, data, out, true);
       }
 
       out.flush();
@@ -199,7 +198,7 @@ public class CdmrGridController implements LastModified {
     }
   }
 
-  private long sendData(GridCoverage grid, Array data, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
+  private long sendData(Coverage grid, Array data, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
 
     // length of data uncompressed
     long uncompressedLength = data.getSizeBytes();
@@ -224,10 +223,11 @@ public class CdmrGridController implements LastModified {
       size += NcStream.writeVInt(out, deflatedSize);
       bout.writeTo(out);
       size += deflatedSize;
-      float ratio = ((float) uncompressedLength)/deflatedSize;
-      if (showRes) System.out.printf(" CdmrFeatureController.sendData grid='%s' org/compress= %d/%d = %f%n", grid.getName(), uncompressedLength, deflatedSize, ratio);
+      float ratio = ((float) uncompressedLength) / deflatedSize;
+      if (showRes)
+        System.out.printf(" CdmrFeatureController.sendData grid='%s' org/compress= %d/%d = %f%n", grid.getName(), uncompressedLength, deflatedSize, ratio);
 
-    }  else {
+    } else {
 
       size += NcStream.writeVInt(out, (int) uncompressedLength); // data len or number of objects
       if (showRes) System.out.printf(" CdmrFeatureController.sendData grid='%s' data len=%d%n", grid.getName(), uncompressedLength);

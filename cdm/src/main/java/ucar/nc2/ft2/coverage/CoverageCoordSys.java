@@ -23,8 +23,8 @@ public class CoverageCoordSys {
   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
   //////////////////////////////////////////////////
-  private CoverageDataset dataset; // almost immutable
-  private HorizCoordSys horizCoordSys;
+  private CoverageDataset dataset; // almost immutable, need to wire these in after the constructor
+  private CoverageCoordSysHoriz horizCoordSys;
 
   private final String name;
   private final List<String> axisNames;
@@ -43,7 +43,7 @@ public class CoverageCoordSys {
     this.dataset = dataset;
   }
 
-  void setHorizCoordSys(HorizCoordSys horizCoordSys) {
+  void setHorizCoordSys(CoverageCoordSysHoriz horizCoordSys) {
     if (this.horizCoordSys != null) throw new RuntimeException("Cant change horizCoordSys once set");
     this.horizCoordSys = horizCoordSys;
   }
@@ -54,6 +54,14 @@ public class CoverageCoordSys {
 
   public List<String> getTransformNames() {
     return (transformNames != null) ? transformNames : new ArrayList<>();
+  }
+
+  public CoverageTransform getHorizTransform() {
+    for (String name : getTransformNames()) {
+      CoverageTransform ct = dataset.findCoordTransform(name);
+      if (ct.isHoriz()) return ct;
+    }
+    return null;
   }
 
   public Type getType() {
@@ -127,14 +135,18 @@ public class CoverageCoordSys {
     return null;
   }
 
-  public CoverageCoordAxis getTimeAxis() {
+  public CoverageCoordAxisTime getTimeAxis() {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
        if (axis.getAxisType() == AxisType.Time) {
-         return axis;
+         return (CoverageCoordAxisTime) axis;
        }
      }
     return null;
+  }
+
+  public CoverageCoordAxis getAxis(String axisName) {
+    return dataset.findCoordAxis(axisName);
   }
 
   public CoverageCoordAxis getAxis(AxisType type) {
@@ -170,10 +182,14 @@ public class CoverageCoordSys {
 
   public ProjectionImpl getProjection() {
     for (String ctName : getTransformNames()) {
-      CoverageCoordTransform ct = dataset.findCoordTransform(ctName);
+      CoverageTransform ct = dataset.findCoordTransform(ctName);
       if (ct != null && ct.isHoriz())
         return ct.getProjection();
     }
     return new LatLonProjection();
   }
+
+  /////////////////////////////////////////////////////////////////////
+
+
 }

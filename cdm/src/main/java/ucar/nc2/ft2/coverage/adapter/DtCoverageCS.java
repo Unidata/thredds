@@ -3,12 +3,10 @@ package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.grid.GridCoordSys;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.SimpleUnit;
@@ -18,7 +16,6 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import java.io.IOException;
 import java.util.*;

@@ -18,14 +18,14 @@ import java.util.Formatter;
  * @since 7/11/2015
  */
 @Immutable
-public class CoverageCoordTransform implements AttributeContainer {
+public class CoverageTransform implements AttributeContainer {
 
   private final String name;
   private final AttributeContainerHelper attributes;
   private final boolean isHoriz;
   private ProjectionImpl projection;    // lazy instantiation
 
-  public CoverageCoordTransform(String name, AttributeContainerHelper attributes, boolean isHoriz) {
+  public CoverageTransform(String name, AttributeContainerHelper attributes, boolean isHoriz) {
     this.name = name;
     this.attributes = attributes;
     this.isHoriz = isHoriz;

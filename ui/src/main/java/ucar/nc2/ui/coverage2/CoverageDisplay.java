@@ -971,7 +971,7 @@ public class CoverageDisplay extends JPanel {
           //gridTable.setDataset(controller.getFields());
           datasetNameLabel.setText("Dataset:  " + coverageDataset.getName());
           setSelected(true);
-          gtWindow.hide();
+          gtWindow.setVisible(false);
         }
       }
     });

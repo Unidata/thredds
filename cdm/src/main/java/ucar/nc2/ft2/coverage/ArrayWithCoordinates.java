@@ -2,10 +2,6 @@
 package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.Array;
-import ucar.ma2.Index;
-import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
-
-import java.util.Iterator;
 
 /**
  * Describe

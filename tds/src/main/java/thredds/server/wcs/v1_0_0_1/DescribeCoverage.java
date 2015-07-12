@@ -37,9 +37,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 import thredds.server.wcs.Request;
-import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
-import ucar.nc2.ft2.coverage.grid.GridCoordAxisTime;
-import ucar.nc2.ft2.coverage.grid.GridCoordSys;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
@@ -103,7 +101,7 @@ public class DescribeCoverage extends WcsRequest {
 
   public Element genCoverageOfferingElem(String covId) {
     WcsCoverage coverage = this.getWcsDataset().getAvailableCoverage(covId);
-    GridCoordSys gridCoordSystem = coverage.getCoordinateSystem();
+    CoverageCoordSys gridCoordSystem = coverage.getCoordinateSystem();
 
     // CoverageDescription/CoverageOffering (wcs) [1..*]
     Element covDescripElem = genCoverageOfferingBriefElem("CoverageOffering", covId,
@@ -134,7 +132,7 @@ public class DescribeCoverage extends WcsRequest {
 
     // ../domainSet/spatialDomain [0..1] AND/OR temporalDomain [0..1]
     domainSetElem.addContent(genSpatialDomainElem(coverage));
-    GridCoordAxisTime timeCoord = wcsDataset.getDataset().getTimeAxis( coverage.getCoordinateSystem());
+    CoverageCoordAxisTime timeCoord = coverage.getCoordinateSystem().getTimeAxis();
     if (timeCoord != null) {
       domainSetElem.addContent(genTemporalDomainElem(timeCoord));
     }
@@ -161,9 +159,9 @@ public class DescribeCoverage extends WcsRequest {
     // ../spatialDomain/gml:RectifiedGrid
     Element rectifiedGridElem = new Element("RectifiedGrid", gmlNS);
 
-    GridCoordAxis xaxis = wcsDataset.getDataset().getXAxis(coverage.getCoordinateSystem());
-    GridCoordAxis yaxis = wcsDataset.getDataset().getYAxis(coverage.getCoordinateSystem());
-    GridCoordAxis zaxis = wcsDataset.getDataset().getZAxis(coverage.getCoordinateSystem());
+    CoverageCoordAxis xaxis = coverage.getCoordinateSystem().getXAxis();
+    CoverageCoordAxis yaxis = coverage.getCoordinateSystem().getZAxis();
+    CoverageCoordAxis zaxis = coverage.getCoordinateSystem().getXAxis();
 
     // ../spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
     rectifiedGridElem.setAttribute("srsName", coverage.getNativeCrs());
@@ -257,10 +255,10 @@ public class DescribeCoverage extends WcsRequest {
     return buf.toString();
   }
 
-  private Element genEnvelopeElem(GridCoordSys gcs) {
+  private Element genEnvelopeElem(CoverageCoordSys gcs) {
     // spatialDomain/Envelope
     Element envelopeElem;
-    GridCoordAxisTime timeCoord = wcsDataset.getDataset().getTimeAxis( gcs);
+    CoverageCoordAxisTime timeCoord = gcs.getTimeAxis();
     if (timeCoord != null)
       envelopeElem = new Element("EnvelopeWithTimePeriod", wcsNS);
     else
@@ -300,7 +298,7 @@ public class DescribeCoverage extends WcsRequest {
     return envelopeElem;
   }
 
-  private Element genTemporalDomainElem(GridCoordAxisTime timeAxis) {
+  private Element genTemporalDomainElem(CoverageCoordAxisTime timeAxis) {
     Element temporalDomainElem = new Element("temporalDomain", wcsNS);
     // temporalDomain/timePosition [1..*]
     for (int i=0; i<timeAxis.getNcoords(); i++) {

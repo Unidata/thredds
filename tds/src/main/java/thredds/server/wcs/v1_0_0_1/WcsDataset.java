@@ -35,9 +35,6 @@ package thredds.server.wcs.v1_0_0_1;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.grid.GridCoordSys;
-import ucar.nc2.ft2.coverage.grid.GridCoverage;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 
 import java.io.IOException;
 import java.util.Collection;

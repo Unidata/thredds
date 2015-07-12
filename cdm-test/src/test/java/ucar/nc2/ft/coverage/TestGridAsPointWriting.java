@@ -11,9 +11,8 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageSubset;
-import ucar.nc2.ft2.coverage.grid.writer.DSGGridCoverageWriter;
+import ucar.nc2.ft2.coverage.SubsetParams;
+import ucar.nc2.ft2.coverage.writer.DSGGridCoverageWriter;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
@@ -64,7 +63,7 @@ public class TestGridAsPointWriting {
 
         NetcdfFileWriter ncwriter = NetcdfFileWriter.createNew(version, tempFile.getPath(), null);
 
-        DSGGridCoverageWriter writer = new DSGGridCoverageWriter(gcd, covList, new CoverageSubset());
+        DSGGridCoverageWriter writer = new DSGGridCoverageWriter(gcd, covList, new SubsetParams());
       }
 
       /* open the new file as a Coverage
