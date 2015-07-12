@@ -54,6 +54,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.geotiff.GeoTiff;
@@ -5010,7 +5011,7 @@ public class ToolsUI extends JPanel {
     JSplitPane split;
     IndependentWindow viewerWindow;
 
-    GridCoverageDataset gcd = null;
+    CoverageDataset gcd = null;
 
     CoveragePanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);
@@ -5020,7 +5021,7 @@ public class ToolsUI extends JPanel {
       AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
       viewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          GridCoverageDataset gridDataset = dsTable.getCoverageDataset();
+          CoverageDataset gridDataset = dsTable.getCoverageDataset();
           if (gridDataset == null) return;
           if (display == null) makeDisplay();
           display.setDataset(dsTable);
@@ -5071,7 +5072,7 @@ public class ToolsUI extends JPanel {
       }
 
       try {
-        gcd = CoverageDatasetFactory.openGridCoverage(command);
+        gcd = CoverageDatasetFactory.openCoverage(command);
         setDataset(gcd);
 
       } catch (IOException e) {
@@ -5120,7 +5121,7 @@ public class ToolsUI extends JPanel {
       setSelectedItem(newds.getLocation());
     }  */
 
-    void setDataset(GridCoverageDataset gds) {
+    void setDataset(CoverageDataset gds) {
       if (gds == null) return;
 
       try {

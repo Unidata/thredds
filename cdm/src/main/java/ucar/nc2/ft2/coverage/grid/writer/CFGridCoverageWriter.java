@@ -7,7 +7,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
-import ucar.nc2.ft2.coverage.grid.*;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.*;
 
@@ -62,8 +62,8 @@ public class CFGridCoverageWriter {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  public static long writeFile(GridCoverageDataset gdsOrg, List<String> gridNames,
-                               GridSubset subset,
+  public static long writeFile(CoverageDataset gdsOrg, List<String> gridNames,
+                               CoverageSubset subset,
                                boolean addLatLon,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
@@ -83,15 +83,15 @@ public class CFGridCoverageWriter {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  private long writeOrTestSize(GridCoverageDataset gdsOrg, List<String> gridNames, GridSubset subset, boolean addLatLon, boolean testSizeOnly,
+  private long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames, CoverageSubset subset, boolean addLatLon, boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     // construct the subsetted dataset
-    GridDatasetHelper helper = new GridDatasetHelper(gdsOrg, gridNames);
-    GridCoverageDataset subsetDataset = helper.subset(subset);
+    // GridDatasetHelper helper = new GridDatasetHelper(gdsOrg, gridNames);  LOOK
+    CoverageDataset subsetDataset = gdsOrg; // helper.subset(subset);
 
     long total_size = 0;
-    for (GridCoverage grid : subsetDataset.getGrids()) {
+    for (Coverage grid : subsetDataset.getCoverages()) {
       total_size += subsetDataset.getSizeInBytes(grid);
     }
 
@@ -109,16 +109,16 @@ public class CFGridCoverageWriter {
     // LOOK need to deal with multiple variables for one axis, eg bounds
     Map<String, Dimension> dimHash = new HashMap<>();
     String dims;
-    for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
-      if (axis.getDependenceType() == GridCoordAxis.DependenceType.independent) {
+    for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
         Dimension d = writer.addDimension(null, axis.getName(), axis.getNcoords());
         dimHash.put(axis.getName(), d);
         dims = axis.getName();
 
-      } else if (axis.getDependenceType() == GridCoordAxis.DependenceType.scalar) {
+      } else if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.scalar) {
         dims = "";
 
-      } else if (axis.getDependenceType() == GridCoordAxis.DependenceType.twoD) {
+      } else if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.twoD) {
         dims = axis.getDependsOn();
 
       } else {
@@ -130,13 +130,13 @@ public class CFGridCoverageWriter {
     }
 
     // grids
-    for (GridCoverage grid : subsetDataset.getGrids()) {                        // LOOK need to deal with runtime(time), runtime(runtime, time)
-      Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), subsetDataset.getIndependentAxisNames(grid));
+    for (Coverage grid : subsetDataset.getCoverages()) {                        // LOOK need to deal with runtime(time), runtime(runtime, time)
+      Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), grid.getCoordSys().getIndependentAxisNames());
       addVariableAttributes(v, grid.getAttributes());
     }
 
     // coordTransforms
-    for (GridCoordTransform ct : subsetDataset.getCoordTransforms()) {
+    for (CoverageCoordTransform ct : subsetDataset.getCoordTransforms()) {
       Variable ctv = writer.addVariable(null, ct.getName(), DataType.INT, ""); // scaler coordinate transform variable - container for transform info
       for (Attribute att : ct.getAttributes())
         ctv.addAttribute(att);
@@ -148,7 +148,7 @@ public class CFGridCoverageWriter {
     writer.create();
 
      // write the coordinates to the new file.
-    for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
+    for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
       Variable v = writer.findVariable(axis.getName());
       if (v != null) {
         System.out.printf("write axis %s%n", v.getNameAndDimensions());
@@ -160,10 +160,10 @@ public class CFGridCoverageWriter {
 
 
     // write the data to the new file.
-    for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
-      List<Range> ranges = helper.makeSubset(subsetDataset, gridset);
+    for (CoverageSet gridset : subsetDataset.getCoverageSets()) {  // LOOK
+      List<Range> ranges = null; // helper.makeSubset(subsetDataset, gridset);
 
-      for (GridCoverage grid : gridset.grids) {
+      for (Coverage grid : gridset.getCoverages()) {
         Variable v = writer.findVariable(grid.getName());
         Array data = grid.readSubset(ranges);
         // Array reshape = data.reshape(v.getShape());
@@ -191,7 +191,7 @@ public class CFGridCoverageWriter {
   }
 
 
-  private void addGlobalAttributes(GridCoverageDataset gds, NetcdfFileWriter writer) {
+  private void addGlobalAttributes(CoverageDataset gds, NetcdfFileWriter writer) {
     // global attributes
     for (Attribute att : gds.getGlobalAttributes()) {
       if (att.getShortName().equals(CDM.FILE_FORMAT)) continue;
@@ -227,11 +227,11 @@ public class CFGridCoverageWriter {
     }
   }
 
-  private void addCFAnnotations(GridCoverageDataset gds, NetcdfFileWriter writer, boolean addLatLon) {
+  private void addCFAnnotations(CoverageDataset gds, NetcdfFileWriter writer, boolean addLatLon) {
 
     //Group root = ncfile.getRootGroup();
-    for (GridCoverage grid : gds.getGrids()) {
-      GridCoordSys gcs = gds.findCoordSys(grid.getCoordSysName());
+    for (Coverage grid : gds.getCoverages()) {
+      CoverageCoordSys gcs = gds.findCoordSys(grid.getCoordSysName());
 
       Variable newV = writer.findVariable(grid.getName());
       if (newV == null) {
@@ -241,19 +241,19 @@ public class CFGridCoverageWriter {
 
       // annotate Variable for CF
       StringBuilder sbuff = new StringBuilder();
-      sbuff.append(gds.getAxisNames(grid));
+      sbuff.append(grid.getCoordSys().getAxisNames());
       if (addLatLon) sbuff.append("lat lon");
       newV.addAttribute(new Attribute(CF.COORDINATES, sbuff.toString()));
 
       // looking for coordinate transform variables
       for (String ctname : gcs.getTransformNames()) {
-        GridCoordTransform ct = gds.findCoordTransform(ctname);
+        CoverageCoordTransform ct = gds.findCoordTransform(ctname);
         if (ct.isHoriz())
           newV.addAttribute(new Attribute(CF.GRID_MAPPING, ctname));
       }
     }
 
-    for (GridCoordAxis axis : gds.getCoordAxes()) {
+    for (CoverageCoordAxis axis : gds.getCoordAxes()) {
       Variable newV = writer.findVariable(axis.getName());
       /* if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
         if (null != axis.getPositive())

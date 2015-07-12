@@ -3,26 +3,17 @@ package ucar.nc2.ui.coverage2;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
-//import ucar.nc2.dataset.*;
-//import ucar.nc2.ft.fmrc.GridDatasetInv;
-//import ucar.nc2.ft.cover.Coverage;
-//import ucar.nc2.ft.cover.CoverageCS;
-//import ucar.nc2.ft.cover.CoverageDataset;
-//import ucar.nc2.ft.cover.impl.CoverageDatasetImpl;
-import ucar.nc2.ft2.coverage.grid.*;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-//import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.nc2.util.NamedObject;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-//import java.awt.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -37,7 +28,7 @@ import java.util.List;
  */
 public class CoverageTable extends JPanel {
   private PreferencesExt prefs;
-  private GridCoverageDataset gridDataset;
+  private CoverageDataset gridDataset;
 
   private BeanTable gridTable, csTable, axisTable, transTable;
   private JSplitPane split = null, split2 = null, split3 = null;
@@ -251,26 +242,26 @@ public class CoverageTable extends JPanel {
     gridDataset.toString(result);
   }
 
-  public void setDataset(GridCoverageDataset gds) throws IOException {
+  public void setDataset(CoverageDataset gds) throws IOException {
     this.gridDataset = gds;
 
     List<GridBean> beanList = new ArrayList<>();
-    for (GridCoverage g : gridDataset.getGrids())
+    for (Coverage g : gridDataset.getCoverages())
       beanList.add(new GridBean(g));
     gridTable.setBeans(beanList);
 
     List<CoordSysBean> csList = new ArrayList<>();
-    for (GridCoordSys gcs : gridDataset.getCoordSys())
+    for (CoverageCoordSys gcs : gridDataset.getCoordSys())
       csList.add(new CoordSysBean(gridDataset, gcs));
     csTable.setBeans(csList);
 
     List<CoordTransBean> transList = new ArrayList<>();
-    for (GridCoordTransform t : gridDataset.getCoordTransforms())
+    for (CoverageCoordTransform t : gridDataset.getCoordTransforms())
       transList.add(new CoordTransBean(t));
     transTable.setBeans(transList);
 
     List<AxisBean> axisList = new ArrayList<>();
-    for (GridCoordAxis axis : gridDataset.getCoordAxes())
+    for (CoverageCoordAxis axis : gridDataset.getCoordAxes())
       axisList.add(new AxisBean(axis));
     axisTable.setBeans(axisList);
   }
@@ -281,7 +272,7 @@ public class CoverageTable extends JPanel {
     return false;
   }
 
-  public GridCoverageDataset getCoverageDataset() {
+  public CoverageDataset getCoverageDataset() {
     return gridDataset;
   }
 
@@ -302,7 +293,7 @@ public class CoverageTable extends JPanel {
   public class GridBean implements NamedObject {
     // static public String editableProperties() { return "title include logging freq"; }
 
-    GridCoverage geogrid;
+    Coverage geogrid;
     String name, desc, units, coordSysName;
     DataType dataType;
 
@@ -311,7 +302,7 @@ public class CoverageTable extends JPanel {
     }
 
     // create from a dataset
-    public GridBean(GridCoverage geogrid) {
+    public GridBean(Coverage geogrid) {
       this.geogrid = geogrid;
       setName(geogrid.getName());
       setDescription(geogrid.getDescription());
@@ -389,7 +380,7 @@ public class CoverageTable extends JPanel {
   }
 
   public class CoordSysBean {
-    private GridCoordSys gcs;
+    private CoverageCoordSys gcs;
     private String coordTrans, axisNames;
     private int nIndAxis = 0;
 
@@ -397,7 +388,7 @@ public class CoverageTable extends JPanel {
     public CoordSysBean() {
     }
 
-    public CoordSysBean(GridCoverageDataset gds, GridCoordSys gcs) {
+    public CoordSysBean(CoverageDataset gds, CoverageCoordSys gcs) {
       this.gcs = gcs;
 
       Formatter buff = new Formatter();
@@ -408,8 +399,8 @@ public class CoverageTable extends JPanel {
       Formatter f = new Formatter();
       for (String name : gcs.getAxisNames()) {
         f.format("%s,", name);
-        GridCoordAxis axis = gds.findCoordAxis(name);
-        if (axis.getDependenceType() == GridCoordAxis.DependenceType.independent) nIndAxis++;
+        CoverageCoordAxis axis = gds.findCoordAxis(name);
+        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) nIndAxis++;
       }
       setAxisNames(f.toString());
     }
@@ -419,7 +410,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getType() {
-      GridCoordSys.Type type = gcs.getType();
+      CoverageCoordSys.Type type = gcs.getType();
       return (type == null) ? "" : type.toString();
     }
 
@@ -449,7 +440,7 @@ public class CoverageTable extends JPanel {
   }
 
   public class CoordTransBean {
-    private GridCoordTransform gcs;
+    private CoverageCoordTransform gcs;
     String params;
     boolean isHoriz;
 
@@ -457,7 +448,7 @@ public class CoverageTable extends JPanel {
     public CoordTransBean() {
     }
 
-    public CoordTransBean(GridCoordTransform gcs) {
+    public CoordTransBean(CoverageCoordTransform gcs) {
       this.gcs = gcs;
       this.isHoriz = gcs.isHoriz();
 
@@ -481,7 +472,7 @@ public class CoverageTable extends JPanel {
   }
 
   public class AxisBean {
-    GridCoordAxis axis;
+    CoverageCoordAxis axis;
     String name, desc, units;
     DataType dataType;
     AxisType axisType;
@@ -494,7 +485,7 @@ public class CoverageTable extends JPanel {
     }
 
     // create from a dataset
-    public AxisBean(GridCoordAxis v) {
+    public AxisBean(CoverageCoordAxis v) {
       this.axis = v;
 
       setName(v.getName());
@@ -547,7 +538,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getSpacing() {
-      GridCoordAxis.Spacing sp = axis.getSpacing();
+      CoverageCoordAxis.Spacing sp = axis.getSpacing();
       return (sp == null) ? "" : sp.toString();
     }
 
@@ -580,7 +571,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getDependsOn() {
-      if (axis.getDependenceType() != GridCoordAxis.DependenceType.independent)
+      if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.independent)
         return axis.getDependenceType()+": "+axis.getDependsOn();
       else
         return axis.getDependenceType().toString();

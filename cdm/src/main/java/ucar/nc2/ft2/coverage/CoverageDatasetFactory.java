@@ -16,27 +16,29 @@ import java.io.IOException;
  */
 public class CoverageDatasetFactory {
 
-  static public GridCoverageDataset openGridCoverage(String endpoint) throws IOException {
+  static public CoverageDataset openCoverage(String endpoint) throws IOException {
 
+    // remote CdmrFeatureDataset
     if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME)) {
 
       endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
       CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
-      return reader.openGridCoverage();
+      return reader.openCoverageDataset();
 
     } else if (endpoint.startsWith("http:")) {
       CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
       if (reader.isCmrfEndpoint()) {
-        return reader.openGridCoverage();
+        return reader.openCoverageDataset();
       } // otherwise let it fall through to DtCoverageDataset.open(endpoint)
 
     } else if (endpoint.startsWith("file:")) {
       endpoint = endpoint.substring("file:".length());
     }
 
+    // adapt a DtCoverageDataset (forked from ucar.nc2.dt.GridDataset), eg a local file
     DtCoverageDataset gds = DtCoverageDataset.open(endpoint);
     if (gds.getGrids().size() > 0)
-      return new DtCoverageAdapter(gds);
+      return DtCoverageAdapter.factory(gds);
 
     return null;
   }

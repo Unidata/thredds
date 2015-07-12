@@ -7,7 +7,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
-import ucar.nc2.ft2.coverage.grid.GridCoordSys;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -55,7 +55,7 @@ public class DtCoverageDataset implements AutoCloseable {
   ////////////////////////////////////////
 
   private NetcdfDataset ncd;
-  private GridCoordSys.Type coverageType;
+  private CoverageCoordSys.Type coverageType;
 
   private ArrayList<DtCoverage> grids = new ArrayList<>();
   private Map<String, Gridset> gridsetHash = new HashMap<>();
@@ -157,7 +157,7 @@ public class DtCoverageDataset implements AutoCloseable {
     }
   }
 
-  public GridCoordSys.Type getCoverageType() {
+  public CoverageCoordSys.Type getCoverageType() {
     return coverageType;
   }
 

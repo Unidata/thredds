@@ -12,11 +12,10 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.grid.GridCoordSys;
 import ucar.nc2.ft2.coverage.grid.GridCoverage;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.ft2.coverage.grid.GridSubset;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.test.util.CompareNetcdf;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -64,9 +63,9 @@ public class TestGridCoverageSubset {
     public void testGridCoverageDataset() throws IOException {
       System.out.printf("Test Dataset %s%n", endpoint);
 
-      try (GridCoverageDataset gcs = CoverageDatasetFactory.openGridCoverage(endpoint)) {
+      try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {
         Assert.assertNotNull(endpoint, gcs);
-        Assert.assertEquals("NGrids", ncoverages, gcs.getGrids().size());
+        Assert.assertEquals("NGrids", ncoverages, gcs.getCoverageCount());
         Assert.assertEquals(expectType, gcs.getCoverageType());
 
         // check DtCoverageCS
@@ -78,7 +77,7 @@ public class TestGridCoverageSubset {
             CoordinateAxis1DTime timeAxis = csys.getTimeAxis1D();
             CoordinateAxis1D vertAxis = csys.getVerticalAxis();
 
-            GridCoverage cover = gcs.findCoverage(dt.getFullName());
+            Coverage cover = gcs.findCoverage(dt.getFullName());
             if (cover == null) {
               System.out.printf("Cant find %s%n", dt.getFullName());
               continue;
@@ -91,7 +90,7 @@ public class TestGridCoverageSubset {
       }
     }
 
-  private void readOneSliceRunTime(GridCoverage cover, GridDatatype dt, CoordinateAxis1DTime runtimeAxis, CoordinateAxis1D ensAxis, CoordinateAxis1DTime timeAxis, CoordinateAxis1D vertAxis)  {
+  private void readOneSliceRunTime(Coverage cover, GridDatatype dt, CoordinateAxis1DTime runtimeAxis, CoordinateAxis1D ensAxis, CoordinateAxis1DTime timeAxis, CoordinateAxis1D vertAxis)  {
     if (runtimeAxis == null)
       readOneSliceEns(cover, dt, null, -1, ensAxis, timeAxis, vertAxis);
     else {
@@ -101,7 +100,7 @@ public class TestGridCoverageSubset {
   }
 
 
-  private void readOneSliceEns(GridCoverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, CoordinateAxis1D ensAxis, CoordinateAxis1DTime timeAxis, CoordinateAxis1D vertAxis)  {
+  private void readOneSliceEns(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, CoordinateAxis1D ensAxis, CoordinateAxis1DTime timeAxis, CoordinateAxis1D vertAxis)  {
     if (ensAxis == null)
       readOneSliceTime(cover, dt, rt_val, rt_idx, 0, -1, timeAxis, vertAxis);
     else {
@@ -111,7 +110,7 @@ public class TestGridCoverageSubset {
   }
 
 
-  private void readOneSliceTime(GridCoverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, double ens_val, int ens_idx,
+  private void readOneSliceTime(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, double ens_val, int ens_idx,
                                 CoordinateAxis1DTime timeAxis, CoordinateAxis1D vertAxis)  {
     if (timeAxis == null)
       readOneSliceVert( cover, dt, rt_val, rt_idx, ens_val, ens_idx, null, -1, vertAxis);
@@ -121,7 +120,7 @@ public class TestGridCoverageSubset {
     }
   }
 
-  private void readOneSliceVert(GridCoverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, double ens_val, int ens_idx,
+  private void readOneSliceVert(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, double ens_val, int ens_idx,
                                 CalendarDate time_val, int time_idx, CoordinateAxis1D vertAxis)  {
     if (vertAxis == null)
       readOneSlice(cover, dt, rt_val, rt_idx, ens_val, ens_idx, time_val, time_idx, 0, -1);
@@ -131,7 +130,7 @@ public class TestGridCoverageSubset {
     }
   }
 
-  private void readOneSlice(GridCoverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, double ens_val, int ens_idx,
+  private void readOneSlice(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, double ens_val, int ens_idx,
                             CalendarDate time_val, int time_idx, double vert_val, int vert_idx)  {
     System.out.printf("   Slice runtime=%s (%d) ens=%f (%d) time=%s (%d) vert=%f (%d) %n", rt_val, rt_idx, ens_val, ens_idx, time_val, time_idx, vert_val, vert_idx);
 
@@ -143,17 +142,17 @@ public class TestGridCoverageSubset {
       return;
     }
 
-    GridSubset subset = new GridSubset();
+    CoverageSubset subset = new CoverageSubset();
     if (rt_idx >= 0)
-      subset.set(GridSubset.runtime, rt_val);
+      subset.set(CoverageSubset.runtime, rt_val);
     if (ens_idx >= 0)
-       subset.set(GridSubset.ensCoord, ens_val);
+       subset.set(CoverageSubset.ensCoord, ens_val);
     if (time_idx >= 0)
-      subset.set(GridSubset.date, time_val);
+      subset.set(CoverageSubset.date, time_val);
     if (vert_idx >= 0)
-      subset.set(GridSubset.vertCoord, vert_val);
+      subset.set(CoverageSubset.vertCoord, vert_val);
 
-    Array gc_array;
+    ArrayWithCoordinates gc_array;
     try {
       gc_array = cover.readData(subset);
     } catch (IOException e) {
@@ -161,7 +160,7 @@ public class TestGridCoverageSubset {
       return;
     }
 
-    CompareNetcdf.compareData(dt_array, gc_array);
+    CompareNetcdf.compareData(dt_array, gc_array.getData());
     //NCdumpW.printArray(dt_array);
   }
 

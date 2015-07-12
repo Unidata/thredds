@@ -1,16 +1,13 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid.writer;
 
-import ucar.ma2.Array;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.point.writer.CFPointWriterConfig;
-import ucar.nc2.ft.point.writer.WriterCFPointCollection;
+import ucar.nc2.ft2.coverage.ArrayWithCoordinates;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.grid.GridCoverage;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.ft2.coverage.grid.GridSubset;
+import ucar.nc2.ft2.coverage.CoverageSubset;
 import ucar.nc2.util.Misc;
 
 import java.io.IOException;
@@ -27,28 +24,28 @@ import java.util.List;
 public class DSGGridCoverageWriter {
   private static final boolean debug = true;
 
-  private GridCoverageDataset gcd;
+  private CoverageDataset gcd;
   private List<VarData> varData;
-  private GridSubset subset;
+  private CoverageSubset subset;
 
   private class VarData {
-    GridCoverage cov;
-    Array data;
+    Coverage cov;
+    ArrayWithCoordinates array;
 
-    public VarData(GridCoverage cov) throws IOException {
+    public VarData(Coverage cov) throws IOException {
       this.cov = cov;
-      this.data = cov.readData(subset);
-      System.out.printf(" Coverage %s data shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
+      this.array = cov.readData(subset);
+      System.out.printf(" Coverage %s data shape = %s%n", cov.getName(), Misc.showInts(array.getData().getShape()));
     }
   }
 
-  public DSGGridCoverageWriter(GridCoverageDataset gcd, List<String> varNames, GridSubset subset) throws IOException {
+  public DSGGridCoverageWriter(CoverageDataset gcd, List<String> varNames, CoverageSubset subset) throws IOException {
     this.gcd = gcd;
     this.subset = subset;
 
     varData = new ArrayList<>(varNames.size());
     for (String varName : varNames) {
-      GridCoverage cov = gcd.findCoverage(varName);
+      Coverage cov = gcd.findCoverage(varName);
       if (cov != null) {
         varData.add(new VarData(cov));
       }

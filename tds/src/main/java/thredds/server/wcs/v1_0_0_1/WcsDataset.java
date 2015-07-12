@@ -32,6 +32,9 @@
  */
 package thredds.server.wcs.v1_0_0_1;
 
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.grid.GridCoordSys;
 import ucar.nc2.ft2.coverage.grid.GridCoverage;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
@@ -46,10 +49,10 @@ import java.util.Map;
 public class WcsDataset {
   private String datasetPath;
   private String datasetName;
-  private GridCoverageDataset dataset;
+  private CoverageDataset dataset;
   private Map<String, WcsCoverage> availableCoverages;
 
-  public WcsDataset(GridCoverageDataset dataset, String datasetPath) {
+  public WcsDataset(CoverageDataset dataset, String datasetPath) {
     this.datasetPath = datasetPath;
     int pos = datasetPath.lastIndexOf("/");
     this.datasetName = (pos > 0) ? datasetPath.substring(pos + 1) : datasetPath;
@@ -60,9 +63,9 @@ public class WcsDataset {
     // ToDo WCS 1.0PlusPlus - compartmentalize coverage to hide GridDatatype vs GridDataset.Gridset ???
     // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
     // This is WCS 1.0 coverage for each parameter
-    for (GridCoverage coverage : this.dataset.getGrids()) {
-      GridCoordSys gcs = dataset.findCoordSys(coverage.getCoordSysName());
-      if (!this.dataset.isRegularSpatial(gcs)) continue;
+    for (Coverage coverage : this.dataset.getCoverages()) {
+      CoverageCoordSys gcs = dataset.findCoordSys(coverage.getCoordSysName());
+      if (!gcs.isRegularSpatial()) continue;
       this.availableCoverages.put(coverage.getName(), new WcsCoverage(coverage, gcs, this));
     }
     // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
@@ -84,7 +87,7 @@ public class WcsDataset {
     return datasetName;
   }
 
-  public GridCoverageDataset getDataset() {
+  public CoverageDataset getDataset() {
     return dataset;
   }
 

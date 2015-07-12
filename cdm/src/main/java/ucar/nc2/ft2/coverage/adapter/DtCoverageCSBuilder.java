@@ -5,7 +5,7 @@ import com.beust.jcommander.internal.Lists;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
-import ucar.nc2.ft2.coverage.grid.GridCoordSys;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.RotatedPole;
@@ -53,7 +53,7 @@ public class DtCoverageCSBuilder {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
-  GridCoordSys.Type type;
+  CoverageCoordSys.Type type;
 
   boolean isLatLon;
   CoordinateAxis xaxis, yaxis, timeAxis;
@@ -232,21 +232,21 @@ public class DtCoverageCSBuilder {
     this.orgProj = cs.getProjection();
   }
 
-  private GridCoordSys.Type classify () {
+  private CoverageCoordSys.Type classify () {
 
     // now to classify
     boolean is2Dtime = (rtAxis != null) && (timeOffsetAxis != null || (timeAxis != null && timeAxis.getRank() == 2));
     if (is2Dtime) {
-      return GridCoordSys.Type.Fmrc;   // LOOK this would allow 2d horiz
+      return CoverageCoordSys.Type.Fmrc;   // LOOK this would allow 2d horiz
     }
 
     boolean is2Dhoriz = isLatLon && (xaxis.getRank() == 2) && (yaxis.getRank() == 2);
     if (is2Dhoriz) {
       Set<Dimension> xyDomain = CoordinateSystem.makeDomain(Lists.newArrayList(xaxis, yaxis));
       if (timeAxis != null && CoordinateSystem.isSubsetOf(timeAxis.getDimensionsAll(), xyDomain))
-        return  GridCoordSys.Type.Swath;   // LOOK prob not exactly right
+        return  CoverageCoordSys.Type.Swath;   // LOOK prob not exactly right
       else
-        return  GridCoordSys.Type.Curvilinear;
+        return  CoverageCoordSys.Type.Curvilinear;
     }
 
     // what makes it a grid?
@@ -254,11 +254,11 @@ public class DtCoverageCSBuilder {
     Set<Dimension> indDimensions = CoordinateSystem.makeDomain(independentAxes);
     Set<Dimension> allDimensions = CoordinateSystem.makeDomain(allAxes);
     if (indDimensions.size() == allDimensions.size()) {
-      return GridCoordSys.Type.Grid;
+      return CoverageCoordSys.Type.Grid;
     }
 
     // default
-    return GridCoordSys.Type.Coverage;
+    return CoverageCoordSys.Type.Coverage;
   }
 
   public DtCoverageCS makeCoordSys() {

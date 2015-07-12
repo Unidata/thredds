@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.ft2.coverage.grid.*;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDateRange;
@@ -33,10 +33,10 @@ public class CdmrfWriter {
   static public final int MAX_INLINE_NVALUES = 1000;
   private static final boolean show = false;
 
-  GridCoverageDataset gridDataset;
+  CoverageDataset gridDataset;
   String location;
 
-  public CdmrfWriter(GridCoverageDataset gridDataset, String location) throws IOException {
+  public CdmrfWriter(CoverageDataset gridDataset, String location) throws IOException {
     this.gridDataset = gridDataset;
     this.location = location;
   }
@@ -72,7 +72,7 @@ public class CdmrfWriter {
       repeated CoordAxis coordAxes = 8;
       repeated GridCoverage grids = 9;
     } */
-  CdmrFeatureProto.GridCoverageDataset.Builder encodeHeader(GridCoverageDataset gridDataset) {
+  CdmrFeatureProto.GridCoverageDataset.Builder encodeHeader(CoverageDataset gridDataset) {
     CdmrFeatureProto.GridCoverageDataset.Builder builder = CdmrFeatureProto.GridCoverageDataset.newBuilder();
     builder.setName(location);
     builder.setCoverageType(convertCoverageType(gridDataset.getCoverageType()));
@@ -85,16 +85,16 @@ public class CdmrfWriter {
     for (Attribute att : gridDataset.getGlobalAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
 
-    for (GridCoordSys gcs : gridDataset.getCoordSys())
+    for (CoverageCoordSys gcs : gridDataset.getCoordSys())
       builder.addCoordSys(encodeCoordSys(gcs));
 
-    for (GridCoordTransform gcs : gridDataset.getCoordTransforms())
-      builder.addCoordTransforms(encodeCoordTransform(gcs));
+    for (CoverageCoordTransform gct : gridDataset.getCoordTransforms())
+      builder.addCoordTransforms(encodeCoordTransform(gct));
 
-    for (GridCoordAxis axis : gridDataset.getCoordAxes())
+    for (CoverageCoordAxis axis : gridDataset.getCoordAxes())
       builder.addCoordAxes(encodeCoordAxis(axis));
 
-    for (GridCoverage grid : gridDataset.getGrids())
+    for (Coverage grid : gridDataset.getCoverages())
       builder.addGrids(encodeGrid(grid));
 
     return builder;
@@ -152,7 +152,7 @@ public class CdmrfWriter {
     required string coordSys = 5;
   }
    */
-  CdmrFeatureProto.GridCoverage.Builder encodeGrid(GridCoverage grid) {
+  CdmrFeatureProto.GridCoverage.Builder encodeGrid(Coverage grid) {
     CdmrFeatureProto.GridCoverage.Builder builder = CdmrFeatureProto.GridCoverage.newBuilder();
     builder.setName(grid.getName());
     builder.setDataType(NcStream.convertDataType(grid.getDataType()));
@@ -173,7 +173,7 @@ public class CdmrfWriter {
       repeated string transformNames = 3;
       repeated CoordSys components = 4;        // ??
     } */
-  CdmrFeatureProto.CoordSys.Builder encodeCoordSys(GridCoordSys gcs) {
+  CdmrFeatureProto.CoordSys.Builder encodeCoordSys(CoverageCoordSys gcs) {
     CdmrFeatureProto.CoordSys.Builder builder = CdmrFeatureProto.CoordSys.newBuilder();
     builder.setName(gcs.getName());
     builder.setCoverageType(convertCoverageType(gcs.getType()));
@@ -192,7 +192,7 @@ public class CdmrfWriter {
       required string name = 2;
       repeated Attribute params = 3;
     } */
-  CdmrFeatureProto.CoordTransform.Builder encodeCoordTransform(GridCoordTransform gct) {
+  CdmrFeatureProto.CoordTransform.Builder encodeCoordTransform(CoverageCoordTransform gct) {
     CdmrFeatureProto.CoordTransform.Builder builder = CdmrFeatureProto.CoordTransform.newBuilder();
     builder.setIsHoriz(gct.isHoriz());
     builder.setName(gct.getName());
@@ -212,7 +212,7 @@ public class CdmrfWriter {
       required double max = 8;
       optional double resolution = 9;
     } */
-  CdmrFeatureProto.CoordAxis.Builder encodeCoordAxis(GridCoordAxis axis) {
+  CdmrFeatureProto.CoordAxis.Builder encodeCoordAxis(CoverageCoordAxis axis) {
     CdmrFeatureProto.CoordAxis.Builder builder = CdmrFeatureProto.CoordAxis.newBuilder();
     builder.setName(axis.getName());
     builder.setDataType(NcStream.convertDataType(axis.getDataType()));
@@ -303,7 +303,7 @@ public class CdmrfWriter {
 
     //   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
-  static public CdmrFeatureProto.CoverageType convertCoverageType(GridCoordSys.Type type) {
+  static public CdmrFeatureProto.CoverageType convertCoverageType(CoverageCoordSys.Type type) {
     switch (type) {
       case Coverage:
         return CdmrFeatureProto.CoverageType.Coverage;
@@ -319,7 +319,7 @@ public class CdmrfWriter {
     throw new IllegalStateException("illegal CoverageType " + type);
   }
 
-  static public CdmrFeatureProto.DependenceType convertDependenceType(GridCoordAxis.DependenceType type) {
+  static public CdmrFeatureProto.DependenceType convertDependenceType(CoverageCoordAxis.DependenceType type) {
     switch (type) {
       case independent:
         return CdmrFeatureProto.DependenceType.independent;
@@ -334,7 +334,7 @@ public class CdmrfWriter {
   }
 
 
-  static public CdmrFeatureProto.AxisSpacing convertSpacing(GridCoordAxis.Spacing type) {
+  static public CdmrFeatureProto.AxisSpacing convertSpacing(CoverageCoordAxis.Spacing type) {
     switch (type) {
       case regular:
         return CdmrFeatureProto.AxisSpacing.regular;

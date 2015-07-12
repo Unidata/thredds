@@ -1001,9 +1001,11 @@ public class TestWrite {
   @Test
   public void testRecordSizeBug() throws IOException, InvalidRangeException {
     String filename = TestLocal.temporaryDataDir + "foo.nc";
+    System.out.printf("Write to %s%n", new File(filename).getAbsolutePath());
     //File tempFile = File.createTempFile("foo", "nc");
     //tempFile.deleteOnExit();
-    Array timeData;
+    Array timeDataAll;
+    int size = 10;
 
     try (NetcdfFileWriter ncWriteable = NetcdfFileWriter.createNew(filename, false)) {
       Dimension timeDim = ncWriteable.addUnlimitedDimension("time");
@@ -1011,11 +1013,15 @@ public class TestWrite {
       ncWriteable.addVariableAttribute("time", "units", "hours since 1990-01-01");
       ncWriteable.create();
 
-      timeData = Array.factory(DataType.INT, new int[]{1});
+      timeDataAll = Array.factory(DataType.INT, new int[]{size});
+      IndexIterator iter = timeDataAll.getIndexIterator();
+      Array timeData = Array.factory(DataType.INT, new int[]{1});
       int[] time_origin = new int[]{0};
 
-      for (int time = 0; time < 10; time++) {
-        timeData.setInt(timeData.getIndex(), time * 12);
+      for (int time = 0; time < size; time++) {
+        int val = time * 12;
+        iter.setIntNext(val);
+        timeData.setInt(timeData.getIndex(), val);
         time_origin[0] = time;
         ncWriteable.write("time", time_origin, timeData);
       }
@@ -1029,7 +1035,7 @@ public class TestWrite {
       // Prints "0 0 12 0 24 0 36 0 48 0".
       Array result2 = ncFile.readSection("time");
       System.out.println(result2);
-      ucar.unidata.test.util.CompareNetcdf.compareData(timeData, result2);
+      ucar.unidata.test.util.CompareNetcdf.compareData(timeDataAll, result2);
 
     }
   }

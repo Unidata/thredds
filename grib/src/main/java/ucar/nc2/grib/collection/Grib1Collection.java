@@ -44,6 +44,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
@@ -112,14 +113,14 @@ public class Grib1Collection extends GribCollectionImmutable {
   }
 
   @Override
-  public GridCoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
+  public CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
       Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
       NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation()+"#"+group.getId(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       DtCoverageDataset gds = new DtCoverageDataset(ncd);
-      return new DtCoverageAdapter(gds);
+      return DtCoverageAdapter.factory(gds);
 
     } else {
       MFile wantFile = findMFileByName(filename);
@@ -131,7 +132,7 @@ public class Grib1Collection extends GribCollectionImmutable {
         NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
         DtCoverageDataset gds = new DtCoverageDataset(ncd);
-        return new DtCoverageAdapter(gds);
+        return DtCoverageAdapter.factory(gds);
       }
       return null;
     }

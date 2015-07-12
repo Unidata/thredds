@@ -41,6 +41,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.transform.*;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
+import ucar.nc2.ft2.coverage.CoverageCoordTransform;
 import ucar.nc2.ft2.coverage.grid.GridCoordTransform;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
@@ -276,7 +277,7 @@ public class CoordTransBuilder {
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
-  static public ProjectionImpl makeProjection(GridCoordTransform gct, Formatter errInfo) {
+  static public ProjectionImpl makeProjection(CoverageCoordTransform gct, Formatter errInfo) {
     // standard name
     String transform_name = gct.findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
 

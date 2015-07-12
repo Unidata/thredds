@@ -6,7 +6,9 @@ import ucar.ma2.*;
 //import ucar.nc2.dataset.CoordinateAxis2D;
 //import ucar.nc2.ft.cover.Coverage;
 //import ucar.nc2.ft.cover.CoverageCS;
-import ucar.nc2.ft2.coverage.grid.*;
+import ucar.nc2.ft2.coverage.ArrayWithCoordinates;
+import ucar.nc2.ft2.coverage.CoverageSubset;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;
 import ucar.unidata.geoloc.*;
@@ -34,19 +36,19 @@ public class CoverageRenderer {
   private boolean drawContourLabels = false;
   private boolean isNewField = true;
 
-  private ColorScale cs = null;
+  private ColorScale colorScale = null;
   private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
   private ProjectionImpl drawProjection = null;    // current drawing Projection
   private ProjectionImpl dataProjection = null;    // current data Projection
-  // private GridCoverage stridedGrid = null;
+  // private Coverage stridedGrid = null;
 
   // data stuff
-  private Array dataH;
+  private ArrayWithCoordinates dataH;
   private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
   private int wantRunTime = -1, wantEnsemble = -1;
   private int lastLevel = -1, lastTime = -1, lastStride = -1;   // last data read
   private int lastRunTime = -1, lastEnsemble = -1;   // last data read
-  private GridCoverage lastGrid = null;
+  private Coverage lastGrid = null;
 
   // drawing optimization
   private boolean useModeForProjections = false; // use colorMode optimization for different projections
@@ -67,12 +69,12 @@ public class CoverageRenderer {
 
   /* get the current ColorScale */
   public ColorScale getColorScale() {
-    return cs;
+    return colorScale;
   }
 
   /* set the ColorScale to use */
   public void setColorScale(ColorScale cs) {
-    this.cs = cs;
+    this.colorScale = cs;
   }
 
   /* set the ColorScale data min/max type */
@@ -83,37 +85,37 @@ public class CoverageRenderer {
   }
 
   private class DataState {
-    GridCoverageDataset coverageDataset;
-    GridCoverage grid;
-    GridCoordSys geocs;
-    GridCoordAxis xaxis;
-    GridCoordAxis yaxis;
-    GridCoordAxis zaxis;
-    GridCoordAxisTime taxis;
-    GridCoordAxis rtaxis;
+    CoverageDataset coverageDataset;
+    Coverage grid;
+    CoverageCoordSys geocs;
+    //CoverageCoordAxis xaxis;
+    //CoverageCoordAxis yaxis;
+    CoverageCoordAxis zaxis;
+    CoverageCoordAxisTime taxis;
+    CoverageCoordAxis rtaxis;
 
-    public DataState(GridCoverageDataset coverageDataset, GridCoverage grid) {
+    public DataState(CoverageDataset coverageDataset, Coverage grid) {
       this.coverageDataset = coverageDataset;
       this.grid = grid;
-      this.geocs = coverageDataset.findCoordSys(grid.getCoordSysName());
-      this.xaxis = coverageDataset.getXAxis(geocs);
-      this.yaxis = coverageDataset.getYAxis(geocs);
-      this.zaxis = coverageDataset.getZAxis(geocs);
-      this.taxis = coverageDataset.getTimeAxis(geocs);
+      this.geocs = grid.getCoordSys();
+      //this.xaxis = coverageDataset.getXAxis(geocs);
+      //this.yaxis = coverageDataset.getYAxis(geocs);
+      this.zaxis = geocs.getZAxis();
+      this.taxis = (CoverageCoordAxisTime) geocs.getTimeAxis();
     }
   }
   private DataState dataState;
 
   /* set the Grid */
-  public void setCoverage(GridCoverageDataset coverageDataset, GridCoverage grid) {
+  public void setCoverage(CoverageDataset coverageDataset, Coverage grid) {
     this.dataState = new DataState(coverageDataset, grid);
     this.lastGrid = null;
     isNewField = true;
   }
 
-  public Array getCurrentHorizDataSlice() {
+  /* public Array getCurrentHorizDataSlice() {
     return dataH;
-  }
+  } */
 
   /* get the current data projection */
   public ProjectionImpl getDataProjection() {
@@ -450,7 +452,7 @@ public class CoverageRenderer {
    dataVolumeChanged = true;
  } */
 
-  private Array makeHSlice(int level, int time, int ensemble, int runtime) {
+  private ArrayWithCoordinates makeHSlice(int level, int time, int ensemble, int runtime) {
 
     /* make sure x, y exists
     CoverageCS gcs = useG.getCoordinateSystem();
@@ -468,20 +470,20 @@ public class CoverageRenderer {
 
     // get the data slice
       //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
-    GridSubset subset = new GridSubset();
+    CoverageSubset subset = new CoverageSubset();
     if (level >= 0 && dataState.zaxis != null) {
       double levelVal = dataState.zaxis.getCoord(level);
-      subset.set(GridSubset.vertCoord, levelVal);
+      subset.set(CoverageSubset.vertCoord, levelVal);
     }
     if (time >= 0 && dataState.taxis != null) {
       double timeVal = dataState.taxis.getCoord(time);
       CalendarDate date = dataState.taxis.makeDate(timeVal);
-      subset.set(GridSubset.date, date);
+      subset.set(CoverageSubset.date, date);
     }
 
     try {
       dataH = dataState.grid.readData(subset);
-      dataH = dataH.reduce(); // get rid of n=1 dimensions
+      //dataH = dataH.reduce(); // get rid of n=1 dimensions
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -572,15 +574,15 @@ public class CoverageRenderer {
       return;
     isNewField = false;
 
-    Array dataArr = makeHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
+    ArrayWithCoordinates dataArr = makeHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
 
     //else
     //  dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
 
     if (dataArr != null) {
-      MAMath.MinMax minmax = MAMath.getMinMaxSkipMissingData(dataArr, dataState.grid);
-      cs.setMinMax(minmax.min, minmax.max);
-      cs.setGeoGrid(dataState.grid);
+      MAMath.MinMax minmax = MAMath.getMinMaxSkipMissingData(dataArr.getData(), dataState.grid);
+      colorScale.setMinMax(minmax.min, minmax.max);
+      colorScale.setGeoGrid(dataState.grid);
     }
   }
 
@@ -671,7 +673,7 @@ public class CoverageRenderer {
    * @param dFromN transforms "Normalized Device" to Device coordinates
    */
   public void renderPlanView(java.awt.Graphics2D g, AffineTransform dFromN) {
-    if ((dataState.grid == null) || (cs == null) || (drawProjection == null))
+    if ((dataState.grid == null) || (colorScale == null) || (drawProjection == null))
       return;
 
     if (!drawGrid && !drawContours)
@@ -694,7 +696,7 @@ public class CoverageRenderer {
       drawGridLines(g);
   }
 
-  private void drawGridHoriz(java.awt.Graphics2D g, Array data) {
+  private void drawGridHoriz(java.awt.Graphics2D g, ArrayWithCoordinates data) {
     drawGridHorizRegular(g, data);
 
     /* data = data.reduce();
@@ -815,11 +817,15 @@ public class CoverageRenderer {
    return gp;
  } */
 
-  private void drawGridHorizRegular(java.awt.Graphics2D g, Array data) {
+  private void drawGridHorizRegular(java.awt.Graphics2D g, ArrayWithCoordinates array) {
     int count = 0;
 
-    int nx = (int) dataState.xaxis.getNcoords();
-    int ny = (int) dataState.yaxis.getNcoords();
+    CoverageCoordAxis xaxis = array.getXaxis();
+    CoverageCoordAxis yaxis = array.getYaxis();
+    Array data = array.getData();
+
+    int nx = xaxis.getNcoords();
+    int ny = yaxis.getNcoords();
 
     //// drawing optimizations
     sameProjection = drawProjection.equals(dataProjection); // always true
@@ -830,20 +836,20 @@ public class CoverageRenderer {
     }
 
     // find the most common color and fill the entire area with it
-    cs.resetHist();
-    IndexIterator iiter = data.getIndexIterator();
+    colorScale.resetHist();
+    IndexIterator iiter = array.getData().getIndexIterator();
     while (iiter.hasNext()) {
       double val = iiter.getDoubleNext();
-      cs.getIndexFromValue(val);                // accum in histogram
+      colorScale.getIndexFromValue(val);                // accum in histogram
     }
-    int modeColor = cs.getHistMax();
+    int modeColor = colorScale.getHistMax();
     if (debugMiss) System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
 
     if (sameProjection) {
-      double xmin = Math.min(dataState.xaxis.getCoordEdge1(0), dataState.xaxis.getCoordEdgeLast());
-      double xmax = Math.max(dataState.xaxis.getCoordEdge1(0), dataState.xaxis.getCoordEdgeLast());
-      double ymin = Math.min(dataState.yaxis.getCoordEdge1(0), dataState.yaxis.getCoordEdgeLast());
-      double ymax = Math.max(dataState.yaxis.getCoordEdge1(0), dataState.yaxis.getCoordEdgeLast());
+      double xmin = Math.min(xaxis.getCoordEdge1(0), xaxis.getCoordEdgeLast());
+      double xmax = Math.max(xaxis.getCoordEdge1(0), xaxis.getCoordEdgeLast());
+      double ymin = Math.min(yaxis.getCoordEdge1(0), yaxis.getCoordEdgeLast());
+      double ymax = Math.max(yaxis.getCoordEdge1(0), yaxis.getCoordEdgeLast());
 
       // pre color the drawing area with the most used color
       count += drawRect(g, modeColor, xmin, ymin, xmax, ymax, drawProjection.isLatLon());
@@ -854,10 +860,10 @@ public class CoverageRenderer {
     debugPts = Debug.isSet("GridRenderer/showPts");
 
     // draw individual rects with run length
-    Index imaH = dataH.getIndex();
+    Index imaH = data.getIndex();
     for (int y = 0; y < ny; y++) {
-      double ybeg = dataState.yaxis.getCoordEdge1(y);
-      double yend = dataState.yaxis.getCoordEdge2(y);
+      double ybeg = yaxis.getCoordEdge1(y);
+      double yend = yaxis.getCoordEdge2(y);
       int thisColor, lastColor = 0;
       int run = 0;
       int xbeg = 0;
@@ -867,7 +873,7 @@ public class CoverageRenderer {
       for (int x = 0; x < nx; x++) {
         try {
           double val = data.getDouble(imaH.set(y, x));
-          thisColor = cs.getIndexFromValue(val);
+          thisColor = colorScale.getIndexFromValue(val);
         } catch (ArrayIndexOutOfBoundsException e) {
           System.out.println("bad");
           throw e;
@@ -878,7 +884,7 @@ public class CoverageRenderer {
         else {
           if (sameProjection) {
             if (lastColor != modeColor) // dont have to draw these
-              count += drawRect(g, lastColor, dataState.xaxis.getCoordEdge1(xbeg), ybeg, dataState.xaxis.getCoordEdge2(x), yend, drawProjection.isLatLon());
+              count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdge2(x), yend, drawProjection.isLatLon());
           } //else {
             //if (!useModeForProjections || (lastColor != modeColor)) // dont have to draw mode
             //count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, x);
@@ -891,7 +897,7 @@ public class CoverageRenderer {
       // get the ones at the end
       if (sameProjection) {
         if (lastColor != modeColor)
-          count += drawRect(g, lastColor, dataState.xaxis.getCoordEdge1(xbeg), ybeg, dataState.xaxis.getCoordEdgeLast(), yend, drawProjection.isLatLon());
+          count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdgeLast(), yend, drawProjection.isLatLon());
       } //else {
         //if (!useModeForProjections || (lastColor != modeColor))
         //count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, nx - 1);
@@ -906,7 +912,7 @@ public class CoverageRenderer {
   private Rectangle2D rect = new Rectangle2D.Double();
 
   private int drawRectLatLon(Graphics2D g, int color, double lon1, double lat1, double lon2, double lat2) {
-    g.setColor(cs.getColor(color));
+    g.setColor(colorScale.getColor(color));
 
     int count = 0;
     ProjectionRect[] rects = projectll.latLonToProjRect(lat1, lon1, lat2, lon2);
@@ -924,7 +930,7 @@ public class CoverageRenderer {
     if (useLatlon)
       return drawRectLatLon(g, color, w1, h1, w2, h2);
 
-    g.setColor(cs.getColor(color));
+    g.setColor(colorScale.getColor(color));
     double wmin = Math.min(w1, w2);
     double hmin = Math.min(h1, h2);
     double width = Math.abs(w1 - w2);

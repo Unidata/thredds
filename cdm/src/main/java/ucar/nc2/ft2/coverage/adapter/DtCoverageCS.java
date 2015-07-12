@@ -7,6 +7,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.grid.GridCoordSys;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -262,7 +263,7 @@ public class DtCoverageCS {
     return name;
   }
 
-  public GridCoordSys.Type getCoverageType() {
+  public CoverageCoordSys.Type getCoverageType() {
     return builder.type;
   }
 

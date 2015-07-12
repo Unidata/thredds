@@ -5,8 +5,7 @@ import thredds.client.catalog.Access;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.Dataset;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.grid.*;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ui.event.ActionCoordinator;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
@@ -114,8 +113,8 @@ public class CoverageDisplay extends JPanel {
   private AbstractAction drawHorizAction, drawVertAction;
 
   // data components
-  private GridCoverageDataset coverageDataset;
-  private GridCoverage currentField;
+  private CoverageDataset coverageDataset;
+  private Coverage currentField;
   private ProjectionImpl project;
 
   // state
@@ -983,13 +982,9 @@ public class CoverageDisplay extends JPanel {
   boolean showDataset() {
 
     // temp kludge for initialization
-    java.util.List<GridCoverage> grids = coverageDataset.getGrids();
-    if ((grids == null) || grids.size() == 0) {
-      javax.swing.JOptionPane.showMessageDialog(null, "No gridded fields in file " + coverageDataset.getName());
-      return false;
-    }
+    Iterable<Coverage> grids = coverageDataset.getCoverages();
 
-    currentField = grids.get(0);
+    currentField = grids.iterator().next();   // first
     currentSlice = 0;
     currentLevel = 0;
     currentTime = 0;
@@ -998,12 +993,12 @@ public class CoverageDisplay extends JPanel {
 
     eventsOK = false; // dont let this trigger redraw
     coverageRenderer.setCoverage(coverageDataset, currentField);
-    coverageRenderer.setDataProjection(coverageDataset.getProjection(currentField));
+    coverageRenderer.setDataProjection(currentField.getCoordSys().getProjection());
     // setFields(grids);
     setField(currentField);
 
     // LOOK if possible, change the projection and the map area to one that fits this dataset
-    ProjectionImpl dataProjection = coverageDataset.getProjection(currentField);
+    ProjectionImpl dataProjection = currentField.getCoordSys().getProjection();
     if (dataProjection != null)
       setProjection(dataProjection);
 
@@ -1032,9 +1027,9 @@ public class CoverageDisplay extends JPanel {
     //gridTable.setDataset(controller.getFields());
   }
 
-  public void setDataset(GridCoverageDataset gcd) {
+  public void setDataset(CoverageDataset gcd) {
     this.coverageDataset = gcd;
-    setFields(gcd.getGrids());
+    setFields(gcd.getCoverages());
 
     startOK = false; // wait till redraw is hit before drawing
     showDataset();
@@ -1046,14 +1041,14 @@ public class CoverageDisplay extends JPanel {
     fieldChooser.setCollection(fields.iterator());
   }
 
-  void setFields(java.util.List<GridCoverage> fields) {
+  void setFields(Iterable<Coverage> fields) {
     fieldChooser.setCollection(fields.iterator());
   }
 
   private boolean setField(Object fld) {
-    GridCoverage gg = null;
-    if (fld instanceof GridCoverage)
-      gg = (GridCoverage) fld;
+    Coverage gg = null;
+    if (fld instanceof Coverage)
+      gg = (Coverage) fld;
     else if (fld instanceof String)
       gg = coverageDataset.findCoverage((String) fld);
     else if (fld instanceof NamedObject)
@@ -1061,15 +1056,16 @@ public class CoverageDisplay extends JPanel {
     if (null == gg)
       return false;
 
+    CoverageCoordSys coordsSys = gg.getCoordSys();
     coverageRenderer.setCoverage(coverageDataset, gg);
-    coverageRenderer.setDataProjection(coverageDataset.getProjection(gg));
+    coverageRenderer.setDataProjection(coordsSys.getProjection());
     currentField = gg;
 
-    GridCoordSys gcs = coverageDataset.findCoordSys(gg.getCoordSysName());
+    CoverageCoordSys gcs = coverageDataset.findCoordSys(gg.getCoordSysName());
     //gcs.setProjectionBoundingBox();
 
     // set levels
-    GridCoordAxis vertAxis = coverageDataset.getZAxis(gcs);
+    CoverageCoordAxis vertAxis = coordsSys.getZAxis();
     if (vertAxis != null) {
       levelNames = vertAxis.getCoordValueNames();
       if ((currentLevel < 0) || (currentLevel >= levelNames.size()))
@@ -1088,7 +1084,7 @@ public class CoverageDisplay extends JPanel {
     }
 
     // set times
-    GridCoordAxisTime timeAxis = coverageDataset.getTimeAxis(gcs);
+    CoverageCoordAxisTime timeAxis = (CoverageCoordAxisTime) gcs.getTimeAxis();
     if (timeAxis != null) {
       timeNames = timeAxis.getCoordValueNames();
       if ((currentTime < 0) || (currentTime >= timeNames.size()))
@@ -1461,9 +1457,9 @@ public class CoverageDisplay extends JPanel {
     }
 
     public void run() {
-      GridCoverageDataset gcd = null;
+      CoverageDataset gcd = null;
       try {
-        gcd = CoverageDatasetFactory.openGridCoverage(endpoint.toString());
+        gcd = CoverageDatasetFactory.openCoverage(endpoint.toString());
       } catch (IOException e) {
         setError("Failed to open datset: "+e.getMessage());
       }

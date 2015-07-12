@@ -316,7 +316,7 @@ public class GridCoverageDataset implements AutoCloseable {
     ProjectionImpl proj = transform.getProjection();
     if (proj == null) {
       Formatter errInfo = new Formatter();
-      proj = CoordTransBuilder.makeProjection(transform, errInfo);  // LOOK could store the projection in the transform
+      // proj = CoordTransBuilder.makeProjection(transform, errInfo);  // LOOK could store the projection in the transform
     }
     transform.setProjection(proj);
     return proj;

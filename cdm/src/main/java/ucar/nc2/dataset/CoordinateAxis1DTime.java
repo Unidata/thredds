@@ -36,6 +36,7 @@ package ucar.nc2.dataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.time.*;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
@@ -104,6 +105,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     s.cdates = cdateSection;
     return s;
   }
+
+  public Calendar getCalendar() { return getCalendarFromAttribute(); }
 
    /**
    * Get the the ith CalendarDate.

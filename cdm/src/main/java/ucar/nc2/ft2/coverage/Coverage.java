@@ -1,10 +1,9 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid;
+package ucar.nc2.ft2.coverage;
 
+import net.jcip.annotations.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
-import ucar.nc2.ft2.coverage.ArrayWithCoordinates;
-import ucar.nc2.ft2.coverage.CoverageSubset;
 import ucar.nc2.util.Indent;
 
 import java.io.IOException;
@@ -12,69 +11,56 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- message GridCoverage {
-   required string name = 1; // short name
-   required DataType dataType = 2;
-   optional bool unsigned = 3 [default = false];
-   repeated Attribute atts = 4;
-   required string coordSys = 5;
- }
+ * Coverage
+ *
  * @author caron
- * @since 5/2/2015
+ * @since 7/11/2015
  */
-public abstract class GridCoverage implements IsMissingEvaluator {
-  String name;
-  DataType dataType;
-  List<Attribute> atts;
-  String coordSysName;
-  String units, description;
+@Immutable
+public abstract class Coverage implements IsMissingEvaluator {
+  private CoverageCoordSys coordSys; // almost immutable
+  private final String name;
+  private final DataType dataType;
+  private final List<Attribute> atts;
+  private final String coordSysName;
+  private final String units, description;
+
+  public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description) {
+    this.name = name;
+    this.dataType = dataType;
+    this.atts = atts;
+    this.coordSysName = coordSysName;
+    this.units = units;
+    this.description = description;
+  }
+
+  void setCoordSys (CoverageCoordSys coordSys) {
+    if (this.coordSys != null) throw new RuntimeException("Cant change coordSys once set");
+    this.coordSys = coordSys;
+  }
 
   public String getName() {
     return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public DataType getDataType() {
     return dataType;
   }
 
-  public void setDataType(DataType dataType) {
-    this.dataType = dataType;
-  }
-
   public List<Attribute> getAttributes() {
     return atts;
-  }
-
-  public void setAtts(List<Attribute> atts) {
-    this.atts = atts;
   }
 
   public String getCoordSysName() {
     return coordSysName;
   }
 
-  public void setCoordSysName(String coordSysName) {
-    this.coordSysName = coordSysName;
-  }
-
   public String getUnits() {
     return units;
   }
 
-  public void setUnits(String units) {
-    this.units = units;
-  }
-
   public String getDescription() {
     return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   @Override
@@ -93,6 +79,14 @@ public abstract class GridCoverage implements IsMissingEvaluator {
       f.format("%s     %s%n", indent, att);
     indent.decr();
   }
+
+  public CoverageCoordSys getCoordSys() {
+    return coordSys;
+  }
+
+  ///////////////////////////////////////////////////////////////
+
+
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   // LOOK what is the contract? what order are the values ?? ie what are the coordinates of each point ??

@@ -38,7 +38,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.ft2.coverage.grid.*;
+import ucar.nc2.ft2.coverage.*;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
@@ -551,15 +551,15 @@ public class GeotiffWriter implements AutoCloseable {
    * @param greyScale if true, write greyScale image, else dataSample.
    * @throws IOException on i/o error
    */
-  public void writeGrid(GridCoverageDataset dataset, GridCoverage coverage, Array data, boolean greyScale) throws IOException {
+  public void writeGrid(CoverageDataset dataset, Coverage coverage, Array data, boolean greyScale) throws IOException {
 
-    GridCoordSys gcs = dataset.findCoordSys(coverage.getCoordSysName());
-    if (!dataset.isRegularSpatial(gcs))
+    CoverageCoordSys gcs = coverage.getCoordSys();
+    if (!gcs.isRegularSpatial())
       throw new IllegalArgumentException("Must have 1D x and y axes for " + coverage.getName());
 
-    Projection proj = dataset.getProjection(coverage);
-    GridCoordAxis xaxis = dataset.getXAxis(gcs);
-    GridCoordAxis yaxis = dataset.getYAxis(gcs);
+    Projection proj = gcs.getProjection();
+    CoverageCoordAxis xaxis = gcs.getXAxis();
+    CoverageCoordAxis yaxis = gcs.getYAxis();
 
     // latlon coord does not need to be scaled
     double scaler = (proj instanceof LatLonProjection) ? 1.0 : 1000.0;

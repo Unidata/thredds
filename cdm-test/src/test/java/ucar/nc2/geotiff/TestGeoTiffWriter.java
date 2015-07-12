@@ -44,9 +44,7 @@ import ucar.ma2.Array;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.grid.*;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.ft2.coverage.*;
 import ucar.unidata.test.util.CompareNetcdf;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -118,21 +116,21 @@ public class TestGeoTiffWriter {
       String gridOut2 = TestDir.temporaryLocalDataDir + f.getName() + ".coverage.tif";
       System.out.printf("geotiff2 read coverage %s write %s%n", filename, gridOut2);
 
-      Array data2;
-      try (GridCoverageDataset gcd = CoverageDatasetFactory.openGridCoverage(filename)) {
+      ArrayWithCoordinates data2;
+      try (CoverageDataset gcd = CoverageDatasetFactory.openCoverage(filename)) {
         assert gcd != null;
-        GridCoverage coverage = gcd.findCoverage(field);
+        Coverage coverage = gcd.findCoverage(field);
         assert coverage != null;
-        data2 = coverage.readData(new GridSubset()
-                .set(GridSubset.latestTime, true)
-                .set(GridSubset.vertIndex, 0));
+        data2 = coverage.readData(new CoverageSubset()
+                .set(CoverageSubset.latestTime, true)
+                .set(CoverageSubset.vertIndex, 0));
 
         try (GeotiffWriter writer = new GeotiffWriter(gridOut2)) {
-          writer.writeGrid(gcd, coverage, data2, true);
+          writer.writeGrid(gcd, coverage, data2.getData(), true);
         }
       }
 
-      CompareNetcdf.compareData(data1, data2);
+      CompareNetcdf.compareData(data1, data2.getData());
 
       // read it back in
       try (GeoTiff geotiff2 = new GeoTiff(gridOut2)) {

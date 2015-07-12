@@ -61,6 +61,7 @@ import java.util.zip.DeflaterOutputStream;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.ma2.*;
+import ucar.nc2.ft2.coverage.CoverageSubset;
 import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.ft2.coverage.grid.remote.CdmrfWriter;
 import ucar.nc2.iosp.IospHelper;
@@ -177,7 +178,7 @@ public class CdmrGridController implements LastModified {
       response.setHeader("Content-Description", "ncstream");
 
           // construct the subsetted dataset
-      GridSubset subset = qb.makeSubset(gridCoverageDataset.getCalendar());
+      CoverageSubset subset = qb.makeSubset(gridCoverageDataset.getCalendar());
       GridDatasetHelper helper = new GridDatasetHelper(gridCoverageDataset, qb.getVar());  // LOOK only one var ??
       GridCoverageDataset subsetDataset = helper.subset(subset);
 

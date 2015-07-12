@@ -85,7 +85,7 @@ public class TestH4eos {
 
   @Test
   public void testSpecificVariableSection() throws InvalidRangeException, IOException {
-    try (NetcdfFile ncfile = NetcdfFile.open(TestH4readAndCount.testDir + "96108_08.hdf")) {
+    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/hdf4/96108_08.hdf")) {
 
       Variable v = ncfile.findVariable("CalibratedData");
       assert (null != v);

@@ -1,8 +1,8 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid.remote;
 
+import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 
 import java.io.IOException;
 
@@ -30,14 +30,14 @@ public class CdmrFeatureDataset {
     return reader.isCmrfEndpoint();
   }
 
-  public GridCoverageDataset openGridCoverage() throws IOException {
+  public CoverageDataset openCoverageDataset() throws IOException {
     CdmrfReader reader = new CdmrfReader(endpoint);
     return reader.open();
   }
 
   public static void main(String args[]) throws IOException {
     String endpoint = "http://localhost:8080/thredds/cdmrfeature/test/testData2.grib2";
-    GridCoverageDataset gdc = CoverageDatasetFactory.openGridCoverage(endpoint);
+    CoverageDataset gdc = CoverageDatasetFactory.openCoverage(endpoint);
     System.out.printf("%n%s%n", gdc);
   }
 }

@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid;
+package ucar.nc2.ft2.coverage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.Set;
  * @author caron
  * @since 5/6/2015
  */
-public class GridSubset {
+public class CoverageSubset {
   public static final String latlonBB = "latlonBB";     // value = LatLonRect
   public static final String projBB = "projBB";         // value = ProjRect
   public static final String horizStride = "horizStride";  // value = Integer
@@ -36,7 +36,7 @@ public class GridSubset {
     return req.keySet();
   }
 
-  public GridSubset set(String key, Object value) {
+  public CoverageSubset set(String key, Object value) {
     req.put(key, value);
     return this;
   }

@@ -37,6 +37,7 @@ import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssGridParamsBean;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.ft2.coverage.CoverageSubset;
 import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.ft2.coverage.grid.writer.CFGridCoverageWriter;
 import ucar.nc2.ft2.coverage.grid.writer.DSGGridCoverageWriter;
@@ -77,7 +78,7 @@ class GridResponder {
     } */
 
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
-    GridSubset subset = params.makeSubset(gcd.getCalendar());
+    CoverageSubset subset = params.makeSubset(gcd.getCalendar());
     CFGridCoverageWriter.writeFile(gcd, params.getVar(), subset, params.isAddLatLon(), writer);
 
     return new File(responseFilename);
@@ -87,7 +88,7 @@ class GridResponder {
           throws NcssException, InvalidRangeException, ParseException, IOException {
 
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
-    GridSubset subset = params.makeSubset(gcd.getCalendar());
+    CoverageSubset subset = params.makeSubset(gcd.getCalendar());
 
     DSGGridCoverageWriter dsgWriter = new DSGGridCoverageWriter(gcd, params.getVar(), subset);
     dsgWriter.writePointFeatureCollection(writer);
@@ -98,7 +99,7 @@ class GridResponder {
   void streamResponse(OutputStream out, NcssGridParamsBean params, SupportedFormat sf)
           throws NcssException, InvalidRangeException, ParseException, IOException {
 
-    GridSubset subset = params.makeSubset(gcd.getCalendar());
+    CoverageSubset subset = params.makeSubset(gcd.getCalendar());
 
     DSGGridCoverageWriter dsgWriter = new DSGGridCoverageWriter(gcd, params.getVar(), subset);
     dsgWriter.streamResponse(out);

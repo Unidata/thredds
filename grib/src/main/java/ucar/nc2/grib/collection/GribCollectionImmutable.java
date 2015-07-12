@@ -43,6 +43,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
@@ -965,7 +966,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
                   FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
 
-  public abstract GridCoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename,
+  public abstract CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename,
                   FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
 

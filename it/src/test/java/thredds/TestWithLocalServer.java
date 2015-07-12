@@ -41,10 +41,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.util.ContentType;
-import ucar.httpservices.HTTPAuthScope;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
+import ucar.httpservices.*;
 
 /**
  * Describe
@@ -99,7 +96,8 @@ public class TestWithLocalServer {
       Assert.assertEquals(expectContentType.getContentHeader(), header.getValue());
 
       return response;
-    } catch (Exception e) {
+
+    } catch (HTTPException e) {
       e.printStackTrace();
       assert false;
     }

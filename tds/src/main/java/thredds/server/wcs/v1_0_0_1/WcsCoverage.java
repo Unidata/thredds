@@ -35,11 +35,8 @@ package thredds.server.wcs.v1_0_0_1;
 import thredds.server.wcs.Request;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.ft2.coverage.grid.*;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.grid.writer.CFGridCoverageWriter;
 import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.nc2.time.CalendarDateRange;
@@ -61,9 +58,9 @@ public class WcsCoverage {
 
   // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
   private WcsDataset wcsDataset;
-  private GridCoverageDataset dataset;
-  private GridCoverage coverage;
-  private GridCoordSys coordSys;
+  private CoverageDataset dataset;
+  private Coverage coverage;
+  private CoverageCoordSys coordSys;
   private String nativeCRS;
 
   private String defaultRequestCrs;
@@ -72,13 +69,13 @@ public class WcsCoverage {
 
   private WcsRangeField range;
 
-  public WcsCoverage(@Nonnull GridCoverage coverage, @Nonnull GridCoordSys coordSys, @Nonnull WcsDataset wcsDataset) {
+  public WcsCoverage(@Nonnull Coverage coverage, @Nonnull CoverageCoordSys coordSys, @Nonnull WcsDataset wcsDataset) {
     this.wcsDataset = wcsDataset;
     this.coverage = coverage;
     this.coordSys = coordSys;
 
     dataset = wcsDataset.getDataset();
-    ProjectionImpl proj = dataset.getProjection(coverage);
+    ProjectionImpl proj = coordSys.getProjection();
     this.nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId(proj);
 
     this.defaultRequestCrs = "OGC:CRS84";
@@ -89,7 +86,7 @@ public class WcsCoverage {
     this.supportedCoverageFormatList.add(Request.Format.GeoTIFF_Float);
     this.supportedCoverageFormatList.add(Request.Format.NetCDF3);
 
-    GridCoordAxis zaxis = dataset.getZAxis(coordSys);
+    CoverageCoordAxis zaxis = coordSys.getZAxis();
     WcsRangeField.Axis vertAxis;
     if (zaxis != null) {
       List<String> vals = new ArrayList<String>();
@@ -116,7 +113,7 @@ public class WcsCoverage {
     return coverage.getDescription();
   }
 
-  public GridCoordSys getCoordinateSystem() {
+  public CoverageCoordSys getCoordinateSystem() {
     return coordSys;
   }
 
@@ -225,10 +222,10 @@ public class WcsCoverage {
 
         try {
           //GridCoverage subset = this.coverage.makeSubset(tRange, zRange, bboxLatLonRect, 1, 1, 1);  // LOOK do you need to subset it?
-          Array data = coverage.readData(new GridSubset());
+          ArrayWithCoordinates array = coverage.readData(new CoverageSubset());
 
           GeotiffWriter writer = new GeotiffWriter(tifFile.getPath());
-          writer.writeGrid(this.wcsDataset.getDataset(), coverage, data, format == Request.Format.GeoTIFF);
+          writer.writeGrid(this.wcsDataset.getDataset(), coverage, array.getData(), format == Request.Format.GeoTIFF);
 
           writer.close();
           //} catch (InvalidRangeException e) {
@@ -247,7 +244,7 @@ public class WcsCoverage {
         if (log.isDebugEnabled())
           log.debug("writeCoverageDataToFile(): ncFile=" + outFile.getPath());
 
-        GridSubset subset = new GridSubset();
+        CoverageSubset subset = new CoverageSubset();
         NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath());
         /*
          public static long writeFile(GridCoverageDataset gdsOrg, List<String> gridNames,

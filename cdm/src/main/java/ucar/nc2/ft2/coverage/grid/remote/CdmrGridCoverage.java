@@ -6,8 +6,10 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.ma2.*;
-import ucar.nc2.ft2.coverage.grid.GridCoverage;
-import ucar.nc2.ft2.coverage.grid.GridSubset;
+import ucar.nc2.Attribute;
+import ucar.nc2.ft2.coverage.ArrayWithCoordinates;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageSubset;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.util.IO;
@@ -25,19 +27,20 @@ import java.util.zip.InflaterInputStream;
  * @author caron
  * @since 5/5/2015
  */
-public class CdmrGridCoverage extends GridCoverage {
+public class CdmrGridCoverage extends Coverage {
 
   String endpoint;
   HTTPSession httpClient;
   boolean debug = false;
   boolean showRequest = true;
 
-  CdmrGridCoverage(String endpoint) {
+  CdmrGridCoverage(String endpoint, String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description) {
+    super(name, dataType, atts, coordSysName, units, description);
     this.endpoint = endpoint;
   }
 
   @Override
-  public Array readData(GridSubset subset) throws IOException {
+  public ArrayWithCoordinates readData(CoverageSubset subset) throws IOException {
     if (httpClient == null)
       httpClient = HTTPFactory.newSession(endpoint);
 
@@ -103,7 +106,7 @@ public class CdmrGridCoverage extends GridCoverage {
       }
 
       if (debug) System.out.println("  readData data len= " + dsize);
-      return data;
+      return new ArrayWithCoordinates(data, getCoordSys());
     }
 
   }
