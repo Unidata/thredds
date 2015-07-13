@@ -6,10 +6,11 @@ MAINTAINER Sean Arms <sarms@ucar.edu>
 EXPOSE 8080 8443
 
 #
-# Install nano and vim so that we have text editors
+# Install netcdf and some basic command line tools
 #
 RUN apt-get update && apt-get install -y \
   less \
+  libnetcdf-dev \
   vim 
 
 #
@@ -20,9 +21,9 @@ RUN groupadd -r tomcat -g 1000 && \
 useradd -u 1000 -r -g tomcat -d /usr/local/tomcat -s /bin/bash -c "User tomcat for Docker image" tomcat
 
 #
-# Create a data directory and let tomcat own it
+# Create a data directory and the tdm directory
 #
-RUN mkdir /data 
+RUN mkdir /data && mkdir -p /usr/local/tomcat/content/tdm  
 
 #
 # Copy over modified tomcat files
@@ -35,7 +36,6 @@ COPY tomcat-files/conf/keystore /usr/local/tomcat/conf/keystore
 #
 # Copy over TDM files
 #
-RUN mkdir -p /usr/local/tomcat/content/tdm
 COPY tdm-files/runTdm.sh /usr/local/tomcat/content/tdm/runTdm.sh
 
 #
@@ -71,6 +71,8 @@ COPY tds-files/tds-4.6.3-SNAPSHOT.war /usr/local/tomcat/webapps/thredds##04.06.0
 #
 COPY tdm-files/tdmFat-4.6.3-SNAPSHOT.jar /usr/local/tomcat/content/tdm/tdmFat-4.6.3-SNAPSHOT.jar
 
+RUN chmod u+x /usr/local/tomcat/startItAll.sh && \ 
+    chmod u+x /usr/local/tomcat/content/tdm/runTdm.sh 
 #
 # Start the TDM
 #

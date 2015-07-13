@@ -32,5 +32,4 @@ echo `cat /usr/local/tomcat/content/tdm/runTdm.sh`$IP > /usr/local/tomcat/conten
 /bin/bash /usr/local/tomcat/content/tdm/runTdm.sh&
 
 echo "Let's play!"
-cat /usr/local/tomcat/content/tdm/runTdm.sh
 /bin/bash
