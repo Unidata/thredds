@@ -33,7 +33,7 @@ public class NcssIntegrationTest {
 
   @Test
   public void checkGrid() throws Exception {
-    String endpoint = TestWithLocalServer.withPath("/ncss/grid/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/GC?var=Temperature_isobaric");
+    String endpoint = TestWithLocalServer.withPath("/ncss/grid/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1?var=Temperature_isobaric");
 
     byte[] content = call(endpoint, 200);
     // Open the binary response in memory

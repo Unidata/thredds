@@ -1,10 +1,8 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage;
 
-import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.AttributeContainerHelper;
-import ucar.nc2.ft2.coverage.grid.GridDatasetHelper;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -22,13 +20,13 @@ import java.util.*;
  * @author caron
  * @since 7/12/2015
  */
-public class CoverageSubset {
+public class CoverageSubsetter {
 
   private CoverageDataset org;
   private List<String> gridsWanted;
   private SubsetParams subset;
 
-  public CoverageSubset(CoverageDataset org, List<String> gridsWanted, SubsetParams subset) {
+  public CoverageSubsetter(CoverageDataset org, List<String> gridsWanted, SubsetParams subset) {
     this.org = org;
     this.gridsWanted = gridsWanted;
     this.subset = subset;

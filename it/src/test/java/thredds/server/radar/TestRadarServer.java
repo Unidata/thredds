@@ -4,8 +4,9 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
-import thredds.util.HttpUriResolver;
-import thredds.util.HttpUriResolverFactory;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
 import ucar.nc2.util.IO;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
@@ -40,7 +41,7 @@ public class TestRadarServer {
   }
 
   @org.junit.Test
-  public void testReadRadarXml() {
+  public void testReadRadarXml() throws IOException {
     URI catUri = null;
     try {
       catUri = new URI(path);
@@ -48,7 +49,17 @@ public class TestRadarServer {
       fail("Bad syntax in catalog URI [" + path + "]: " + e.getMessage());
     }
 
-    try {
+    try (HTTPMethod method = HTTPFactory.Get(path)) {
+        int status = method.execute();
+        assert (status == 200) : path + " response status= " +  status;
+
+        try (InputStream is = method.getResponseBodyAsStream()) {
+          System.out.printf("response= '%s'%n", IO.readContents(is));
+        }
+
+    }
+
+    /* try {
       HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver(catUri);
       httpUriResolver.makeRequest();
       int status = httpUriResolver.getResponseStatusCode();
@@ -68,11 +79,11 @@ public class TestRadarServer {
         int num = isr.read(c);
         System.out.println(cnt + "[" + num + "]" + new String(c));
         cnt++;
-      }   */
+      }
 
     } catch (IOException e) {
       fail("Failed to read catalog [" + path + "]: " + e.getMessage());
-    }
+    } */
 
   }
 

@@ -88,7 +88,7 @@
   </datasetScan>
 
   <datasetScan name="Test Restricted datasetScan" ID="testRestrictedScan" path="testRestrictedScan" location="${cdmUnitTest}/ncss/point_features/windProfilers"
-      restrictAccess="tiggeData">
+               restrictAccess="tiggeData">
     <metadata inherited="true">
       <serviceName>all</serviceName>
     </metadata>
@@ -127,78 +127,81 @@
     </datasetScan>
   </dataset>
 
-  <!-- UNTESTED test NcML in dataset LOOK doesnt work -->
-  <dataset name="Example NcML Modified - DODS" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
-    <serviceName>odap</serviceName>
-    <dataType>Grid</dataType>
-    <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
-      <attribute name="name" value="value"/>
-      <variable name="Temperature" orgName="T"/>
-      <variable name="ReletiveHumidity" orgName="rh">
-        <attribute name="long_name" value="relatively humid"/>
-        <attribute name="units" value="percent (%)"/>
-        <remove type="attribute" name="description"/>
-      </variable>
-    </ncml:netcdf>
-  </dataset>
+  <dataset name="Ncml Tests">
 
-  <dataset name="Example NcML Modified - cdmremote" ID="ExampleNcMLModified2" urlPath="ExampleNcML2/Modified.nc">
-    <serviceName>cdmremote</serviceName>
-    <dataType>Grid</dataType>
-    <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
-      <attribute name="name" value="value"/>
-      <variable name="Temperature" orgName="T"/>
-      <variable name="ReletiveHumidity" orgName="rh">
-        <attribute name="long_name" value="relatively humid"/>
-        <attribute name="units" value="percent (%)"/>
-        <remove type="attribute" name="description"/>
-      </variable>
-    </ncml:netcdf>
-  </dataset>
-
-  <!-- test NcML in datasetScan -->
-  <datasetScan name="ModifyDatasetScan" ID="ModifyDatasetScan" path="ModifyDatasetScan" location="${cdmUnitTest}/tds/">
-    <metadata inherited="true">
-      <serviceName>all</serviceName>
+    <!-- UNTESTED test NcML in dataset LOOK doesnt work -->
+    <dataset name="Example NcML Modified - DODS" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
+      <serviceName>odap</serviceName>
       <dataType>Grid</dataType>
-    </metadata>
+      <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
+        <attribute name="name" value="value"/>
+        <variable name="Temperature" orgName="T"/>
+        <variable name="ReletiveHumidity" orgName="rh">
+          <attribute name="long_name" value="relatively humid"/>
+          <attribute name="units" value="percent (%)"/>
+          <remove type="attribute" name="description"/>
+        </variable>
+      </ncml:netcdf>
+    </dataset>
 
-    <filter>
-      <include wildcard="*.nc" collection="false"/>
-      <exclude wildcard="/*" collection="true"/>
-    </filter>
+    <dataset name="Example NcML Modified - cdmremote" ID="ExampleNcMLModified2" urlPath="ExampleNcML2/Modified.nc">
+      <serviceName>cdmremote</serviceName>
+      <dataType>Grid</dataType>
+      <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
+        <attribute name="name" value="value"/>
+        <variable name="Temperature" orgName="T"/>
+        <variable name="ReletiveHumidity" orgName="rh">
+          <attribute name="long_name" value="relatively humid"/>
+          <attribute name="units" value="percent (%)"/>
+          <remove type="attribute" name="description"/>
+        </variable>
+      </ncml:netcdf>
+    </dataset>
 
-    <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true">
-      <attribute name="name" value="value"/>
-      <variable name="Temperature" orgName="T"/>
-      <variable name="ReletiveHumidity" orgName="rh">
-        <attribute name="long_name" value="relatively humid"/>
-        <attribute name="units" value="percent (%)"/>
-        <remove type="attribute" name="description"/>
-      </variable>
-    </ncml:netcdf>
+    <!-- test NcML aggregation in dataset -->
+    <dataset name="Example NcML Aggregation" ID="ExampleNcMLAgg" urlPath="ExampleNcML/Agg.nc">
+      <serviceName>odap</serviceName>
+      <dataType>Grid</dataType>
+      <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+        <attribute name="ncmlAdded" value="stuff"/>
+        <variable name="lat">
+          <attribute name="ncmlAdded" value="lat_stuff"/>
+        </variable>
+        <aggregation dimName="time" type="joinExisting" timeUnitsChange="true">
+          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_0600.nc" ncoords="2"/>
+          <!-- prob doesnt work -->
+          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1200.nc" ncoords="2"/>
+          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1800.nc" ncoords="2"/>
+          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060926_0000.nc" ncoords="2"/>
+        </aggregation>
+      </ncml:netcdf>
+    </dataset>
 
-  </datasetScan>
+    <!-- test NcML in datasetScan -->
+    <datasetScan name="ModifyDatasetScan" ID="ModifyDatasetScan" path="ModifyDatasetScan" location="${cdmUnitTest}/tds/">
+      <metadata inherited="true">
+        <serviceName>all</serviceName>
+        <dataType>Grid</dataType>
+      </metadata>
 
-  <!-- test NcML aggregation in dataset -->
-  <dataset name="Example NcML Aggregation" ID="ExampleNcMLAgg" urlPath="ExampleNcML/Agg.nc">
-    <serviceName>odap</serviceName>
-    <dataType>Grid</dataType>
-    <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-      <attribute name="ncmlAdded" value="stuff"/>
-      <variable name="lat">
-        <attribute name="ncmlAdded" value="lat_stuff"/>
-      </variable>
-      <aggregation dimName="time" type="joinExisting" timeUnitsChange="true">
-        <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_0600.nc" ncoords="2"/>
-        <!-- prob doesnt work -->
-        <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1200.nc" ncoords="2"/>
-        <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1800.nc" ncoords="2"/>
-        <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060926_0000.nc" ncoords="2"/>
-      </aggregation>
-    </ncml:netcdf>
+      <filter>
+        <include wildcard="*.nc" collection="false"/>
+        <exclude wildcard="/*" collection="true"/>
+      </filter>
+
+      <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true">
+        <attribute name="name" value="value"/>
+        <variable name="Temperature" orgName="T"/>
+        <variable name="ReletiveHumidity" orgName="rh">
+          <attribute name="long_name" value="relatively humid"/>
+          <attribute name="units" value="percent (%)"/>
+          <remove type="attribute" name="description"/>
+        </variable>
+      </ncml:netcdf>
+
+    </datasetScan>
+
   </dataset>
-
 
   <!-- END UNTESTED-->
 
@@ -209,6 +212,7 @@
   <catalogRef xlink:title="somecat" xlink:href="somedir/somecat.xml" name=""/>
   <catalogRef xlink:title="update JoinExisting Agg" xlink:href="catalogUpdateAgg.xml" name=""/>
   <catalogRef xlink:title="Radar Collections" xlink:href="radar/radarCollections.xml" name=""/>
+  <catalogRef xlink:title="HIOOS" xlink:href="wav_mod.xml" name=""/>
 
   <catalogScan location="catalogs5" path="catalogs5" name="catalog scan with version 5 features"/>
 

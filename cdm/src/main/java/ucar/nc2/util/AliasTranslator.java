@@ -5,6 +5,7 @@ import ucar.unidata.util.StringUtil2;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handle textual substitution for dataroots.
@@ -14,7 +15,7 @@ import java.util.Map;
  */
 public class AliasTranslator {
 
-  private static Map<String, String> alias = new HashMap<>();
+  private static Map<String, String> alias = new ConcurrentHashMap<>();
 
   public static void addAlias(String aliasKey, String actual) {
     alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));

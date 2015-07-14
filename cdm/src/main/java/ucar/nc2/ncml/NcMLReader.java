@@ -36,6 +36,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
+import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
@@ -251,6 +252,8 @@ public class NcMLReader {
       if (referencedDatasetUri == null)
         referencedDatasetUri = netcdfElem.getAttributeValue("url");
     }
+    if (referencedDatasetUri != null)
+      referencedDatasetUri = AliasTranslator.translateAlias(referencedDatasetUri);
 
     NcMLReader reader = new NcMLReader();
     NetcdfDataset ncd = reader._readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
@@ -349,6 +352,8 @@ public class NcMLReader {
     String referencedDatasetUri = netcdfElem.getAttributeValue("location");
     if (referencedDatasetUri == null)
       referencedDatasetUri = netcdfElem.getAttributeValue("url");
+    if (referencedDatasetUri != null)
+      referencedDatasetUri = AliasTranslator.translateAlias(referencedDatasetUri);
 
     NcMLReader reader = new NcMLReader();
     return reader._readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
@@ -1377,6 +1382,8 @@ public class NcMLReader {
       java.util.List<Element> scan2List = aggElem.getChildren("scanFmrc", ncNS);
       for (Element scanElem : scan2List) {
         String dirLocation = scanElem.getAttributeValue("location");
+        if (dirLocation != null)
+          dirLocation = AliasTranslator.translateAlias(dirLocation);
         String regexpPatternString = scanElem.getAttributeValue("regExp");
         String suffix = scanElem.getAttributeValue("suffix");
         String subdirs = scanElem.getAttributeValue("subdirs");
@@ -1445,6 +1452,8 @@ public class NcMLReader {
       String location = netcdfElemNested.getAttributeValue("location");
       if (location == null)
         location = netcdfElemNested.getAttributeValue("url");
+      if (location != null)
+        location = AliasTranslator.translateAlias(location);
 
       String id = netcdfElemNested.getAttributeValue("id");
       String ncoords = netcdfElemNested.getAttributeValue("ncoords");
@@ -1457,6 +1466,7 @@ public class NcMLReader {
       cacheName += "#" + Integer.toString(netcdfElemNested.hashCode()); // need a unique name, in case file has been modified by ncml
 
       String realLocation = URLnaming.resolveFile(ncmlLocation, location);
+
       agg.addExplicitDataset(cacheName, realLocation, id, ncoords, coordValueS, sectionSpec, reader);
 
       if ((cancelTask != null) && cancelTask.isCancel())
@@ -1468,6 +1478,9 @@ public class NcMLReader {
     java.util.List<Element> dirList = aggElem.getChildren("scan", ncNS);
     for (Element scanElem : dirList) {
       String dirLocation = scanElem.getAttributeValue("location");
+      if (dirLocation != null)
+        dirLocation = AliasTranslator.translateAlias(dirLocation);
+
       String regexpPatternString = scanElem.getAttributeValue("regExp");
       String suffix = scanElem.getAttributeValue("suffix");
       String subdirs = scanElem.getAttributeValue("subdirs");

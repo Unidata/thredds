@@ -160,8 +160,8 @@ public class DescribeCoverage extends WcsRequest {
     Element rectifiedGridElem = new Element("RectifiedGrid", gmlNS);
 
     CoverageCoordAxis xaxis = coverage.getCoordinateSystem().getXAxis();
-    CoverageCoordAxis yaxis = coverage.getCoordinateSystem().getZAxis();
-    CoverageCoordAxis zaxis = coverage.getCoordinateSystem().getXAxis();
+    CoverageCoordAxis yaxis = coverage.getCoordinateSystem().getYAxis();
+    CoverageCoordAxis zaxis = coverage.getCoordinateSystem().getZAxis();
 
     // ../spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
     rectifiedGridElem.setAttribute("srsName", coverage.getNativeCrs());

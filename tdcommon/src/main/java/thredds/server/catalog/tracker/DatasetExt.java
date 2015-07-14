@@ -11,10 +11,7 @@ import thredds.client.catalog.Property;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +25,7 @@ public class DatasetExt implements Externalizable {
   static public int total_count = 0;
   static public long total_nbytes = 0;
 
-  static private final boolean showParsedXML = true;
+  static private final boolean showParsedXML = false;
 
   long catId;
   Dataset ds;
@@ -92,55 +89,37 @@ public class DatasetExt implements Externalizable {
     int len = in.readInt();
     byte[] b = new byte[len];
     int n = in.read(b);
-    //System.out.printf(" read size = %d%n", b.length);
 
-    //try {
     if (n != len)
       throw new RuntimeException("barf with read size=" + len + " in.available=" + avail);
 
-    ConfigCatalogExtProto.Dataset dsp = ConfigCatalogExtProto.Dataset.parseFrom(b);
-    DatasetBuilder dsb = new DatasetBuilder(null);
-    this.catId = dsp.getCatId(); // LOOK could add to dataset
-    dsb.setName(dsp.getName());
-    if (dsp.hasRestrict())
-      dsb.put(Dataset.RestrictAccess, dsp.getRestrict());
+    ConfigCatalogExtProto.Dataset pDataset = ConfigCatalogExtProto.Dataset.parseFrom(b);
+    DatasetBuilder dsBuilder = new DatasetBuilder(null);
+    this.catId = pDataset.getCatId(); // LOOK could add to dataset
+    dsBuilder.setName(pDataset.getName());
+    if (pDataset.hasRestrict())
+      dsBuilder.put(Dataset.RestrictAccess, pDataset.getRestrict());
 
-    if (dsp.hasNcml()) {
-      org.jdom2.Document doc;
+    if (pDataset.hasNcml()) {
       try {
-        SAXBuilder builder = new SAXBuilder();
-        doc = builder.build(dsp.getNcml());
+        StringReader ins = new StringReader(pDataset.getNcml());
+        SAXBuilder saxBuilder = new SAXBuilder();
+        org.jdom2.Document jdomDoc = saxBuilder.build(ins);
+        Element ncmlElem = jdomDoc.getRootElement();
+        dsBuilder.put(Dataset.Ncml, ncmlElem);
+
+        if (showParsedXML) {
+          XMLOutputter xmlOut = new XMLOutputter();
+          ncml = xmlOut.outputString(ncmlElem);
+          System.out.println("*** ConfigCatalogExtProto/ncmlElem = \n" + xmlOut.outputString(ncmlElem) + "\n*******");
+        }
+
       } catch (JDOMException e) {
         throw new IOException(e.getMessage());
       }
-      Element ncmlElem = doc.getRootElement();
-
-      if (showParsedXML) {
-        XMLOutputter xmlOut = new XMLOutputter();
-        ncml = xmlOut.outputString(ncmlElem);
-        System.out.println("*** ConfigCatalogExtProto/ncmlElem = \n" + xmlOut.outputString(ncmlElem) + "\n*******");
-      }
-
-      dsb.put(Dataset.Ncml, ncmlElem);
     }
 
-      /* if (dsp.hasId())
-        dsb.put(Dataset.Id, dsp.getId());
-      if (dsp.hasPath())
-        dsb.put(Dataset.UrlPath, dsp.getPath());
-
-      for (ConfigCatalogExtProto.Access accessp : dsp.getAccessList())
-        dsb.addAccess(parseAccess(dsb, accessp));
-
-      if (dsp.getPropertyCount() > 0)
-        dsb.put(Dataset.Properties, parseProperty(dsp.getPropertyList()));  */
-
-    this.ds = dsb.makeDataset(null);
-
-    //} catch (Throwable e) {
-    //  System.out.printf("barf with read size=%d in.available=%d%n", len, avail);
-    //  e.printStackTrace();
-    //}
+    this.ds = dsBuilder.makeDataset(null);
   }
 
   private ConfigCatalogExtProto.Property buildProperty(Property p) {

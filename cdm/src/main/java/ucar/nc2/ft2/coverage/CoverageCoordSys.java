@@ -56,6 +56,8 @@ public class CoverageCoordSys {
     this.horizCoordSys = horizCoordSys;
   }
 
+  ///////////////////////////////////////////////
+
   public String getName() {
     return name;
   }
@@ -209,8 +211,5 @@ public class CoverageCoordSys {
     }
     return new LatLonProjection();
   }
-
-  /////////////////////////////////////////////////////////////////////
-
 
 }

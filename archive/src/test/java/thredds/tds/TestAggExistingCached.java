@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 import java.io.IOException;
 import java.util.Date;
 
+import thredds.TestWithLocalServer;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
@@ -60,7 +61,7 @@ public class TestAggExistingCached extends TestCase {
   }
 
       // String filename = "file:"+TestNcML.topDir + "aggExisting4.ncml";
-    String filename = "dods://localhost:8080/thredds/dodsC/aggCacheTest/aggExisting4.ncml";
+    String filename = TestWithLocalServer.server+"dodsC/ExampleNcML/Agg.nc";
 
   public void testNcmlDirect() throws IOException, InvalidRangeException {
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, false, null);
@@ -104,15 +105,15 @@ public class TestAggExistingCached extends TestCase {
 
   }
 
-  double[] result = new double[] {1.1496816E9, 1.1496852E9, 1.1496888E9  };
+  double[] result = new double[] {3.000000, 6.000000, 9.000000, 12.000000, 15.000000, 18.000000, 21.000000, 24.000000};
   public void testAggCoordVar(NetcdfFile ncfile) {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
     assert time.getShortName().equals("time");
     assert time.getRank() == 1;
-    assert time.getSize() == 3;
-    assert time.getShape()[0] == 3;
+    assert time.getSize() == 8;
+    assert time.getShape()[0] == 8;
     assert time.getDataType() == DataType.DOUBLE;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
@@ -120,8 +121,8 @@ public class TestAggExistingCached extends TestCase {
     try {
       Array data = time.read();
       assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
+      assert data.getSize() == 8;
+      assert data.getShape()[0] == 8;
       assert data.getElementType() == double.class;
 
       int count = 0;

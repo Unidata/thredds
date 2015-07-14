@@ -57,7 +57,7 @@ import java.io.IOException;
 @Category(NeedsCdmUnitTest.class)
 public class TestOpendapMisc {
 
-  @Ignore("Fails because we dont have alias subst in ncml")
+  // @Ignore("Fails because we dont have alias subst in ncml")
   @Test
   public void testAliasSubst() throws IOException {
     String url = TestWithLocalServer.withPath("/dodsC/ExampleNcML/Modified.nc");

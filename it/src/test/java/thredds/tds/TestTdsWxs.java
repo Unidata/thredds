@@ -47,10 +47,10 @@ public class TestTdsWxs extends TestCase {
   }
 
   public void testWcs() throws IOException {
-    showGetCapabilities(TestWithLocalServer.server+"wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini");
-    showDescribeCoverage(TestWithLocalServer.server+"wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini", "IR_WV");
-    showGetCoverage(TestWithLocalServer.server+"wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini", "IR_WV",
-            "2000-06-16T07:00:00Z", null, null);
+    showGetCapabilities(TestWithLocalServer.server+"wcs/localContent/SUPER-NATIONAL_1km_CTP_20140105_2300.gini");
+    showDescribeCoverage(TestWithLocalServer.server+"wcs/localContent/SUPER-NATIONAL_1km_CTP_20140105_2300.gini", "CTP");
+    showGetCoverage(TestWithLocalServer.server+"wcs/localContent/SUPER-NATIONAL_1km_CTP_20140105_2300.gini", "CTP",
+            "2014-01-05T23:00:00Z", null, null);
   }
 
   private void showGetCapabilities(String url) throws IOException {

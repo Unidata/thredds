@@ -121,7 +121,7 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     }
 
     boolean hasRestrict = dataset.getRestrictAccess() != null;
-    boolean hasNcml = (dataset.getNcmlElement() == null) && !(dataset instanceof DatasetScan) && (dataset instanceof FeatureCollectionRef);
+    boolean hasNcml = (dataset.getNcmlElement() != null) && !(dataset instanceof DatasetScan) && !(dataset instanceof FeatureCollectionRef);
     if (!hasRestrict && !hasNcml) return false;
 
     String path = null;

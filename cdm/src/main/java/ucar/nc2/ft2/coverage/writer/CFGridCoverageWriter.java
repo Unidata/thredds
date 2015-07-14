@@ -1,7 +1,6 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.writer;
 
-import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
@@ -86,7 +85,7 @@ public class CFGridCoverageWriter {
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     // construct the subsetted dataset
-    CoverageSubset helper = new CoverageSubset(gdsOrg, gridNames, subsetParams);
+    CoverageSubsetter helper = new CoverageSubsetter(gdsOrg, gridNames, subsetParams);
     CoverageDataset subsetDataset = helper.makeCoverageDatasetSubset();
 
     long total_size = 0;

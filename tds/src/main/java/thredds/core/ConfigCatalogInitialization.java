@@ -107,12 +107,13 @@ public class ConfigCatalogInitialization {
 
    // on reread, construct new objects, so cant be spring beans
   private DataRootPathMatcher dataRootPathMatcher;
-  private DataRootTracker dataRootTracker; // dataRootTracker wired into dataRootPathMatcher
+  private DataRootTracker dataRootTracker;
   private CatalogTracker catalogTracker;  // catalogTracker is not shared with anyone else - used only during catalog reading / updating.
   private DatasetTracker datasetTracker;
 
   private String trackerDir;              // the tracker "databases" are kept in this directory
   private long maxDatasetsToTrack;              // the tracker "databases" are kept in this directory
+  private boolean isOutsideLoaded;
 
   // debugging
   private DatasetTracker.Callback callback;
@@ -144,6 +145,7 @@ public class ConfigCatalogInitialization {
     this.allowedServices = allowedServices;
     this.callback = callback;
     this.maxDatasets = maxDatasets;
+    this.isOutsideLoaded = true;
 
     File trackerFile = new File(this.trackerDir);
     if (!trackerFile.exists()) {
@@ -180,8 +182,9 @@ public class ConfigCatalogInitialization {
     if (ccc != null) ccc.invalidateAll();
 
     if (!isStartup && readMode == ReadMode.always) trackerNumber++;  // must write a new database if TDS is already running and rereading all
-    if (this.datasetTracker == null)
+    if (!isOutsideLoaded || this.datasetTracker == null)
       this.datasetTracker = new DatasetTrackerChronicle(trackerDir, maxDatasetsToTrack, trackerNumber);
+
     boolean databaseAlreadyExists = datasetTracker.exists(); // detect if tracker database exists
     if (!databaseAlreadyExists) {
       readMode = ReadMode.always;
@@ -190,6 +193,7 @@ public class ConfigCatalogInitialization {
 
     if (this.callback == null)
       this.callback = new StatCallback(readMode);
+
     switch (readMode) {
       case always:
         if (databaseAlreadyExists) this.datasetTracker.reinit();
