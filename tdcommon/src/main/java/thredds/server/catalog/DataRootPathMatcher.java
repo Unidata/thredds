@@ -7,6 +7,7 @@ import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.server.catalog.tracker.DataRootExt;
 import thredds.server.catalog.tracker.DataRootTracker;
+import ucar.nc2.util.AliasTranslator;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;

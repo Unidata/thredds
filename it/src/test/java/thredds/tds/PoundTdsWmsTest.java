@@ -2,6 +2,7 @@ package thredds.tds;
 
 import org.apache.http.client.HttpClient;
 import org.junit.Test;
+import thredds.TestWithLocalServer;
 import ucar.nc2.util.IO;
 import ucar.unidata.test.util.ThreddsServer;
 
@@ -11,45 +12,35 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.1
- */
-public class PoundTdsWmsTest
-{
+public class PoundTdsWmsTest {
   @Test
-  public void hitLocalTdsWms() throws IOException
-  {
+  public void hitLocalTdsWms() throws IOException {
     String curUrl;
     long curUrlResponseSize;
-    for ( int i=0; i < timeStrings.length; i++) {
-      curUrl = baseUrl + timeStrings[ i];
-      curUrlResponseSize = IO.copyUrlB( curUrl, null, 8000);
-      System.out.println( "[" + i + "] " + timeStrings[i] + ": " + curUrlResponseSize );
+    for (int i = 0; i < timeStrings.length; i++) {
+      curUrl = baseUrl + timeStrings[i];
+      curUrlResponseSize = IO.copyUrlB(curUrl, null, 8000);
+      System.out.println("[" + i + "] " + timeStrings[i] + ": " + curUrlResponseSize);
     }
   }
 
   @Test
-  public void hitMl8081TdsWms() throws IOException
-  {
+  public void hitMl8081TdsWms() throws IOException {
     ThreddsServer.LIVE.assumeIsAvailable();
     String curUrl;
     long curUrlResponseSize;
-    for ( int i=0; i < ml8081GfsHalfDegreeBestWmsTimeStrings.length; i++) {
-      curUrl = ml8081GfsHalfDegreeBestWmsGetMapBaseUrl + ml8081GfsHalfDegreeBestWmsTimeStrings[ i];
-      curUrlResponseSize = IO.copyUrlB( curUrl, null, 8000);
-      System.out.println( "[" + i + "] " + ml8081GfsHalfDegreeBestWmsTimeStrings[i] + ": " + curUrlResponseSize );
+    for (int i = 0; i < ml8081GfsHalfDegreeBestWmsTimeStrings.length; i++) {
+      curUrl = ml8081GfsHalfDegreeBestWmsGetMapBaseUrl + ml8081GfsHalfDegreeBestWmsTimeStrings[i];
+      curUrlResponseSize = IO.copyUrlB(curUrl, null, 8000);
+      System.out.println("[" + i + "] " + ml8081GfsHalfDegreeBestWmsTimeStrings[i] + ": " + curUrlResponseSize);
     }
   }
 
   @Test
   public void hitLocalTdsWms_MultiThreaded()
           throws IOException,
-                 InterruptedException,
-                 ExecutionException
-  {
+          InterruptedException,
+          ExecutionException {
     final int numThreads = 60;
     final int numToRepeat = 5;
     int timeout = 20 * 1000;
@@ -57,15 +48,14 @@ public class PoundTdsWmsTest
     String wmsGetMapBaseUrl = baseUrl;
     String[] timeSeriesStrings = timeStrings;
 
-    executeAndLogRequests( numThreads, numToRepeat, timeout, httpUserAgentName, wmsGetMapBaseUrl, timeSeriesStrings );
+    executeAndLogRequests(numThreads, numToRepeat, timeout, httpUserAgentName, wmsGetMapBaseUrl, timeSeriesStrings);
   }
 
   @Test
   public void hitMl8081TdsWms_MultiThreaded()
           throws IOException,
-                 InterruptedException,
-                 ExecutionException
-  {
+          InterruptedException,
+          ExecutionException {
     ThreddsServer.LIVE.assumeIsAvailable();
     final int numThreads = 60;
     final int numToRepeat = 5;
@@ -74,12 +64,11 @@ public class PoundTdsWmsTest
     String wmsGetMapBaseUrl = ml8081GfsHalfDegreeBestWmsGetMapBaseUrl;
     String[] timeSeriesStrings = ml8081GfsHalfDegreeBestWmsTimeStrings;
 
-    executeAndLogRequests( numThreads, numToRepeat, timeout, httpUserAgentName, wmsGetMapBaseUrl, timeSeriesStrings );
+    executeAndLogRequests(numThreads, numToRepeat, timeout, httpUserAgentName, wmsGetMapBaseUrl, timeSeriesStrings);
   }
 
-  private void executeAndLogRequests( int numThreads, int numToRepeat, int timeout, String httpUserAgentName, String wmsGetMapBaseUrl, String[] timeSeriesStrings )
-          throws InterruptedException, ExecutionException
-  {
+  private void executeAndLogRequests(int numThreads, int numToRepeat, int timeout, String httpUserAgentName, String wmsGetMapBaseUrl, String[] timeSeriesStrings)
+          throws InterruptedException, ExecutionException {
 //    HttpClient httpClient = HttpClientManager.init( null, httpUserAgentName );
 //    MultiThreadedHttpConnectionManager cm = (MultiThreadedHttpConnectionManager) httpClient.getHttpConnectionManager();
 //    HttpConnectionManagerParams cmParams = cm.getParams();
@@ -123,30 +112,28 @@ public class PoundTdsWmsTest
 //      if ( ! futures.remove( curFuture )) System.out.println( "Future not in list." );
 //    }
 //    System.out.println( "Number of Requests     : " + numRequests );
-    System.out.println( "Number of Cancellations: " + numCancelled );
+    System.out.println("Number of Cancellations: " + numCancelled);
   }
 
-  private int executeRequests( String baseUrl, String[] timeSeriesStrings, int timesToRepeatTimeSeriesRequests,
-                               HttpClient httpClient,
-                               ExecutorCompletionService<MakeHttpRequestResult> completionService,
-                               List<Future<MakeHttpRequestResult>> futures )
-  {
+  private int executeRequests(String baseUrl, String[] timeSeriesStrings, int timesToRepeatTimeSeriesRequests,
+                              HttpClient httpClient,
+                              ExecutorCompletionService<MakeHttpRequestResult> completionService,
+                              List<Future<MakeHttpRequestResult>> futures) {
     Future<MakeHttpRequestResult> curFuture;
     String curUrl;
     int numRequests = 0;
-    for ( int j=0; j < timesToRepeatTimeSeriesRequests; j++ )
-    {
-      for ( int i=0; i < timeSeriesStrings.length; i++) {
-        curUrl = baseUrl + timeSeriesStrings[ i];
-        curFuture = completionService.submit( new MakeHttpRequestCallable( httpClient, curUrl, i + j*timeSeriesStrings.length ) );
+    for (int j = 0; j < timesToRepeatTimeSeriesRequests; j++) {
+      for (int i = 0; i < timeSeriesStrings.length; i++) {
+        curUrl = baseUrl + timeSeriesStrings[i];
+        curFuture = completionService.submit(new MakeHttpRequestCallable(httpClient, curUrl, i + j * timeSeriesStrings.length));
         numRequests++;
-        futures.add( curFuture);
+        futures.add(curFuture);
       }
     }
     return numRequests;
   }
 
-  private static String baseUrl = "http://localhost:8080/thredds/wms/ncWmsPixelMapProblem/GFS_Global_0p5deg_20101026_0000.grib2?service=WMS&version=1.3.0&REQUEST=GetMap&CRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1000&HEIGHT=500&FORMAT=image/png&LAYERS=Precipitable_water&STYLES=boxfill/redblue&COLORSCALERANGE=0,100&TIME=";
+  private static String baseUrl = TestWithLocalServer.server+"wms/ncWmsPixelMapProblem/GFS_Global_0p5deg_20101026_0000.grib2?service=WMS&version=1.3.0&REQUEST=GetMap&CRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1000&HEIGHT=500&FORMAT=image/png&LAYERS=Precipitable_water&STYLES=boxfill/redblue&COLORSCALERANGE=0,100&TIME=";
   private static String[] timeStrings = new String[]
           {
                   "2010-10-26T00:00:00.000Z",
@@ -428,15 +415,15 @@ public class PoundTdsWmsTest
                   "2010-12-01T18:00:00.000Z",
                   "2010-12-01T21:00:00.000Z"
           };
-  public static class TimeSeriesModelWmsAccessUrl
-  {
+
+  public static class TimeSeriesModelWmsAccessUrl {
     private String wmsGetMapBaseUrl;
     private String[] wmsTimeSeries;
     private String[] wmsGetMapUrls;
-    public TimeSeriesModelWmsAccessUrl( String wmsGetMapBaseUrl, int numDaysBack, int numDays, int[] dailyRunTimes)
-    {
-      wmsGetMapUrls = new String[ numDays * dailyRunTimes.length];
-      
+
+    public TimeSeriesModelWmsAccessUrl(String wmsGetMapBaseUrl, int numDaysBack, int numDays, int[] dailyRunTimes) {
+      wmsGetMapUrls = new String[numDays * dailyRunTimes.length];
+
     }
 
     public String[] getWmsGetMapUrls() {

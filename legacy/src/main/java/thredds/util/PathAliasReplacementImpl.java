@@ -32,7 +32,7 @@
  */
 package thredds.util;
 
-import org.springframework.util.StringUtils;
+//import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,8 +68,8 @@ public class PathAliasReplacementImpl implements PathAliasReplacement {
     if (alias == null) throw new IllegalArgumentException("Alias must not be null.");
     if (replacementPath == null) throw new IllegalArgumentException("Replacment path must not be null.");
 
-    alias = StringUtils.cleanPath(alias);
-    replacementPath = StringUtils.cleanPath(replacementPath);
+    //alias = StringUtils.cleanPath(alias);
+    //replacementPath = StringUtils.cleanPath(replacementPath);
 
     // Make sure neither alias nor replacementPath ends with a slash ("/").
     this.alias = alias.endsWith("/") ? alias.substring(0, alias.length() - 1) : alias;
@@ -87,14 +87,14 @@ public class PathAliasReplacementImpl implements PathAliasReplacement {
   @Override
   public boolean containsPathAlias(String path) {
     if (path == null) throw new IllegalArgumentException("Path must not be null.");
-    path = StringUtils.cleanPath(path);
+    //path = StringUtils.cleanPath(path);
     return path.startsWith(alias + "/");
   }
 
   @Override
   public String replacePathAlias(String path) {
     if (path == null) throw new IllegalArgumentException("Path must not be null.");
-    path = StringUtils.cleanPath(path);
+    //path = StringUtils.cleanPath(path);
     if (!path.startsWith(alias + "/"))
       throw new IllegalArgumentException("Path [" + path + "] does not contain alias [startWith( \"" + alias + "/\" )].");
     return replacementPath + path.substring(alias.length());

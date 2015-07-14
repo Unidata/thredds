@@ -36,7 +36,7 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import thredds.client.catalog.Catalog;
 import thredds.inventory.CollectionAbstract;
-import thredds.util.PathAliasReplacement;
+import ucar.nc2.util.AliasTranslator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -238,16 +238,9 @@ public class FeatureCollectionConfigBuilder {
   }
 
   private String expandAliasForCollectionSpec(String location) {
-    if (replace != null) {
-      String result = replace.replaceIfMatch(location);
-      if (result != null) return result;
-    }
+    String result = AliasTranslator.translateAlias(location);
+    if (result != null) return result;
     return location;
-  }
-
-  static private PathAliasReplacement replace;
-  static public void setPathAliasReplacement(PathAliasReplacement _replace) {
-    replace = _replace;
   }
 
 }

@@ -40,6 +40,7 @@ import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionSpecParser;
+import ucar.nc2.util.AliasTranslator;
 
 import java.util.List;
 import java.util.Map;

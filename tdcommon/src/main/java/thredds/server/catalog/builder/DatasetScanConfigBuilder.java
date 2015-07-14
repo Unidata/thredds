@@ -36,7 +36,7 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
-import thredds.server.catalog.AliasTranslator;
+import ucar.nc2.util.AliasTranslator;
 import thredds.server.catalog.DatasetScanConfig;
 import ucar.unidata.util.StringUtil2;
 

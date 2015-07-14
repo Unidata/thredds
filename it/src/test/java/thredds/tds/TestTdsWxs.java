@@ -34,6 +34,7 @@ package thredds.tds;
 
 import junit.framework.*;
 
+import thredds.TestWithLocalServer;
 import ucar.nc2.util.IO;
 
 import java.io.IOException;
@@ -46,9 +47,9 @@ public class TestTdsWxs extends TestCase {
   }
 
   public void testWcs() throws IOException {
-    showGetCapabilities("http://localhost:8080/thredds/wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini");
-    showDescribeCoverage("http://localhost:8080/thredds/wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini", "IR_WV");
-    showGetCoverage("http://localhost:8080/thredds/wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini", "IR_WV",
+    showGetCapabilities(TestWithLocalServer.server+"wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini");
+    showDescribeCoverage(TestWithLocalServer.server+"wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini", "IR_WV");
+    showGetCoverage(TestWithLocalServer.server+"wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini", "IR_WV",
             "2000-06-16T07:00:00Z", null, null);
   }
 

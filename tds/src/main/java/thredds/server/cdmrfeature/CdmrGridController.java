@@ -179,7 +179,7 @@ public class CdmrGridController implements LastModified {
 
       // construct the subsetted dataset
       SubsetParams subset = qb.makeSubset(gridCoverageDataset.getCalendar());
-      CoverageSubset helper = new CoverageSubset(gridCoverageDataset, qb.getVar(), subset);
+      CoverageSubsetter helper = new CoverageSubsetter(gridCoverageDataset, qb.getVar(), subset);
       CoverageDataset subsetDataset = helper.makeCoverageDatasetSubset();
 
       // write the data to the stream

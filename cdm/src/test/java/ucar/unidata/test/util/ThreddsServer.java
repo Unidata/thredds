@@ -16,6 +16,7 @@ import java.net.URL;
  * @since 2015/04/18
  */
 public enum ThreddsServer {
+    LOCAL("http://localhost:8081/thredds/"),
     LIVE("http://thredds.ucar.edu/thredds/"),
     TEST("http://thredds-test.unidata.ucar.edu/thredds/"),
     DEV("http://thredds-dev.unidata.ucar.edu/thredds/"),

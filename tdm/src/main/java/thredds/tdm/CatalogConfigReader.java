@@ -9,7 +9,7 @@ import thredds.client.catalog.Catalog;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionSpecParser;
 import thredds.featurecollection.FeatureCollectionConfigBuilder;
-import thredds.util.AliasHandler;
+import ucar.nc2.util.AliasTranslator;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,12 +37,12 @@ public class CatalogConfigReader {
   }
 
   Formatter errlog = new Formatter();
-  private AliasHandler aliasHandler;
+  // private AliasHandler aliasHandler;
   private File rootDir;
 
-  public CatalogConfigReader(Path rootPath, Resource catR, AliasHandler aliasHandler) throws IOException {
+  public CatalogConfigReader(Path rootPath, Resource catR) throws IOException {
     this.rootDir = rootPath.toFile();
-    this.aliasHandler = aliasHandler;
+    // this.aliasHandler = aliasHandler;
     readCatalog(catR);
   }
 
@@ -76,7 +76,7 @@ public class CatalogConfigReader {
             name = config.collectionName;
 
             if (config.spec != null)
-              config.spec = aliasHandler.replaceAlias(config.spec);
+              config.spec = AliasTranslator.translateAlias(config.spec);
 
             CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
             Path rootPath = Paths.get(specp.getRootDir());

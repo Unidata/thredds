@@ -1,11 +1,10 @@
 package ucar.unidata.test.util;
 
-import thredds.featurecollection.FeatureCollectionConfigBuilder;
-import thredds.util.PathAliasReplacementFromMap;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.util.AliasTranslator;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
@@ -171,8 +170,7 @@ public class TestDir {
     if (d4ts != null && d4ts.length() > 0)
       dap4TestServer = d4ts;
 
-    PathAliasReplacementFromMap replace = new PathAliasReplacementFromMap("${cdmUnitTest}", cdmUnitTestDir);
-    FeatureCollectionConfigBuilder.setPathAliasReplacement(replace);
+    AliasTranslator.addAlias("${cdmUnitTest}", cdmUnitTestDir);
   }
 
   static public File getTempFile() throws IOException {

@@ -39,6 +39,7 @@ import org.junit.experimental.categories.Category;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
+import ucar.nc2.util.AliasTranslator;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 

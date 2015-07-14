@@ -46,6 +46,7 @@ import thredds.server.catalog.tracker.DataRootExt;
 import thredds.server.config.TdsContext;
 
 import thredds.util.filesource.FileSource;
+import ucar.nc2.util.AliasTranslator;
 
 import javax.annotation.Resource;
 import java.io.File;

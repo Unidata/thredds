@@ -40,13 +40,10 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import org.springframework.stereotype.Component;
 import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
@@ -56,6 +53,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.httpservices.HTTPException;
@@ -191,12 +189,6 @@ public class Tdm {
     }
   }
 
-  AliasHandler aliasHandler;
-
-  public void setPathAliasReplacements(List<PathAliasReplacement> aliasExpanders) {
-    aliasHandler = new AliasHandler(aliasExpanders);
-  }
-
   ////////////////////////////////////////////////////////////////////
   boolean init() {
     System.setProperty("tds.log.dir", contentTdmDir.toString());
@@ -242,12 +234,12 @@ public class Tdm {
     eventBus.register(this);
 
     List<FeatureCollectionConfig> fcList = new ArrayList<>();
-    CatalogConfigReader reader = new CatalogConfigReader(contentThreddsDir, catalog, aliasHandler);
+    CatalogConfigReader reader = new CatalogConfigReader(contentThreddsDir, catalog);
     fcList.addAll(reader.getFcList());
 
     // do the catalogRoots
     for (Resource catr : catalogRoots) {
-      CatalogConfigReader r = new CatalogConfigReader(contentThreddsDir, catr, aliasHandler);
+      CatalogConfigReader r = new CatalogConfigReader(contentThreddsDir, catr);
       fcList.addAll(r.getFcList());
     }
 
@@ -483,8 +475,8 @@ public class Tdm {
       Tdm driver = (Tdm) springContext.getBean("testDriver2");
 
       Map<String, String> aliases = (Map<String, String>) springContext.getBean("dataRootLocationAliasExpanders");
-      List<PathAliasReplacement> aliasExpanders = PathAliasReplacementImpl.makePathAliasReplacements(aliases);
-      driver.setPathAliasReplacements(aliasExpanders);
+      for (Map.Entry<String,String> entry : aliases.entrySet())
+        AliasTranslator.addAlias(entry.getKey(), entry.getValue());
 
       EventBus eventBus = (EventBus) springContext.getBean("fcTriggerEventBus");
       CollectionUpdater collectionUpdater = (CollectionUpdater) springContext.getBean("collectionUpdater");
