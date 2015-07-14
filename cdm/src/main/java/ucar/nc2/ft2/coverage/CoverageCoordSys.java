@@ -23,7 +23,7 @@ public class CoverageCoordSys {
   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
   //////////////////////////////////////////////////
-  private CoverageDataset dataset; // almost immutable, need to wire these in after the constructor
+  protected CoverageDataset dataset; // almost immutable, need to wire these in after the constructor
   private CoverageCoordSysHoriz horizCoordSys;
 
   private final String name;
@@ -36,6 +36,14 @@ public class CoverageCoordSys {
     this.axisNames = axisNames;
     this.transformNames = transformNames;
     this.type = type;
+  }
+
+  // copy constructor
+  public CoverageCoordSys(CoverageCoordSys from) {
+    this.name = from.getName();
+    this.axisNames = from.getAxisNames();
+    this.transformNames = from.getTransformNames();
+    this.type = from.getType();
   }
 
   void setDataset(CoverageDataset dataset) {
@@ -62,6 +70,10 @@ public class CoverageCoordSys {
       if (ct.isHoriz()) return ct;
     }
     return null;
+  }
+
+  public CoverageCoordSysHoriz getHorizCoordSys() {
+    return horizCoordSys;
   }
 
   public Type getType() {
@@ -157,6 +169,15 @@ public class CoverageCoordSys {
        }
      }
     return null;
+  }
+
+  public List<CoverageCoordAxis> getAxes() {
+    List<CoverageCoordAxis> result = new ArrayList<>();
+    for (String axisName : getAxisNames()) {
+      CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
+      result.add(axis);
+     }
+    return result;
   }
 
   public boolean isRegularSpatial() {

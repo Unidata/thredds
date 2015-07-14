@@ -20,9 +20,9 @@ public class AttributeContainerHelper implements AttributeContainer {
     this.atts = new ArrayList<>();
   }
 
-  public AttributeContainerHelper(AttributeContainerHelper from) {
-    this(from.getName());
-    addAll(from.atts);
+  public AttributeContainerHelper(String name, List<Attribute> from) {
+    this(name);
+    addAll(from);
   }
 
   @Override

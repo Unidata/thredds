@@ -40,6 +40,7 @@ import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
 import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
@@ -88,10 +89,10 @@ public class WcsCoverage {
     CoverageCoordAxis zaxis = coordSys.getZAxis();
     WcsRangeField.Axis vertAxis;
     if (zaxis != null) {
-      List<String> vals = new ArrayList<String>();
-      for (double val :  zaxis.getValues())
-        vals.add(Format.d(val, 5, 8));
-      vertAxis = new WcsRangeField.Axis("Vertical", zaxis.getName(), zaxis.getDescription(), true, vals);
+      List<String> names = new ArrayList<>();
+      for (NamedObject val :  zaxis.getCoordValueNames())
+        names.add(val.getName());
+      vertAxis = new WcsRangeField.Axis("Vertical", zaxis.getName(), zaxis.getDescription(), true, names);
     } else
       vertAxis = null;
 

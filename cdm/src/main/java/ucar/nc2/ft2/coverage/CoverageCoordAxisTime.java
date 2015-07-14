@@ -2,7 +2,7 @@
 package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.DataType;
-import ucar.nc2.AttributeContainer;
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -26,11 +26,12 @@ public class CoverageCoordAxisTime extends CoverageCoordAxis {
   final CalendarDate runDate;
   final double duration;
 
-  public CoverageCoordAxisTime(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
+  public CoverageCoordAxisTime(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
                            DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                           double[] values, ucar.nc2.time.Calendar cal) {
+                           double[] values, CoordAxisReader reader, ucar.nc2.time.Calendar cal) {
+
     super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing,
-                ncoords, startValue, endValue, resolution, values);
+                ncoords, startValue, endValue, resolution, values, reader);
 
     this.dateUnit = CalendarDateUnit.withCalendar(cal, getUnits()); // this will throw exception on failure
     this.runDate = dateUnit.getBaseCalendarDate();
@@ -44,7 +45,7 @@ public class CoverageCoordAxisTime extends CoverageCoordAxis {
 
   @Override
   public List<NamedObject> getCoordValueNames() {
-    getValues();
+    getValues(); // read in if needed
     List<NamedObject> result = new ArrayList<>();
     for (int i = 0; i < getNcoords(); i++) {
       String valName = "";

@@ -74,7 +74,7 @@ public class CFGridCoverageWriter {
   /**
    * @param gdsOrg       the GridCoverageDataset
    * @param gridNames    the list of variables to be written, or null for all
-   * @param subset       the desired subset
+   * @param subsetParams       the desired subset
    * @param addLatLon    add 2D lat/lon coordinates if needed
    * @param testSizeOnly dont write, just return size
    * @param writer       this does the actual writing
@@ -82,11 +82,12 @@ public class CFGridCoverageWriter {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  private long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subset, boolean addLatLon, boolean testSizeOnly,
+  private long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subsetParams, boolean addLatLon, boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     // construct the subsetted dataset
-    CoverageDatasetSubset subsetDataset = new CoverageDatasetSubset(gdsOrg, gridNames, subset);
+    CoverageSubset helper = new CoverageSubset(gdsOrg, gridNames, subsetParams);
+    CoverageDataset subsetDataset = helper.makeCoverageDatasetSubset();
 
     long total_size = 0;
     for (Coverage grid : subsetDataset.getCoverages()) {
@@ -159,10 +160,10 @@ public class CFGridCoverageWriter {
     // write the data to the new file.
       for (Coverage grid : subsetDataset.getCoverages()) {
         Variable v = writer.findVariable(grid.getName());
-        Array data = subsetDataset.readSubset(grid);
+        ArrayWithCoordinates array = grid.readData(subsetParams);
         // Array reshape = data.reshape(v.getShape());
         System.out.printf("write grid %s%n", v.getNameAndDimensions());
-        writer.write(v, data);
+        writer.write(v, array.getData());
     }
 
     //updateGeospatialRanges(writer, llrect );
@@ -182,7 +183,7 @@ public class CFGridCoverageWriter {
     return isLargeFile;
   }
 
-  private void addGlobalAttributes(CoverageDatasetSubset gds, NetcdfFileWriter writer) {
+  private void addGlobalAttributes(CoverageDataset gds, NetcdfFileWriter writer) {
     // global attributes
     for (Attribute att : gds.getGlobalAttributes()) {
       if (att.getShortName().equals(CDM.FILE_FORMAT)) continue;
@@ -217,7 +218,7 @@ public class CFGridCoverageWriter {
     }
   }
 
-  private void addCFAnnotations(CoverageDatasetSubset gds, NetcdfFileWriter writer, boolean addLatLon) {
+  private void addCFAnnotations(CoverageDataset gds, NetcdfFileWriter writer, boolean addLatLon) {
 
     //Group root = ncfile.getRootGroup();
     for (Coverage grid : gds.getCoverages()) {

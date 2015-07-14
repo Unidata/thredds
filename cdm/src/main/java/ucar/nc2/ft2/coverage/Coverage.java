@@ -17,13 +17,13 @@ import java.util.List;
  * @since 7/11/2015
  */
 @Immutable
-public abstract class Coverage implements IsMissingEvaluator {
-  private CoverageCoordSys coordSys; // almost immutable
+public class Coverage implements IsMissingEvaluator {
   private final String name;
   private final DataType dataType;
   private final List<Attribute> atts;
-  private final String coordSysName;
   private final String units, description;
+  private final String coordSysName;
+  private CoverageCoordSys coordSys; // almost immutable
 
   public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description) {
     this.name = name;
@@ -32,6 +32,16 @@ public abstract class Coverage implements IsMissingEvaluator {
     this.coordSysName = coordSysName;
     this.units = units;
     this.description = description;
+  }
+
+  // copy constructor
+  public Coverage(Coverage from) {
+    this.name = from.getName();
+    this.dataType = from.getDataType();
+    this.atts = from.getAttributes();
+    this.units = from.getUnits();
+    this.description = from.getDescription();
+    this.coordSysName = from.getCoordSysName();
   }
 
   void setCoordSys (CoverageCoordSys coordSys) {
@@ -103,11 +113,14 @@ public abstract class Coverage implements IsMissingEvaluator {
   // public abstract ReferencedArray readData(GridSubset subset) throws IOException;
 
   // LOOK what is the contract? what order are the returned values ?? ie what are the coordinates of each point ??
-  public abstract ArrayWithCoordinates readData(SubsetParams subset) throws IOException;
+  public ArrayWithCoordinates readData(SubsetParams subset) throws IOException {
+    CoverageReader reader = coordSys.dataset.reader;
+    return reader.readData(this, subset);
+  }
 
-  // LOOK problem this violates coordinate-only data access. NA with cdmr
+  /* LOOK problem this violates coordinate-only data access. NA with cdmr
   // used by CFGridCoverageWriter. this is asking that the coordinates dont change, eg only allow a rectangular subset of the (possibly) bigger grid
-  public abstract Array readSubset(List<Range> subset) throws IOException, InvalidRangeException;
+  public abstract Array readSubset(List<Range> subset) throws IOException, InvalidRangeException;   */
 
   @Override
   public boolean hasMissing() {

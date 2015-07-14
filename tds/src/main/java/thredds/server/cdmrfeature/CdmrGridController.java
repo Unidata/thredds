@@ -55,10 +55,7 @@ import thredds.util.TdsPathUtils;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetSubset;
-import ucar.nc2.ft2.coverage.SubsetParams;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.remote.CdmrfWriter;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.stream.NcStream;
@@ -182,13 +179,14 @@ public class CdmrGridController implements LastModified {
 
       // construct the subsetted dataset
       SubsetParams subset = qb.makeSubset(gridCoverageDataset.getCalendar());
-      CoverageDatasetSubset subsetDataset = new CoverageDatasetSubset(gridCoverageDataset, qb.getVar(), subset);
+      CoverageSubset helper = new CoverageSubset(gridCoverageDataset, qb.getVar(), subset);
+      CoverageDataset subsetDataset = helper.makeCoverageDatasetSubset();
 
       // write the data to the stream
       // write the data to the new file.
       for (Coverage grid : subsetDataset.getCoverages()) {
-        Array data = subsetDataset.readSubset(grid);
-        sendData(grid, data, out, true);
+        ArrayWithCoordinates array = grid.readData(subset);
+        sendData(grid, array.getData(), out, true);
       }
 
       out.flush();

@@ -1192,7 +1192,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public Variable(Variable from) {
     super(from.getShortName());
-    this.attributes = new AttributeContainerHelper(from.attributes);
+    this.attributes = new AttributeContainerHelper(from.getShortName(), from.getAttributes());
     this.cache = from.cache; // caller should do createNewCache() if dont want to share
     setDataType(from.getDataType());
     this.dimensions = new ArrayList<>(from.dimensions); // dimensions are shared

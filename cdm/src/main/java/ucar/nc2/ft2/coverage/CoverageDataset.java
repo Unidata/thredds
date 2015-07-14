@@ -36,23 +36,26 @@ public class CoverageDataset implements AutoCloseable {
   private final Map<String, Coverage> coverageMap = new HashMap<>();
 
   private final CoverageCoordSys.Type coverageType;
+  protected final CoverageReader reader;
 
-  public CoverageDataset(String name, AttributeContainerHelper atts, LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox,
-                         CalendarDateRange calendarDateRange, List<CoverageCoordSys> coordSys, List<CoverageTransform> coordTransforms,
-                         List<CoverageCoordAxis> coordAxes, List<Coverage> coverages, CoverageCoordSys.Type coverageType) {
+  public CoverageDataset(String name, CoverageCoordSys.Type coverageType, AttributeContainerHelper atts,
+                         LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox, CalendarDateRange calendarDateRange,
+                         List<CoverageCoordSys> coordSys, List<CoverageTransform> coordTransforms, List<CoverageCoordAxis> coordAxes, List<Coverage> coverages,
+                         CoverageReader reader) {
     this.name = name;
     this.atts = atts;
     this.latLonBoundingBox = latLonBoundingBox;
     this.projBoundingBox = projBoundingBox;
     this.calendarDateRange = calendarDateRange;
+    this.coverageType = coverageType;
+
     this.coordSys = coordSys;
     this.coordTransforms = coordTransforms;
     this.coordAxes = coordAxes;
-    this.coverageType = coverageType;
 
     this.coverageSets = wireObjectsTogether(coverages);
+    this.reader = reader;
   }
-
 
   private List<CoordSysSet> wireObjectsTogether(List<Coverage> coverages) {
     Map<String, CoordSysSet> map = new HashMap<>();
@@ -98,7 +101,13 @@ public class CoverageDataset implements AutoCloseable {
 
   @Override
   public void close() throws IOException {
-    // NOOP
+    try {
+      reader.close();
+    } catch (IOException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IOException(e);
+    }
   }
 
   public String findAttValueIgnoreCase(String attName, String defaultValue) {

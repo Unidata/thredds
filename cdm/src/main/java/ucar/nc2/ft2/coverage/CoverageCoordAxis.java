@@ -1,16 +1,22 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage;
 
+import net.jcip.annotations.Immutable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -21,7 +27,9 @@ import java.util.List;
  * @author caron
  * @since 7/11/2015
  */
+@Immutable
 public class CoverageCoordAxis {
+  static private final Logger logger = LoggerFactory.getLogger(CoverageCoordAxis.class);
 
   public enum Spacing {
     regular,                // regularly spaced points or intervals (start, end, npts), edges halfway between coords
@@ -35,18 +43,17 @@ public class CoverageCoordAxis {
     scalar,                  // reftime
     twoD }                   // time(reftime, time)
 
-  public static CoverageCoordAxis factory(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
+  public static CoverageCoordAxis factory(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
                              DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                             double[] values, ucar.nc2.time.Calendar cal) {
+                             double[] values, CoordAxisReader reader, ucar.nc2.time.Calendar cal) {
 
     if (axisType == AxisType.Time)
       return new CoverageCoordAxisTime(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing,
-              ncoords, startValue, endValue, resolution, values, cal);
+              ncoords, startValue, endValue, resolution, values, reader, cal);
     else
       return new CoverageCoordAxis(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing,
-            ncoords, startValue, endValue, resolution, values);
+            ncoords, startValue, endValue, resolution, values, reader);
   }
-
 
   private final String name;
   private final String units, description;
@@ -60,34 +67,48 @@ public class CoverageCoordAxis {
   private final Spacing spacing;
   private final double startValue;
   private final double endValue;
+  private final double resolution;
+  final CoordAxisReader reader;
 
-  private double resolution;
-  private double[] values;     // null if isRegular,
+  // maybe lazy eval
+  private double[] values;     // null if isRegular, CoordAxisReader for lazy eval
 
-  // subset
+  // subset ??
   private long minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
   private int stride = 1;
 
-  public CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
+  protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
                            DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                           double[] values) {
+                           double[] values, CoordAxisReader reader) {
     this.name = name;
     this.units = units;
     this.description = description;
     this.dataType = dataType;
     this.axisType = axisType;
-    this.attributes = attributes;
+    this.attributes = new AttributeContainerHelper( name, attributes);
     this.dependenceType = dependenceType;
     this.dependsOn = dependsOn;
     this.spacing = spacing;
     this.startValue = startValue;
     this.endValue = endValue;
-    this.resolution = resolution;
     this.values = values;
+    this.reader = reader; // used only if values == null
+
+    if (resolution == 0.0 && ncoords > 1)
+      this.resolution = (endValue - startValue) / (ncoords - 1);
+    else
+      this.resolution = resolution;
 
     this.ncoords = ncoords;
     this.minIndex = 0;
     this.maxIndex = ncoords-1;
+  }
+
+  // ??
+  void setIndexRange(int minIndex, int maxIndex, int stride) {
+    this.minIndex = minIndex;
+    this.maxIndex = maxIndex;
+    this.stride = stride;
   }
 
   public String getName() {
@@ -114,24 +135,12 @@ public class CoverageCoordAxis {
     return minIndex;
   }
 
-  public void setMinIndex(long minIndex) {
-    this.minIndex = minIndex;
-  }
-
   public long getMaxIndex() {
     return maxIndex;
   }
 
-  public void setMaxIndex(long maxIndex) {
-    this.maxIndex = maxIndex;
-  }
-
   public int getStride() {
     return stride;
-  }
-
-  public void setStride(int stride) {
-    this.stride = stride;
   }
 
   public Spacing getSpacing() {
@@ -143,13 +152,7 @@ public class CoverageCoordAxis {
   }
 
   public double getResolution() {
-    if (resolution == 0.0 && isRegular() && ncoords > 1)    // LOOK calc resolution for non regular ??
-      resolution = (endValue - startValue) / (ncoords - 1);
     return resolution;
-  }
-
-  public void setResolution(double resolution) {
-    this.resolution = resolution;
   }
 
   public double getStartValue() {
@@ -333,6 +336,16 @@ public class CoverageCoordAxis {
     return result;
   }
 
+  public CoverageCoordAxis subset(double minValue, double maxValue) {
+    CoordAxisHelper helper = new CoordAxisHelper(this);
+    return helper.subset(minValue, maxValue);
+  }
+
+  public CoverageCoordAxis copy(Calendar cal) {
+    CoordAxisHelper helper = new CoordAxisHelper(this);
+    return helper.copy(cal);
+  }
+
  /* public Array getCoordEdge1() {
     getValues();
     double[] vals = new double[ ncoords];
@@ -350,7 +363,7 @@ public class CoverageCoordAxis {
   } */
 
   public List<NamedObject> getCoordValueNames() {
-    getValues();
+    getValues();  // read in if needed
     List<NamedObject> result = new ArrayList<>();
     for (int i = 0; i < ncoords; i++) {
       String valName = "";
@@ -374,10 +387,16 @@ public class CoverageCoordAxis {
 
   ///////////////////////////////////////////////
 
-  protected double[] readValues() { return null; } //LOOK
-
+  // will return null when isRegular
   public double[] getValues() {
-    if (values == null) values = readValues();
+    synchronized (this) {
+      if (values == null && !isRegular() && reader != null)
+        try {
+          values = reader.readValues(this);
+        } catch (IOException e) {
+          logger.error("Failed to read "+name, e);
+        }
+    }
     return values;
   }
 }

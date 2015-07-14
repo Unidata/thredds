@@ -101,7 +101,6 @@ public class CoverageTransform implements AttributeContainer {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
 
-
   @Override
   public void addAll(Iterable<Attribute> atts) {
     // NOOP

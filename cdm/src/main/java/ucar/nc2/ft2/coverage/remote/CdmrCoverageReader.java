@@ -6,7 +6,6 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.ma2.*;
-import ucar.nc2.Attribute;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
@@ -25,32 +24,37 @@ import java.util.zip.InflaterInputStream;
  * @author caron
  * @since 5/5/2015
  */
-public class CdmrGridCoverage extends Coverage {
+public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
   String endpoint;
   HTTPSession httpClient;
   boolean debug = false;
   boolean showRequest = true;
 
-  CdmrGridCoverage(String endpoint, String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description) {
-    super(name, dataType, atts, coordSysName, units, description);
+  CdmrCoverageReader(String endpoint, HTTPSession httpClient) throws IOException {
     this.endpoint = endpoint;
+    this.httpClient = httpClient;
   }
 
   @Override
-  public ArrayWithCoordinates readData(SubsetParams subset) throws IOException {
+  public void close() throws Exception {
+    httpClient.close();
+  }
+
+  @Override
+  public ArrayWithCoordinates readData(Coverage coverage, SubsetParams subset) throws IOException {
     if (httpClient == null)
       httpClient = HTTPFactory.newSession(endpoint);
 
     Formatter f = new Formatter();
-    f.format("%s?req=data&var=%s", endpoint, getName());  // LOOK full vs short name
+    f.format("%s?req=data&var=%s", endpoint, coverage.getName());  // LOOK full vs short name
 
     for (Map.Entry<String,Object> entry : subset.getEntries()) {
       f.format("&%s=%s", entry.getKey(), entry.getValue());
     }
 
     if (showRequest)
-      System.out.printf(" CdmrFeature data request for gridCoverage: %s%n url=%s%n", getName(), f);
+      System.out.printf(" CdmrFeature data request for gridCoverage: %s%n url=%s%n", coverage.getName(), f);
 
     try (HTTPMethod method = HTTPFactory.Get(httpClient, f.toString())) {
       int statusCode = method.execute();
@@ -104,7 +108,7 @@ public class CdmrGridCoverage extends Coverage {
       }
 
       if (debug) System.out.println("  readData data len= " + dsize);
-      return new ArrayWithCoordinates(data, getCoordSys());
+      return new ArrayWithCoordinates(data, null); // LOOK getCoordSys());
     }
 
   }
@@ -119,5 +123,10 @@ public class CdmrGridCoverage extends Coverage {
     String status = method.getStatusLine();
     String content = method.getResponseAsString();
     return (content == null) ? path+" "+status : path+" "+status +"\n "+content;
+  }
+
+  @Override
+  public double[] readValues(CoverageCoordAxis coordAxis) throws IOException {
+    return new double[0];
   }
 }
