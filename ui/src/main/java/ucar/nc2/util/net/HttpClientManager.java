@@ -36,9 +36,7 @@ package ucar.nc2.util.net;
 import org.apache.http.Header;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.entity.StringEntity;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
+import ucar.httpservices.*;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Urlencoded;
 
@@ -64,18 +62,14 @@ public class HttpClientManager
      */
     static public void init(CredentialsProvider provider, String userAgent)
     {
-        if(provider != null)
-            HTTPSession.setGlobalCredentialsProvider(provider);
-
+        if(provider != null) try {
+            HTTPSession.setGlobalCredentialsProvider(HTTPAuthSchemes.BASIC, provider);
+        } catch (HTTPException e) {};
         if(userAgent != null)
             HTTPSession.setGlobalUserAgent(userAgent + "/NetcdfJava/HttpClient");
         else
             HTTPSession.setGlobalUserAgent("NetcdfJava/HttpClient");
 
-    }
-
-    public static void clearState()
-    {
     }
 
     /**

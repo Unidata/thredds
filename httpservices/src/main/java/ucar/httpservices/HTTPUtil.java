@@ -189,26 +189,6 @@ abstract public class HTTPUtil
         return bytes.toByteArray();
     }
 
-    static public String makerealm(URL url)
-    {
-        return makerealm(url.getHost(), url.getPort());
-    }
-
-    static public String makerealm(AuthScope scope)
-    {
-        return makerealm(scope.getHost(), scope.getPort());
-    }
-
-    static public String makerealm(String host, int port)
-    {
-        if(host == null) host = ANY_HOST;
-        if(host == ANY_HOST)
-            return ANY_REALM;
-        String sport = (port <= 0 || port == ANY_PORT) ? "" : String.format("%d", port);
-        return host + sport;
-    }
-
-
     static public  File
     fillTempFile(String base, String content)
 	throws IOException
@@ -238,6 +218,13 @@ abstract public class HTTPUtil
         } catch (IOException e) {
             throw new IOException("Cannot create temp file",e);
         }
+    }
+
+    /**
+     * @return {@code true} if the objects are equal or both null
+     */
+    public static boolean equals(final Object obj1, final Object obj2) {
+        return obj1 == null ? obj2 == null : obj1.equals(obj2);
     }
 
 

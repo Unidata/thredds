@@ -59,7 +59,6 @@ import org.apache.http.protocol.HttpContext;
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.lang.reflect.Method;
 import java.net.*;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
@@ -67,7 +66,6 @@ import java.util.List;
 import java.util.Vector;
 
 import static org.apache.http.auth.AuthScope.*;
-import static ucar.httpservices.HTTPAuthScope.ANY_PRINCIPAL;
 
 /**
  * A session is encapsulated in an instance of the class
@@ -133,10 +131,13 @@ public class HTTPSession implements AutoCloseable
     static final public String HEADER_USERAGENT = "User-Agent";
     static final public String ACCEPT_ENCODING = "Accept-Encoding";
 
-    static final public String BASIC = HTTPAuthPolicy.BASIC;
-    static final public String DIGEST = HTTPAuthPolicy.DIGEST;
-    static final public String NTLM = HTTPAuthPolicy.NTLM;
-    static final public String SSL = HTTPAuthPolicy.SSL;
+    // Locally defined
+    static final public String CREDENTIALS = "Credentials";
+
+    static final public String BASIC = HTTPAuthSchemes.BASIC;
+    static final public String DIGEST = HTTPAuthSchemes.DIGEST;
+    static final public String NTLM = HTTPAuthSchemes.NTLM;
+    static final public String SSL = HTTPAuthSchemes.SSL;
 
     static final int DFALTTHREADCOUNT = 50;
     static final int DFALTREDIRECTS = 25;
@@ -294,6 +295,8 @@ public class HTTPSession implements AutoCloseable
     static Settings globalsettings;
     static List<HttpRequestInterceptor> reqintercepts = new ArrayList<HttpRequestInterceptor>();
     static List<HttpResponseInterceptor> rspintercepts = new ArrayList<HttpResponseInterceptor>();
+    static protected HTTPAuthStore authglobal = new HTTPAuthStore();
+
 
     static {
         connmgr = new PoolingClientConnectionManager();
@@ -399,40 +402,44 @@ public class HTTPSession implements AutoCloseable
 
     // Authorization
 
-    static synchronized protected void
-    defineCredentialsProvider(String principal, AuthScope scope, CredentialsProvider provider, HTTPAuthStore store)
+    /**
+     *
+     * @param url
+     * @param provider
+     * @throws HTTPException
+     */
+    static public void
+    setGlobalCredentialsProvider(String url, CredentialsProvider provider)
+            throws HTTPException
     {
-        // Add/remove entry to AuthStore
-        try {
-            if(provider == null) {//remove
-                store.remove(new HTTPAuthStore.Entry(principal, scope, provider));
-            } else { // add
-                store.insert(new HTTPAuthStore.Entry(principal, scope, provider));
-            }
-        } catch (HTTPException he) {
-            log.error("HTTPSession.setCredentialsProvider failed");
-        }
+        if(url == null || provider == null)
+            throw new IllegalArgumentException("null argument");
+        setGlobalCredentialsProvider(HTTPAuthUtil.urlToScope(url, HTTPAuthSchemes.BASIC), provider);
     }
 
     static public void
     setGlobalCredentialsProvider(AuthScope scope, CredentialsProvider provider)
+            throws HTTPException
     {
-        defineCredentialsProvider(ANY_PRINCIPAL, scope, provider, HTTPAuthStore.getDefault());
+        if(provider == null || scope == null || scope.getScheme() == null)
+            throw new IllegalArgumentException("null argument");
+        authglobal.insert(scope, provider);
     }
 
+    /**
+     * It is convenient to be able to directly set the Credentials
+     * (not the provider) when those credentials are fixed.
+     *
+     * @param url
+     * @param creds
+     * @throws HTTPException
+     */
     static public void
-    setGlobalCredentialsProvider(CredentialsProvider provider)
-    {
-        defineCredentialsProvider(ANY_PRINCIPAL, HTTPAuthScope.ANY, provider, HTTPAuthStore.getDefault());
-    }
-
-    // It is convenient to be able to directly set the Credentials
-    // (not the provider) when those credentials are fixed.
-    static public void
-    setGlobalCredentials(AuthScope scope, Credentials creds)
+    setGlobalCredentials(String url, Credentials creds)
+            throws HTTPException
     {
         CredentialsProvider provider = new HTTPConstantProvider(creds);
-        setGlobalCredentialsProvider(scope, provider);
+        setGlobalCredentialsProvider(url, provider);
     }
 
     static public int
@@ -446,7 +453,6 @@ public class HTTPSession implements AutoCloseable
     {
         RetryHandler.setRetries(count);
     }
-
 
     //////////////////////////////////////////////////
     // Static Utility functions
@@ -585,9 +591,11 @@ public class HTTPSession implements AutoCloseable
         if(keypath != null || trustpath != null) { // define conditionally
             HTTPSSLProvider sslprovider = new HTTPSSLProvider(keypath, keypassword,
                     trustpath, trustpassword);
-            setGlobalCredentialsProvider(
-                    new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, HTTPAuthPolicy.SSL),
-                    sslprovider);
+            try {
+                setGlobalCredentialsProvider(new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, HTTPAuthSchemes.SSL), sslprovider);
+            } catch (HTTPException he) {
+                HTTPSession.log.info(String.format("HTTPSession: no keystore properties found"));
+            }
         }
     }
 
@@ -637,7 +645,7 @@ public class HTTPSession implements AutoCloseable
     protected HttpContext execcontext = null; // same instance must be used for all methods
     protected String identifier = "Session";
     protected Settings localsettings = new Settings();
-    protected HTTPAuthStore authlocal = HTTPAuthStore.getDefault();
+    protected HTTPAuthStore authlocal = new HTTPAuthStore(authglobal);
     // We currently only allow the use of global interceptors
     protected List<Object> intercepts = new ArrayList<Object>(); // current set of interceptors;
 
@@ -652,7 +660,7 @@ public class HTTPSession implements AutoCloseable
     public HTTPSession(String host, int port)
             throws HTTPException
     {
-        init(new AuthScope(host, port, HTTPUtil.makerealm(host, port)));
+        init(new AuthScope(host, port, HTTPAuthUtil.makerealm(host, port)));
     }
 
 
@@ -662,11 +670,10 @@ public class HTTPSession implements AutoCloseable
         if(url == null || url.length() == 0)
             throw new HTTPException("HTTPSession(): empty URL not allowed");
         // Make sure url has leading protocol
-        String[] pieces = url.split("^[a-zZ-Z0-9+.-]+:");
-        if(pieces.length == 1)
+        if(!url.matches("^[a-zZ-Z0-9+.-]+:.*$"))
             url = "http:" + url; // try to make it parseable
         this.sessionURL = url;
-        init(HTTPAuthScope.urlToScope(ANY_SCHEME, url, null));
+        init(HTTPAuthUtil.urlToScope(url, ANY_SCHEME));
     }
 
     public HTTPSession(AuthScope scope)
@@ -681,7 +688,7 @@ public class HTTPSession implements AutoCloseable
         if(scope == null)
             throw new HTTPException("HTTPSession(): empty scope not allowed");
         this.realm = scope;
-        this.realmURL = HTTPAuthScope.scopeToURL(scope).toString();
+        this.realmURL = HTTPAuthUtil.scopeToURL(scope).toString();
         try {
             synchronized (HTTPSession.class) {
                 sessionClient = new DefaultHttpClient(connmgr);
@@ -735,13 +742,6 @@ public class HTTPSession implements AutoCloseable
     getAuthStore()
     {
         return this.authlocal;
-    }
-
-    public void
-    setAuthStore(HTTPAuthStore store)
-    {
-        if(store == null) store = HTTPAuthStore.getDefault();
-        this.authlocal = store;
     }
 
     public Settings getSettings()
@@ -875,53 +875,45 @@ public class HTTPSession implements AutoCloseable
     // Authorization
     // per-session versions of the global accessors
 
-    public void
-    setCredentialsProvider(AuthScope scope, CredentialsProvider provider)
-    {
-        defineCredentialsProvider(ANY_PRINCIPAL, scope, provider, this.authlocal);
-    }
-
-    public void
-    setCredentialsProvider(CredentialsProvider provider)
-    {
-        setCredentialsProvider(HTTPAuthScope.ANY, provider);
-    }
-
-    public void
-    setCredentialsProvider(String scheme, CredentialsProvider provider)
-    {
-        AuthScope scope = new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, scheme);
-        setCredentialsProvider(scope, provider);
-    }
-
-    public void
-    setCredentials(String scheme, Credentials creds)
-    {
-        CredentialsProvider provider = new HTTPConstantProvider(creds);
-        setCredentialsProvider(scheme, provider);
-    }
-
-    // Assumes that user info exists in the url and we can
-    // use it to build a simple UsernamePasswordCredentials as our provider.
-    // Also assume this is a compatible url to the Session url
-    public void
-    setCredentialsProvider(String surl)
-            throws HTTPException
-    {
-        // Try to extract user info
-        URI uri = HTTPAuthScope.decompose(surl);
-        String userinfo = uri.getUserInfo();
-        if(userinfo != null) {
-            int index = userinfo.indexOf(':');
-            String user = userinfo.substring(index);
-            String pwd = userinfo.substring(index + 1, userinfo.length());
-            if(user != null && pwd != null) {
-                // Create a non-interactive user+pwd handler
-                CredentialsProvider bp = new HTTPBasicProvider(user, pwd);
-                setCredentialsProvider(HTTPAuthPolicy.BASIC, bp);
-            }
+    /**
+         *
+         * @param url
+         * @param provider
+         * @throws HTTPException
+         */
+        public void
+        setCredentialsProvider(String url, CredentialsProvider provider)
+                throws HTTPException
+        {
+            if(url == null || provider == null)
+                throw new IllegalArgumentException("null argument");
+            setCredentialsProvider(HTTPAuthUtil.urlToScope(url, HTTPAuthSchemes.BASIC), provider);
         }
-    }
+
+        public void
+        setCredentialsProvider(AuthScope scope, CredentialsProvider provider)
+                throws HTTPException
+        {
+            if(provider == null || scope == null || scope.getScheme() == null)
+                throw new IllegalArgumentException("null argument");
+            authlocal.insert(scope, provider);
+        }
+
+        /**
+         * It is convenient to be able to directly set the Credentials
+         * (not the provider) when those credentials are fixed.
+         *
+         * @param url
+         * @param creds
+         * @throws HTTPException
+         */
+        public void
+        setCredentials(String url, Credentials creds)
+                throws HTTPException
+        {
+            CredentialsProvider provider = new HTTPConstantProvider(creds);
+            setCredentialsProvider(url, provider);
+        }
 
     // This provides support for HTTPMethod.setAuthentication method
     synchronized protected void

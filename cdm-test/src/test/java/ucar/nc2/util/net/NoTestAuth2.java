@@ -35,10 +35,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import ucar.httpservices.HTTPException;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
+import ucar.httpservices.*;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.ThreddsServer;
@@ -85,7 +82,7 @@ public class NoTestAuth2 extends UnitTestCommon
         try (HTTPMethod m = HTTPFactory.Get(data.url)) {
             try {
                 if(data.provider != null)
-                    m.getSession().setCredentialsProvider(data.provider);
+                    m.getSession().setCredentialsProvider(HTTPAuthSchemes.BASIC, data.provider);
                 m.getSession().setUserAgent("tdmRunner");
                 HTTPSession.setGlobalUserAgent("TDM v4.3");
                 int status = m.execute();

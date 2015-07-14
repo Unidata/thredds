@@ -33,25 +33,30 @@
 
 package ucar.httpservices;
 
-import org.apache.http.client.params.AuthPolicy;
+import org.apache.http.client.config.AuthSchemes;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * HTTPAuthPolicy defines the set of currently supported schemes.
+ * HTTPAuthSchemes defines the set of currently supported schemes.
  *
- * @see AuthPolicy
+ * @see AuthSchemes
  */
 
 
-abstract public class HTTPAuthPolicy /* mimics AuthPolicy (AuthPolicy is final for some reason) */
+abstract public class HTTPAuthSchemes /* mimics AuthSchemes (AuthSchemes is final for some reason) */
 {
-    public static final String BASIC = AuthPolicy.BASIC;
-    public static final String DIGEST = AuthPolicy.DIGEST;
-    public static final String NTLM = AuthPolicy.NTLM;
-    public static final String SSL = "SSL";
-    public static final String ANY = null;
+    static public final String BASIC = AuthSchemes.BASIC;
+    static public final String DIGEST = AuthSchemes.DIGEST;
+    static public final String NTLM = AuthSchemes.NTLM;
+    static public final String SPNEGO = AuthSchemes.SPNEGO;
+    static public final String KERBEROS = AuthSchemes.KERBEROS;
+    // Local extensions
+    static public final String SSL = "SSL";
+    static public final String ANY = null;
+
+    static public final String DEFAULT_SCHEME = HTTPAuthSchemes.BASIC;
 
     protected static Set<String> legal;
 

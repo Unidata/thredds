@@ -135,7 +135,7 @@ public class TestHTTPSession extends UnitTestCommon
             session.setConnectionTimeout(37777);
             session.setMaxRedirects(111);
             CredentialsProvider bp = new HTTPBasicProvider("anyuser", "password");
-            session.setCredentialsProvider(HTTPAuthPolicy.BASIC, bp);
+            session.setCredentialsProvider(HTTPAuthSchemes.BASIC, bp);
             //session.setAuthorizationPreemptive(true); not implemented
 
             HTTPMethod method = HTTPFactory.Get(session,TESTURL1);
