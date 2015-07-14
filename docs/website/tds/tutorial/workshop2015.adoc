@@ -1,4 +1,3 @@
-:stylesheet: ../tds.css
 :stylesheet: tutorial2.css
 
 = 2015 Training Workshop Schedule : TDS Configuration and Administration
@@ -73,7 +72,8 @@ Form] (Repeated submissions encouraged)
 === 3:15 - 3:45 Using ToolsUI (Christian)
 * Running link:../../netcdf-java/ToolsUI.html[ToolsUI]
 * Use Case: Using ToolsUI to serve new data
-** IOSP and FeatureTypes
+** Access your TDS server in ToolsUI.
+* IOSP and FeatureTypes
 
 === 3:45 - 4:15 NcML - Metadata editing with the goal of enhancing Data Discovery (Sean)
 * link:../../netcdf-java/ncml/Tutorial.html[Basic NcML tutorial]
@@ -87,7 +87,7 @@ Convention for Data Discovery] (Ethan?)
 === 4:15 - 4:45 Software Engineering and Contributing (Christian)
 * Source on https://github.com/Unidata/thredds[GitHub]
 * Build with gradle
-* Maven artifacts on https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]CDM/TDS Nightly Build/Test System (Jenkins)
+* Maven artifacts on https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
 * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
 * Continuous Integration on https://travis-ci.org/Unidata/thredds[Travis]
 * Static code analysis on https://scan.coverity.com/projects/388?tab=overview[Coverity]
