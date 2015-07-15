@@ -388,6 +388,35 @@ public class TestAuth extends UnitTestCommon
         assertTrue("testBasic", pass);
     }
 
+    @Test
+    public void
+    testBugs() throws Exception
+    {
+        boolean pass = true;
+        System.err.println("*** Testing: Caron bug 1");
+        String url = "http://" + TestDir.threddsTestServer + "/thredds/dodsC/restrict/testData.nc.dds";
+        try (HTTPSession session = HTTPFactory.newSession(url);
+             HTTPMethod m = HTTPFactory.Get(url)) {
+            CredentialsProvider cp = new CredentialsProvider()
+            {
+                public Credentials getCredentials(AuthScope scope)
+                {
+                    return new UsernamePasswordCredentials("tiggeUser", "tigge");
+                }
+
+                public void setCredentials(AuthScope scope, Credentials creds)
+                {
+                }
+
+                public void clear()
+                {
+                }
+            };
+            session.setCredentialsProvider(url,cp);
+            m.execute();
+
+        }
+    }
 /*
     @Test
     public void
