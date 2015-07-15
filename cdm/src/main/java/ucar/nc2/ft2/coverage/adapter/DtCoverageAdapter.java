@@ -124,7 +124,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       startValue = axis1D.getCoordValue(0);
       endValue = axis1D.getCoordValue((int) dtCoordAxis.getSize() - 1);
 
-      if (axis1D.isRegular()) {
+      if (axis1D.isRegular() || axis1D.isScalar()) {
         spacing = CoverageCoordAxis.Spacing.regular;
 
       } else if (!dtCoordAxis.isInterval()) {
@@ -147,6 +147,9 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         }
       }
 
+    } else {
+      spacing = CoverageCoordAxis.Spacing.regular;
+      // throw new IllegalStateException(); // dunno what to do yet
     }
 
     // LOOK 2D case not dealt with here

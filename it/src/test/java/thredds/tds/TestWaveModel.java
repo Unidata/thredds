@@ -40,8 +40,9 @@ public class TestWaveModel extends TestCase {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);
 
-    Dataset ds = cat.findDatasetByID("swan_oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_best.ncd");
-    assert (ds != null) : "cant find dataset 'swan_oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_best.ncd'";
+    String id = "hioos/model/wav/swan/oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_best.ncd";
+    Dataset ds = cat.findDatasetByID(id);
+    assert (ds != null) : "cant find dataset id="+id;
     assert ds.getFeatureType() == FeatureType.GRID;
 
     DataFactory fac = new DataFactory();
@@ -71,15 +72,15 @@ public class TestWaveModel extends TestCase {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/offset/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);
 
-    Dataset ds = cat.findDatasetByID("swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr");
-    assert (ds != null) : "cant find dataset 'swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr'";
+    String id = "hioos/model/wav/swan/oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr";
+    Dataset ds = cat.findDatasetByID(id);
+    assert (ds != null) : "cant find dataset id="+id;
     assert ds.getFeatureType() == FeatureType.GRID;
 
-    DateFormatter df = new DateFormatter();
     DateRange dr = ds.getTimeCoverage();
     assert dr != null;
-    assert dr.getStart().getDate().equals( df.getISODate("2011-07-12T21:00:00Z")) : df.toDateTimeStringISO(dr.getStart().getDate());
-    assert dr.getEnd().getDate().equals( df.getISODate("2011-07-13T21:00:00Z")) : df.toDateTimeStringISO(dr.getEnd().getDate());
+    assert dr.getStart().getCalendarDate().toString().equals("2011-07-12T21:00:00Z") : dr.getStart().getCalendarDate();
+    assert dr.getEnd().getCalendarDate().toString().equals(("2011-07-13T21:00:00Z")) : dr.getEnd().getCalendarDate();
     assert dr.getDuration().equals(new TimeDuration("24 hours")) : dr.getDuration();
 
     DataFactory fac = new DataFactory();

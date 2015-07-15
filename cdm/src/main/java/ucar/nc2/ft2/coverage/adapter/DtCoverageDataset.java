@@ -26,7 +26,7 @@ public class DtCoverageDataset implements AutoCloseable {
 
   /**
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
-   * and turn into a GridDataset.
+   * and turn into a DtCoverageDataset.
    *
    * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
    * @return GridDataset
@@ -39,7 +39,7 @@ public class DtCoverageDataset implements AutoCloseable {
 
   /**
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
-   * and turn into a GridDataset.
+   * and turn into a DtCoverageDataset.
    *
    * @param location    netcdf dataset to open, using NetcdfDataset.acquireDataset().
    * @param enhanceMode open netcdf dataset with this enhanceMode
@@ -66,7 +66,7 @@ public class DtCoverageDataset implements AutoCloseable {
   private ProjectionRect projBB = null;
 
   /**
-   * Create a GridDataset from a NetcdfDataset.
+   * Create a DtCoverageDataset from a NetcdfDataset.
    *
    * @param ncd underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
    * @throws java.io.IOException on read error
@@ -76,7 +76,7 @@ public class DtCoverageDataset implements AutoCloseable {
   }
 
   /**
-   * Create a GridDataset from a NetcdfDataset.
+   * Create a DtCoverageDataset from a NetcdfDataset.
    *
    * @param ncd       underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
    * @param parseInfo put parse info here, may be null
@@ -300,6 +300,14 @@ public class DtCoverageDataset implements AutoCloseable {
   public DtCoverage findGridByShortName(String shortName) {
     for (DtCoverage ggi : grids) {
       if (shortName.equals(ggi.getShortName()))
+        return ggi;
+    }
+    return null;
+  }
+
+  public DtCoverage findGridByFullName(String fullName) {
+    for (DtCoverage ggi : grids) {
+      if (fullName.equals(ggi.getFullName()))
         return ggi;
     }
     return null;

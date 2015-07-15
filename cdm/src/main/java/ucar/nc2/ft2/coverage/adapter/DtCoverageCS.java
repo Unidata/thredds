@@ -331,7 +331,6 @@ public class DtCoverageCS {
     return builder.timeAxis;
   }
 
-
   public CoordinateAxis1DTime getRunTimeAxis() {
     return builder.rtAxis;
   }

@@ -37,10 +37,11 @@ public class NcssIntegrationTest {
 
     byte[] content = call(endpoint, 200);
     // Open the binary response in memory
-    NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content);
-    ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
-    assertNotNull(gdsDataset.findGridByName("Temperature_isobaric"));
-    System.out.printf("%s%n", nf);
+    try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
+      ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
+      assertNotNull(gdsDataset.findGridByName("Temperature_isobaric"));
+      System.out.printf("%s%n", nf);
+    }
   }
 
   @Test
@@ -56,10 +57,11 @@ public class NcssIntegrationTest {
     byte[] content = call(endpoint, 200);
 
     // Open the binary response in memory
-    NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content);
-    ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
-    assertNotNull(gdsDataset.findGridByName("Relative_humidity_height_above_ground"));
-    System.out.printf("%s%n", nf);
+    try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
+      ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
+      assertNotNull(gdsDataset.findGridByName("Relative_humidity_height_above_ground"));
+      System.out.printf("%s%n", nf);
+    }
   }
 
   private byte[] call(String endpoint, int expectCode) throws HTTPException {

@@ -26,11 +26,7 @@ public class DtCoverageCSBuilder {
 
     // sort by largest size first
     List<CoordinateSystem> css = new ArrayList<>(ds.getCoordinateSystems());
-    Collections.sort(css, new Comparator<CoordinateSystem>() {
-      public int compare(CoordinateSystem o1, CoordinateSystem o2) {
-        return o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size();
-      }
-    });
+    Collections.sort(css, (o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
 
     DtCoverageCSBuilder fac = null;
     for (CoordinateSystem cs : css) {
@@ -66,7 +62,6 @@ public class DtCoverageCSBuilder {
   ProjectionImpl orgProj;
 
   DtCoverageCSBuilder(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
-    // this.cs = cs; // LOOK gc ??
 
     // must be at least 2 dimensions
     if (cs.getRankDomain() < 2) {
@@ -141,14 +136,12 @@ public class DtCoverageCSBuilder {
       if (axis.isIndependentCoordinate()) independentAxes.add(axis);
       else otherAxes.add(axis);
     }
-    Collections.sort(independentAxes, new Comparator<CoordinateAxis>() {  // sort by axis type
-      public int compare(CoordinateAxis o1, CoordinateAxis o2) {
-        AxisType t1 = o1.getAxisType();
-        AxisType t2 = o2.getAxisType();
-        if (t1 != null && t2 != null)
-          return t1.axisOrder() - t2.axisOrder();
-        return (t1 == null) ? ((t2 == null) ? 0 : -1) : 1;
-      }
+    Collections.sort(independentAxes, (o1, o2) -> {
+      AxisType t1 = o1.getAxisType();
+      AxisType t2 = o2.getAxisType();
+      if (t1 != null && t2 != null)
+        return t1.axisOrder() - t2.axisOrder();
+      return (t1 == null) ? ((t2 == null) ? 0 : -1) : 1;
     });
 
     //////////////////////////////////////////////////////////////
@@ -176,6 +169,8 @@ public class DtCoverageCSBuilder {
       if (!(rt instanceof CoordinateAxis1DTime)) {    // convert to CoordinateAxis1DTime
         try {
           rtAxis = CoordinateAxis1DTime.factory(ds, rt, errlog);
+          int index = allAxes.indexOf(rt); // replace
+          allAxes.set(index, rtAxis);
         } catch (Exception e) {
           if (errlog != null)
             errlog.format("%s: Error reading runtime coord= %s err= %s%n", rt.getDatasetLocation(), rt.getFullName(), e.getMessage());
@@ -201,6 +196,8 @@ public class DtCoverageCSBuilder {
       if (t instanceof CoordinateAxis1D && !(t instanceof CoordinateAxis1DTime)) {  // convert time axis into CoordinateAxis1DTime if possible
         try {
           timeAxis = CoordinateAxis1DTime.factory(ds, t, errlog);
+          int index = allAxes.indexOf(t); // replace
+          allAxes.set(index, timeAxis);
         } catch (Exception e) {
           if (errlog != null)
             errlog.format("%s: Error reading time coord= %s err= %s%n", t.getDatasetLocation(), t.getFullName(), e.getMessage());

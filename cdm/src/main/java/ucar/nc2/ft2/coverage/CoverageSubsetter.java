@@ -61,18 +61,27 @@ public class CoverageSubsetter {
     List<CoverageTransform> coordTransforms = new ArrayList<>();
 
     // subset axes
-    for (CoverageCoordAxis orgAxis : orgCoordAxis.values())
-      coordAxes.add( subset(orgAxis, subset));
+    for (CoverageCoordAxis orgAxis : orgCoordAxis.values()) {
+      CoverageCoordAxis axis = subset(orgAxis, subset);
+      if (axis != null)
+        coordAxes.add(axis);
+    }
+
     for (CoverageCoordSysHoriz hcs : horizSet)
-    subsetHorizAxes(subset, hcs, coordAxes);
+      subsetHorizAxes(subset, hcs, coordAxes);
 
     // subset coordSys, coverages, transforms
     for (CoverageCoordSys orgCs : orgCoordSys.values())
       coordSys.add( new CoverageCoordSys(orgCs));
+
     for (Coverage orgCov : orgCoverages)
       coverages.add( new Coverage(orgCov));
-    for (String tname : coordTransformSet)
-      coordTransforms.add( org.findCoordTransform(tname));
+
+    for (String tname : coordTransformSet) {
+      CoverageTransform t = org.findCoordTransform(tname);
+      if (t != null)
+        coordTransforms.add(t);
+    }
 
     // LOOK TODO
     LatLonRect latLonBoundingBox = null;

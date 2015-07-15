@@ -120,7 +120,7 @@ public class TestWcsServer {
   }
 
   @HttpTest(method = Method.GET, path = "wcs/scanCdmUnitTests/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&request=GetCoverage&COVERAGE=sst&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
-  public void testGetCoverageFail() throws IOException {
+    public void testGetCoverageFail() throws IOException {
     if (showContent) System.out.printf("%s%n", response.getBody(String.class));
     assertBadRequest(response);
   }

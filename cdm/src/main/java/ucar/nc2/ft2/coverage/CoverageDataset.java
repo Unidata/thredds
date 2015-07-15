@@ -222,8 +222,9 @@ public class CoverageDataset implements AutoCloseable {
   }
 
   public CoverageCoordAxis findCoordAxis(String name) {
-    for (CoverageCoordAxis axis : coordAxes)
+    for (CoverageCoordAxis axis : coordAxes) {
       if (axis.getName().equalsIgnoreCase(name)) return axis;
+    }
     return null;
   }
 
