@@ -34,21 +34,19 @@ Form] (Repeated submissions encouraged)
 * threddsConfig.xml local information [Sean]
 ** link:BasicThreddsConfig_xml.html[Basic threddsConfig.xml]
 * link:CatalogPrimer.html[TDS Client Catalog Overview] (Ryan)
-* link:BasicConfigCatalogs.html[TDS Configuration Catalogs] (Ryan)
-* link:ConfigCatalogs.html[TDS Configuration Catalogs] (Ryan)
+* link:BasicConfigCatalogs.html[TDS Configuration Catalogs - Basic] (Ryan)
+* link:ConfigCatalogs.html[TDS Configuration Catalogs - Intermediate] (Ryan)
 ** Unidata's https://github.com/Unidata/TdsConfig[TDS Server catalogs]
-* link:../reference/Services.html[Services] (Christian)
-** Topics to cover:
-*** compound services
-*** base not configurable
-*** httpserver needs files
-*** turn some on in threddsconfig.xml
-*** enabling NetCDF4 for NCSS: Compression!
-* link:../reference/ThreddsConfigXMLFile.html[threddsConfig Reference] (Christian)
-* enabling writing netCDF-4 files
+* link:../reference/ThreddsConfigXMLFile.html[threddsConfig.xml Reference] (Christian)
 * URL construction [Christian]
 
 === 11:30 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis)
+* link:../reference/Services.html[Available services]
+** compound services
+** service base URL is not configurable
+** `fileServer` requires physical files, not virtual ones
+** turn some on in threddsConfig.xml
+** link:../../netcdf-java/reference/netcdf4Clibrary.html[enabling NetCDF4] for NCSS: Compression!
 * link:DAP.html[OPeNDAP DAP2 and DAP4 Protocol Services]
 * Netcdf Subset Service
 ** link:../reference/NetcdfSubsetServiceConfigure.html[configure],
