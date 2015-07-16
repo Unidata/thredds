@@ -19,12 +19,13 @@ Sean's Dockerhub workflow...YMMV
  * Rebuild image:
    * `docker build -t tds-workshop .`
  * Start image: 
-   * `docker run -i -t tds-workshop /bin/bash`
+   * `docker run -i -t tds-workshop`
  * If all looks ok, tag the image:
    * docker tag -f tds-workshop unidata/tds-workshop:latest
  * Commit container:
-   * `docker commit <id as seen on docker run command line above>  unidata/tds-workshop:latest`
+   * find the container-id by looking at the first line of output from `docker ps -a`
+   * `docker commit -a "author name" -m "message" <container-id> unidata/tds-workshop:latest`
  * Push to docker hub:
-   * `docker push unidata/tds-workshop`
+   * `docker push unidata/tds-workshop:latest`
 
 If this works, you will see new stuff being uploaded to dockerhub. 

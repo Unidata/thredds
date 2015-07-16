@@ -44,6 +44,13 @@ COPY tdm-files/runTdm.sh /usr/local/tomcat/content/tdm/runTdm.sh
 COPY tomcat-files/startItAll.sh /usr/local/tomcat/startItAll.sh
 
 #
+# Copy over bash_logout file that nicely closes java processes for
+#  shutting down
+#
+COPY tomcat-files/bash_logout /usr/local/tomcat/.bash_logout
+
+
+#
 # Change owner of tomcat directory to user and group tomcat
 #
 RUN chown -R tomcat:tomcat /usr/local/tomcat 
@@ -71,9 +78,9 @@ COPY tds-files/tds-4.6.3-SNAPSHOT.war /usr/local/tomcat/webapps/thredds##04.06.0
 #
 COPY tdm-files/tdmFat-4.6.3-SNAPSHOT.jar /usr/local/tomcat/content/tdm/tdmFat-4.6.3-SNAPSHOT.jar
 
-RUN chmod u+x /usr/local/tomcat/startItAll.sh && \ 
-    chmod u+x /usr/local/tomcat/content/tdm/runTdm.sh 
+RUN chmod u+rwx /usr/local/tomcat/startItAll.sh && \ 
+    chmod u+rwx /usr/local/tomcat/content/tdm/runTdm.sh 
 #
 # Start the TDM
 #
-CMD ["/bin/bash", "/usr/local/tomcat/startItAll.sh"]
+CMD  /usr/local/tomcat/startItAll.sh
