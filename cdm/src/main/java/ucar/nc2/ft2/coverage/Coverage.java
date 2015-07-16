@@ -108,12 +108,8 @@ public class Coverage implements IsMissingEvaluator {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // LOOK what is the contract? what order are the values ?? ie what are the coordinates of each point ??
-  // think about "crossing the seam", the coordsys has to shift
-  // public abstract ReferencedArray readData(GridSubset subset) throws IOException;
 
-  // LOOK what is the contract? what order are the returned values ?? ie what are the coordinates of each point ??
-  public ArrayWithCoordinates readData(SubsetParams subset) throws IOException {
+  public GeoReferencedArray readData(SubsetParams subset) throws IOException {
     CoverageReader reader = coordSys.dataset.reader;
     return reader.readData(this, subset);
   }

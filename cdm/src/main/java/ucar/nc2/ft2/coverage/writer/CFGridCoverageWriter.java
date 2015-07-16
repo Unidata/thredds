@@ -159,7 +159,7 @@ public class CFGridCoverageWriter {
     // write the data to the new file.
       for (Coverage grid : subsetDataset.getCoverages()) {
         Variable v = writer.findVariable(grid.getName());
-        ArrayWithCoordinates array = grid.readData(subsetParams);
+        GeoReferencedArray array = grid.readData(subsetParams);
         // Array reshape = data.reshape(v.getShape());
         System.out.printf("write grid %s%n", v.getNameAndDimensions());
         writer.write(v, array.getData());

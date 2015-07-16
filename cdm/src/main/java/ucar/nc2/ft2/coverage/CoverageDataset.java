@@ -77,7 +77,7 @@ public class CoverageDataset implements AutoCloseable {
     Collections.sort(csets, (o1, o2) -> o1.getCoordSys().getName().compareTo(o2.getCoordSys().getName()));
 
     // construct the HorizCoordSys
-    Map<String, CoverageCoordSysHoriz> hcsMap = new HashMap<>();
+    Map<String, HorizCoordSys> hcsMap = new HashMap<>();
     for (CoordSysSet cset : csets) {
       CoverageCoordSys coordsys = cset.getCoordSys();
 
@@ -87,8 +87,8 @@ public class CoverageDataset implements AutoCloseable {
       CoverageCoordAxis lonaxis = coordsys.getAxis(AxisType.Lon);
 
       CoverageTransform hct = coordsys.getHorizTransform();
-      CoverageCoordSysHoriz hcs = new CoverageCoordSysHoriz(xaxis, yaxis, lataxis, lonaxis, hct);
-      CoverageCoordSysHoriz old = hcsMap.get(hcs.getName());
+      HorizCoordSys hcs = new HorizCoordSys(xaxis, yaxis, lataxis, lonaxis, hct);
+      HorizCoordSys old = hcsMap.get(hcs.getName());
       if (old == null)
         hcsMap.put(hcs.getName(), hcs);
       else

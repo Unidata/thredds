@@ -255,7 +255,7 @@ public class DtCoverageCSBuilder {
     }
 
     // default
-    return CoverageCoordSys.Type.Coverage;
+    return CoverageCoordSys.Type.General;
   }
 
   public DtCoverageCS makeCoordSys() {

@@ -20,11 +20,11 @@ import java.util.List;
 @Immutable
 public class CoverageCoordSys {
 
-  public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
+  public enum Type {General, Curvilinear, Grid, Swath, Fmrc}
 
   //////////////////////////////////////////////////
   protected CoverageDataset dataset; // almost immutable, need to wire these in after the constructor
-  private CoverageCoordSysHoriz horizCoordSys;
+  private HorizCoordSys horizCoordSys;
 
   private final String name;
   private final List<String> axisNames;
@@ -51,7 +51,7 @@ public class CoverageCoordSys {
     this.dataset = dataset;
   }
 
-  void setHorizCoordSys(CoverageCoordSysHoriz horizCoordSys) {
+  void setHorizCoordSys(HorizCoordSys horizCoordSys) {
     if (this.horizCoordSys != null) throw new RuntimeException("Cant change horizCoordSys once set");
     this.horizCoordSys = horizCoordSys;
   }
@@ -66,6 +66,14 @@ public class CoverageCoordSys {
     return (transformNames != null) ? transformNames : new ArrayList<>();
   }
 
+  public List<CoverageTransform> getTransforms() {
+    List<CoverageTransform> result = new ArrayList<>();
+    for (String name : getTransformNames()) {
+      result.add(dataset.findCoordTransform(name));
+    }
+    return result;
+  }
+
   public CoverageTransform getHorizTransform() {
     for (String name : getTransformNames()) {
       CoverageTransform ct = dataset.findCoordTransform(name);
@@ -74,7 +82,7 @@ public class CoverageCoordSys {
     return null;
   }
 
-  public CoverageCoordSysHoriz getHorizCoordSys() {
+  public HorizCoordSys getHorizCoordSys() {
     return horizCoordSys;
   }
 
@@ -149,11 +157,11 @@ public class CoverageCoordSys {
     return null;
   }
 
-  public CoverageCoordAxisTime getTimeAxis() {
+  public CoverageCoordAxis getTimeAxis() {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
        if (axis.getAxisType() == AxisType.Time) {
-         return (CoverageCoordAxisTime) axis;
+         return axis;
        }
      }
     return null;
@@ -185,8 +193,8 @@ public class CoverageCoordSys {
   public boolean isRegularSpatial() {
     CoverageCoordAxis xaxis = getXAxis();
     CoverageCoordAxis yaxis = getYAxis();
-    if (xaxis == null || !xaxis.isRegular()) return false;
-    if (yaxis == null || !yaxis.isRegular()) return false;
+    if (xaxis == null || !(xaxis instanceof CoverageCoordAxis1D) || !xaxis.isRegular()) return false;
+    if (yaxis == null || !(yaxis instanceof CoverageCoordAxis1D) || !yaxis.isRegular()) return false;
     return true;
   }
 

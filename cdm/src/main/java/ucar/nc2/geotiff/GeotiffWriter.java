@@ -558,8 +558,8 @@ public class GeotiffWriter implements AutoCloseable {
       throw new IllegalArgumentException("Must have 1D x and y axes for " + coverage.getName());
 
     Projection proj = gcs.getProjection();
-    CoverageCoordAxis xaxis = gcs.getXAxis();
-    CoverageCoordAxis yaxis = gcs.getYAxis();
+    CoverageCoordAxis1D xaxis = (CoverageCoordAxis1D) gcs.getXAxis();
+    CoverageCoordAxis1D yaxis = (CoverageCoordAxis1D) gcs.getYAxis();
 
     // latlon coord does not need to be scaled
     double scaler = (proj instanceof LatLonProjection) ? 1.0 : 1000.0;

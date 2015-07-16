@@ -32,7 +32,8 @@
  */
 package thredds.server.wcs.v1_0_0_1;
 
-import ucar.nc2.ft2.coverage.CoverageCoordAxisTime;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis;
+import ucar.nc2.ft2.coverage.TimeHelper;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.time.CalendarDateRange;
@@ -136,7 +137,7 @@ public abstract class WcsRequest {
 
     // <CoverageOfferingBrief>/lonLatEnvelope/gml:timePostion [2]
 
-    CoverageCoordAxisTime timeCoord = (CoverageCoordAxisTime) gcs.getTimeAxis();
+    CoverageCoordAxis timeCoord = gcs.getTimeAxis();
     if (timeCoord != null) {
       CalendarDateRange dr = timeCoord.getDateRange();
       if (dr != null) {

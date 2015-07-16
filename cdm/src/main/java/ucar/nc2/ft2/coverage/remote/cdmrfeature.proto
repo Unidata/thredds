@@ -1,6 +1,6 @@
 import "ucar/nc2/stream/ncStream.proto";
 
-option java_package = "ucar.nc2.ft2.coverage.grid.remote";
+option java_package = "ucar.nc2.ft2.coverage.remote";
 option java_outer_classname = "CdmrFeatureProto";
 
 message CoordTransform {
@@ -24,24 +24,25 @@ enum AxisType {  // same as ucar.nc2.constants.AxisType
   RadialDistance=12;
   RadialElevation=13;
   Spectral=14;
+  TimeOffset=15;
 }
 
-enum AxisSpacing {  // same as GridCoordAxis.Spacing
+enum AxisSpacing {  // same as CoverageCoordAxis.Spacing
   regular=1;
   irregularPoint=2;
   contiguousInterval=3;
   discontiguousInterval=4;
 }
 
-enum CoverageType {  // same as GridCoordSys.Type
-  Coverage=1;
+enum CoverageType {  // same as CoverageCoordSys.Type
+  General=1;
   Curvilinear=2;
   Grid=3;
   Swath=4;
   Fmrc=5;
 }
 
-enum DependenceType {  // same as GridCoordAxis.DependenceType
+enum DependenceType {  // same as CoverageCoordAxis.DependenceType
   independent=1;     // has its own dimension, is a coordinate variable, eg x(x)
   dependent=2;       // aux coordinate, reftime(time) or time_bounds(time);
   scalar=3;          // reftime
@@ -51,7 +52,7 @@ enum DependenceType {  // same as GridCoordAxis.DependenceType
 message CoordAxis {
   required string name = 1;          // short name, unique within dataset
   required DataType dataType = 2;
-  repeated Attribute atts = 3;
+  repeated Attribute atts = 3;       // look for calendar attribute here?
   required AxisType axisType = 4;
   required string units = 5;
   optional string description = 6;
@@ -63,19 +64,18 @@ message CoordAxis {
   required AxisSpacing spacing = 11;
   required double startValue = 12;
   required double endValue = 13;
-  optional double resolution = 14;     // resolution = (max-min) / (nvalues-1)
-  optional bytes values = 15;          // "immediate" - store small non-regular data in header
+  optional double resolution = 14;     // resolution = (end-start) / (nvalues-1)
+  optional bytes values = 15;          // not used for regular, may be deferred
 }
 
 message CoordSys {
   required string name = 1;               // must be unique in dataset's CoordSys
   repeated string axisNames = 2;
   repeated string transformNames = 3;
-  repeated CoordSys components = 4;        // factor out Horiz, Time ??
   optional CoverageType coverageType = 5;
 }
 
-message GridCoverage {
+message Coverage {
   required string name = 1;               // short name, unique within dataset
   required DataType dataType = 2;
   repeated Attribute atts = 4;
@@ -84,7 +84,7 @@ message GridCoverage {
   optional string description = 7;
 }
 
-enum Calendar {
+enum Calendar {  // same as ucar.nc2.time.Calendar
   gregorian=1;
   proleptic_gregorian=2;
   noleap=3;
@@ -107,7 +107,7 @@ message Rectangle {
   required double incy = 4;
 }
 
-message GridCoverageDataset {
+message CoverageDataset {
   required string name = 1;
   repeated Attribute atts = 2;
   required Rectangle latlonRect = 3;
@@ -117,9 +117,32 @@ message GridCoverageDataset {
   repeated CoordSys coordSys = 6;
   repeated CoordTransform coordTransforms = 7;
   repeated CoordAxis coordAxes = 8;
-  repeated GridCoverage grids = 9;
+  repeated Coverage grids = 9;
   optional CoverageType coverageType = 10;
 }
 
+//////////////////////////////////
+
+message GeoReferencedArray {
+  required string coverageName = 1;          // full escaped name.
+  required DataType dataType = 2;
+  optional bool bigend = 3 [default = true];
+  optional uint32 version = 4 [default = 0];
+  optional Compress compress = 5 [default = NONE];
+  optional uint64 uncompressedSize = 6;
+
+  repeated uint32 shape = 7;            // the shape of the returned array
+  repeated string axisName = 8;         // each dimension corresponds to this axis
+  required string coordSysName = 9;     // must have coordAxes corresponding to shape
+}
+
+message DataResponse {
+  repeated CoordAxis coordAxes = 1;              // may be shared if asking for multiple grids
+  repeated CoordSys coordSys = 2;                //    "
+  repeated CoordTransform coordTransforms = 3;   //    "
+
+  repeated GeoReferencedArray geoArray = 4;
+}
+
 //  cd c:/dev/github/thredds50/cdm/src/main/java
-//  protoc --proto_path=. --java_out=. ucar/nc2/ft2/coverage/grid/remote/cdmrfeature.proto
+//  protoc --proto_path=. --java_out=. ucar/nc2/ft2/coverage/remote/cdmrfeature.proto

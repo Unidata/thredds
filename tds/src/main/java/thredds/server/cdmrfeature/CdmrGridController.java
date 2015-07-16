@@ -54,12 +54,11 @@ import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft2.coverage.remote.CdmrFeatureProto;
 import ucar.nc2.ft2.coverage.remote.CdmrfWriter;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.stream.NcStreamProto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,6 +66,10 @@ import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.zip.DeflaterOutputStream;
 
 /**
@@ -93,13 +96,6 @@ public class CdmrGridController implements LastModified {
     return TdsRequestedDataset.getLastModified(path);
   }
 
-  /* private Validator validator = new CdmrFeatureQueryBeanValidator();
-
-  @InitBinder
-  protected void initBinder(WebDataBinder binder) {
-    binder.setValidator(validator);
-  }  */
-
   ////////////////////////////////////////////////////////////////////
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=header")
@@ -117,8 +113,8 @@ public class CdmrGridController implements LastModified {
 
       response.setContentType(ContentType.binary.getContentHeader());
       response.setHeader("Content-Description", "ncstream");
-      CdmrfWriter writer = new CdmrfWriter(gridCoverageDataset, ServletUtil.getRequestBase(request));
-      long size = writer.sendHeader(out);
+      CdmrfWriter writer = new CdmrfWriter();
+      long size = writer.sendHeader(out, gridCoverageDataset, ServletUtil.getRequestBase(request));
       out.flush();
 
       if (showRes)
@@ -182,13 +178,13 @@ public class CdmrGridController implements LastModified {
       CoverageSubsetter helper = new CoverageSubsetter(gridCoverageDataset, qb.getVar(), subset);
       CoverageDataset subsetDataset = helper.makeCoverageDatasetSubset();
 
-      // write the data to the stream
-      // write the data to the new file.
+      // LOOK problematic; CoverageSubsetter subsets coordSys and then CoverageReader subsets the data.
+      List<GeoReferencedArray> arrays = new ArrayList<>();
       for (Coverage grid : subsetDataset.getCoverages()) {
-        ArrayWithCoordinates array = grid.readData(subset);
-        sendData(grid, array.getData(), out, true);
+        GeoReferencedArray array = grid.readData(subset);
+        arrays.add(array);
       }
-
+      sendDataResponse(arrays, out, true);
       out.flush();
 
     } catch (Throwable t) {
@@ -196,17 +192,46 @@ public class CdmrGridController implements LastModified {
     }
   }
 
-  private long sendData(Coverage grid, Array data, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
+  private long sendDataResponse(List<GeoReferencedArray> arrays, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
 
-    // length of data uncompressed
-    long uncompressedLength = data.getSizeBytes();
+    Set<CoverageCoordSys> sysSet = new HashSet<>();
+    for (GeoReferencedArray array : arrays) {
+      sysSet.add(array.getCoordSysForData());
+    }
 
+    Set<CoverageTransform> transformSet = new HashSet<>();
+    Set<CoverageCoordAxis> axisSet = new HashSet<>();
+    for (CoverageCoordSys sys : sysSet) {
+      for (CoverageCoordAxis axis : sys.getAxes())
+        axisSet.add(axis);
+      for (CoverageTransform t : sys.getTransforms())
+        transformSet.add( t);
+    }
+
+    CdmrfWriter cdmrfWriter = new CdmrfWriter();
     long size = 0;
     size += writeBytes(out, NcStream.MAGIC_DATA); // magic
-    NcStreamProto.Data dataProto = NcStream.encodeDataProto(grid.getName(), grid.getDataType(), new Section(data.getShape()), deflate, (int) uncompressedLength);
+    CdmrFeatureProto.DataResponse dataProto = cdmrfWriter.encodeDataResponse(axisSet, sysSet, transformSet, arrays, deflate);
     byte[] datab = dataProto.toByteArray();
     size += NcStream.writeVInt(out, datab.length); // dataProto len
     size += writeBytes(out, datab); // dataProto
+
+    size += NcStream.writeVInt(out, arrays.size()); // lenn
+
+    for (GeoReferencedArray array : arrays) {
+      long dataMessageLen = sendData(array.getData(), out, deflate);
+      if (showRes) System.out.printf(" CdmrFeatureController.sendData grid='%s' data message len=%d%n", array.getCoverageName(), dataMessageLen);
+      size += dataMessageLen;
+    }
+
+    return size;
+  }
+
+  private long sendData(Array data, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
+
+    // length of data uncompressed
+    long uncompressedLength = data.getSizeBytes();
+    long size = 0;
 
     // regular arrays
     if (deflate) {
@@ -223,12 +248,11 @@ public class CdmrGridController implements LastModified {
       size += deflatedSize;
       float ratio = ((float) uncompressedLength) / deflatedSize;
       if (showRes)
-        System.out.printf(" CdmrFeatureController.sendData grid='%s' org/compress= %d/%d = %f%n", grid.getName(), uncompressedLength, deflatedSize, ratio);
+        System.out.printf("  org/compress= %d/%d = %f%n", uncompressedLength, deflatedSize, ratio);
 
     } else {
 
       size += NcStream.writeVInt(out, (int) uncompressedLength); // data len or number of objects
-      if (showRes) System.out.printf(" CdmrFeatureController.sendData grid='%s' data len=%d%n", grid.getName(), uncompressedLength);
 
       size += IospHelper.copyToOutputStream(data, out);
     }

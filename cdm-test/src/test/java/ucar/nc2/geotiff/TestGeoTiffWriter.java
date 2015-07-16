@@ -116,7 +116,7 @@ public class TestGeoTiffWriter {
       String gridOut2 = TestDir.temporaryLocalDataDir + f.getName() + ".coverage.tif";
       System.out.printf("geotiff2 read coverage %s write %s%n", filename, gridOut2);
 
-      ArrayWithCoordinates data2;
+      GeoReferencedArray data2;
       try (CoverageDataset gcd = CoverageDatasetFactory.openCoverage(filename)) {
         assert gcd != null;
         Coverage coverage = gcd.findCoverage(field);

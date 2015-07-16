@@ -2,7 +2,6 @@
 package ucar.nc2.ft2.coverage;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Describe
@@ -14,6 +13,6 @@ public interface CoverageReader extends AutoCloseable {
 
   // List<ArrayWithCoordinates> readData(List<Coverage> coverage, SubsetParams subset) throws IOException;
 
-  ArrayWithCoordinates readData(Coverage coverage, SubsetParams subset) throws IOException;
+  GeoReferencedArray readData(Coverage coverage, SubsetParams subset) throws IOException;
 
 }

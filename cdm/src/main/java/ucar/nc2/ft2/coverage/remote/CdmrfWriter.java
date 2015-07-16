@@ -8,6 +8,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
+import java.util.List;
 
 /**
  * Server side for Cdmrf
@@ -33,19 +35,11 @@ public class CdmrfWriter {
   static public final int MAX_INLINE_NVALUES = 1000;
   private static final boolean show = false;
 
-  CoverageDataset gridDataset;
-  String location;
-
-  public CdmrfWriter(CoverageDataset gridDataset, String location) throws IOException {
-    this.gridDataset = gridDataset;
-    this.location = location;
-  }
-
-  public long sendHeader(OutputStream out) throws IOException {
+  public long sendHeader(OutputStream out, CoverageDataset gridDataset, String location) throws IOException {
     long size = 0;
 
-    CdmrFeatureProto.GridCoverageDataset.Builder headerBuilder = encodeHeader(gridDataset);
-    CdmrFeatureProto.GridCoverageDataset header = headerBuilder.build();
+    CdmrFeatureProto.CoverageDataset.Builder headerBuilder = encodeHeader(gridDataset, location);
+    CdmrFeatureProto.CoverageDataset header = headerBuilder.build();
 
     // header message
     size += NcStream.writeBytes(out, NcStream.MAGIC_HEADER);
@@ -60,7 +54,7 @@ public class CdmrfWriter {
     return size;
   }
 
-  /* message GridCoverageDataset {
+  /* message CoverageDataset {
       required string name = 1;
       repeated Attribute atts = 2;
       required Rectangle latlonRect = 3;
@@ -70,10 +64,10 @@ public class CdmrfWriter {
       repeated CoordSys coordSys = 6;
       repeated CoordTransform coordTransforms = 7;
       repeated CoordAxis coordAxes = 8;
-      repeated GridCoverage grids = 9;
+      repeated Coverage grids = 9;
     } */
-  CdmrFeatureProto.GridCoverageDataset.Builder encodeHeader(CoverageDataset gridDataset) {
-    CdmrFeatureProto.GridCoverageDataset.Builder builder = CdmrFeatureProto.GridCoverageDataset.newBuilder();
+  CdmrFeatureProto.CoverageDataset.Builder encodeHeader(CoverageDataset gridDataset, String location) {
+    CdmrFeatureProto.CoverageDataset.Builder builder = CdmrFeatureProto.CoverageDataset.newBuilder();
     builder.setName(location);
     builder.setCoverageType(convertCoverageType(gridDataset.getCoverageType()));
     builder.setDateRange(encodeDateRange(gridDataset.getCalendarDateRange()));
@@ -144,7 +138,7 @@ public class CdmrfWriter {
   }
 
   /*
-  message GridCoverage {
+  message Coverage {
     required string name = 1; // short name
     required DataType dataType = 2;
     optional bool unsigned = 3 [default = false];
@@ -152,8 +146,8 @@ public class CdmrfWriter {
     required string coordSys = 5;
   }
    */
-  CdmrFeatureProto.GridCoverage.Builder encodeGrid(Coverage grid) {
-    CdmrFeatureProto.GridCoverage.Builder builder = CdmrFeatureProto.GridCoverage.newBuilder();
+  CdmrFeatureProto.Coverage.Builder encodeGrid(Coverage grid) {
+    CdmrFeatureProto.Coverage.Builder builder = CdmrFeatureProto.Coverage.newBuilder();
     builder.setName(grid.getName());
     builder.setDataType(NcStream.convertDataType(grid.getDataType()));
 
@@ -168,10 +162,11 @@ public class CdmrfWriter {
   }
 
   /* message CoordSys {
-      required string name = 1;
-      repeated string axisNames = 2;
-      repeated string transformNames = 3;
-      repeated CoordSys components = 4;        // ??
+    required string name = 1;               // must be unique in dataset's CoordSys
+    repeated string axisNames = 2;
+    repeated string transformNames = 3;
+    optional CoverageType coverageType = 5;
+  }
     } */
   CdmrFeatureProto.CoordSys.Builder encodeCoordSys(CoverageCoordSys gcs) {
     CdmrFeatureProto.CoordSys.Builder builder = CdmrFeatureProto.CoordSys.newBuilder();
@@ -240,8 +235,6 @@ public class CdmrfWriter {
       builder.setValues(ByteString.copyFrom(bb.array()));
     }
 
-    /* for (Attribute att : axis.getParameters())
-      builder.addParams(NcStream.encodeAtt(att)); */
     return builder;
   }
 
@@ -276,6 +269,8 @@ public class CdmrfWriter {
         return CdmrFeatureProto.AxisType.RadialElevation;
       case Spectral:
         return CdmrFeatureProto.AxisType.Spectral;
+      case TimeOffset:
+        return CdmrFeatureProto.AxisType.TimeOffset;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }
@@ -305,8 +300,8 @@ public class CdmrfWriter {
 
   static public CdmrFeatureProto.CoverageType convertCoverageType(CoverageCoordSys.Type type) {
     switch (type) {
-      case Coverage:
-        return CdmrFeatureProto.CoverageType.Coverage;
+      case General:
+        return CdmrFeatureProto.CoverageType.General;
       case Curvilinear:
         return CdmrFeatureProto.CoverageType.Curvilinear;
       case Grid:
@@ -346,5 +341,69 @@ public class CdmrfWriter {
         return CdmrFeatureProto.AxisSpacing.discontiguousInterval;
     }
     throw new IllegalStateException("illegal data type " + type);
+  }
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  /*
+  message GeoReferencedArray {
+    required string gridName = 1;          // full escaped name.
+    required DataType dataType = 2;
+    optional bool bigend = 3 [default = true];
+    optional uint32 version = 4 [default = 0];
+    optional Compress compress = 5 [default = NONE];
+    optional uint32 uncompressedSize = 6;
+
+    repeated uint32 shape = 7;            // the shape of the returned array
+    repeated string axisName = 8;         // each dimension corresponds to this axis
+    required string coordSysName = 9;     // must have coordAxis corresponding to shape
+  }
+
+  message DataResponse {
+    repeated CoordAxis coordAxes = 1;              // may be shared if asking for multiple grids
+    repeated CoordSys coordSys = 2;                // may be shared if asking for multiple grids
+
+    repeated GeoReferencedArray data = 4;
+  }
+   */
+
+  public CdmrFeatureProto.DataResponse encodeDataResponse(Iterable<CoverageCoordAxis> axes, Iterable<CoverageCoordSys> coordSys, Iterable<CoverageTransform> transforms,
+                                                          List<GeoReferencedArray> arrays, boolean deflate) {
+    CdmrFeatureProto.DataResponse.Builder builder = CdmrFeatureProto.DataResponse.newBuilder();
+    for (CoverageCoordAxis axis : axes)
+      builder.addCoordAxes( encodeCoordAxis(axis));
+    for (CoverageCoordSys cs : coordSys)
+      builder.addCoordSys(encodeCoordSys(cs));
+    for (CoverageTransform t : transforms)
+      builder.addCoordTransforms(encodeCoordTransform(t));
+    for (GeoReferencedArray array : arrays)
+      builder.addGeoArray(encodeGeoReferencedArray(array, deflate));
+
+    return builder.build();
+  }
+
+  public CdmrFeatureProto.GeoReferencedArray.Builder encodeGeoReferencedArray(GeoReferencedArray geoArray, boolean deflate) {
+    CdmrFeatureProto.GeoReferencedArray.Builder builder = CdmrFeatureProto.GeoReferencedArray.newBuilder();
+    builder.setCoverageName(geoArray.getCoverageName());
+    builder.setDataType(NcStream.convertDataType( geoArray.getDataType()));
+    builder.setVersion(1);
+
+    if (deflate) {
+      builder.setCompress(NcStreamProto.Compress.DEFLATE);
+      long uncompressedSize = geoArray.getData().getSizeBytes();
+      builder.setUncompressedSize(uncompressedSize);
+    }
+
+    int shape[] = geoArray.getData().getShape();
+    for (int aShape : shape) builder.addShape(aShape);
+
+    CoverageCoordSys csys = geoArray.getCoordSysForData();
+    for (String axisName : csys.getAxisNames()) // geoArray.getAxisNames())  // LOOK could use csys.getAxisNames(), but order may be incorrrect, must match shape
+      builder.addAxisName(axisName);
+
+    builder.setCoordSysName(csys.getName());
+
+    return builder;
   }
 }

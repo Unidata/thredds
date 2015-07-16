@@ -106,8 +106,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return s;
   }
 
-  public Calendar getCalendar() { return getCalendarFromAttribute(); }
-
    /**
    * Get the the ith CalendarDate.
    * @param idx index

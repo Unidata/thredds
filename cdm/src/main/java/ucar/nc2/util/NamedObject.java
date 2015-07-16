@@ -42,11 +42,11 @@ public interface NamedObject {
   /** Get the object's name
    * @return object's name
    */
-  public String getName();
+  String getName();
 
   /** Get the object's description. Use as a tooltip, for example
    * @return object's description
    */
-  public String getDescription(); 
+  String getDescription();
 
 }

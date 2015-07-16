@@ -1084,7 +1084,7 @@ public class CoverageDisplay extends JPanel {
     }
 
     // set times
-    CoverageCoordAxisTime timeAxis = (CoverageCoordAxisTime) gcs.getTimeAxis();
+    CoverageCoordAxis timeAxis = gcs.getTimeAxis();
     if (timeAxis != null) {
       timeNames = timeAxis.getCoordValueNames();
       if ((currentTime < 0) || (currentTime >= timeNames.size()))

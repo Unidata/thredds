@@ -25,7 +25,7 @@ public class DSGGridCoverageWriter {
 
   private class VarData {
     Coverage cov;
-    ArrayWithCoordinates array;
+    GeoReferencedArray array;
 
     public VarData(Coverage cov) throws IOException {
       this.cov = cov;

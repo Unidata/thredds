@@ -17,7 +17,7 @@ public class SubsetParams {
   public static final String projBB = "projBB";         // value = ProjRect
   public static final String horizStride = "horizStride";  // value = Integer
   public static final String vertCoord = "vertCoord";   // value = double
-  public static final String vertIndex = "vertIndex";   // value = integer
+  public static final String vertIndex = "vertIndex";   // value = integer    LOOK BAD
   public static final String dateRange = "dateRange";   // value = CalendarDateRange
   public static final String date = "time";             // value = CalendarDate
   public static final String timeWindow = "timeWindow"; // value = TimeDuration

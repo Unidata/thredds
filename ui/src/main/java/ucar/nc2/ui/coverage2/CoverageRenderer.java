@@ -6,7 +6,7 @@ import ucar.ma2.*;
 //import ucar.nc2.dataset.CoordinateAxis2D;
 //import ucar.nc2.ft.cover.Coverage;
 //import ucar.nc2.ft.cover.CoverageCS;
-import ucar.nc2.ft2.coverage.ArrayWithCoordinates;
+import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
@@ -40,10 +40,10 @@ public class CoverageRenderer {
   private ColorScale.MinMaxType dataMinMaxType = ColorScale.MinMaxType.horiz;
   private ProjectionImpl drawProjection = null;    // current drawing Projection
   private ProjectionImpl dataProjection = null;    // current data Projection
-  // private Coverage stridedGrid = null;
 
   // data stuff
-  private ArrayWithCoordinates dataH;
+  private GeoReferencedArray dataH;
+  private double useLevel;
   private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
   private int wantRunTime = -1, wantEnsemble = -1;
   private int lastLevel = -1, lastTime = -1, lastStride = -1;   // last data read
@@ -91,7 +91,7 @@ public class CoverageRenderer {
     //CoverageCoordAxis xaxis;
     //CoverageCoordAxis yaxis;
     CoverageCoordAxis zaxis;
-    CoverageCoordAxisTime taxis;
+    CoverageCoordAxis taxis;
     CoverageCoordAxis rtaxis;
 
     public DataState(CoverageDataset coverageDataset, Coverage grid) {
@@ -101,7 +101,7 @@ public class CoverageRenderer {
       //this.xaxis = coverageDataset.getXAxis(geocs);
       //this.yaxis = coverageDataset.getYAxis(geocs);
       this.zaxis = geocs.getZAxis();
-      this.taxis = (CoverageCoordAxisTime) geocs.getTimeAxis();
+      this.taxis = geocs.getTimeAxis();
     }
   }
   private DataState dataState;
@@ -452,7 +452,7 @@ public class CoverageRenderer {
    dataVolumeChanged = true;
  } */
 
-  private ArrayWithCoordinates makeHSlice(int level, int time, int ensemble, int runtime) {
+  private GeoReferencedArray makeHSlice(int level, int time, int ensemble, int runtime) {
 
     /* make sure x, y exists
     CoverageCS gcs = useG.getCoordinateSystem();
@@ -471,12 +471,12 @@ public class CoverageRenderer {
     // get the data slice
       //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
     SubsetParams subset = new SubsetParams();
-    if (level >= 0 && dataState.zaxis != null) {
-      double levelVal = dataState.zaxis.getCoord(level);
+    if (level >= 0 && dataState.zaxis != null && dataState.zaxis instanceof CoverageCoordAxis1D) {
+      double levelVal = ((CoverageCoordAxis1D)dataState.zaxis).getCoord(level);
       subset.set(SubsetParams.vertCoord, levelVal);
     }
-    if (time >= 0 && dataState.taxis != null) {
-      double timeVal = dataState.taxis.getCoord(time);
+    if (time >= 0 && dataState.taxis != null  && dataState.taxis instanceof CoverageCoordAxis1D) {
+      double timeVal = ((CoverageCoordAxis1D)dataState.taxis).getCoord(time);
       CalendarDate date = dataState.taxis.makeDate(timeVal);
       subset.set(SubsetParams.date, date);
     }
@@ -574,7 +574,7 @@ public class CoverageRenderer {
       return;
     isNewField = false;
 
-    ArrayWithCoordinates dataArr = makeHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
+    GeoReferencedArray dataArr = makeHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
 
     //else
     //  dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
@@ -696,7 +696,7 @@ public class CoverageRenderer {
       drawGridLines(g);
   }
 
-  private void drawGridHoriz(java.awt.Graphics2D g, ArrayWithCoordinates data) {
+  private void drawGridHoriz(java.awt.Graphics2D g, GeoReferencedArray data) {
     drawGridHorizRegular(g, data);
 
     /* data = data.reduce();
@@ -817,11 +817,12 @@ public class CoverageRenderer {
    return gp;
  } */
 
-  private void drawGridHorizRegular(java.awt.Graphics2D g, ArrayWithCoordinates array) {
+  private void drawGridHorizRegular(java.awt.Graphics2D g, GeoReferencedArray array) {
     int count = 0;
 
-    CoverageCoordAxis xaxis = array.getXaxis();
-    CoverageCoordAxis yaxis = array.getYaxis();
+    CoverageCoordSys gsys = array.getCoordSysForData();
+    CoverageCoordAxis1D xaxis = (CoverageCoordAxis1D) gsys.getXAxis();
+    CoverageCoordAxis1D yaxis = (CoverageCoordAxis1D) gsys.getYAxis();
     Array data = array.getData();
 
     int nx = xaxis.getNcoords();

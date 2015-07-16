@@ -14,9 +14,9 @@ import ucar.nc2.time.CalendarDateRange;
 class CoordAxisHelper {
   enum Mode {min, max, closest} // values is a min, max or closest
 
-  private final CoverageCoordAxis axis;
+  private final CoverageCoordAxis1D axis;
 
-  CoordAxisHelper(CoverageCoordAxis axis) {
+  CoordAxisHelper(CoverageCoordAxis1D axis) {
     this.axis = axis;
   }
 
@@ -235,12 +235,6 @@ class CoordAxisHelper {
 
   //////////////////////////////////////////////////////////////
 
-  public CoverageCoordAxis copy(Calendar cal) {
-    return CoverageCoordAxis.factory(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(), axis.getAttributes(),
-            axis.getDependenceType(), axis.getDependsOn(), axis.getSpacing(), axis.getNcoords(),
-            axis.getStartValue(), axis.getEndValue(), axis.getResolution(), axis.getValues(), axis.reader, cal);  // LOOK reuse the axis.reader, wont work for subset
-  }
-
   public CoverageCoordAxis subset(double minValue, double maxValue) {
     return subsetValues(null, minValue, maxValue);
   }
@@ -254,15 +248,13 @@ class CoordAxisHelper {
   }
 
   public CoverageCoordAxis subset(Calendar cal, CalendarDate date) {
-    CoverageCoordAxisTime timeAxis = (CoverageCoordAxisTime) axis;
-    double want = timeAxis.convert(date);
+    double want = axis.convert(date);
     return subsetValuesClosest(cal, want);
   }
 
   public CoverageCoordAxis subset(Calendar cal, CalendarDateRange dateRange) {
-    CoverageCoordAxisTime timeAxis = (CoverageCoordAxisTime) axis;
-    double min = timeAxis.convert(dateRange.getStart());
-    double max = timeAxis.convert(dateRange.getEnd());
+    double min = axis.convert(dateRange.getStart());
+    double max = axis.convert(dateRange.getEnd());
     return subsetValues(cal, min, max);
   }
 
@@ -308,9 +300,9 @@ class CoordAxisHelper {
         break;
     }
 
-    CoverageCoordAxis result = CoverageCoordAxis.factory(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
+    CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
             axis.getAttributes(), axis.getDependenceType(), axis.getDependsOn(), axis.getSpacing(),
-            count, axis.getCoord(minIndex), axis.getCoord(maxIndex), axis.getResolution(), subsetValues, axis.reader, cal);
+            count, axis.getCoord(minIndex), axis.getCoord(maxIndex), axis.getResolution(), subsetValues, axis.reader);
     result.setIndexRange(minIndex, maxIndex, 1);
     return result;
   }
@@ -346,9 +338,9 @@ class CoordAxisHelper {
         break;
     }
 
-    CoverageCoordAxis result = CoverageCoordAxis.factory(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
+    CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
             axis.getAttributes(), axis.getDependenceType(), axis.getDependsOn(), axis.getSpacing(),
-            1, axis.getCoord(want_index), axis.getCoord(want_index), axis.getResolution(), subsetValues, axis.reader, cal);
+            1, axis.getCoord(want_index), axis.getCoord(want_index), axis.getResolution(), subsetValues, axis.reader);
     result.setIndexRange(want_index, want_index, 1);
     return result;
   }
@@ -374,9 +366,9 @@ class CoordAxisHelper {
         break;
     }
 
-    CoverageCoordAxis result = CoverageCoordAxis.factory(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
+    CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
             axis.getAttributes(), axis.getDependenceType(), axis.getDependsOn(), axis.getSpacing(),
-            1, start, end, axis.getResolution(), subsetValues, axis.reader, cal);
+            1, start, end, axis.getResolution(), subsetValues, axis.reader);
     result.setIndexRange(last, last, 1);
     return result;
   }

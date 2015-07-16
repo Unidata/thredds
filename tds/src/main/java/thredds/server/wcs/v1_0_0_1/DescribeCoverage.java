@@ -132,7 +132,7 @@ public class DescribeCoverage extends WcsRequest {
 
     // ../domainSet/spatialDomain [0..1] AND/OR temporalDomain [0..1]
     domainSetElem.addContent(genSpatialDomainElem(coverage));
-    CoverageCoordAxisTime timeCoord = coverage.getCoordinateSystem().getTimeAxis();
+    CoverageCoordAxis1D timeCoord = (CoverageCoordAxis1D) coverage.getCoordinateSystem().getTimeAxis();
     if (timeCoord != null) {
       domainSetElem.addContent(genTemporalDomainElem(timeCoord));
     }
@@ -159,9 +159,9 @@ public class DescribeCoverage extends WcsRequest {
     // ../spatialDomain/gml:RectifiedGrid
     Element rectifiedGridElem = new Element("RectifiedGrid", gmlNS);
 
-    CoverageCoordAxis xaxis = coverage.getCoordinateSystem().getXAxis();
-    CoverageCoordAxis yaxis = coverage.getCoordinateSystem().getYAxis();
-    CoverageCoordAxis zaxis = coverage.getCoordinateSystem().getZAxis();
+    CoverageCoordAxis1D xaxis = (CoverageCoordAxis1D) coverage.getCoordinateSystem().getXAxis();
+    CoverageCoordAxis1D yaxis = (CoverageCoordAxis1D) coverage.getCoordinateSystem().getYAxis();
+    CoverageCoordAxis1D zaxis = (CoverageCoordAxis1D) coverage.getCoordinateSystem().getZAxis();
 
     // ../spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
     rectifiedGridElem.setAttribute("srsName", coverage.getNativeCrs());
@@ -258,7 +258,7 @@ public class DescribeCoverage extends WcsRequest {
   private Element genEnvelopeElem(CoverageCoordSys gcs) {
     // spatialDomain/Envelope
     Element envelopeElem;
-    CoverageCoordAxisTime timeCoord = gcs.getTimeAxis();
+    CoverageCoordAxis timeCoord = gcs.getTimeAxis();
     if (timeCoord != null)
       envelopeElem = new Element("EnvelopeWithTimePeriod", wcsNS);
     else
@@ -298,7 +298,7 @@ public class DescribeCoverage extends WcsRequest {
     return envelopeElem;
   }
 
-  private Element genTemporalDomainElem(CoverageCoordAxisTime timeAxis) {
+  private Element genTemporalDomainElem(CoverageCoordAxis1D timeAxis) {
     Element temporalDomainElem = new Element("temporalDomain", wcsNS);
     // temporalDomain/timePosition [1..*]
     for (int i=0; i<timeAxis.getNcoords(); i++) {

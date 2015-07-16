@@ -44,7 +44,6 @@ import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
-import ucar.unidata.util.Format;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -222,7 +221,7 @@ public class WcsCoverage {
 
         try {
           //GridCoverage subset = this.coverage.makeSubset(tRange, zRange, bboxLatLonRect, 1, 1, 1);  // LOOK do you need to subset it?
-          ArrayWithCoordinates array = coverage.readData(new SubsetParams());
+          GeoReferencedArray array = coverage.readData(new SubsetParams());
 
           GeotiffWriter writer = new GeotiffWriter(tifFile.getPath());
           writer.writeGrid(this.wcsDataset.getDataset(), coverage, array.getData(), format == Request.Format.GeoTIFF);

@@ -398,7 +398,7 @@ public class CoordinateAxis extends VariableDS {
   /////////////////////////////////////
 
   // needed by time coordinates
-  protected ucar.nc2.time.Calendar getCalendarFromAttribute() {
+  public ucar.nc2.time.Calendar getCalendarFromAttribute() {
     Attribute cal = findAttribute(CF.CALENDAR);
     String s = (cal == null) ? null : cal.getStringValue();
     if (s == null) {     // default for CF and COARDS

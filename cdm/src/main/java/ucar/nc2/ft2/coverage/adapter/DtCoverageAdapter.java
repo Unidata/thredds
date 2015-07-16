@@ -108,9 +108,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       dependsOn = dtCoordAxis.getDimension(0).toString();
     }
 
-    AttributeContainerHelper atts = new AttributeContainerHelper(name);
-    for (Attribute patt : dtCoordAxis.getAttributes())
-      atts.addAttribute(patt);
+    Calendar cal = axisType.isTime() ? dtCoordAxis.getCalendarFromAttribute() : null;
 
     int ncoords = (int) dtCoordAxis.getSize();
     CoverageCoordAxis.Spacing spacing = null;
@@ -119,6 +117,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     double resolution = 0.0;
     double[] values = null;
 
+    // 1D case
     if (dtCoordAxis instanceof CoordinateAxis1D) {
       CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
       startValue = axis1D.getCoordValue(0);
@@ -147,21 +146,30 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         }
       }
 
-    } else {
+      return new CoverageCoordAxis1D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
+                    ncoords, startValue, endValue, resolution, values, reader);
+
+    }
+
+    // Fmrc Time
+    if (dtCoordAxis instanceof CoordinateAxis2D && axisType == AxisType.Time) {
+
       spacing = CoverageCoordAxis.Spacing.regular;
-      // throw new IllegalStateException(); // dunno what to do yet
+
+      return new FmrcTimeAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
+                    ncoords, startValue, endValue, resolution, values, reader);
     }
 
-    // LOOK 2D case not dealt with here
+    // 2D Lat Lon Time
+    if (dtCoordAxis instanceof CoordinateAxis2D && (axisType == AxisType.Lat || axisType == AxisType.Lat )) {
 
-    Calendar cal = null;
-    if (dtCoordAxis instanceof CoordinateAxis1DTime) {
-      CoordinateAxis1DTime timeAxis = (CoordinateAxis1DTime) dtCoordAxis;
-      cal = timeAxis.getCalendar();
+      spacing = CoverageCoordAxis.Spacing.regular;
+
+      return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
+                    ncoords, startValue, endValue, resolution, values, reader);
     }
 
-    return CoverageCoordAxis.factory(name, units, description, dataType, axisType, atts.getAttributes(), dependenceType, dependsOn, spacing,
-                  ncoords, startValue, endValue, resolution, values, reader, cal);
+    throw new IllegalStateException("DOnt know what to do with axis "+dtCoordAxis.getFullName());
   }
 
   ////////////////////////
@@ -177,7 +185,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   }
 
   @Override
-  public ArrayWithCoordinates readData(Coverage coverage, SubsetParams subset) throws IOException {  // LOOK incomplete
+  public GeoReferencedArray readData(Coverage coverage, SubsetParams subset) throws IOException {  // LOOK incomplete
     DtCoverage grid = proxy.findGridByName(coverage.getName());
     DtCoverageCS gcs = grid.getCoordinateSystem();
 
@@ -233,7 +241,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     //int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index
     Array data = grid.readDataSlice(runtime, ens, time, level, -1, -1);
-    return new ArrayWithCoordinates(data, null); // LOOK getCoordSys());
+    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, null); // LOOK getCoordSys());
   }
 
 

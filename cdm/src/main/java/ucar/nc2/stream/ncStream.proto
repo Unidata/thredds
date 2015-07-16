@@ -104,7 +104,7 @@ enum Compress {
 }
 
 message Data {
-  required string varName = 1;          // full escaped name. change to hash or index to save space ??
+  required string varName = 1;          // full escaped name.
   required DataType dataType = 2;
   optional Section section = 3;         // not required for SEQUENCE
   optional bool bigend = 4 [default = true];

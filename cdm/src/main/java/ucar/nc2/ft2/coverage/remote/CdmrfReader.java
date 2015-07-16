@@ -10,6 +10,7 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Client side for CdmrFeature Grid
+ * Client side for opening a CdmrFeature CoverageDataset
  *
  * @author caron
  * @since 5/2/2015
@@ -87,7 +88,7 @@ public class CdmrfReader {
       byte[] m = new byte[msize];
       NcStream.readFully(is, m);
 
-      CdmrFeatureProto.GridCoverageDataset proto = CdmrFeatureProto.GridCoverageDataset.parseFrom(m);
+      CdmrFeatureProto.CoverageDataset proto = CdmrFeatureProto.CoverageDataset.parseFrom(m);
       CoverageDataset gridDataset =  decodeHeader(proto, reader);
 
       long took = System.currentTimeMillis() - start;
@@ -111,7 +112,7 @@ public class CdmrfReader {
       required int32 calendar = 3; // ucar.nc2.time.Calendar ordinal
     }
 
-    message GridCoverageDataset {
+    message CoverageDataset {
       required string name = 1;
       repeated Attribute atts = 2;
       required Rectangle latlonRect = 3;
@@ -121,15 +122,15 @@ public class CdmrfReader {
       repeated CoordSys coordSys = 6;
       repeated CoordTransform coordTransforms = 7;
       repeated CoordAxis coordAxes = 8;
-      repeated GridCoverage grids = 9;
+      repeated Coverage grids = 9;
     } */
-  CoverageDataset decodeHeader(CdmrFeatureProto.GridCoverageDataset proto, CdmrCoverageReader reader) {
+  CoverageDataset decodeHeader(CdmrFeatureProto.CoverageDataset proto, CdmrCoverageReader reader) {
     String name = endpoint;
     CoverageCoordSys.Type csysType = proto.hasCoverageType() ? convertCoverageType(proto.getCoverageType()) : null;
     LatLonRect latLonBoundingBox = decodeLatLonRectangle(proto.getLatlonRect());
     ProjectionRect projBoundingBox = decodeProjRectangle(proto.getProjRect());
     CalendarDateRange calendarDateRange = proto.hasDateRange() ? decodeDateRange(proto.getDateRange()) : null;
-    Calendar cal = calendarDateRange != null ? calendarDateRange.getStart().getCalendar() : Calendar.getDefault();  // LOOK
+    // Calendar cal = calendarDateRange != null ? calendarDateRange.getStart().getCalendar() : Calendar.getDefault();  // LOOK
 
     AttributeContainerHelper gatts = new AttributeContainerHelper(name);
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
@@ -145,10 +146,10 @@ public class CdmrfReader {
 
     List<CoverageCoordAxis> axes = new ArrayList<>();
     for (CdmrFeatureProto.CoordAxis paxes : proto.getCoordAxesList())
-      axes.add(decodeCoordAxis(paxes, reader, cal));
+      axes.add(decodeCoordAxis(paxes, reader));
 
     List<Coverage> coverages = new ArrayList<>();
-    for (CdmrFeatureProto.GridCoverage pgrid : proto.getGridsList())
+    for (CdmrFeatureProto.Coverage pgrid : proto.getGridsList())
       coverages.add(decodeGrid(pgrid));
 
     //   public CoverageDataset(String name, AttributeContainerHelper atts, LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox,
@@ -182,12 +183,12 @@ public class CdmrfReader {
   }
 
   /*
-  message CoordSys {
-    required string name = 1;
-    repeated string axisNames = 2;
-    repeated string transformNames = 3;
-    repeated CoordSys components = 4;        // ??
-  }
+message CoordSys {
+  required string name = 1;               // must be unique in dataset's CoordSys
+  repeated string axisNames = 2;
+  repeated string transformNames = 3;
+  optional CoverageType coverageType = 5;
+}
    */
   CoverageCoordSys decodeCoordSys(CdmrFeatureProto.CoordSys proto) {
     //   public CoverageCoordSys(String name, List<String> axisNames, List<String> transformNames, Type type) {
@@ -225,7 +226,7 @@ public class CdmrfReader {
     optional double resolution = 9;
   }
    */
-  CoverageCoordAxis decodeCoordAxis(CdmrFeatureProto.CoordAxis proto, CdmrCoverageReader reader, ucar.nc2.time.Calendar cal) {
+  CoverageCoordAxis decodeCoordAxis(CdmrFeatureProto.CoordAxis proto, CoordAxisReader reader) {
     AxisType axisType = convertAxisType(proto.getAxisType());
     String name = proto.getName();
     DataType dataType = NcStream.convertDataType(proto.getDataType());
@@ -249,12 +250,24 @@ public class CdmrfReader {
       for (int i = 0; i < n; i++) values[i] = db.get(i);
     }
 
-    return CoverageCoordAxis.factory(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
-            spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, cal);
+    if (dependenceType == CoverageCoordAxis.DependenceType.twoD && axisType == AxisType.Time) {
+
+      return new FmrcTimeAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
+                 spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader);
+
+    } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
+
+      return new LatLonAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
+                 spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader);
+    } else {
+
+      return new CoverageCoordAxis1D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
+              spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader);
+    }
   }
 
   /*
-message GridCoverage {
+message Coverage {
   required string name = 1; // short name
   required DataType dataType = 2;
   optional bool unsigned = 3 [default = false];
@@ -262,7 +275,7 @@ message GridCoverage {
   required string coordSys = 5;
 }
  */
-  Coverage decodeGrid(CdmrFeatureProto.GridCoverage proto) {
+  Coverage decodeGrid(CdmrFeatureProto.Coverage proto) {
     DataType dataType = NcStream.convertDataType(proto.getDataType());
 
     List<Attribute> atts = new ArrayList<>();
@@ -302,6 +315,8 @@ message GridCoverage {
         return AxisType.RadialElevation;
       case Spectral:
         return AxisType.Spectral;
+      case TimeOffset:
+        return AxisType.TimeOffset;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }
@@ -330,8 +345,8 @@ message GridCoverage {
 
   static public CoverageCoordSys.Type convertCoverageType(CdmrFeatureProto.CoverageType type) {
     switch (type) {
-      case Coverage:
-        return CoverageCoordSys.Type.Coverage;
+      case General:
+        return CoverageCoordSys.Type.General;
       case Curvilinear:
         return CoverageCoordSys.Type.Curvilinear;
       case Grid:
@@ -373,5 +388,72 @@ message GridCoverage {
     throw new IllegalStateException("illegal data type " + type);
   }
 
+    ///////////////////////////////////////////////////////////////////
+
+  /*
+    message DataResponse {
+    repeated CoordAxis coordAxes = 1;              // may be shared if asking for multiple grids
+    repeated CoordSys coordSys = 2;                // may be shared if asking for multiple grids
+
+    repeated GeoReferencedArray geoArray = 4;
+  }
+   */
+  public DataResponse decodeDataResponse(CdmrFeatureProto.DataResponse dproto) {
+    List<CoverageTransform> transforms = new ArrayList<>();
+    for (CdmrFeatureProto.CoordTransform pt : dproto.getCoordTransformsList())
+      transforms.add( decodeCoordTransform(pt));
+
+    List<CoverageCoordSys> coordSys = new ArrayList<>();
+    for (CdmrFeatureProto.CoordSys psys : dproto.getCoordSysList())
+      coordSys.add( decodeCoordSys(psys));
+
+    List<CoverageCoordAxis> axes = new ArrayList<>();
+    for (CdmrFeatureProto.CoordAxis paxis : dproto.getCoordAxesList())
+      axes.add( decodeCoordAxis(paxis, null));  // LOOK null reader - so all values must be present
+
+    List<GeoArrayResponse> arrays = new ArrayList<>();
+    for (CdmrFeatureProto.GeoReferencedArray psys : dproto.getGeoArrayList())
+      arrays.add(decodeGeoReferencedArray(psys));
+
+    return new DataResponse(axes, coordSys, transforms, arrays);
+  }
+
+  /*
+  message GeoReferencedArray {
+    required string gridName = 1;          // full escaped name.
+    required DataType dataType = 2;
+    optional bool bigend = 3 [default = true];
+    optional uint32 version = 4 [default = 0];
+    optional Compress compress = 5 [default = NONE];
+    optional uint64 uncompressedSize = 6;
+
+    repeated uint32 shape = 7;            // the shape of the returned array
+    repeated string axisName = 8;         // each dimension corresponds to this axis
+    required string coordSysName = 9;     // must have coordAxis corresponding to shape
+  }
+
+
+   */
+
+  public GeoArrayResponse decodeGeoReferencedArray(CdmrFeatureProto.GeoReferencedArray parray) {
+    GeoArrayResponse result = new GeoArrayResponse();
+
+    result.coverageName = parray.getCoverageName();
+    result.dataType = NcStream.convertDataType(parray.getDataType());
+
+    result.bigend = parray.getBigend();
+    result.deflate = parray.getCompress() == NcStreamProto.Compress.DEFLATE;
+    result.uncompressedSize = (parray.hasUncompressedSize()) ? parray.getUncompressedSize() : 0;
+
+    int[] shape = new int[parray.getShapeCount()];
+    for (int i=0; i< parray.getShapeCount(); i++)
+      shape[i] = parray.getShape(i);
+    result.shape = shape;
+
+    result.axisName = parray.getAxisNameList();
+    result.coordSysName = parray.getCoordSysName();
+
+    return result;
+  }
 
 }

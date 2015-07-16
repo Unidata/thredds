@@ -96,9 +96,8 @@ public class GetCoverage extends WcsRequest {
     if (bbox != null)
       bboxLatLonRect = convertBoundingBox(bbox, coverage.getCoordinateSystem());
 
-    CoverageDataset gcd = dataset.getDataset();
     CoverageCoordSys gcs = this.coverage.getCoordinateSystem();
-    CoverageCoordAxisTime timeCoord = gcs.getTimeAxis();
+    CoverageCoordAxis timeCoord = gcs.getTimeAxis();
     this.timeRange = timeRange;
     if (timeRange != null)
       this.isSingleTimeRequest = timeRange.isPoint();

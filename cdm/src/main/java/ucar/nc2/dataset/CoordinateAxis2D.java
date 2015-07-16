@@ -99,7 +99,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (debug)
       System.out.printf("Coordinate2D read%n");
 
-    coords = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, data.getShape(), data.get1DJavaArray(double.class));
+    coords = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, data.getShape(), data.get1DJavaArray(DataType.DOUBLE));
 
     if (this.axisType == AxisType.Lon)
       makeConnectedLon(coords);
@@ -165,7 +165,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (coords == null) doRead();
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis2D.getCoordValues() on non-numeric");
-    return (double[]) coords.get1DJavaArray(double.class);
+    return (double[]) coords.get1DJavaArray(DataType.DOUBLE);
   }
 
   /**

@@ -149,7 +149,7 @@ public class TestGridCoverageSubset {
     if (vert_idx >= 0)
       subset.set(SubsetParams.vertCoord, vert_val);
 
-    ArrayWithCoordinates gc_array;
+    GeoReferencedArray gc_array;
     try {
       gc_array = cover.readData(subset);
     } catch (IOException e) {

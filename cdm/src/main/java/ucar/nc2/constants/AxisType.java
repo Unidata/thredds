@@ -34,8 +34,7 @@
 package ucar.nc2.constants;
 
 /**
- * Type-safe enumeration of netCDF Coordinate Axis types. These are used for tagging
- * georeferencing axes.
+ * Type-safe enumeration of netCDF Coordinate Axis types. These are used for tagging georeferencing axes.
  * Do not change the ordering of these enums, as they are used in protobuf messages, only add new ones onto the end.
  *
  * @author john caron
@@ -98,6 +97,14 @@ public enum AxisType {
 
   public String getCFAxisName() {
     return cfAxisName;
+  }
+
+  public boolean isHoriz() {
+    return this == GeoX || this == GeoY || this == Lat || this == Lon;
+  }
+
+  public boolean isTime() {
+    return this == Time || this == RunTime || this == TimeOffset;
   }
 
 }

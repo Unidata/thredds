@@ -175,7 +175,6 @@ public class NcStreamReader {
         ArrayStructureBB data = NcStream.decodeArrayStructure(members, section.getShape(), datab);
         return new DataResult(dproto.getVarName(), data);
       }
-
     }
 
     // is it compressed ?
