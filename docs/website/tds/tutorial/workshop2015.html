@@ -76,20 +76,20 @@ ul#breadcrumbs li a {
 }
 
 /* section formatting */
-#section {
+div.sectionbody {
     border: 3px solid #CFCFCF;
     padding: 30px 30px 10px 30px;
     margin: 20px 0px 60px 0px;
 }
 
-#section h2 {
+div.sectionbody h2 {
     padding: 0px 0px 0px 0px;
     margin: -45px 0px 0px -15px;
     color: #9C9C9C;
     font-size: 16pt;
 }
 
-#section h2 a {
+div.sectionbody h2 a {
     text-decoration: none;
     border: none;
     background-color: #FFFFFF;
@@ -97,7 +97,7 @@ ul#breadcrumbs li a {
     margin: 0px 10px 0px 0px;
 }
 
-#section h2 a:hover {
+div.sectionbody h2 a:hover {
     color: #9C9C9C;
 }
 
@@ -294,7 +294,7 @@ a.tooltip:hover b em.inner {
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_23_july_2015_tds_installation_management_and_configuration">23 July 2015 : TDS Installation, Management, and Configuration</h2>
+<h2 id="_23_july_2015_tds_management_and_configuration">23 July 2015 : TDS Management, and Configuration</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_8_00_9_00_coffee_and_continental_breakfast">8:00 - 9:00 Coffee and continental breakfast</h3>
@@ -359,17 +359,6 @@ Form</a> (Repeated submissions encouraged)</p>
 <li>
 <p><a href="GettingStarted.html#manager">Tomcat <code>manager</code> Application</a></p>
 </li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_10_15_10_30_break">10:15 - 10:30 Break</h3>
-
-</div>
-<div class="sect2">
-<h3 id="_10_30_11_30_tds_server_configuration">10:30 - 11:30 TDS Server Configuration</h3>
-<div class="ulist">
-<ul>
 <li>
 <p>TDS Refresher (all default catalogs, no modifications)</p>
 </li>
@@ -378,13 +367,20 @@ Form</a> (Repeated submissions encouraged)</p>
 </li>
 <li>
 <p>threddsConfig.xml local information [Sean]</p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="BasicThreddsConfig_xml.html">Basic threddsConfig.xml</a></p>
 </li>
 </ul>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_10_15_10_30_break">10:15 - 10:30 Break</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_10_30_11_45_tds_server_configuration">10:30 - 11:45 TDS Server Configuration</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>TDS Refresher (all default catalogs, no modifications)</p>
 </li>
 <li>
 <p><a href="CatalogPrimer.html">TDS Client Catalog Overview</a> (Ryan)</p>
@@ -412,7 +408,7 @@ Form</a> (Repeated submissions encouraged)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_11_30_12_30_tds_services_catalogs_opendap_ncss_ncwms_nciso_cdmremote_dennis">11:30 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis)</h3>
+<h3 id="_11_45_12_30_tds_services_catalogs_opendap_ncss_ncwms_nciso_cdmremote_dennis">11:45 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -460,11 +456,11 @@ Form</a> (Repeated submissions encouraged)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_12_30_1_30_lunch">12:30 - 1:30 Lunch</h3>
+<h3 id="_12_30_2_00_lunch">12:30 - 2:00 Lunch</h3>
 
 </div>
 <div class="sect2">
-<h3 id="_1_30_2_00_accessing_tds_with_python_clients_ryan">1:30 - 2:00 Accessing TDS with python clients (Ryan)</h3>
+<h3 id="_2_00_2_30_accessing_tds_services_with_python_ryan">2:00 - 2:30 Accessing TDS services with python (Ryan)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -474,12 +470,9 @@ Form</a> (Repeated submissions encouraged)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_2_00_3_00_tds_monitoring_debugging_logs_jen_sean_ryan">2:00 - 3:00 TDS Monitoring, Debugging, Logs (Jen, Sean, Ryan)</h3>
+<h3 id="_2_30_3_00_tds_monitoring_debugging_logs_sean">2:30 - 3:00 TDS Monitoring, Debugging, Logs (Sean)</h3>
 <div class="ulist">
 <ul>
-<li>
-<p>Tomcat Stuff (SEAN AND JEN WILL MEET)</p>
-</li>
 <li>
 <p>Looking at logs on the server</p>
 </li>
@@ -500,7 +493,7 @@ Form</a> (Repeated submissions encouraged)</p>
 
 </div>
 <div class="sect2">
-<h3 id="_3_15_3_45_using_toolsui_christian">3:15 - 3:45 Using ToolsUI (Christian)</h3>
+<h3 id="_3_15_4_00_using_toolsui_christian">3:15 - 4:00 Using ToolsUI (Christian)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -511,7 +504,7 @@ Form</a> (Repeated submissions encouraged)</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Access your TDS server in ToolsUI.</p>
+<p>Access local and remote TDS servers in ToolsUI.</p>
 </li>
 </ul>
 </div>
@@ -523,33 +516,7 @@ Form</a> (Repeated submissions encouraged)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_3_45_4_15_ncml_metadata_editing_with_the_goal_of_enhancing_data_discovery_sean">3:45 - 4:15 NcML - Metadata editing with the goal of enhancing Data Discovery (Sean)</h3>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="../../netcdf-java/ncml/Tutorial.html">Basic NcML tutorial</a></p>
-</li>
-<li>
-<p><a href="NcML.htm">Using NcML in the TDS</a></p>
-</li>
-<li>
-<p>Data discovery systems: (<a href="files/metadata_ncISO.pdf">pdf</a>)</p>
-</li>
-<li>
-<p><a href="../reference/ncISO.html">ncIso</a></p>
-</li>
-<li>
-<p>exercise- how can we increase our ncISO score?</p>
-</li>
-<li>
-<p><a href="http://wiki.esipfed.org/index.php?title=Category:Attribute_Conventions_Dataset_Discovery">Attribute
-Convention for Data Discovery</a> (Ethan?)</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_4_15_4_45_software_engineering_and_contributing_christian">4:15 - 4:45 Software Engineering and Contributing (Christian)</h3>
+<h3 id="_4_00_4_45_software_engineering_and_contributing_christian">4:00 - 4:45 Software Engineering and Contributing (Christian)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -623,7 +590,83 @@ Convention for Data Discovery</a> (Ethan?)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_9_30_10_00_reading_grib_data_with_the_cdm">9:30 - 10:00 Reading GRIB data with the CDM (????)</h3>
+<h3 id="_9_30_11_30_open_exploration_1_on_1">9:30 - 11:30 Open Exploration, 1-on-1</h3>
+<div class="paragraph">
+<p>After looking over the workshop schedule, please consider topics you&#8217;d like
+to explore/discuss during this time. Potential topics include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Setting up Tomcat and TDS from scratch</p>
+</li>
+<li>
+<p>Aggregation with NcML</p>
+</li>
+<li>
+<p>Improving dataset discoverability discovery with NcML (ncIso service)</p>
+</li>
+<li>
+<p>TDS and WebMappingService (via ncWMS)</p>
+</li>
+<li>
+<p>Troubleshooting and more information on upgrading from TDS 4.x to 4.6.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_11_30_1_30_lunch">11:30 - 1:30 Lunch</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_1_30_2_00_an_ode_to_grib_john">1:30 - 2:00 An ode to GRIB (John)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>What is GRIB</p>
+</li>
+<li>
+<p>Grib1 vs Grib2</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/Introduction_GRIB1-GRIB2.pdf">WMO</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Where can I learn more?</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://www.nco.ncep.noaa.gov/pmb/docs/on388/">NCEP GRIB Holy Book</a></p>
+</li>
+<li>
+<p><a href="http://www.wmo.int/pages/prog/www/WMOCodes.html">WMO</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html">WMO GRIB-1</a></p>
+</li>
+<li>
+<p><a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf">WMO GRIB-2</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Table versioning issues</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_00_2_30_reading_grib_data_with_the_cdm_sean">2:00 - 2:30 Reading GRIB data with the CDM (Sean)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -649,24 +692,11 @@ Convention for Data Discovery</a> (Ethan?)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_10_00_10_15_issues_with_grib_tables_sean">10:00 - 10:15 Issues with GRIB Tables (Sean)</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>Table versioning</p>
-</li>
-<li>
-<p>Grib1 vs Grib2</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_10_15_10_30_break_2">10:15 - 10:30 Break</h3>
+<h3 id="_2_30_2_15_break">2:30 - 2:15 Break</h3>
 
 </div>
 <div class="sect2">
-<h3 id="_10_30_12_30_grib_feature_collections_john_sean_ryan_christian">10:30 - 12:30 GRIB Feature Collections (John, Sean, Ryan, Christian)</h3>
+<h3 id="_2_15_14_30_grib_feature_collections_john_sean_ryan_christian">2:15 - 14:30 GRIB Feature Collections (John, Sean, Ryan, Christian)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -694,19 +724,8 @@ Convention for Data Discovery</a> (Ethan?)</p>
 <li>
 <p>GRIB FAQ</p>
 </li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_12_30_1_30_lunch_2">12:30 - 1:30 Lunch</h3>
-
-</div>
-<div class="sect2">
-<h3 id="_1_30_2_30_problem_solving_sean">1:30 - 2:30 Problem Solving (Sean)</h3>
-<div class="ulist">
-<ul>
 <li>
-<p>Examples:</p>
+<p>Troubleshooting Examples:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -725,16 +744,6 @@ Convention for Data Discovery</a> (Ethan?)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_2_30_4_30_discussion_questions_and_1_on_1_with_participants_all">2:30 - 4:30 Discussion, Questions, and 1-on-1 with Participants (All)</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>After looking over the workshop schedule, please send us topics you&#8217;d like to discuss during this time</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
 <h3 id="_day_two_finish">Day Two Finish</h3>
 
 </div>
@@ -743,7 +752,7 @@ Convention for Data Discovery</a> (Ethan?)</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-07-16 10:18:05 MDT
+Last updated 2015-07-17 12:19:06 MDT
 </div>
 </div>
 </body>
