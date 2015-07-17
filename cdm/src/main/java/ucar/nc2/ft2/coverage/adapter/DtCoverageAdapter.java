@@ -284,7 +284,12 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         case SubsetParams.vertCoord: { // double
           CoordinateAxis1D zaxis = gcs.getVerticalAxis();
           if (zaxis != null && !zaxis.isScalar()) {
-            int wantIndex = zaxis.findCoordElement(params.getDouble(key));
+            double zval = params.getDouble(key);
+            int wantIndex = zaxis.findCoordElement(zval);
+            if (wantIndex < 0) {
+              System.out.println("HEY");
+              zaxis.findCoordElement(zval);
+            }
             section.add(new Range(AxisType.GeoZ.toString(), wantIndex, wantIndex));
           }
           break;

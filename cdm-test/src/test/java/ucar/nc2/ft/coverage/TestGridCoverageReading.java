@@ -31,30 +31,27 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGridCoverageSubset {
+public class TestGridCoverageReading {
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", CoverageCoordSys.Type.Grid, 4, 4, 31});  // NUWG - has CoordinateAlias
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", CoverageCoordSys.Type.Grid, 4, 5, 5});  // scalar runtime
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", CoverageCoordSys.Type.Grid, 3, 3, 4});  // both x,y and lat,lon
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", CoverageCoordSys.Type.Grid});  // NUWG - has CoordinateAlias
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", CoverageCoordSys.Type.Grid});  // scalar runtime
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", CoverageCoordSys.Type.Grid});  // both x,y and lat,lon
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", CoverageCoordSys.Type.Grid}); // SRC                               // TP
 
     return result;
   }
 
   String endpoint;
   CoverageCoordSys.Type expectType;
-  int domain, range, ncoverages;
+  //int domain, range, ncoverages;
 
-
-  public TestGridCoverageSubset(String endpoint, CoverageCoordSys.Type expectType, int domain, int range, int ncoverages) {
+  public TestGridCoverageReading(String endpoint, CoverageCoordSys.Type expectType) {
     this.endpoint = endpoint;
     this.expectType = expectType;
-    this.domain = domain;
-    this.range = range;
-    this.ncoverages = ncoverages;
   }
 
   @Test
@@ -63,7 +60,7 @@ public class TestGridCoverageSubset {
 
     try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {
       Assert.assertNotNull(endpoint, gcs);
-      Assert.assertEquals("NGrids", ncoverages, gcs.getCoverageCount());
+      //Assert.assertEquals("NGrids", ncoverages, gcs.getCoverageCount());
       Assert.assertEquals(expectType, gcs.getCoverageType());
 
       // check DtCoverageCS
@@ -97,7 +94,6 @@ public class TestGridCoverageSubset {
     }
   }
 
-
   private void readOneSliceEns(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, CoordinateAxis1D ensAxis, CoordinateAxis1DTime timeAxis, CoordinateAxis1D vertAxis) {
     if (ensAxis == null)
       readOneSliceTime(cover, dt, rt_val, rt_idx, 0, -1, timeAxis, vertAxis);
@@ -106,7 +102,6 @@ public class TestGridCoverageSubset {
         readOneSliceTime(cover, dt, rt_val, rt_idx, ensAxis.getCoordValue(i), i, timeAxis, vertAxis);
     }
   }
-
 
   private void readOneSliceTime(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, double ens_val, int ens_idx,
                                 CoordinateAxis1DTime timeAxis, CoordinateAxis1D vertAxis) {

@@ -18,7 +18,7 @@
         <entry key="wcs" value="true"/>
         <entry key="wms" value="true"/>
         <entry key="iso" value="true"/>
-        <entry key="ncml" value="true"/>
+        <entry key="iso_ncml" value="true"/>
         <entry key="uddc" value="true"/>
       </map>
     </property>
@@ -34,7 +34,7 @@
         <value>wms</value>
         <value>wcs</value>
         <value>iso</value>
-        <value>ncml</value>
+        <value>iso_ncml</value>
         <value>uddc</value>
       </list>
     </property>
@@ -47,7 +47,7 @@
         <value>httpServer</value>
         <value>netcdfSubsetPoint</value>
         <value>iso</value>
-        <value>ncml</value>
+        <value>iso_ncml</value>
         <value>uddc</value>
       </list>
     </property>
@@ -59,7 +59,7 @@
         <value>dap4</value>
         <value>httpServer</value>
         <value>iso</value>
-        <value>ncml</value>
+        <value>iso_ncml</value>
         <value>uddc</value>
       </list>
     </property>

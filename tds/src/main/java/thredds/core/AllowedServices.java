@@ -93,7 +93,10 @@ public class AllowedServices {
   public void setAllow(StandardService service, Boolean allow) {
     if (allow == null) return;
     AllowedService as = allowed.get(service);
-    as.allowed = allow;
+    if (as == null)
+      logServerStartup.error("AllowedService cant find StandardService " + service);
+    else
+      as.allowed = allow;
   }
 
   public void setGridServices(List<String> list) {

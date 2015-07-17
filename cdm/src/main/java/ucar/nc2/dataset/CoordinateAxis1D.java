@@ -435,11 +435,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   /**
-   * Given a coordinate position, find what grid element contains it.
+   * Given a coordinate value, find what grid element contains it.
    * This means that
    * <pre>
-   * edge[i] <= pos < edge[i+1] (if values are ascending)
-   * edge[i] > pos >= edge[i+1] (if values are descending)
+   * edge[i] <= value < edge[i+1] (if values are ascending)
+   * edge[i] > value >= edge[i+1] (if values are descending)
    * </pre>
    *
    * @param coordVal position in this coordinate system
@@ -466,6 +466,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public int findCoordElementBounded(double coordVal) {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis.findCoordElementBounded() on non-numeric");
+
+    // the scalar or len-1 case:
+    if (this.getSize() == 1) return 0;
 
     if (isRegular())
       return findCoordElementRegular(coordVal, true);
@@ -500,6 +503,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
    */
   private int findCoordElementRegular(double coordValue, boolean bounded) {
     int n = (int) this.getSize();
+
+        // the scalar or len-1 case:
+    if (this.getSize() == 1) {
+      return 0;
+    }
 
   /*  if (axisType == AxisType.Lon) {
       double maxValue = this.start + this.increment * n;

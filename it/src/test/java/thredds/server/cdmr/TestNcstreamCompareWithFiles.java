@@ -48,7 +48,7 @@ public class TestNcstreamCompareWithFiles {
 
     try {
       addFromScan(result, contentRoot +"/netcdf3/", new SuffixFileFilter(".nc"));
-      addFromScan(result, contentRoot + "/netcdf4/", new SuffixFileFilter(".nc"));
+      addFromScan(result, contentRoot + "/netcf4/", new SuffixFileFilter(".nc"));
 
       addFromScan(result, contentRoot + "/hdf5/", new FileFilter() {
         public boolean accept(File pathname) {
