@@ -79,7 +79,7 @@ abstract public class CoverageCoordAxis {
     this.values = values;
     this.reader = reader; // used only if values == null
 
-    if (axisType == AxisType.Time || axisType == AxisType.RunTime || axisType == AxisType.TimeOffset)
+    if (axisType == AxisType.Time || axisType == AxisType.RunTime)
       timeHelper = new TimeHelper(units, attributes);
     else
       timeHelper = null;
@@ -93,7 +93,9 @@ abstract public class CoverageCoordAxis {
   }
 
   abstract public void toString(Formatter f, Indent indent);
+  abstract public CoverageCoordAxis copy(CoordAxisReader reader);
   abstract public CoverageCoordAxis subset(SubsetParams params);
+  abstract public CoverageCoordAxis subset(double minValue, double maxValue);
   abstract public Array getCoordsAsArray();
   abstract public List<NamedObject> getCoordValueNames();
 

@@ -62,7 +62,7 @@ public class CoverageSubsetter {
     }
     // subset horiz axes
     for (HorizCoordSys hcs : horizSet)
-      hcs.subset(params);
+      coordAxes.addAll(hcs.subset(params));
 
     // subset coordSys, coverages, transforms
     for (CoverageCoordSys orgCs : orgCoordSys.values())

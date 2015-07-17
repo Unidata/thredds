@@ -5,7 +5,6 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
@@ -205,6 +204,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return result;
   }
 
+  @Override
   public CoverageCoordAxis subset(double minValue, double maxValue) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
     return helper.subset(minValue, maxValue);
@@ -280,18 +280,18 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         if (params.isTrue(SubsetParams.latestTime))
           return helper.subsetLatest( timeHelper.cal);
 
-        CalendarDate date = (CalendarDate) params.get(SubsetParams.date);
+        CalendarDate date = (CalendarDate) params.get(SubsetParams.time);
         if (date != null)
           return helper.subset( timeHelper.cal, date);
 
-        CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.dateRange);
+        CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
         if (dateRange != null)
           return helper.subset( timeHelper.cal, dateRange);
         break;
     }
 
     // otherwise take the entire axis
-    return this.copy( this.reader);
+    return this.copy(this.reader);
   }
 
 }

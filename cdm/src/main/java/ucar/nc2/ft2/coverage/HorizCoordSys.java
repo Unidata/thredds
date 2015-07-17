@@ -62,11 +62,11 @@ public class HorizCoordSys {
     return null;
   }
 
-  public List<CoverageCoordAxis> subset(SubsetParams subset) throws InvalidRangeException {
+  public List<CoverageCoordAxis> subset(SubsetParams params) throws InvalidRangeException {
     List<CoverageCoordAxis> result = new ArrayList<>();
 
-    /* LatLonRect llbb = (LatLonRect) subset.get(SubsetParams.latlonBB);
-    ProjectionRect projbb = (ProjectionRect) subset.get(SubsetParams.projBB);
+    LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
+    ProjectionRect projbb = (ProjectionRect) params.get(SubsetParams.projBB);
 
     if (projbb != null) {
       result.add( xaxis.subset(projbb.getMinX(), projbb.getMaxX()));
@@ -83,13 +83,13 @@ public class HorizCoordSys {
 
       // we have to transform latlon to projection coordinates
       ProjectionImpl proj = transform.getProjection();
-      if (!(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation) && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
-        LatLonRect bb = org.getLatLonBoundingBox(); // first clip the request rectangle to the bounding box of the grid LOOK bb may be null
+      /* if (!(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation) && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
+        LatLonRect bb = getLatLonBoundingBox(); // first clip the request rectangle to the bounding box of the grid LOOK bb may be null
         LatLonRect rect2 = bb.intersect(llbb);
         if (null == rect2)
           throw new InvalidRangeException("Request Bounding box does not intersect Grid ");
         llbb = rect2;
-      }
+      } */
 
       ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
       result.add(xaxis.subset(prect.getMinX(), prect.getMaxX()));
@@ -106,7 +106,7 @@ public class HorizCoordSys {
     if (hasLatLon) {
       result.add(lataxis.copy(null));
       result.add(lonaxis.copy(null));
-    }   */
+    }
 
     return result;
 

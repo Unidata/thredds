@@ -7,6 +7,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
@@ -145,14 +146,14 @@ public class TestGridCoverageSubset {
     if (ens_idx >= 0)
       subset.set(SubsetParams.ensCoord, ens_val);
     if (time_idx >= 0)
-      subset.set(SubsetParams.date, time_val);
+      subset.set(SubsetParams.time, time_val);
     if (vert_idx >= 0)
       subset.set(SubsetParams.vertCoord, vert_val);
 
     GeoReferencedArray gc_array;
     try {
       gc_array = cover.readData(subset);
-    } catch (IOException e) {
+    } catch (IOException | InvalidRangeException e) {
       e.printStackTrace();
       return;
     }

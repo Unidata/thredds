@@ -33,7 +33,17 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   }
 
   @Override
+  public CoverageCoordAxis1D copy(CoordAxisReader reader) {
+    return null;
+  }
+
+  @Override
   public CoverageCoordAxis subset(SubsetParams params) {
+    return null;
+  }
+
+  @Override
+  public CoverageCoordAxis subset(double minValue, double maxValue) {
     return null;
   }
 

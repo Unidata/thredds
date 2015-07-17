@@ -73,7 +73,7 @@ public class TestDir {
   /**
    * Temporary data directory (for writing temporary data).
    */
-  public static String temporaryLocalDataDir = "target/test/tmp/";
+  public static String temporaryLocalDataDir = "build/test/tmp/";
 
   //////////////////////////////////////////////////////////////////////
   /**

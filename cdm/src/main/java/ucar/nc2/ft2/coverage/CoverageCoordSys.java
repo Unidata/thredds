@@ -27,7 +27,7 @@ public class CoverageCoordSys {
   private HorizCoordSys horizCoordSys;
 
   private final String name;
-  private final List<String> axisNames;
+  private final List<String> axisNames;        // note not in order (?)
   private final List<String> transformNames;
   private final Type type;
 
@@ -174,6 +174,8 @@ public class CoverageCoordSys {
   public CoverageCoordAxis getAxis(AxisType type) {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
+      if (axis == null)
+        System.out.println("HEY");
        if (axis.getAxisType() == type) {
          return axis;
        }

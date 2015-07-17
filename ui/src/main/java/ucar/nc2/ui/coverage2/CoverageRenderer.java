@@ -478,14 +478,14 @@ public class CoverageRenderer {
     if (time >= 0 && dataState.taxis != null  && dataState.taxis instanceof CoverageCoordAxis1D) {
       double timeVal = ((CoverageCoordAxis1D)dataState.taxis).getCoord(time);
       CalendarDate date = dataState.taxis.makeDate(timeVal);
-      subset.set(SubsetParams.date, date);
+      subset.set(SubsetParams.time, date);
     }
 
     try {
       dataH = dataState.grid.readData(subset);
       //dataH = dataH.reduce(); // get rid of n=1 dimensions
 
-    } catch (IOException e) {
+    } catch (IOException | InvalidRangeException e) {
       e.printStackTrace();
     }
 

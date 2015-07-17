@@ -98,10 +98,9 @@ public class Coverage implements IsMissingEvaluator {
 
   public long getSizeInBytes() {
     long total = 1;
-    for (String axisName : coordSys.getAxisNames()) {
+    for (String axisName : coordSys.getAxisNames()) {  // LOOK this assumes a certain order
       CoverageCoordAxis axis = coordSys.getAxis(axisName);
-      if (axis != null)   // LOOK
-        total *= axis.getNcoords();
+      total *= axis.getNcoords();
     }
     total *= getDataType().getSize();
     return total;
@@ -109,7 +108,7 @@ public class Coverage implements IsMissingEvaluator {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public GeoReferencedArray readData(SubsetParams subset) throws IOException {
+  public GeoReferencedArray readData(SubsetParams subset) throws IOException, InvalidRangeException {
     CoverageReader reader = coordSys.dataset.reader;
     return reader.readData(this, subset);
   }

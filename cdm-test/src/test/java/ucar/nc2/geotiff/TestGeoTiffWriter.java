@@ -41,6 +41,7 @@ import org.apache.commons.io.FileUtils;
 
 import org.junit.runners.Parameterized;
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -90,7 +91,7 @@ public class TestGeoTiffWriter {
 
 
   @Test
-  public void testWriteCoverage() throws IOException {
+  public void testWriteCoverage() throws IOException, InvalidRangeException {
     File f = new File(filename);
     String gridOut = TestDir.temporaryLocalDataDir + f.getName() + ".grid.tif";
     System.out.printf("geotiff read grid %s write %s%n", filename, gridOut);

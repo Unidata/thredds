@@ -214,17 +214,24 @@ message CoordSys {
   }
 
   /*
-    message CoordAxis {
-    required string name = 1;
-    required DataType dataType = 2;
-    required int32 axisType = 3;    // ucar.nc2.constants.AxisType ordinal
-    required int64 nvalues = 4;
-    required string units = 5;
-    optional bool isRegular = 6;
-    required double min = 7;        // required ??
-    required double max = 8;
-    optional double resolution = 9;
-  }
+message CoordAxis {
+  required string name = 1;          // short name, unique within dataset
+  required DataType dataType = 2;
+  repeated Attribute atts = 3;       // look for calendar attribute here?
+  required AxisType axisType = 4;
+  required string units = 5;
+  optional string description = 6;
+
+  required DependenceType depend = 7;
+  optional string dependsOn = 8;    // depends on this axis
+
+  required int64 nvalues = 10;
+  required AxisSpacing spacing = 11;
+  required double startValue = 12;
+  required double endValue = 13;
+  optional double resolution = 14;     // resolution = (end-start) / (nvalues-1)
+  optional bytes values = 15;          // big endian doubles; not used for regular, may be deferred
+}
    */
   CoverageCoordAxis decodeCoordAxis(CdmrFeatureProto.CoordAxis proto, CoordAxisReader reader) {
     AxisType axisType = convertAxisType(proto.getAxisType());
@@ -259,6 +266,7 @@ message CoordSys {
 
       return new LatLonAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
                  spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader);
+
     } else {
 
       return new CoverageCoordAxis1D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,

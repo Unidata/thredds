@@ -3,6 +3,8 @@ package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
@@ -10,6 +12,8 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
@@ -32,7 +36,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     List<Coverage> pgrids = new ArrayList<>();
     for (DtCoverage dtGrid : proxy.getGrids())
-      pgrids.add( makeCoverage(dtGrid));
+      pgrids.add(makeCoverage(dtGrid));
 
     List<CoverageCoordSys> pcoordSys = new ArrayList<>();
     for (DtCoverageDataset.Gridset gset : proxy.getGridsets())
@@ -57,7 +61,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       DtCoverageCS gcs = gset.getGeoCoordSystem();
       for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordAxes())
         if (!axisNames.contains(axis.getFullName())) {
-          axes.add( makeCoordAxis(axis, reader));
+          axes.add(makeCoordAxis(axis, reader));
           axisNames.add(axis.getFullName());
         }
     }
@@ -108,8 +112,6 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       dependsOn = dtCoordAxis.getDimension(0).toString();
     }
 
-    Calendar cal = axisType.isTime() ? dtCoordAxis.getCalendarFromAttribute() : null;
-
     int ncoords = (int) dtCoordAxis.getSize();
     CoverageCoordAxis.Spacing spacing = null;
     double startValue = 0.0;
@@ -136,18 +138,18 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
       } else {
         spacing = CoverageCoordAxis.Spacing.discontiguousInterval;
-        values = new double[2*ncoords];
+        values = new double[2 * ncoords];
         double[] bounds1 = axis1D.getBound1();
         double[] bounds2 = axis1D.getBound2();
         int count = 0;
-        for (int i=0; i<ncoords; i++) {
+        for (int i = 0; i < ncoords; i++) {
           values[count++] = bounds1[i];
           values[count++] = bounds2[i];
         }
       }
 
       return new CoverageCoordAxis1D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
-                    ncoords, startValue, endValue, resolution, values, reader);
+              ncoords, startValue, endValue, resolution, values, reader);
 
     }
 
@@ -157,19 +159,19 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       spacing = CoverageCoordAxis.Spacing.regular;
 
       return new FmrcTimeAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
-                    ncoords, startValue, endValue, resolution, values, reader);
+              ncoords, startValue, endValue, resolution, values, reader);
     }
 
     // 2D Lat Lon Time
-    if (dtCoordAxis instanceof CoordinateAxis2D && (axisType == AxisType.Lat || axisType == AxisType.Lat )) {
+    if (dtCoordAxis instanceof CoordinateAxis2D && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
 
       spacing = CoverageCoordAxis.Spacing.regular;
 
       return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
-                    ncoords, startValue, endValue, resolution, values, reader);
+              ncoords, startValue, endValue, resolution, values, reader);
     }
 
-    throw new IllegalStateException("DOnt know what to do with axis "+dtCoordAxis.getFullName());
+    throw new IllegalStateException("Dont know what to do with axis " + dtCoordAxis.getFullName());
   }
 
   ////////////////////////
@@ -179,35 +181,72 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     this.proxy = proxy;
   }
 
+
+  //////////////////////////////////////////////////////////////////////////////////////
+  // CoverageReader
+
   @Override
   public void close() throws IOException {
     proxy.close();
   }
 
+  /*
+    public static final String latlonBB = "latlonBB";     // value = LatLonRect
+    public static final String projBB = "projBB";         // value = ProjRect
+    public static final String horizStride = "horizStride";  // value = Integer
+ ok   public static final String vertCoord = "vertCoord";   // value = double
+ ok   public static final String vertIndex = "vertIndex";   // value = integer    LOOK BAD
+ ok   public static final String timeRange = "timeRange";   // value = CalendarDateRange
+ ok   public static final String time = "time";             // value = CalendarDate
+    public static final String timeWindow = "timeWindow"; // value = TimeDuration
+ ok   public static final String timeStride = "timeStride"; // value = Integer
+  X  public static final String allTimes = "allTimes";     // value = Boolean
+ ok   public static final String latestTime = "latestTime"; // value = Boolean
+ ok   public static final String runtime = "runtime";       // value = CalendarDate
+ ok   public static final String runtime = "runtimeRange";  // value = CalendarDateRange
+ ok   public static final String ensCoord = "ensCoord";     // value = double ??
+   */
+
   @Override
-  public GeoReferencedArray readData(Coverage coverage, SubsetParams subset) throws IOException {  // LOOK incomplete
+  public GeoReferencedArray readData(Coverage coverage, SubsetParams params) throws IOException, InvalidRangeException {
     DtCoverage grid = proxy.findGridByName(coverage.getName());
     DtCoverageCS gcs = grid.getCoordinateSystem();
+    CoverageCoordSys ccsys = coverage.getCoordSys();
 
-    int ens = -1;
-    int level = -1;
-    int time = -1;
-    int runtime = -1;
-
-    for (String key : subset.getKeys()) {
+    List<Range> section = new ArrayList<>();
+    for (String key : params.getKeys()) {
       switch (key) {
 
-        case SubsetParams.date: { // CalendarDate
-          CalendarDate cdate = (CalendarDate) subset.get(key);
+        case SubsetParams.time: { // CalendarDate
+          CalendarDate cdate = (CalendarDate) params.get(key);
           CoordinateAxis taxis = gcs.getTimeAxis();
-          if (taxis != null) {
+          if (taxis != null && !taxis.isScalar()) {
             if (taxis instanceof CoordinateAxis1DTime) {
               CoordinateAxis1DTime time1d = (CoordinateAxis1DTime) taxis;
-              time = time1d.findTimeIndexFromCalendarDate(cdate);
+              int wantIndex = time1d.findTimeIndexFromCalendarDate(cdate);               // LOOK change to closest
+              section.add(new Range(AxisType.Time.toString(), wantIndex, wantIndex));
 
-            } else if (taxis instanceof CoordinateAxis2D) {
-              CoordinateAxis2D time2d = (CoordinateAxis2D) taxis;
+            } else if (taxis instanceof CoordinateAxis2D) {      // LOOK what to do ?
+              // CoordinateAxis2D time2d = (CoordinateAxis2D) taxis;
               // time = time2d.findTimeIndexFromCalendarDate(cdate);
+            }
+          }
+          break;
+        }
+
+        case SubsetParams.timeRange: { // CalendarDate
+          CalendarDateRange dateRange = (CalendarDateRange) params.get(key);
+          CoordinateAxis taxis = gcs.getTimeAxis();
+          if (taxis != null && !taxis.isScalar()) {
+            if (taxis instanceof CoordinateAxis1DTime) {
+              CoordinateAxis1DTime time1d = (CoordinateAxis1DTime) taxis;
+              int startIndex = time1d.findTimeIndexFromCalendarDate(dateRange.getStart());   // LOOK change to closest
+              int endIndex = time1d.findTimeIndexFromCalendarDate(dateRange.getEnd());
+              Integer stride = params.getInteger(SubsetParams.timeStride);
+              if (stride == null)
+                section.add(new Range(AxisType.Time.toString(), startIndex, endIndex));
+              else
+                section.add(new Range(AxisType.Time.toString(), startIndex, endIndex, stride));
             }
           }
           break;
@@ -215,67 +254,110 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
         case SubsetParams.latestTime: {
           CoordinateAxis taxis = gcs.getTimeAxis();
-          if (taxis != null) time = (int) taxis.getSize() - 1;
+          if (taxis != null && !taxis.isScalar()) {
+            int wantIndex = (int) taxis.getSize() - 1;
+            section.add(new Range(AxisType.Time.toString(), wantIndex, wantIndex));
+          }
+          break;
+        }
+
+        case SubsetParams.runtime: { // CalendarDate
+          CalendarDate cdate = (CalendarDate) params.get(key);
+          CoordinateAxis1DTime rtaxis = gcs.getRunTimeAxis();
+          if (rtaxis != null && !rtaxis.isScalar()) {
+            int wantIndex = rtaxis.findTimeIndexFromCalendarDate(cdate);                   // LOOK change to closest
+            section.add(new Range(AxisType.RunTime.toString(), wantIndex, wantIndex));
+          }
+          break;
+        }
+
+        case SubsetParams.runtimeRange: { // CalendarDateRange
+          CalendarDateRange dateRange = (CalendarDateRange) params.get(key);
+          CoordinateAxis1DTime rtaxis = gcs.getRunTimeAxis();
+          if (rtaxis != null && !rtaxis.isScalar()) {
+            int startIndex = rtaxis.findTimeIndexFromCalendarDate(dateRange.getStart());   // LOOK change to closest
+            int endIndex = rtaxis.findTimeIndexFromCalendarDate(dateRange.getEnd());
+            section.add(new Range(AxisType.RunTime.toString(), startIndex, endIndex));
+          }
           break;
         }
 
         case SubsetParams.vertCoord: { // double
           CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-          if (zaxis != null) level = zaxis.findCoordElement(subset.getDouble(key));
+          if (zaxis != null && !zaxis.isScalar()) {
+            int wantIndex = zaxis.findCoordElement(params.getDouble(key));
+            section.add(new Range(AxisType.GeoZ.toString(), wantIndex, wantIndex));
+          }
           break;
         }
 
-        case SubsetParams.vertIndex: {
+        case SubsetParams.vertIndex: {    // LOOK should we allow this ??
           CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-          if (zaxis != null) level = subset.getInteger(key);
+          if (zaxis != null && !zaxis.isScalar()) {
+            int wantIndex = params.getInteger(key);
+            section.add(new Range(AxisType.GeoZ.toString(), wantIndex, wantIndex));
+          }
           break;
         }
 
         case SubsetParams.ensCoord: { // double
           CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
-          if (eaxis != null) ens = eaxis.findCoordElement(subset.getDouble(key));
+          if (eaxis != null && !eaxis.isScalar()) {
+            int wantIndex = eaxis.findCoordElement(params.getDouble(key));
+            section.add(new Range(AxisType.Ensemble.toString(), wantIndex, wantIndex));
+          }
           break;
         }
+
+        case SubsetParams.projBB: { // ProjRect
+          if (!ccsys.getHorizCoordSys().hasProjection) continue;
+          ProjectionRect projRect = (ProjectionRect) params.get(key);
+          ccsys.getHorizCoordSys().subset(params);
+          break;
+        }
+
       }
     }
 
-    //int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index
-    Array data = grid.readDataSlice(runtime, ens, time, level, -1, -1);
+    /*    * This reads an arbitrary data section, returning the data in
+       * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
+       *
+       * @param subset - each Range must be named by the axisType that its used for
+       *
+       * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
+       * */
+    Array data = grid.readDataSection(section);
     return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, null); // LOOK getCoordSys());
   }
 
 
-    /*
-   * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
-   * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
-   * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
-   * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
-   */
-    @Override
-    public double[] readValues(CoverageCoordAxis coordAxis) throws IOException {
-      ucar.nc2.dataset.CoordinateAxis dtCoordAxis = proxy.getNetcdfDataset().findCoordinateAxis(coordAxis.getName());
+  //////////////////////////////////////////////////////////////////////////////////////
+  // CoordAxisReader
 
-      Array data = dtCoordAxis.read();
+  /*
+ * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
+ * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
+ * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
+ * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
+ */
+  @Override
+  public double[] readValues(CoverageCoordAxis coordAxis) throws IOException {
+    ucar.nc2.dataset.CoordinateAxis dtCoordAxis = proxy.getNetcdfDataset().findCoordinateAxis(coordAxis.getName());
 
-      double [] result = new double[ (int) data.getSize()];
-      int count = 0;
-      while (data.hasNext())
-        result[count++] = data.nextDouble();
+    if (dtCoordAxis instanceof CoordinateAxis1D) {
 
-      return result;
-
-      /*
+      CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
 
       switch (coordAxis.getSpacing()) {
         case irregularPoint:
-          return dtCoordAxis.getCoordValues();
+          return axis1D.getCoordValues();
         case contiguousInterval:
-          return dtCoordAxis.getCoordEdges();
+          return axis1D.getCoordEdges();
         case discontiguousInterval:
           int n = (int) dtCoordAxis.getSize();
           double[] result = new double[2 * n];
-          double[] bounds1 = dtCoordAxis.getBound1();
-          double[] bounds2 = dtCoordAxis.getBound2();
+          double[] bounds1 = axis1D.getBound1();
+          double[] bounds2 = axis1D.getBound2();
           int count = 0;
           for (int i = 0; i < n; i++) {
             result[count++] = bounds1[i];
@@ -283,7 +365,17 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
           }
           return result;
       }
-      return null; */
     }
+
+    // twoD case i guess
+    Array data = dtCoordAxis.read();
+
+    double[] result = new double[(int) data.getSize()];
+    int count = 0;
+    while (data.hasNext())
+      result[count++] = data.nextDouble();
+
+    return result;
+  }
 
 }

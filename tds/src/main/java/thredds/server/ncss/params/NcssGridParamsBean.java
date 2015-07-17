@@ -127,12 +127,12 @@ public class NcssGridParamsBean extends NcssParamsBean {
         subset.set(SubsetParams.timeStride, timeStride);
 
     } else if (date != null) {
-      subset.set(SubsetParams.date, date);
+      subset.set(SubsetParams.time, date);
       if (timeWindow != null)
         subset.set(SubsetParams.timeWindow, timeWindow);
 
     } else if (dateRange != null) {
-      subset.set(SubsetParams.dateRange, dateRange);
+      subset.set(SubsetParams.timeRange, dateRange);
       if (timeStride != null)
         subset.set(SubsetParams.timeStride, timeStride);
 

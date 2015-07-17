@@ -90,7 +90,7 @@ public class CoordinateAxis extends VariableDS {
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
    */
   static public CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds) {
-    if ((vds.getRank() == 1) || (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR)) {
+    if ((vds.getRank() == 0) || (vds.getRank() == 1) || (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR)) {
         return new CoordinateAxis1D(ncd, vds);
     } else if (vds.getRank() == 2)
       return new CoordinateAxis2D(ncd, vds);

@@ -65,7 +65,7 @@ message CoordAxis {
   required double startValue = 12;
   required double endValue = 13;
   optional double resolution = 14;     // resolution = (end-start) / (nvalues-1)
-  optional bytes values = 15;          // not used for regular, may be deferred
+  optional bytes values = 15;          // big endian doubles; not used for regular, may be deferred
 }
 
 message CoordSys {

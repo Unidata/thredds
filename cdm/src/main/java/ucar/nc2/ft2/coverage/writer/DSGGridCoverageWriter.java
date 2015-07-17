@@ -1,6 +1,7 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.writer;
 
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.Misc;
@@ -29,7 +30,11 @@ public class DSGGridCoverageWriter {
 
     public VarData(Coverage cov) throws IOException {
       this.cov = cov;
-      this.array = cov.readData(subset);
+      try {
+        this.array = cov.readData(subset);
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+      }
       System.out.printf(" Coverage %s data shape = %s%n", cov.getName(), Misc.showInts(array.getData().getShape()));
     }
   }

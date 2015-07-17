@@ -410,6 +410,7 @@ public class DtCoverage implements IsMissingEvaluator {
    * @param z  if < 0, get all of z dim; if valid index, fix slice to that value.
    * @param y  if < 0, get all of y dim; if valid index, fix slice to that value.
    * @param x  if < 0, get all of x dim; if valid index, fix slice to that value.
+   *
    * @return data[rt, e, t, z, y, x], eliminating missing or fixed dimension.
    */
   public Array readDataSlice(int rt, int e, int t, int z, int y, int x) throws java.io.IOException {
@@ -492,37 +493,13 @@ public class DtCoverage implements IsMissingEvaluator {
       throw new java.io.IOException(ex);
     }
 
-    // LOOK: the real problem is the lack of named dimensions in the Array object
-    // figure out correct permutation for canonical ordering for permute
-    List<Dimension> oldDims = new ArrayList<>(vs.getDimensions());
-    int[] permuteIndex = new int[dataVolume.getRank()];
-    int count = 0;
-    if (oldDims.contains(rtdim)) permuteIndex[count++] = oldDims.indexOf(rtdim);
-    if (oldDims.contains(edim)) permuteIndex[count++] = oldDims.indexOf(edim);
-    if (oldDims.contains(tdim)) permuteIndex[count++] = oldDims.indexOf(tdim);
-    if (oldDims.contains(zdim)) permuteIndex[count++] = oldDims.indexOf(zdim);
-    if (oldDims.contains(ydim)) permuteIndex[count++] = oldDims.indexOf(ydim);
-    if (oldDims.contains(xdim)) permuteIndex[count] = oldDims.indexOf(xdim);
-
-    if (debugArrayShape) {
-      System.out.println("oldDims = ");
-      for (Dimension oldDim : oldDims) System.out.println("   oldDim = " + oldDim.getShortName());
-      System.out.println("permute dims = ");
-      for (int aPermuteIndex : permuteIndex) System.out.println("   oldDim index = " + aPermuteIndex);
-    }
-
-    // check to see if we need to permute
-    boolean needPermute = false;
-    for (int i = 0; i < permuteIndex.length; i++) {
-      if (i != permuteIndex[i]) needPermute = true;
-    }
-
-    // permute to the order rt,e,t,z,y,x
-    if (needPermute)
+    // permute to canonical order if needed; order rt,e,t,z,y,x
+    int[] permuteIndex = calcPermuteIndex();
+    if (permuteIndex != null)
       dataVolume = dataVolume.permute(permuteIndex);
 
     // eliminate fixed dimensions, but not all dimensions of length 1.
-    count = 0;
+    int count = 0;
     if (rtdim != null) {
       if (rt >= 0) dataVolume = dataVolume.reduce(count);
       else count++;
@@ -550,11 +527,18 @@ public class DtCoverage implements IsMissingEvaluator {
     return dataVolume;
   }
 
-  public Array readSubset(List<Range> subset) throws InvalidRangeException, IOException {
+  /**
+   * This reads an arbitrary data section, returning the data in
+   * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
+   *
+   * @param subset - each Range must be named by the axisType that its used for
+   *
+   * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
+   */
+  public Array readDataSection(List<Range> subset) throws InvalidRangeException, IOException {
 
     // get the ranges list in the order of the variable; a null range means "all" to vs.read()
-    int rank = getRank();
-    Range[] varRange = new Range[rank];
+    Range[] varRange = new Range[getRank()];
     for (Range r : subset) {
       AxisType type = AxisType.valueOf(r.getName());
       switch (type) {
@@ -586,10 +570,48 @@ public class DtCoverage implements IsMissingEvaluator {
     // read it
     Array dataVolume = vs.read(Arrays.asList(varRange));
 
-    // LOOK permute to canonical order if needed
-
+    // permute to canonical order if needed; order rt,e,t,z,y,x
+    int[] permuteIndex = calcPermuteIndex();
+    if (permuteIndex != null)
+      dataVolume = dataVolume.permute(permuteIndex);
 
     return dataVolume;
+  }
+
+  private int[] calcPermuteIndex() throws java.io.IOException {
+    Dimension xdim = getXDimension();
+    Dimension ydim = getYDimension();
+    Dimension zdim = getZDimension();
+    Dimension tdim = getTimeDimension();
+    Dimension edim = getEnsembleDimension();
+    Dimension rtdim = getRunTimeDimension();
+
+    // LOOK: the real problem is the lack of named dimensions in the Array object
+    // figure out correct permutation for canonical ordering for permute
+    List<Dimension> oldDims = vs.getDimensions();
+    int[] permuteIndex = new int[vs.getRank()];
+    int count = 0;
+    if (oldDims.contains(rtdim)) permuteIndex[count++] = oldDims.indexOf(rtdim);
+    if (oldDims.contains(edim)) permuteIndex[count++] = oldDims.indexOf(edim);
+    if (oldDims.contains(tdim)) permuteIndex[count++] = oldDims.indexOf(tdim);
+    if (oldDims.contains(zdim)) permuteIndex[count++] = oldDims.indexOf(zdim);
+    if (oldDims.contains(ydim)) permuteIndex[count++] = oldDims.indexOf(ydim);
+    if (oldDims.contains(xdim)) permuteIndex[count] = oldDims.indexOf(xdim);
+
+    if (debugArrayShape) {
+      System.out.println("oldDims = ");
+      for (Dimension oldDim : oldDims) System.out.println("   oldDim = " + oldDim.getShortName());
+      System.out.println("permute dims = ");
+      for (int aPermuteIndex : permuteIndex) System.out.println("   oldDim index = " + aPermuteIndex);
+    }
+
+    // check to see if we need to permute
+    boolean needPermute = false;
+    for (int i = 0; i < permuteIndex.length; i++) {
+      if (i != permuteIndex[i]) needPermute = true;
+    }
+
+    return needPermute ? permuteIndex : null;
   }
 
 
