@@ -222,11 +222,12 @@ public class LogLocalManager {
           String filenameDate;
           int len = name.length();
 
-          // all: access.2013-07-29.log
+          // all: access.2013-07-29.log  or  localhost_access_log.2015-06-17.txt
           // 4.3: threddsServlet.log.2013-08-01-14
           // 4.4: threddsServlet.2013-08-01-14.log
-          if (name.startsWith("access.")) {
-            filenameDate = name.substring("access.".length(), len - 4);
+          if (name.contains("access")) {
+            int pos = name.indexOf(".");
+            filenameDate = name.substring(pos+1, len - 4);
           } else if (name.startsWith("threddsServlet.log.")) {
             filenameDate = name.substring("threddsServlet.log.".length());
           } else if (name.startsWith("threddsServlet.")) {

@@ -308,7 +308,7 @@ public class AccessLogTable extends JPanel {
     }
 
     LogReader reader = new LogReader(new AccessLogParser());
-    completeLogs = new ArrayList<LogReader.Log>(30000);
+    completeLogs = new ArrayList<>(30000);
 
     if ((start != null) && (end != null))
       filter = new LogReader.DateFilter(start.getTime(), end.getTime(), filter);

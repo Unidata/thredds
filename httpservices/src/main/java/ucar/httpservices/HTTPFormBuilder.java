@@ -149,11 +149,14 @@ public class HTTPFormBuilder
         parts.put(fieldname, f);
     }
 
-    public void add(String fieldname, final byte[] content, String filename)
+    public void add(String fieldname,  byte[] content, String filename)
         throws HTTPException
     {
-        if(isempty(fieldname) || content == null || isempty(filename))
+        if(isempty(fieldname))
             throw new IllegalArgumentException();
+        if(content == null) content = new byte[0];
+        if(isempty(filename)) filename = "";
+
         Field f = new Field(Sort.BYTES, fieldname, content, filename);
         parts.put(fieldname, f);
         this.usemultipart = true;

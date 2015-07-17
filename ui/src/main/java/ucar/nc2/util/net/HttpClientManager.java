@@ -237,7 +237,7 @@ public class HttpClientManager
             int status = m.execute();
 
             if(status != 200) {
-                throw new IOException("failed status = " + status);
+                throw new IOException(urlencoded+": failed status = " + status);
             }
 
             String charset = m.getResponseCharSet();

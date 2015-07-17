@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>2015 Training Workshop Schedule : TDS Configuration and Administration</title>
+<style>
+/* general */
+body {
+    font-size: 12pt;
+}
+
+code {
+    color: #708090 !important;
+}
+
+h1 {
+    font-size: 20pt;
+    padding: 15px 0px 10px 80px;
+    margin: 10px 0px 30px 0px;
+    background: transparent url('images/thredds-50x50.png') no-repeat 0px 0px;
+    border: none;
+}
+
+h3 {
+    padding: 0px 0px 0px 0px;
+    margin: 20px 0px;
+    font-size: 14pt !important;
+    color: #000000 !important;
+}
+
+h4 {
+    border: none !important;
+}
+
+pre {
+    white-space: pre-wrap;
+    position: relative;
+    font-family: "Lucida Console", "Courier New", monospace;
+    margin: 0px 0px 20px 0px;
+    padding: 5px 10px 5px 10px;
+    background: #FAF8F0;
+    border: 1px solid #BEBAB0;
+    font-size: 9pt;
+}
+
+.notice {
+    margin-top: -40px;
+    font-size: 10pt
+}
+
+ul {
+    margin: 0 0 20px 0;
+}
+
+/* breadcrumbs */
+ul#breadcrumbs {
+    list-style: none;
+    font-size: 11px;
+    margin: 0 0 20px 0;
+    padding: 0;
+    color: #696969;
+}
+
+ul#breadcrumbs li {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+ul#breadcrumbs li a {
+    padding: 0px 20px 0px 0px;
+    background: transparent url('images/breadcrumb.png') no-repeat center right;
+}
+
+/* section formatting */
+#section {
+    border: 3px solid #CFCFCF;
+    padding: 30px 30px 10px 30px;
+    margin: 20px 0px 60px 0px;
+}
+
+#section h2 {
+    padding: 0px 0px 0px 0px;
+    margin: -45px 0px 0px -15px;
+    color: #9C9C9C;
+    font-size: 16pt;
+}
+
+#section h2 a {
+    text-decoration: none;
+    border: none;
+    background-color: #FFFFFF;
+    padding: 0px 10px 0px 10px;
+    margin: 0px 10px 0px 0px;
+}
+
+#section h2 a:hover {
+    color: #9C9C9C;
+}
+
+/* right floating boxes */
+#note {
+    z-index: 10;
+    border: 2px dashed #4682B4;
+    padding: 10px 10px 5px 10px;
+    margin: 0px 0px 10px 50px;
+    float: right;
+    position: relative;
+    width: 250px;
+    font-size: 10pt;
+}
+
+#note h4 {
+    padding: 0px 0px 0px 40px;
+    margin: 0px 0px 15px 0px;
+}
+
+/* full width boxes */
+#expanded {
+    padding: 5px 5px 5px 45px;
+    margin: 20px 0px 30px 0px;
+    border: 1px dashed #CFCFCF;
+    font-size: 10pt;
+    background-color: #CFCFCF
+}
+
+#expanded.exercise {
+    padding: 5px 5px 5px 75px !important;
+    background: transparent url('images/exercise.png') no-repeat 10px 10px;
+    border: 1px solid #4682B4;
+}
+
+/* floating boxes formatting */
+.info {
+    background: #FFFFFF url('images/info.png') no-repeat 10px 5px;
+}
+
+.reminder {
+    background: #FFFFFF url('images/reminder.png') no-repeat 10px 5px;
+}
+
+.ahead {
+    background: #FFFFFF url('images/ahead.png') no-repeat 10px 5px;
+}
+
+.troubleshooting {
+    background: transparent url('images/troubleshooting.png') no-repeat 10px 5px;
+}
+
+.question {
+    background: transparent url('images/question.png') no-repeat 10px 10px;
+}
+
+/* table stuff */
+table {
+    table-layout: auto;
+    border-collapse: separate;
+    font-size: 10pt;
+}
+
+th {
+    text-align: left;
+    background-color: #E7E7E7;
+    border-spacing: 2px;
+    border: 1px solid #CFCFCF;
+    padding: 2px 5px 2px 5px;
+    vertical-align: top;
+}
+
+td {
+    text-align: left;
+    background-color: #F7F7F7;
+    border-spacing: 2px;
+    border: 1px solid #CFCFCF;
+    padding: 2px 5px 2px 5px;
+    vertical-align: top;
+}
+
+table code {
+    font-size: 10pt;
+}
+
+/* tooltips */
+a.tooltip {
+    color: #0000FF;
+    text-decoration: none;
+}
+
+a.tooltip b {
+    display: none;
+}
+
+a.tooltip:hover {
+    border: 0px;
+    position: relative;
+    z-index: 500;
+    text-decoration: none;
+}
+
+a.tooltip:hover b {
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: -25px;
+    padding: 5px;
+    font-weight: normal;
+    color: #000;
+    border: 1px solid #000000;
+    background: #FFFFFF;
+    width: 300px;
+}
+
+a.tooltip:hover b em.outer {
+    position: absolute;
+    left: 20px;
+    top: -8px;
+    width: 0;
+    height: 0;
+    display: block;
+    background: transparent;
+    border-left: 7px dashed transparent;
+    border-right: 7px dashed transparent;
+    border-bottom: 7px solid #000000;
+    overflow: hidden;
+    z-index: 100;
+}
+
+a.tooltip:hover b em.inner {
+    position: absolute;
+    left: 20px;
+    top: -7px;
+    width: 0;
+    height: 0;
+    display: block;
+    background: transparent;
+    border-left: 7px dashed transparent;
+    border-right: 7px dashed transparent;
+    border-bottom: 7px solid #FFFFFF;
+    overflow: hidden;
+    z-index: 100
+}
+
+.clear {
+    clear: both;
+}
+
+/* dialog box*/
+.ui-dialog {
+    text-align: left;
+    font-size: 12pt !important
+}
+
+.ui-dialog h3 {
+    border-bottom: 1px solid #696969;
+    background: transparent url('images/view.png') no-repeat left center;
+    padding-left: 100px;
+}
+
+.ui-dialog ol {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.ui-dialog pre {
+    margin-top: 20px
+}
+
+.ui-dialog-titlebar {
+    display: none;
+}
+
+/* tutorial links */
+.example {
+    display: block;
+    padding: 5px 5px 5px 115px !important;
+    margin: 10px;
+    background: transparent url('images/view.png') no-repeat 10px 2px;
+    font-size: 11pt;
+    color: #0000FF;
+    cursor: pointer;
+}
+
+
+
+
+</style>
+</head>
+<body class="article">
+<div id="header">
+<h1>2015 Training Workshop Schedule : TDS Configuration and Administration</h1>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_23_july_2015_tds_installation_management_and_configuration">23 July 2015 : TDS Installation, Management, and Configuration</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_8_00_9_00_coffee_and_continental_breakfast">8:00 - 9:00 Coffee and continental breakfast</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Participant Introductions</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Name, organization, how you use TDS.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Introduction of Unidata staff</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_9_00_9_30_welcome_and_logistics_tds_motivation_and_technology_overview_ethan">9:00 - 9:30 Welcome and Logistics / TDS Motivation and Technology Overview (Ethan?)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Review of schedule</p>
+</li>
+<li>
+<p>Why use TDS? (<a href="TDSOverview.pptx">PPT</a>)(<a href="TDSOverview.pdf">PDF</a>)</p>
+</li>
+<li>
+<p>TDS Resources: <a href="../TDS.html">Web page</a>,
+<a href="../reference/index.html">Reference</a>, <a href="../faq.html">FAQ</a></p>
+</li>
+<li>
+<p><a href="http://www.unidata.ucar.edu/community/surveys/2015training/survey.html">Feedback/Evaluation
+Form</a> (Repeated submissions encouraged)</p>
+</li>
+<li>
+<p>Etherpad for live feedback</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_9_30_10_15_tds_with_docker_sean">9:30 - 10:15 TDS with Docker (Sean)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="GettingStarted.html#tour">Tomcat Directory Structure: Quick Tour</a></p>
+</li>
+<li>
+<p><a href="GettingStarted.html#running">Running Tomcat</a></p>
+</li>
+<li>
+<p><a href="GettingStarted.html#logs">Tomcat Log Files</a></p>
+</li>
+<li>
+<p>Deploying the TDS</p>
+</li>
+<li>
+<p><a href="GettingStarted.html#manager">Tomcat <code>manager</code> Application</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_10_15_10_30_break">10:15 - 10:30 Break</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_10_30_11_30_tds_server_configuration">10:30 - 11:30 TDS Server Configuration</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>TDS Refresher (all default catalogs, no modifications)</p>
+</li>
+<li>
+<p>ContentPath (setenv.sh) [Sean]</p>
+</li>
+<li>
+<p>threddsConfig.xml local information [Sean]</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="BasicThreddsConfig_xml.html">Basic threddsConfig.xml</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="CatalogPrimer.html">TDS Client Catalog Overview</a> (Ryan)</p>
+</li>
+<li>
+<p><a href="BasicConfigCatalogs.html">TDS Configuration Catalogs</a> (Ryan)</p>
+</li>
+<li>
+<p><a href="ConfigCatalogs.html">TDS Configuration Catalogs</a> (Ryan)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Unidata&#8217;s <a href="https://github.com/Unidata/TdsConfig">TDS Server catalogs</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="../reference/Services.html">Services</a> (Christian)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Topics to cover:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>compound services</p>
+</li>
+<li>
+<p>base not configurable</p>
+</li>
+<li>
+<p>httpserver needs files</p>
+</li>
+<li>
+<p>turn some on in threddsconfig.xml</p>
+</li>
+<li>
+<p>enabling NetCDF4 for NCSS: Compression!</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="../reference/ThreddsConfigXMLFile.html">threddsConfig Reference</a> (Christian)</p>
+</li>
+<li>
+<p>enabling writing netCDF-4 files</p>
+</li>
+<li>
+<p>URL construction [Christian]</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_11_30_12_30_tds_services_catalogs_opendap_ncss_ncwms_nciso_cdmremote_dennis">11:30 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="DAP.html">OPeNDAP DAP2 and DAP4 Protocol Services</a></p>
+</li>
+<li>
+<p>Netcdf Subset Service</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../reference/NetcdfSubsetServiceConfigure.html">configure</a>,</p>
+</li>
+<li>
+<p><a href="../reference/NetcdfSubsetServiceReference.html">reference</a> (<a href="../reference/files/NCSS_4_3.pdf">pdf</a>)</p>
+</li>
+<li>
+<p>URL Builder</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_12_30_1_30_lunch">12:30 - 1:30 Lunch</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_1_30_2_00_accessing_tds_with_python_clients_ryan">1:30 - 2:00 Accessing TDS with python clients (Ryan)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>links to notebooks</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_00_3_00_tds_monitoring_debugging_logs_jen_sean_ryan">2:00 - 3:00 TDS Monitoring, Debugging, Logs (Jen, Sean, Ryan)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Tomcat Stuff (SEAN AND JEN WILL MEET)</p>
+</li>
+<li>
+<p>Looking at logs on the server</p>
+</li>
+<li>
+<p>Looking at logs on the server using Remote Management (aka <a href="http://localhost:8080/thredds/admin/debug">debug</a> page)</p>
+</li>
+<li>
+<p><a href="tdsMonitor.html">Using the TdsMonitor tool</a></p>
+</li>
+<li>
+<p><a href="TroubleShooting.html">Troubleshooting Configuration Catalogs</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_00_3_15_break">3:00 - 3:15 Break</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_3_15_3_45_using_toolsui_christian">3:15 - 3:45 Using ToolsUI (Christian)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Running <a href="../../netcdf-java/ToolsUI.html">ToolsUI</a></p>
+</li>
+<li>
+<p>Use Case: Using ToolsUI to serve new data</p>
+<div class="ulist">
+<ul>
+<li>
+<p>IOSP and FeatureTypes</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_45_4_15_ncml_metadata_editing_with_the_goal_of_enhancing_data_discovery_sean">3:45 - 4:15 NcML - Metadata editing with the goal of enhancing Data Discovery (Sean)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../../netcdf-java/ncml/Tutorial.html">Basic NcML tutorial</a></p>
+</li>
+<li>
+<p><a href="NcML.htm">Using NcML in the TDS</a></p>
+</li>
+<li>
+<p>Data discovery systems: (<a href="files/metadata_ncISO.pdf">pdf</a>)</p>
+</li>
+<li>
+<p><a href="../reference/ncISO.html">ncIso</a></p>
+</li>
+<li>
+<p>exercise- how can we increase our ncISO score?</p>
+</li>
+<li>
+<p><a href="http://wiki.esipfed.org/index.php?title=Category:Attribute_Conventions_Dataset_Discovery">Attribute
+Convention for Data Discovery</a> (Ethan?)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_15_4_45_software_engineering_and_contributing_christian">4:15 - 4:45 Software Engineering and Contributing (Christian)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Source on <a href="https://github.com/Unidata/thredds">GitHub</a></p>
+</li>
+<li>
+<p>Build with gradle</p>
+</li>
+<li>
+<p>Maven artifacts on <a href="https://artifacts.unidata.ucar.edu/index.html#view-repositories">Nexus</a>CDM/TDS Nightly Build/Test System (Jenkins)</p>
+</li>
+<li>
+<p>CDM/TDS Nightly Build/Test System (<a href="images/jenkins.png">Jenkins</a>)</p>
+</li>
+<li>
+<p>Continuous Integration on <a href="https://travis-ci.org/Unidata/thredds">Travis</a></p>
+</li>
+<li>
+<p>Static code analysis on <a href="https://scan.coverity.com/projects/388?tab=overview">Coverity</a></p>
+</li>
+<li>
+<p>Issue Tracking with <a href="http://www.unidata.ucar.edu/jira/">JIRA</a></p>
+</li>
+<li>
+<p><a href="http://www.unidata.ucar.edu/support/#mailinglists">Email Lists</a>: <a href="mailto:thredds@unidata.ucar.edu">thredds@unidata.ucar.edu</a>; <a href="mailto:netcdf-java@unidata.ucar.edu">netcdf-java@unidata.ucar.edu</a></p>
+</li>
+<li>
+<p><a href="http://www.unidata.ucar.edu/support/index.html#archives">Support</a>: <a href="mailto:support-thredds@unidata.ucar.edu">support-thredds@unidata.ucar.edu</a>; <a href="mailto:support-netcdf-java@unidata.ucar.edu">support-netcdf-java@unidata.ucar.edu</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_discussion_and_questions">Discussion and Questions</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_day_one_finish">Day One Finish</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_dinner_tbd_bru">Dinner TBD (BRU?)</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_24_july_2015_july_2015_advanced_uses_of_tds">24 July 2015 : July 2015: Advanced Uses of TDS</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_8_00_8_30_coffee_and_continental_breakfast">8:00 - 8:30 Coffee and continental breakfast</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_8_30_9_30_advanced_tds_configuration_christian">8:30 - 9:30 Advanced TDS Configuration (Christian?)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../reference/collections/FeatureCollections.html">FeatureCollections</a></p>
+</li>
+<li>
+<p><a href="FmrcFeatureCollectionsTutorial.html">FMRC Tutorial</a></p>
+</li>
+<li>
+<p><a href="../reference/collections/PointFeatures.html">Point Feature Collections</a></p>
+</li>
+<li>
+<p><a href="../UpgradingTo4.6.html">Upgrading to 4.6</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_9_30_10_00_reading_grib_data_with_the_cdm">9:30 - 10:00 Reading GRIB data with the CDM (????)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>General overview of tools for GRIB</p>
+</li>
+<li>
+<p>ToolsUI</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Viewer</p>
+</li>
+<li>
+<p>IOSP</p>
+</li>
+<li>
+<p>Grid Feature Type</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_10_00_10_15_issues_with_grib_tables_sean">10:00 - 10:15 Issues with GRIB Tables (Sean)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Table versioning</p>
+</li>
+<li>
+<p>Grib1 vs Grib2</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_10_15_10_30_break_2">10:15 - 10:30 Break</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_10_30_12_30_grib_feature_collections_john_sean_ryan_christian">10:30 - 12:30 GRIB Feature Collections (John, Sean, Ryan, Christian)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>cache, index files, partition types (architecture background) (John)</p>
+</li>
+<li>
+<p><a href="GRIBFeatureCollectionTutorial.html">GRIB Feature Collection Tutorial</a></p>
+</li>
+<li>
+<p>Using the THREDDS Data Manager (TDM)</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../reference/collections/TDM.html">TDM</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="GribCollectionExamples.html">GRIB Collection Examples</a></p>
+</li>
+<li>
+<p><a href="../reference/ThreddsConfigXMLFile.html#GribIndexWriting">GRIB Index redirection</a></p>
+</li>
+<li>
+<p>GRIB FAQ</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_12_30_1_30_lunch_2">12:30 - 1:30 Lunch</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_1_30_2_30_problem_solving_sean">1:30 - 2:30 Problem Solving (Sean)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Examples:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Multiple groups</p>
+</li>
+<li>
+<p>names must be unique (i.e. we need updated tables)</p>
+</li>
+<li>
+<p>typical e-support type questions</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_30_4_30_discussion_questions_and_1_on_1_with_participants_all">2:30 - 4:30 Discussion, Questions, and 1-on-1 with Participants (All)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>After looking over the workshop schedule, please send us topics you&#8217;d like to discuss during this time</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_day_two_finish">Day Two Finish</h3>
+
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-07-06 14:59:41 MDT
+</div>
+</div>
+</body>
+</html>

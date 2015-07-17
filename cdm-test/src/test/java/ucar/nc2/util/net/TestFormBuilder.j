@@ -40,7 +40,6 @@ import ucar.httpservices.HTTPFormBuilder;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.util.UnitTestCommon;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +57,6 @@ public class TestFormBuilder extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static final boolean DEBUG = false;
-
     static protected final String TESTURL = "http://echo.httpkit.com";
 
     static protected final String FAKEBOUNDARY = "XXXXXXXXXXXXXXXXXXXX";
@@ -73,10 +70,9 @@ public class TestFormBuilder extends UnitTestCommon
     static final String SOFTWAREPACKAGEENTRY = "IDV";
     static final String VERSIONENTRY = "1.0.1";
     static final String HARDWAREENTRY = "x86";
-    static final String OSTEXT = System.getProperty("os.name");
     static final String EXTRATEXT = "extra";
     static final String BUNDLETEXT = "bundle";
-    static final String ATTACHTEXT = "arbitrary data\n";
+    static final String OSTEXT = System.getProperty("os.name");
 
     static final char QUOTE = '"';
     static final char COLON = ':';
@@ -93,9 +89,6 @@ public class TestFormBuilder extends UnitTestCommon
     boolean pass = false;
 
     protected String boundary = null;
-
-    File attach3file = null;
-
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -129,7 +122,7 @@ public class TestFormBuilder extends UnitTestCommon
                     Object json = Json.parse(body);
                     json = cleanup(json, false);
                     String text = Json.toString(json);
-                    text = localize(text, OSTEXT);
+                    text = localize(text, OSTEXT, false);
                     if(prop_visual)
                         visual(TESTURL, text);
                     String diffs = compare("TestSimple", expectedSimple, text);
@@ -151,24 +144,6 @@ public class TestFormBuilder extends UnitTestCommon
     testMultiPart()
             throws Exception
     {
-        // Try to create a tmp file
-        String tmppath = System.getenv("TEMP");
-        if(tmppath == null || tmppath.length() == 0)
-            tmppath = "/tmp";
-        File tmpdir = new File(tmppath);
-        if(!tmpdir.exists() || !tmpdir.canWrite())
-            throw new IOException("Cannot create temp file: no tmp dir");
-        try {
-            attach3file = File.createTempFile("attach3", ".txt", tmpdir);
-            attach3file.deleteOnExit();
-        } catch (IOException e) {
-            throw new IOException("Cannot create temp file");
-        }
-
-        // Fill with the value of ATTACHTEXT
-        FileOutputStream fw = new FileOutputStream(attach3file);
-        fw.write(ATTACHTEXT.getBytes(HTTPFormBuilder.ASCII));
-        fw.close();
         pass = true;
         try {
             HTTPFormBuilder builder = buildForm(true);
@@ -183,12 +158,10 @@ public class TestFormBuilder extends UnitTestCommon
                     pass = false;
                 }
                 if(pass) {
-                    if(DEBUG)
-                       visual("RAW",body);
                     Object json = Json.parse(body);
                     json = cleanup(json, true);
                     String text = Json.toString(json);
-                    text = localize(text, OSTEXT);
+                    text = localize(text, OSTEXT, true);
                     body = text;
                     if(prop_visual)
                         visual(TESTURL, body);
@@ -230,24 +203,25 @@ public class TestFormBuilder extends UnitTestCommon
         if(multipart) {
             builder.add("attachmentOne", EXTRATEXT.getBytes(HTTPFormBuilder.ASCII), "extra.html");
             builder.add("attachmentTwo", BUNDLETEXT.getBytes(HTTPFormBuilder.ASCII), "bundle.xidv");
-            if(attach3file != null)
-                builder.add("attachmentThree", attach3file);
+            builder.add("attachmentThree", new byte[]{1, 2, 0}, "arbfile");
         }
         return builder;
     }
 
-    protected String localize(String text, String os)
+    protected String localize(String text, String os, boolean multipart)
             throws HTTPException
     {
-	// Handle case with and without blank/+
-        text = text.replace(os, "<OSNAME>");
-        os = os.replace(' ', '+');
-        text = text.replace(os, "<OSNAME>");
+        if(multipart)
+            text = text.replace(os, "<OSNAME>");
+        else {
+            os = os.replace(' ', '+');
+            text = text.replace(os, "<OSNAME>");
+        }
         return text;
     }
 
     protected Map<String, Object> cleanup(Object o, boolean multipart)
-            throws IOException
+            throws HTTPException
     {
         Map<String, Object> map = (Map<String, Object>) o;
         map = (Map<String, Object>) sort(map);
@@ -276,7 +250,7 @@ public class TestFormBuilder extends UnitTestCommon
                 map.put("body", mapjoin(bodymap, "\n", ": "));
             } else {
                 Map<String, String> bodymap = parsesimplebody(body);
-                map.put("body", mapjoin(bodymap, "&", "="));
+                map.put("body", mapjoin(bodymap, "&","="));
             }
         }
         return map;
@@ -319,69 +293,68 @@ public class TestFormBuilder extends UnitTestCommon
         return map;
     }
 
-    static final String patb = "--.*";
-    static final Pattern blockb = Pattern.compile(patb);
+    static final Pattern blockb = Pattern.compile(
+            "--[^\n]*+[\n]", Pattern.DOTALL);
 
-    static final String patcd =
-            "Content-Disposition:\\s+form-data;\\s+name=[\"]([^\"]*)[\"]";
-    static final Pattern blockcd = Pattern.compile(patcd);
-    static final String patcdx = patcd
-            + "\\s*[;]\\s+filename=[\"]([^\"]*)[\"]";
-    static final Pattern blockcdx = Pattern.compile(patcdx);
+    static final Pattern blockc = Pattern.compile(
+            "Content-Disposition:\\s+form-data;\\s+name="
+                    + "[\"]([^\"]*)[\"]"
+            , Pattern.DOTALL);
+
+    static final Pattern blockf = Pattern.compile(
+            "[;]\\s+filename="
+                    + "[\"]([^\"]*)[\"]"
+                    + "[\n][Cc]ontent-[Tt]ype[:]\\s*([^\n]*)"
+            , Pattern.DOTALL);
+
+    static final Pattern blockx = Pattern.compile(
+            "([^\n]*)[\n]"
+            , Pattern.DOTALL);
+
 
     protected Map<String, String> parsemultipartbody(String body)
-            throws IOException
+            throws HTTPException
     {
         Map<String, String> map = new TreeMap<>();
         body = body.replace("\r\n", "\n");
-        StringReader sr = new StringReader(body);
-        BufferedReader rdr = new BufferedReader(sr);
-        String line = rdr.readLine();
-        if(line == null)
-            throw new HTTPException("Empty body");
-        for(; ; ) { // invariant is that the next unconsumed line is in line
-            String name = null;
+        while(body.length() > 0) {
+            Matcher mb = blockb.matcher(body);
+            if(!mb.lookingAt()) {
+                throw new HTTPException("Missing boundary marker : " + body);
+            }
+            int len = mb.group(0).length();
+            body = body.substring(len);
+            if(body.length() == 0) break; // trailing boundary marker
+            Matcher mc = blockc.matcher(body);
+            if(!mc.lookingAt())
+                throw new HTTPException("Missing Content-type marker : " + body);
+            len = mc.group(0).length();
+            String name = mc.group(1);
+            body = body.substring(len);
+            Matcher mf = blockf.matcher(body);
             String filename = null;
-            StringBuilder value = new StringBuilder();
-            if(!line.startsWith("--"))
-                throw new HTTPException("Missing boundary marker : " + line);
-            line = rdr.readLine();
-            // This might have been the trailing boundary marker
-            if(line == null)
-                break;
-            if(line.toLowerCase().startsWith("content-disposition")) {
-                // Parse the content-disposition
-                Matcher mcd = blockcdx.matcher(line); // try extended
-                if(!mcd.lookingAt()) {
-                    mcd = blockcd.matcher(line);
-                    if(!mcd.lookingAt())
-                        throw new HTTPException("Malformed Content-Disposition marker : " + line);
-                    name = mcd.group(1);
-                }  else {
-                    name = mcd.group(1);
-                    filename = mcd.group(2);
-                }
-            } else
-                throw new HTTPException("Missing Content-Disposition marker : " + line);
-            // Treat content-type line as optional; may or may not have charset
-            line = rdr.readLine();
-            if(line.toLowerCase().startsWith("content-type")) {
-                line = rdr.readLine();
+            String contenttype = null;
+            if(mf.lookingAt()) {
+                filename = mf.group(1);
+                contenttype = mf.group(2);
+                len = mf.group(0).length();
+                body = body.substring(len);
             }
-            // treat content-transfer-encoding line as optional
-            if(line.toLowerCase().startsWith("content-transfer-encoding")) {
-                line = rdr.readLine();
+            // Skip the two newlines
+            if(!body.startsWith("\n\n"))
+                throw new HTTPException("Missing newlines");
+            body = body.substring(2);
+            // Extract the pieces
+            String value = null;
+            Matcher mx = blockx.matcher(body);
+            if(mx.lookingAt()) {
+                value = mx.group(1);
+                len = mx.group(0).length();
+                body = body.substring(len);
+            } else {
+                throw new HTTPException("Match failure at : " + body);
             }
-            // Skip one blank line
-            line = rdr.readLine();
-            // Extract the content
-            value.setLength(0);
-            while(!line.startsWith("--")) {
-                value.append(line);
-                value.append("\n");
-                line = rdr.readLine();
-            }
-            map.put(name, value.toString());
+            map.put(name, value);
         }
         return map;
     }
@@ -428,7 +401,7 @@ public class TestFormBuilder extends UnitTestCommon
     static final String expectedMultipart =
             "{\n"
                     + "  \"body\" : \"attachmentOne: extra\n"
-                    + "attachmentThree: arbitrary data\n"
+                    + "attachmentThree: u0001u0002u0000\n"
                     + "attachmentTwo: bundle\n"
                     + "description: TestFormBuilder\n"
                     + "emailAddress: idv@ucar.edu\n"
@@ -438,8 +411,7 @@ public class TestFormBuilder extends UnitTestCommon
                     + "os: <OSNAME>\n"
                     + "packageVersion: 1.0.1\n"
                     + "softwarePackage: IDV\n"
-                    + "subject: hello\n"
-                    + "\",\n"
+                    + "subject: hello\",\n"
                     + "  \"docs\" : \"http://httpkit.com/echo\",\n"
                     + "  \"ip\" : \"127.0.0.1\",\n"
                     + "  \"method\" : \"POST\",\n"
@@ -452,3 +424,6 @@ public class TestFormBuilder extends UnitTestCommon
                     + "  \"uri\" : \"/\"\n"
                     + "}\n";
 }
+
+
+

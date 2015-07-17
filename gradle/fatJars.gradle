@@ -134,6 +134,11 @@ configure(fatJarTasks - buildTdmFat) {
     exclude '*.xml'
 }
 
+// Exclude *.xml files from all fat jars except tdmFat; we need tdm's log4j2.xml to be included.
+configure(fatJarTasks - buildTdmFat) {
+    exclude '*.xml'
+}
+
 // See: http://gradle.org/docs/current/userguide/standard_plugins.html#N11EE8
 apply plugin: 'base'
 
