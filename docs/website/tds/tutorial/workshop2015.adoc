@@ -58,7 +58,7 @@ Form] (Repeated submissions encouraged)
  * links to notebooks
 
 === 2:45 - 3:15 Using ToolsUI (Christian)
- * Running link:../../netcdf-java/ToolsUI.html[ToolsUI]
+ * Running link:../../netcdf-java/reference/ToolsUI/ToolsUI.html[ToolsUI]
  * Use Case: Using ToolsUI to serve new data
  ** Access local and remote TDS servers in ToolsUI.
  * IOSP and FeatureTypes
