@@ -1,4 +1,4 @@
-:stylesheet: tutorial_adoc.css 
+:stylesheet: tutorial_adoc.css
 
 = 2015 Training Workshop Schedule : TDS Configuration and Administration
 
@@ -24,9 +24,8 @@ Form] (Repeated submissions encouraged)
  * link:GettingStarted.html#logs[Tomcat Log Files]
  * Deploying the TDS
  * link:GettingStarted.html#manager[Tomcat `manager` Application]
- * TDS Refresher (all default catalogs, no modifications)
- * ContentPath (setenv.sh) [Sean]
- * threddsConfig.xml local information [Sean]
+ * ContentPath (setenv.sh)
+ * threddsConfig.xml local information
 
 === 10:15 - 10:30 Break
 
