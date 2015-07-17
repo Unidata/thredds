@@ -113,7 +113,7 @@ public class ThreddsConfigReader {
   }
 
   public String get(String paramName, String defValue) {
-    String s = getParam( paramName);
+    String s = getParam(paramName);
     return (s == null) ? defValue : s;
   }
 
@@ -140,6 +140,19 @@ public class ThreddsConfigReader {
       log.error("ThreddsConfig: param "+paramName+" not a boolean: " + e.getMessage());
     }
     return defValue;
+  }
+
+
+  public Boolean getBoolean(String paramName) {
+    String s = getParam( paramName);
+    if (s == null) return null;
+
+    try {
+      return Boolean.parseBoolean(s);
+    } catch (Exception e) {
+      log.error("ThreddsConfig: param "+paramName+" not a boolean: " + e.getMessage());
+    }
+    return null;
   }
 
   public long getBytes(String paramName, long defValue) {

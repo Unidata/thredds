@@ -107,12 +107,16 @@
   <li>The TDS provides standard service elements, which know which services are appropriate for each Feature Type.</li>
   <li>User defined services in the root catalog are global and can be referenced by name in any other config catalog. </li>
   <li>User defined services  in non-root catalogs are local to that catalog and override (by name) any global services.</li>
-  <li>All services are enabled unless explicitly disabled.</li>
+  <li>All services are enabled unless explicitly disabled
+    <ul>
+      <li>Except for remote catalog services</li>
+    </ul>
+  </li>
   <li>Standard service  details are <a href="reference/Services.html">here</a></li>
 </ul>
 <h3>FeatureCollections</h3>
 <ul>
-  <li>the  <strong><a href="reference/collections/FeatureCollections.html#update">update</a></strong> element is now <em>startup=&quot;never&quot;</em>, meaning do not update collection on startup, and use existing indices when the collection is accessed.</li>
+  <li>The  <strong><a href="reference/collections/FeatureCollections.html#update">update</a></strong> element default is now <em>startup=&quot;never&quot;</em>, meaning do not update collection on startup, and use existing indices when the collection is accessed.</li>
   <li>The <strong><a href="reference/collections/FeatureCollections.html#filesSort">fileSort</a></strong> element is now inside the <strong>featureCollection</strong> itself, so it can be processed uniformly for all types of feature collections. When a collection shows a list of files, the files will be sorted by increasing name. To use a decreasing sort, use the element <strong>&lt;filesSort increasing=&quot;false&quot; /&gt;</strong> inside the <strong>featureCollection</strong> element. This supercedes the old way of placing that element in the <strong>&lt;gribConfig&gt;</strong> element, or the older verbose  <strong>lexigraphicByName</strong> element:
     <pre>  &lt;filesSort&gt;
     &lt;lexigraphicByName increasing="false" /&gt;  // deprecated

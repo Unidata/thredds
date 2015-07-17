@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import thredds.core.AllowedServices;
+import thredds.core.StandardService;
 import thredds.mock.web.MockTdsContextLoader;
 import ucar.unidata.test.util.NeedsContentRoot;
 import ucar.unidata.test.util.ThreddsServer;
@@ -29,9 +31,13 @@ public class RemoteCatalogControllerTest {
 	private WebApplicationContext wac;
 	private MockMvc mockMvc;
 
+	@Autowired
+ private AllowedServices allowedServices;
+
 	@Before
  	public void setup(){
  		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+		allowedServices.setAllow(StandardService.catalogRemote, true);
  	}
 
 	String dataset="casestudies/ccs039/grids/netCDF/1998062912_eta.nc";

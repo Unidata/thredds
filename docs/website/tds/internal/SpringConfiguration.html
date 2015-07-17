@@ -86,7 +86,11 @@
 <ol>
   <li>    Tomcat loads <em>thredds.war</em> with /WEB-INF/web.xml</li>
   <li>org.springframework.web.context.<em>ContextLoaderListener</em> listens for context loading</li>
-  <li>beans in <em>applicationContext.xml</em> are created and wired, annotations are found and wired.</li>
+  <li>beans in <em>applicationContext.xml</em> are created and wired, annotations are found and wired.
+    <ol>
+      <li>Apparently <em>TdsConfig</em> an be called in @PostConstruct method of spring beans</li>
+    </ol>
+  </li>
   <li><em>TdsContext.afterPropertiesSet(</em><strong>). </strong>This has the <em>ServletContext</em> already set. </li>
   <li>    ContextRefreshedEvent caught by <em>TdsInit</em>. Can assume all beans are now wired.
     <ol>
@@ -107,8 +111,7 @@
 <ul>
   <li>TdsInit using ThreddsConfig</li>
   <li>ThreddsConfig.init() called from TdsContext.afterPropertiesSet()</li>
-  <li>TdsConfigMapper seems to be ethan's replacement ?? seems not used</li>
-  <li>none of it using autowire</li>
+  <li>TdsConfigMapper fills several autowired bean configuration objects: <em>TdsServerInfoBean HtmlConfigBean WmsConfigBean CorsConfigBean TdsUpdateConfigBean</em></li>
 </ul>
 <h3>spring-servlet.xml</h3>
 <ul>

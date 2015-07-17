@@ -33,7 +33,6 @@
 
 package thredds.server.config;
 
-import com.google.common.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
@@ -112,9 +111,6 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
   @Autowired
   @Qualifier("fcTriggerExecutor")
   private ExecutorService executor;  // need this so we can shut it down
-
-  //@Autowired
-  //private CatalogWatcher catalogWatcher;
 
   @Autowired
   private AllowedServices allowedServices;
@@ -220,7 +216,18 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
     //////////////////////////////////////////////////////////
     // Controlling Data Services
-    // see thredds.server.config.AllowableServices
+    // allows users to control services in ThreddsConfig, but not override the default if they havent set
+    // LOOK only exposing the ones alreaady in use. maybe let user override tdsGlobalConfig.xml (phase out ThreddsConfig)
+
+    allowedServices.setAllow(StandardService.catalogRemote, ThreddsConfig.getBoolean("CatalogServices.allowRemote"));
+    allowedServices.setAllow(StandardService.wcs, ThreddsConfig.getBoolean("WCS.allow"));
+    allowedServices.setAllow(StandardService.wms, ThreddsConfig.getBoolean("WMS.allow"));
+    allowedServices.setAllow(StandardService.netcdfSubsetGrid, ThreddsConfig.getBoolean("NetcdfSubsetService.allow"));
+    allowedServices.setAllow(StandardService.netcdfSubsetPoint, ThreddsConfig.getBoolean("NetcdfSubsetService.allow"));
+    allowedServices.setAllow(StandardService.iso_ncml, ThreddsConfig.getBoolean("NCISO.ncmlAllow"));
+    allowedServices.setAllow(StandardService.uddc, ThreddsConfig.getBoolean("NCISO.uddcAllow"));
+    allowedServices.setAllow(StandardService.iso, ThreddsConfig.getBoolean("NCISO.isoAllow"));
+
 
     // CDM configuration
 

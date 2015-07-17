@@ -110,7 +110,7 @@
         </tr>
         <tr>
           <td>Default&nbsp;Availability</td>
-          <td>Enabled</td>
+          <td>Always</td>
         </tr>
         <tr>
           <td>Access Point</td>
@@ -135,7 +135,7 @@
         </tr>
         <tr>
           <td>Default&nbsp;Availability</td>
-          <td>Enabled</td>
+          <td>Always</td>
         </tr>
         <tr>
           <td>Access Point</td>
@@ -153,7 +153,7 @@
         </tr>
         <tr>
           <td>Default&nbsp;Availability</td>
-          <td>Enabled</td>
+          <td>Always</td>
         </tr>
         <tr>
           <td>Access Point</td>
@@ -180,7 +180,7 @@
         </tr>
         <tr>
           <td>Default&nbsp;Availability</td>
-          <td>Enabled</td>
+          <td>Always</td>
         </tr>
         <tr>
           <td>Access Point</td>
@@ -281,7 +281,7 @@
         </tr>
         <tr>
           <td>Default&nbsp;Availability</td>
-          <td>Disabled</td>
+          <td>Enabled</td>
         </tr>
         <tr>
           <td>Access Point</td>
@@ -321,7 +321,7 @@
         </tr>
         <tr>
           <td>Default&nbsp;Availability</td>
-          <td>Disabled</td>
+          <td>Enabled</td>
         </tr>
         <tr>
           <td>Access Point</td>
@@ -537,7 +537,7 @@
       </tr>
       <tr>
         <td>Default&nbsp;Availability</td>
-        <td>Disabled</td>
+        <td>Enabled</td>
       </tr>
       <tr>
         <td>Access Point</td>
@@ -640,7 +640,9 @@
 <pre>&lt;service name="odap" serviceType="<strong>OPeNDAP</strong>" base="<strong>/thredds/dodsC/</strong>"/&gt;</pre>
 
 <h4>NetCDF Subset Service</h4>
-<pre>&lt;service name="ncss" serviceType="<strong>NetcdfSubset</strong>" base="<strong>/thredds/ncss/</strong>"/&gt;</pre>
+<pre>&lt;service name="ncss" serviceType="<strong>NetcdfSubset</strong>" base="<strong>/thredds/ncss/grid</strong>"/&gt;
+
+&lt;service name=&quot;ncss&quot; serviceType=&quot;<strong>NetcdfSubset</strong>&quot; base=&quot;<strong>/thredds/ncss/point</strong>&quot;/&gt;</pre>
 
 <h4>WCS</h4>
 <pre> &lt;service name="wcs" serviceType="<strong>WCS</strong>" base="<strong>/thredds/wcs/</strong>"/&gt;</pre>
@@ -652,9 +654,9 @@
 <pre>&lt;service name="fileServer" serviceType="<strong>HTTPServer</strong>" base="<strong>/thredds/fileServer/"</strong>&nbsp;/&gt;</pre>
 
 <h4>ncISO</h4>
-<pre>&lt;service name="iso" serviceType="<strong>ISO</strong>" base="<strong>/thredds/iso/"</strong>&nbsp;/&gt;</pre>
-<pre>&lt;service name="ncml" serviceType="<strong>NCML</strong>" base="<strong>/thredds/ncml/"</strong>&nbsp;/&gt;</pre>
-<pre>&lt;service name="uddc" serviceType="<strong>UDDC</strong>" base="<strong>/thredds/uddc/"</strong>&nbsp;/&gt;</pre>
+<pre>&lt;service name="iso" serviceType="<strong>ISO</strong>" base="<strong>/thredds/iso/"</strong>&nbsp;/&gt;
+&lt;service name="ncml" serviceType="<strong>NCML</strong>" base="<strong>/thredds/ncml/"</strong>&nbsp;/&gt;
+&lt;service name="uddc" serviceType="<strong>UDDC</strong>" base="<strong>/thredds/uddc/"</strong>&nbsp;/&gt;</pre>
 
 
 <h3><a name="compoundExample">Example compound <code>service</code> Element</a></h3>
@@ -663,7 +665,7 @@
 &lt;service name=&quot;all&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
     &lt;service name=&quot;HTTPServer&quot; serviceType=&quot;<strong>HTTPServer</strong>&quot; base=&quot;<strong>/thredds/fileServer/</strong>&quot;/&gt;
     &lt;service name=&quot;opendap&quot; serviceType=&quot;<strong>OPENDAP</strong>&quot; base=&quot;<strong>/thredds/dodsC/</strong>&quot;/&gt;
-    &lt;service name=&quot;ncss&quot; serviceType=&quot;<strong>NetcdfSubset</strong>&quot; base=&quot;<strong>/thredds/ncss/</strong>&quot;/&gt;
+    &lt;service name=&quot;ncss&quot; serviceType=&quot;<strong>NetcdfSubset</strong>&quot; base=&quot;<strong>/thredds/ncss/grid</strong>&quot;/&gt;
     &lt;service name=&quot;cdmremote&quot; serviceType=&quot;<strong>CdmRemote</strong>&quot; base=&quot;<strong>/thredds/cdmremote/</strong>&quot;/&gt;
 
     &lt;service name=&quot;wcs&quot; serviceType=&quot;<strong>WCS</strong>&quot; base=&quot;<strong>/thredds/wcs/</strong>&quot;/&gt;
@@ -679,7 +681,7 @@
 
 <address>
   <img alt="THREDDS" src="../thread.png" height="71" width="73"/>
-  This document last changed June 2015. Send
+  This document last changed July 2015. Send
   comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 

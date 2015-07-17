@@ -30,75 +30,50 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package thredds.server.cdmvalidator;
 
-package thredds.server.config;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextListener;
 
-import thredds.util.ThreddsConfigReader;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.context.WebApplicationContext;
+import thredds.servlet.UsageLog;
 
 /**
- * Read and process the threddsConfig.xml file.
- * You can access the values by calling ThreddsConfig.getXXX(name1.name2), where
- * <pre>
- *  <name1>
- *   <name2>value</name2>
- *  </name1>
- * </pre>
+ * CDM Validator initializer - called on startup
+ *
+ * @author edavis
+ * @since 4.0
  */
-public final class ThreddsConfig {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  private static ThreddsConfigReader reader;
+public class CdmValidatorConfigContextListener implements ServletContextListener
+{
+  private org.slf4j.Logger logger =
+          org.slf4j.LoggerFactory.getLogger( CdmValidatorConfigContextListener.class );
 
-  public static void init(String filename) {
-    reader = new ThreddsConfigReader(filename, log);
+  public void contextInitialized( ServletContextEvent event )
+  {
+    logger.info( "contextInitialized(): start - " + UsageLog.setupNonRequestContext() );
+
+    // Get webapp context.
+    ServletContext servletContext = event.getServletContext();
+    WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
+
+    // Initialize the TDS context.
+    CdmValidatorContext cdmValidatorContext = wac.getBean( "cdmValidatorContext", CdmValidatorContext.class );
+    cdmValidatorContext.init( servletContext );
+
+    logger.info( "contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
   }
 
-  static public String get(String paramName, String defValue) {
-    if (reader == null) return defValue;
-    return reader.get(paramName, defValue);
+  public void contextDestroyed( ServletContextEvent event )
+  {
+    logger.info( "contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
+    ServletContext servletContext = event.getServletContext();
+    WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
+    CdmValidatorContext cdmValidatorContext = wac.getBean( "cdmValidatorContext", CdmValidatorContext.class );
+    cdmValidatorContext.destroy();
+
+    logger.info( "contextDestroyed(): Done - " + UsageLog.closingMessageNonRequestContext());
   }
-
-  static public boolean hasElement(String paramName) {
-    if (reader == null) return false;
-    return reader.hasElement(paramName);
-  }
-
-  static public boolean getBoolean(String paramName, boolean defValue) {
-    if (reader == null) return defValue;
-    return reader.getBoolean(paramName, defValue);
-  }
-
-  // return null if not set
-  static public Boolean getBoolean(String paramName) {
-    return reader.getBoolean(paramName);
-  }
-
-
-  static public long getBytes(String paramName, long defValue) {
-    if (reader == null) return defValue;
-    return reader.getBytes(paramName, defValue);
-  }
-
-  static public int getInt(String paramName, int defValue) {
-    if (reader == null) return defValue;
-    return reader.getInt(paramName, defValue);
-  }
-
-  static public long getLong(String paramName, long defValue) {
-    if (reader == null) return defValue;
-    return reader.getLong(paramName, defValue);
-  }
-
-  static public int getSeconds(String paramName, int defValue) {
-    if (reader == null) return defValue;
-    return reader.getSeconds(paramName, defValue);
-  }
-
-  static public List<String> getRootList(String elementName) {
-    if (reader == null) return new ArrayList<>(0);
-    return reader.getRootList(elementName);
-  }
-
 }

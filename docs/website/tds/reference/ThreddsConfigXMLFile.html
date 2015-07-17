@@ -246,17 +246,17 @@ where:
 <h3><a name="WCS" id="WCS">WCS Service</a></h3>
 
 <p>The OGC WCS service provided as part of the TDS is described in more detail <a href="WCS.html">here</a>.
-  By default this service is disabled. It can be enabled by including the following in the
+  By default this service is enabled, and can be disabled by including the following in the
   <code>threddsConfig.xml</code> file:</p>
 <pre>
 &lt;WCS&gt;
-  &lt;allow&gt;true&lt;/allow&gt;
+  &lt;allow&gt;false&lt;/allow&gt;
 &lt;/WCS&gt;
 </pre>
 <p>The following shows all the configuration options available in the WCS section of the <code>threddsConfig.xml</code> file with the default values shown:</p>
 <pre>
 &lt;WCS&gt;
-  &lt;allow&gt;false&lt;/allow&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
   &lt;dir&gt;(see the note below)&lt;/dir&gt;
   &lt;scour&gt;15 min&lt;/scour&gt;
   &lt;maxAge&gt;30 min&lt;/maxAge&gt;
@@ -267,7 +267,7 @@ where:
   various options: </p>
 
 <ol>
-  <li><strong>allow</strong>: a value of "true" enables the WCS service.</li>
+  <li><strong>allow</strong>: a value of "false" disables the WCS service.</li>
   <li><strong>dir</strong>: the working directory where generated files are cached
     before being sent to the client (see <a href="#Cache_Locations">choosing a cache directory</a>). If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/wcs/</strong> directory. We recommend that you do not specify a <strong>WCS.dir</strong> element, and use the default.</li>
   <li><strong>scour</strong>: how often to scour the working directory, to delete files that were not successfully downloaded.</li>
@@ -277,17 +277,18 @@ where:
 <h3><a name="WMS" id="WMS">WMS Service</a></h3>
 
 <p>The OGC WMS service provided as part of the TDS is described in more detail <a href="WMS.html">here</a>.
-  By default this service is disabled. It can be enabled by including the following in the <code>threddsConfig.xml</code> file:</p>
+  By default this service is enabled, and can be disabled by including the following in the
+  <code>threddsConfig.xml</code> file:</p>
 <pre>
 &lt;WMS&gt;
-  &lt;allow&gt;true&lt;/allow&gt;
+  &lt;allow&gt;false&lt;/allow&gt;
 &lt;/WMS&gt;
 </pre>
 <p>The following shows all the configuration options available in the WMS section of the
   <code>threddsConfig.xml</code> file with the default values shown:</p>
 <pre>
 &lt;WMS&gt;
-  &lt;allow&gt;false&lt;/allow&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
   &lt;allowRemote&gt;false&lt;/allowRemote&gt;
   &lt;paletteLocationDir&gt;/WEB-INF/palettes&lt;/paletteLocationDir&gt;
   &lt;maxImageWidth&gt;2048&lt;/maxImageWidth&gt;
@@ -297,7 +298,7 @@ where:
 <p>We recommend that you include in the <code>threddsConfig.xml</code> file only the options you
   want to change. Here is the description of the various options:</p>
 <ol>
-  <li><strong>allow</strong>: a value of "true" enables the WMS service.</li>
+  <li><strong>allow</strong>: a value of "false" disables the WMS service.</li>
   <li><strong>allowRemote</strong>: a value of "true" enables the WMS service for datasets
     available from a remote server.
   </li>
@@ -317,17 +318,17 @@ where:
 </ol>
 
 <h3><a name="ncss" id="ncss">NetCDF Subset Service (NCSS)</a></h3>
-<p>The NetCDF Subset Service provided as part of the TDS is described in more detail <a href="NetcdfSubsetServiceReference.html">here</a>. By default this service is disabled. It can be enabled by including the following in the
+<p>The NetCDF Subset Service provided as part of the TDS is described in more detail <a href="NetcdfSubsetServiceReference.html">here</a>. By default this service is enabled, and can be disabled by including the following in the
 <code>threddsConfig.xml</code> file:</p>
 <pre>
 &lt;NetcdfSubsetService&gt;
-  &lt;allow&gt;true&lt;/allow&gt;
+  &lt;allow&gt;false&lt;/allow&gt;
 &lt;/NetcdfSubsetService&gt;
 </pre>
 <p>The following shows all the configuration options available in the NetcdfSubsetService section of the <code>threddsConfig.xml</code> file with the default values shown:</p>
 <pre>
 &lt;NetcdfSubsetService&gt;
-  &lt;allow&gt;false&lt;/allow&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
   &lt;dir&gt;(see the note below)&lt;/dir&gt;
   &lt;scour&gt;15 min&lt;/scour&gt;
   &lt;maxAge&gt;30 min&lt;/maxAge&gt;
@@ -339,7 +340,7 @@ where:
   various options:</p>
   
 <ol>
-  <li><strong>allow</strong>: a value of "true" enables the NetCDF Subset Service.</li>
+  <li><strong>allow</strong>: a value of "false" disables the NetCDF Subset Service.</li>
   <li><strong>dir</strong>: the working directory for creating files for download (see <a href="#Cache_Locations">choosing a cache directory</a>). If not
     otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/ncss/</strong> directory. We recommend that you do not specify a <strong>NetcdfSubsetService.dir</strong> element, and use the default.
   </li>
@@ -355,13 +356,13 @@ where:
 
 <h3><a name="ncISO" id="ncISO">ncISO Service</a></h3>
 
-<p>By default the ncISO services are disabled in the TDS. They can be enabled by including the following in the <code>threddsConfig.xml</code> file:</p>
+<p>By default these services are enabled, and can be disabled by including the following in the <code>threddsConfig.xml</code> file:</p>
 
 <pre>
 &lt;NCISO&gt;
-  &lt;ncmlAllow&gt;true&lt;/ncmlAllow&gt;
-  &lt;uddcAllow&gt;true&lt;/uddcAllow&gt;
-  &lt;isoAllow&gt;true&lt;/isoAllow&gt;
+  &lt;ncmlAllow&gt;false&lt;/ncmlAllow&gt;
+  &lt;uddcAllow&gt;false&lt;/uddcAllow&gt;
+  &lt;isoAllow&gt;false&lt;/isoAllow&gt;
 &lt;/NCISO&gt;
 </pre>
 

@@ -46,7 +46,6 @@ import thredds.client.catalog.Dataset;
 import thredds.core.CatalogManager;
 import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.core.TdsRequestedDataset;
-import thredds.server.config.TdsContext;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
@@ -63,9 +62,6 @@ import java.net.URISyntaxException;
 @RequestMapping(value = "/catalog")
 public class CatalogServiceController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-
-  @Autowired
-  private TdsContext tdsContext;
 
   @Autowired
   private CatalogManager catalogManager;

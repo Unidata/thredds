@@ -6,6 +6,7 @@
   <bean id="allowedServices" class="thredds.core.AllowedServices">
     <property name="allow">
       <map>
+        <entry key="catalogRemote" value="false"/>
         <entry key="cdmRemote" value="true"/>
         <entry key="cdmrFeatureGrid" value="true"/>
         <entry key="dap4" value="true"/>

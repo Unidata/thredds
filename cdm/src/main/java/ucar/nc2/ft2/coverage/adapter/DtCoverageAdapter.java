@@ -10,7 +10,6 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.ProjectionRect;

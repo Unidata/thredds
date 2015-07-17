@@ -4,25 +4,13 @@ package thredds.core;
 import thredds.client.catalog.ServiceType;
 
 /**
- * These are the services that the TDS can do
- *
-         <entry key="cdmRemote" value="true"/>
-         <entry key="cdmrFeatureGrid" value="true"/>
-         <entry key="dap4" value="true"/>
-         <entry key="httpServer" value="true"/>
-         <entry key="resolver" value="true"/>
-         <entry key="netcdfSubsetGrid" value="true"/>
-         <entry key="opendap" value="true"/>
-         <entry key="wcs" value="true"/>
-         <entry key="wms" value="true"/>
-         <entry key="iso" value="true"/>
-         <entry key="ncml" value="true"/>
-         <entry key="uddc" value="true"/>
+ * These are the built-in services of the TDS
  *
  * @author caron
  * @since 4/29/2015
  */
 public enum StandardService {
+  catalogRemote(ServiceType.Catalog, "/catalog/"),
   cdmRemote(ServiceType.CdmRemote, "/cdmremote/"),
   cdmrFeatureGrid(ServiceType.CdmrFeature, "/cdmrfeature/grid/"),
   dap4(ServiceType.DAP4, "/dap4/"),
@@ -35,7 +23,7 @@ public enum StandardService {
   wms(ServiceType.WMS, "/wms/"),
 
   iso(ServiceType.ISO, "/iso/"),
-  ncml(ServiceType.NCML, "/ncml/"),
+  iso_ncml(ServiceType.NCML, "/ncml/"),
   uddc(ServiceType.UDDC, "/uddc/");
 
   static public StandardService getStandardServiceIgnoreCase(String typeS) {

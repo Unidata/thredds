@@ -45,7 +45,7 @@ import ucar.nc2.constants.FeatureType;
 import java.util.*;
 
 /**
- * These are the services that the TDS can do.
+ * Manage Lists of Services
  *
  * @author caron
  * @see "src/main/webapp/WEB-INF/tdsGlobalConfig.xml"
@@ -89,9 +89,18 @@ public class AllowedServices {
     }
   }
 
+    // allows users to turn off services in ThreddsConfig, but not override the default
+  public void setAllow(StandardService service, Boolean allow) {
+    if (allow == null) return;
+    AllowedService as = allowed.get(service);
+    as.allowed = allow;
+  }
+
   public void setGridServices(List<String> list) {
     this.allowedGridServiceNames = list;
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
   public void setPointServices(List<String> list) {
     this.allowedPointServiceNames = list;
@@ -183,6 +192,9 @@ public class AllowedServices {
     if (s == null) return null;
     return !s.allowed ? null : makeService(s.ss);
   }
+
+  ///////////////////////////////////////////////////////
+  // manage global services - in the top catalog
 
   public void addGlobalServices(List<Service> services) {
     for (Service s : services) {

@@ -47,11 +47,14 @@ import org.springframework.web.util.HtmlUtils;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.core.AllowedServices;
 import thredds.core.ConfigCatalogHtmlWriter;
+import thredds.core.StandardService;
 import thredds.server.config.HtmlConfigBean;
 import thredds.server.config.ThreddsConfig;
 import thredds.server.exception.ServiceNotAllowed;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -71,7 +74,9 @@ import java.util.Map;
 public class RemoteCatalogServiceController {
 
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private boolean allowRemote = ThreddsConfig.getBoolean("CatalogServices.allowRemote", false);
+
+  @Autowired
+  private AllowedServices allowedServices;
 
   @Autowired
   private HtmlConfigBean htmlConfig;
@@ -88,8 +93,8 @@ public class RemoteCatalogServiceController {
   protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response,
                                        @Valid RemoteCatalogRequest params, BindingResult validationResult) throws Exception {
 
-    if (!allowRemote)
-      throw new ServiceNotAllowed("Catalog services not supported for remote catalogs.");
+    if (!allowedServices.isAllowed(StandardService.catalogRemote))
+      throw new ServiceNotAllowed(StandardService.catalogRemote.toString());
 
     if (validationResult.hasErrors())
       throw new BindException(validationResult);
