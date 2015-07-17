@@ -39,7 +39,7 @@ Form] (Repeated submissions encouraged)
  * link:../reference/ThreddsConfigXMLFile.html[threddsConfig.xml Reference] (Christian)
  * URL construction [Christian]
 
-=== 11:45 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis)
+=== 11:45 - 12:45 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis)
  * link:../reference/Services.html[Available services]
  ** compound services
  ** service base URL is not configurable
@@ -52,24 +52,24 @@ Form] (Repeated submissions encouraged)
  ** link:../reference/NetcdfSubsetServiceReference.html[reference] (link:../reference/files/NCSS_4_3.pdf[pdf])
  ** URL Builder
 
-=== 12:30 - 2:00 Lunch
+=== 12:45 - 2:15 Lunch
 
-=== 2:00 - 2:30 Accessing TDS services with python (Ryan)
+=== 2:15 - 2:45 Accessing TDS services with python (Ryan)
  * links to notebooks
 
-=== 2:30 - 3:00 TDS Monitoring, Debugging, Logs (Sean)
- * Looking at logs on the server
- * Looking at logs on the server using Remote Management (aka http://localhost:8080/thredds/admin/debug[debug] page)
- * link:tdsMonitor.html[Using the TdsMonitor tool]
- * link:TroubleShooting.html[Troubleshooting Configuration Catalogs]
-
-=== 3:00 - 3:15 Break
-
-=== 3:15 - 4:00 Using ToolsUI (Christian)
+=== 2:45 - 3:15 Using ToolsUI (Christian)
  * Running link:../../netcdf-java/ToolsUI.html[ToolsUI]
  * Use Case: Using ToolsUI to serve new data
  ** Access local and remote TDS servers in ToolsUI.
  * IOSP and FeatureTypes
+
+=== 3:15 - 3:30 Break
+
+=== 3:30 - 4:00 TDS Monitoring, Debugging, Logs (Sean)
+ * Looking at logs on the server
+ * Looking at logs on the server using Remote Management (aka http://localhost:8080/thredds/admin/debug[debug] page)
+ * link:tdsMonitor.html[Using the TdsMonitor tool]
+ * link:TroubleShooting.html[Troubleshooting Configuration Catalogs]
 
 === 4:00 - 4:45 Software Engineering and Contributing (Christian)
  * Source on https://github.com/Unidata/thredds[GitHub]
@@ -128,9 +128,9 @@ to explore/discuss during this time. Potential topics include:
  ** IOSP
  ** Grid Feature Type
 
-=== 2:30 - 2:15 Break
+=== 2:30 - 2:45 Break
 
-=== 2:15 - 14:30 GRIB Feature Collections (John, Sean, Ryan, Christian)
+=== 2:45 - 4:30 GRIB Feature Collections (John, Sean, Ryan, Christian)
  * cache, index files, partition types (architecture background) (John)
  * link:GRIBFeatureCollectionTutorial.html[GRIB Feature Collection Tutorial]
  * Using the THREDDS Data Manager (TDM)
