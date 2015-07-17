@@ -123,7 +123,7 @@ public class TestGridCoverageReading {
     }
   }
 
-  private void readOneSlice(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, double ens_val, int ens_idx,
+  static void readOneSlice(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, double ens_val, int ens_idx,
                             CalendarDate time_val, int time_idx, double vert_val, int vert_idx) {
     System.out.printf("   Slice runtime=%s (%d) ens=%f (%d) time=%s (%d) vert=%f (%d) %n", rt_val, rt_idx, ens_val, ens_idx, time_val, time_idx, vert_val, vert_idx);
 

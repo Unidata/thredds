@@ -10,7 +10,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
@@ -57,7 +56,7 @@ abstract public class CoverageCoordAxis {
   protected final double resolution;
   final CoordAxisReader reader;
 
-  protected final TimeHelper timeHelper;
+  protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
 
   // maybe lazy eval
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval

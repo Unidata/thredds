@@ -174,14 +174,13 @@ public class CdmrGridController implements LastModified {
       response.setHeader("Content-Description", "ncstream");
 
       // construct the subsetted dataset
-      SubsetParams subset = qb.makeSubset(gridCoverageDataset.getCalendar());
-      CoverageSubsetter helper = new CoverageSubsetter(gridCoverageDataset, qb.getVar(), subset);
-      CoverageDataset subsetDataset = helper.makeCoverageDatasetSubset();
+      SubsetParams params = qb.makeSubset(gridCoverageDataset.getCalendar());
+      CoverageDataset subsetDataset = new CoverageSubsetter().makeCoverageDatasetSubset(gridCoverageDataset, qb.getVar(), params);
 
       // LOOK problematic; CoverageSubsetter subsets coordSys and then CoverageReader subsets the data.
       List<GeoReferencedArray> arrays = new ArrayList<>();
       for (Coverage grid : subsetDataset.getCoverages()) {
-        GeoReferencedArray array = grid.readData(subset);
+        GeoReferencedArray array = grid.readData(params);
         arrays.add(array);
       }
       sendDataResponse(arrays, out, true);

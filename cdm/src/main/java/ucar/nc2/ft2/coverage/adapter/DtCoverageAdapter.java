@@ -209,7 +209,82 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   @Override
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params) throws IOException, InvalidRangeException {
     DtCoverage grid = proxy.findGridByName(coverage.getName());
-    DtCoverageCS gcs = grid.getCoordinateSystem();
+    CoverageCoordSys orgCoordSys = coverage.getCoordSys();
+    CoverageCoordSys subsetCoordSys = orgCoordSys.subset(params);
+
+    List<Range> section = new ArrayList<>();
+    for (CoverageCoordAxis axis : subsetCoordSys.getAxes()) {
+      if (axis instanceof CoverageCoordAxis1D) {
+        CoverageCoordAxis1D axis1D = (CoverageCoordAxis1D) axis;
+        if (axis.isScalar()) continue;
+        section.add(new Range(axis.getAxisType().toString(), axis1D.getMinIndex(), axis1D.getMaxIndex()));
+      }
+    }
+
+    /*    * This reads an arbitrary data section, returning the data in
+       * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
+       *
+       * @param subset - each Range must be named by the axisType that its used for
+       *
+       * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
+       * */
+    Array data = grid.readDataSection(section);
+    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, subsetCoordSys);
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////////////
+  // CoordAxisReader
+
+  /*
+ * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
+ * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
+ * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
+ * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
+ */
+  @Override
+  public double[] readValues(CoverageCoordAxis coordAxis) throws IOException {
+    ucar.nc2.dataset.CoordinateAxis dtCoordAxis = proxy.getNetcdfDataset().findCoordinateAxis(coordAxis.getName());
+
+    if (dtCoordAxis instanceof CoordinateAxis1D) {
+
+      CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
+
+      switch (coordAxis.getSpacing()) {
+        case irregularPoint:
+          return axis1D.getCoordValues();
+        case contiguousInterval:
+          return axis1D.getCoordEdges();
+        case discontiguousInterval:
+          int n = (int) dtCoordAxis.getSize();
+          double[] result = new double[2 * n];
+          double[] bounds1 = axis1D.getBound1();
+          double[] bounds2 = axis1D.getBound2();
+          int count = 0;
+          for (int i = 0; i < n; i++) {
+            result[count++] = bounds1[i];
+            result[count++] = bounds2[i];
+          }
+          return result;
+      }
+    }
+
+    // twoD case i guess
+    Array data = dtCoordAxis.read();
+
+    double[] result = new double[(int) data.getSize()];
+    int count = 0;
+    while (data.hasNext())
+      result[count++] = data.nextDouble();
+
+    return result;
+  }
+
+  /*
+
+
+
+    //DtCoverageCS gcs = grid.getCoordinateSystem();
     CoverageCoordSys ccsys = coverage.getCoordSys();
 
     List<Range> section = new ArrayList<>();
@@ -218,7 +293,11 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
         case SubsetParams.time: { // CalendarDate
           CalendarDate cdate = (CalendarDate) params.get(key);
-          CoordinateAxis taxis = gcs.getTimeAxis();
+          CoverageCoordAxis taxisOrg = ccsys.getTimeAxis();
+          if (taxisOrg != null && !taxisOrg.isScalar()) {
+            CoverageCoordAxis taxisWant = taxisOrg.subset(params);
+            section.add(new Range(AxisType.Time.toString(), taxisWant.getMinIndex(), taxisWant.getMaxIndex()));
+
           if (taxis != null && !taxis.isScalar()) {
             if (taxis instanceof CoordinateAxis1DTime) {
               CoordinateAxis1DTime time1d = (CoordinateAxis1DTime) taxis;
@@ -322,64 +401,6 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
       }
     }
-
-    /*    * This reads an arbitrary data section, returning the data in
-       * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
-       *
-       * @param subset - each Range must be named by the axisType that its used for
-       *
-       * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
-       * */
-    Array data = grid.readDataSection(section);
-    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, null); // LOOK getCoordSys());
-  }
-
-
-  //////////////////////////////////////////////////////////////////////////////////////
-  // CoordAxisReader
-
-  /*
- * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
- * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
- * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
- * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
- */
-  @Override
-  public double[] readValues(CoverageCoordAxis coordAxis) throws IOException {
-    ucar.nc2.dataset.CoordinateAxis dtCoordAxis = proxy.getNetcdfDataset().findCoordinateAxis(coordAxis.getName());
-
-    if (dtCoordAxis instanceof CoordinateAxis1D) {
-
-      CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
-
-      switch (coordAxis.getSpacing()) {
-        case irregularPoint:
-          return axis1D.getCoordValues();
-        case contiguousInterval:
-          return axis1D.getCoordEdges();
-        case discontiguousInterval:
-          int n = (int) dtCoordAxis.getSize();
-          double[] result = new double[2 * n];
-          double[] bounds1 = axis1D.getBound1();
-          double[] bounds2 = axis1D.getBound2();
-          int count = 0;
-          for (int i = 0; i < n; i++) {
-            result[count++] = bounds1[i];
-            result[count++] = bounds2[i];
-          }
-          return result;
-      }
-    }
-
-    // twoD case i guess
-    Array data = dtCoordAxis.read();
-
-    double[] result = new double[(int) data.getSize()];
-    int count = 0;
-    while (data.hasNext())
-      result[count++] = data.nextDouble();
-
-    return result;
-  }
+   */
 
 }

@@ -25,7 +25,7 @@ import java.util.List;
 public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
   // subset ??
-  protected long minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
+  protected int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
   protected int stride = 1;
 
   public CoverageCoordAxis1D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
@@ -46,11 +46,19 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return stride;
   }
 
-  // ??
+  // for subseting - these are the indexes reletive to original - note cant compose !!
   void setIndexRange(int minIndex, int maxIndex, int stride) {
     this.minIndex = minIndex;
     this.maxIndex = maxIndex;
     this.stride = stride;
+  }
+
+  public int getMinIndex() {
+    return minIndex;
+  }
+
+  public int getMaxIndex() {
+    return maxIndex;
   }
 
   @Override
@@ -99,8 +107,6 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
    * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
    * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
    */
-
-  // LOOK question: is this applicable to anyD or only 1D ??
 
   public boolean isAscending() {
     switch (spacing) {
@@ -263,11 +269,19 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         Double dval = params.getDouble(SubsetParams.vertCoord);
         if (dval != null) {
           // LOOK problems when vertCoord doesnt match any coordinates in the axes
+          // LOOK problems when vertCoord is discontinuous interval
           return helper.subsetClosest(dval);
         }
         break;
 
-      // x,y gets seperately subsetted
+      case Ensemble:
+         Double eval = params.getDouble(SubsetParams.ensCoord);
+         if (eval != null) {
+           return helper.subsetClosest(eval);
+         }
+         break;
+
+       // x,y gets seperately subsetted
       case GeoX:
       case GeoY:
       case Lat:
@@ -278,16 +292,27 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         if (params.isTrue(SubsetParams.allTimes))
           return this.copy(this.reader);
         if (params.isTrue(SubsetParams.latestTime))
-          return helper.subsetLatest( timeHelper.cal);
+          return helper.subsetLatest();
 
         CalendarDate date = (CalendarDate) params.get(SubsetParams.time);
         if (date != null)
-          return helper.subset( timeHelper.cal, date);
+          return helper.subset(date);
 
         CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
         if (dateRange != null)
-          return helper.subset( timeHelper.cal, dateRange);
+          return helper.subset(dateRange);
         break;
+
+      case RunTime:
+        CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
+        if (rundate != null)
+          return helper.subset(rundate);
+
+        CalendarDateRange rundateRange = (CalendarDateRange) params.get(SubsetParams.runtimeRange);
+        if (rundateRange != null)
+          return helper.subset(rundateRange);
+        break;
+
     }
 
     // otherwise take the entire axis
@@ -295,3 +320,4 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   }
 
 }
+

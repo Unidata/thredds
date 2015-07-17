@@ -33,7 +33,9 @@
 package ucar.nc2.dataset;
 
 import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Group;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.Misc;
@@ -46,14 +48,14 @@ import java.util.List;
 
 /**
  * A 1-dimensional Coordinate Axis. Its values must be monotonic.
- * <p/>
+ * <p>
  * If this is char valued, it will have rank 2, otherwise it will have rank 1.
- * <p/>
+ * <p>
  * If string or char valued, only <i>getCoordName()</i> can be called.
- * <p/>
+ * <p>
  * If the coordinates are regularly spaced, <i>isRegular()</i> is true, and the values are equal to
  * <i>getStart()</i> + i * <i>getIncrement()</i>.
- * <p/>
+ * <p>
  * This will also set "cell bounds" for this axis. By default, the cell bounds are midway between the coordinates values,
  * and are therefore contiguous, and can be accessed though getCoordEdge(i).
  * The only way the bounds can be set is if the coordinate variable has an attribute "bounds" that points to another variable
@@ -97,6 +99,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   /**
    * Copy constructor
+   *
    * @param ncd ok to reparent
    * @param org copy from here
    */
@@ -112,11 +115,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
     this.isInterval = org.isInterval();
     this.isRegular = org.isRegular();
 
-    if(isNumeric()){
-    	this.coords = org.getCoordValues();
-    	this.edge = org.getCoordEdges();
+    if (isNumeric()) {
+      this.coords = org.getCoordValues();
+      this.edge = org.getCoordEdges();
     }
-    
+
     this.names = org.names;
 
     if (isInterval) {
@@ -159,38 +162,38 @@ public class CoordinateAxis1D extends CoordinateAxis {
     int len = r.length();
 
     // deal with the midpoints, bounds
-    if(isNumeric()){
-	    double[] new_mids = new double[len];
-	    for (int idx = 0; idx < len; idx++) {
-	      int old_idx = r.element(idx);
-	      new_mids[idx] = coords[old_idx];
-	    }
-	    result.coords = new_mids;
-	
-	    if (isInterval) {
-	      double[] new_bound1 = new double[len];
-	      double[] new_bound2 = new double[len];
-	      double[] new_edge = new double[len+1];
-	      for (int idx = 0; idx < len; idx++) {
-	        int old_idx = r.element(idx);
-	        new_bound1[idx] = bound1[old_idx];
-	        new_bound2[idx] = bound2[old_idx];
-	        new_edge[idx] = bound1[old_idx];
-	        new_edge[idx+1] = bound2[old_idx]; // all but last are overwritten
-	      }
-	      result.bound1 = new_bound1;
-	      result.bound2 = new_bound2;
-	      result.edge = new_edge;
-	
-	    } else {
-	      double[] new_edge = new double[len+1];
-	      for (int idx = 0; idx < len; idx++) {
-	        int old_idx = r.element(idx);
-	        new_edge[idx] = edge[old_idx];
-	        new_edge[idx+1] = edge[old_idx+1]; // all but last are overwritten
-	      }
-	      result.edge = new_edge;
-	    }
+    if (isNumeric()) {
+      double[] new_mids = new double[len];
+      for (int idx = 0; idx < len; idx++) {
+        int old_idx = r.element(idx);
+        new_mids[idx] = coords[old_idx];
+      }
+      result.coords = new_mids;
+
+      if (isInterval) {
+        double[] new_bound1 = new double[len];
+        double[] new_bound2 = new double[len];
+        double[] new_edge = new double[len + 1];
+        for (int idx = 0; idx < len; idx++) {
+          int old_idx = r.element(idx);
+          new_bound1[idx] = bound1[old_idx];
+          new_bound2[idx] = bound2[old_idx];
+          new_edge[idx] = bound1[old_idx];
+          new_edge[idx + 1] = bound2[old_idx]; // all but last are overwritten
+        }
+        result.bound1 = new_bound1;
+        result.bound2 = new_bound2;
+        result.edge = new_edge;
+
+      } else {
+        double[] new_edge = new double[len + 1];
+        for (int idx = 0; idx < len; idx++) {
+          int old_idx = r.element(idx);
+          new_edge[idx] = edge[old_idx];
+          new_edge[idx + 1] = edge[old_idx + 1]; // all but last are overwritten
+        }
+        result.edge = new_edge;
+      }
     }
 
     if (names != null) {
@@ -218,7 +221,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   @Override
   public CoordinateAxis copyNoCache() {
     CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
-        getUnitsString(), getDescription());
+            getUnitsString(), getDescription());
 
     // other state
     axis.axisType = this.axisType;
@@ -231,18 +234,18 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   /**
-    * Get the list of names, to be used for user selection.
-    * The ith one refers to the ith coordinate.
-    *
-    * @return List of ucar.nc2.util.NamedObject, or empty list.
-    */
-   public List<NamedObject> getNames() {
-     int n = getDimension(0).getLength();
-     List<NamedObject> names = new ArrayList<>(n);
-     for (int i = 0; i < n; i++)
-       names.add(new ucar.nc2.util.NamedAnything(getCoordName(i), getShortName() + " "+ getUnitsString()));
-     return names;
-   }
+   * Get the list of names, to be used for user selection.
+   * The ith one refers to the ith coordinate.
+   *
+   * @return List of ucar.nc2.util.NamedObject, or empty list.
+   */
+  public List<NamedObject> getNames() {
+    int n = getDimension(0).getLength();
+    List<NamedObject> names = new ArrayList<>(n);
+    for (int i = 0; i < n; i++)
+      names.add(new ucar.nc2.util.NamedAnything(getCoordName(i), getShortName() + " " + getUnitsString()));
+    return names;
+  }
 
   /**
    * The "name" of the ith coordinate. If nominal, this is all there is to a coordinate.
@@ -372,6 +375,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   /**
    * If this coordinate has interval values.
    * If so, then one should use getBound1, getBound2, and not getCoordEdges()
+   *
    * @return true if coordinate has interval values
    */
   public boolean isInterval() {
@@ -499,12 +503,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @param coordValue The value along this coordinate axis
    * @param bounded    if false and not in range, return -1, else nearest index
    * @return the index that is nearest to this point, or -1 if the point is
-   *         out of range for the axis
+   * out of range for the axis
    */
   private int findCoordElementRegular(double coordValue, boolean bounded) {
     int n = (int) this.getSize();
 
-        // the scalar or len-1 case:
+    // the scalar or len-1 case:
     if (this.getSize() == 1) {
       return 0;
     }
@@ -546,7 +550,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @param target  The value to search for
    * @param bounded if false, and not in range, return -1, else nearest index
    * @return the index of the element in values whose value is closest to target,
-   *         or -1 if the target is out of range
+   * or -1 if the target is out of range
    */
   private int findCoordElementIrregular(double target, boolean bounded) {
     int n = (int) this.getSize();
@@ -612,7 +616,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * Given a coordinate position, find what grid element contains it.
    * Only use if isContiguous() == false
    * This algorithm does a linear search in the bound1[] amd bound2[] array.
-   * <p/>
+   * <p>
    * This means that
    * <pre>
    * edge[i] <= pos < edge[i+1] (if values are ascending)
@@ -622,7 +626,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @param target  The value to search for
    * @param bounded if false, and not in range, return -1, else nearest index
    * @return the index of the element in values whose value is closest to target,
-   *         or -1 if the target is out of range
+   * or -1 if the target is out of range
    */
   private int findCoordElementNonContiguous(double target, boolean bounded) {
 
@@ -634,65 +638,59 @@ public class CoordinateAxis1D extends CoordinateAxis {
       // Check that the point is within range
       if (target < bounds1[0])
         return bounded ? 0 : -1;
-      else if (target > bounds2[n-1])
-        return bounded ? n-1 : -1;
+      else if (target > bounds2[n - 1])
+        return bounded ? n - 1 : -1;
 
-      // do a linear search to find the nearest index
-      for (int i=0; i<n; i++) {
-        if ((bounds1[i] <= target) && (target <= bounds2[i]))
-           return i;
-        if (bounds1[i] > target) {
-          if (!bounded) return -1;
-          double d1 = bounds1[i] - target;
-          double d2 = target - bounds1[i-1];
-          return (d1 > d2) ? i-1 : i;
-        }
-      }
-      return bounded ? n-1 : -1;
+      int idx = findSingleHit(bounds1, bounds2, target);
+      if (idx >= 0) return idx;
+
+      // multiple hits = choose closest to the midpoint i guess
+      return findClosest(coords, target);
 
     } else {
 
       // Check that the point is within range
       if (target > bounds1[0])
         return bounded ? 0 : -1;
-      else if (target < bounds2[n-1])
-        return bounded ? n-1 : -1;
+      else if (target < bounds2[n - 1])
+        return bounded ? n - 1 : -1;
 
-      // do a linear search to find the nearest index
-      for (int i=0; i<n; i++) {
-        if ((bounds2[i] <= target) && (target <= bounds1[i]))
-           return i;
-        if (bounds2[i] < target) {
-          if (!bounded) return -1;
-          double d1 = bounds2[i] - target;
-          double d2 = target - bounds2[i-1];
-          return (d1 > d2) ? i-1 : i;
-        }
-      }
-      return bounded ? n-1 : -1;
+      int idx = findSingleHit(bounds2, bounds1, target);
+      if (idx >= 0) return idx;
+
+      // multiple hits = choose closest to the midpoint i guess
+      return findClosest(getCoordValues(), target);
     }
   }
 
-  ////////////////////////////////////
-  // hmmm dubious
-
-  // private boolean isLayer = false;
-
-  /*
-   * Caution: many datasets do not explicitly specify this info, this is often a guess; default is false.
-   *
-   * @return true if coordinate lies between a layer, or false if its at a point.
-   *
-  public boolean isLayer() {
-    return isLayer;
+  // return index if only one match, else -1
+  private int findSingleHit(double[] low, double[] high, double target) {
+    int hits = 0;
+    int idxFound = -1;
+    int n = low.length;
+    for (int i = 0; i < n; i++) {
+      if ((low[i] <= target) && (target <= high[i])) {
+        hits++;
+        idxFound = i;
+      }
+    }
+    return hits == 1 ? idxFound : -1;
   }
 
-
-  private void setIsLayer() {
-    Attribute att = findAttribute(_Coordinate.ZisLayer);
-    if ((att != null) && att.getStringValue().equalsIgnoreCase("true"))
-      this.isLayer = true;
-  } */
+  // return index of closest value to target
+  private int findClosest(double[] values, double target) {
+    double minDiff =  Double.MAX_VALUE;
+    int idxFound = -1;
+    int n = values.length;
+    for (int i = 0; i < n; i++) {
+      double diff =  Math.abs(values[i]-target);
+      if (diff < minDiff) {
+        minDiff = diff;
+        idxFound = i;
+      }
+    }
+    return idxFound;
+  }
 
   ///////////////////////////////////////////////////////////////////////////////
   // check if Regular
@@ -762,9 +760,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       else
         isAscending = getCoordValue(0) < getCoordValue(1);
       //  calcIsRegular(); */
-    } else
-
-    if (getDataType() == DataType.STRING) {
+    } else if (getDataType() == DataType.STRING) {
       readStringValues();
       wasRead = true;
     } else {
@@ -915,13 +911,13 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     // flip if needed
     boolean firstLower = true; // in the first interval, is lower < upper ?
-    for (int i=0; i<value1.length; i++) {
+    for (int i = 0; i < value1.length; i++) {
       if (Misc.closeEnough(value1[i], value2[i])) continue; // skip when lower == upper
       firstLower = value1[i] < value2[i];
       break;
     }
     // check first against last : lower, unless all lower equal then upper
-    boolean goesUp = (n < 2) || value1[n-1] > value1[0] || (Misc.closeEnough(value1[n-1], value2[0]) && value2[n-1] > value2[0]);
+    boolean goesUp = (n < 2) || value1[n - 1] > value1[0] || (Misc.closeEnough(value1[n - 1], value2[0]) && value2[n - 1] > value2[0]);
     if (goesUp != firstLower) {
       double[] temp = value1;
       value1 = value2;

@@ -236,5 +236,21 @@ public class CoverageDataset implements AutoCloseable {
 
   ////////////////////////////////////////////////
 
+  CoverageDataset(CoverageDataset from, List<CoverageCoordSys> coordSys, List<CoverageCoordAxis> coordAxes) {
+    this.name = from.name;
+    this.atts = from.atts;
+    this.coverageType = from.coverageType;
+
+    this.coordSys = coordSys;
+    this.coordTransforms = from.coordTransforms;
+    this.coordAxes = coordAxes;
+    this.reader = from.reader;
+
+    // ??
+    this.latLonBoundingBox = null;
+    this.projBoundingBox = null;
+    this.calendarDateRange = null;
+    this.coverageSets = null;
+  }
 
 }

@@ -6,9 +6,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
-import ucar.unidata.geoloc.projection.sat.Geostationary;
-import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,25 +59,47 @@ public class HorizCoordSys {
     return null;
   }
 
-  public List<CoverageCoordAxis> subset(SubsetParams params) throws InvalidRangeException {
+
+  public List<CoverageCoordAxis> getCoordAxes() throws InvalidRangeException {
     List<CoverageCoordAxis> result = new ArrayList<>();
+    if (xaxis != null) result.add(xaxis);
+    if (yaxis != null) result.add(yaxis);
+    if (lataxis != null) result.add(lataxis);
+    if (lonaxis != null) result.add(lonaxis);
+    return result;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////
+
+  public HorizCoordSys subset(SubsetParams params) throws InvalidRangeException {
 
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
     ProjectionRect projbb = (ProjectionRect) params.get(SubsetParams.projBB);
+    if (projbb == null && llbb == null) return this;
+
+    CoverageCoordAxis xaxisSubset = xaxis, yaxisSubset = yaxis, lataxisSubset = lataxis, lonaxisSubset = lonaxis;
 
     if (projbb != null) {
-      result.add( xaxis.subset(projbb.getMinX(), projbb.getMaxX()));
-      result.add( yaxis.subset(projbb.getMinY(), projbb.getMaxY()));
-      return result;
+      if (hasProjection) {
+        xaxisSubset = xaxis.subset(projbb.getMinX(), projbb.getMaxX());
+        yaxisSubset = yaxis.subset(projbb.getMinY(), projbb.getMaxY());
+      }
+
+      if (hasLatLon) {
+        ProjectionImpl proj = transform.getProjection();
+        LatLonRect llrect = proj.projToLatLonBB(projbb);
+        lonaxisSubset = lonaxis.subset(llrect.getLonMin(), llrect.getLonMax());
+        lataxisSubset = lataxis.subset(llrect.getLatMin(), llrect.getLatMax());
+      }
     }
 
     if (llbb != null) {
-      if (transform == null) { // this means its a latlon
-        result.add(lonaxis.subset(llbb.getLonMin(), llbb.getLonMax()));  // heres where to deal with crossing seam
-        result.add(lataxis.subset(llbb.getLatMin(), llbb.getLatMax()));
-        return result;
+      if (hasLatLon) {
+        lonaxisSubset = lonaxis.subset(llbb.getLonMin(), llbb.getLonMax());  // heres where to deal with crossing seam
+        lataxisSubset = lataxis.subset(llbb.getLatMin(), llbb.getLatMax());
       }
 
+      if (hasProjection) {
       // we have to transform latlon to projection coordinates
       ProjectionImpl proj = transform.getProjection();
       /* if (!(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation) && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
@@ -91,24 +110,13 @@ public class HorizCoordSys {
         llbb = rect2;
       } */
 
-      ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
-      result.add(xaxis.subset(prect.getMinX(), prect.getMaxX()));
-      result.add(yaxis.subset(prect.getMinY(), prect.getMaxY()));
-      return result;
+        ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
+        xaxisSubset = xaxis.subset(prect.getMinX(), prect.getMaxX());
+        yaxisSubset = yaxis.subset(prect.getMinY(), prect.getMaxY());
+      }
     }
 
-    // otherwise leave originals
-    if (hasProjection) {
-      result.add(xaxis.copy(null));
-      result.add(yaxis.copy(null));
-    }
-
-    if (hasLatLon) {
-      result.add(lataxis.copy(null));
-      result.add(lonaxis.copy(null));
-    }
-
-    return result;
-
+    return new HorizCoordSys(xaxisSubset, yaxisSubset, lataxisSubset, lonaxisSubset, transform);
   }
+
 }

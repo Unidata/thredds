@@ -17,17 +17,7 @@ import java.util.*;
  */
 public class CoverageSubsetter {
 
-  private CoverageDataset org;
-  private List<String> gridsWanted;
-  private SubsetParams params;
-
-  public CoverageSubsetter(CoverageDataset org, List<String> gridsWanted, SubsetParams params) {
-    this.org = org;
-    this.gridsWanted = gridsWanted;
-    this.params = params;
-  }
-
-  public CoverageDataset makeCoverageDatasetSubset() throws InvalidRangeException {
+  public CoverageDataset makeCoverageDatasetSubset(CoverageDataset org, List<String> gridsWanted, SubsetParams params) throws InvalidRangeException {
 
     // Get subset of original objects that are needed by the requested grids
     List<Coverage> orgCoverages = new ArrayList<>();
@@ -61,8 +51,10 @@ public class CoverageSubsetter {
         coordAxes.add( orgAxis.subset(params));
     }
     // subset horiz axes
-    for (HorizCoordSys hcs : horizSet)
-      coordAxes.addAll(hcs.subset(params));
+    for (HorizCoordSys hcs : horizSet) {
+      HorizCoordSys hcsSubset = hcs.subset(params);
+      coordAxes.addAll(hcsSubset.getCoordAxes());
+    }
 
     // subset coordSys, coverages, transforms
     for (CoverageCoordSys orgCs : orgCoordSys.values())
@@ -85,7 +77,7 @@ public class CoverageSubsetter {
     return new CoverageDataset(org.getName(), org.getCoverageType(), new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()),
             latLonBoundingBox, projBoundingBox, dateRange,
             coordSys, coordTransforms, coordAxes, coverages, org.reader);  // use org.reader -> subset always in coord space !
-
   }
+
 
 }

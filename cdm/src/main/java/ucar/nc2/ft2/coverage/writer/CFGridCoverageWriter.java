@@ -85,8 +85,7 @@ public class CFGridCoverageWriter {
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     // construct the subsetted dataset
-    CoverageSubsetter helper = new CoverageSubsetter(gdsOrg, gridNames, subsetParams);
-    CoverageDataset subsetDataset = helper.makeCoverageDatasetSubset();
+    CoverageDataset subsetDataset = new CoverageSubsetter().makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
 
     long total_size = 0;
     for (Coverage grid : subsetDataset.getCoverages()) {

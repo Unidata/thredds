@@ -2,12 +2,14 @@
 package ucar.nc2.ft2.coverage;
 
 import net.jcip.annotations.Immutable;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
@@ -176,7 +178,7 @@ public class CoverageCoordSys {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
       if (axis == null)
         System.out.println("HEY");
-       if (axis.getAxisType() == type) {
+       else if (axis.getAxisType() == type) {
          return axis;
        }
      }
@@ -221,5 +223,27 @@ public class CoverageCoordSys {
     }
     return new LatLonProjection();
   }
+
+  ////////////////////////////////////////////////
+
+  public CoverageCoordSys subset(SubsetParams params) throws InvalidRangeException {
+
+    List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
+    for (CoverageCoordAxis axis : getAxes()) {
+      if (!axis.getAxisType().isHoriz())
+        subsetAxes.add(axis.subset(params));
+    }
+    HorizCoordSys orgHcs = getHorizCoordSys();
+    HorizCoordSys subsetHcs = orgHcs.subset(params);
+    subsetAxes.addAll(subsetHcs.getCoordAxes());
+
+    CoverageCoordSys result = new CoverageCoordSys(this);
+    CoverageDataset  fakeDataset = new CoverageDataset(dataset, Arrays.asList(result), subsetAxes);
+    result.setDataset(fakeDataset);
+    result.setHorizCoordSys(subsetHcs);
+
+    return result;
+  }
+
 
 }

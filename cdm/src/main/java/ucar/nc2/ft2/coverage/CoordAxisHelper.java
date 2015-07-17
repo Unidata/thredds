@@ -1,7 +1,6 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage;
 
-import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 
@@ -236,31 +235,31 @@ class CoordAxisHelper {
   //////////////////////////////////////////////////////////////
 
   public CoverageCoordAxis subset(double minValue, double maxValue) {
-    return subsetValues(null, minValue, maxValue);
+    return subsetValues(minValue, maxValue);
   }
 
   public CoverageCoordAxis subsetClosest(double want) {
-    return subsetValuesClosest(null, want);
+    return subsetValuesClosest( want);
   }
 
-  public CoverageCoordAxis subsetLatest(Calendar cal) {
-    return subsetValuesLatest(cal);
+  public CoverageCoordAxis subsetLatest() {
+    return subsetValuesLatest();
   }
 
-  public CoverageCoordAxis subset(Calendar cal, CalendarDate date) {
+  public CoverageCoordAxis subset(CalendarDate date) {
     double want = axis.convert(date);
-    return subsetValuesClosest(cal, want);
+    return subsetValuesClosest(want);
   }
 
-  public CoverageCoordAxis subset(Calendar cal, CalendarDateRange dateRange) {
+  public CoverageCoordAxis subset(CalendarDateRange dateRange) {
     double min = axis.convert(dateRange.getStart());
     double max = axis.convert(dateRange.getEnd());
-    return subsetValues(cal, min, max);
+    return subsetValues(min, max);
   }
 
   // look does min < max when !isAscending ?
   // look specialize when only one point
-  private CoverageCoordAxis subsetValues(Calendar cal, double minValue, double maxValue) {
+  private CoverageCoordAxis subsetValues(double minValue, double maxValue) {
     double[] subsetValues = null;
     int minIndex, maxIndex;
     int count2 = 0;
@@ -313,7 +312,7 @@ class CoordAxisHelper {
    * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
    * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
    */
-  private CoverageCoordAxis subsetValuesClosest(Calendar cal, double want) {
+  private CoverageCoordAxis subsetValuesClosest(double want) {
     double[] subsetValues = null;
 
     int want_index = findCoordElement(want, Mode.closest);
@@ -345,7 +344,7 @@ class CoordAxisHelper {
     return result;
   }
 
-  private CoverageCoordAxis subsetValuesLatest(Calendar cal) {
+  private CoverageCoordAxis subsetValuesLatest() {
     double[] subsetValues = null;
 
     int last = axis.getNcoords()-1;
