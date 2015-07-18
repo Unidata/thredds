@@ -44,9 +44,12 @@ COPY tdm-files/runTdm.sh /usr/local/tomcat/content/tdm/runTdm.sh
 COPY tomcat-files/startItAll.sh /usr/local/tomcat/startItAll.sh
 
 #
+# Copy over bash_profile file that sets correct umask for sharing
+#
 # Copy over bash_logout file that nicely closes java processes for
 #  shutting down
 #
+COPY tomcat-files/bash_profile /usr/local/tomcat/.bash_profile
 COPY tomcat-files/bash_logout /usr/local/tomcat/.bash_logout
 
 
