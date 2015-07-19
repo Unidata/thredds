@@ -43,7 +43,7 @@ public class TestCoverageClassification {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", CoverageCoordSys.Type.Grid, 3, 5, 4});  // both x,y and lat,lon
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", CoverageCoordSys.Type.Curvilinear, 4, 5, 7});  // GRIB Curvilinear
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", CoverageCoordSys.Type.Grid, 4, 5, 40}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", CoverageCoordSys.Type.Grid, 4, 5, 65}); // SRC                               // TP
 
     return result;
   }

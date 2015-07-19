@@ -15,6 +15,6 @@ public interface CoverageReader extends AutoCloseable {
 
   // List<ArrayWithCoordinates> readData(List<Coverage> coverage, SubsetParams subset) throws IOException;
 
-  GeoReferencedArray readData(Coverage coverage, SubsetParams subset) throws IOException, InvalidRangeException;
+  GeoReferencedArray readData(Coverage coverage, SubsetParams subset, boolean canonicalOrder) throws IOException, InvalidRangeException;
 
 }

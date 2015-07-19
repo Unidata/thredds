@@ -33,6 +33,7 @@
 package ucar.nc2.dataset;
 
 import junit.framework.TestCase;
+import org.junit.Assert;
 import ucar.nc2.ncml.NcMLReader;
 
 import java.io.IOException;
@@ -257,8 +258,8 @@ public class TestFindCoord extends TestCase {
         new int[] { 2, -1, -1,  0,  0,  0, -1, -1, -1, -1, -1, -1, });
 
     doTest(ncml, "lat", true,
-        new double[]{90, 50, 48, 41.5, 40, 33, 15, 0, -10},
-        new int[] { 2,  2,  2,  2,  2,  2,  1,  0,  0, });
+        new double[]{90, 50, 48, 41.5, 40, 33, 15.5, 0, -10},
+        new int[] {   2,  2,  2,    2,  2,  2,  1,  0,  0, });
 
     doTest(ncml, "lon", true,
         new double[]{90, 20, 18, 5, 4, 0, -10, -15, -20, -45, -90, -100},
@@ -312,41 +313,44 @@ public class TestFindCoord extends TestCase {
 
   public void doTest(String ncml, String varName, boolean bounded, double[] vals, int[] expect) throws IOException {
     NetcdfDataset nc = NcMLReader.readNcML(new StringReader(ncml), null);
-    NetcdfDataset dataset = new NetcdfDataset(nc, true);
 
-    try {
+    try (NetcdfDataset dataset = new NetcdfDataset(nc, true)) {
       CoordinateAxis1D axis1D = (CoordinateAxis1D) dataset.findVariable(varName);
       if (axis1D.isContiguous()) {
         double[] edge = axis1D.getCoordEdges();
-        System.out.printf("%s =", varName);
-        for (int i =0; i<edge.length;i++)
+        System.out.printf("%s bounded=%s", varName, bounded);
+        for (int i = 0; i < edge.length; i++)
           System.out.printf("%2f, ", edge[i]);
         System.out.printf("%n");
 
       } else {
-        System.out.printf("%s =", varName);
-        double[] bound1 =axis1D.getBound1();
-        double[] bound2 =axis1D.getBound2();
-        for (int i =0; i<axis1D.getSize();i++)
-          System.out.printf("(%f,%f) ", bound1[i],bound2[i]);
+        System.out.printf("%s bounded=%s", varName, bounded);
+        double[] bound1 = axis1D.getBound1();
+        double[] bound2 = axis1D.getBound2();
+        for (int i = 0; i < axis1D.getSize(); i++)
+          System.out.printf("(%f,%f) ", bound1[i], bound2[i]);
         System.out.printf("%n");
       }
-      
-      for (int i =0; i<vals.length;i++) {
+
+      for (int i = 0; i < vals.length; i++) {
         double v = vals[i];
-        int index = bounded ? axis1D.findCoordElementBounded(v) :  axis1D.findCoordElement(v);
+        int index = bounded ? axis1D.findCoordElementBounded(v) : axis1D.findCoordElement(v);
         System.out.printf(" %5.1f, index= %2d %n", v, index);
-        if (expect != null) assert index == expect[i];
+        if (expect != null) {
+          if (expect[i] != index)
+            index = bounded ? axis1D.findCoordElementBounded(v) : axis1D.findCoordElement(v);
+
+          Assert.assertEquals(varName+" bounded="+bounded, expect[i], index);
+        }
       }
+
       System.out.printf("{");
-      for (int i =0; i<vals.length;i++) {
+      for (int i = 0; i < vals.length; i++) {
         double v = vals[i];
-        int index = bounded ? axis1D.findCoordElementBounded(v) :  axis1D.findCoordElement(v);
+        int index = bounded ? axis1D.findCoordElementBounded(v) : axis1D.findCoordElement(v);
         System.out.printf("%2d, ", index);
       }
       System.out.printf("}%n%n");
-    } finally {
-      dataset.close();
     }
   }
 }

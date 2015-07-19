@@ -72,12 +72,12 @@ public class TestGeoTiffWriter {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Temperature_sigma"});         // SRC                               // TP
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3", "Pressure_surface"});                                         // TP
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
-    // result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
+    /* result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3", "Pressure_surface"});                                         // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
 
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", "Temperature"});
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", "geopotential"});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", "Temperature"});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", "geopotential"});  */
 
     return result;
   }

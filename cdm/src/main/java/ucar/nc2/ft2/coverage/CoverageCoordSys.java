@@ -202,7 +202,7 @@ public class CoverageCoordSys {
     return true;
   }
 
-  public String getIndependentAxisNames() {
+  public String getIndependentAxisNamesOrdered() {
     StringBuilder sb = new StringBuilder();
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);

@@ -535,7 +535,7 @@ public class DtCoverage implements IsMissingEvaluator {
    *
    * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
    */
-  public Array readDataSection(List<Range> subset) throws InvalidRangeException, IOException {
+  public Array readDataSection(List<Range> subset, boolean canonicalOrder) throws InvalidRangeException, IOException {
 
     // get the ranges list in the order of the variable; a null range means "all" to vs.read()
     Range[] varRange = new Range[getRank()];
@@ -571,9 +571,11 @@ public class DtCoverage implements IsMissingEvaluator {
     Array dataVolume = vs.read(Arrays.asList(varRange));
 
     // permute to canonical order if needed; order rt,e,t,z,y,x
-    int[] permuteIndex = calcPermuteIndex();
-    if (permuteIndex != null)
-      dataVolume = dataVolume.permute(permuteIndex);
+    if (canonicalOrder) {
+      int[] permuteIndex = calcPermuteIndex();
+      if (permuteIndex != null)
+        dataVolume = dataVolume.permute(permuteIndex);
+    }
 
     return dataVolume;
   }

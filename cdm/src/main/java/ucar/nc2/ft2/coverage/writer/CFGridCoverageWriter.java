@@ -128,7 +128,7 @@ public class CFGridCoverageWriter {
 
     // grids
     for (Coverage grid : subsetDataset.getCoverages()) {                        // LOOK need to deal with runtime(time), runtime(runtime, time)
-      Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), grid.getCoordSys().getIndependentAxisNames());
+      Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), grid.getCoordSys().getIndependentAxisNamesOrdered());
       addVariableAttributes(v, grid.getAttributes());
     }
 

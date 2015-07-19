@@ -110,7 +110,7 @@ public class Coverage implements IsMissingEvaluator {
 
   public GeoReferencedArray readData(SubsetParams subset) throws IOException, InvalidRangeException {
     CoverageReader reader = coordSys.dataset.reader;
-    return reader.readData(this, subset);
+    return reader.readData(this, subset, false);
   }
 
   /* LOOK problem this violates coordinate-only data access. NA with cdmr

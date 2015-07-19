@@ -627,8 +627,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
       else if (target > bounds2[n - 1])
         return bounded ? n - 1 : -1;
 
-      int idx = findSingleHit(bounds1, bounds2, target);
-      if (idx >= 0) return idx;
+      int[] idx = findSingleHit(bounds1, bounds2, target);
+      if (idx[0] == 0 && !bounded) return -1;  // no hits
+      if (idx[0] == 1) return idx[1];          // one hit
 
       // multiple hits = choose closest to the midpoint i guess
       return findClosest(coords, target);
@@ -641,8 +642,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
       else if (target < bounds2[n - 1])
         return bounded ? n - 1 : -1;
 
-      int idx = findSingleHit(bounds2, bounds1, target);
-      if (idx >= 0) return idx;
+      int[] idx = findSingleHit(bounds2, bounds1, target);
+      if (idx[0] == 0 && !bounded) return -1;  // no hits
+      if (idx[0] == 1) return idx[1];
 
       // multiple hits = choose closest to the midpoint i guess
       return findClosest(getCoordValues(), target);
@@ -650,7 +652,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   // return index if only one match, else -1
-  private int findSingleHit(double[] low, double[] high, double target) {
+  private int[] findSingleHit(double[] low, double[] high, double target) {
     int hits = 0;
     int idxFound = -1;
     int n = low.length;
@@ -660,7 +662,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
         idxFound = i;
       }
     }
-    return hits == 1 ? idxFound : -1;
+    return new int[] {hits, idxFound};
   }
 
   // return index of closest value to target

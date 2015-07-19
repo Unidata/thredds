@@ -207,7 +207,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
    */
 
   @Override
-  public GeoReferencedArray readData(Coverage coverage, SubsetParams params) throws IOException, InvalidRangeException {
+  public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
     DtCoverage grid = proxy.findGridByName(coverage.getName());
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
     CoverageCoordSys subsetCoordSys = orgCoordSys.subset(params);
@@ -221,14 +221,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       }
     }
 
-    /*    * This reads an arbitrary data section, returning the data in
-       * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
-       *
-       * @param subset - each Range must be named by the axisType that its used for
-       *
-       * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
-       * */
-    Array data = grid.readDataSection(section);
+    Array data = grid.readDataSection(section, canonicalOrder);
     return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, subsetCoordSys);
   }
 

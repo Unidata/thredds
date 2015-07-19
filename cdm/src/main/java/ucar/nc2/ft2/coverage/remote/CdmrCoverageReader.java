@@ -8,7 +8,6 @@ import ucar.httpservices.HTTPSession;
 import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.util.IO;
 
 import java.io.*;
@@ -43,7 +42,7 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
   }
 
   @Override
-  public GeoReferencedArray readData(Coverage coverage, SubsetParams subset) throws IOException {
+  public GeoReferencedArray readData(Coverage coverage, SubsetParams subset, boolean canonicalOrder) throws IOException {
     if (httpClient == null)
       httpClient = HTTPFactory.newSession(endpoint);
 
