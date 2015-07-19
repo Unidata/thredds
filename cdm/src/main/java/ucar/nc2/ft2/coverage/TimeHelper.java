@@ -35,7 +35,7 @@ public class TimeHelper {
 
   public double convert(CalendarDate date) {
     long msecs = date.getDifferenceInMsecs(runDate);
-    return Math.round(msecs / duration);
+    return msecs / duration;
   }
 
   public List<NamedObject> getCoordValueNames(CoverageCoordAxis1D axis) {

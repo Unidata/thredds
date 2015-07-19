@@ -135,15 +135,13 @@ class CoordAxisHelper {
 
       // do a binary search to find the nearest index
       int mid;
-      while (high > low + 1) {
+      while (high > low+1) {
         mid = (low + high) / 2;                           // binary search
-        double midVal = axis.getCoordEdge1(mid);
-        if (midVal == target) return mid;                // look double compare
-        else if (midVal < target) low = mid;
+        if (contains(target, mid, true)) return mid;
+        else if (axis.getCoordEdge2(mid) < target) low = mid;
         else high = mid;
       }
-
-      return low;
+      return contains(target, low, true) ? low : high;
 
     } else {  // descending
 
@@ -155,16 +153,23 @@ class CoordAxisHelper {
 
       // do a binary search to find the nearest index
       int mid;
-      while (high > low + 1) {
+      while (high > low+1) {
         mid = (low + high) / 2;         // binary search
-        double midVal = axis.getCoordEdge1(mid);
-        if (midVal == target) return mid;
-        else if (midVal < target) high = mid;
+        if (contains(target, mid, false)) return mid;
+        else if (axis.getCoordEdge2(mid) < target) high = mid;
         else low = mid;
       }
-
-      return high - 1;
+      return contains(target, low, false) ? low : high;
     }
+  }
+
+  private boolean contains(double target, int coordIdx, boolean ascending) {
+    double midVal1 = axis.getCoordEdge1(coordIdx);
+    double midVal2 = axis.getCoordEdge2(coordIdx);
+    if (ascending)
+      return (midVal1 <= target && target <= midVal2);
+    else
+      return (midVal1 >= target && target >= midVal2);
   }
 
   /**
@@ -184,7 +189,7 @@ class CoordAxisHelper {
    * or -1 if the target is out of range
    */
 
-  private int findCoordElementDiscontiguousInterval(double target, boolean bounded) {
+  private int findCoordElementDiscontiguousIntervalOld(double target, boolean bounded) {
     int n = axis.getNcoords();
     //double resolution = (values[n-1] - values[0]) / (n - 1);
     //int startGuess = (int) Math.round((target - values[0]) / resolution);
@@ -230,6 +235,67 @@ class CoordAxisHelper {
 
       return high - 1;
     }
+  }
+
+  private int findCoordElementDiscontiguousInterval(double target, boolean bounded) {
+    ;
+    int n = axis.getNcoords();
+
+    if (axis.isAscending()) {
+      // Check that the point is within range
+      if (target < axis.getCoordEdge1(0))
+        return bounded ? 0 : -1;
+      else if (target > axis.getCoordEdge2(n - 1))
+        return bounded ? n - 1 : -1;
+
+      int idx = findSingleHit(target, true);
+      if (idx >= 0) return idx;
+
+      // multiple hits = choose closest to the midpoint i guess
+      return findClosest(target);
+
+    } else {
+
+      // Check that the point is within range
+      if (target > axis.getCoordEdge1(0))
+        return bounded ? 0 : -1;
+      else if (target < axis.getCoordEdge2(n-1))
+        return bounded ? n - 1 : -1;
+
+      int idx = findSingleHit(target, false);
+      if (idx >= 0) return idx;
+
+      // multiple hits = choose closest to the midpoint i guess
+      return findClosest(target);
+    }
+  }
+
+  // return index if only one match, else -1
+  private int findSingleHit(double target, boolean ascending) {
+    int hits = 0;
+    int idxFound = -1;
+    int n = axis.getNcoords();
+    for (int i = 0; i < n; i++) {
+      if (contains(target, i, ascending)) {
+        hits++;
+        idxFound = i;
+      }
+    }
+    return hits == 1 ? idxFound : -1;
+  }
+
+  // return index of closest value to target
+  private int findClosest(double target) {
+    double minDiff =  Double.MAX_VALUE;
+    int idxFound = -1;
+    for (int i = 0; i < axis.getNcoords(); i++) {
+      double diff =  Math.abs(axis.getCoord(i)-target);
+      if (diff < minDiff) {
+        minDiff = diff;
+        idxFound = i;
+      }
+    }
+    return idxFound;
   }
 
   //////////////////////////////////////////////////////////////

@@ -236,12 +236,14 @@ public class CFGridCoverageWriter {
 
       // looking for coordinate transform variables
       CoverageTransform ct = gcs.getHorizTransform();
-      if (ct.isHoriz())
+      if (ct != null && ct.isHoriz())
         newV.addAttribute(new Attribute(CF.GRID_MAPPING, ct.getName()));
     }
 
     for (CoverageCoordAxis axis : gds.getCoordAxes()) {
       Variable newV = writer.findVariable(axis.getName());
+      if (newV == null)
+        System.out.println("HEY");
       /* if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
         if (null != axis.getPositive())
           newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));

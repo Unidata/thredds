@@ -823,7 +823,7 @@ public class CoverageRenderer {
     CoverageCoordSys gsys = array.getCoordSysForData();
     CoverageCoordAxis1D xaxis = (CoverageCoordAxis1D) gsys.getXAxis();
     CoverageCoordAxis1D yaxis = (CoverageCoordAxis1D) gsys.getYAxis();
-    Array data = array.getData();
+    Array data = array.getData().reduce();
 
     int nx = xaxis.getNcoords();
     int ny = yaxis.getNcoords();

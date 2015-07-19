@@ -41,52 +41,51 @@ public class TestNcstreamCompareWithFiles {
     System.out.printf("success = %d/%d %n", success, total);
   }
 
-  @Parameterized.Parameters(name="{0}")
+  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
 
-   List<Object[]>  result = new ArrayList<>(500);
+    List<Object[]> result = new ArrayList<>(500);
 
-    try {
-      addFromScan(result, contentRoot +"/netcdf3/", new SuffixFileFilter(".nc"));
-      addFromScan(result, contentRoot + "/netcf4/", new SuffixFileFilter(".nc"));
+    addFromScan(result, contentRoot + "/netcdf3/", new SuffixFileFilter(".nc"));
+    addFromScan(result, contentRoot + "/netcdf4/", new SuffixFileFilter(".nc"));
 
-      addFromScan(result, contentRoot + "/hdf5/", new FileFilter() {
-        public boolean accept(File pathname) {
-          return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
-        }
-      });
-      addFromScan(result, contentRoot + "/hdf4/", new FileFilter() {
-        public boolean accept(File pathname) {
-          return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
-        }
-      });
-      addFromScan(result, contentRoot + "/grib1/", new FileFilter() {
-        public boolean accept(File pathname) {
-          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2")&& !pathname.getPath().endsWith(".ncx3");
-        }
-      });
-      addFromScan(result, contentRoot + "/grib2/", new FileFilter() {
-        public boolean accept(File pathname) {
-          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2")&& !pathname.getPath().endsWith(".ncx3");
-        }
-      });
-      addFromScan(result, contentRoot + "/gini/", new SuffixFileFilter(".gini"));
-      addFromScan(result, contentRoot + "/gempak/", new SuffixFileFilter(".gem"));
-
-    } catch (IOException e) {
-       e.printStackTrace();
-     }
+    addFromScan(result, contentRoot + "/hdf5/", new FileFilter() {
+      public boolean accept(File pathname) {
+        return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
+      }
+    });
+    addFromScan(result, contentRoot + "/hdf4/", new FileFilter() {
+      public boolean accept(File pathname) {
+        return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
+      }
+    });
+    addFromScan(result, contentRoot + "/grib1/", new FileFilter() {
+      public boolean accept(File pathname) {
+        return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2") && !pathname.getPath().endsWith(".ncx3");
+      }
+    });
+    addFromScan(result, contentRoot + "/grib2/", new FileFilter() {
+      public boolean accept(File pathname) {
+        return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2") && !pathname.getPath().endsWith(".ncx3");
+      }
+    });
+    addFromScan(result, contentRoot + "/gini/", new SuffixFileFilter(".gini"));
+    addFromScan(result, contentRoot + "/gempak/", new SuffixFileFilter(".gem"));
 
     return result;
   }
 
-  static void addFromScan(final List<Object[]> list, String dirName, FileFilter ff) throws IOException {
-    TestDir.actOnAll(dirName, ff, new TestDir.Act() {
-      public int doAct(String filename) throws IOException {
-        list.add (new Object[] {filename});
-        return 1;
-      }
-    }, true);
+  static void addFromScan(final List<Object[]> list, String dirName, FileFilter ff) {
+    try {
+      TestDir.actOnAll(dirName, ff, new TestDir.Act() {
+        public int doAct(String filename) throws IOException {
+          list.add(new Object[]{filename});
+          return 1;
+        }
+      }, true);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /////////////////////////////////////////////////////////////
@@ -107,7 +106,7 @@ public class TestNcstreamCompareWithFiles {
 
   static int compareDatasets(String local, String remote) throws IOException {
     try (NetcdfFile ncfile = NetcdfDataset.openFile(local, null);
-         NetcdfFile  ncremote = new CdmRemote(remote)) {
+         NetcdfFile ncremote = new CdmRemote(remote)) {
 
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
@@ -133,7 +132,10 @@ public class TestNcstreamCompareWithFiles {
       return true;
     }
 
-    @Override public boolean varDataTypeCheckOk(Variable v) { return true; }
+    @Override
+    public boolean varDataTypeCheckOk(Variable v) {
+      return true;
+    }
 
   }
 

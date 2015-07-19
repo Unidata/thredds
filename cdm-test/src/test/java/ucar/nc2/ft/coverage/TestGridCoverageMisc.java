@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Describe
+ * Read specific Grid Coverage fields and compare results with dt.GridDataset.
+ * Generally the ones that are failing in TestGridCoverageReading
  *
  * @author caron
  * @since 7/17/2015
@@ -33,41 +34,38 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class TestGridCoverageMisc {
 
-    @Parameterized.Parameters(name = "{0}")
-    public static List<Object[]> getTestParameters() {
-      List<Object[]> result = new ArrayList<>();
+  @Parameterized.Parameters(name = "{0}")
+  public static List<Object[]> getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
 
-      result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", CoverageCoordSys.Type.Grid});  // NUWG - has CoordinateAlias
-      result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", CoverageCoordSys.Type.Grid});  // scalar runtime
-      result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", CoverageCoordSys.Type.Grid});  // both x,y and lat,lon
-      result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Relative_humidity_sigma_layer"}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", "RH_lpdg", null, null, "2003-06-12T19:00:00Z", 150.0});  // NUWG - has CoordinateAlias
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.580000}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.665000}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Absolute_vorticity_isobaric", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 100000.0}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", "elev", null, null, "2009-10-24T04:14:59.121Z", null});  // x,y axis but no projection
 
-      return result;
-    }
+    return result;
+  }
 
-    String endpoint;
-    CoverageCoordSys.Type expectType;
-    //int domain, range, ncoverages;
+  String endpoint;
+  String covName;
+  CalendarDate rt_val;
+  Double ens_val;
+  CalendarDate time_val;
+  Double vert_val;
 
-    public TestGridCoverageMisc(String endpoint, CoverageCoordSys.Type expectType) {
-      this.endpoint = endpoint;
-      this.expectType = expectType;
-    }
+  public TestGridCoverageMisc(String endpoint, String covName, String rt_val, Double ens_val, String time_val, Double vert_val) {
+    this.endpoint = endpoint;
+    this.covName = covName;
+    this.rt_val = rt_val == null ? null : CalendarDate.parseISOformat(null, rt_val);
+    this.ens_val = ens_val;
+    this.time_val = time_val == null ? null : CalendarDate.parseISOformat(null, time_val);
+    this.vert_val = vert_val;
+  }
 
 
   @Test
-  public void testFail() throws IOException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3";
-    String covName = "Relative_humidity_sigma_layer";
-    CalendarDate rt_val = CalendarDate.parseISOformat(null, "2015-03-26T06:00:00Z");
-    CalendarDate time_val = CalendarDate.parseISOformat(null, "2015-03-26T06:00:00Z");
-
-    //    Slice runtime=2015-03-26T06:00:00Z (0) ens=0.000000 (-1) time=2015-03-26T06:00:00Z (0) vert=0.665000 (1)
-    //testReadGridCoverageSlice(endpoint, covName, rt_val, null, time_val, 0.580000);
-    testReadGridCoverageSlice(endpoint, covName, rt_val, null, time_val, 0.665000);
-  }
-
-  private void testReadGridCoverageSlice(String endpoint, String covName, CalendarDate rt_val, Double ens_val, CalendarDate time_val, Double vert_val) throws IOException {
+  public void testReadGridCoverageSlice() throws IOException {
     System.out.printf("Test Dataset %s%n", endpoint);
 
     try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {

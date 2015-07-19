@@ -557,20 +557,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     int low = 0;
     int high = n;
 
-    /* special case for longitude
-    if (axisType == AxisType.Lon) {
-      if (target < this.edge[low]) {
-        target += 360.0;
-        if (target > this.edge[high])
-          return bounded ? 0 : -1;
-
-      } else if (target > this.edge[high]) {
-        target -= 360.0;
-        if (target < this.edge[low])
-          return bounded ? n - 1 : -1;
-      }
-    } */
-
     if (isAscending) {
       // Check that the point is within range
       if (target < this.edge[low])
