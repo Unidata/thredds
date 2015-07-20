@@ -1820,32 +1820,41 @@ public final class CdmrFeatureProto {
      */
     ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType getDepend();
 
-    // optional string dependsOn = 8;
+    // repeated string dependsOn = 8;
     /**
-     * <code>optional string dependsOn = 8;</code>
+     * <code>repeated string dependsOn = 8;</code>
      *
      * <pre>
-     * depends on this axis
+     * depends on these axes, only for non-independent axes
      * </pre>
      */
-    boolean hasDependsOn();
+    java.util.List<java.lang.String>
+    getDependsOnList();
     /**
-     * <code>optional string dependsOn = 8;</code>
+     * <code>repeated string dependsOn = 8;</code>
      *
      * <pre>
-     * depends on this axis
+     * depends on these axes, only for non-independent axes
      * </pre>
      */
-    java.lang.String getDependsOn();
+    int getDependsOnCount();
     /**
-     * <code>optional string dependsOn = 8;</code>
+     * <code>repeated string dependsOn = 8;</code>
      *
      * <pre>
-     * depends on this axis
+     * depends on these axes, only for non-independent axes
+     * </pre>
+     */
+    java.lang.String getDependsOn(int index);
+    /**
+     * <code>repeated string dependsOn = 8;</code>
+     *
+     * <pre>
+     * depends on these axes, only for non-independent axes
      * </pre>
      */
     com.google.protobuf.ByteString
-        getDependsOnBytes();
+        getDependsOnBytes(int index);
 
     // required int64 nvalues = 10;
     /**
@@ -1910,7 +1919,7 @@ public final class CdmrFeatureProto {
      * <code>optional bytes values = 15;</code>
      *
      * <pre>
-     * not used for regular, may be deferred
+     * big endian doubles; not used for regular, may be deferred
      * </pre>
      */
     boolean hasValues();
@@ -1918,7 +1927,7 @@ public final class CdmrFeatureProto {
      * <code>optional bytes values = 15;</code>
      *
      * <pre>
-     * not used for regular, may be deferred
+     * big endian doubles; not used for regular, may be deferred
      * </pre>
      */
     com.google.protobuf.ByteString getValues();
@@ -2031,12 +2040,15 @@ public final class CdmrFeatureProto {
               break;
             }
             case 66: {
-              bitField0_ |= 0x00000040;
-              dependsOn_ = input.readBytes();
+              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+                dependsOn_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000080;
+              }
+              dependsOn_.add(input.readBytes());
               break;
             }
             case 80: {
-              bitField0_ |= 0x00000080;
+              bitField0_ |= 0x00000040;
               nvalues_ = input.readInt64();
               break;
             }
@@ -2046,28 +2058,28 @@ public final class CdmrFeatureProto {
               if (value == null) {
                 unknownFields.mergeVarintField(11, rawValue);
               } else {
-                bitField0_ |= 0x00000100;
+                bitField0_ |= 0x00000080;
                 spacing_ = value;
               }
               break;
             }
             case 97: {
-              bitField0_ |= 0x00000200;
+              bitField0_ |= 0x00000100;
               startValue_ = input.readDouble();
               break;
             }
             case 105: {
-              bitField0_ |= 0x00000400;
+              bitField0_ |= 0x00000200;
               endValue_ = input.readDouble();
               break;
             }
             case 113: {
-              bitField0_ |= 0x00000800;
+              bitField0_ |= 0x00000400;
               resolution_ = input.readDouble();
               break;
             }
             case 122: {
-              bitField0_ |= 0x00001000;
+              bitField0_ |= 0x00000800;
               values_ = input.readBytes();
               break;
             }
@@ -2081,6 +2093,9 @@ public final class CdmrFeatureProto {
       } finally {
         if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
           atts_ = java.util.Collections.unmodifiableList(atts_);
+        }
+        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+          dependsOn_ = new com.google.protobuf.UnmodifiableLazyStringList(dependsOn_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -2359,59 +2374,50 @@ public final class CdmrFeatureProto {
       return depend_;
     }
 
-    // optional string dependsOn = 8;
+    // repeated string dependsOn = 8;
     public static final int DEPENDSON_FIELD_NUMBER = 8;
-    private java.lang.Object dependsOn_;
+    private com.google.protobuf.LazyStringList dependsOn_;
     /**
-     * <code>optional string dependsOn = 8;</code>
+     * <code>repeated string dependsOn = 8;</code>
      *
      * <pre>
-     * depends on this axis
+     * depends on these axes, only for non-independent axes
      * </pre>
      */
-    public boolean hasDependsOn() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+    public java.util.List<java.lang.String>
+        getDependsOnList() {
+      return dependsOn_;
     }
     /**
-     * <code>optional string dependsOn = 8;</code>
+     * <code>repeated string dependsOn = 8;</code>
      *
      * <pre>
-     * depends on this axis
+     * depends on these axes, only for non-independent axes
      * </pre>
      */
-    public java.lang.String getDependsOn() {
-      java.lang.Object ref = dependsOn_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          dependsOn_ = s;
-        }
-        return s;
-      }
+    public int getDependsOnCount() {
+      return dependsOn_.size();
     }
     /**
-     * <code>optional string dependsOn = 8;</code>
+     * <code>repeated string dependsOn = 8;</code>
      *
      * <pre>
-     * depends on this axis
+     * depends on these axes, only for non-independent axes
+     * </pre>
+     */
+    public java.lang.String getDependsOn(int index) {
+      return dependsOn_.get(index);
+    }
+    /**
+     * <code>repeated string dependsOn = 8;</code>
+     *
+     * <pre>
+     * depends on these axes, only for non-independent axes
      * </pre>
      */
     public com.google.protobuf.ByteString
-        getDependsOnBytes() {
-      java.lang.Object ref = dependsOn_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        dependsOn_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+        getDependsOnBytes(int index) {
+      return dependsOn_.getByteString(index);
     }
 
     // required int64 nvalues = 10;
@@ -2421,7 +2427,7 @@ public final class CdmrFeatureProto {
      * <code>required int64 nvalues = 10;</code>
      */
     public boolean hasNvalues() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
      * <code>required int64 nvalues = 10;</code>
@@ -2437,7 +2443,7 @@ public final class CdmrFeatureProto {
      * <code>required .AxisSpacing spacing = 11;</code>
      */
     public boolean hasSpacing() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+      return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
      * <code>required .AxisSpacing spacing = 11;</code>
@@ -2453,7 +2459,7 @@ public final class CdmrFeatureProto {
      * <code>required double startValue = 12;</code>
      */
     public boolean hasStartValue() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
+      return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
      * <code>required double startValue = 12;</code>
@@ -2469,7 +2475,7 @@ public final class CdmrFeatureProto {
      * <code>required double endValue = 13;</code>
      */
     public boolean hasEndValue() {
-      return ((bitField0_ & 0x00000400) == 0x00000400);
+      return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
      * <code>required double endValue = 13;</code>
@@ -2489,7 +2495,7 @@ public final class CdmrFeatureProto {
      * </pre>
      */
     public boolean hasResolution() {
-      return ((bitField0_ & 0x00000800) == 0x00000800);
+      return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
      * <code>optional double resolution = 14;</code>
@@ -2509,17 +2515,17 @@ public final class CdmrFeatureProto {
      * <code>optional bytes values = 15;</code>
      *
      * <pre>
-     * not used for regular, may be deferred
+     * big endian doubles; not used for regular, may be deferred
      * </pre>
      */
     public boolean hasValues() {
-      return ((bitField0_ & 0x00001000) == 0x00001000);
+      return ((bitField0_ & 0x00000800) == 0x00000800);
     }
     /**
      * <code>optional bytes values = 15;</code>
      *
      * <pre>
-     * not used for regular, may be deferred
+     * big endian doubles; not used for regular, may be deferred
      * </pre>
      */
     public com.google.protobuf.ByteString getValues() {
@@ -2534,7 +2540,7 @@ public final class CdmrFeatureProto {
       units_ = "";
       description_ = "";
       depend_ = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType.independent;
-      dependsOn_ = "";
+      dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       nvalues_ = 0L;
       spacing_ = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.regular;
       startValue_ = 0D;
@@ -2617,25 +2623,25 @@ public final class CdmrFeatureProto {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeEnum(7, depend_.getNumber());
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeBytes(8, getDependsOnBytes());
+      for (int i = 0; i < dependsOn_.size(); i++) {
+        output.writeBytes(8, dependsOn_.getByteString(i));
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeInt64(10, nvalues_);
       }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeEnum(11, spacing_.getNumber());
       }
-      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeDouble(12, startValue_);
       }
-      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeDouble(13, endValue_);
       }
-      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeDouble(14, resolution_);
       }
-      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeBytes(15, values_);
       }
       getUnknownFields().writeTo(output);
@@ -2675,31 +2681,36 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(7, depend_.getNumber());
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, getDependsOnBytes());
+      {
+        int dataSize = 0;
+        for (int i = 0; i < dependsOn_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(dependsOn_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getDependsOnList().size();
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(10, nvalues_);
       }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(11, spacing_.getNumber());
       }
-      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(12, startValue_);
       }
-      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(13, endValue_);
       }
-      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(14, resolution_);
       }
-      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(15, values_);
       }
@@ -2838,7 +2849,7 @@ public final class CdmrFeatureProto {
         bitField0_ = (bitField0_ & ~0x00000020);
         depend_ = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType.independent;
         bitField0_ = (bitField0_ & ~0x00000040);
-        dependsOn_ = "";
+        dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000080);
         nvalues_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000100);
@@ -2913,32 +2924,34 @@ public final class CdmrFeatureProto {
           to_bitField0_ |= 0x00000020;
         }
         result.depend_ = depend_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000040;
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          dependsOn_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              dependsOn_);
+          bitField0_ = (bitField0_ & ~0x00000080);
         }
         result.dependsOn_ = dependsOn_;
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
-          to_bitField0_ |= 0x00000080;
+          to_bitField0_ |= 0x00000040;
         }
         result.nvalues_ = nvalues_;
         if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
-          to_bitField0_ |= 0x00000100;
+          to_bitField0_ |= 0x00000080;
         }
         result.spacing_ = spacing_;
         if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
-          to_bitField0_ |= 0x00000200;
+          to_bitField0_ |= 0x00000100;
         }
         result.startValue_ = startValue_;
         if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
-          to_bitField0_ |= 0x00000400;
+          to_bitField0_ |= 0x00000200;
         }
         result.endValue_ = endValue_;
         if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
-          to_bitField0_ |= 0x00000800;
+          to_bitField0_ |= 0x00000400;
         }
         result.resolution_ = resolution_;
         if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
-          to_bitField0_ |= 0x00001000;
+          to_bitField0_ |= 0x00000800;
         }
         result.values_ = values_;
         result.bitField0_ = to_bitField0_;
@@ -3007,9 +3020,14 @@ public final class CdmrFeatureProto {
         if (other.hasDepend()) {
           setDepend(other.getDepend());
         }
-        if (other.hasDependsOn()) {
-          bitField0_ |= 0x00000080;
-          dependsOn_ = other.dependsOn_;
+        if (!other.dependsOn_.isEmpty()) {
+          if (dependsOn_.isEmpty()) {
+            dependsOn_ = other.dependsOn_;
+            bitField0_ = (bitField0_ & ~0x00000080);
+          } else {
+            ensureDependsOnIsMutable();
+            dependsOn_.addAll(other.dependsOn_);
+          }
           onChanged();
         }
         if (other.hasNvalues()) {
@@ -3765,100 +3783,131 @@ public final class CdmrFeatureProto {
         return this;
       }
 
-      // optional string dependsOn = 8;
-      private java.lang.Object dependsOn_ = "";
-      /**
-       * <code>optional string dependsOn = 8;</code>
-       *
-       * <pre>
-       * depends on this axis
-       * </pre>
-       */
-      public boolean hasDependsOn() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+      // repeated string dependsOn = 8;
+      private com.google.protobuf.LazyStringList dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureDependsOnIsMutable() {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+          dependsOn_ = new com.google.protobuf.LazyStringArrayList(dependsOn_);
+          bitField0_ |= 0x00000080;
+         }
       }
       /**
-       * <code>optional string dependsOn = 8;</code>
+       * <code>repeated string dependsOn = 8;</code>
        *
        * <pre>
-       * depends on this axis
+       * depends on these axes, only for non-independent axes
        * </pre>
        */
-      public java.lang.String getDependsOn() {
-        java.lang.Object ref = dependsOn_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          dependsOn_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      public java.util.List<java.lang.String>
+          getDependsOnList() {
+        return java.util.Collections.unmodifiableList(dependsOn_);
       }
       /**
-       * <code>optional string dependsOn = 8;</code>
+       * <code>repeated string dependsOn = 8;</code>
        *
        * <pre>
-       * depends on this axis
+       * depends on these axes, only for non-independent axes
+       * </pre>
+       */
+      public int getDependsOnCount() {
+        return dependsOn_.size();
+      }
+      /**
+       * <code>repeated string dependsOn = 8;</code>
+       *
+       * <pre>
+       * depends on these axes, only for non-independent axes
+       * </pre>
+       */
+      public java.lang.String getDependsOn(int index) {
+        return dependsOn_.get(index);
+      }
+      /**
+       * <code>repeated string dependsOn = 8;</code>
+       *
+       * <pre>
+       * depends on these axes, only for non-independent axes
        * </pre>
        */
       public com.google.protobuf.ByteString
-          getDependsOnBytes() {
-        java.lang.Object ref = dependsOn_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          dependsOn_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+          getDependsOnBytes(int index) {
+        return dependsOn_.getByteString(index);
       }
       /**
-       * <code>optional string dependsOn = 8;</code>
+       * <code>repeated string dependsOn = 8;</code>
        *
        * <pre>
-       * depends on this axis
+       * depends on these axes, only for non-independent axes
        * </pre>
        */
       public Builder setDependsOn(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureDependsOnIsMutable();
+        dependsOn_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string dependsOn = 8;</code>
+       *
+       * <pre>
+       * depends on these axes, only for non-independent axes
+       * </pre>
+       */
+      public Builder addDependsOn(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000080;
-        dependsOn_ = value;
+  ensureDependsOnIsMutable();
+        dependsOn_.add(value);
         onChanged();
         return this;
       }
       /**
-       * <code>optional string dependsOn = 8;</code>
+       * <code>repeated string dependsOn = 8;</code>
        *
        * <pre>
-       * depends on this axis
+       * depends on these axes, only for non-independent axes
+       * </pre>
+       */
+      public Builder addAllDependsOn(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureDependsOnIsMutable();
+        super.addAll(values, dependsOn_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string dependsOn = 8;</code>
+       *
+       * <pre>
+       * depends on these axes, only for non-independent axes
        * </pre>
        */
       public Builder clearDependsOn() {
+        dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000080);
-        dependsOn_ = getDefaultInstance().getDependsOn();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string dependsOn = 8;</code>
+       * <code>repeated string dependsOn = 8;</code>
        *
        * <pre>
-       * depends on this axis
+       * depends on these axes, only for non-independent axes
        * </pre>
        */
-      public Builder setDependsOnBytes(
+      public Builder addDependsOnBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000080;
-        dependsOn_ = value;
+  ensureDependsOnIsMutable();
+        dependsOn_.add(value);
         onChanged();
         return this;
       }
@@ -4053,7 +4102,7 @@ public final class CdmrFeatureProto {
        * <code>optional bytes values = 15;</code>
        *
        * <pre>
-       * not used for regular, may be deferred
+       * big endian doubles; not used for regular, may be deferred
        * </pre>
        */
       public boolean hasValues() {
@@ -4063,7 +4112,7 @@ public final class CdmrFeatureProto {
        * <code>optional bytes values = 15;</code>
        *
        * <pre>
-       * not used for regular, may be deferred
+       * big endian doubles; not used for regular, may be deferred
        * </pre>
        */
       public com.google.protobuf.ByteString getValues() {
@@ -4073,7 +4122,7 @@ public final class CdmrFeatureProto {
        * <code>optional bytes values = 15;</code>
        *
        * <pre>
-       * not used for regular, may be deferred
+       * big endian doubles; not used for regular, may be deferred
        * </pre>
        */
       public Builder setValues(com.google.protobuf.ByteString value) {
@@ -4089,7 +4138,7 @@ public final class CdmrFeatureProto {
        * <code>optional bytes values = 15;</code>
        *
        * <pre>
-       * not used for regular, may be deferred
+       * big endian doubles; not used for regular, may be deferred
        * </pre>
        */
       public Builder clearValues() {
@@ -14731,7 +14780,7 @@ public final class CdmrFeatureProto {
       "\002(\0162\t.DataType\022\030\n\004atts\030\003 \003(\0132\n.Attribute" +
       "\022\033\n\010axisType\030\004 \002(\0162\t.AxisType\022\r\n\005units\030\005" +
       " \002(\t\022\023\n\013description\030\006 \001(\t\022\037\n\006depend\030\007 \002(" +
-      "\0162\017.DependenceType\022\021\n\tdependsOn\030\010 \001(\t\022\017\n" +
+      "\0162\017.DependenceType\022\021\n\tdependsOn\030\010 \003(\t\022\017\n" +
       "\007nvalues\030\n \002(\003\022\035\n\007spacing\030\013 \002(\0162\014.AxisSp",
       "acing\022\022\n\nstartValue\030\014 \002(\001\022\020\n\010endValue\030\r " +
       "\002(\001\022\022\n\nresolution\030\016 \001(\001\022\016\n\006values\030\017 \001(\014\"" +

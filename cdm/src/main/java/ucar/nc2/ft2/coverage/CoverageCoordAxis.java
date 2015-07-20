@@ -33,13 +33,15 @@ abstract public class CoverageCoordAxis {
     regular,                // regularly spaced points or intervals (start, end, npts), edges halfway between coords
     irregularPoint,         // irregular spaced points (values, npts), edges halfway between coords
     contiguousInterval,     // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
-    discontiguousInterval } // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
+    discontiguousInterval
+  } // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
 
   public enum DependenceType {
     independent,             // time(time)
     dependent,               // reftime(time), lat(x,y)
     scalar,                  // reftime
-    twoD }                   // time(reftime, time)
+    twoD
+  }                   // time(reftime, time)
 
   protected final String name;
   protected final String units, description;
@@ -47,14 +49,14 @@ abstract public class CoverageCoordAxis {
   protected final AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
   protected final AttributeContainer attributes;
   protected final DependenceType dependenceType;
-  protected final String dependsOn;
+  protected final List<String> dependsOn;
 
   protected final int ncoords;            // number of coordinates (not values)
   protected final Spacing spacing;
   protected final double startValue;
   protected final double endValue;
   protected final double resolution;
-  final CoordAxisReader reader;
+  protected final CoordAxisReader reader;
 
   protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
 
@@ -62,14 +64,14 @@ abstract public class CoverageCoordAxis {
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
 
   protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
-                           DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                           double[] values, CoordAxisReader reader) {
+                              DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
+                              double[] values, CoordAxisReader reader) {
     this.name = name;
     this.units = units;
     this.description = description;
     this.dataType = dataType;
     this.axisType = axisType;
-    this.attributes = new AttributeContainerHelper( name, attributes);
+    this.attributes = new AttributeContainerHelper(name, attributes);
     this.dependenceType = dependenceType;
     this.dependsOn = dependsOn;
     this.spacing = spacing;
@@ -91,11 +93,20 @@ abstract public class CoverageCoordAxis {
     this.ncoords = ncoords;
   }
 
-  abstract public void toString(Formatter f, Indent indent);
-  abstract public CoverageCoordAxis copy(CoordAxisReader reader);
+  protected void setDataset(CoordSysContainer dataset) {
+    // NOOP
+  }
+
+  abstract public CoverageCoordAxis copy();
+
   abstract public CoverageCoordAxis subset(SubsetParams params);
+
   abstract public CoverageCoordAxis subset(double minValue, double maxValue);
-  abstract public Array getCoordsAsArray();
+
+  abstract public Array getCoordsAsArray() throws IOException;
+
+  abstract public Array getCoordBoundsAsArray();
+
   abstract public List<NamedObject> getCoordValueNames();
 
   public String getName() {
@@ -151,9 +162,18 @@ abstract public class CoverageCoordAxis {
     return dependenceType;
   }
 
-  public boolean isScalar() { return dependenceType == DependenceType.scalar; }
+  public boolean isScalar() {
+    return dependenceType == DependenceType.scalar;
+  }
 
   public String getDependsOn() {
+    StringBuilder sb = new StringBuilder();
+    for (String name : dependsOn)
+      sb.append(name).append(" ");
+    return sb.toString();
+  }
+
+  public List<String> getDependsOnList() {
     return dependsOn;
   }
 
@@ -163,6 +183,41 @@ abstract public class CoverageCoordAxis {
     Indent indent = new Indent(2);
     toString(f, indent);
     return f.toString();
+  }
+
+  public void toString(Formatter f, Indent indent) {
+    indent.incr();
+    f.format("%sCoordAxis '%s' (%s)%n", indent, name, getClass().getName());
+    f.format("%s  axisType=%s dataType=%s units='%s'%n", indent, axisType, dataType, units);
+    f.format("%s  npts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
+    if (getResolution() != 0.0)
+      f.format(" resolution=%f", resolution);
+    f.format(" %s :", getDependenceType());
+    for (String s : dependsOn)
+      f.format(" %s", s);
+    f.format("%n");
+
+    if (values != null) {
+      int n = values.length;
+      switch (spacing) {
+        case irregularPoint:
+        case contiguousInterval:
+          f.format("%ncontiguous (%d)=", n);
+          for (double v : values)
+            f.format("%f,", v);
+          f.format("%n");
+          break;
+
+        case discontiguousInterval:
+          f.format("%ndiscontiguous (%d)=", n);
+          for (int i = 0; i < n; i += 2)
+            f.format("(%f,%f) ", values[i], values[i + 1]);
+          f.format("%n");
+          break;
+      }
+    }
+
+    indent.decr();
   }
 
   ///////////////////////////////////////////////
@@ -180,7 +235,7 @@ abstract public class CoverageCoordAxis {
     return timeHelper.getDateRange(startValue, endValue);
   }
 
-    ///////////////////////////////////////////////
+  ///////////////////////////////////////////////
 
   // will return null when isRegular
   public double[] getValues() {
@@ -189,7 +244,7 @@ abstract public class CoverageCoordAxis {
         try {
           values = reader.readValues(this);
         } catch (IOException e) {
-          logger.error("Failed to read "+name, e);
+          logger.error("Failed to read " + name, e);
         }
     }
     return values;

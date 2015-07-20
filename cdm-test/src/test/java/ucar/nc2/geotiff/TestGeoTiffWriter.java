@@ -117,21 +117,21 @@ public class TestGeoTiffWriter {
       String gridOut2 = TestDir.temporaryLocalDataDir + f.getName() + ".coverage.tif";
       System.out.printf("geotiff2 read coverage %s write %s%n", filename, gridOut2);
 
-      GeoReferencedArray data2;
+      GeoReferencedArray array;
       try (CoverageDataset gcd = CoverageDatasetFactory.openCoverage(filename)) {
         assert gcd != null;
         Coverage coverage = gcd.findCoverage(field);
         assert coverage != null;
-        data2 = coverage.readData(new SubsetParams()
+        array = coverage.readData(new SubsetParams()
                 .set(SubsetParams.latestTime, true)
                 .set(SubsetParams.vertIndex, 0));
 
         try (GeotiffWriter writer = new GeotiffWriter(gridOut2)) {
-          writer.writeGrid(gcd, coverage, data2.getData(), true);
+          writer.writeGrid(array, true);
         }
       }
 
-      CompareNetcdf.compareData(data1, data2.getData());
+      CompareNetcdf.compareData(data1, array.getData());
 
       // read it back in
       try (GeoTiff geotiff2 = new GeoTiff(gridOut2)) {

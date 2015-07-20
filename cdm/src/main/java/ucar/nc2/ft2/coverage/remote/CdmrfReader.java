@@ -130,7 +130,6 @@ public class CdmrfReader {
     LatLonRect latLonBoundingBox = decodeLatLonRectangle(proto.getLatlonRect());
     ProjectionRect projBoundingBox = decodeProjRectangle(proto.getProjRect());
     CalendarDateRange calendarDateRange = proto.hasDateRange() ? decodeDateRange(proto.getDateRange()) : null;
-    // Calendar cal = calendarDateRange != null ? calendarDateRange.getStart().getCalendar() : Calendar.getDefault();  // LOOK
 
     AttributeContainerHelper gatts = new AttributeContainerHelper(name);
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
@@ -150,7 +149,7 @@ public class CdmrfReader {
 
     List<Coverage> coverages = new ArrayList<>();
     for (CdmrFeatureProto.Coverage pgrid : proto.getGridsList())
-      coverages.add(decodeGrid(pgrid));
+      coverages.add(decodeGrid(pgrid, reader));
 
     //   public CoverageDataset(String name, AttributeContainerHelper atts, LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox,
     //                         CalendarDateRange calendarDateRange, List<CoverageCoordSys > coordSys, List< CoverageCoordTransform > coordTransforms,
@@ -238,7 +237,7 @@ message CoordAxis {
     String name = proto.getName();
     DataType dataType = NcStream.convertDataType(proto.getDataType());
     CoverageCoordAxis.DependenceType dependenceType = convertDependenceType(proto.getDepend());
-    String dependsOn = proto.hasDependsOn() ? proto.getDependsOn() : null;
+    List<String> dependsOn = proto.getDependsOnList();
     CoverageCoordAxis.Spacing spacing = convertSpacing(proto.getSpacing());
 
     AttributeContainerHelper atts = new AttributeContainerHelper("axis atts");
@@ -283,14 +282,14 @@ message Coverage {
   required string coordSys = 5;
 }
  */
-  Coverage decodeGrid(CdmrFeatureProto.Coverage proto) {
+  Coverage decodeGrid(CdmrFeatureProto.Coverage proto, CoverageReader reader) {
     DataType dataType = NcStream.convertDataType(proto.getDataType());
 
     List<Attribute> atts = new ArrayList<>();
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
       atts.add(NcStream.decodeAtt(patt));
 
-    return new Coverage(proto.getName(), dataType, atts, proto.getCoordSys(), proto.getUnits(), proto.getDescription());
+    return new Coverage(proto.getName(), dataType, atts, proto.getCoordSys(), proto.getUnits(), proto.getDescription(), reader);
   }
 
   static public AxisType convertAxisType(CdmrFeatureProto.AxisType dtype) {

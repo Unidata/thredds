@@ -105,7 +105,7 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  public ModelAndView showGridForm(CoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) {
+  public ModelAndView showGridForm(CoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) throws IOException {
     boolean netcdf4IsAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
     CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
 

@@ -61,7 +61,7 @@ public class CoverageDatasetCapabilities {
  	 *
  	 * @return a JDOM Document
  	 */
- 	public Document makeDatasetDescription() {
+ 	public Document makeDatasetDescription() throws IOException {
  		Element rootElem = new Element("gridDataset");
  		Document doc = new Document(rootElem);
  		rootElem.setAttribute("location", gcd.getName());
@@ -135,7 +135,7 @@ public class CoverageDatasetCapabilities {
  		return doc;
  	}
 
-  private Element writeAxis(CoverageCoordAxis axis) {
+  private Element writeAxis(CoverageCoordAxis axis) throws IOException {
 
  		Element varElem = new Element("axis");
  		varElem.setAttribute("name", axis.getName());
@@ -192,7 +192,7 @@ public class CoverageDatasetCapabilities {
  		rootElement.addContent(elem);
  	}
 
-  private Element writeAxis2(CoverageCoordAxis axis, String name) {
+  private Element writeAxis2(CoverageCoordAxis axis, String name) throws IOException {
   		if (axis == null) return null;
 
   		Element varElem = new Element(name);

@@ -19,37 +19,57 @@ import java.util.List;
  * @since 7/15/2015
  */
 public class FmrcTimeAxis2D extends CoverageCoordAxis {
+  private int[] shape;
 
   public FmrcTimeAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
-                           DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
+                           DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
                            double[] values, CoordAxisReader reader) {
 
     super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
   }
 
   @Override
+  protected void setDataset(CoordSysContainer dataset) {
+    if (shape != null) throw new RuntimeException("Cant change axis once set");
+    shape = new int[2];
+    int count = 0;
+    for (String axisName : dependsOn) {
+      CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
+      shape[count++] = axis.getNcoords();
+    }
+  }
+
+  @Override
   public void toString(Formatter f, Indent indent) {
-
+    super.toString(f, indent);
   }
 
   @Override
-  public CoverageCoordAxis1D copy(CoordAxisReader reader) {
-    return null;
+  public FmrcTimeAxis2D copy() {
+    return new FmrcTimeAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType,
+                          dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
   }
 
   @Override
-  public CoverageCoordAxis subset(SubsetParams params) {
-    return null;
+  public FmrcTimeAxis2D subset(SubsetParams params) {    // LOOK wrong
+    return new FmrcTimeAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType,
+                          dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
   }
 
   @Override
-  public CoverageCoordAxis subset(double minValue, double maxValue) {
-    return null;
+  public FmrcTimeAxis2D subset(double minValue, double maxValue) {
+    return this; // LOOK
   }
 
   @Override
   public Array getCoordsAsArray() {
-    return null;
+    double[] values = getValues();
+    return Array.factory(DataType.DOUBLE, shape, values);
+  }
+
+  @Override
+  public Array getCoordBoundsAsArray() {
+    return null; // LOOK
   }
 
   @Override

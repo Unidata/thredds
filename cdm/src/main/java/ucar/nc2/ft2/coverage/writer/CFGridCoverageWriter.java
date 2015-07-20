@@ -23,6 +23,10 @@ import java.util.Map;
 public class CFGridCoverageWriter {
 
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFGridCoverageWriter.class);
+  static private final boolean show = true;
+
+  static private final String BOUNDS = "Bounds";
+  static private final String BOUNDS_DIM = "bounds_dim";
 
   /**
    * Compute the size of the file without writing
@@ -103,32 +107,53 @@ public class CFGridCoverageWriter {
 
     addGlobalAttributes(subsetDataset, writer);
 
-    // LOOK need to deal with multiple variables for one axis, eg bounds
+    // add dimensions
     Map<String, Dimension> dimHash = new HashMap<>();
-    String dims;
     for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
         Dimension d = writer.addDimension(null, axis.getName(), axis.getNcoords());
         dimHash.put(axis.getName(), d);
+      }
+
+      if (axis.getSpacing() == CoverageCoordAxis.Spacing.contiguousInterval || axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval) {
+        if (null == dimHash.get(BOUNDS_DIM)) {
+          Dimension d = writer.addDimension(null, BOUNDS_DIM, 2);
+          dimHash.put(BOUNDS_DIM, d);
+        }
+      }
+    }
+
+    // add coordinates
+    for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
+      String dims;
+
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
         dims = axis.getName();
 
       } else if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.scalar) {
         dims = "";
 
-      } else if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.twoD) {
-        dims = axis.getDependsOn();
-
       } else {
-        continue; // LOOK WRONG
+        dims = axis.getDependsOn();  // LOOK must conform to whatever axis.getCoordsAsArray() returns
+      }
+
+      boolean hasBounds = false;
+      if (axis.getSpacing() == CoverageCoordAxis.Spacing.contiguousInterval || axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval) {
+        Variable vb = writer.addVariable(null, axis.getName()+BOUNDS, axis.getDataType(), dims+" "+BOUNDS_DIM);
+        vb.addAttribute(new Attribute(CDM.UNITS, axis.getUnits()));
+        hasBounds = true;
       }
 
       Variable v = writer.addVariable(null, axis.getName(), axis.getDataType(), dims);
       addVariableAttributes(v, axis.getAttributes());
+      if (hasBounds)
+        v.addAttribute(new Attribute(CF.BOUNDS, axis.getName()+BOUNDS));
+
     }
 
-    // grids
-    for (Coverage grid : subsetDataset.getCoverages()) {                        // LOOK need to deal with runtime(time), runtime(runtime, time)
-      Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), grid.getCoordSys().getIndependentAxisNamesOrdered());
+    // add grids
+    for (Coverage grid : subsetDataset.getCoverages()) {
+      Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), grid.getIndependentAxisNamesOrdered());
       addVariableAttributes(v, grid.getAttributes());
     }
 
@@ -144,23 +169,28 @@ public class CFGridCoverageWriter {
     // finish define mode
     writer.create();
 
-     // write the coordinates to the new file.
+     // write the coordinate data
     for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
       Variable v = writer.findVariable(axis.getName());
       if (v != null) {
-        System.out.printf("write axis %s%n", v.getNameAndDimensions());
+        if (show) System.out.printf("write axis %s%n", v.getNameAndDimensions());
         writer.write(v, axis.getCoordsAsArray());
       } else {
         System.out.printf("No variable for %s%n", axis.getName());
       }
+
+      if (axis.getSpacing() == CoverageCoordAxis.Spacing.contiguousInterval || axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval) {
+        Variable vb = writer.findVariable(axis.getName() + BOUNDS);
+        writer.write(vb, axis.getCoordBoundsAsArray());
+      }
     }
 
-    // write the data to the new file.
+    // write the grid data
       for (Coverage grid : subsetDataset.getCoverages()) {
         Variable v = writer.findVariable(grid.getName());
         GeoReferencedArray array = grid.readData(subsetParams);
         // Array reshape = data.reshape(v.getShape());
-        System.out.printf("write grid %s%n", v.getNameAndDimensions());
+        if (show) System.out.printf("write grid %s%n", v.getNameAndDimensions());
         writer.write(v, array.getData());
     }
 
@@ -173,7 +203,7 @@ public class CFGridCoverageWriter {
 
   private boolean isLargeFile(long total_size) {
     boolean isLargeFile = false;
-    long maxSize = 2 * 1000 * 1000 * 1000;  // LOOK why not use exact
+    long maxSize = Integer.MAX_VALUE;
     if (total_size > maxSize) {
       log.debug("Request size = {} Mbytes", total_size / 1000 / 1000);
       isLargeFile = true;
@@ -224,7 +254,7 @@ public class CFGridCoverageWriter {
 
       Variable newV = writer.findVariable(grid.getName());
       if (newV == null) {
-        log.debug("NetcdfCFWriter cant find " + grid.getName() + " in gds " + gds.getName());
+        log.debug("NetcdfCFWriter cant find " + grid.getName() + " in writer ");
         continue;
       }
 
@@ -242,8 +272,10 @@ public class CFGridCoverageWriter {
 
     for (CoverageCoordAxis axis : gds.getCoordAxes()) {
       Variable newV = writer.findVariable(axis.getName());
-      if (newV == null)
-        System.out.println("HEY");
+      if (newV == null) {
+        log.debug("NetcdfCFWriter cant find " + axis.getName() + " in writer ");
+        continue;
+      }
       /* if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
         if (null != axis.getPositive())
           newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));

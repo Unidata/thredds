@@ -25,7 +25,7 @@ public class CoverageCoordSys {
   public enum Type {General, Curvilinear, Grid, Swath, Fmrc}
 
   //////////////////////////////////////////////////
-  protected CoverageDataset dataset; // almost immutable, need to wire these in after the constructor
+  protected CoordSysContainer dataset; // almost immutable, need to wire these in after the constructor
   private HorizCoordSys horizCoordSys;
 
   private final String name;
@@ -48,7 +48,7 @@ public class CoverageCoordSys {
     this.type = from.getType();
   }
 
-  void setDataset(CoverageDataset dataset) {
+  public void setDataset(CoordSysContainer dataset) {
     if (this.dataset != null) throw new RuntimeException("Cant change dataset once set");
     this.dataset = dataset;
   }
@@ -176,9 +176,7 @@ public class CoverageCoordSys {
   public CoverageCoordAxis getAxis(AxisType type) {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-      if (axis == null)
-        System.out.println("HEY");
-       else if (axis.getAxisType() == type) {
+      if (axis.getAxisType() == type) {
          return axis;
        }
      }
@@ -200,19 +198,6 @@ public class CoverageCoordSys {
     if (xaxis == null || !(xaxis instanceof CoverageCoordAxis1D) || !xaxis.isRegular()) return false;
     if (yaxis == null || !(yaxis instanceof CoverageCoordAxis1D) || !yaxis.isRegular()) return false;
     return true;
-  }
-
-  public String getIndependentAxisNamesOrdered() {
-    StringBuilder sb = new StringBuilder();
-    for (String axisName : getAxisNames()) {
-      CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-      if (axis == null)
-        throw new RuntimeException("Cant find axis "+axisName);
-      if (!(axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)) continue;
-      sb.append(axisName);
-      sb.append(" ");
-    }
-    return sb.toString();
   }
 
   public ProjectionImpl getProjection() {
@@ -238,11 +223,34 @@ public class CoverageCoordSys {
     subsetAxes.addAll(subsetHcs.getCoordAxes());
 
     CoverageCoordSys result = new CoverageCoordSys(this);
-    CoverageDataset  fakeDataset = new CoverageDataset(dataset, Arrays.asList(result), subsetAxes);
+    MyCoordSysContainer  fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
     result.setDataset(fakeDataset);
     result.setHorizCoordSys(subsetHcs);
 
     return result;
+  }
+
+  private class MyCoordSysContainer implements CoordSysContainer {
+    public List<CoverageCoordAxis> axes;
+    public List<CoverageTransform> transforms;
+
+    public MyCoordSysContainer(List<CoverageCoordAxis> axes, List<CoverageTransform> transforms) {
+      this.axes = axes;
+      this.transforms = transforms;
+    }
+
+    public CoverageTransform findCoordTransform(String transformName) {
+     for (CoverageTransform ct : transforms)
+       if (ct.getName().equalsIgnoreCase(transformName)) return ct;
+     return null;
+   }
+
+   public CoverageCoordAxis findCoordAxis(String axisName) {
+     for (CoverageCoordAxis axis : axes) {
+       if (axis.getName().equalsIgnoreCase(axisName)) return axis;
+     }
+     return null;
+   }
   }
 
 

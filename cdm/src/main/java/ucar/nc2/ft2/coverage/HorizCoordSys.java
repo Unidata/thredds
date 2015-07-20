@@ -75,9 +75,9 @@ public class HorizCoordSys {
 
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
     ProjectionRect projbb = (ProjectionRect) params.get(SubsetParams.projBB);
-    if (projbb == null && llbb == null) return this;
+    // if (projbb == null && llbb == null) return this;
 
-    CoverageCoordAxis xaxisSubset = xaxis, yaxisSubset = yaxis, lataxisSubset = lataxis, lonaxisSubset = lonaxis;
+    CoverageCoordAxis xaxisSubset = null, yaxisSubset = null, lataxisSubset= null, lonaxisSubset = null;
 
     if (projbb != null) {
       if (hasProjection) {
@@ -93,7 +93,7 @@ public class HorizCoordSys {
       }
     }
 
-    if (llbb != null) {
+    else if (llbb != null) {
       if (hasLatLon) {
         lonaxisSubset = lonaxis.subset(llbb.getLonMin(), llbb.getLonMax());  // heres where to deal with crossing seam
         lataxisSubset = lataxis.subset(llbb.getLatMin(), llbb.getLatMax());
@@ -115,6 +115,11 @@ public class HorizCoordSys {
         yaxisSubset = yaxis.subset(prect.getMinY(), prect.getMaxY());
       }
     }
+
+    if (xaxisSubset == null) xaxisSubset = (xaxis == null) ? null : xaxis.copy();
+    if (yaxisSubset == null) yaxisSubset = (yaxis == null) ? null : yaxis.copy();
+    if (lataxisSubset == null) lataxisSubset = (lataxis == null) ? null : lataxis.copy();
+    if (lonaxisSubset == null) lonaxisSubset = (lonaxis == null) ? null : lonaxis.copy();
 
     return new HorizCoordSys(xaxisSubset, yaxisSubset, lataxisSubset, lonaxisSubset, transform);
   }

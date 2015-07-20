@@ -23,15 +23,18 @@ public class Coverage implements IsMissingEvaluator {
   private final List<Attribute> atts;
   private final String units, description;
   private final String coordSysName;
+  protected final CoverageReader reader;
+
   private CoverageCoordSys coordSys; // almost immutable
 
-  public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description) {
+  public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description, CoverageReader reader) {
     this.name = name;
     this.dataType = dataType;
     this.atts = atts;
     this.coordSysName = coordSysName;
     this.units = units;
     this.description = description;
+    this.reader = reader;
   }
 
   // copy constructor
@@ -42,6 +45,7 @@ public class Coverage implements IsMissingEvaluator {
     this.units = from.getUnits();
     this.description = from.getDescription();
     this.coordSysName = from.getCoordSysName();
+    this.reader = from.reader;
   }
 
   void setCoordSys (CoverageCoordSys coordSys) {
@@ -108,9 +112,21 @@ public class Coverage implements IsMissingEvaluator {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  // LOOK should this just be readDaata(), counting on the coordSys to describe the subset ??
   public GeoReferencedArray readData(SubsetParams subset) throws IOException, InvalidRangeException {
-    CoverageReader reader = coordSys.dataset.reader;
     return reader.readData(this, subset, false);
+  }
+
+  // LOOK must conform to whatever grid.readData() returns
+  // LOOK need to deal with runtime(time), runtime(runtime, time)
+  public String getIndependentAxisNamesOrdered() {
+    StringBuilder sb = new StringBuilder();
+    for (CoverageCoordAxis axis : coordSys.getAxes()) {
+      if (!(axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)) continue;
+      sb.append(axis.getName());
+      sb.append(" ");
+    }
+    return sb.toString();
   }
 
   /* LOOK problem this violates coordinate-only data access. NA with cdmr

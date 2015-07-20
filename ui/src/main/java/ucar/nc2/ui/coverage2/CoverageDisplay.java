@@ -1066,7 +1066,7 @@ public class CoverageDisplay extends JPanel {
 
     // set levels
     CoverageCoordAxis vertAxis = coordsSys.getZAxis();
-    if (vertAxis != null) {
+    if (vertAxis != null && vertAxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
       levelNames = vertAxis.getCoordValueNames();
       if ((currentLevel < 0) || (currentLevel >= levelNames.size()))
         currentLevel = 0;
@@ -1085,7 +1085,7 @@ public class CoverageDisplay extends JPanel {
 
     // set times
     CoverageCoordAxis timeAxis = gcs.getTimeAxis();
-    if (timeAxis != null) {
+    if (timeAxis != null && timeAxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
       timeNames = timeAxis.getCoordValueNames();
       if ((currentTime < 0) || (currentTime >= timeNames.size()))
         currentTime = 0;

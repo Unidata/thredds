@@ -9,6 +9,7 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.NamedObject;
 
+import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
 
@@ -19,35 +20,57 @@ import java.util.List;
  * @since 7/15/2015
  */
 public class LatLonAxis2D extends CoverageCoordAxis {
+  private int[] shape;
 
   public LatLonAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes, DependenceType dependenceType,
-                      String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution, double[] values, CoordAxisReader reader) {
+                      List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution, double[] values,
+                      CoordAxisReader reader) {
     super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
   }
 
   @Override
+  protected void setDataset(CoordSysContainer dataset) {
+    if (shape != null)
+      throw new RuntimeException("Cant change axis once set");
+    shape = new int[2];
+    int count = 0;
+    for (String axisName : dependsOn) {
+      CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
+      shape[count++] = axis.getNcoords();
+    }
+  }
+
+  @Override
   public void toString(Formatter f, Indent indent) {
-
+    super.toString(f, indent);
   }
 
   @Override
-  public CoverageCoordAxis1D copy(CoordAxisReader reader) {
-    return null;
+  public LatLonAxis2D copy() {
+    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType,
+                          dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
   }
 
   @Override
-  public CoverageCoordAxis subset(SubsetParams params) {
-    return null;
+  public LatLonAxis2D subset(SubsetParams params) {  // LOOK wrong
+    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType,
+                          dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
   }
 
   @Override
-  public CoverageCoordAxis subset(double minValue, double maxValue) {
-    return null;
+  public LatLonAxis2D subset(double minValue, double maxValue) {
+    return this; // LOOK
   }
 
   @Override
-  public Array getCoordsAsArray() {
-    return null;
+  public Array getCoordsAsArray() throws IOException {
+    double[] values = getValues();
+    return Array.factory(DataType.DOUBLE, shape, values);
+  }
+
+  @Override
+  public Array getCoordBoundsAsArray() {
+    return null;   // LOOK
   }
 
   @Override

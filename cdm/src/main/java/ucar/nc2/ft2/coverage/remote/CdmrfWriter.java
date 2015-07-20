@@ -216,8 +216,8 @@ public class CdmrfWriter {
     if (axis.getUnits() != null) builder.setUnits(axis.getUnits());
     if (axis.getDescription() != null) builder.setDescription(axis.getDescription());
     builder.setDepend(convertDependenceType(axis.getDependenceType()));
-    if (axis.getDependsOn() != null)
-      builder.setDependsOn(axis.getDependsOn());
+    for (String s : axis.getDependsOnList())
+      builder.addDependsOn(s);
 
     for (Attribute att : axis.getAttributes())
       builder.addAtts(NcStream.encodeAtt(att));

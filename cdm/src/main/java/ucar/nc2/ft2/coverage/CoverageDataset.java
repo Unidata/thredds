@@ -20,7 +20,7 @@ import java.util.*;
  * @since 7/11/2015
  */
 @Immutable
-public class CoverageDataset implements AutoCloseable {
+public class CoverageDataset implements AutoCloseable, CoordSysContainer {
 
   private final List<CoordSysSet> coverageSets;
 
@@ -94,6 +94,11 @@ public class CoverageDataset implements AutoCloseable {
       else
         hcs = old;
       coordsys.setHorizCoordSys(hcs);
+    }
+
+    // wire in the "CoordSysContainer"
+    for (CoverageCoordAxis axis : coordAxes) {
+      axis.setDataset( this);
     }
 
     return csets;

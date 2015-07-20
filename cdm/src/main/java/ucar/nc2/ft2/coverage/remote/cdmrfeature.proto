@@ -58,7 +58,7 @@ message CoordAxis {
   optional string description = 6;
 
   required DependenceType depend = 7;
-  optional string dependsOn = 8;    // depends on this axis
+  repeated string dependsOn = 8;    // depends on these axes, only for non-independent axes
 
   required int64 nvalues = 10;
   required AxisSpacing spacing = 11;

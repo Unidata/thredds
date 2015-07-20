@@ -7,6 +7,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
@@ -30,12 +31,14 @@ import java.util.Set;
 public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
   public static CoverageDataset factory(DtCoverageDataset proxy) {
+    DtCoverageAdapter reader = new DtCoverageAdapter(proxy);
+
     AttributeContainerHelper atts = new AttributeContainerHelper(proxy.getName());
     atts.addAll(proxy.getGlobalAttributes());
 
     List<Coverage> pgrids = new ArrayList<>();
     for (DtCoverage dtGrid : proxy.getGrids())
-      pgrids.add(makeCoverage(dtGrid));
+      pgrids.add(makeCoverage(dtGrid, reader));
 
     List<CoverageCoordSys> pcoordSys = new ArrayList<>();
     for (DtCoverageDataset.Gridset gset : proxy.getGridsets())
@@ -51,8 +54,6 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
           transformNames.add(ct.getName());
         }
     }
-
-    DtCoverageAdapter reader = new DtCoverageAdapter(proxy);
 
     Set<String> axisNames = new HashSet<>();
     List<CoverageCoordAxis> axes = new ArrayList<>();
@@ -70,8 +71,8 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
             pcoordSys, transforms, axes, pgrids, reader);
   }
 
-  private static Coverage makeCoverage(DtCoverage dt) {
-    return new Coverage(dt.getName(), dt.getDataType(), dt.getAttributes(), dt.getCoordinateSystem().getName(), dt.getUnitsString(), dt.getDescription());
+  private static Coverage makeCoverage(DtCoverage dt, DtCoverageAdapter reader) {
+    return new Coverage(dt.getName(), dt.getDataType(), dt.getAttributes(), dt.getCoordinateSystem().getName(), dt.getUnitsString(), dt.getDescription(), reader);
   }
 
   private static CoverageCoordSys makeCoordSys(DtCoverageCS dt) {
@@ -79,7 +80,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     for (CoordinateTransform ct : dt.getCoordTransforms())
       transformNames.add(ct.getName());
     List<String> axisNames = new ArrayList<>();
-    for (CoordinateAxis axis : dt.getCoordAxes()) // LOOK should be just the grid axes ?
+    for (CoordinateAxis axis : dt.getCoordAxes()) // should be just the grid axes ??
       axisNames.add(axis.getFullName());
 
     return new CoverageCoordSys(dt.getName(), axisNames, transformNames, dt.getCoverageType());
@@ -101,14 +102,22 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     String description = dtCoordAxis.getDescription();
 
     CoverageCoordAxis.DependenceType dependenceType;
-    String dependsOn = null;
+    List<String> dependsOn = new ArrayList<>();
     if (dtCoordAxis.isIndependentCoordinate())
       dependenceType = CoverageCoordAxis.DependenceType.independent;
+
     else if (dtCoordAxis.isScalar())
       dependenceType = CoverageCoordAxis.DependenceType.scalar;
-    else {
+
+    else if (dtCoordAxis instanceof CoordinateAxis2D) {
+      dependenceType = CoverageCoordAxis.DependenceType.twoD;
+      for (Dimension d : dtCoordAxis.getDimensions())
+        dependsOn.add(d.getName());
+
+    } else {
       dependenceType = CoverageCoordAxis.DependenceType.dependent;
-      dependsOn = dtCoordAxis.getDimension(0).toString();
+      for (Dimension d : dtCoordAxis.getDimensions())
+        dependsOn.add(d.getName());
     }
 
     int ncoords = (int) dtCoordAxis.getSize();
@@ -149,7 +158,6 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
       return new CoverageCoordAxis1D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
               ncoords, startValue, endValue, resolution, values, reader);
-
     }
 
     // Fmrc Time
@@ -161,10 +169,10 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
               ncoords, startValue, endValue, resolution, values, reader);
     }
 
-    // 2D Lat Lon Time
+    // 2D Lat Lon
     if (dtCoordAxis instanceof CoordinateAxis2D && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
 
-      spacing = CoverageCoordAxis.Spacing.regular;
+      spacing = CoverageCoordAxis.Spacing.irregularPoint;
 
       return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
               ncoords, startValue, endValue, resolution, values, reader);
@@ -235,6 +243,11 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
  * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
  * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
  */
+
+  /*
+    The coordAxis describes the subset wanted.
+    LOOK this just reads the entire set of values from the original...
+   */
   @Override
   public double[] readValues(CoverageCoordAxis coordAxis) throws IOException {
     ucar.nc2.dataset.CoordinateAxis dtCoordAxis = proxy.getNetcdfDataset().findCoordinateAxis(coordAxis.getName());
@@ -246,8 +259,10 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       switch (coordAxis.getSpacing()) {
         case irregularPoint:
           return axis1D.getCoordValues();
+
         case contiguousInterval:
           return axis1D.getCoordEdges();
+
         case discontiguousInterval:
           int n = (int) dtCoordAxis.getSize();
           double[] result = new double[2 * n];
@@ -272,6 +287,8 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     return result;
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /*
 

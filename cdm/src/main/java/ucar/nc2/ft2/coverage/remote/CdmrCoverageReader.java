@@ -89,8 +89,8 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
       List<GeoReferencedArray> geoArrays = new ArrayList<>();
 
       // read Data
-      for (GeoArrayResponse response : dataResponse.arrayResponse) {
-        geoArrays.add(readData(response, is));
+      for (GeoArrayResponse arrayResponse : dataResponse.arrayResponse) {
+        geoArrays.add(readData(dataResponse, arrayResponse, is));
       }
 
       assert geoArrays.size() == 1;
@@ -99,25 +99,27 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
   }
 
-  public GeoReferencedArray readData(GeoArrayResponse response, InputStream is) throws IOException {
+  public GeoReferencedArray readData(DataResponse dataResponse, GeoArrayResponse arrayResponse, InputStream is) throws IOException {
     // is it compressed ?
     Array data;
-    if (response.deflate) {
+    if (arrayResponse.deflate) {
       //ByteArrayInputStream bin = new ByteArrayInputStream(datab);
       InflaterInputStream in = new InflaterInputStream(is);
-      ByteArrayOutputStream bout = new ByteArrayOutputStream( (int) response.uncompressedSize);
+      ByteArrayOutputStream bout = new ByteArrayOutputStream( (int) arrayResponse.uncompressedSize);
       IO.copy(in, bout);  // decompress
       byte[] resultb = bout.toByteArray();  // another fucking copy - overrride ByteArrayOutputStream(byte[] myown);
-      data = Array.factory(response.dataType, response.shape, ByteBuffer.wrap(resultb)); // another copy, not sure can do anything
+      data = Array.factory(arrayResponse.dataType, arrayResponse.shape, ByteBuffer.wrap(resultb)); // another copy, not sure can do anything
 
     } else {
-      byte[] datab = new byte[(int) response.uncompressedSize];
-      is.read(datab);
-      data = Array.factory(response.dataType, response.shape, ByteBuffer.wrap(datab));
+      byte[] datab = new byte[(int) arrayResponse.uncompressedSize];
+      NcStream.readFully(is, datab);
+      data = Array.factory(arrayResponse.dataType, arrayResponse.shape, ByteBuffer.wrap(datab));
     }
 
+    CoverageCoordSys csys = dataResponse.findCoordSys( arrayResponse.coordSysName);
+
     // String coverageName, DataType dataType, Array data, CoverageCoordSys csSubset
-    return new GeoReferencedArray(response.coverageName, response.dataType, data, null); // LOOK
+    return new GeoReferencedArray(arrayResponse.coverageName, arrayResponse.dataType, data, csys);
 
   }
 

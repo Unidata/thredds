@@ -40,7 +40,7 @@ public class TestGridCoverageWriting {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", Lists.newArrayList("P_sfc", "P_trop", "T"), NetcdfFileWriter.Version.netcdf3});
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", Lists.newArrayList("Surface_pressure_surface"), NetcdfFileWriter.Version.netcdf3});  // scalar runtime
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", Lists.newArrayList("PS", "Temperature"), NetcdfFileWriter.Version.netcdf3});  // both x,y and lat,lon   */
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", Lists.newArrayList("PS", "Temperature"), NetcdfFileWriter.Version.netcdf3});  // both x,y and lat,lon */
     return result;
   }
 

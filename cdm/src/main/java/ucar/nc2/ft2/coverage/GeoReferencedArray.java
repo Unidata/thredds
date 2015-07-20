@@ -3,6 +3,7 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.IsMissingEvaluator;
 
 /**
  * GeoReferencedArray
@@ -10,7 +11,7 @@ import ucar.ma2.DataType;
  * @author caron
  * @since 7/11/2015
  */
-public class GeoReferencedArray {
+public class GeoReferencedArray implements IsMissingEvaluator{
   private String coverageName;
   private DataType dataType;
   private Array data;
@@ -37,5 +38,15 @@ public class GeoReferencedArray {
 
   public CoverageCoordSys getCoordSysForData() {
     return csSubset;
+  }
+
+  @Override
+  public boolean hasMissing() {
+    return true;
+  }
+
+  @Override
+  public boolean isMissing(double val) {
+    return Double.isNaN(val);
   }
 }

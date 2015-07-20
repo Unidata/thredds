@@ -29,7 +29,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   protected int stride = 1;
 
   public CoverageCoordAxis1D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
-                                DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue,
+                                DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue,
                                 double resolution, double[] values, CoordAxisReader reader) {
 
     super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
@@ -38,7 +38,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     this.maxIndex = ncoords-1;
   }
 
-  public CoverageCoordAxis1D copy(CoordAxisReader reader) {
+  public CoverageCoordAxis1D copy() {
     return new CoverageCoordAxis1D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
   }
 
@@ -63,39 +63,9 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
   @Override
   public void toString(Formatter f, Indent indent) {
-    indent.incr();
-    f.format("%s CoordAxis '%s' axisType=%s dataType=%s", indent, name, axisType, dataType);
-    f.format(" npts: %d [%f,%f] '%s' spacing=%s", ncoords, startValue, endValue, units, spacing);
-    if (getResolution() != 0.0)
-      f.format(" resolution=%f", resolution);
-    f.format(" %s", getDependenceType());
-    if (getDependsOn() != null)
-      f.format(": %s", getDependsOn());
-    f.format("%n");
-
-    if (values != null) {
-      int n = values.length;
-      switch (spacing) {
-        case irregularPoint:
-        case contiguousInterval:
-          f.format("%ncontiguous (%d)=", n);
-          for (double v : values)
-            f.format("%f,", v);
-          f.format("%n");
-          break;
-
-        case discontiguousInterval:
-          f.format("%ndiscontiguous (%d)=", n);
-          for (int i = 0; i < n; i += 2)
-            f.format("(%f,%f) ", values[i], values[i + 1]);
-          f.format("%n");
-          break;
-      }
-    }
-
-    indent.decr();
+    super.toString(f, indent);
+    f.format("%s   minIndex=%d maxIndex=%d stride=%d%n", indent, minIndex, maxIndex, stride);
   }
-
 
 
   ///////////////////////////////////////////////////////////////////
@@ -197,9 +167,6 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
       case scalar:
         result = Array.factory(getDataType(), new int[0]);
         break;
-      case twoD:
-        result = Array.factory(getDataType(), new int[0]);
-        break;
       default:
         result = Array.factory(getDataType(), new int[] { ncoords});
         break;
@@ -207,6 +174,19 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
     for (int i=0; i< ncoords; i++)
       result.setDouble(i, getCoord(i));
+    return result;
+  }
+
+  @Override
+  public Array getCoordBoundsAsArray() {
+    getValues();
+    Array result = Array.factory(getDataType(), new int[] { ncoords, 2});
+
+    int count = 0;
+    for (int i=0; i<ncoords; i++) {
+      result.setDouble(count++, getCoordEdge1(i));
+      result.setDouble(count++, getCoordEdge2(i));
+    }
     return result;
   }
 
@@ -290,7 +270,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
       case Time:
         if (params.isTrue(SubsetParams.allTimes))
-          return this.copy(this.reader);
+          return this.copy();
         if (params.isTrue(SubsetParams.latestTime))
           return helper.subsetLatest();
 
@@ -316,7 +296,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     }
 
     // otherwise take the entire axis
-    return this.copy(this.reader);
+    return this.copy();
   }
 
 }

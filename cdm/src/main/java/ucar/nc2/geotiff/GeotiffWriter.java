@@ -545,17 +545,15 @@ public class GeotiffWriter implements AutoCloseable {
   /**
    * Write GridCoverage data to the geotiff file.
    *
-   * @param dataset   grid in contained in this dataset
-   * @param coverage  data is in this grid
-   * @param data      2D array in YX order
+   * @param array      GeoReferencedArray array in YX order
    * @param greyScale if true, write greyScale image, else dataSample.
    * @throws IOException on i/o error
    */
-  public void writeGrid(CoverageDataset dataset, Coverage coverage, Array data, boolean greyScale) throws IOException {
+  public void writeGrid(GeoReferencedArray array, boolean greyScale) throws IOException {
 
-    CoverageCoordSys gcs = coverage.getCoordSys();
+    CoverageCoordSys gcs = array.getCoordSysForData();
     if (!gcs.isRegularSpatial())
-      throw new IllegalArgumentException("Must have 1D x and y axes for " + coverage.getName());
+      throw new IllegalArgumentException("Must have 1D x and y axes for " + array.getCoverageName());
 
     Projection proj = gcs.getProjection();
     CoverageCoordAxis1D xaxis = (CoverageCoordAxis1D) gcs.getXAxis();
@@ -570,6 +568,7 @@ public class GeotiffWriter implements AutoCloseable {
     double xInc = xaxis.getResolution() * scaler;
     double yInc = Math.abs(yaxis.getResolution()) * scaler;
 
+    Array data = array.getData().reduce();
     if (yaxis.getCoord(0) < yaxis.getCoord(1)) {
       data = data.flip(0);
       yStart = yaxis.getCoordEdgeLast();
@@ -589,12 +588,12 @@ public class GeotiffWriter implements AutoCloseable {
 
     // write the data first
     int nextStart = 0;
-    MAMath.MinMax dataMinMax = MAMath.getMinMaxSkipMissingData(data, coverage);
+    MAMath.MinMax dataMinMax = MAMath.getMinMaxSkipMissingData(data, array);
     if (greyScale) {
-      ArrayByte result = replaceMissingValuesAndScale(coverage, data, dataMinMax);
+      ArrayByte result = replaceMissingValuesAndScale(array, data, dataMinMax);
       nextStart = geotiff.writeData((byte[]) result.getStorage(), pageNumber);
     } else {
-      ArrayFloat result = replaceMissingValues(coverage, data, dataMinMax);
+      ArrayFloat result = replaceMissingValues(array, data, dataMinMax);
       nextStart = geotiff.writeData((float[]) result.getStorage(), pageNumber);
     }
 
