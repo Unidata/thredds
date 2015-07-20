@@ -43,10 +43,12 @@ public class TestGridCoverageReading {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", CoverageCoordSys.Type.Grid}); // SRC
 
     // not GRID
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc});
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", CoverageCoordSys.Type.Fmrc}); // ensemble, time-offset
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", CoverageCoordSys.Type.Fmrc});              // scalar vert
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", CoverageCoordSys.Type.Curvilinear});  // x,y axis but no projection
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", CoverageCoordSys.Type.Curvilinear});  // GRIB Curvilinear
+
 
     return result;
   }

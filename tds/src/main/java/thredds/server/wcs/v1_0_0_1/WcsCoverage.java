@@ -224,7 +224,7 @@ public class WcsCoverage {
           GeoReferencedArray array = coverage.readData(new SubsetParams());
 
           GeotiffWriter writer = new GeotiffWriter(tifFile.getPath());
-          writer.writeGrid(this.wcsDataset.getDataset(), coverage, array.getData(), format == Request.Format.GeoTIFF);
+          writer.writeGrid(array, format == Request.Format.GeoTIFF);
 
           writer.close();
           //} catch (InvalidRangeException e) {
