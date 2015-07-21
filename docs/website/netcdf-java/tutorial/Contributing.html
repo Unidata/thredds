@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>Contributing code to THREDDS</title>
+<link rel="stylesheet" href="./../../tds/tutorial/tutorial_adoc.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>Contributing code to THREDDS</h1>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_submitting_a_pull_request">Submitting a pull request</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The THREDDS source code is hosted on <a href="https://github.com/">GitHub</a> and we use its
+<a href="https://help.github.com/articles/using-pull-requests/">pull request</a> feature to accept external contributions.
+Follow these steps to submit a pull request to Unidata:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://help.github.com/articles/fork-a-repo/">Fork</a> the
+<a href="https://github.com/Unidata/thredds">THREDDS repository</a>.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Click the "Fork" button at the upper-right corner of the THREDDS GitHub page. This will create a copy of the
+repository under your GitHub account.</p>
+</li>
+<li>
+<p><span class="image"><img src="images/fork.png" alt="Forking a repository in GitHub."></span></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Clone your fork to your local computer.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><code>git clone https://github.com/&lt;github_user_name&gt;/thredds.git</code></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Change into the <code>thredds</code> directory.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><code>cd thredds</code></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Create a branch for the changes that you will make based on <code>master</code>.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><code>git checkout -b &lt;branch_name&gt; master</code></p>
+</li>
+<li>
+<p>For instance: <code>git checkout -b fix_radar_iosp master</code></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Make changes to the source code. See <a href="SourceCodeBuild.html">this tutorial</a> for help building THREDDS.</p>
+</li>
+<li>
+<p>Commit your changes using the git <a href="http://git-scm.com/docs/git-add">add</a> and
+<a href="http://git-scm.com/docs/git-commit">commit</a> commands.</p>
+</li>
+<li>
+<p><a href="http://git-scm.com/docs/git-push">Push</a> your changes to GitHub.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><code>git push -u origin &lt;branch_name&gt;</code></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Go to your forked THREDDS repository on GitHub (it&#8217;ll be something like
+<code>https://github.com/&lt;github_user_name&gt;/thredds</code>) and select the <code>&lt;branch_name&gt;</code> branch from the drop-down
+box at the top left.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="images/branch_selection.png" alt="Selecting a branch on GitHub."></span></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Click the link that says "Pull Request", review the changes, and click the green "Create pull request" button.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="images/pull_request.png" alt="Creating a pull request on GitHub."></span></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Unidata will be notified of your request, and will be able to review the changes and discuss them with you before
+merging.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For more info, see GitHub&#8217;s <a href="https://help.github.com/articles/creating-a-pull-request">Creating a pull request</a>
+article.</p>
+</div>
+<div class="sect2">
+<h3 id="_resources">Resources</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/Unidata/git-recipes">Git recipes from Unidata</a></p>
+</li>
+<li>
+<p><a href="http://schacon.github.io/git/git.html">git(1) Manual Page </a></p>
+</li>
+<li>
+<p><a href="http://git-scm.com/book">Pro Git book</a></p>
+</li>
+<li>
+<p><a href="http://gitref.org/">Git Reference</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-07-21 16:40:46 MDT
+</div>
+</div>
+</body>
+</html>

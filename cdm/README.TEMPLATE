@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 see http://www.unidata.ucar.edu/packages/netcdf-java/
-see http://www.unidata.ucar.edu/software/netcdf-java/reference/JarDependencies.html
+see http://www.unidata.ucar.edu/software/netcdf-java/reference/BuildDependencies.html
 
 DISTRIBUTIONS
   netcdf-@VERSION@.jar        unbundled CDM library. add optional jars as needed

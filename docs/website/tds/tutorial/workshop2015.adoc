@@ -53,7 +53,7 @@ Form] (Repeated submissions encouraged)
  ** WCS (link:../reference/WCS.html[reference])
  ** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:../reference/WMS.html[reference])
  ** ncIso (link:AddingServices.html#Setup[configure])(link:../reference/ncISO.html[reference])
- ** Server Infomation (link:../reference/ThreddsConfigXMLFile.html#Server_Info_Docs[reference])
+ ** Server Information (link:../reference/ThreddsConfigXMLFile.html#Server_Info_Docs[reference])
 
 === 12:45 - 2:15 Lunch
 
@@ -80,9 +80,11 @@ Form] (Repeated submissions encouraged)
  * link:TroubleShooting.html[Troubleshooting] Configuration Catalogs
 
 === 4:00 - 4:45 Software Engineering and Contributing (Christian)
- * Source on https://github.com/Unidata/thredds[GitHub]
- * Build with gradle
+ * Source code on https://github.com/Unidata/thredds[GitHub]
+ ** Exercise: link:../../netcdf-java/tutorial/SourceCodeBuild.html[Build THREDDS from source code]
+ ** Exercise: link:../../netcdf-java/tutorial/Contributing.html[Submit a pull request]
  * Maven artifacts on https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
+ ** link:../../netcdf-java/reference/BuildDependencies.html[How to use them in your project]
  * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
  * Continuous Integration on https://travis-ci.org/Unidata/thredds[Travis]
  * Static code analysis on https://scan.coverity.com/projects/388?tab=overview[Coverity]
