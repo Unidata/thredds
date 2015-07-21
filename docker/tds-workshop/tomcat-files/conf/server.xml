@@ -135,7 +135,7 @@
                pattern="%h %l %u %t &quot;%r&quot; %s %b" / -->
 
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
-               prefix="access." suffix=".log"
+               prefix="access" suffix=".log"
                pattern="%h %l %u %t &quot;%r&quot; %s %b &quot;%{Referer}i&quot; &quot;%{User-Agent}i&quot; %D" />
 
       </Host>
