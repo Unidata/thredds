@@ -25,7 +25,6 @@ Form] (Repeated submissions encouraged)
  * link:GettingStarted.html#tour[Tomcat Directory Structure: Quick Tour]
  * link:GettingStarted.html#logs[Tomcat Log Files]
  * link:GettingStarted.html#manager[Tomcat `manager` Application]
- * The importance of link:https://github.com/Unidata/thredds/blob/master/docker/tds-workshop/tomcat-files/bin/setenv.sh[setenv.sh]
  * link:http://www.unidata.ucar.edu/software/thredds/current/tds/tutorial/BasicThreddsConfig_xml.html[Exercise]: edit threddsConfig.xml to add local information
 
 === 10:15 - 10:30 Break
@@ -52,7 +51,7 @@ Form] (Repeated submissions encouraged)
  ** OPeNDAP link:DAP.html[DAP2 and DAP4 Protocol] Services
  ** Netcdf Subset Service (link:../reference/NetcdfSubsetServiceConfigure.html[configure])(link:../reference/NetcdfSubsetServiceReference.html[reference])
  ** WCS (link:../reference/WCS.html[reference])
- ** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:link:../reference/WMS.html[reference])
+ ** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:../reference/WMS.html[reference])
  ** ncIso (link:AddingServices.html#Setup[configure])(link:../reference/ncISO.html[reference])
  ** Server Infomation (link:../reference/ThreddsConfigXMLFile.html#Server_Info_Docs[reference])
 
@@ -73,10 +72,10 @@ Form] (Repeated submissions encouraged)
 
 === 3:30 - 4:00 TDS Monitoring, Debugging, Logs (Sean)
  * Looking at logs while logged into the server (good for when things won't start!)
- ** link:GettingStarted.html#logs[Tomcat]
+ ** link:TomcatAndTDSLogs.html#access[Tomcat]
  ** link:TomcatAndTDSLogs.html#tds[TDS]
  * Looking at logs 'remotely' (good for when things do start):
- ** via http and the link:http://localhost:8080/thredds/admin/debug[debug] page
+ ** via http and the link:../reference/RemoteManagement.html[debug] page
  ** using the link:tdsMonitor.html[TdsMonitor] Desktop tool
  * link:TroubleShooting.html[Troubleshooting] Configuration Catalogs
 

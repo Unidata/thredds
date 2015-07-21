@@ -46,34 +46,34 @@
   </div>
 
   <ul>
-    <li>Sun Java 7 (latest version)</li>
-    <li>Apache Tomcat 7.x</li>
+    <li>Oracle Java 8 (latest version)</li>
+    <li>Apache Tomcat 8.x</li>
   </ul>
-  <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <em>Sun Java</em> and
+  <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <em>Oracle Java</em> and
     the <em>Apache Tomcat</em> servlet container.</p>
 
 
   <h3>Installing Java</h3>
   <ol>
-    <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun. Use the latest 1.7 version
+    <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Oracle. Use the latest 1.8 version
       of the JDK.
     </li>
-    <p>At the time of this workshop, that is version <em>Java SE 7u25</em>. We will be using the Linux x64-bit tar.gz file:</p>
+    <p>At the time of this workshop, that is version <em>Java SE 8u51</em>. We will be using the Linux x64-bit tar.gz file:</p>
 
-    <p><code>jdk-7u25-linux-x64.tar.gz</code></p>
-    <li>Install the JDK as per the Sun <a href="http://docs.oracle.com/javase/7/docs/webnotes/install/">installation instructions</a>.</li>
+    <p><code>jdk-8u51-linux-x64.tar.gz</code></p>
+    <li>Install the JDK as per the Oracle <a href="http://docs.oracle.com/javase/8/docs/webnotes/install/">installation instructions</a>.</li>
     <p>Copy the binary tar.gz file into the installation directory (<code>/usr/local/tds/</code> in this example):</p>
 
 <pre>
 <strong>$</strong> pwd
 /usr/local/tds
-<strong>$</strong> cp Downloads/jdk-7u25-linux-x64.tar.gz .
+<strong>$</strong> cp Downloads/jdk-8u51-linux-x64.tar.gz .
 
 <strong>$</strong> ls -l
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
 drwxr-xr-x  2 tds workshop     4096 Jul 22 17:29 Downloads
-<strong>-rw-r--r-- 1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz</strong>
+<strong>-rw-r--r-- 1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz</strong>
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
@@ -86,7 +86,7 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
     <p>Unpack the archive file:</p>
 
 <pre>
-<strong>$</strong> tar zxvf jdk-7u25-linux-x64.tar.gz
+<strong>$</strong> tar zxvf jdk-8u51-linux-x64.tar.gz
 </pre>
 
     <p>This will extract the JDK in the installation directory:</p>
@@ -96,8 +96,8 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
 drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
-<strong>drwxr-xr-x 8 tds workshop 4096 Jun 5 22:07 jdk1.7.0_25</strong>
--rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+<strong>drwxr-xr-x 8 tds workshop 4096 Jun 5 22:07 jdk1.8u51</strong>
+-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
@@ -124,11 +124,11 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
       guide</a> for installation on different platforms.</p>
   </div>
   <ol>
-    <li><a href="http://tomcat.apache.org/download-70.cgi">Download</a> current version of the Tomcat 7 servlet container.</li>
-    <p>At the time of this workshop, that is version <em>7.0.42</em>. We will be using the binary tar.gz file:</p>
+    <li><a href="http://tomcat.apache.org/download-80.cgi">Download</a> current version of the Tomcat 8 servlet container.</li>
+    <p>At the time of this workshop, that is version <em>8.0.24</em>. We will be using the binary tar.gz file:</p>
 
-    <p><code>apache-tomcat-7.0.42.tar.gz</code></p>
-    <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-7.0-doc/setup.html">installation instructions</a>.</li>
+    <p><code>apache-tomcat-8.0.24.tar.gz</code></p>
+    <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-8.0-doc/setup.html">installation instructions</a>.</li>
     <p>Copy the binary tar.gz file into the installation directory (<code>/usr/local/tds/</code> in this example):</p>
 
 <pre>
@@ -136,12 +136,12 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
 /usr/local/tds
 
 <strong>$</strong> ls -l
-<strong>-rw-r--r-- 1 tds workshop 7955948 Jul 15 09:35 apache-tomcat-7.0.42.tar.gz</strong>
+<strong>-rw-r--r-- 1 tds workshop 7955948 Jul 15 09:35 apache-tomcat-8.0.24.tar.gz</strong>
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
 drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
-drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25
--rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.8u51
+-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
@@ -154,20 +154,20 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
     <p>Unpack the archive file:</p>
 
 <pre>
-<strong>$</strong> tar xvzf apache-tomcat-7.0.42.tar.gz
+<strong>$</strong> tar xvzf apache-tomcat-8.0.24.tar.gz
 </pre>
 
     <p>This will create a Tomcat directory:</p>
 
 <pre>
 <strong>$</strong> ls -l
-<strong>drwxr-xr-x 9 tds workshop 4096 Jul 15 09:37 apache-tomcat-7.0.42</strong>
--rw-r--r-- 1 tds workshop  7955948 Jul 15 09:35 apache-tomcat-7.0.42.tar.gz
+<strong>drwxr-xr-x 9 tds workshop 4096 Jul 15 09:37 apache-tomcat-8.0.24</strong>
+-rw-r--r-- 1 tds workshop  7955948 Jul 15 09:35 apache-tomcat-8.0.24.tar.gz
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
 drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
-drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25
--rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.8u51
+-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
@@ -191,7 +191,7 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
     <li>Examine the Tomcat directory structure, aka <code>${tomcat_home}</code>.</li>
     <p>Move into <code>${tomcat_home}</code> and do a long listing:</p>
 <pre>
-<strong>$</strong> cd apache-tomcat-7.0.42
+<strong>$</strong> cd apache-tomcat-8.0.24
 <strong>$</strong> ls -l
 drwxr-xr-x 2 tds workshop  4096 Jul 15 09:37 bin
 drwxr-xr-x 2 tds workshop  4096 Jul  2 01:59 conf
@@ -253,7 +253,7 @@ drwxr-xr-x 2 tds workshop  4096 Jul  2 01:57 work
     <p>Run the <code>startup.sh</code> script in the Tomcat <code>bin/</code> directory:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42
+/usr/local/tds/apache-tomcat-8.0.24
 
 <strong>$</strong> bin/startup.sh
 </pre>
@@ -263,7 +263,7 @@ drwxr-xr-x 2 tds workshop  4096 Jul  2 01:57 work
 
 <pre>
 <strong>$</strong> ps -ef | grep tomcat
-tds      21912     1 29 09:39 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-7.0.42/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-7.0.42/endorsed -classpath /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-7.0.42 -Dcatalina.home=/usr/local/tds/apache-tomcat-7.0.42 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-7.0.42/temp org.apache.catalina.startup.Bootstrap start
+tds      21912     1 29 09:39 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-8.0.24/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-8.0.24/endorsed -classpath /usr/local/tds/apache-tomcat-8.0.24/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-8.0.24/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-8.0.24 -Dcatalina.home=/usr/local/tds/apache-tomcat-8.0.24 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-8.0.24/temp org.apache.catalina.startup.Bootstrap start
 tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
 </pre>
 
@@ -292,7 +292,7 @@ tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
   </div>
 
 
-  <h3>Setting <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_BASE</code></h3>
+  <h3>Setting <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code>, <code>$CATALINA_BASE</code>, and <code>$CONTENT_ROOT</code></h3>
 
   <div id="note" class="info">
     <h4>Tomcat on Windows</h4>
@@ -314,7 +314,7 @@ tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
 
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42
+/usr/local/tds/apache-tomcat-8.0.24
 
 <strong>$</strong> cd bin
 <strong>$</strong> vi setenv.sh
@@ -324,16 +324,40 @@ tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
 <pre>
 #!/bin/sh
 #
-# ENVARS for Tomcat and TDS environment
+# ENVARS for Tomcat
 #
-JAVA_HOME="/usr/local/tds/jdk1.7.0_25"
-export JAVA_HOME
+export CATALINA_HOME="/usr/local/tomcat"
 
-JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs"
+export CATALINA_BASE="/usr/local/tomcat"
+
+export JAVA_HOME="/usr"
+
+# TDS specific ENVARS
+#
+# Define where the TDS content directory will live
+#   THIS IS CRITICAL and there is NO DEFAULT - the
+#   TDS will not start without this.
+#
+CONTENT_ROOT=-Dtds.content.root.path=/usr/local/tomcat/content
+
+# set java prefs related variables (used by the wms service, for example)
+JAVA_PREFS_ROOTS="-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs \
+                  -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs"
+
+#
+# Some commonly used JAVA_OPTS settings:
+#
+NORMAL="-d64 -Xmx4096m -Xms512m -server -ea"
+MAX_PERM_GEN="-XX:MaxPermSize=256m"
+HEAP_DUMP="-XX:+HeapDumpOnOutOfMemoryError"
+HEADLESS="-Djava.awt.headless=true"
+
+#
+# Standard setup.
+#
+JAVA_OPTS="$CONTENT_ROOT $NORMAL $MAX_PERM_GEN $HEAP_DUMP $HEADLESS $JAVA_PREFS_ROOTS"
+
 export JAVA_OPTS
-
-CATALINA_BASE="/usr/local/tds/apache-tomcat-7.0.42"
-export CATALINA_BASE
 </pre>
     <div id="note" class="info">
       <h4>Settings </h4>
@@ -351,7 +375,7 @@ export CATALINA_BASE
         will crash the server in some circumstances.
       </li>
       <li><code style="white-space: nowrap;">-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</code> allows the
-        <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS to write system preferences
+        <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS to write system preferences
         to a location that is writable by the Tomcat user.
       </li>
 
@@ -359,7 +383,7 @@ export CATALINA_BASE
         <h4>Looking Ahead</h4>
 
         <p>You will learn more about the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/WMS.html">TDS Web Map Service (WMS)</a> later on
-          in this workshop.</p>
+          in this tutorial.</p>
       </div>
 
 
@@ -371,11 +395,11 @@ export CATALINA_BASE
 
 <pre>
 <strong>$</strong> ./startup.sh
-Using CATALINA_BASE:   /usr/local/tds/apache-tomcat-7.0.42
-Using CATALINA_HOME:   /usr/local/tds/apache-tomcat-7.0.42
-Using CATALINA_TMPDIR: /usr/local/tds/apache-tomcat-7.0.42/temp
-<strong>Using JRE_HOME: /usr/local/tds/jdk1.7.0_25</strong>
-Using CLASSPATH:       /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar
+Using CATALINA_BASE:   /usr/local/tds/apache-tomcat-8.0.24
+Using CATALINA_HOME:   /usr/local/tds/apache-tomcat-8.0.24
+Using CATALINA_TMPDIR: /usr/local/tds/apache-tomcat-8.0.24/temp
+<strong>Using JRE_HOME: /usr/local/tds/jdk1.8u51</strong>
+Using CLASSPATH:       /usr/local/tds/apache-tomcat-8.0.24/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-8.0.24/bin/tomcat-juli.jar
 </pre>
     <div id="expanded" class="question">
       <p>Did you notice any difference in the what is being reported to <code>STDOUT</code> during startup?</p>
@@ -385,8 +409,8 @@ Using CLASSPATH:       /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/us
 
 <pre>
 <strong>$</strong> ps -ef | grep tomcat
-tds      22007     1  9 09:44 pts/1    00:00:02 /usr/local/tds/jdk1.7.0_25/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-7.0.42/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager <strong>-Xmx4096m
-  -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/usr/local/tds/apache-tomcat-7.0.42/content/thredds/javaUtilPrefs</strong> -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-7.0.42/endorsed -classpath /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-7.0.42 -Dcatalina.home=/usr/local/tds/apache-tomcat-7.0.42 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-7.0.42/temp org.apache.catalina.startup.Bootstrap start
+tds      22007     1  9 09:44 pts/1    00:00:02 /usr/local/tds/jdk1.8u51/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-8.0.24/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager <strong>-Xmx4096m
+  -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/usr/local/tds/apache-tomcat-8.0.24/content/thredds/javaUtilPrefs</strong> -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-8.0.24/endorsed -classpath /usr/local/tds/apache-tomcat-8.0.24/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-8.0.24/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-8.0.24 -Dcatalina.home=/usr/local/tds/apache-tomcat-8.0.24 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-8.0.24/temp org.apache.catalina.startup.Bootstrap start
 tds      22030 21675  0 09:44 pts/1    00:00:00 grep tomcat
 </pre>
     <div id="note" class="info">
@@ -432,13 +456,13 @@ WARNING: Couldn't flush system prefs: java.util.prefs.BackingStoreException: /et
 #
 # ENVARS for Tomcat and TDS environment
 #
-JAVA_HOME="/usr/local/tds/jdk1.7.0_25"
+JAVA_HOME="/usr/local/tds/jdk1.8u51"
 export JAVA_HOME
 
 JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true <strong>-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</strong>"
 export JAVA_OPTS
 
-CATALINA_BASE="/usr/local/tds/apache-tomcat-7.0.42"
+CATALINA_BASE="/usr/local/tds/apache-tomcat-8.0.24"
 export CATALINA_BASE
 </pre>
       </ul>
@@ -461,7 +485,7 @@ export CATALINA_BASE
 
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/webapps
+/usr/local/tds/apache-tomcat-8.0.24/webapps
 <strong>$</strong> cd ../logs
 
 <strong>$</strong> ls -l
@@ -486,7 +510,7 @@ export CATALINA_BASE
     <li>Examining <code>catalina.out</code>.</li>
     <p>Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:</p>
 <pre>
-<strong>$</strong> tail -f /usr/local/tds/apache-tomcat-7.0.42/logs/catalina.out
+<strong>$</strong> tail -f /usr/local/tds/apache-tomcat-8.0.24/logs/catalina.out
 </pre>
     <p>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</p>
 
@@ -551,7 +575,7 @@ export CATALINA_BASE
   <p>Move into the Tomcat <code>conf/</code> directory and examine the <code>server.xml</code> file:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/logs
+/usr/local/tds/apache-tomcat-8.0.24/logs
 <strong>$</strong> cd ../conf
 
 <strong>$</strong> less server.xml
@@ -749,7 +773,7 @@ export CATALINA_BASE
   <p>Open the <code>tomcat-users.xml</code> file:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/conf
+/usr/local/tds/apache-tomcat-8.0.24/conf
 
 <strong>$</strong> less tomcat-users.xml
 </pre>
@@ -852,7 +876,7 @@ export CATALINA_BASE
 
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/bin
+/usr/local/tds/apache-tomcat-8.0.24/bin
 <strong>$</strong> cd ../webapps
 
 <strong>$</strong> mv ~/thredds.war .
@@ -888,7 +912,7 @@ drwxr-xr-x  3 tds workshop     4096 Jul 15 09:37 ROOT
     <p>Move into <code>${tomcat_home}</code> and do a long listing:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/webapps
+/usr/local/tds/apache-tomcat-8.0.24/webapps
 <strong>$</strong> cd ..
 
 <strong>$</strong> ls -l
@@ -1034,7 +1058,7 @@ drwxr-xr-x 3 tds workshop  4096 Jul 15 09:39 work
       directory have been removed:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/conf
+/usr/local/tds/apache-tomcat-8.0.24/conf
 <strong>$</strong> cd ../webapps
 
 <strong>$</strong> ls -l
