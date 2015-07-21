@@ -1,7 +1,8 @@
-= NetCDF-Java Build Dependencies
 :source-highlighter: coderay
 :linkcss:
 :stylesheet: ../cdm.css
+
+= NetCDF-Java Build Dependencies
 
 == Building with Maven artifacts
 
