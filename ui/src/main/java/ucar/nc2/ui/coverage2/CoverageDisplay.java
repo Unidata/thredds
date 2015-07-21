@@ -4,6 +4,7 @@ package ucar.nc2.ui.coverage2;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.Dataset;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ui.event.ActionCoordinator;
@@ -1064,29 +1065,29 @@ public class CoverageDisplay extends JPanel {
     CoverageCoordSys gcs = coverageDataset.findCoordSys(gg.getCoordSysName());
     //gcs.setProjectionBoundingBox();
 
-    // set levels
-    CoverageCoordAxis vertAxis = coordsSys.getZAxis();
-    if (vertAxis != null && vertAxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
-      levelNames = vertAxis.getCoordValueNames();
-      if ((currentLevel < 0) || (currentLevel >= levelNames.size()))
-        currentLevel = 0;
-      //vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
+    // set runtimes
+    CoverageCoordAxis rtaxis = gcs.getAxis(AxisType.RunTime);
+    if (rtaxis != null && rtaxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
+      runtimeNames = ((CoverageCoordAxis1D)rtaxis).getCoordValueNames();
+      currentRunTime = runtimeNames.size() > 0 ? 0 : -1;
+      if ((currentRunTime < 0) || (currentRunTime >= runtimeNames.size()))
+        currentRunTime = 0;
 
-      setChooserWanted("level", true);
-      levelChooser.setCollection(levelNames.iterator(), true);
-      NamedObject no = levelNames.get(currentLevel);
-      levelChooser.setSelectedByName(no.getName());
+      setChooserWanted("runtime", true);
+      ensembleChooser.setCollection(runtimeNames.iterator(), true);
+      NamedObject no = runtimeNames.get(currentRunTime);
+      ensembleChooser.setSelectedByName(no.getName());
 
     } else {
-      levelNames = new ArrayList<>();
-      setChooserWanted("level", false);
-      coverageRenderer.setLevel(-1);
+      ensembleNames = new ArrayList<>();
+      setChooserWanted("runtime", false);
+      coverageRenderer.setEnsemble(-1);
     }
 
     // set times
     CoverageCoordAxis timeAxis = gcs.getTimeAxis();
     if (timeAxis != null && timeAxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
-      timeNames = timeAxis.getCoordValueNames();
+      timeNames = ((CoverageCoordAxis1D)timeAxis).getCoordValueNames();
       if ((currentTime < 0) || (currentTime >= timeNames.size()))
         currentTime = 0;
       hasDependentTimeAxis = true;
@@ -1102,48 +1103,43 @@ public class CoverageDisplay extends JPanel {
       setChooserWanted("time", false);
     }
 
-    /* set ensembles
-    CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
-    ensembleNames = (eaxis == null) ? new ArrayList() : eaxis.getNames();
-    currentEnsemble = ensembleNames.size() > 0 ? 0 : -1;
+    // set ensembles
+    CoverageCoordAxis eaxis = gcs.getAxis(AxisType.Ensemble);
+    if (eaxis != null && eaxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
+      ensembleNames = ((CoverageCoordAxis1D)eaxis).getCoordValueNames();
+      currentEnsemble = ensembleNames.size() > 0 ? 0 : -1;
+      if ((currentEnsemble < 0) || (currentEnsemble >= ensembleNames.size()))
+        currentEnsemble = 0;
 
-    // set runtimes
-    CoordinateAxis1DTime rtaxis = gcs.getRunTimeAxis();
-    runtimeNames = (rtaxis == null) ? new ArrayList() : rtaxis.getNames();
-    currentRunTime = runtimeNames.size() > 0 ? 0 : -1;
-
-
-      // times
-    if (gcs.hasTimeAxis()) {
-      axis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
-      setChooserWanted("time", axis != null);
-      if (axis != null) {
-        java.util.List<NamedObject> names = axis.getNames();
-        timeChooser.setCollection(names.iterator(), true);
-        NamedObject no =  names.get(currentTime);
-        timeChooser.setSelectedByName(no.getName());
-      }
-    } else {
-      setChooserWanted("time", false);
-    }
-
-    axis = gcs.getEnsembleAxis();
-    setChooserWanted("ensemble", axis != null);
-    if (axis != null) {
-      java.util.List<NamedObject> names = axis.getNames();
-      ensembleChooser.setCollection(names.iterator(), true);
-      NamedObject no =  names.get(currentEnsemble);
+      setChooserWanted("ensemble", true);
+      ensembleChooser.setCollection(ensembleNames.iterator(), true);
+      NamedObject no = ensembleNames.get(currentEnsemble);
       ensembleChooser.setSelectedByName(no.getName());
+
+    } else {
+      ensembleNames = new ArrayList<>();
+      setChooserWanted("ensemble", false);
+      coverageRenderer.setEnsemble(-1);
     }
 
-    axis = gcs.getRunTimeAxis();
-    setChooserWanted("runtime", axis != null);
-    if (axis != null) {
-      java.util.List<NamedObject> names = axis.getNames();
-      runtimeChooser.setCollection(names.iterator(), true);
-      NamedObject no = names.get(currentRunTime);
-      runtimeChooser.setSelectedByName(no.getName());
-    }   */
+        // set levels
+    CoverageCoordAxis vertAxis = coordsSys.getZAxis();
+    if (vertAxis != null && vertAxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
+      levelNames = ((CoverageCoordAxis1D)vertAxis).getCoordValueNames();
+      if ((currentLevel < 0) || (currentLevel >= levelNames.size()))
+        currentLevel = 0;
+      //vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
+
+      setChooserWanted("level", true);
+      levelChooser.setCollection(levelNames.iterator(), true);
+      NamedObject no = levelNames.get(currentLevel);
+      levelChooser.setSelectedByName(no.getName());
+
+    } else {
+      levelNames = new ArrayList<>();
+      setChooserWanted("level", false);
+      coverageRenderer.setLevel(-1);
+    }
 
     addChoosers();
 

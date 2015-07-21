@@ -10,6 +10,7 @@
     <collection spec="${cdmUnitTest}/datasets/NDFD-CONUS-5km/.*grib2$" timePartition="file" />
 
     <gribConfig datasetTypes="TwoD LatestFile Files">
+      <gdsHash from="-197088379" to="-198041691"/>
       <pdsHash>
         <useGenType>true</useGenType>
       </pdsHash>

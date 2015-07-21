@@ -107,8 +107,6 @@ abstract public class CoverageCoordAxis {
 
   abstract public Array getCoordBoundsAsArray();
 
-  abstract public List<NamedObject> getCoordValueNames();
-
   public String getName() {
     return name;
   }

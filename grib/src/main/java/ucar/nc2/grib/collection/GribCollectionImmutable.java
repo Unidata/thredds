@@ -964,7 +964,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
                   FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
-
   public abstract CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename,
                   FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 

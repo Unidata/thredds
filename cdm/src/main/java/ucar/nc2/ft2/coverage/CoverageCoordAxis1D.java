@@ -17,7 +17,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * Coverage CoordAxis 1D case
  *
  * @author caron
  * @since 7/15/2015
@@ -46,7 +46,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return stride;
   }
 
-  // for subseting - these are the indexes reletive to original - note cant compose !!
+  // for subsetting - these are the indexes reletive to original - note cant compose !!
   void setIndexRange(int minIndex, int maxIndex, int stride) {
     this.minIndex = minIndex;
     this.maxIndex = maxIndex;
@@ -212,9 +212,12 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return Array.makeFromJavaArray(vals);
   } */
 
-  @Override
   public List<NamedObject> getCoordValueNames() {
     getValues();  // read in if needed
+    if (timeHelper != null) {
+      return timeHelper.getCoordValueNames(this);
+    }
+
     List<NamedObject> result = new ArrayList<>();
     for (int i = 0; i < ncoords; i++) {
       String valName = "";

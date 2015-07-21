@@ -7,6 +7,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.Misc;
 import ucar.nc2.util.NamedObject;
 
 import java.util.Formatter;
@@ -42,6 +43,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
+    f.format("%s  %s%n", indent, Misc.showInts(shape));
   }
 
   @Override
@@ -72,8 +74,4 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
     return null; // LOOK
   }
 
-  @Override
-  public List<NamedObject> getCoordValueNames() {
-    return null;
-  }
 }

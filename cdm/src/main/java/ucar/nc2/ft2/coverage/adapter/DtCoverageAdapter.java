@@ -112,12 +112,12 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     else if (dtCoordAxis instanceof CoordinateAxis2D) {
       dependenceType = CoverageCoordAxis.DependenceType.twoD;
       for (Dimension d : dtCoordAxis.getDimensions())
-        dependsOn.add(d.getName());
+        dependsOn.add(d.getFullName());
 
     } else {
       dependenceType = CoverageCoordAxis.DependenceType.dependent;
       for (Dimension d : dtCoordAxis.getDimensions())
-        dependsOn.add(d.getName());
+        dependsOn.add(d.getFullName());
     }
 
     int ncoords = (int) dtCoordAxis.getSize();

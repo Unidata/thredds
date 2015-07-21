@@ -87,9 +87,9 @@ public class WcsCoverage {
 
     CoverageCoordAxis zaxis = coordSys.getZAxis();
     WcsRangeField.Axis vertAxis;
-    if (zaxis != null) {
+    if (zaxis != null && zaxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
       List<String> names = new ArrayList<>();
-      for (NamedObject val :  zaxis.getCoordValueNames())
+      for (NamedObject val :  ((CoverageCoordAxis1D)zaxis).getCoordValueNames())
         names.add(val.getName());
       vertAxis = new WcsRangeField.Axis("Vertical", zaxis.getName(), zaxis.getDescription(), true, names);
     } else
