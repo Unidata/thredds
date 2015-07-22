@@ -25,7 +25,8 @@ Form] (Repeated submissions encouraged)
  * link:GettingStarted.html#tour[Tomcat Directory Structure: Quick Tour]
  * link:GettingStarted.html#logs[Tomcat Log Files]
  * link:GettingStarted.html#manager[Tomcat `manager` Application]
- * link:http://www.unidata.ucar.edu/software/thredds/current/tds/tutorial/BasicThreddsConfig_xml.html[Exercise]: edit threddsConfig.xml to add local information
+ * link:http://www.unidata.ucar.edu/software/thredds/current/tds/tutorial/BasicThreddsConfig_xml.html[Exercise]:
+       edit threddsConfig.xml to add local information
 
 === 10:15 - 10:30 Break
 
@@ -41,12 +42,12 @@ Form] (Repeated submissions encouraged)
 
 === 11:45 - 12:45 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis, Christian)
  * General Overview (Christian)
- ** Available link:../reference/Services.html[services]
- ** Using Compound Services
- *** Note that service base URL is not configurable
- *** Note that `fileServer` requires physical files, not virtual ones
- ** example: turn on NCSS in threddsConfig.xml
- *** link:../../netcdf-java/reference/netcdf4Clibrary.html[enabling NetCDF4] for NCSS: Compression!
+ ** link:../reference/Services.html[Available services]
+ *** `serviceType` and `base` attributes are not configurable
+ *** `HTTPServer` requires physical files, not virtual ones
+ ** Using compound services
+ ** Example: link:../reference/ThreddsConfigXMLFile.html#ncss[Turn on NCSS in threddsConfig.xml]
+ *** link:../../netcdf-java/reference/netcdf4Clibrary.html[Enabling NetCDF4] for NCSS: Compression!
  * More details for specific services (Dennis)
  ** Catalog Service (link:../reference/CatalogService.html[reference])
  ** OPeNDAP link:DAP.html[DAP2 and DAP4 Protocol] Services
@@ -65,9 +66,9 @@ Form] (Repeated submissions encouraged)
 
 === 2:45 - 3:15 Using ToolsUI (Christian)
  * Running link:../../netcdf-java/reference/ToolsUI/ToolsUI.html[ToolsUI]
- * Use Case: Using ToolsUI to serve new datav
- ** Access local and remote TDS servers in ToolsUI.
- * IOSP and FeatureTypes
+ * Use Case: Using ToolsUI to serve new data
+ ** Access local and remote TDS servers in ToolsUI
+ * IOSPs and FeatureTypes
 
 === 3:15 - 3:30 Break
 
