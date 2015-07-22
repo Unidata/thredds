@@ -438,6 +438,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return e;
   }
 
+  public double getCoordBoundsMidpoint(int i) {
+    double[] bounds = getCoordBounds(i);
+    return (bounds[0]+bounds[1])/2;
+  }
+
   /**
    * Given a coordinate value, find what grid element contains it.
    * This means that

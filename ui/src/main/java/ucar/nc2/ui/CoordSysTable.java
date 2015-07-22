@@ -317,7 +317,6 @@ public class CoordSysTable extends JPanel {
 
 
   private void showValues2D(CoordinateAxis2D axis2D) {
-
     Formatter f = new Formatter();
 
     if (axis2D.isInterval()) {
@@ -328,6 +327,7 @@ public class CoordSysTable extends JPanel {
         return;
       }
 
+      int count = 0;
       IndexIterator coordIter = coords.getIndexIterator();
       IndexIterator boundsIter = bounds.getIndexIterator();
       while (coordIter.hasNext()) {
@@ -336,7 +336,8 @@ public class CoordSysTable extends JPanel {
         double bounds1 = boundsIter.getDoubleNext();
         if (!boundsIter.hasNext()) break;
         double bounds2 = boundsIter.getDoubleNext();
-        f.format("%f (%f,%f) = %f%n", coordValue, bounds1, bounds2, bounds2 - bounds1);
+        f.format("%3d: %f (%f,%f) len=%f mid=%f%n", count, coordValue, bounds1, bounds2, bounds2 - bounds1, (bounds2 + bounds1)/2);
+        count++;
       }
 
     } else {
@@ -346,9 +347,7 @@ public class CoordSysTable extends JPanel {
         double coordValue = coordIter.getDoubleNext();
         f.format("%f%n", coordValue);
       }
-
     }
-
     infoTA.appendLine(f.toString());
   }
 
@@ -447,6 +446,7 @@ public class CoordSysTable extends JPanel {
 
   private void showDates2D(CoordinateAxis2D axis2D, CalendarDateUnit cdu) {
     Formatter f = new Formatter();
+    int count = 0;
 
     if (axis2D.isInterval()) {
       ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
@@ -464,7 +464,7 @@ public class CoordSysTable extends JPanel {
         double bounds1 = boundsIter.getDoubleNext();
         if (!boundsIter.hasNext()) break;
         double bounds2 = boundsIter.getDoubleNext();
-        f.format("%s (%s,%s)%n", makeCalendarDateStringOrMissing(cdu, coordValue),
+        f.format("%3d: %s (%s,%s)%n", count++, makeCalendarDateStringOrMissing(cdu, coordValue),
                 makeCalendarDateStringOrMissing(cdu, bounds1),
                 makeCalendarDateStringOrMissing(cdu, bounds2));
       }
@@ -474,7 +474,7 @@ public class CoordSysTable extends JPanel {
       IndexIterator coordIter = coords.getIndexIterator();
       while (coordIter.hasNext()) {
         double coordValue = coordIter.getDoubleNext();
-        f.format("%s%n", makeCalendarDateStringOrMissing(cdu, coordValue));
+        f.format("%3d: %s%n", count++, makeCalendarDateStringOrMissing(cdu, coordValue));
       }
 
     }

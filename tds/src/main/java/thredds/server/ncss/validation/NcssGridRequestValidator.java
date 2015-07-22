@@ -114,9 +114,14 @@ public class NcssGridRequestValidator implements ConstraintValidator<NcssGridReq
 
 		// runtime
 		if (params.getRuntime() != null) {
-			CalendarDate cd = TimeParamsValidator.validateISOString(params.getRuntime(), "{thredds.server.ncSubset.validation.param.time}", constraintValidatorContext);
-			if (cd != null)
-     		params.setRuntimeDate(cd);
+			if ("latest".equalsIgnoreCase(params.getRuntime())) {
+				params.setLatestRuntime(true);
+
+			} else {
+				CalendarDate cd = TimeParamsValidator.validateISOString(params.getRuntime(), "{thredds.server.ncSubset.validation.param.runtime}", constraintValidatorContext);
+				if (cd != null)
+					params.setRuntimeDate(cd);
+			}
 		}
 
 		return isValid;

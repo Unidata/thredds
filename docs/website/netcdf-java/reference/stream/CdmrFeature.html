@@ -44,13 +44,6 @@ coordname=minvalue:maxvalue</pre>
     <td></td>
   </tr>
   <tr>
-    <td><p>latitude, longitude</p></td>
-    <td>no</td>
-    <td><span>Point location. units of degrees_east, degrees_north</span></td>
-    <td><span>Must be within the dataset bounding box.</span></td>
-    <td></td>
-  </tr>
-  <tr>
     <td>north, south, east, west</td>
     <td>no</td>
     <td>Lat/lon bounding box, units of degrees_east, degrees_north</td>
@@ -105,19 +98,11 @@ coordname=minvalue:maxvalue</pre>
   <tr>
     <td>runtime</td>
     <td>no</td>
-    <td>Restrict to specified runtime coordinate. <a rel="nofollow"
-                 href="#W3Cdate">W3C
-    date</a></td>
+    <td>Time as a <a rel="nofollow"
+                         href="#W3Cdate">W3C
+    date</a> or &quot;latest&quot;. Restrict to specified runtime coordinate.</td>
     <td>Used only if Grid has a runtime coordinate.</td>
     <td>All runtimes will be returned </td>
-  </tr>
-  <tr>
-    <td>offset</td>
-    <td>no</td>
-    <td>Restrict to specified offset.<a rel="nofollow"
-                 href="#W3Cdate"></a></td>
-    <td>Used only if Grid has a runtime coordinate.</td>
-    <td>&nbsp;</td>
   </tr>
     <tr>
     <td>vertCoord</td>
@@ -149,7 +134,7 @@ coordname=minvalue:maxvalue</pre>
 </ul>
 <h4><strong>Vertical spatial subsetting:</strong></h4>
 <ul>
-  <li>You may specify a vertical coordinate as a double. The closest value is returned. If not specified,  all vertical levels are returned</li>
+  <li>You may specify a vertical coordinate as a double. The closest value is returned. If not specified,  all vertical levels are returned.</li>
 </ul>
 <h4><strong>Temporal subsetting:</strong></h4>
 <ul>
@@ -161,9 +146,28 @@ coordname=minvalue:maxvalue</pre>
   <li>datetime: isoString or &quot;present&quot;</li>
   <li>The dataset determines what Calendar is used, so you must use that calendar.</li>
 </ul>
+<h4>Interval coordinate:</h4>
+<ul>
+  <li>If the  coordinate is an <em>interval coordinate</em> (common for vertical or time coordinates), it has a lower and upper bound, eg (2.0-10.0).</li>
+  <li>The request is still made with a single value. The interval that contains the requested value is used.</li>
+  <li>If the requested value is contained in more than one interval, the midpoint of the interval is calculated, and the closest midpoint to the requested value is used.</li>
+</ul>
 <h3>Data Return</h3>
 <p>The Data is returned as a <em><strong>GeoReferencedArray</strong></em>:</p>
 <p>TBD</p>
+<p>&nbsp;</p>
+<h3>FMRC</h3>
+<p>This has  coordinates <strong>runtime</strong>(runtime) and <strong>time</strong>(runtime, time);</p>
+<ul>
+  <li><strong>runtime</strong>=rundate or &quot;latest&quot;: <strong>time</strong>=&quot;all&quot; : get all times for that run </li>
+  <li><strong>runtime</strong>=rundate or &quot;latest&quot;: <strong>time</strong>=&quot;latest&quot; : get latest time slice for that run </li>
+  <li><strong>runtime</strong>=rundate, <strong>time</strong>=date : get the specific time slice</li>
+  <li><strong>runtime</strong>=rundate, <strong>timeRange</strong>=dates : get the  time slices</li>
+  <li><strong>runtimeRange</strong>=rundates, <strong>timeRange</strong>=dates : get the  time slices (NOT DONE)</li>
+  <li><strong>time</strong>=date : constant forecast (NOT DONE) </li>
+  <li><strong>timeOffset</strong>=value : constant offset (NOT DONE)</li>
+</ul>
+<p>&nbsp;</p>
 <hr />
 <h2>PointDataset</h2>
 <p>Possible requests are:</p>

@@ -95,6 +95,19 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     throw new IllegalStateException("unknown spacing"+spacing);
   }
 
+  public double getCoordMidpoint(int index) {
+    switch (spacing) {
+      case regular:
+      case irregularPoint:
+        return getCoord(index);
+
+      case contiguousInterval:
+      case discontiguousInterval:
+        return (getCoordEdge1(index)+getCoordEdge2(index))/2;
+    }
+    throw new IllegalStateException("Unknown spacing=" + spacing);
+  }
+
   public double getCoord(int index) {
     switch (spacing) {
       case regular:
@@ -129,6 +142,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         return values[index];
 
       case discontiguousInterval:
+        if (values == null || index <0)
+          System.out.println("HEY");
         return values[2 * index];
     }
     throw new IllegalStateException("Unknown spacing=" + spacing);
@@ -220,20 +235,19 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
     List<NamedObject> result = new ArrayList<>();
     for (int i = 0; i < ncoords; i++) {
-      String valName = "";
+      Object value = null;
       switch (spacing) {
         case regular:
         case irregularPoint:
-          valName = Format.d(getCoord(i), 3);
+          value = Format.d(getCoord(i), 3);
           break;
 
         case contiguousInterval:
         case discontiguousInterval:
-          valName = Format.d(getCoordEdge1(i), 3) + "," + Format.d(getCoordEdge2(i), 3);
+          value = new CoordInterval(getCoordEdge1(i), getCoordEdge2(i), 3);
           break;
-
       }
-      result.add(new NamedAnything(valName, valName + " " + getUnits()));
+      result.add(new NamedAnything(value, value + " " + getUnits()));
     }
 
     return result;
@@ -287,6 +301,9 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         break;
 
       case RunTime:
+        if (params.isTrue(SubsetParams.latestRuntime))
+          return helper.subsetLatest();
+
         CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
         if (rundate != null)
           return helper.subset(rundate);

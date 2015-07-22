@@ -181,7 +181,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
   }
 
   private static CalendarDate isoString2Date(String isoString) {
-    if ("present".equals(isoString)) return CalendarDate.present();
+    if ("present".equalsIgnoreCase(isoString)) return CalendarDate.present();
     return CalendarDateFormatter.isoStringToCalendarDate(Calendar.getDefault(), isoString);
   }
 }

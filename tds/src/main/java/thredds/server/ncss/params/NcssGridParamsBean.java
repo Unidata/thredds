@@ -122,6 +122,11 @@ public class NcssGridParamsBean extends NcssParamsBean {
   ////////////////////////////////////////////
 
   protected CalendarDate runtimeDate;
+  protected boolean latestRuntime;
+
+  public void setLatestRuntime(boolean latestRuntime) {
+    this.latestRuntime = latestRuntime;
+  }
 
   public void setRuntimeDate(CalendarDate runtimeDate) {
     this.runtimeDate = runtimeDate;

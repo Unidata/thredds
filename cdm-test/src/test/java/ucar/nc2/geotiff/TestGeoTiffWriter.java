@@ -124,7 +124,7 @@ public class TestGeoTiffWriter {
         assert coverage != null;
         array = coverage.readData(new SubsetParams()
                 .set(SubsetParams.latestTime, true)
-                .set(SubsetParams.vertIndex, 0));
+                .set(SubsetParams.vertIndex, 0));      // LOOK cheating
 
         try (GeotiffWriter writer = new GeotiffWriter(gridOut2)) {
           writer.writeGrid(array, true);

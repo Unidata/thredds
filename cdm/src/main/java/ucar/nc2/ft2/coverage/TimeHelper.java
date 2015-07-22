@@ -9,7 +9,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
-import ucar.unidata.util.Format;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,22 +41,19 @@ public class TimeHelper {
     axis.getValues(); // read in if needed
     List<NamedObject> result = new ArrayList<>();
     for (int i = 0; i < axis.getNcoords(); i++) {
-      String valName = "";
       double value;
       switch (axis.getSpacing()) {
         case regular:
         case irregularPoint:
           value = axis.getCoord(i);
-          //valName = Format.d(value, 3);
           result.add(new NamedAnything(makeDate(value), axis.getAxisType().toString()));
           break;
 
         case contiguousInterval:
         case discontiguousInterval:
-          valName = Format.d(axis.getCoordEdge1(i), 3) + "," + Format.d(axis.getCoordEdge2(i), 3);
-          result.add(new NamedAnything(valName, valName + " " + axis.getUnits()));
+          CoordInterval coord = new CoordInterval(axis.getCoordEdge1(i), axis.getCoordEdge2(i), 3);  // LOOK
+          result.add(new NamedAnything(coord, coord + " " + axis.getUnits()));
           break;
-
       }
     }
 
@@ -77,7 +73,7 @@ public class TimeHelper {
   public static ucar.nc2.time.Calendar getCalendarFromAttribute(List<Attribute> atts) {
     Attribute cal = null;
     for (Attribute att : atts) {
-      if (att.getName().equalsIgnoreCase(CF.CALENDAR))
+      if (att.getFullName().equalsIgnoreCase(CF.CALENDAR))
        cal = att;
     }
     if (cal == null) return null;

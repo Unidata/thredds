@@ -81,7 +81,7 @@ import ucar.nc2.ParsedSectionSpec;
 @RequestMapping("/cdmremote")
 public class CdmRemoteController implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmRemoteController.class);
-  private static final boolean debug = false, showReq = false;
+  private static final boolean debug = false, showReq = true;
 
   @Autowired
   TdsContext tdsContext;
@@ -113,6 +113,7 @@ public class CdmRemoteController implements LastModified {
 
     if (showReq)
       System.out.printf("CdmRemoteController req=%s%n", absPath + "?" + request.getQueryString());
+    long start = System.currentTimeMillis();
     if (debug) {
       System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
     }
@@ -213,9 +214,9 @@ public class CdmRemoteController implements LastModified {
 
     if (showReq)
       System.out.printf("CdmRemoteController req=%s%n", absPath + "?" + request.getQueryString());
-    if (debug) {
+    if (debug)
       System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
-    }
+    long start = System.currentTimeMillis();
 
     try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
       if (ncfile == null) return;
@@ -246,7 +247,7 @@ public class CdmRemoteController implements LastModified {
       out.flush();
 
       if (showReq)
-        System.out.printf("CdmRemoteController data ok, size=%s%n", size);
+        System.out.printf("CdmRemoteController data ok, size=%s took=%d%n", size, System.currentTimeMillis() - start);
 
     } catch (IllegalArgumentException | InvalidRangeException e) { // ParsedSectionSpec failed
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());

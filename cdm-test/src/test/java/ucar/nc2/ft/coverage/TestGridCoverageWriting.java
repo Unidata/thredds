@@ -42,8 +42,8 @@ public class TestGridCoverageWriting {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", Lists.newArrayList("Surface_pressure_surface"), NetcdfFileWriter.Version.netcdf3});  // scalar runtime
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", Lists.newArrayList("PS", "Temperature"), NetcdfFileWriter.Version.netcdf3});  // both x,y and lat,lon */
 
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", Lists.newArrayList("Best/Soil_temperature_depth_below_surface_layer"), NetcdfFileWriter.Version.netcdf4});  // TwoD Best
-    //result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", Lists.newArrayList("TwoD/Soil_temperature_depth_below_surface_layer"), NetcdfFileWriter.Version.netcdf4 });  // TwoD
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", Lists.newArrayList("Best/Soil_temperature_depth_below_surface_layer"), NetcdfFileWriter.Version.netcdf4});  // TwoD Best
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", Lists.newArrayList("TwoD/Soil_temperature_depth_below_surface_layer"), NetcdfFileWriter.Version.netcdf4 });  // TwoD
 
     return result;
   }

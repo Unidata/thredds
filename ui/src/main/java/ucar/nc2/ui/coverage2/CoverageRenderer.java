@@ -453,11 +453,11 @@ public class CoverageRenderer {
     //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
     SubsetParams subset = new SubsetParams();
     if (level >= 0 && dataState.zaxis != null) {
-      double levelVal = dataState.zaxis.getCoord(level);
+      double levelVal = dataState.zaxis.getCoordMidpoint(level);
       subset.set(SubsetParams.vertCoord, levelVal);
     }
     if (time >= 0 && dataState.taxis != null) {
-      double timeVal = dataState.taxis.getCoord(time);
+      double timeVal = dataState.taxis.getCoordMidpoint(time);
       CalendarDate date = dataState.taxis.makeDate(timeVal);
       subset.set(SubsetParams.time, date);
     }

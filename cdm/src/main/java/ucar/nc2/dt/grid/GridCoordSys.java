@@ -915,6 +915,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return timeTaxis != null;
   }
 
+  /**
+   * @deprecated doesnt work correctly for intervals
+   */
   @Override
   public CoordinateAxis1DTime getTimeAxisForRun(int run_index) {
     if (!hasTimeAxis() || hasTimeAxis1D() || runTimeAxis == null) return null;

@@ -91,7 +91,7 @@ public class TestCoverageBuilding {
 
         CoverageCoordAxis ccaTime = cd.findCoordAxis(timeAxis.getFullName());
         Assert.assertNotNull(timeAxis.getFullName(), ccaTime);
-        Assert.assertEquals(CoverageCoordAxis.Spacing.regular, ccaTime.getSpacing());
+        Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, ccaTime.getSpacing());
       }
     }
   }

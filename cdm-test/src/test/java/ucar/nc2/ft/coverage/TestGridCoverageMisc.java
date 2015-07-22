@@ -37,11 +37,15 @@ public class TestGridCoverageMisc {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", "RH_lpdg", null, null, "2003-06-12T19:00:00Z", 150.0});  // NUWG - has CoordinateAlias
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.580000}); // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.665000}); // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Absolute_vorticity_isobaric", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 100000.0}); // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", "elev", null, null, "2009-10-24T04:14:59.121Z", null});  // x,y axis but no projection
+    //    Slice runtime=2015-03-01T18:00:00Z (3) ens=0.000000 (-1) time=2015-03-17T18:00:00Z (92) vert=30000.000000 (9)
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "TwoD/Total_ozone_entire_atmosphere_single_layer", "2015-03-01T18:00:00Z", null, "2015-03-17T18:00:00Z", null, null});
+    //    Slice runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "TwoD/Momentum_flux_u-component_surface_Mixed_intervals_Average", "2015-03-01T00:00:00Z", null, "2015-03-06T19:30:00Z", null, 46});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", "RH_lpdg", null, null, "2003-06-12T19:00:00Z", 150.0, null});  // NUWG - has CoordinateAlias
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.580000, null}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.665000, null}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Absolute_vorticity_isobaric", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 100000.0, null}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", "elev", null, null, "2009-10-24T04:14:59.121Z", null, null});  // x,y axis but no projection
 
     return result;
   }
@@ -52,20 +56,21 @@ public class TestGridCoverageMisc {
   Double ens_val;
   CalendarDate time_val;
   Double vert_val;
+  Integer time_idx;
 
-  public TestGridCoverageMisc(String endpoint, String covName, String rt_val, Double ens_val, String time_val, Double vert_val) {
+  public TestGridCoverageMisc(String endpoint, String covName, String rt_val, Double ens_val, String time_val, Double vert_val, Integer time_idx) {
     this.endpoint = endpoint;
     this.covName = covName;
     this.rt_val = rt_val == null ? null : CalendarDate.parseISOformat(null, rt_val);
     this.ens_val = ens_val;
     this.time_val = time_val == null ? null : CalendarDate.parseISOformat(null, time_val);
     this.vert_val = vert_val;
+    this.time_idx = time_idx;
   }
-
 
   @Test
   public void testReadGridCoverageSlice() throws IOException {
-    System.out.printf("Test Dataset %s%n", endpoint);
+    System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
 
     try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {
       Assert.assertNotNull(endpoint, gcs);
@@ -81,18 +86,55 @@ public class TestGridCoverageMisc {
         CoordinateAxis1DTime timeAxis = csys.getTimeAxis1D();
         CoordinateAxis1D vertAxis = csys.getVerticalAxis();
 
+        int calcTimeIdx = -1;
         int rt_idx = (rtAxis == null || rt_val == null) ? -1 : rtAxis.findTimeIndexFromCalendarDate(rt_val);
+        if (time_idx == null) {
+          if (time_val != null) {
+            if (timeAxis != null)
+              calcTimeIdx = timeAxis.findTimeIndexFromCalendarDate(time_val);
+            else if (rt_idx >= 0) {
+              timeAxis = csys.getTimeAxisForRun(rt_idx);
+              if (timeAxis != null)
+                calcTimeIdx = timeAxis.findTimeIndexFromCalendarDate(time_val);
+            }
+          }
+        } else {
+          calcTimeIdx = time_idx;
+        }
+
         int ens_idx = (ensAxis == null || ens_val == null) ? -1 : ensAxis.findCoordElement(ens_val);
-        int time_idx = (timeAxis == null || time_val == null) ? -1 : timeAxis.findTimeIndexFromCalendarDate(time_val);
         int vert_idx = (vertAxis == null || vert_val == null) ? -1 : vertAxis.findCoordElement(vert_val);
 
         System.out.printf(" Grid %s%n", dt.getFullName());
 
         TestGridCoverageReading.readOneSlice(cover, dt,
                 rt_val, rt_idx,
+                time_val, calcTimeIdx,
                 ens_val == null ? 0 : ens_val, ens_idx,
-                time_val, time_idx,
                 vert_val == null ? 0 : vert_val, vert_idx);
+      }
+    }
+  }
+
+  @Test
+  public void testReadGridCoverageVariable() throws IOException {
+    if (!covName.contains("TwoD/Momentum_flux_u-component_surface_Mixed_intervals_Average")) return;  // cheater
+    System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {
+      Assert.assertNotNull(endpoint, gcs);
+      Coverage cover = gcs.findCoverage(covName);
+
+      // check DtCoverageCS
+      try (GridDataset ds = GridDataset.open(endpoint)) {
+        GridDatatype dt = ds.findGridByName(covName);
+
+        GridCoordSystem csys = dt.getCoordinateSystem();
+        CoordinateAxis1DTime rtAxis = csys.getRunTimeAxis();
+        CoordinateAxis1D ensAxis = csys.getEnsembleAxis();
+        CoordinateAxis1D vertAxis = csys.getVerticalAxis();
+
+        TestGridCoverageReading.readAllRuntimes(cover, dt, rtAxis, ensAxis, vertAxis);
       }
     }
   }

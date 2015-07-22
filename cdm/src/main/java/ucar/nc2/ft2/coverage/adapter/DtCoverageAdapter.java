@@ -255,7 +255,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     for (CoverageCoordAxis axis : subsetCoordSys.getAxes()) {
       if (axis instanceof CoverageCoordAxis1D && !axis.isScalar()) {
         CoverageCoordAxis1D axis1D = (CoverageCoordAxis1D) axis;
-        section.add(new Range(axis.getAxisType().toString(), axis1D.getMinIndex(), axis1D.getMaxIndex()));
+        section.add(new Range(axis.getAxisType().toString(), axis1D.getMinIndex(), axis1D.getMaxIndex(), axis1D.getStride()));
       }
     }
 

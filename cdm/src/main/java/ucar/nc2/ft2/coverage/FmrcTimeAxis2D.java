@@ -5,6 +5,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -64,14 +65,21 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
   @Override
   public CoverageCoordAxis subset(SubsetParams params) {
-    CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
-    if (rundate != null) {
-      double rundateTarget = runCoord.convert(rundate);
+    CoordAxisHelper helper = new CoordAxisHelper(runCoord);
+    int run_index = -1;
 
-      CoordAxisHelper helper = new CoordAxisHelper(runCoord);
-      int run_index = helper.findCoordElement(rundateTarget, CoordAxisHelper.Mode.closest);
+    if (params.isTrue(SubsetParams.latestRuntime))
+      run_index = runCoord.getNcoords()-1;
+    else {
+      CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
+      if (rundate != null) {
+        double rundateTarget = runCoord.convert(rundate);
+        run_index = helper.findCoordElementBounded(rundateTarget, CoordAxisHelper.Mode.closest);  // LOOK Bounded
+      }
+    }
+
+    if (run_index >= 0) {
       CoverageCoordAxis1D time1D = getTimeAxisForRun(run_index);
-
       return time1D.subset(params);
     }
 
@@ -91,9 +99,18 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
   @Override
   public Array getCoordBoundsAsArray() {
-    return null; // LOOK
+    double[] values = getValues();
+    int[] shapeB = new int[3];
+    System.arraycopy(shape, 0, shapeB, 0, 2);
+    shapeB[2] = 2;
+    return Array.factory(DataType.DOUBLE, shapeB, values);
   }
 
+  public CoverageCoordAxis1D getTimeAxisForRun(CalendarDate rundate) {
+    double rundateTarget = runCoord.convert(rundate);
+    int run_index = new CoordAxisHelper(runCoord).findCoordElementBounded(rundateTarget, CoordAxisHelper.Mode.closest);  // LOOK Bounded
+    return (run_index < 0) ? null : getTimeAxisForRun(run_index);
+  }
 
   public CoverageCoordAxis1D getTimeAxisForRun(int run_index) {
     if (spacing == Spacing.irregularPoint) {
@@ -106,13 +123,14 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       while (subset.hasNext())
         values[count++] = subset.nextDouble();
 
-      return new CoverageCoordAxis1D(name, units, description, dataType, axisType, attributes.getAttributes(),
+      return new CoverageCoordAxis1D(name, units, description, dataType, axisType,
+              AttributeContainerHelper.filter(attributes.getAttributes(), "_Coordinate"),
               dependenceType, dependsOn, spacing, n, values[0], values[n - 1],
               0.0, values, reader);
     }
 
     if (spacing == Spacing.discontiguousInterval) {
-      Array data = getCoordsAsArray();
+      Array data = getCoordBoundsAsArray();
       Array subset = data.slice(0, run_index);
 
       int count = 0;
@@ -121,7 +139,8 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       while (subset.hasNext())
         values[count++] = subset.nextDouble();
 
-      return new CoverageCoordAxis1D(name, units, description, dataType, axisType, attributes.getAttributes(),
+      return new CoverageCoordAxis1D(name, units, description, dataType, axisType,
+              AttributeContainerHelper.filter(attributes.getAttributes(), "_Coordinate"),
               dependenceType, dependsOn, spacing, n/2, values[0], values[n - 1],
               0.0, values, reader);
     }

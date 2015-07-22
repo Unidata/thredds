@@ -26,6 +26,7 @@ public class SubsetParams {
   public static final String latestTime = "latestTime"; // value = Boolean
   public static final String runtime = "runtime";       // value = CalendarDate
   public static final String runtimeRange = "runtimeRange"; // value = CalendarDateRange
+  public static final String latestRuntime = "latestRuntime"; // value = Boolean
   public static final String ensCoord = "ensCoord";     // value = double ??
 
   private final Map<String, Object> req = new HashMap<>();

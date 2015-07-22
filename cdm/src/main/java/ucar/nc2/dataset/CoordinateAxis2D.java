@@ -402,8 +402,8 @@ public class CoordinateAxis2D extends CoordinateAxis {
     VariableDS boundsVar = (VariableDS) ncd.findVariable(getParentGroup(), boundsVarName);
     if (null == boundsVar) return false;
     if (3 != boundsVar.getRank()) return false;
-
     if (getDimension(0) != boundsVar.getDimension(0)) return false;
+    if (getDimension(1) != boundsVar.getDimension(1)) return false;
     return 2 == boundsVar.getDimension(2).getLength();
   }
 

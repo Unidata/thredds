@@ -204,6 +204,12 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return e;
   }
 
+  public CalendarDate getCoordBoundsMidpointDate( int i) {
+    double[] intv = getCoordBounds(i);
+    double midpoint = (intv[0]+intv[1])/2;
+    return helper.makeCalendarDateFromOffset(midpoint);
+  }
+
   ////////////////////////////////////////////////////////////////////////
 
   /**
@@ -219,8 +225,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    */
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims) throws IOException {
     super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription());
-    this.ncd = ncd;
-    
+
     //Gotta set the original var. Otherwise it would be unable to read the values
     this.orgVar = org;
     
