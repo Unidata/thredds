@@ -36,7 +36,8 @@ Form] (Repeated submissions encouraged)
  ** link:ConfigCatalogs.html[TDS Configuration Catalogs - Intermediate] (Ryan)
  *** Unidata's https://github.com/Unidata/TdsConfig[TDS Server catalogs]
  * link:../reference/ThreddsConfigXMLFile.html[threddsConfig.xml Reference] (Christian)
- * URL link:../catalog/InvCatalogSpec.html#constructingURLs[construction] (Christian)
+ * URL Construction (link:CatalogPrimer.html#Constructing_an_access_URL[tutorial])
+   (link:../catalog/InvCatalogSpec.html#constructingURLs[reference]) (Christian)
 
 === 11:45 - 12:45 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis, Christian)
  * General Overview (Christian)
