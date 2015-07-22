@@ -342,6 +342,10 @@ public class CoverageTable extends JPanel {
       return name;
     }
 
+    public Object getValue() {
+      return geogrid;
+    }
+
     public void setName(String name) {
       this.name = name;
     }

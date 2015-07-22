@@ -177,6 +177,8 @@ public class NcStreamReader {
       }
     }
 
+    // otherwise its a multidim array
+
     // is it compressed ?
     Array data;
     NcStreamProto.Compress compress = dproto.getCompress();
@@ -184,14 +186,19 @@ public class NcStreamReader {
     if (compress == NcStreamProto.Compress.DEFLATE) {
       ByteArrayInputStream bin = new ByteArrayInputStream(datab);
       InflaterInputStream in = new InflaterInputStream(bin);
-      ByteArrayOutputStream bout = new ByteArrayOutputStream(uncompressedSize);
+      byte[] resultb = new byte[uncompressedSize];
+      NcStream.readFully(in, resultb);
+
+      /* ByteArrayOutputStream bout = new ByteArrayOutputStream(uncompressedSize);
       IO.copy(in, bout);  // decompress
-      byte[] resultb = bout.toByteArray();  // another fucking copy - overrride ByteArrayOutputStream(byte[] myown);
+      byte[] resultb = bout.toByteArray();  // another fucking copy - should overrride ByteArrayOutputStream(byte[] myown);  */
       data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(resultb)); // another copy, not sure can do anything
 
     } else {
       data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(datab));
     }
+
+
     return new DataResult(dproto.getVarName(), data);
   }
 

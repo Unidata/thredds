@@ -64,6 +64,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
    */
   public CoordinateAxis2D(NetcdfDataset ncd, VariableDS vds) {
     super(ncd, vds);
+    isContiguous = false;
   }
 
   // for section and slice

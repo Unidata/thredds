@@ -101,7 +101,7 @@ public class CdmrGridController implements LastModified {
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=header")
   public void handleHeaderRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
     if (showReq)
-      System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
+      System.out.printf("CdmrGridController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
 
     if (!allowedServices.isAllowed(StandardService.cdmrFeatureGrid))
       throw new ServiceNotAllowed(StandardService.cdmrFeatureGrid.toString());
@@ -118,14 +118,14 @@ public class CdmrGridController implements LastModified {
       out.flush();
 
       if (showRes)
-        System.out.printf(" CdmrFeatureController.getHeader sent, message size=%s%n", size);
+        System.out.printf(" CdmrGridController.getHeader sent, message size=%s%n", size);
     }
   }
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=form")
   public ResponseEntity<String> handleFormRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
     if (showReq)
-      System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
+      System.out.printf("CdmrGridController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
 
     if (!allowedServices.isAllowed(StandardService.cdmrFeatureGrid))
       throw new ServiceNotAllowed(StandardService.cdmrFeatureGrid.toString());
@@ -139,7 +139,7 @@ public class CdmrGridController implements LastModified {
       String text = gridCoverageDataset.toString();
 
       if (showRes)
-        System.out.printf(" CdmrFeatureController.getHeader sent, message size=%s%n", text.length());
+        System.out.printf(" CdmrGridController.getHeader sent, message size=%s%n", text.length());
 
       responseHeaders = new HttpHeaders();
       responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
@@ -157,7 +157,8 @@ public class CdmrGridController implements LastModified {
                                 @Valid NcssGridParamsBean qb, BindingResult validationResult, OutputStream out) throws IOException, BindException, InvalidRangeException {
 
     if (showReq)
-      System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
+      System.out.printf("CdmrGridController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
+    long start = System.currentTimeMillis();
 
     if (!allowedServices.isAllowed(StandardService.cdmrFeatureGrid))
       throw new ServiceNotAllowed(StandardService.cdmrFeatureGrid.toString());
@@ -175,11 +176,9 @@ public class CdmrGridController implements LastModified {
 
       // construct the subsetted dataset
       SubsetParams params = qb.makeSubset(gridCoverageDataset.getCalendar());
-      CoverageDataset subsetDataset = new CoverageSubsetter().makeCoverageDatasetSubset(gridCoverageDataset, qb.getVar(), params);
-
-      // LOOK problematic; CoverageSubsetter subsets coordSys and then CoverageReader subsets the data.
       List<GeoReferencedArray> arrays = new ArrayList<>();
-      for (Coverage grid : subsetDataset.getCoverages()) {
+      for (String gridWanted : qb.getVar()) {
+        Coverage grid = gridCoverageDataset.findCoverage(gridWanted);
         GeoReferencedArray array = grid.readData(params);
         arrays.add(array);
       }
@@ -189,6 +188,9 @@ public class CdmrGridController implements LastModified {
     } catch (Throwable t) {
       t.printStackTrace();
     }
+
+    if (showReq)
+       System.out.printf(" that took %d msecs%n", System.currentTimeMillis() - start);
   }
 
   private long sendDataResponse(List<GeoReferencedArray> arrays, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
@@ -219,7 +221,7 @@ public class CdmrGridController implements LastModified {
 
     for (GeoReferencedArray array : arrays) {
       long dataMessageLen = sendData(array.getData(), out, deflate);
-      if (showRes) System.out.printf(" CdmrFeatureController.sendData grid='%s' data message len=%d%n", array.getCoverageName(), dataMessageLen);
+      if (showRes) System.out.printf(" CdmrGridController.sendData grid='%s' data message len=%d%n", array.getCoverageName(), dataMessageLen);
       size += dataMessageLen;
     }
 
@@ -232,7 +234,7 @@ public class CdmrGridController implements LastModified {
     long uncompressedLength = data.getSizeBytes();
     long size = 0;
 
-    // regular arrays
+
     if (deflate) {
       // write to an internal buffer, so we can find out the size
       ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -250,9 +252,7 @@ public class CdmrGridController implements LastModified {
         System.out.printf("  org/compress= %d/%d = %f%n", uncompressedLength, deflatedSize, ratio);
 
     } else {
-
-      size += NcStream.writeVInt(out, (int) uncompressedLength); // data len or number of objects
-
+      size += NcStream.writeVInt(out, (int) uncompressedLength);
       size += IospHelper.copyToOutputStream(data, out);
     }
 

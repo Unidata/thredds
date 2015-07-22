@@ -40,15 +40,16 @@ package ucar.nc2.util;
  */
 
 public class NamedAnything implements NamedObject {
-  private String name, desc;
+  private Object value;
+  private String desc;
 
-  public NamedAnything(String name, String desc) {
-    this.name = name;
+  public NamedAnything(Object value, String desc) {
+    this.value = value;
     this.desc = desc;
   }
 
   public String getName() {
-    return name;
+    return value.toString();
   }
 
   public String getDescription() {
@@ -56,6 +57,11 @@ public class NamedAnything implements NamedObject {
   }
 
   public String toString() {
-    return name;
+    return value.toString();
   }
+
+  public Object getValue() {
+    return value;
+  }
+
 }

@@ -28,7 +28,7 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
   String endpoint;
   HTTPSession httpClient;
-  boolean debug = false;
+  boolean showCompression = true;
   boolean showRequest = true;
 
   CdmrCoverageReader(String endpoint, HTTPSession httpClient) throws IOException {
@@ -47,14 +47,14 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
       httpClient = HTTPFactory.newSession(endpoint);
 
     Formatter f = new Formatter();
-    f.format("%s?req=data&var=%s", endpoint, coverage.getName());  // LOOK full vs short name
+    f.format("%s?req=data&var=%s", endpoint, coverage.getName());  // LOOK full vs short name LOOK URL encoding
 
     for (Map.Entry<String,Object> entry : subset.getEntries()) {
       f.format("&%s=%s", entry.getKey(), entry.getValue());
     }
 
     if (showRequest)
-      System.out.printf(" CdmrFeature data request for gridCoverage: %s%n url=%s%n", coverage.getName(), f);
+      System.out.printf("CdmrFeature data request for gridCoverage: %s%n url=%s%n", coverage.getName(), f);
 
     try (HTTPMethod method = HTTPFactory.Get(httpClient, f.toString())) {
       int statusCode = method.execute();
@@ -78,7 +78,6 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
       // read Data message
       int psize = NcStream.readVInt(is);
-      if (debug) System.out.println("  readData data message len= " + psize);
       byte[] dp = new byte[psize];
       NcStream.readFully(is, dp);
       CdmrFeatureProto.DataResponse dproto = CdmrFeatureProto.DataResponse.parseFrom(dp);
@@ -100,27 +99,20 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
   }
 
   public GeoReferencedArray readData(DataResponse dataResponse, GeoArrayResponse arrayResponse, InputStream is) throws IOException {
-    // is it compressed ?
-    Array data;
-    if (arrayResponse.deflate) {
-      //ByteArrayInputStream bin = new ByteArrayInputStream(datab);
-      InflaterInputStream in = new InflaterInputStream(is);
-      ByteArrayOutputStream bout = new ByteArrayOutputStream( (int) arrayResponse.uncompressedSize);
-      IO.copy(in, bout);  // decompress
-      byte[] resultb = bout.toByteArray();  // another fucking copy - overrride ByteArrayOutputStream(byte[] myown);
-      data = Array.factory(arrayResponse.dataType, arrayResponse.shape, ByteBuffer.wrap(resultb)); // another copy, not sure can do anything
+    int sizeIn  = NcStream.readVInt(is);  // not used ?
 
-    } else {
-      byte[] datab = new byte[(int) arrayResponse.uncompressedSize];
-      NcStream.readFully(is, datab);
-      data = Array.factory(arrayResponse.dataType, arrayResponse.shape, ByteBuffer.wrap(datab));
+    if (arrayResponse.deflate) {
+      is = new InflaterInputStream(is);
+      float ratio = (sizeIn == 0) ? 0.0f : ((float) arrayResponse.uncompressedSize) / sizeIn;
+      if (showCompression) System.out.printf("  readData data message compress= %d decompress=%d compress=%f%n", sizeIn, arrayResponse.uncompressedSize, ratio);
     }
 
+    byte[] datab = new byte[(int) arrayResponse.uncompressedSize];
+    NcStream.readFully(is, datab);
+    Array data = Array.factory(arrayResponse.dataType, arrayResponse.shape, ByteBuffer.wrap(datab));
+
     CoverageCoordSys csys = dataResponse.findCoordSys( arrayResponse.coordSysName);
-
-    // String coverageName, DataType dataType, Array data, CoverageCoordSys csSubset
     return new GeoReferencedArray(arrayResponse.coverageName, arrayResponse.dataType, data, csys);
-
   }
 
 

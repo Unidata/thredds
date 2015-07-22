@@ -5,6 +5,7 @@ import thredds.server.ncss.validation.NcssGridRequestConstraint;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -19,20 +20,16 @@ public class NcssGridParamsBean extends NcssParamsBean {
 
     //// projection rectangle
   private Double minx;
-
  	private Double maxx;
-
  	private Double miny;
-
  	private Double maxy;
-
  	private boolean addLatLon;
-
  	private Integer horizStride = 1;
 
  	private Integer timeStride = 1;
-
   private Double vertCoord;
+  private Double ensCoord;
+  private String runtime;
 
   public Double getMinx() {
     return minx;
@@ -106,9 +103,51 @@ public class NcssGridParamsBean extends NcssParamsBean {
     this.vertCoord = vertCoord;
   }
 
+  public Double getEnsCoord() {
+    return ensCoord;
+  }
+
+  public void setEnsCoord(Double ensCoord) {
+    this.ensCoord = ensCoord;
+  }
+
+  public String getRuntime() {
+    return runtime;
+  }
+
+  public void setRuntime(String runtime) {
+    this.runtime = runtime;
+  }
+
+  ////////////////////////////////////////////
+
+  protected CalendarDate runtimeDate;
+
+  public void setRuntimeDate(CalendarDate runtimeDate) {
+    this.runtimeDate = runtimeDate;
+  }
+  public CalendarDate getRuntimeDate(Calendar cal) {
+    if (runtimeDate == null) return null;
+    if (cal.equals(Calendar.getDefault())) return runtimeDate;
+
+     // otherwise must reparse
+    if (getTime().equalsIgnoreCase("present")) {
+      return CalendarDate.present(cal);
+    }
+
+    return CalendarDateFormatter.isoStringToCalendarDate(cal, getRuntime());
+  }
+
   public SubsetParams makeSubset(Calendar cal) {
-    // construct the subset
     SubsetParams subset = new SubsetParams();
+
+    if (vertCoord != null)
+      subset.set(SubsetParams.vertCoord, vertCoord);
+
+    if (ensCoord != null)
+      subset.set(SubsetParams.ensCoord, ensCoord);
+
+    // horiz subset
     if (hasProjectionBB())
       subset.set(SubsetParams.projBB, getProjectionBB());
     else if (hasLatLonBB())
@@ -116,9 +155,7 @@ public class NcssGridParamsBean extends NcssParamsBean {
     if (horizStride != null)
       subset.set(SubsetParams.horizStride, horizStride);
 
-    if (vertCoord != null)
-      subset.set(SubsetParams.vertCoord, vertCoord);
-
+    // time
     CalendarDate date = getRequestedDate(cal);
     CalendarDateRange dateRange = getCalendarDateRange(cal);
     if (isAllTimes()) {
@@ -139,6 +176,11 @@ public class NcssGridParamsBean extends NcssParamsBean {
     } else {
       subset.set(SubsetParams.latestTime, true);
     }
+
+     // runtime
+    CalendarDate rundate = getRuntimeDate(cal);
+    if (rundate != null)
+      subset.set(SubsetParams.runtime, rundate);
 
     return subset;
   }

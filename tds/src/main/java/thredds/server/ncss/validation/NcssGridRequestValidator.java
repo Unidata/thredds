@@ -34,6 +34,7 @@
 package thredds.server.ncss.validation;
 
 import thredds.server.ncss.params.NcssGridParamsBean;
+import ucar.nc2.time.CalendarDate;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -109,6 +110,13 @@ public class NcssGridRequestValidator implements ConstraintValidator<NcssGridReq
 				isValid = false;
 				constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.rangey}").addConstraintViolation();
 			}
+		}
+
+		// runtime
+		if (params.getRuntime() != null) {
+			CalendarDate cd = TimeParamsValidator.validateISOString(params.getRuntime(), "{thredds.server.ncSubset.validation.param.time}", constraintValidatorContext);
+			if (cd != null)
+     		params.setRuntimeDate(cd);
 		}
 
 		return isValid;

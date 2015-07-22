@@ -417,6 +417,7 @@ public class SuperComboBox extends JPanel {
     NamedObjectRow( NamedObject o){ this.o = o; }
     public Object getValueAt( int col) { return this; }
     public Object getUserObject() { return o; }
+    public Object getValue() { return o; }
 
     public String getName() { return o.getName(); }
     public String getDescription() { return o.getDescription(); }
@@ -428,6 +429,7 @@ public class SuperComboBox extends JPanel {
     GeoGridRow(NamedObject o){ this.o = o; }
     public Object getValueAt( int col) { return this; }
     public Object getUserObject() { return o; }
+    public Object getValue() { return o; }
 
     public String getName() { return o.getName(); }
     public String getDescription() { return o.getDescription(); }

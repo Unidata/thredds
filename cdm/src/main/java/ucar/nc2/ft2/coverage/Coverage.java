@@ -112,7 +112,7 @@ public class Coverage implements IsMissingEvaluator {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // LOOK should this just be readDaata(), counting on the coordSys to describe the subset ??
+  // LOOK should this just be readData(), counting on the coordSys to describe the subset ??
   public GeoReferencedArray readData(SubsetParams subset) throws IOException, InvalidRangeException {
     return reader.readData(this, subset, false);
   }

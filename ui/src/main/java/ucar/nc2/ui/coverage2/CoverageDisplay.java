@@ -6,7 +6,9 @@ import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.Dataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.event.ActionCoordinator;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
@@ -107,13 +109,14 @@ public class CoverageDisplay extends JPanel {
   //private AbstractAction showGridDatasetInfoAction;
   //private AbstractAction showNetcdfDatasetAction;
   private AbstractAction minmaxHorizAction, minmaxLogAction, minmaxHoldAction;
-  private AbstractAction fieldLoopAction, levelLoopAction, timeLoopAction;
+  private AbstractAction fieldLoopAction, levelLoopAction, timeLoopAction, runtimeLoopAction;
   private AbstractAction chooseProjectionAction, saveCurrentProjectionAction;
 
   private AbstractAction dataProjectionAction, exitAction, helpAction, showGridAction, showContoursAction, showContourLabelsAction, showWindsAction;
   private AbstractAction drawHorizAction, drawVertAction;
 
   // data components
+  private DataState dataState;
   private CoverageDataset coverageDataset;
   private Coverage currentField;
   private ProjectionImpl project;
@@ -532,6 +535,7 @@ public class CoverageDisplay extends JPanel {
     fieldLoopAction = new LoopControlAction(fieldChooser);
     levelLoopAction = new LoopControlAction(levelChooser);
     timeLoopAction = new LoopControlAction(timeChooser);
+    runtimeLoopAction = new LoopControlAction(runtimeChooser);
   }
 
   private void makeActionsToolbars() {
@@ -644,21 +648,10 @@ public class CoverageDisplay extends JPanel {
     state = store.getBoolean("showContourLabelsAction", false);
     showContourLabelsAction.putValue(BAMutil.STATE, new Boolean(state));
     coverageRenderer.setDrawContourLabels(state);
-
-    /* winds
-    showWindsAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        drawWinds = state.booleanValue();
-        draw(true, false, false);
-      }
-    };
-    BAMutil.setActionProperties( showWindsAction, "ShowWinds", "show wind", true, 'W', 0);
-    */
   }
 
   private void makeEventManagement() {
-
+   // LOOK what prevents these ActionCoordinator from getting GC ?
     //// manage field selection events
     String actionName = "field";
     ActionCoordinator fieldCoordinator = new ActionCoordinator(actionName);
@@ -683,7 +676,6 @@ public class CoverageDisplay extends JPanel {
     //// manage level selection events
     actionName = "level";
     ActionCoordinator levelCoordinator = new ActionCoordinator(actionName);
-    // connect to the levelChooser
     levelCoordinator.addActionSourceListener(levelChooser.getActionSourceListener());
     // connect to the vertPanel
     /* levelCoordinator.addActionSourceListener(vertPanel.getActionSourceListener());
@@ -719,7 +711,6 @@ public class CoverageDisplay extends JPanel {
     //// manage time selection events
     actionName = "time";
     ActionCoordinator timeCoordinator = new ActionCoordinator(actionName);
-    // connect to the timeChooser
     timeCoordinator.addActionSourceListener(timeChooser.getActionSourceListener());
     // heres what to do when the time changes
     ActionSourceListener timeSource = new ActionSourceListener(actionName) {
@@ -737,21 +728,22 @@ public class CoverageDisplay extends JPanel {
     };
     timeCoordinator.addActionSourceListener(timeSource);
 
-    /* manage runtime selection events
+    // manage runtime selection events
     actionName = "runtime";
     ActionCoordinator runtimeCoordinator = new ActionCoordinator(actionName);
-      // connect to the timeChooser
     runtimeCoordinator.addActionSourceListener(runtimeChooser.getActionSourceListener());
-      // heres what to do when the time changes
+      // heres what to do when the runtime changes
     ActionSourceListener runtimeSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
+        Object dataValue = e.getValue();
         int runtime = findIndexFromName( runtimeNames, e.getValue().toString());
         if ((runtime != -1) && (runtime != currentRunTime)) {
           currentRunTime = runtime;
-          if (hasDependentTimeAxis) {
-            CoverageCS gcs = currentField.getCoordinateSystem();
-            CoordinateAxis1DTime taxis = gcs.getTimeAxisForRun(runtime);
-            timeNames = taxis.getNames();
+
+          if (dataState.taxis2D != null) {
+            // CoverageCoordAxis1D taxis = dataState.taxis2D.getTimeAxisForRun((CalendarDate) dataValue);
+            dataState.taxis = dataState.taxis2D.getTimeAxisForRun(currentRunTime);
+            timeNames = dataState.taxis.getCoordValueNames();
             timeChooser.setCollection(timeNames.iterator());
             if (currentTime >= timeNames.size())
               currentTime = 0;
@@ -765,12 +757,11 @@ public class CoverageDisplay extends JPanel {
         }
       }
     };
-    runtimeCoordinator.addActionSourceListener(runtimeSource);  */
+    runtimeCoordinator.addActionSourceListener(runtimeSource);
 
     //// manage runtime selection events
     actionName = "ensemble";
     ActionCoordinator ensembleCoordinator = new ActionCoordinator(actionName);
-    // connect to the timeChooser
     ensembleCoordinator.addActionSourceListener(ensembleChooser.getActionSourceListener());
     // heres what to do when the time changes
     ActionSourceListener ensembleSource = new ActionSourceListener(actionName) {
@@ -812,47 +803,6 @@ public class CoverageDisplay extends JPanel {
       }
     });
 
-
-    /* get Pick events from the navigated panel
-  np.addPickEventListener( new PickEventListener() {
-    public void actionPerformed(PickEvent e) {
-      projPoint.setLocation(e.getLocation());
-      int slice = renderGrid.findSliceFromPoint(projPoint);
-      if (Debug.isSet("pick/event"))
-        System.out.println("pick.event: "+projPoint+" "+slice);
-      if ((slice >= 0) && (slice != currentSlice)) {
-        currentSlice = slice;
-        //vertPanel.setSlice( currentSlice);
-        redrawLater();
-      }
-    }
-  });  */
-
-    /* get Move events from the navigated panel
-  np.addCursorMoveEventListener( new CursorMoveEventListener() {
-    public void actionPerformed(CursorMoveEvent e) {
-      projPoint.setLocation(e.getLocation());
-      String valueS = ""; // renderGrid.getXYvalueStr(projPoint);  LOOK
-      dataValueLabel.setText(valueS);
-    }
-  });
-
-  /*   // get Move events from the vertPanel
-  vertPanel.getDrawArea().addCursorMoveEventListener( new CursorMoveEventListener() {
-    public void actionPerformed(CursorMoveEvent e) {
-      Point2D loc = e.getLocation();
-      posLabel.setText(renderGrid.getYZpositionStr(loc));
-      dataValueLabel.setText(renderGrid.getYZvalueStr(loc));
-    }
-  });
-
-
-    // catch window resize events in vertPanel : LOOK event order problem?
-  vertPanel.getDrawArea().addComponentListener( new ComponentAdapter() {
-    public void componentResized( ComponentEvent e) {
-      draw(false);
-    }
-  });  */
   }
 
   private int findIndexFromName(List<NamedObject> list, String name) {
@@ -930,6 +880,7 @@ public class CoverageDisplay extends JPanel {
     fieldLoopAction.setEnabled(b);
     levelLoopAction.setEnabled(b);
     timeLoopAction.setEnabled(b);
+    runtimeLoopAction.setEnabled(b);
 
     navPanel.setEnabledActions(b);
   }
@@ -993,7 +944,7 @@ public class CoverageDisplay extends JPanel {
     currentRunTime = 0;
 
     eventsOK = false; // dont let this trigger redraw
-    coverageRenderer.setCoverage(coverageDataset, currentField);
+    this.dataState = coverageRenderer.setCoverage(coverageDataset, currentField);
     coverageRenderer.setDataProjection(currentField.getCoordSys().getProjection());
     // setFields(grids);
     setField(currentField);
@@ -1057,37 +1008,36 @@ public class CoverageDisplay extends JPanel {
     if (null == gg)
       return false;
 
-    CoverageCoordSys coordsSys = gg.getCoordSys();
-    coverageRenderer.setCoverage(coverageDataset, gg);
-    coverageRenderer.setDataProjection(coordsSys.getProjection());
+    this.dataState = coverageRenderer.setCoverage(coverageDataset, gg);
+    coverageRenderer.setDataProjection(this.dataState.geocs.getProjection());
     currentField = gg;
 
-    CoverageCoordSys gcs = coverageDataset.findCoordSys(gg.getCoordSysName());
-    //gcs.setProjectionBoundingBox();
-
     // set runtimes
-    CoverageCoordAxis rtaxis = gcs.getAxis(AxisType.RunTime);
-    if (rtaxis != null && rtaxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
-      runtimeNames = ((CoverageCoordAxis1D)rtaxis).getCoordValueNames();
+    if (this.dataState.rtaxis != null) {
+      runtimeNames = this.dataState.rtaxis.getCoordValueNames();
       currentRunTime = runtimeNames.size() > 0 ? 0 : -1;
       if ((currentRunTime < 0) || (currentRunTime >= runtimeNames.size()))
         currentRunTime = 0;
 
       setChooserWanted("runtime", true);
-      ensembleChooser.setCollection(runtimeNames.iterator(), true);
+      runtimeChooser.setCollection(runtimeNames.iterator(), true);
       NamedObject no = runtimeNames.get(currentRunTime);
-      ensembleChooser.setSelectedByName(no.getName());
+      runtimeChooser.setSelectedByName(no.getName());
+
+      if (this.dataState.taxis2D != null) {
+        // CalendarDate runtime = (CalendarDate) runtimeNames.get(currentRunTime).getValue();
+        this.dataState.taxis =  this.dataState.taxis2D.getTimeAxisForRun(currentRunTime);
+      }
 
     } else {
-      ensembleNames = new ArrayList<>();
+      runtimeNames = new ArrayList<>();
       setChooserWanted("runtime", false);
-      coverageRenderer.setEnsemble(-1);
+      coverageRenderer.setRunTime(-1);
     }
 
     // set times
-    CoverageCoordAxis timeAxis = gcs.getTimeAxis();
-    if (timeAxis != null && timeAxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
-      timeNames = ((CoverageCoordAxis1D)timeAxis).getCoordValueNames();
+    if (this.dataState.taxis != null) {
+      timeNames = this.dataState.taxis.getCoordValueNames();
       if ((currentTime < 0) || (currentTime >= timeNames.size()))
         currentTime = 0;
       hasDependentTimeAxis = true;
@@ -1104,9 +1054,8 @@ public class CoverageDisplay extends JPanel {
     }
 
     // set ensembles
-    CoverageCoordAxis eaxis = gcs.getAxis(AxisType.Ensemble);
-    if (eaxis != null && eaxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
-      ensembleNames = ((CoverageCoordAxis1D)eaxis).getCoordValueNames();
+    if (this.dataState.ensaxis != null) {
+      ensembleNames = this.dataState.ensaxis.getCoordValueNames();
       currentEnsemble = ensembleNames.size() > 0 ? 0 : -1;
       if ((currentEnsemble < 0) || (currentEnsemble >= ensembleNames.size()))
         currentEnsemble = 0;
@@ -1123,9 +1072,8 @@ public class CoverageDisplay extends JPanel {
     }
 
         // set levels
-    CoverageCoordAxis vertAxis = coordsSys.getZAxis();
-    if (vertAxis != null && vertAxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
-      levelNames = ((CoverageCoordAxis1D)vertAxis).getCoordValueNames();
+    if (this.dataState.zaxis != null) {
+      levelNames = this.dataState.zaxis.getCoordValueNames();
       if ((currentLevel < 0) || (currentLevel >= levelNames.size()))
         currentLevel = 0;
       //vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
@@ -1183,8 +1131,8 @@ public class CoverageDisplay extends JPanel {
     coverageRenderer.setLevel(currentLevel);
     coverageRenderer.setTime(currentTime);
     //renderGrid.setSlice(currentSlice);
-    //renderGrid.setEnsemble(currentEnsemble);
-    //renderGrid.setRunTime(currentRunTime);
+    coverageRenderer.setEnsemble(currentEnsemble);
+    coverageRenderer.setRunTime(currentRunTime);
 
     if (drawHorizOn)
       drawH(immediate);
@@ -1293,29 +1241,6 @@ public class CoverageDisplay extends JPanel {
       redrawTimer.start();
   }
 
-  /*  private void makeSysConfigWindow() {
-   sysConfigDialog = new ucar.unidata.ui.PropertyDialog(topLevel.getRootPaneContainer(), true,
-       "System Configuration", store, "HelpDir");     // LOOK KLUDGE
-   sysConfigDialog.pack();
-   sysConfigDialog.setSize(500,200);
-   sysConfigDialog.setLocation(300,300);
- }
-
- private void makeColorScaleManager() {
-   csManager = new ColorScaleManager(topLevel.getRootPaneContainer(), store);
-   csManager.addPropertyChangeListener(  new java.beans.PropertyChangeListener() {
-     public void propertyChange( java.beans.PropertyChangeEvent e) {
-       if (e.getPropertyName().equals("ColorScale")) {
-         ColorScale cs = (ColorScale) e.getNewValue();
-         cs = (ColorScale) cs.clone();
-         //System.out.println("UI: new Colorscale got "+cs);
-         colorScalePanel.setColorScale(cs);
-         controller.setColorScale(cs);
-       }
-     }
-   });
- } */
-
   public ProjectionManager getProjectionManager() {
     if (null != projManager)
       return projManager;
@@ -1408,6 +1333,7 @@ public class CoverageDisplay extends JPanel {
     BAMutil.addActionToMenu(loopMenu, fieldLoopAction);
     BAMutil.addActionToMenu(loopMenu, levelLoopAction);
     BAMutil.addActionToMenu(loopMenu, timeLoopAction);
+    BAMutil.addActionToMenu(loopMenu, runtimeLoopAction);
     toolMenu.add(loopMenu);
 
     // MinMax Control

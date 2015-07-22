@@ -1,19 +1,14 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.adapter;
 
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import com.google.common.collect.Lists;
+import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
@@ -121,11 +116,11 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     }
 
     int ncoords = (int) dtCoordAxis.getSize();
-    CoverageCoordAxis.Spacing spacing = null;
+    CoverageCoordAxis.Spacing spacing;
     double startValue = 0.0;
     double endValue = 0.0;
     double resolution = 0.0;
-    double[] values = null;
+    double[] values;
 
     // 1D case
     if (dtCoordAxis instanceof CoordinateAxis1D) {
@@ -135,6 +130,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
       if (axis1D.isRegular() || axis1D.isScalar()) {
         spacing = CoverageCoordAxis.Spacing.regular;
+        values = null;
 
       } else if (!dtCoordAxis.isInterval()) {
         spacing = CoverageCoordAxis.Spacing.irregularPoint;
@@ -160,19 +156,54 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
               ncoords, startValue, endValue, resolution, values, reader);
     }
 
-    // Fmrc Time
-    if (dtCoordAxis instanceof CoordinateAxis2D && axisType == AxisType.Time) {
+    // TwoD case
+    if (!(dtCoordAxis instanceof CoordinateAxis2D))
+      throw new IllegalStateException("Dont know what to do with axis " + dtCoordAxis.getFullName());
 
-      spacing = CoverageCoordAxis.Spacing.regular;
+    CoordinateAxis2D axis2D = (CoordinateAxis2D) dtCoordAxis;
+
+    if (!dtCoordAxis.isInterval()) {
+      spacing = CoverageCoordAxis.Spacing.irregularPoint;
+      values = axis2D.getCoordValues();
+
+    } else if (dtCoordAxis.isContiguous()) {
+      spacing = CoverageCoordAxis.Spacing.contiguousInterval;
+      ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+      int[] shape = bounds.getShape();
+      int count = 0;
+      values = new double[ncoords+1];
+      for (int i = 0; i < shape[0]; i++) {
+        for (int j = 0; j < shape[1]; j++) {
+          values[count++] = bounds.get(i, j, 0);
+        }
+      }
+      values[count] = bounds.get(shape[0]-1, shape[1]-1, 1); // last edge
+
+    } else {
+      spacing = CoverageCoordAxis.Spacing.discontiguousInterval;
+      ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+      int[] shape = bounds.getShape();
+      int count = 0;
+      values = new double[2 * ncoords];
+      for (int i = 0; i < shape[0]; i++) {
+        for (int j = 0; j < shape[1]; j++) {
+          values[count++] = bounds.get(i, j, 0);
+          values[count++] = bounds.get(i, j, 1);
+        }
+      }
+    }
+
+    // Fmrc Time
+    if (axisType == AxisType.Time) {
+
+      dependsOn = Lists.newArrayList(dtCoordAxis.getDimension(0).getFullName());  // only the first dimension
 
       return new FmrcTimeAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
               ncoords, startValue, endValue, resolution, values, reader);
     }
 
     // 2D Lat Lon
-    if (dtCoordAxis instanceof CoordinateAxis2D && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
-
-      spacing = CoverageCoordAxis.Spacing.irregularPoint;
+    if (axisType == AxisType.Lat || axisType == AxisType.Lon) {
 
       return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
               ncoords, startValue, endValue, resolution, values, reader);
@@ -222,9 +253,8 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     List<Range> section = new ArrayList<>();
     for (CoverageCoordAxis axis : subsetCoordSys.getAxes()) {
-      if (axis instanceof CoverageCoordAxis1D) {
+      if (axis instanceof CoverageCoordAxis1D && !axis.isScalar()) {
         CoverageCoordAxis1D axis1D = (CoverageCoordAxis1D) axis;
-        if (axis.isScalar()) continue;
         section.add(new Range(axis.getAxisType().toString(), axis1D.getMinIndex(), axis1D.getMaxIndex()));
       }
     }

@@ -6,6 +6,7 @@ import ucar.ma2.*;
 //import ucar.nc2.dataset.CoordinateAxis2D;
 //import ucar.nc2.ft.cover.Coverage;
 //import ucar.nc2.ft.cover.CoverageCS;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.*;
@@ -42,6 +43,7 @@ public class CoverageRenderer {
   private ProjectionImpl dataProjection = null;    // current data Projection
 
   // data stuff
+  private DataState dataState;
   private GeoReferencedArray dataH;
   private double useLevel;
   private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
@@ -84,33 +86,12 @@ public class CoverageRenderer {
     }
   }
 
-  private class DataState {
-    CoverageDataset coverageDataset;
-    Coverage grid;
-    CoverageCoordSys geocs;
-    //CoverageCoordAxis xaxis;
-    //CoverageCoordAxis yaxis;
-    CoverageCoordAxis zaxis;
-    CoverageCoordAxis taxis;
-    CoverageCoordAxis rtaxis;
-
-    public DataState(CoverageDataset coverageDataset, Coverage grid) {
-      this.coverageDataset = coverageDataset;
-      this.grid = grid;
-      this.geocs = grid.getCoordSys();
-      //this.xaxis = coverageDataset.getXAxis(geocs);
-      //this.yaxis = coverageDataset.getYAxis(geocs);
-      this.zaxis = geocs.getZAxis();
-      this.taxis = geocs.getTimeAxis();
-    }
-  }
-  private DataState dataState;
-
   /* set the Grid */
-  public void setCoverage(CoverageDataset coverageDataset, Coverage grid) {
+  public DataState setCoverage(CoverageDataset coverageDataset, Coverage grid) {
     this.dataState = new DataState(coverageDataset, grid);
     this.lastGrid = null;
     isNewField = true;
+    return this.dataState;
   }
 
   /* public Array getCurrentHorizDataSlice() {
@@ -469,18 +450,26 @@ public class CoverageRenderer {
       return dataH; // nothing changed
 
     // get the data slice
-      //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
+    //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
     SubsetParams subset = new SubsetParams();
-    if (level >= 0 && dataState.zaxis != null && dataState.zaxis instanceof CoverageCoordAxis1D) {
-      double levelVal = ((CoverageCoordAxis1D)dataState.zaxis).getCoord(level);
+    if (level >= 0 && dataState.zaxis != null) {
+      double levelVal = dataState.zaxis.getCoord(level);
       subset.set(SubsetParams.vertCoord, levelVal);
     }
-    if (time >= 0 && dataState.taxis != null  && dataState.taxis instanceof CoverageCoordAxis1D) {
-      double timeVal = ((CoverageCoordAxis1D)dataState.taxis).getCoord(time);
+    if (time >= 0 && dataState.taxis != null) {
+      double timeVal = dataState.taxis.getCoord(time);
       CalendarDate date = dataState.taxis.makeDate(timeVal);
       subset.set(SubsetParams.time, date);
     }
-
+    if (runtime >= 0 && dataState.rtaxis != null) {
+      double rtimeVal = dataState.rtaxis.getCoord(runtime);
+      CalendarDate date = dataState.rtaxis.makeDate(rtimeVal);
+      subset.set(SubsetParams.runtime, date);
+    }
+    if (ensemble >= 0 && dataState.ensaxis != null) {
+      double ensVal = dataState.ensaxis.getCoord(ensemble);
+      subset.set(SubsetParams.ensCoord, ensVal);
+    }
     try {
       dataH = dataState.grid.readData(subset);
       //dataH = dataH.reduce(); // get rid of n=1 dimensions
@@ -824,6 +813,10 @@ public class CoverageRenderer {
     CoverageCoordAxis1D xaxis = (CoverageCoordAxis1D) gsys.getXAxis();
     CoverageCoordAxis1D yaxis = (CoverageCoordAxis1D) gsys.getYAxis();
     Array data = array.getData().reduce();
+    if (data.getRank() != 2) {
+      System.out.printf("drawGridHorizRegular Rank equals %d, must be 2%n", data.getRank());
+      return;
+    }
 
     int nx = xaxis.getNcoords();
     int ny = yaxis.getNcoords();

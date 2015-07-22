@@ -49,4 +49,7 @@ public interface NamedObject {
    */
   String getDescription();
 
+  // the object itself
+  Object getValue();
+
 }

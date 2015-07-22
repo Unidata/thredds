@@ -171,7 +171,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
     return false;
   }
 
-  private CalendarDate validateISOString(String isoString, String msg, ConstraintValidatorContext constraintValidatorContext) {
+  public static CalendarDate validateISOString(String isoString, String msg, ConstraintValidatorContext constraintValidatorContext) {
     try {
       return isoString2Date(isoString);
     } catch (IllegalArgumentException iea) {
@@ -180,7 +180,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
     return null;
   }
 
-  private CalendarDate isoString2Date(String isoString) {
+  private static CalendarDate isoString2Date(String isoString) {
     if ("present".equals(isoString)) return CalendarDate.present();
     return CalendarDateFormatter.isoStringToCalendarDate(Calendar.getDefault(), isoString);
   }

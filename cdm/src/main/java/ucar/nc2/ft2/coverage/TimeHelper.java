@@ -48,8 +48,8 @@ public class TimeHelper {
         case regular:
         case irregularPoint:
           value = axis.getCoord(i);
-          valName = Format.d(value, 3);
-          result.add(new NamedAnything(valName, makeDate(value).toString()));
+          //valName = Format.d(value, 3);
+          result.add(new NamedAnything(makeDate(value), axis.getAxisType().toString()));
           break;
 
         case contiguousInterval:

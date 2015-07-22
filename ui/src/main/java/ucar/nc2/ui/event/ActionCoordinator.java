@@ -49,6 +49,7 @@ import ucar.nc2.util.ListenerManager;
  * @author John Caron
  */
 
+// LOOK could replace with guava EventBus probably
 public class ActionCoordinator implements ActionValueListener {
   private ListenerManager lm;
   private String eventType;

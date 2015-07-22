@@ -733,7 +733,7 @@ public class NCdumpW {
     out.flush();
   }
 
-  static public String toString(Array ma) throws IOException {
+  static public String toString(Array ma) {
     return toString(ma, "", null);
   }
 

@@ -353,8 +353,14 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   /**
    * get the standardized description, or null if none.
    */
+  @Override
   public String getDescription() {
     return vs.getDescription();
+  }
+
+  @Override
+  public Object getValue() {
+    return this;
   }
 
   /**

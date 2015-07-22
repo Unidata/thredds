@@ -33,8 +33,8 @@ abstract public class CoverageCoordAxis {
     regular,                // regularly spaced points or intervals (start, end, npts), edges halfway between coords
     irregularPoint,         // irregular spaced points (values, npts), edges halfway between coords
     contiguousInterval,     // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
-    discontiguousInterval
-  } // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
+    discontiguousInterval   // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1..
+  }
 
   public enum DependenceType {
     independent,             // time(time)

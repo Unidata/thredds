@@ -88,7 +88,7 @@ public class CFGridCoverageWriter {
   private long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subsetParams, boolean addLatLon, boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
-    // construct the subsetted dataset
+    // construct the subsetted dataset, we need this to create the netcdf variables etc
     CoverageDataset subsetDataset = new CoverageSubsetter().makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
 
     long total_size = 0;
@@ -187,9 +187,11 @@ public class CFGridCoverageWriter {
 
     // write the grid data
       for (Coverage grid : subsetDataset.getCoverages()) {
+        // LOOK - we need to call readData on the original
+        Coverage gridOrg = gdsOrg.findCoverage(grid.getName());
+        GeoReferencedArray array = gridOrg.readData(subsetParams);
+
         Variable v = writer.findVariable(grid.getName());
-        GeoReferencedArray array = grid.readData(subsetParams);
-        // Array reshape = data.reshape(v.getShape());
         if (show) System.out.printf("write grid %s%n", v.getNameAndDimensions());
         writer.write(v, array.getData());
     }

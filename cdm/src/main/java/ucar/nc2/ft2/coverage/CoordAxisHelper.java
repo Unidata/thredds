@@ -382,6 +382,8 @@ class CoordAxisHelper {
     double[] subsetValues = null;
 
     int want_index = findCoordElement(want, Mode.closest);
+    if (want_index < 0)
+      System.out.println("HEY");
 
     switch (axis.getSpacing()) {
       case contiguousInterval:
