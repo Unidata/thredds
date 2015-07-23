@@ -81,7 +81,7 @@ and associated message formats.
 <h2><a name="Subsetting">What is Dataset Subsetting?</a></h2>
 <p>
 <ul>
-<li> Downloading a whole dataset using e.g. ftp
+<li> Why not just use FTP? Because Downloading a whole dataset
 can take a long time and can use significant memory or disk locally.
 <p>
 <li> Better is to be able to ask the server to provide a
@@ -97,27 +97,33 @@ of the dataset.
 <li> Other names for subsetting: <em>query</em>, <em>constraint</em>.
 <p>
 <li> Many of the protocols supported by the thredds server
-can provide subsetting; however, the form of the subset request
+can provide subsetting; however, there is no standard, so
+the form of the subset request
 differs between protocols.
 <p>
-Typical elements that can be subsetted:
+<li>What can be subsetted is determined by the "data model"
+presented to the user:
+<p>
+<ol>
+<li> variable arrays indexed by integer dimensions
+<li> variables indexed by (latitude, longitude) 
+</ol>
+<p>
+<li>So Typical elements that can be subsetted:
 <p>
   <ul>
-  <li> Subset of variables
+  <li> Subset of variables (i.e. give me <em>temperature</em>, <em>velocity</em>)
   <p>
   <li> Subset of the data within a one or more variables:<br>
-  <p>
-  <li> Two <strong>primary</strong> kinds of data subsetting:
-       <ul>
 	<p>
+       <ul>
        <li>index-based: [first:stride:last] or (first:stride:last+1)<br>
 	   e.g var[0:1:10][3:2:9]<br>
-	   Sometimes stride and last are reversed.
+	   Sometimes (e.g. stride and last are reversed.
 	<p>
        <li>coordinate-based: <br>
-	   e.g. [43e,45e][10s:85n]
+	   e.g. [43e:45e][10s:85n]
        </ul>
-  </ul>
 </ul>
 </div>
 
@@ -150,13 +156,9 @@ https://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubset
 
 <div id="section">
 <h2><a name="Opendap">OPenDAP and DAP2 and DAP4</a></h2>
-
 <p>
 <ul>
 <li>DAP version 2 (aka DAP2) is a widely supported protocol and standard data format for accessing remote data
-<p>
-<li>The standard is maintained by the
-<a href="http://www.opendap.org" target="_blank">OPenDAP organization</a>
 <p>
 <li>The DAP2 protocol was expressly designed to serve as intermediate format for accessing a wide variety of data sources
 <p>
@@ -168,8 +170,17 @@ than DAP2.
 <p>
 <li> Examples:
 <dl>
+<dt>Sources of test data
 <dd><a href="http://remotetest.unidata.ucar.edu/dts" target="_blank">http://remotetest.unidata.ucar.edu/dts</a>
 <dd><a href="http://remotetest.unidata.ucar.edu/d4ts" target="_blank">http://remotetest.unidata.ucar.edu/d4ts</a>
+<p>
+<dt>Request Single variable
+<dd>BASE: <a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.dds">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.dds</a>
+<dd>SUBSET: <a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.asc?X">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.asc?X</a>
+<dd>SUBSET: <a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.asc?X[0:10]">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.asc?X[0:10]</a>
+<p>
+<dt>Form-Based Access
+<dd>FORM: <a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.html">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.html</a>
 </dl>
 
 <p>
@@ -212,7 +223,7 @@ to encode/decode metadata. Data is serialized using a simpler protocol.
 <li> Two important "req"s are:
      <ul>
      <p>
-     <li> req=form&nbsp&mdash;return the dataset's metadata in netcdf cdl forma.t
+     <li> req=form&nbsp&mdash;return the dataset's metadata in netcdf cdl format
      <p>
      <li> req=data&nbsp&mdash;return extra information about the dataset
      <p>
@@ -224,13 +235,20 @@ to encode/decode metadata. Data is serialized using a simpler protocol.
 <p>
 <li> Examples:
 <dl>
+<p>
 <dd>
-<a href="http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/DGEX/CONUS_12km/Best?req=data&var=x(0:10:3);isobaric2">
+BASE: <a href="http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/DGEX/CONUS_12km/Best?req=form">
+http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/DGEX/CONUS_12km/Best?req=form</a>
+<p>
+<dd>
+SUBSET: <a href="http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/DGEX/CONUS_12km/Best?req=data&var=x(0:10:3);isobaric2">
 http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/DGEX/CONUS_12km/Best?req=data&var=x(0:10:3);isobaric2"</a>
+<p>
 <dd>
-&lt;url&gt;.../point?req=data&north=40.3&south=22.8&east=-80&west=-105
+SUBSET: &lt;url&gt;.../point?req=data&north=40.3&south=22.8&east=-80&west=-105
+<p>
 <dd>
-&lt;url&gt;.../station?req=data&stn=KDEN,KLOG,MOAS
+SUBSET: &lt;url&gt;.../station?req=data&stn=KDEN,KLOG,MOAS
 </dl>
 
 <p>
