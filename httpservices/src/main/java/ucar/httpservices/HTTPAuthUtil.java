@@ -175,6 +175,8 @@ abstract public class HTTPAuthUtil
         // test port values correctly, so we need to fix here.
         if(true) {
             boolean b1 = HTTPUtil.equals(a1.getHost(), a2.getHost());
+            if(!b1 && ( a1.getHost() == AuthScope.ANY_HOST || a1.getHost() == AuthScope.ANY_HOST))
+                b1 = true;
             int aport = a2.getPort();
             boolean b2 = (a1.getPort() == aport || a1.getPort() == ANY_PORT || aport == ANY_PORT);
             // Also, we ignore the realms

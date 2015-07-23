@@ -48,14 +48,14 @@ Form] (Repeated submissions encouraged)
  ** Using compound services
  ** Example: link:../reference/ThreddsConfigXMLFile.html#ncss[Turn on NCSS in threddsConfig.xml]
  *** link:../../netcdf-java/reference/netcdf4Clibrary.html[Enabling NetCDF4] for NCSS: Compression!
- * More details for specific services (Dennis)
- ** Catalog Service (link:../reference/CatalogService.html[reference])
- ** OPeNDAP link:DAP.html[DAP2 and DAP4 Protocol] Services
+ * Dataset Subsetting Services (Dennis) (link:Subset.html[presentation])
  ** Netcdf Subset Service (link:../reference/NetcdfSubsetServiceConfigure.html[configure])(link:../reference/NetcdfSubsetServiceReference.html[reference])
- ** WCS (link:../reference/WCS.html[reference])
- ** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:../reference/WMS.html[reference])
- ** ncIso (link:AddingServices.html#Setup[configure])(link:../reference/ncISO.html[reference])
- ** Server Information (link:../reference/ThreddsConfigXMLFile.html#Server_Info_Docs[reference])
+ ** OPeNDAP Services: DAP2 and DAP4 Protocols
+ ** Other Services (Not covered) 
+ *** Catalog Service (link:../reference/CatalogService.html[reference])
+ *** WCS (link:../reference/WCS.html[reference])
+ *** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:../reference/WMS.html[reference])
+ *** ncIso (link:AddingServices.html#Setup[configure])(link:../reference/ncISO.html[reference])
 
 === 12:45 - 2:15 Lunch
 
