@@ -19,9 +19,8 @@
 </ul>
 <h2>Overview</h2>
 <p>The configuration catalogs and internal state of the TDS has been extensively reworked to be able to scale to large numbers of catalogs, datasets, and internal objects without excessive use of memory. A running TDS can be triggered to reread the configuration catalogs without having to restart. It can be configured to  reread only changed catalogs, for fast incremental updates. Other features have been added to make writing configuration catalogs more maintainable, including the <em>catalogScan</em> element, and default and standard services.</p>
-<p>The other major enhancement is that <em>GridDataset</em> is being replaced by <em>GridCoverage</em>, to better support very large feature collections. The GridCoverage API works only with coordinate values, which solves various intractable problems  that arise when using aray index subsetting on large collections.</p>
+<p>The other major enhancement is that <em>GridDataset</em> is being replaced by <em>GridCoverage</em>, to better support very large feature collections. The GridCoverage API works only with <em>coordinate values</em> (not array indices), which solves various intractable problems  that arise when using aray index subsetting on large collections.</p>
 <p>Deprecated classes and methods have been removed, and the module structure and third-party jar use has been improved.</p>
-<p>&nbsp;</p>
 <h2>API Changes</h2>
 <h3>Catalogs</h3>
 <ul>
@@ -50,7 +49,9 @@
 </ul>
 <h3>Feature Types</h3>
 <ul>
-  <li> <strong>ucar.nc2.dt.TypedDatasetFactory </strong>has been removed. Use <strong>ucar.nc2.ft.FeatureDatasetFactoryManager.</strong></li>
+  <li> <strong>ucar.nc2.dt.TypedDatasetFactory </strong>has been removed. Use <strong>ucar.nc2.ft.FeatureDatasetFactoryManager</strong></li>
+  <li><strong>ucar.nc2.dt</strong>.<strong>grid</strong> is deprecated (but not removed) and is replaced by <strong>ucar.nc2.ft2.coverage</strong></li>
+  <li><strong>ucar.nc2.dt</strong>.<strong>point</strong> and <strong>ucar.nc2.dt</strong>.<strong>trajectory</strong> has been removed, replaced by <strong>ucar.nc2.ft.*</strong></li>
 </ul>
 <h3>Unsigned Types</h3>
 <ul>
@@ -61,7 +62,7 @@
   <li>remove Array.setUnsigned(), Variable.setUnsigned() </li>
   <li>Variable.getUnsigned() -&gt; Variable.getDataType().getUnsigned() </li>
   <li>    Attribute(String&#32;name,&#32;List&#32;values) -&gt; Attribute(String&#32;name,&#32;List&#32;values,&#32;boolean&#32;isUnsigned) </li>
-  <li>StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;boolean isUnsigned, Number&#32;val  ) -&gt; StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;Number&#32;val  ) -&gt; </li>
+  <li>StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;boolean isUnsigned, Number&#32;val  ) -&gt; StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;Number&#32;val  );</li>
 </ul>
 <h3>Miscellaneous</h3>
 <ul>
@@ -132,16 +133,24 @@
   <li>Put all user-defined <strong>service</strong> elements in root catalog.</li>
   <li>Only use  user-defined <strong>service</strong> elements in non-root catalogs when they are experimental or truly a special case.</li>
 </ul>
+<h2>CdmrFeature Service</h2>
+<p>A new TDS service has been added for remote access to CDM Feature Datasets. </p>
+<ul>
+  <li>Initial implementation for Coverage (Grid, FMRC, Swath) datasets, based on the new Coverage implementation in <strong>ucar.nc2.ft2.coverage</strong>.</li>
+  <li>Target is a python client that has full access to all of the coordinate information and coordinate based subsetting capabilities of the Java client.</li>
+  <li>Compatible / integrated with the Netcdf Subset Service (NCSS), using the same web API.</li>
+</ul>
 <h2>ThreddsConfig.xml</h2>
 <ul>
-  <li>You no longer turn catalog caching on or off, but you  can control how many catalogs are cached (see <a href="reference/ThreddsConfigXMLFile.html#CatalogCaching">here</a> for the new syntax).So the following is no longer used:
+  <li>You no longer turn catalog caching on or off, but you  can control how many catalogs are cached (see <a href="reference/ThreddsConfigXMLFile.html#CatalogCaching">here</a> for the new syntax). So the following is no longer used:
     <pre>
 &lt;Catalog&gt;
   &lt;cache&gt;false&lt;/cache&gt;
 &lt;/Catalog&gt;
 </pre></li>
+<li>By default, most services are enabled, but may still be turned off in threddsConfig.xml.</li>
 </ul>
-<h2>Reccomendations for ESGF<a name="ESGF"></a></h2>
+<h2>Recommendations for ESGF<a name="ESGF"></a></h2>
 <ol>
   <li>You must determine the number of datasets that are contained in all of your catalogs. To  get a report, enable <a href="reference/RemoteManagement.html">Remote Management</a>, and from <strong>https://server/thredds/admin/debug</strong>, select <em>&quot;Make Catalog Report&quot;</em>. This may take 5-20 minutes, depending on the numbers of catalogs.</li>
   <li>Add the <a href="reference/ThreddsConfigXMLFile.html#CatalogCaching">ConfigCatalog</a> element to threddsConfig.xml:</li>
@@ -216,7 +225,7 @@ For example:
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated June 30, 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated July 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 

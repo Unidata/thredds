@@ -50,7 +50,6 @@ public class TestGridCoverageReading {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", CoverageCoordSys.Type.Curvilinear});  // x,y axis but no projection
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", CoverageCoordSys.Type.Curvilinear});  // GRIB Curvilinear
 
-
     return result;
   }
 

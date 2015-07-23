@@ -1,0 +1,97 @@
+= GRIB
+:source-highlighter: coderay
+:linkcss:
+:stylesheet: ../tds.css
+
+== 1 Standards ==
+
+==== GRIB1 and GRIB2
+
+The World Meteorological Organization (WMO) Commission for Basic Systems (CBS) met in 1985 to create the GRIB (GRIdded Binary) format.
+GRIB Edition 1 was approved in February 1994. GRIB Edition 2 format was approved in 2003. Transition to GRIB-2 has been slow, despite the severe limitations of GRIB-1.
+Data is stored in compressed binary format, replacing earlier text encoding formats. By international treaty, national weather services are required to publish their data
+in GRIB (and BUFR) for international exchange.
+
+==== Standard Tables / Local Tables
+
+Information in the files references external tables, either WMO standard tables or local tables defined by each National Center.
+For criticism of GRIB table handling practices, see: http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[Archiving in GRIB considered Harmful]
+
+==== WMO
+- The GRIB Bible: http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/VolumeI.2.html[Manual on Codes (WMO-No. 306)]
+- WMO Standard Tables: http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html
+- WMO now publishes their standard tables in XML for GRIB2 (though not GRIB1): http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/GRIB2_15_1_0.zip
+
+==== NCEP
+
+NCEP does not publish their tables in a machine-readable format, so we periodically screenscrape their HTML pages. The results are stored in the THREDDS GIT site.
+
+- NCEP GRIB-1 Tables: http://www.nco.ncep.noaa.gov/pmb/docs/on388/[Original]  https://github.com/Unidata/thredds/tree/master/grib/src/main/resources/resources/grib1/ncep[CDM XML]
+- NCEP GRIB-2 Tables: http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml[Original] https://github.com/Unidata/thredds/tree/master/grib/src/main/resources/resources/grib2/ncep[CDM XML]
+
+==== NCAR
+
+- NCAR / RDS has extensive documentation on the datasets they support: http://rda.ucar.edu/
+- Example : http://rda.ucar.edu/datasets/ds628.0/docs/
+
+
+== 2 Raw Grib
+
+==== Streaming
+
+==== ToolsUI
+
+==== Vertical Coordinates
+
+==== Time Intervals
+
+==== Reference Time / Valid Time
+
+==== Ensembles
+
+==== Data Encoding / Compression
+
+
+== 3 Turning GRIB into netCDF with the CDM
+
+==== Variables grouped by PDS
+* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/GribConfig.html#pdsHash[Control how PDS are made into variables]
+
+==== Horizontal Reference System grouped by GDS
+
+* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/GribConfig.html#gdsHash[Fix errors in GDS encoding]
+
+==== Time Intervals
+
+* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/GribConfig.html#intvFilter[Time Interval filters]
+
+==== Table Handling
+
+
+
+== 4 Grib Collections
+
+==== Grib Indexes
+
+==== Collection Indexes
+
+==== Partitions
+
+* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/Partitions.html
+
+==== Checking large collections
+
+* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/TDM.html#GCPass1[GCPass1]
+
+
+== 5 TDS and GRIB Feature Collections
+
+==== Configuration
+
+* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/GribConfig.html
+
+
+
+
+
+
