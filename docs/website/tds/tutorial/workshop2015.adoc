@@ -40,7 +40,7 @@ Form] (Repeated submissions encouraged)
  * URL Construction (link:CatalogPrimer.html#Constructing_an_access_URL[tutorial])
    (link:../catalog/InvCatalogSpec.html#constructingURLs[reference]) (Christian)
 
-=== 11:45 - 12:45 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis, Christian)
+=== 11:45 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis, Christian)
  * General Overview (Christian)
  ** link:../reference/Services.html[Available services]
  *** `serviceType` and `base` attributes are not configurable
@@ -57,22 +57,22 @@ Form] (Repeated submissions encouraged)
  *** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:../reference/WMS.html[reference])
  *** ncIso (link:AddingServices.html#Setup[configure])(link:../reference/ncISO.html[reference])
 
-=== 12:45 - 2:15 Lunch
+=== 12:30 - 2:00 Lunch
 
-=== 2:15 - 2:45 Accessing TDS data services with python (Ryan)
+=== 2:00 - 2:30 Accessing TDS data services with python (Ryan)
 ** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/matplotlib-and-cartopy.ipynb[OPeNDAP]
 ** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/SIPHON_NCSS_Example.ipynb[Netcdf Subset Service]
 ** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/wms_sample.ipynb[ncWMS]
 
-=== 2:45 - 3:15 Using ToolsUI (Christian)
+=== 2:30 - 3:00 Using ToolsUI (Christian)
  * Running link:../../netcdf-java/reference/ToolsUI/ToolsUI.html[ToolsUI]
  * Use Case: Using ToolsUI to serve new data
  ** Access local and remote TDS servers in ToolsUI
  * IOSPs and FeatureTypes
 
-=== 3:15 - 3:30 Break
+=== 3:00 - 3:15 Break
 
-=== 3:30 - 4:00 TDS Monitoring, Debugging, Logs (Sean)
+=== 3:15 - 3:45 TDS Monitoring, Debugging, Logs (Sean)
  * Looking at logs while logged into the server (good for when things won't start!)
  ** link:TomcatAndTDSLogs.html#access[Tomcat]
  ** link:TomcatAndTDSLogs.html#tds[TDS]
@@ -81,7 +81,7 @@ Form] (Repeated submissions encouraged)
  ** using the link:tdsMonitor.html[TdsMonitor] Desktop tool
  * link:TroubleShooting.html[Troubleshooting] Configuration Catalogs
 
-=== 4:00 - 4:45 Software Engineering and Contributing (Christian)
+=== 3:45 - 4:30 Software Engineering and Contributing (Christian)
  * Source code on https://github.com/Unidata/thredds[GitHub]
  ** Exercise: link:../../netcdf-java/tutorial/SourceCodeBuild.html[Build THREDDS from source code]
  ** Exercise: link:../../netcdf-java/tutorial/Contributing.html[Submit a pull request]
