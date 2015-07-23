@@ -117,7 +117,7 @@ to explore/discuss during this time. Potential topics include:
 
  * Setting up Tomcat and TDS from scratch
  * Aggregation with NcML
- * Improving dataset discoverability discovery with NcML (ncIso service)
+ * Improving dataset discoverability with NcML (ncIso service)
  * TDS and WebMappingService (via ncWMS)
  * Troubleshooting and more information on upgrading from TDS 4.x to 4.6.
 
