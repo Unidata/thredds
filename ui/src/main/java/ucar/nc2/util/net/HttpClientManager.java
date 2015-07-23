@@ -63,7 +63,7 @@ public class HttpClientManager
     static public void init(CredentialsProvider provider, String userAgent)
     {
         if(provider != null) try {
-            HTTPSession.setGlobalCredentialsProvider(HTTPAuthSchemes.BASIC, provider);
+            HTTPSession.setGlobalCredentialsProvider(provider,HTTPAuthSchemes.BASIC);
         } catch (HTTPException e) {};
         if(userAgent != null)
             HTTPSession.setGlobalUserAgent(userAgent + "/NetcdfJava/HttpClient");

@@ -154,7 +154,7 @@ public class Tdm {
     for (String name : serverNames) {
       HTTPSession session = new HTTPSession(name);
       // AuthScope scope = new AuthScope(ANY_HOST, -1, ANY_REALM, "Digest");
-      session.setCredentialsProvider(HTTPAuthSchemes.BASIC,new CredentialsProvider() {
+      session.setCredentialsProvider(name,new CredentialsProvider() {
         public Credentials getCredentials(AuthScope scope) {
           //System.out.printf("getCredentials called %s %s%n", user, pass);
           return new UsernamePasswordCredentials(user, pass);
