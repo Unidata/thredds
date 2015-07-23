@@ -39,6 +39,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.entity.DeflateDecompressingEntity;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -59,7 +60,10 @@ import org.apache.http.protocol.HttpContext;
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.net.*;
+import java.net.ConnectException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -403,7 +407,6 @@ public class HTTPSession implements AutoCloseable
     // Authorization
 
     /**
-     *
      * @param url
      * @param provider
      * @throws HTTPException
@@ -415,6 +418,21 @@ public class HTTPSession implements AutoCloseable
         if(url == null || provider == null)
             throw new IllegalArgumentException("null argument");
         setGlobalCredentialsProvider(HTTPAuthUtil.urlToScope(url, HTTPAuthSchemes.BASIC), provider);
+    }
+
+    /**
+     * @param url
+     * @param provider
+     * @throws HTTPException
+     */
+    static public void
+    setGlobalCredentialsProvider(CredentialsProvider provider,String scheme)
+            throws HTTPException
+    {
+        if(scheme == null || provider == null)
+            throw new IllegalArgumentException("null argument");
+        AuthScope anybasic = new AuthScope(null, -1, null, scheme);
+        setGlobalCredentialsProvider(anybasic,  provider);
     }
 
     static public void
@@ -876,44 +894,43 @@ public class HTTPSession implements AutoCloseable
     // per-session versions of the global accessors
 
     /**
-         *
-         * @param url
-         * @param provider
-         * @throws HTTPException
-         */
-        public void
-        setCredentialsProvider(String url, CredentialsProvider provider)
-                throws HTTPException
-        {
-            if(url == null || provider == null)
-                throw new IllegalArgumentException("null argument");
-            setCredentialsProvider(HTTPAuthUtil.urlToScope(url, HTTPAuthSchemes.BASIC), provider);
-        }
+     * @param url
+     * @param provider
+     * @throws HTTPException
+     */
+    public void
+    setCredentialsProvider(String url, CredentialsProvider provider)
+            throws HTTPException
+    {
+        if(url == null || provider == null)
+            throw new IllegalArgumentException("null argument");
+        setCredentialsProvider(HTTPAuthUtil.urlToScope(url, HTTPAuthSchemes.BASIC), provider);
+    }
 
-        public void
-        setCredentialsProvider(AuthScope scope, CredentialsProvider provider)
-                throws HTTPException
-        {
-            if(provider == null || scope == null || scope.getScheme() == null)
-                throw new IllegalArgumentException("null argument");
-            authlocal.insert(scope, provider);
-        }
+    public void
+    setCredentialsProvider(AuthScope scope, CredentialsProvider provider)
+            throws HTTPException
+    {
+        if(provider == null || scope == null || scope.getScheme() == null)
+            throw new IllegalArgumentException("null argument");
+        authlocal.insert(scope, provider);
+    }
 
-        /**
-         * It is convenient to be able to directly set the Credentials
-         * (not the provider) when those credentials are fixed.
-         *
-         * @param url
-         * @param creds
-         * @throws HTTPException
-         */
-        public void
-        setCredentials(String url, Credentials creds)
-                throws HTTPException
-        {
-            CredentialsProvider provider = new HTTPConstantProvider(creds);
-            setCredentialsProvider(url, provider);
-        }
+    /**
+     * It is convenient to be able to directly set the Credentials
+     * (not the provider) when those credentials are fixed.
+     *
+     * @param url
+     * @param creds
+     * @throws HTTPException
+     */
+    public void
+    setCredentials(String url, Credentials creds)
+            throws HTTPException
+    {
+        CredentialsProvider provider = new HTTPConstantProvider(creds);
+        setCredentialsProvider(url, provider);
+    }
 
     // This provides support for HTTPMethod.setAuthentication method
     synchronized protected void

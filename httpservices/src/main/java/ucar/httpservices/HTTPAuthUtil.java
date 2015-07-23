@@ -179,7 +179,7 @@ abstract public class HTTPAuthUtil
             boolean b2 = (a1.getPort() == aport || a1.getPort() == ANY_PORT || aport == ANY_PORT);
             // Also, we ignore the realms
             // boolean b3 = HTTPUtil.equals(a1.getRealm(), a2.getRealm());
-            boolean b4 = HTTPUtil.equals(a1.getScheme(), a2.getScheme());
+            boolean b4 = HTTPUtil.schemeEquals(a1.getScheme(), a2.getScheme());
             if(!(b1 && b2 && b4))
                 return false;
         } else if(!a1.equals(a2))

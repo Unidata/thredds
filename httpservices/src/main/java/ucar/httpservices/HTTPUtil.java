@@ -34,16 +34,12 @@
 package ucar.httpservices;
 
 import org.apache.http.*;
-import org.apache.http.auth.AuthScope;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.http.auth.AuthScope.*;
 
 abstract public class HTTPUtil
 {
@@ -116,26 +112,28 @@ abstract public class HTTPUtil
                 Header[] hdrs = this.request.getAllHeaders();
                 if(hdrs == null) hdrs = new Header[0];
                 System.err.println("Request Headers:");
-                for(Header h : hdrs)
+                for(Header h : hdrs) {
                     System.err.println(h.toString());
+                }
             }
             if(this.response != null) {
                 Header[] hdrs = this.response.getAllHeaders();
                 if(hdrs == null) hdrs = new Header[0];
                 System.err.println("Response Headers:");
-                for(Header h : hdrs)
+                for(Header h : hdrs) {
                     System.err.println(h.toString());
+                }
             }
             System.err.flush();
         }
     }
 
     static public class InterceptResponse extends InterceptCommon
-        implements HttpResponseInterceptor
+            implements HttpResponseInterceptor
     {
         synchronized public void
         process(HttpResponse response, HttpContext context)
-            throws HttpException, IOException
+                throws HttpException, IOException
         {
             this.response = response;
             this.context = context;
@@ -143,20 +141,21 @@ abstract public class HTTPUtil
                 printHeaders();
             else if(this.response != null) {
                 Header[] hdrs = this.response.getAllHeaders();
-                for(int i = 0;i < hdrs.length;i++)
+                for(int i = 0; i < hdrs.length; i++) {
                     headers.add(hdrs[i]);
+                }
             }
         }
     }
 
     static public class InterceptRequest extends InterceptCommon
-        implements HttpRequestInterceptor
+            implements HttpRequestInterceptor
     {
         HttpRequest req = null;
 
         synchronized public void
         process(HttpRequest request, HttpContext context)
-            throws HttpException, IOException
+                throws HttpException, IOException
         {
             this.req = request;
             this.context = context;
@@ -164,8 +163,9 @@ abstract public class HTTPUtil
                 printHeaders();
             else if(this.req != null) {
                 Header[] hdrs = this.req.getAllHeaders();
-                for(int i = 0;i < hdrs.length;i++)
+                for(int i = 0; i < hdrs.length; i++) {
                     headers.add(hdrs[i]);
+                }
             }
         }
     }
@@ -175,12 +175,12 @@ abstract public class HTTPUtil
 
     static public byte[]
     readbinaryfile(InputStream stream)
-        throws IOException
+            throws IOException
     {
         // Extract the stream into a bytebuffer
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         byte[] tmp = new byte[1 << 16];
-        for(;;) {
+        for(; ; ) {
             int cnt;
             cnt = stream.read(tmp);
             if(cnt <= 0) break;
@@ -189,11 +189,11 @@ abstract public class HTTPUtil
         return bytes.toByteArray();
     }
 
-    static public  File
+    static public File
     fillTempFile(String base, String content)
-	throws IOException
+            throws IOException
     {
-	// Locate a temp directory
+        // Locate a temp directory
         String tmppath = System.getenv("TEMP");
         if(tmppath == null || tmppath.length() == 0)
             tmppath = "/tmp";
@@ -201,30 +201,42 @@ abstract public class HTTPUtil
         if(!tmpdir.exists() || !tmpdir.canWrite())
             throw new IOException("Cannot create temp file: no tmp dir");
         try {
-	    String suffix;
-	    String prefix;
-	    int index = base.lastIndexOf('.');
-	    if(index < 0) index = base.length();
-	    suffix = base.substring(index,base.length());
-	    prefix = base.substring(0,index);
-	    if(prefix.length() == 0)
-		throw new IOException("Malformed base: "+base);
+            String suffix;
+            String prefix;
+            int index = base.lastIndexOf('.');
+            if(index < 0) index = base.length();
+            suffix = base.substring(index, base.length());
+            prefix = base.substring(0, index);
+            if(prefix.length() == 0)
+                throw new IOException("Malformed base: " + base);
             File f = File.createTempFile(prefix, suffix, tmpdir);
             // Fill with the content
             FileOutputStream fw = new FileOutputStream(f);
             fw.write(content.getBytes(UTF8));
             fw.close();
-	    return f;
+            return f;
         } catch (IOException e) {
-            throw new IOException("Cannot create temp file",e);
+            throw new IOException("Cannot create temp file", e);
         }
     }
 
     /**
      * @return {@code true} if the objects are equal or both null
      */
-    public static boolean equals(final Object obj1, final Object obj2) {
+    public static boolean equals(final Object obj1, final Object obj2)
+    {
         return obj1 == null ? obj2 == null : obj1.equals(obj2);
+    }
+
+    /**
+     * @return {@code true} if the objects are equal or both null
+     */
+    public static boolean schemeEquals(String s1, String s2)
+    {
+        if(s1 == s2) return true;
+        if((s1 == null) ^ (s2 == null)) return false;
+        if((s1.length() == 0) ^ (s2.length() == 0)) return true;
+        return s1.equals(s2);
     }
 
 

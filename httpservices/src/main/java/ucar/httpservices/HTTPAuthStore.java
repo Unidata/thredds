@@ -35,7 +35,6 @@ package ucar.httpservices;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -111,7 +110,7 @@ public class HTTPAuthStore implements Serializable
 
     public HTTPAuthStore(HTTPAuthStore parent)
     {
-	this();
+        this();
         this.parent = parent;
     }
 
@@ -128,14 +127,16 @@ public class HTTPAuthStore implements Serializable
     insert(AuthScope scope, CredentialsProvider provider)
             throws HTTPException
     {
-        if(scope == null || scope.getScheme() == null || provider == null)
-            throw new HTTPException("HTTPAuthStore.insert: null argument");
-        // Make realm from host+port
+        if(scope == null) scope = AuthScope.ANY;
+        if(provider == null)
+            throw new HTTPException("HTTPAuthStore.insert: null provider");
         String scheme = scope.getScheme();
+        if(scheme == AuthScope.ANY_SCHEME) scheme = HTTPAuthSchemes.ANY;
+        // Make realm from host+port
         List<Scope> scopes = getScopes(scheme);
         CredentialsProvider old = null;
         for(Scope sc : scopes) {
-            if(HTTPAuthUtil.equals(sc.scope,scope)) {
+            if(HTTPAuthUtil.equals(sc.scope, scope)) {
                 old = sc.provider;
                 sc.provider = provider;
                 break;
@@ -144,6 +145,7 @@ public class HTTPAuthStore implements Serializable
         if(old == null)
             scopes.add(new Scope(scope, provider));
         return old;
+
     }
 
     /**
@@ -202,14 +204,20 @@ public class HTTPAuthStore implements Serializable
         if(scope == null || scope.getScheme() == null)
             throw new IllegalArgumentException("null value");
         List<Scope> scopes = getScopes(scope.getScheme());
-        for(Scope sc: scopes) {
-            if(HTTPAuthUtil.equals(sc.scope,scope))
+        for(Scope sc : scopes) {
+            if(HTTPAuthUtil.equals(sc.scope, scope))
                 return sc.provider;
         }
-	// Try parent,if any
-	if(parent == null)
+        // Try the "ANY" case
+        scopes = getScopes(HTTPAuthSchemes.ANY);
+        for(Scope sc : scopes) {
+            if(HTTPAuthUtil.equals(sc.scope, scope))
+                return sc.provider;
+        }
+        // Try parent,if any
+        if(parent == null)
             return null;
-	return parent.lookup(scope);
+        return parent.lookup(scope);
     }
 
     protected List<Scope>

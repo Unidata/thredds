@@ -54,7 +54,7 @@ abstract public class HTTPAuthSchemes /* mimics AuthSchemes (AuthSchemes is fina
     static public final String KERBEROS = AuthSchemes.KERBEROS;
     // Local extensions
     static public final String SSL = "SSL";
-    static public final String ANY = null;
+    static public final String ANY = ""; // MUst be usable in map
 
     static public final String DEFAULT_SCHEME = HTTPAuthSchemes.BASIC;
 

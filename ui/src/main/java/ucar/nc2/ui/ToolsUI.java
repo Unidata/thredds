@@ -6512,7 +6512,7 @@ public class ToolsUI extends JPanel {
 
       UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
       try {
-        HTTPSession.setGlobalCredentialsProvider(HTTPAuthSchemes.BASIC,provider);
+        HTTPSession.setGlobalCredentialsProvider(provider,HTTPAuthSchemes.BASIC);
       }catch (HTTPException e) {
         log.error("Failed to set global credentials");
       }
