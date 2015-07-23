@@ -18,7 +18,7 @@
    link:../reference/index.html[Reference], link:../faq.html[FAQ]
  * http://www.unidata.ucar.edu/community/surveys/2015training/survey.html[Feedback/Evaluation
 Form] (Repeated submissions encouraged)
- * Etherpad for live feedback (Ryan?)
+ * (link:https://etherpad.net/p/TdsWorkshop2015)[Etherpad] for real-time feedback!
 
 === 9:30 - 10:15 TDS with Docker (Sean)
  * Using the TDS and link:https://registry.hub.docker.com/u/unidata/tds-workshop/[Docker]
