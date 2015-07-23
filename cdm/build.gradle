@@ -14,6 +14,9 @@ dependencies {
     compile libraries["protobuf-java"]
     compile libraries["guava"]
     compile libraries["jcommander"]
+    compile 'com.amazonaws:aws-java-sdk:1.9.0'
+    compile 'commons-io:commons-io:2.4'
+    compile 'net.sf.ehcache:ehcache:2.10.0'
 
     compile libraries["slf4j-api"]
 }
