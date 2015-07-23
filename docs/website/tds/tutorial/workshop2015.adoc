@@ -155,11 +155,10 @@ to explore/discuss during this time. Potential topics include:
 
 === 2:30 - 2:45 Break
 
-=== 2:45 - 4:00 GRIB Feature Collections (John, Sean, Ryan (?), Christian (?))
- * cache, index files, partition types (architecture background) (John)
+=== 2:45 - 4:00 GRIB Feature Collections (John)
+ * cache, index files, partition types (architecture background) (https://docs.google.com/presentation/d/18Kj9FzRQBwSoVYbd1zbx-IUWH7weT3FOV4MRZxWHe0E/edit#slide=id.g3b75fa140_2_15[slides])
  * link:GRIBFeatureCollectionTutorial.html[GRIB Feature Collection Tutorial]
- * Using the THREDDS Data Manager (TDM)
- ** link:../reference/collections/TDM.html[TDM]
+ * Using the THREDDS Data Manager (TDM) link:../reference/collections/TDM.html[TDM]
  * link:GribCollectionExamples.html[GRIB Collection Examples]
  * link:../reference/ThreddsConfigXMLFile.html#GribIndexWriting[GRIB Index redirection]
  * GRIB link:../reference/collections/GribCollectionFaq.html[FAQ]
@@ -169,7 +168,12 @@ to explore/discuss during this time. Potential topics include:
  ** typical e-support type questions
 
 === 4:00 - 4:30 TDS 5.0 (John)
-* Where we are heading
-* What to expect
+* Changes in 5.0
+** DataType now has unsigned types: UBYTE, USHORT, UINT, ULONG
+** Server catalog processing much more efficient
+** New TDS remote access service (CdmrFeature) to give python client full access to all of the coordinate information and coordinate based subsetting capabilities of the Java client.
+** http://www.unidata.ucar.edu/software/thredds/v5.0/tds/UpgradingTo5.html[Details]
+
+* Alpha release next week
 
 === Day Two Finish
