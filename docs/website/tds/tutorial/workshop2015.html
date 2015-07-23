@@ -44,7 +44,7 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="_9_00_9_30_welcome_and_logistics_tds_motivation_and_technology_overview_ethan">9:00 - 9:30 Welcome and Logistics / TDS Motivation and Technology Overview (Ethan?)</h3>
+<h3 id="_9_00_9_30_welcome_and_logistics_tds_motivation_and_technology_overview_ethan">9:00 - 9:30 Welcome and Logistics / TDS Motivation and Technology Overview (Ethan)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -62,7 +62,7 @@
 Form</a> (Repeated submissions encouraged)</p>
 </li>
 <li>
-<p>Etherpad for live feedback (Ryan?)</p>
+<p><a href="https://etherpad.net/p/TdsWorkshop2015">Etherpad</a> for real-time feedback!</p>
 </li>
 </ul>
 </div>
@@ -169,17 +169,21 @@ edit threddsConfig.xml to add local information</p>
 </div>
 </li>
 <li>
-<p>More details for specific services (Dennis)</p>
+<p>Dataset Subsetting Services (Dennis) (<a href="Subset.html">presentation</a>)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Netcdf Subset Service (<a href="../reference/NetcdfSubsetServiceConfigure.html">configure</a>)(<a href="../reference/NetcdfSubsetServiceReference.html">reference</a>)</p>
+</li>
+<li>
+<p>OPeNDAP Services: DAP2 and DAP4 Protocols</p>
+</li>
+<li>
+<p>Other Services (Not covered)</p>
 <div class="ulist">
 <ul>
 <li>
 <p>Catalog Service (<a href="../reference/CatalogService.html">reference</a>)</p>
-</li>
-<li>
-<p>OPeNDAP <a href="DAP.html">DAP2 and DAP4 Protocol</a> Services</p>
-</li>
-<li>
-<p>Netcdf Subset Service (<a href="../reference/NetcdfSubsetServiceConfigure.html">configure</a>)(<a href="../reference/NetcdfSubsetServiceReference.html">reference</a>)</p>
 </li>
 <li>
 <p>WCS (<a href="../reference/WCS.html">reference</a>)</p>
@@ -190,8 +194,8 @@ edit threddsConfig.xml to add local information</p>
 <li>
 <p>ncIso (<a href="AddingServices.html#Setup">configure</a>)(<a href="../reference/ncISO.html">reference</a>)</p>
 </li>
-<li>
-<p>Server Information (<a href="../reference/ThreddsConfigXMLFile.html#Server_Info_Docs">reference</a>)</p>
+</ul>
+</div>
 </li>
 </ul>
 </div>
@@ -352,7 +356,7 @@ edit threddsConfig.xml to add local information</p>
 
 </div>
 <div class="sect2">
-<h3 id="_8_30_9_30_advanced_tds_configuration">8:30 - 9:30 Advanced TDS Configuration (???)</h3>
+<h3 id="_8_30_9_30_advanced_tds_configuration_john">8:30 - 9:30 Advanced TDS Configuration (John)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -536,24 +540,17 @@ to explore/discuss during this time. Potential topics include:</p>
 
 </div>
 <div class="sect2">
-<h3 id="_2_45_4_00_grib_feature_collections_john_sean_ryan_christian">2:45 - 4:00 GRIB Feature Collections (John, Sean, Ryan (?), Christian (?))</h3>
+<h3 id="_2_45_4_00_grib_feature_collections_john">2:45 - 4:00 GRIB Feature Collections (John)</h3>
 <div class="ulist">
 <ul>
 <li>
-<p>cache, index files, partition types (architecture background) (John)</p>
+<p>cache, index files, partition types (architecture background) (<a href="https://docs.google.com/presentation/d/18Kj9FzRQBwSoVYbd1zbx-IUWH7weT3FOV4MRZxWHe0E/edit#slide=id.g3b75fa140_2_15">slides</a>)</p>
 </li>
 <li>
 <p><a href="GRIBFeatureCollectionTutorial.html">GRIB Feature Collection Tutorial</a></p>
 </li>
 <li>
-<p>Using the THREDDS Data Manager (TDM)</p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="../reference/collections/TDM.html">TDM</a></p>
-</li>
-</ul>
-</div>
+<p>Using the THREDDS Data Manager (TDM) <a href="../reference/collections/TDM.html">TDM</a></p>
 </li>
 <li>
 <p><a href="GribCollectionExamples.html">GRIB Collection Examples</a></p>
@@ -588,10 +585,26 @@ to explore/discuss during this time. Potential topics include:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Where we are heading</p>
+<p>Changes in 5.0</p>
+<div class="ulist">
+<ul>
+<li>
+<p>DataType now has unsigned types: UBYTE, USHORT, UINT, ULONG</p>
 </li>
 <li>
-<p>What to expect</p>
+<p>Server catalog processing much more efficient</p>
+</li>
+<li>
+<p>New TDS remote access service (CdmrFeature) to give python client full access to all of the coordinate information and coordinate based subsetting capabilities of the Java client.</p>
+</li>
+<li>
+<p><a href="http://www.unidata.ucar.edu/software/thredds/v5.0/tds/UpgradingTo5.html">Details</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Alpha release next week</p>
 </li>
 </ul>
 </div>
@@ -605,7 +618,7 @@ to explore/discuss during this time. Potential topics include:</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-07-22 08:53:10 MDT
+Last updated 2015-07-22 21:55:36 MDT
 </div>
 </div>
 </body>
