@@ -1,12 +1,12 @@
 $(document).ready(function () {
     addNotice();
-    setWorkshopNav();
+    setTutorialNav();
 
-    function setWorkshopNav() {
+    function setTutorialNav() {
         var pageTitle = $("title").html();
-        if (pageTitle != '2014 TDS Training Workshop Schedule') {
+        if (pageTitle != 'THREDDS Data Server Administration Tutorial') {
             var workshopNav = '<ul id="breadcrumbs"">' +
-                    '<li><a href="workshop2014.html">2014 TDS Workshop Home</a></li>' +
+                    '<li><a href="index.html">TDS Administration Tutorial Home Page</a></li>' +
                     '<li>' + pageTitle + '</li>' +
                     '</ul>';
 
@@ -14,6 +14,7 @@ $(document).ready(function () {
             $(workshopNav).appendTo('#container');
         }
     }
+
 
 
     function addNotice() {
