@@ -2,15 +2,14 @@ package thredds.crawlabledataset;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
+import net.sf.ehcache.*;
+import net.sf.ehcache.event.CacheEventListener;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
 {
@@ -20,7 +19,11 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
     private final String path;
     private ThreddsS3Object s3Object = null;
 
-    private static final String EHCACHE_S3_KEY = "S3";
+    private static final String EHCACHE_S3_OBJECT_KEY = "S3Objects";
+    private static final String EHCACHE_S3_LISTING_KEY = "S3Listing";
+    private static final int EHCACHE_MAX_OBJECTS = 1000;
+    private static final int EHCACHE_TTL = 60;
+    private static final int EHCACHE_TTI = 60;
 
     public CrawlableDatasetAmazonS3(String path, Object configObject)
     {
@@ -33,6 +36,36 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
     {
         this(S3Helper.concat(parent.getPath(), s3Object.key), null);
         this.s3Object = s3Object;
+    }
+
+    public static Cache getS3Cache(String cacheName) {
+        return getS3Cache(cacheName, null);
+    }
+
+    public static Cache getS3Cache(String cacheName, CacheEventListener eventListener)
+    {
+        CacheManager cacheManager = CacheManager.create();
+
+        if (!cacheManager.cacheExists(cacheName)) {
+            Cache newCache = new Cache(cacheName, EHCACHE_MAX_OBJECTS, false, false, EHCACHE_TTL, EHCACHE_TTI);
+
+            if (null != eventListener)
+                newCache.getCacheEventNotificationService().registerListener(eventListener);
+
+            cacheManager.addCache(newCache);
+        }
+
+        return cacheManager.getCache(cacheName);
+    }
+
+    private Cache getS3ObjectCache()
+    {
+        return getS3Cache(EHCACHE_S3_OBJECT_KEY, new S3CacheEventListener());
+    }
+
+    private Cache getS3ListingCache()
+    {
+        return getS3Cache(EHCACHE_S3_LISTING_KEY);
     }
 
     @Override
@@ -50,13 +83,13 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
     @Override
     public String getName()
     {
-        return new File(path).getName();
+        return S3Helper.basename(path);
     }
 
     @Override
     public File getFile()
     {
-        return S3Helper.getS3File(path);
+        return S3Helper.getS3File(path, getS3ObjectCache());
     }
 
     @Override
@@ -100,7 +133,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
             throw new IllegalStateException(tmpMsg);
         }
 
-        List<ThreddsS3Object> listing = S3Helper.listS3Dir(this.path);
+        List<ThreddsS3Object> listing = S3Helper.listS3Dir(this.path, getS3ListingCache());
 
         if (listing.isEmpty())
         {
@@ -165,6 +198,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
     {
         private static String S3_PREFIX = "s3://";
         private static String S3_DELIMITER = "/";
+        private static HashMap<String, File> fileStore = new HashMap<String, File>();
 
         public static String concat(String parent, String child)
         {
@@ -178,6 +212,11 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
         {
             int delim = uri.lastIndexOf(S3_DELIMITER);
             return uri.substring(0, delim);
+        }
+
+        public static String basename(String uri)
+        {
+            return new File(uri).getName();
         }
 
         public static String[] s3UriParts(String uri) throws Exception
@@ -216,9 +255,39 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
             return  s3Client;
         }
 
-        public static File getS3File(String uri)
+        public static File createTempFile(String uri) throws IOException
+        {
+            // We have to save the key twice, as Ehcache will not provide
+            // us with tmpFile when eviction happens, so we use fileStore
+            Path tmpDir = Files.createTempDirectory("S3Download_");
+            String fileBasename = new File(uri).getName();
+            File file = new File(tmpDir.toFile(), fileBasename);
+            file.deleteOnExit();
+            fileStore.put(uri, file);
+            return file;
+        }
+
+        public static void deleteFileElement(Element element)
+        {
+            File file = (File) fileStore.get(element.getObjectKey());
+            if (null == file)
+                return;
+
+            // Should cleanup what createTempFile has created, meaning we have
+            // to get rid of both the file and its containing directory
+            file.delete();
+            file.getParentFile().delete();
+
+            fileStore.remove(element.getObjectKey());
+        }
+
+        public static File getS3File(String uri, Cache cache)
         {
             log.debug(String.format("S3 Downloading '%s'", uri));
+
+            Element element;
+            if ((element = cache.get(uri)) != null && ((File) element.getObjectValue()).exists())
+                return (File) element.getObjectValue();
 
             try
             {
@@ -228,15 +297,15 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
 
                 S3Object object = getS3Client().getObject(new GetObjectRequest(s3Bucket, s3Key));
 
-                Path tmpDir = Files.createTempDirectory("S3Download_");
-                String fileBasename = new File(uri).getName();
-                File tmpFile = new File(tmpDir.toFile(), fileBasename);
+                File tmpFile = createTempFile(uri);
 
                 log.info(String.format("S3 Downloading 's3://%s/%s' to '%s'", s3Bucket, s3Key, tmpFile.toString()));
                 OutputStream os = new FileOutputStream(tmpFile);
                 InputStream is = object.getObjectContent();
 
                 IOUtils.copy(is, os);
+
+                cache.put(new Element(uri, tmpFile));
 
                 return tmpFile;
             }
@@ -249,8 +318,12 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
             return null;
         }
 
-        public static List<ThreddsS3Object> listS3Dir(String uri)
+        public static List<ThreddsS3Object> listS3Dir(String uri, Cache cache)
         {
+            Element element;
+            if ((element = cache.get(uri)) != null)
+                return (List<ThreddsS3Object>) element.getObjectValue();
+
             List<ThreddsS3Object> listing = new ArrayList<ThreddsS3Object>();
 
             log.debug(String.format("S3 Listing '%s'", uri));
@@ -288,6 +361,8 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
 
                     listing.add(new ThreddsS3Object(key, ThreddsS3Object.Type.DIR));
                 }
+
+                cache.put(new Element(uri, listing));
             }
             catch (Exception e)
             {
@@ -299,4 +374,30 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
         }
     }
 
+    public static class S3CacheEventListener implements CacheEventListener
+    {
+        public void notifyElementRemoved(final Ehcache cache, final Element element) throws CacheException
+        {
+            S3Helper.deleteFileElement(element);
+        }
+
+        public void notifyElementExpired(final Ehcache cache, final Element element)
+        {
+            S3Helper.deleteFileElement(element);
+        }
+
+        public void notifyElementEvicted(Ehcache cache, Element element)
+        {
+            S3Helper.deleteFileElement(element);
+        }
+
+        public void notifyElementPut(final Ehcache cache, final Element element) throws CacheException {}
+        public void notifyElementUpdated(final Ehcache cache, final Element element) throws CacheException {}
+        public void notifyRemoveAll(Ehcache cache) {}
+        public void dispose() {}
+        public Object clone() throws CloneNotSupportedException
+        {
+            return super.clone();
+        }
+    }
 }
