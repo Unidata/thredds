@@ -1,0 +1,266 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Dataset Subsetting</title>
+  <link rel="stylesheet" href="./git/thredds/docs/website/tds/tutorial/tutorial2.css" type="text/css"/>
+  <script type="text/javascript" src="./git/thredds/docs/website/tds/tutorial/workshopNav.js"></script>
+</head>
+<body>
+
+<center>
+<h1>Dataset Subsetting</h1>
+</center>
+
+<div id="section">
+<h2><a name="Resources">Resources For This Session:</a></h2>
+<p>
+Test Servers used to test NcSS, CDMRemote,  Protocols:
+<p>
+<ol>
+<li> Thredds Test Server 
+<a href="http://thredds-test.unidata.ucar.edu/thredds/catalog.html" target="_blank">
+http://thredds-test.unidata.ucar.edu/thredds/catalog.html
+</a>
+<p>
+<li>Test Servers used to test DAP2 and DAP4 Protocols:
+<p>
+<ul>
+<li> DAP2 Test Server
+<a href="http://remotetest.unidata.ucar.edu/dts" target="_blank">http://remotetest.unidata.ucar.edu/dts</a>
+<p>
+<li> DAP4 Test Server
+<a href="http://remotetest.unidata.ucar.edu/d4ts" target="_blank">http://remotetest.unidata.ucar.edu/d4ts</a>
+<p>
+</ul>
+<li> Thredds Test Server providing DAP4 Services
+<a href="http://remotetest.unidata.ucar.edu/thredds" target="_blank">http://remotetest.unidata.ucar.edu/thredds</a>
+</ol>
+</div>
+
+<div id="section">
+<h2><a name="context">What this presentation covers</a></h2>
+<ul>
+<p>
+<li><a href="#ClientServer">Client Server Architecture</a>
+<p>
+<li><a href="#Subsetting">What is Dataset Subsetting?</a>
+<p>
+<li><a href="#NcSS">The NetCDF Subset Service (NcSS) Protocol</a>
+<p>
+<li><a href="#Opendap">The DAP2 and DAP4 Protocol</a>
+<p>
+<li><a href="#CDMRemote">The CDM Remote Protocol</a>
+</ul>
+</div>
+
+<div id="section">
+<h2><a name="ClientServer">Client Server Architecture</a></h2>
+<p>
+<ul>
+<li>We all routinely use the Client Server Architecture when we use
+a web browser.
+<br>
+<img src="./WebBrowser.svg" width=480>
+<p>
+<li>Key Elements:
+<ul>
+<li> Client Program (Web Browser)
+<li> Server Program (Web Page Server)
+<li> Protocol (HTTP)
+<li> Message Requests and Replies (HTML)
+</ul>
+<p>
+<li>The Thredds Data Server is a Server in a client-server architecture.
+It differs from a web browser in supporting a number of protocols
+and associated message formats.
+<p>
+<img src="./TDS.svg" width="637">
+</div>
+
+<div id="section">
+<h2><a name="Subsetting">What is Dataset Subsetting?</a></h2>
+<p>
+<ul>
+<li> Why not just use FTP? Because Downloading a whole dataset
+can take a long time and can use significant memory or disk locally.
+<p>
+<li> Better is to be able to ask the server to provide a
+<strong>subset</strong> (<strong>a piece</strong>)
+of the dataset.
+<ul>
+<p>
+<li> Because that is all the client needs
+<p>
+<li> Or because we can process the dataset locally piece by piece.
+</ul>
+<p>
+<li> Other names for subsetting: <em>query</em>, <em>constraint</em>.
+<p>
+<li> Many of the protocols supported by the thredds server
+can provide subsetting; however, there is no standard, so
+the form of the subset request
+differs between protocols.
+<p>
+<li>What can be subsetted is determined by the "data model"
+presented to the user:
+<p>
+<ol>
+<li> variable arrays indexed by integer dimensions
+<li> variables indexed by (latitude, longitude) 
+</ol>
+<p>
+<li>So Typical elements that can be subsetted:
+<p>
+  <ul>
+  <li> Subset of variables (i.e. give me <em>temperature</em>, <em>velocity</em>)
+  <p>
+  <li> Subset of the data within a one or more variables:<br>
+	<p>
+       <ul>
+       <li>index-based: [first:stride:last] or (first:stride:last+1)<br>
+	   e.g var[0:1:10][3:2:9]<br>
+	   Sometimes (e.g. stride and last are reversed.
+	<p>
+       <li>coordinate-based: <br>
+	   e.g. [43e:45e][10s:85n]
+       </ul>
+</ul>
+</div>
+
+<div id="section">
+<h2><a name="NcSS">The NetCDF Subset Service (NcSS)</a></h2>
+<p>
+<ul>
+<p>
+<li> NcSS uses HTTP forms to send a request and get results back in 
+a variety of formats: XML, netcdf-3, netcdf-4, XML, etc.
+<p>
+<li> Mostly uses coordinate subsets, but can support others like stations.
+<p>
+<li> The request is encoded as a url query specifying the variables
+and e.g. a bounding box.
+<p>
+<li> Examples:
+<dl>
+<dd><a href="http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/catalog.html?dataset=grib/NCEP/DGEX/CONUS_12km/Best" target="_blank">
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/catalog.html?dataset=grib/NCEP/DGEX/CONUS_12km/Best
+<a>
+</dl>
+
+<p>
+<li><strong>Reference</strong>:<br>
+<a href="https://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html" target="_blank">
+https://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html</a>
+</ul>
+</div>
+
+<div id="section">
+<h2><a name="Opendap">OPenDAP and DAP2 and DAP4</a></h2>
+<p>
+<ul>
+<li>DAP version 2 (aka DAP2) is a widely supported protocol and standard data format for accessing remote data
+<p>
+<li>The DAP2 protocol was expressly designed to serve as intermediate format for accessing a wide variety of data sources
+<p>
+<li>The new DAP version 4 protocol (DAP4) provides a richer
+data model and a more powerful <em>constraint language (aka subset language)</em>
+than DAP2.
+<p>
+<li> DAP2 and DAP4 (currently) are index based.
+<p>
+<li> Examples:
+<dl>
+<dt>Sources of test data
+<dd><a href="http://remotetest.unidata.ucar.edu/dts" target="_blank">http://remotetest.unidata.ucar.edu/dts</a>
+<dd><a href="http://remotetest.unidata.ucar.edu/d4ts" target="_blank">http://remotetest.unidata.ucar.edu/d4ts</a>
+<p>
+<dt>Request Single variable
+<dd>BASE: <a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.dds">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.dds</a>
+<dd>SUBSET: <a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.asc?X">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.asc?X</a>
+<dd>SUBSET: <a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.asc?X[0:10]">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.asc?X[0:10]</a>
+<p>
+<dt>Form-Based Access
+<dd>FORM: <a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.html">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/rtofs.nc.html</a>
+</dl>
+
+<p>
+<li><strong>DAP2 Reference</strong>:<br>
+<a href="http://www.opendap.org/pdf/ESE-RFC-004v1.2.pdf" target="_blank">
+http://www.opendap.org/pdf/ESE-RFC-004v1.2.pdf</a>
+<p>
+<li><strong>DAP4 Reference</strong>:<br>
+<a href="http://docs.opendap.org/index.php/DAP4:_Specification_Volume_1" target="_blank">
+http://docs.opendap.org/index.php/DAP4:_Specification_Volume_1</a>
+
+</ul>
+</div>
+
+<div id="section">
+<h2><a name="CDMRemote">CDMRemote</a></h2>
+<p>
+<ul>
+<p>
+<li> CDMRemote is a protocol developed by Unidata to provide faster
+access to data than DAP2.
+<p>
+<li> Uses the Google <em>protobuf</em> serialization technology
+to encode/decode metadata. Data is serialized using a simpler protocol.
+<p>
+<li> Supports both coordinate queries and index queries.
+<p>
+<li> The request is encoded as a url query specifying various kinds of info.
+     That is, it is of the form<br>
+<strong>&lt;url&gt;?req=...</strong> or
+<strong>&lt;url&gt;/&lt;kind&gt;?req=...</strong>
+<p>
+<li> Possible kinds include: <em>point</em>, <em>station</em>
+     <ul>
+     <li> No kind => index based subsetting
+     <li> point => coordinate based subsetting
+     <li> station => coordinate based subsetting
+     </ul>
+<p>
+<li> Two important "req"s are:
+     <ul>
+     <p>
+     <li> req=form&nbsp&mdash;return the dataset's metadata in netcdf cdl format
+     <p>
+     <li> req=data&nbsp&mdash;return extra information about the dataset
+     <p>
+     </ul>
+<p>
+<li> Some requests require additional fields, e.g:
+     <ul><li> req=data requires an additional query element of the form<br>
+          <em>var=&lt;list of vars with subsetting&gt;</em></ul>
+<p>
+<li> Examples:
+<dl>
+<p>
+<dd>
+BASE: <a href="http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/DGEX/CONUS_12km/Best?req=form">
+http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/DGEX/CONUS_12km/Best?req=form</a>
+<p>
+<dd>
+SUBSET: <a href="http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/DGEX/CONUS_12km/Best?req=data&var=x(0:10:3);isobaric2">
+http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/DGEX/CONUS_12km/Best?req=data&var=x(0:10:3);isobaric2"</a>
+<p>
+<dd>
+SUBSET: &lt;url&gt;.../point?req=data&north=40.3&south=22.8&east=-80&west=-105
+<p>
+<dd>
+SUBSET: &lt;url&gt;.../station?req=data&stn=KDEN,KLOG,MOAS
+</dl>
+
+<p>
+<li><strong>Reference</strong>:
+<a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/stream/CdmRemote.html target="_blank">
+https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/stream/CdmRemote.html</a>
+</ul>
+
+</div>
+
+</body>
+</html>
+<!--
+http://thredds.ucar.edu/thredds/remoteCatalogService?catalog=http://thredds.ucar.edu/thredds/catalog.xml&command=SHOW
+-->

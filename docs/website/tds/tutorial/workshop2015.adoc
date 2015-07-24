@@ -11,14 +11,14 @@
  *** Name, organization, how you use TDS.
  ** Introduction of Unidata staff
 
-=== 9:00 - 9:30 Welcome and Logistics / TDS Motivation and Technology Overview (Ethan?)
+=== 9:00 - 9:30 Welcome and Logistics / TDS Motivation and Technology Overview (Ethan)
  * Review of schedule
  * Why use TDS? (link:TDSOverview.pptx[PPT])(link:TDSOverview.pdf[PDF])
  * TDS Resources: link:../TDS.html[Web page],
    link:../reference/index.html[Reference], link:../faq.html[FAQ]
- * http://www.unidata.ucar.edu/community/surveys/2015training/survey.html[Feedback/Evaluation
+ * link:http://www.unidata.ucar.edu/community/surveys/2015training/survey.html[Feedback/Evaluation
 Form] (Repeated submissions encouraged)
- * Etherpad for live feedback (Ryan?)
+ * link:https://etherpad.net/p/TdsWorkshop2015[Etherpad] for real-time feedback!
 
 === 9:30 - 10:15 TDS with Docker (Sean)
  * Using the TDS and link:https://registry.hub.docker.com/u/unidata/tds-workshop/[Docker]
@@ -40,7 +40,7 @@ Form] (Repeated submissions encouraged)
  * URL Construction (link:CatalogPrimer.html#Constructing_an_access_URL[tutorial])
    (link:../catalog/InvCatalogSpec.html#constructingURLs[reference]) (Christian)
 
-=== 11:45 - 12:45 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis, Christian)
+=== 11:45 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis, Christian)
  * General Overview (Christian)
  ** link:../reference/Services.html[Available services]
  *** `serviceType` and `base` attributes are not configurable
@@ -48,31 +48,31 @@ Form] (Repeated submissions encouraged)
  ** Using compound services
  ** Example: link:../reference/ThreddsConfigXMLFile.html#ncss[Turn on NCSS in threddsConfig.xml]
  *** link:../../netcdf-java/reference/netcdf4Clibrary.html[Enabling NetCDF4] for NCSS: Compression!
- * More details for specific services (Dennis)
- ** Catalog Service (link:../reference/CatalogService.html[reference])
- ** OPeNDAP link:DAP.html[DAP2 and DAP4 Protocol] Services
+ * Dataset Subsetting Services (Dennis) (link:Subset.html[presentation])
  ** Netcdf Subset Service (link:../reference/NetcdfSubsetServiceConfigure.html[configure])(link:../reference/NetcdfSubsetServiceReference.html[reference])
- ** WCS (link:../reference/WCS.html[reference])
- ** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:../reference/WMS.html[reference])
- ** ncIso (link:AddingServices.html#Setup[configure])(link:../reference/ncISO.html[reference])
- ** Server Information (link:../reference/ThreddsConfigXMLFile.html#Server_Info_Docs[reference])
+ ** OPeNDAP Services: DAP2 and DAP4 Protocols
+ ** Other Services (Not covered) 
+ *** Catalog Service (link:../reference/CatalogService.html[reference])
+ *** WCS (link:../reference/WCS.html[reference])
+ *** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:../reference/WMS.html[reference])
+ *** ncIso (link:AddingServices.html#Setup[configure])(link:../reference/ncISO.html[reference])
 
-=== 12:45 - 2:15 Lunch
+=== 12:30 - 2:00 Lunch
 
-=== 2:15 - 2:45 Accessing TDS data services with python (Ryan)
+=== 2:00 - 2:30 Accessing TDS data services with python (Ryan)
 ** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/matplotlib-and-cartopy.ipynb[OPeNDAP]
 ** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/SIPHON_NCSS_Example.ipynb[Netcdf Subset Service]
 ** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/wms_sample.ipynb[ncWMS]
 
-=== 2:45 - 3:15 Using ToolsUI (Christian)
+=== 2:30 - 3:00 Using ToolsUI (Christian)
  * Running link:../../netcdf-java/reference/ToolsUI/ToolsUI.html[ToolsUI]
  * Use Case: Using ToolsUI to serve new data
  ** Access local and remote TDS servers in ToolsUI
  * IOSPs and FeatureTypes
 
-=== 3:15 - 3:30 Break
+=== 3:00 - 3:15 Break
 
-=== 3:30 - 4:00 TDS Monitoring, Debugging, Logs (Sean)
+=== 3:15 - 3:45 TDS Monitoring, Debugging, Logs (Sean)
  * Looking at logs while logged into the server (good for when things won't start!)
  ** link:TomcatAndTDSLogs.html#access[Tomcat]
  ** link:TomcatAndTDSLogs.html#tds[TDS]
@@ -81,7 +81,7 @@ Form] (Repeated submissions encouraged)
  ** using the link:tdsMonitor.html[TdsMonitor] Desktop tool
  * link:TroubleShooting.html[Troubleshooting] Configuration Catalogs
 
-=== 4:00 - 4:45 Software Engineering and Contributing (Christian)
+=== 3:45 - 4:30 Software Engineering and Contributing (Christian)
  * Source code on https://github.com/Unidata/thredds[GitHub]
  ** Exercise: link:../../netcdf-java/tutorial/SourceCodeBuild.html[Build THREDDS from source code]
  ** Exercise: link:../../netcdf-java/tutorial/Contributing.html[Submit a pull request]
@@ -98,13 +98,13 @@ Form] (Repeated submissions encouraged)
 
 === Day One Finish
 
-=== Dinner 6:00 at link:https://twistedpinebrewing.com/[Twisted Pine]
+=== Dinner 6:00 at link:http://fatebrewingcompany.com/[Fate Brewing] (link:https://www.google.com/maps/place/FATE+Brewing+Company/@40.015095,-105.245735,17z/data=!4m2!3m1!1s0x0000000000000000:0xcb92fb30bcd7297b[directions]) 
 
 == 24 July 2015 : July 2015: Advanced Uses of TDS
 
 === 8:00 - 8:30 Coffee and continental breakfast
 
-=== 8:30 - 9:30 Advanced TDS Configuration (???)
+=== 8:30 - 9:30 Advanced TDS Configuration (John)
  * link:../reference/collections/FeatureCollections.html[FeatureCollections]
  * link:FmrcFeatureCollectionsTutorial.html[FMRC Tutorial]
  * link:../reference/collections/PointFeatures.html[Point Feature Collections]
@@ -117,11 +117,20 @@ to explore/discuss during this time. Potential topics include:
 
  * Setting up Tomcat and TDS from scratch
  * Aggregation with NcML
- * Improving dataset discoverability discovery with NcML (ncIso service)
+ * Improving dataset discoverability with NcML (ncIso service)
  * TDS and WebMappingService (via ncWMS)
  * Troubleshooting and more information on upgrading from TDS 4.x to 4.6.
 
-=== 11:30 - 1:30 Lunch
+=== 11:30- 12:00 TDS 5.0 (John)
+* Changes in 5.0
+** DataType now has unsigned types: UBYTE, USHORT, UINT, ULONG
+** Server catalog processing much more efficient
+** New TDS remote access service (CdmrFeature) to give python client full access to all of the coordinate information and coordinate based subsetting capabilities of the Java client.
+** http://www.unidata.ucar.edu/software/thredds/v5.0/tds/UpgradingTo5.html[Details]
+
+* Alpha release next week
+
+=== 12:00 - 1:30 Lunch
 
 === 1:30 - 2:00 An ode to GRIB (Sean)
  * What is GRIB
@@ -167,13 +176,5 @@ to explore/discuss during this time. Potential topics include:
  ** names must be unique (i.e. we need updated tables)
  ** typical e-support type questions
 
-=== 4:00 - 4:30 TDS 5.0 (John)
-* Changes in 5.0
-** DataType now has unsigned types: UBYTE, USHORT, UINT, ULONG
-** Server catalog processing much more efficient
-** New TDS remote access service (CdmrFeature) to give python client full access to all of the coordinate information and coordinate based subsetting capabilities of the Java client.
-** http://www.unidata.ucar.edu/software/thredds/v5.0/tds/UpgradingTo5.html[Details]
-
-* Alpha release next week
 
 === Day Two Finish
