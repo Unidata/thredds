@@ -256,7 +256,7 @@ public class ConfigCatalogHtmlWriter {
                   .append("' alt='").append(htmlConfig.getFolderIconAlt()).append("'> &nbsp;");
 
         // Check if dataset has single resolver service.
-        if (ds.getAccess().size() == 1 && (ds.getAccess().get(0)).getService().getType().equals(ServiceType.Resolver)) {
+        if (ds.getAccess().size() == 1 && ServiceType.Resolver == ds.getAccess().get(0).getService().getType()) {
           Access access = ds.getAccess().get(0);
           String accessUrlName = access.getUnresolvedUrlName();
           int pos = accessUrlName.lastIndexOf(".xml");

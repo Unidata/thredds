@@ -59,7 +59,7 @@ public class DatasetHtmlWriter {
    * <p> With datasetEvents, catrefEvents = false, this is used to construct an HTML page on the server.
    * (eg using HtmlPage); the client then detects URL clicks and processes.
    *
-   * @param out          put HTML here.
+   * @param out           put HTML here.
    * @param ds            the dataset.
    * @param complete      if true, add HTML header and ender so its a complete, valid HTML page.
    * @param isServer      if true, then we are in the thredds data server, so do the following: <ul>
@@ -135,7 +135,7 @@ public class DatasetHtmlWriter {
         }
       }
       out.format("</ul>%n");
-    }  
+    }
 
     java.util.List<Access> access = ds.getAccess();
     if (access.size() > 0) {
@@ -171,11 +171,13 @@ public class DatasetHtmlWriter {
                 e.printStackTrace();
               }
               fullUrlString = fullUrlString + "?catalog=" + catalogUrl + "&dataset=" + datasetId;
-            } else if (stype == ServiceType.NetcdfSubset)
-              fullUrlString = fullUrlString + "/dataset.html";
-            else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))
-              fullUrlString = fullUrlString + "?req=form";
-          }
+            }
+
+          } else if (stype == ServiceType.NetcdfSubset)
+            fullUrlString = fullUrlString + "/dataset.html";
+
+          else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))
+            fullUrlString = fullUrlString + "?req=form";
         }
         out.format(" <li> <b>%s:</b>%s</li>%n", s.getServiceTypeName(), makeHref(fullUrlString, urlString));
       }
@@ -298,7 +300,7 @@ public class DatasetHtmlWriter {
         if (t.getVocabUri() != null) {
           ThreddsMetadata.UriResolved uri = t.getVocabUri();
           String vocabLink = resolveRelativeUrls ? makeHref(uri.resolved.toString(), t.getVocabulary())
-                                                 : makeHref(uri.href, t.getVocabulary());
+                  : makeHref(uri.href, t.getVocabulary());
           out.format(vocabLink);
         } else {
           out.format(StringUtil2.quoteHtmlContent(t.getVocabulary()));
@@ -438,7 +440,7 @@ public class DatasetHtmlWriter {
         java.net.URI uri = cat.resolveUri(href);
         href = uri.toString();
       } catch (java.net.URISyntaxException e) {
-        return "DatasetHtmlWriter: error parsing URL= "+href;
+        return "DatasetHtmlWriter: error parsing URL= " + href;
       }
     }
     return href;
