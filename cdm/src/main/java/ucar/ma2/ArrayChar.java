@@ -269,6 +269,10 @@ public class ArrayChar extends Array {
    */
   public String getString() {
     int rank = getRank();
+    if (rank == 0) {
+      return new String(storage);
+    }
+
     if (rank != 1)
       throw new IllegalArgumentException("ArayChar.getString rank must be 1");
     int strLen = indexCalc.getShape(0);
