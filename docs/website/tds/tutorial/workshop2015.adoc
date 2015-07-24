@@ -171,10 +171,5 @@ to explore/discuss during this time. Potential topics include:
  * link:GribCollectionExamples.html[GRIB Collection Examples]
  * link:../reference/ThreddsConfigXMLFile.html#GribIndexWriting[GRIB Index redirection]
  * GRIB link:../reference/collections/GribCollectionFaq.html[FAQ]
- * Troubleshooting Examples:
- ** Multiple groups
- ** names must be unique (i.e. we need updated tables)
- ** typical e-support type questions
-
 
 === Day Two Finish
