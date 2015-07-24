@@ -133,7 +133,7 @@ to explore/discuss during this time. Potential topics include:
 === 12:00 - 1:30 Lunch
 
 === 1:30 - 2:00 An ode to GRIB (Sean)
- * What is GRIB
+ * What is link:https://imgflip.com/i/omj0i[GRIB]
  * Grib1 vs Grib2
  ** link:http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/Introduction_GRIB1-GRIB2.pdf[WMO]
  * Where can I learn more?
