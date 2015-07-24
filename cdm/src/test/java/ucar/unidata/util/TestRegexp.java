@@ -50,8 +50,19 @@ import ucar.nc2.time.CalendarDateUnit;
  */
 public class TestRegexp {
 	
-  public TestRegexp( ) {
-    
+
+  @Test
+  public void testLogMatch() {
+    testOne("^(\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\\.\\d+ [+-]\\d+) \\[(.*)]\\[(.*)] (\\w+)[\\s]+- ([^-]+) - (.*)",
+            "2015-07-23T21:24:23.760 +0000 [     49132][       1] INFO  - threddsServlet - Remote host: 172.17.42.1 - Request: \"GET /thredds/ HTTP/1.1\"",
+    true);
+  }
+
+  @Test
+  public void testLogMatchFrag1() {
+    testOne("^(\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\\.\\d+ [+-]\\d+)",
+            "2015-07-23T21:24:23.760 +0000",
+    true);
   }
 
   // for one-off testing
@@ -78,15 +89,15 @@ public class TestRegexp {
   @Test
   public void test4() {
     testMatch(".*(J.....) (....) .*", "WMO JUBE99 EGRR 030000", true,
-            new String[] {"JUBE99", "EGRR"});
+            new String[]{"JUBE99", "EGRR"});
     testMatch(".*([IJ].....) (....) .*", "WMO IUBEs9 sssR 030000", true,
-            new String[] {"IUBEs9", "sssR"});
+            new String[]{"IUBEs9", "sssR"});
   }
 
   @Test
   public void test5() {
     testMatch("(.*)\\(see Note.*", "Software identification (see Note 2)",
-            true, new String[] {"Software identification "});
+            true, new String[]{"Software identification "});
   }
 
   @Test

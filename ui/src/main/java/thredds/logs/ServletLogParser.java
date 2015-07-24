@@ -134,7 +134,7 @@ public class ServletLogParser implements LogReader.LogParser {
 
   static private final Pattern donePattern = Pattern.compile("^Request Completed - (.*) - (.*) - (.*)");
   static private final Pattern startPattern = Pattern.compile("^Remote host: ([^-]+) - Request: \"(\\w+) (.*) (.*)");
-  static private final Pattern commonPattern = Pattern.compile("^(\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\\.\\d+ -\\d+) \\[(.*)]\\[(.*)] (\\w+)[\\s]+- ([^-]+) - (.*)");
+  static private final Pattern commonPattern = Pattern.compile("^(\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\\.\\d+ [+-]\\d+) \\[(.*)]\\[(.*)] (\\w+)[\\s]+- ([^-]+) - (.*)");
 
   /*
   Difficult thing is to return the extra line assocated with the previous good log
@@ -151,7 +151,7 @@ public class ServletLogParser implements LogReader.LogParser {
       if (line == null) {
         return haveLog ? log : null;
       }
-      // if (count++ < limit) System.out.println("\n" + line);
+      // if (count++ < limit) System.out.println("\n" + line);                      nTest reqe
 
       try {
         Matcher m = commonPattern.matcher(line);
