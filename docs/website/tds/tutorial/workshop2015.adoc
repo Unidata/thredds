@@ -133,7 +133,7 @@ to explore/discuss during this time. Potential topics include:
 === 12:00 - 1:30 Lunch
 
 === 1:30 - 2:00 An ode to GRIB (Sean)
- * What is GRIB
+ * What is link:https://i.imgflip.com/omj0i.jpg[GRIB]?
  * Grib1 vs Grib2
  ** link:http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/Introduction_GRIB1-GRIB2.pdf[WMO]
  * Where can I learn more?
@@ -141,7 +141,7 @@ to explore/discuss during this time. Potential topics include:
  ** link:http://www.wmo.int/pages/prog/www/WMOCodes.html[WMO]
  *** link:http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html[WMO GRIB-1]
  *** link:http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf[WMO GRIB-2]
- * Table versioning issues
+ * link:http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[On the suitability of BUFR and GRIB for archiving data] (link:http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib[tl;dr;])
 
 === 2:00 - 2:30 Reading GRIB data with the CDM (Sean)
  * General overview of tools for GRIB
@@ -171,10 +171,5 @@ to explore/discuss during this time. Potential topics include:
  * link:GribCollectionExamples.html[GRIB Collection Examples]
  * link:../reference/ThreddsConfigXMLFile.html#GribIndexWriting[GRIB Index redirection]
  * GRIB link:../reference/collections/GribCollectionFaq.html[FAQ]
- * Troubleshooting Examples:
- ** Multiple groups
- ** names must be unique (i.e. we need updated tables)
- ** typical e-support type questions
-
 
 === Day Two Finish
