@@ -1,6 +1,8 @@
 /* Copyright */
 package thredds.server.services;
 
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -24,6 +26,7 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class TestAdminDebug {
     static CredentialsProvider provider = new HTTPBasicProvider("caron", "secret666");
+    Credentials cred = new UsernamePasswordCredentials("caron", "secret666");
 
     @Parameterized.Parameters(name = "{0}")
     public static List<Object[]> getTestParameters() {
@@ -48,7 +51,8 @@ public class TestAdminDebug {
     @Test
     public void testOpenHtml() {
       String endpoint = TestWithLocalServer.withPath(url);
-      String response = TestWithLocalServer.testWithHttpGet(provider, endpoint, ContentType.html);
+      //String response = TestWithLocalServer.testWithHttpGet(provider, endpoint, ContentType.html);
+      String response = TestWithLocalServer.testWithHttpGet(cred, endpoint, ContentType.html);
       if (show)
         System.out.printf("%s%n", response);
     }

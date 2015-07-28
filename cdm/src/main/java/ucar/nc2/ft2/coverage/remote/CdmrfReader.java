@@ -247,7 +247,6 @@ message CoordAxis {
     int ncoords = (int) proto.getNvalues();
     double[] values = null;
     if (proto.hasValues()) {
-      //
       // LOOK may mess with ability to change var size later.
       ByteBuffer bb = ByteBuffer.wrap(proto.getValues().toByteArray());
       DoubleBuffer db = bb.asDoubleBuffer();
@@ -256,6 +255,10 @@ message CoordAxis {
       for (int i = 0; i < n; i++) values[i] = db.get(i);
     }
 
+    int[] shape = new int[proto.getShapeCount()];
+    for (int i=0; i<proto.getShapeCount(); i++)
+      shape[i] = proto.getShape(i);
+
     if (dependenceType == CoverageCoordAxis.DependenceType.twoD && axisType == AxisType.Time) {
 
       return new FmrcTimeAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
@@ -263,7 +266,7 @@ message CoordAxis {
 
     } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
 
-      return new LatLonAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
+      return new LatLonAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn, shape,
                  spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader);
 
     } else {

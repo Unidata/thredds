@@ -88,7 +88,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
   @Override
   public FmrcTimeAxis2D subset(double minValue, double maxValue) {
-    return this; // LOOK
+    return null; // LOOK
   }
 
   @Override

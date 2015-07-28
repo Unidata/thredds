@@ -37,6 +37,15 @@ public class TestGridCoverageMisc {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
+    // Q:/cdmUnitTest/ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2     Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T03:00:00Z (1) vert=0.000000 (-1)
+
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", "Vertical_velocity_geometric_depth_below_sea", null, null, "2009-11-23T00:00:00Z", null, null});
+
+    // Test Dataset Q:/cdmUnitTest/gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3  Grid TwoD/Total_ozone_entire_atmosphere_single_layer
+    //  Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T00:00:00Z (0) vert=0.000000 (-1)
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "TwoD/Total_ozone_entire_atmosphere_single_layer", "2015-03-01T06:00:00Z", null, "2015-03-01T00:00:00Z", null, null});
+    // Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T03:00:00Z (1) vert=0.000000 (-1)
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "TwoD/Total_ozone_entire_atmosphere_single_layer", "2015-03-01T06:00:00Z", null, "2015-03-01T03:00:00Z", null, null});
     //    Slice runtime=2015-03-01T18:00:00Z (3) ens=0.000000 (-1) time=2015-03-17T18:00:00Z (92) vert=30000.000000 (9)
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "TwoD/Total_ozone_entire_atmosphere_single_layer", "2015-03-01T18:00:00Z", null, "2015-03-17T18:00:00Z", null, null});
     //    Slice runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)

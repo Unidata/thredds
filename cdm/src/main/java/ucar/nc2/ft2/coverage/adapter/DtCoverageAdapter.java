@@ -106,7 +106,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     else if (dtCoordAxis instanceof CoordinateAxis2D) {
       dependenceType = CoverageCoordAxis.DependenceType.twoD;
-      for (Dimension d : dtCoordAxis.getDimensions())
+      for (Dimension d : dtCoordAxis.getDimensions())  // LOOK axes may not exist
         dependsOn.add(d.getFullName());
 
     } else {
@@ -205,8 +205,8 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     // 2D Lat Lon
     if (axisType == AxisType.Lat || axisType == AxisType.Lon) {
 
-      return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
-              ncoords, startValue, endValue, resolution, values, reader);
+      return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, dtCoordAxis.getShape(),
+              spacing, ncoords, startValue, endValue, resolution, values, reader);
     }
 
     throw new IllegalStateException("Dont know what to do with axis " + dtCoordAxis.getFullName());

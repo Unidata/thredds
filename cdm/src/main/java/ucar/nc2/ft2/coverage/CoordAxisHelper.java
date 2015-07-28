@@ -305,7 +305,7 @@ class CoordAxisHelper {
   }
 
   public CoverageCoordAxis subsetClosest(double want) {
-    return subsetValuesClosest( want);
+    return subsetValuesClosest(want);
   }
 
   public CoverageCoordAxis subsetLatest() {
@@ -381,9 +381,11 @@ class CoordAxisHelper {
   private CoverageCoordAxis subsetValuesClosest(double want) {
     double[] subsetValues = null;
 
-    int want_index = findCoordElement(want, Mode.closest);
-    if (want_index < 0)
+    int want_index = findCoordElementBounded(want, Mode.closest);  // LOOK bounded
+    if (want_index < 0) {
       System.out.println("HEY");
+      findCoordElementBounded(want, Mode.closest);
+    }
 
     switch (axis.getSpacing()) {
       case contiguousInterval:

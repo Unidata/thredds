@@ -1856,6 +1856,32 @@ public final class CdmrFeatureProto {
     com.google.protobuf.ByteString
         getDependsOnBytes(int index);
 
+    // repeated uint32 shape = 9;
+    /**
+     * <code>repeated uint32 shape = 9;</code>
+     *
+     * <pre>
+     * the shape of the axis (&gt;1D only)
+     * </pre>
+     */
+    java.util.List<java.lang.Integer> getShapeList();
+    /**
+     * <code>repeated uint32 shape = 9;</code>
+     *
+     * <pre>
+     * the shape of the axis (&gt;1D only)
+     * </pre>
+     */
+    int getShapeCount();
+    /**
+     * <code>repeated uint32 shape = 9;</code>
+     *
+     * <pre>
+     * the shape of the axis (&gt;1D only)
+     * </pre>
+     */
+    int getShape(int index);
+
     // required int64 nvalues = 10;
     /**
      * <code>required int64 nvalues = 10;</code>
@@ -2047,6 +2073,27 @@ public final class CdmrFeatureProto {
               dependsOn_.add(input.readBytes());
               break;
             }
+            case 72: {
+              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+                shape_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000100;
+              }
+              shape_.add(input.readUInt32());
+              break;
+            }
+            case 74: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100) && input.getBytesUntilLimit() > 0) {
+                shape_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000100;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                shape_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
             case 80: {
               bitField0_ |= 0x00000040;
               nvalues_ = input.readInt64();
@@ -2096,6 +2143,9 @@ public final class CdmrFeatureProto {
         }
         if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
           dependsOn_ = new com.google.protobuf.UnmodifiableLazyStringList(dependsOn_);
+        }
+        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+          shape_ = java.util.Collections.unmodifiableList(shape_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -2420,6 +2470,41 @@ public final class CdmrFeatureProto {
       return dependsOn_.getByteString(index);
     }
 
+    // repeated uint32 shape = 9;
+    public static final int SHAPE_FIELD_NUMBER = 9;
+    private java.util.List<java.lang.Integer> shape_;
+    /**
+     * <code>repeated uint32 shape = 9;</code>
+     *
+     * <pre>
+     * the shape of the axis (&gt;1D only)
+     * </pre>
+     */
+    public java.util.List<java.lang.Integer>
+        getShapeList() {
+      return shape_;
+    }
+    /**
+     * <code>repeated uint32 shape = 9;</code>
+     *
+     * <pre>
+     * the shape of the axis (&gt;1D only)
+     * </pre>
+     */
+    public int getShapeCount() {
+      return shape_.size();
+    }
+    /**
+     * <code>repeated uint32 shape = 9;</code>
+     *
+     * <pre>
+     * the shape of the axis (&gt;1D only)
+     * </pre>
+     */
+    public int getShape(int index) {
+      return shape_.get(index);
+    }
+
     // required int64 nvalues = 10;
     public static final int NVALUES_FIELD_NUMBER = 10;
     private long nvalues_;
@@ -2541,6 +2626,7 @@ public final class CdmrFeatureProto {
       description_ = "";
       depend_ = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DependenceType.independent;
       dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      shape_ = java.util.Collections.emptyList();
       nvalues_ = 0L;
       spacing_ = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.regular;
       startValue_ = 0D;
@@ -2626,6 +2712,9 @@ public final class CdmrFeatureProto {
       for (int i = 0; i < dependsOn_.size(); i++) {
         output.writeBytes(8, dependsOn_.getByteString(i));
       }
+      for (int i = 0; i < shape_.size(); i++) {
+        output.writeUInt32(9, shape_.get(i));
+      }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeInt64(10, nvalues_);
       }
@@ -2689,6 +2778,15 @@ public final class CdmrFeatureProto {
         }
         size += dataSize;
         size += 1 * getDependsOnList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < shape_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(shape_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getShapeList().size();
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2851,18 +2949,20 @@ public final class CdmrFeatureProto {
         bitField0_ = (bitField0_ & ~0x00000040);
         dependsOn_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000080);
-        nvalues_ = 0L;
+        shape_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000100);
-        spacing_ = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.regular;
+        nvalues_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000200);
-        startValue_ = 0D;
+        spacing_ = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.regular;
         bitField0_ = (bitField0_ & ~0x00000400);
-        endValue_ = 0D;
+        startValue_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000800);
-        resolution_ = 0D;
+        endValue_ = 0D;
         bitField0_ = (bitField0_ & ~0x00001000);
-        values_ = com.google.protobuf.ByteString.EMPTY;
+        resolution_ = 0D;
         bitField0_ = (bitField0_ & ~0x00002000);
+        values_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00004000);
         return this;
       }
 
@@ -2930,27 +3030,32 @@ public final class CdmrFeatureProto {
           bitField0_ = (bitField0_ & ~0x00000080);
         }
         result.dependsOn_ = dependsOn_;
-        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          shape_ = java.util.Collections.unmodifiableList(shape_);
+          bitField0_ = (bitField0_ & ~0x00000100);
+        }
+        result.shape_ = shape_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000040;
         }
         result.nvalues_ = nvalues_;
-        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
           to_bitField0_ |= 0x00000080;
         }
         result.spacing_ = spacing_;
-        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
           to_bitField0_ |= 0x00000100;
         }
         result.startValue_ = startValue_;
-        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
           to_bitField0_ |= 0x00000200;
         }
         result.endValue_ = endValue_;
-        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
           to_bitField0_ |= 0x00000400;
         }
         result.resolution_ = resolution_;
-        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
           to_bitField0_ |= 0x00000800;
         }
         result.values_ = values_;
@@ -3027,6 +3132,16 @@ public final class CdmrFeatureProto {
           } else {
             ensureDependsOnIsMutable();
             dependsOn_.addAll(other.dependsOn_);
+          }
+          onChanged();
+        }
+        if (!other.shape_.isEmpty()) {
+          if (shape_.isEmpty()) {
+            shape_ = other.shape_;
+            bitField0_ = (bitField0_ & ~0x00000100);
+          } else {
+            ensureShapeIsMutable();
+            shape_.addAll(other.shape_);
           }
           onChanged();
         }
@@ -3912,13 +4027,107 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      // repeated uint32 shape = 9;
+      private java.util.List<java.lang.Integer> shape_ = java.util.Collections.emptyList();
+      private void ensureShapeIsMutable() {
+        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+          shape_ = new java.util.ArrayList<java.lang.Integer>(shape_);
+          bitField0_ |= 0x00000100;
+         }
+      }
+      /**
+       * <code>repeated uint32 shape = 9;</code>
+       *
+       * <pre>
+       * the shape of the axis (&gt;1D only)
+       * </pre>
+       */
+      public java.util.List<java.lang.Integer>
+          getShapeList() {
+        return java.util.Collections.unmodifiableList(shape_);
+      }
+      /**
+       * <code>repeated uint32 shape = 9;</code>
+       *
+       * <pre>
+       * the shape of the axis (&gt;1D only)
+       * </pre>
+       */
+      public int getShapeCount() {
+        return shape_.size();
+      }
+      /**
+       * <code>repeated uint32 shape = 9;</code>
+       *
+       * <pre>
+       * the shape of the axis (&gt;1D only)
+       * </pre>
+       */
+      public int getShape(int index) {
+        return shape_.get(index);
+      }
+      /**
+       * <code>repeated uint32 shape = 9;</code>
+       *
+       * <pre>
+       * the shape of the axis (&gt;1D only)
+       * </pre>
+       */
+      public Builder setShape(
+          int index, int value) {
+        ensureShapeIsMutable();
+        shape_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 shape = 9;</code>
+       *
+       * <pre>
+       * the shape of the axis (&gt;1D only)
+       * </pre>
+       */
+      public Builder addShape(int value) {
+        ensureShapeIsMutable();
+        shape_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 shape = 9;</code>
+       *
+       * <pre>
+       * the shape of the axis (&gt;1D only)
+       * </pre>
+       */
+      public Builder addAllShape(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureShapeIsMutable();
+        super.addAll(values, shape_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 shape = 9;</code>
+       *
+       * <pre>
+       * the shape of the axis (&gt;1D only)
+       * </pre>
+       */
+      public Builder clearShape() {
+        shape_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000100);
+        onChanged();
+        return this;
+      }
+
       // required int64 nvalues = 10;
       private long nvalues_ ;
       /**
        * <code>required int64 nvalues = 10;</code>
        */
       public boolean hasNvalues() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+        return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
        * <code>required int64 nvalues = 10;</code>
@@ -3930,7 +4139,7 @@ public final class CdmrFeatureProto {
        * <code>required int64 nvalues = 10;</code>
        */
       public Builder setNvalues(long value) {
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000200;
         nvalues_ = value;
         onChanged();
         return this;
@@ -3939,7 +4148,7 @@ public final class CdmrFeatureProto {
        * <code>required int64 nvalues = 10;</code>
        */
       public Builder clearNvalues() {
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000200);
         nvalues_ = 0L;
         onChanged();
         return this;
@@ -3951,7 +4160,7 @@ public final class CdmrFeatureProto {
        * <code>required .AxisSpacing spacing = 11;</code>
        */
       public boolean hasSpacing() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
        * <code>required .AxisSpacing spacing = 11;</code>
@@ -3966,7 +4175,7 @@ public final class CdmrFeatureProto {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000400;
         spacing_ = value;
         onChanged();
         return this;
@@ -3975,7 +4184,7 @@ public final class CdmrFeatureProto {
        * <code>required .AxisSpacing spacing = 11;</code>
        */
       public Builder clearSpacing() {
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         spacing_ = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.regular;
         onChanged();
         return this;
@@ -3987,7 +4196,7 @@ public final class CdmrFeatureProto {
        * <code>required double startValue = 12;</code>
        */
       public boolean hasStartValue() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
+        return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       /**
        * <code>required double startValue = 12;</code>
@@ -3999,7 +4208,7 @@ public final class CdmrFeatureProto {
        * <code>required double startValue = 12;</code>
        */
       public Builder setStartValue(double value) {
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00000800;
         startValue_ = value;
         onChanged();
         return this;
@@ -4008,7 +4217,7 @@ public final class CdmrFeatureProto {
        * <code>required double startValue = 12;</code>
        */
       public Builder clearStartValue() {
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000800);
         startValue_ = 0D;
         onChanged();
         return this;
@@ -4020,7 +4229,7 @@ public final class CdmrFeatureProto {
        * <code>required double endValue = 13;</code>
        */
       public boolean hasEndValue() {
-        return ((bitField0_ & 0x00000800) == 0x00000800);
+        return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
        * <code>required double endValue = 13;</code>
@@ -4032,7 +4241,7 @@ public final class CdmrFeatureProto {
        * <code>required double endValue = 13;</code>
        */
       public Builder setEndValue(double value) {
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         endValue_ = value;
         onChanged();
         return this;
@@ -4041,7 +4250,7 @@ public final class CdmrFeatureProto {
        * <code>required double endValue = 13;</code>
        */
       public Builder clearEndValue() {
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00001000);
         endValue_ = 0D;
         onChanged();
         return this;
@@ -4057,7 +4266,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public boolean hasResolution() {
-        return ((bitField0_ & 0x00001000) == 0x00001000);
+        return ((bitField0_ & 0x00002000) == 0x00002000);
       }
       /**
        * <code>optional double resolution = 14;</code>
@@ -4077,7 +4286,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public Builder setResolution(double value) {
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         resolution_ = value;
         onChanged();
         return this;
@@ -4090,7 +4299,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public Builder clearResolution() {
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00002000);
         resolution_ = 0D;
         onChanged();
         return this;
@@ -4106,7 +4315,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public boolean hasValues() {
-        return ((bitField0_ & 0x00002000) == 0x00002000);
+        return ((bitField0_ & 0x00004000) == 0x00004000);
       }
       /**
        * <code>optional bytes values = 15;</code>
@@ -4129,7 +4338,7 @@ public final class CdmrFeatureProto {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00002000;
+  bitField0_ |= 0x00004000;
         values_ = value;
         onChanged();
         return this;
@@ -4142,7 +4351,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public Builder clearValues() {
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00004000);
         values_ = getDefaultInstance().getValues();
         onChanged();
         return this;
@@ -14775,59 +14984,59 @@ public final class CdmrFeatureProto {
       "\n.ucar/nc2/ft2/coverage/remote/cdmrfeatu" +
       "re.proto\032\036ucar/nc2/stream/ncStream.proto" +
       "\"K\n\016CoordTransform\022\017\n\007isHoriz\030\001 \002(\010\022\014\n\004n" +
-      "ame\030\002 \002(\t\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\277\002" +
+      "ame\030\002 \002(\t\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\316\002" +
       "\n\tCoordAxis\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 " +
       "\002(\0162\t.DataType\022\030\n\004atts\030\003 \003(\0132\n.Attribute" +
       "\022\033\n\010axisType\030\004 \002(\0162\t.AxisType\022\r\n\005units\030\005" +
       " \002(\t\022\023\n\013description\030\006 \001(\t\022\037\n\006depend\030\007 \002(" +
-      "\0162\017.DependenceType\022\021\n\tdependsOn\030\010 \003(\t\022\017\n" +
-      "\007nvalues\030\n \002(\003\022\035\n\007spacing\030\013 \002(\0162\014.AxisSp",
-      "acing\022\022\n\nstartValue\030\014 \002(\001\022\020\n\010endValue\030\r " +
-      "\002(\001\022\022\n\nresolution\030\016 \001(\001\022\016\n\006values\030\017 \001(\014\"" +
-      "h\n\010CoordSys\022\014\n\004name\030\001 \002(\t\022\021\n\taxisNames\030\002" +
-      " \003(\t\022\026\n\016transformNames\030\003 \003(\t\022#\n\014coverage" +
-      "Type\030\005 \001(\0162\r.CoverageType\"\205\001\n\010Coverage\022\014" +
-      "\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.DataTyp" +
-      "e\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\020\n\010coordSys\030" +
-      "\005 \002(\t\022\r\n\005units\030\006 \001(\t\022\023\n\013description\030\007 \001(" +
-      "\t\"L\n\021CalendarDateRange\022\r\n\005start\030\001 \002(\003\022\013\n" +
-      "\003end\030\002 \002(\003\022\033\n\010calendar\030\003 \002(\0162\t.Calendar\"",
-      "G\n\tRectangle\022\016\n\006startx\030\001 \002(\001\022\016\n\006starty\030\002" +
-      " \002(\001\022\014\n\004incx\030\003 \002(\001\022\014\n\004incy\030\004 \002(\001\"\303\002\n\017Cov" +
-      "erageDataset\022\014\n\004name\030\001 \002(\t\022\030\n\004atts\030\002 \003(\013" +
-      "2\n.Attribute\022\036\n\nlatlonRect\030\003 \002(\0132\n.Recta" +
-      "ngle\022\034\n\010projRect\030\004 \001(\0132\n.Rectangle\022%\n\tda" +
-      "teRange\030\005 \002(\0132\022.CalendarDateRange\022\033\n\010coo" +
-      "rdSys\030\006 \003(\0132\t.CoordSys\022(\n\017coordTransform" +
-      "s\030\007 \003(\0132\017.CoordTransform\022\035\n\tcoordAxes\030\010 " +
-      "\003(\0132\n.CoordAxis\022\030\n\005grids\030\t \003(\0132\t.Coverag" +
-      "e\022#\n\014coverageType\030\n \001(\0162\r.CoverageType\"\345",
-      "\001\n\022GeoReferencedArray\022\024\n\014coverageName\030\001 " +
-      "\002(\t\022\033\n\010dataType\030\002 \002(\0162\t.DataType\022\024\n\006bige" +
-      "nd\030\003 \001(\010:\004true\022\022\n\007version\030\004 \001(\r:\0010\022!\n\010co" +
-      "mpress\030\005 \001(\0162\t.Compress:\004NONE\022\030\n\020uncompr" +
-      "essedSize\030\006 \001(\004\022\r\n\005shape\030\007 \003(\r\022\020\n\010axisNa" +
-      "me\030\010 \003(\t\022\024\n\014coordSysName\030\t \002(\t\"\233\001\n\014DataR" +
-      "esponse\022\035\n\tcoordAxes\030\001 \003(\0132\n.CoordAxis\022\033" +
-      "\n\010coordSys\030\002 \003(\0132\t.CoordSys\022(\n\017coordTran" +
-      "sforms\030\003 \003(\0132\017.CoordTransform\022%\n\010geoArra" +
-      "y\030\004 \003(\0132\023.GeoReferencedArray*\323\001\n\010AxisTyp",
-      "e\022\013\n\007RunTime\020\001\022\014\n\010Ensemble\020\002\022\010\n\004Time\020\003\022\010" +
-      "\n\004GeoX\020\004\022\010\n\004GeoY\020\005\022\010\n\004GeoZ\020\006\022\007\n\003Lat\020\007\022\007\n" +
-      "\003Lon\020\010\022\n\n\006Height\020\t\022\014\n\010Pressure\020\n\022\021\n\rRadi" +
-      "alAzimuth\020\013\022\022\n\016RadialDistance\020\014\022\023\n\017Radia" +
-      "lElevation\020\r\022\014\n\010Spectral\020\016\022\016\n\nTimeOffset" +
-      "\020\017*a\n\013AxisSpacing\022\013\n\007regular\020\001\022\022\n\016irregu" +
-      "larPoint\020\002\022\026\n\022contiguousInterval\020\003\022\031\n\025di" +
-      "scontiguousInterval\020\004*K\n\014CoverageType\022\013\n" +
-      "\007General\020\001\022\017\n\013Curvilinear\020\002\022\010\n\004Grid\020\003\022\t\n" +
-      "\005Swath\020\004\022\010\n\004Fmrc\020\005*F\n\016DependenceType\022\017\n\013",
-      "independent\020\001\022\r\n\tdependent\020\002\022\n\n\006scalar\020\003" +
-      "\022\010\n\004twoD\020\004*t\n\010Calendar\022\r\n\tgregorian\020\001\022\027\n" +
-      "\023proleptic_gregorian\020\002\022\n\n\006noleap\020\003\022\014\n\010al" +
-      "l_leap\020\004\022\020\n\014uniform30day\020\005\022\n\n\006julian\020\006\022\010" +
-      "\n\004none\020\007B0\n\034ucar.nc2.ft2.coverage.remote" +
-      "B\020CdmrFeatureProto"
+      "\0162\017.DependenceType\022\021\n\tdependsOn\030\010 \003(\t\022\r\n" +
+      "\005shape\030\t \003(\r\022\017\n\007nvalues\030\n \002(\003\022\035\n\007spacing",
+      "\030\013 \002(\0162\014.AxisSpacing\022\022\n\nstartValue\030\014 \002(\001" +
+      "\022\020\n\010endValue\030\r \002(\001\022\022\n\nresolution\030\016 \001(\001\022\016" +
+      "\n\006values\030\017 \001(\014\"h\n\010CoordSys\022\014\n\004name\030\001 \002(\t" +
+      "\022\021\n\taxisNames\030\002 \003(\t\022\026\n\016transformNames\030\003 " +
+      "\003(\t\022#\n\014coverageType\030\005 \001(\0162\r.CoverageType" +
+      "\"\205\001\n\010Coverage\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030" +
+      "\002 \002(\0162\t.DataType\022\030\n\004atts\030\004 \003(\0132\n.Attribu" +
+      "te\022\020\n\010coordSys\030\005 \002(\t\022\r\n\005units\030\006 \001(\t\022\023\n\013d" +
+      "escription\030\007 \001(\t\"L\n\021CalendarDateRange\022\r\n" +
+      "\005start\030\001 \002(\003\022\013\n\003end\030\002 \002(\003\022\033\n\010calendar\030\003 ",
+      "\002(\0162\t.Calendar\"G\n\tRectangle\022\016\n\006startx\030\001 " +
+      "\002(\001\022\016\n\006starty\030\002 \002(\001\022\014\n\004incx\030\003 \002(\001\022\014\n\004inc" +
+      "y\030\004 \002(\001\"\303\002\n\017CoverageDataset\022\014\n\004name\030\001 \002(" +
+      "\t\022\030\n\004atts\030\002 \003(\0132\n.Attribute\022\036\n\nlatlonRec" +
+      "t\030\003 \002(\0132\n.Rectangle\022\034\n\010projRect\030\004 \001(\0132\n." +
+      "Rectangle\022%\n\tdateRange\030\005 \002(\0132\022.CalendarD" +
+      "ateRange\022\033\n\010coordSys\030\006 \003(\0132\t.CoordSys\022(\n" +
+      "\017coordTransforms\030\007 \003(\0132\017.CoordTransform\022" +
+      "\035\n\tcoordAxes\030\010 \003(\0132\n.CoordAxis\022\030\n\005grids\030" +
+      "\t \003(\0132\t.Coverage\022#\n\014coverageType\030\n \001(\0162\r",
+      ".CoverageType\"\345\001\n\022GeoReferencedArray\022\024\n\014" +
+      "coverageName\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.D" +
+      "ataType\022\024\n\006bigend\030\003 \001(\010:\004true\022\022\n\007version" +
+      "\030\004 \001(\r:\0010\022!\n\010compress\030\005 \001(\0162\t.Compress:\004" +
+      "NONE\022\030\n\020uncompressedSize\030\006 \001(\004\022\r\n\005shape\030" +
+      "\007 \003(\r\022\020\n\010axisName\030\010 \003(\t\022\024\n\014coordSysName\030" +
+      "\t \002(\t\"\233\001\n\014DataResponse\022\035\n\tcoordAxes\030\001 \003(" +
+      "\0132\n.CoordAxis\022\033\n\010coordSys\030\002 \003(\0132\t.CoordS" +
+      "ys\022(\n\017coordTransforms\030\003 \003(\0132\017.CoordTrans" +
+      "form\022%\n\010geoArray\030\004 \003(\0132\023.GeoReferencedAr",
+      "ray*\323\001\n\010AxisType\022\013\n\007RunTime\020\001\022\014\n\010Ensembl" +
+      "e\020\002\022\010\n\004Time\020\003\022\010\n\004GeoX\020\004\022\010\n\004GeoY\020\005\022\010\n\004Geo" +
+      "Z\020\006\022\007\n\003Lat\020\007\022\007\n\003Lon\020\010\022\n\n\006Height\020\t\022\014\n\010Pre" +
+      "ssure\020\n\022\021\n\rRadialAzimuth\020\013\022\022\n\016RadialDist" +
+      "ance\020\014\022\023\n\017RadialElevation\020\r\022\014\n\010Spectral\020" +
+      "\016\022\016\n\nTimeOffset\020\017*a\n\013AxisSpacing\022\013\n\007regu" +
+      "lar\020\001\022\022\n\016irregularPoint\020\002\022\026\n\022contiguousI" +
+      "nterval\020\003\022\031\n\025discontiguousInterval\020\004*K\n\014" +
+      "CoverageType\022\013\n\007General\020\001\022\017\n\013Curvilinear" +
+      "\020\002\022\010\n\004Grid\020\003\022\t\n\005Swath\020\004\022\010\n\004Fmrc\020\005*F\n\016Dep",
+      "endenceType\022\017\n\013independent\020\001\022\r\n\tdependen" +
+      "t\020\002\022\n\n\006scalar\020\003\022\010\n\004twoD\020\004*t\n\010Calendar\022\r\n" +
+      "\tgregorian\020\001\022\027\n\023proleptic_gregorian\020\002\022\n\n" +
+      "\006noleap\020\003\022\014\n\010all_leap\020\004\022\020\n\014uniform30day\020" +
+      "\005\022\n\n\006julian\020\006\022\010\n\004none\020\007B0\n\034ucar.nc2.ft2." +
+      "coverage.remoteB\020CdmrFeatureProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14845,7 +15054,7 @@ public final class CdmrFeatureProto {
           internal_static_CoordAxis_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_CoordAxis_descriptor,
-              new java.lang.String[] { "Name", "DataType", "Atts", "AxisType", "Units", "Description", "Depend", "DependsOn", "Nvalues", "Spacing", "StartValue", "EndValue", "Resolution", "Values", });
+              new java.lang.String[] { "Name", "DataType", "Atts", "AxisType", "Units", "Description", "Depend", "DependsOn", "Shape", "Nvalues", "Spacing", "StartValue", "EndValue", "Resolution", "Values", });
           internal_static_CoordSys_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_CoordSys_fieldAccessorTable = new

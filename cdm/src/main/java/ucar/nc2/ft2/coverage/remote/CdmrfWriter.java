@@ -219,6 +219,12 @@ public class CdmrfWriter {
     for (String s : axis.getDependsOnList())
       builder.addDependsOn(s);
 
+    if (axis instanceof LatLonAxis2D) {
+      LatLonAxis2D latlon2D = (LatLonAxis2D) axis;
+      for (int shape : latlon2D.getShape())
+       builder.addShape(shape);
+    }
+
     for (Attribute att : axis.getAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
 

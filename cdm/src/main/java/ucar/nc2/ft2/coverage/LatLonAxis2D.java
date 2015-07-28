@@ -15,30 +15,37 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * LatLon axes : lat(y,x), lon(y,x)
  *
  * @author caron
  * @since 7/15/2015
  */
 public class LatLonAxis2D extends CoverageCoordAxis {
   private int[] shape;
+  private CoverageCoordAxis[] dependentAxes;
 
   public LatLonAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes, DependenceType dependenceType,
-                      List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution, double[] values,
+                      List<String> dependsOn, int[] shape, Spacing spacing, int ncoords, double startValue, double endValue, double resolution, double[] values,
                       CoordAxisReader reader) {
     super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
+    this.shape = shape;
   }
 
   @Override
   protected void setDataset(CoordSysContainer dataset) {
-    if (shape != null)
+    if (dependentAxes != null)
       throw new RuntimeException("Cant change axis once set");
-    shape = new int[2];
+    dependentAxes = new CoverageCoordAxis[2];
     int count = 0;
     for (String axisName : dependsOn) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-      shape[count++] = axis.getNcoords();
+      if (axis != null)
+        dependentAxes[count++] = axis;
     }
+  }
+
+  public int[] getShape() {
+    return shape;
   }
 
   @Override
@@ -49,14 +56,14 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   @Override
   public LatLonAxis2D copy() {
-    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType,
-                          dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
+    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, shape,
+            spacing, ncoords, startValue, endValue, resolution, values, reader);
   }
 
   @Override
   public LatLonAxis2D subset(SubsetParams params) {  // LOOK wrong
-    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType,
-                          dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
+    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, shape,
+            spacing, ncoords, startValue, endValue, resolution, values, reader);
   }
 
   @Override

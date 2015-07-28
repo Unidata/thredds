@@ -59,6 +59,7 @@ message CoordAxis {
 
   required DependenceType depend = 7;
   repeated string dependsOn = 8;    // depends on these axes, only for non-independent axes
+  repeated uint32 shape = 9;        // the shape of the axis (>1D only)
 
   required int64 nvalues = 10;
   required AxisSpacing spacing = 11;
