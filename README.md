@@ -29,6 +29,8 @@ are available from Unidata's Maven repositories
 * https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/
 * https://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots/
 
+To build the software yourself, follow [this tutorial](docs/website/netcdf-java/tutorial/SourceCodeBuild.adoc).
+
 Copyright and licensing information can be found here
 
 * http://www.unidata.ucar.edu/software/netcdf/copyright.html

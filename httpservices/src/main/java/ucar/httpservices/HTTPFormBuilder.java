@@ -37,18 +37,23 @@ import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.*;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.*;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.apache.http.entity.ContentType.*;
+import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 /**
  * Class HTTPFormBuilder provides a mechanism for
@@ -65,10 +70,7 @@ public class HTTPFormBuilder
     //////////////////////////////////////////////////
     // Constants
 
-    public static final Charset UTF8 = Charset.forName("UTF-8");
-    public static final Charset ASCII = Charset.forName("US-ASCII");
-
-    public static final Charset DFALTCHARSET = UTF8;
+    public static final Charset DFALTCHARSET = HTTPUtil.UTF8;
 
 
     //////////////////////////////////////////////////
@@ -78,7 +80,7 @@ public class HTTPFormBuilder
     {
         TEXT, BYTES, STREAM, FILE;
 
-        static public ContentType mimetype(Sort sort)
+        static public ContentType contenttype(Sort sort)
         {
             switch (sort) {
             case TEXT:
@@ -89,6 +91,11 @@ public class HTTPFormBuilder
             default:
                 return APPLICATION_OCTET_STREAM;
             }
+        }
+
+        static public String mimetype(Sort sort)
+        {
+            return contenttype(sort).getMimeType();
         }
     }
 
@@ -137,11 +144,15 @@ public class HTTPFormBuilder
         this.charset = Charset.forName(charset);
     }
 
+    public void setCharset(Charset charset)
+    {
+        this.charset = charset;
+    }
     //////////////////////////////////////////////////
     // Field construction
 
     public void add(String fieldname, String text)
-        throws HTTPException
+            throws HTTPException
     {
         if(fieldname == null || text == null || fieldname.length() == 0)
             throw new IllegalArgumentException();
@@ -149,8 +160,8 @@ public class HTTPFormBuilder
         parts.put(fieldname, f);
     }
 
-    public void add(String fieldname,  byte[] content, String filename)
-        throws HTTPException
+    public void add(String fieldname, byte[] content, String filename)
+            throws HTTPException
     {
         if(isempty(fieldname))
             throw new IllegalArgumentException();
@@ -163,7 +174,7 @@ public class HTTPFormBuilder
     }
 
     public void add(String fieldname, final InputStream content, String filename)
-        throws HTTPException
+            throws HTTPException
     {
         if(isempty(fieldname) || content == null || isempty(filename))
             throw new IllegalArgumentException();
@@ -173,7 +184,7 @@ public class HTTPFormBuilder
     }
 
     public void add(String fieldname, File content)
-        throws HTTPException
+            throws HTTPException
     {
         if(isempty(fieldname) || content == null)
             throw new IllegalArgumentException();
@@ -183,7 +194,7 @@ public class HTTPFormBuilder
     }
 
     public HttpEntity build()
-        throws HTTPException
+            throws HTTPException
     {
         if(this.usemultipart)
             return buildmultipart();
@@ -192,6 +203,7 @@ public class HTTPFormBuilder
     }
 
     protected HttpEntity buildsimple()
+            throws HTTPException
     {
         List<NameValuePair> params = new ArrayList<>();
         for(Map.Entry<String, Field> mapentry : parts.entrySet()) {
@@ -206,6 +218,7 @@ public class HTTPFormBuilder
     }
 
     protected HttpEntity buildmultipart()
+            throws HTTPException
     {
         MultipartEntityBuilder mpb = MultipartEntityBuilder.create();
         mpb.setCharset(this.charset);
@@ -213,21 +226,37 @@ public class HTTPFormBuilder
         for(Map.Entry<String, Field> mapentry : parts.entrySet()) {
             Field field = mapentry.getValue();
             Sort sort = field.sort;
-            ContentType mimetype = Sort.mimetype(sort);
+            ContentType ct = Sort.contenttype(sort);
+            ContentBody body = null;
             switch (sort) {
             case TEXT:
-                mpb.addTextBody(field.fieldname, field.value.toString(), mimetype);
+                try {
+                    body = new StringBody(field.value.toString());
+                } catch (UnsupportedEncodingException e) {
+                    assert false;
+                }
                 break;
             case BYTES:
-                mpb.addBinaryBody(field.fieldname, (byte[]) field.value, mimetype, field.name);
+                body = new ByteArrayBody((byte[]) field.value, field.name);
                 break;
             case STREAM:
-                mpb.addBinaryBody(field.fieldname, (InputStream) field.value, mimetype, field.name);
+                // There appears to be a bug that make direct use of inputstream
+                // fail with a 411 http code.
+                // Temporary workaround is to read the input stream
+                // as a set of bytes
+                try {
+                    byte[] tmp = HTTPUtil.readbinaryfile((InputStream) field.value);
+                    body = new ByteArrayBody(tmp, field.name);
+                } catch (IOException ioe) {
+                    throw new HTTPException(ioe);
+                }
                 break;
             case FILE:
-                mpb.addBinaryBody(field.fieldname, (File) field.value, mimetype, field.name);
+                body = new FileBody((File) field.value, field.name,
+                        Sort.mimetype(sort), "US-ASCII");
                 break;
             }
+            mpb.addPart(field.fieldname, body);
         }
         return mpb.build();
     }

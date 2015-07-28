@@ -39,6 +39,8 @@ import thredds.client.catalog.tools.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import thredds.ui.catalog.ThreddsUI;
+import ucar.httpservices.HTTPAuthSchemes;
+import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -6522,7 +6524,11 @@ public class ToolsUI extends JPanel {
       }
 
       UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
-      HTTPSession.setGlobalCredentialsProvider(provider);
+      try {
+        HTTPSession.setGlobalCredentialsProvider(provider,HTTPAuthSchemes.BASIC);
+      }catch (HTTPException e) {
+        log.error("Failed to set global credentials");
+      }
       HTTPSession.setGlobalUserAgent("ToolsUI v4.6");
 
       // set Authentication for accessing passsword protected services like TDS PUT

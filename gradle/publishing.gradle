@@ -66,9 +66,11 @@ publishing {
 }
 
 gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+    // This won't find any publishToMavenLocal tasks. Those are of type PublishToMavenLocal
     Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll { it instanceof PublishToMavenRepository }
+
     if (!mavenPublishTasks) {
-        return  // We're not running any tasks that publish to a Maven repo.
+        return  // We're not running any tasks that publish to a (remote) Maven repo.
     }
 
     Closure nexusCredentials = {

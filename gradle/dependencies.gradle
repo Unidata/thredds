@@ -129,11 +129,11 @@ libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
 
 libraries["guava"] = "com.google.guava:guava:18.0"
 
-libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.3.6"
+libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.4.1"
 
-libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.3.3"
+libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.1"
 
-libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.3.3"
+libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.4.1"
 
 libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"
 

@@ -111,7 +111,7 @@ public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactor
         String trustpassword = null;
         HTTPSSLProvider provider = null;
         if(params == null) return null;
-        Object o = params.getParameter(HTTPAuthPolicy.PROVIDER);
+        Object o = params.getParameter(HTTPAuthSchemes.PROVIDER);
         if(o == null) return null;
         if(!(o instanceof HTTPSSLProvider))
             throw new HTTPException("CustomSSLProtocolSocketFactory: provide is not SSL provider");

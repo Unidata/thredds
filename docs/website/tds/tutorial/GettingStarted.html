@@ -4,6 +4,15 @@
   <title>Getting Started With the TDS: Local Test Server Setup</title>
   <link rel="stylesheet" href="tutorial2.css" type="text/css"/>
   <script type="text/javascript" src="workshopNav.js"></script>
+  <script type="text/javascript">
+   <!--
+    $(document).ready(function () {
+      setTutorialNav();
+    });
+   -->
+  </script>
+
+
 </head>
 <body>
 <h1>Getting Started With the TDS: Local Test Server Setup</h1>
@@ -14,7 +23,7 @@
   <p>This section covers basic installation and configuration of Tomcat, Java JDK and the TDS for a local test server:</p>
 
   <p>
-    <a href="images/gettingStartedContext.png" target="_blank" style="float:right;"><img src="images/gettingStartedContext.png" width="300" alt="Getting Started Context"/></a>
+    <img src="images/gettingStartedContext.png" width="350" alt="Getting Started Context" style="float:right;"/>
   </p>
 
 
@@ -46,34 +55,34 @@
   </div>
 
   <ul>
-    <li>Sun Java 7 (latest version)</li>
-    <li>Apache Tomcat 7.x</li>
+    <li>Oracle Java 8 (latest version)</li>
+    <li>Apache Tomcat 8.x</li>
   </ul>
-  <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <em>Sun Java</em> and
+  <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <em>Oracle Java</em> and
     the <em>Apache Tomcat</em> servlet container.</p>
 
 
   <h3>Installing Java</h3>
   <ol>
-    <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun. Use the latest 1.7 version
+    <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Oracle. Use the latest 1.8 version
       of the JDK.
     </li>
-    <p>At the time of this workshop, that is version <em>Java SE 7u25</em>. We will be using the Linux x64-bit tar.gz file:</p>
+    <p>At the time of this workshop, that is version <em>Java SE 8u51</em>. We will be using the Linux x64-bit tar.gz file:</p>
 
-    <p><code>jdk-7u25-linux-x64.tar.gz</code></p>
-    <li>Install the JDK as per the Sun <a href="http://docs.oracle.com/javase/7/docs/webnotes/install/">installation instructions</a>.</li>
+    <p><code>jdk-8u51-linux-x64.tar.gz</code></p>
+    <li>Install the JDK as per the Oracle <a href="http://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html">installation instructions</a>.</li>
     <p>Copy the binary tar.gz file into the installation directory (<code>/usr/local/tds/</code> in this example):</p>
 
 <pre>
 <strong>$</strong> pwd
 /usr/local/tds
-<strong>$</strong> cp Downloads/jdk-7u25-linux-x64.tar.gz .
+<strong>$</strong> cp Downloads/jdk-8u51-linux-x64.tar.gz .
 
 <strong>$</strong> ls -l
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
 drwxr-xr-x  2 tds workshop     4096 Jul 22 17:29 Downloads
-<strong>-rw-r--r-- 1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz</strong>
+<strong>-rw-r--r-- 1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz</strong>
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
@@ -86,7 +95,7 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
     <p>Unpack the archive file:</p>
 
 <pre>
-<strong>$</strong> tar zxvf jdk-7u25-linux-x64.tar.gz
+<strong>$</strong> tar zxvf jdk-8u51-linux-x64.tar.gz
 </pre>
 
     <p>This will extract the JDK in the installation directory:</p>
@@ -96,8 +105,8 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
 drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
-<strong>drwxr-xr-x 8 tds workshop 4096 Jun 5 22:07 jdk1.7.0_25</strong>
--rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+<strong>drwxr-xr-x 8 tds workshop 4096 Jun 5 22:07 jdk1.8u51</strong>
+-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
@@ -110,7 +119,7 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
     <div id="expanded" class="troubleshooting">
       <h4>Troubleshooting</h4>
 
-      <p>Depending on your OS you may need install either the 32-bit or 64-bit version of the JDK.</p>
+      <p>Depending on your OS you may need install either the 32-bit or 64-bit version of the JDK. <i>But</i>, we really, really, really recommend you use a 64-bit OS if you're planning to run the THREDDS Data Server.</p>
     </div>
   </ol>
 
@@ -120,15 +129,15 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
   <div id="note" class="info">
     <h4>Tomcat on Windows</h4>
 
-    <p>For more information about installing Tomcat on Windows OS, see the <a href="http://tomcat.apache.org/tomcat-7.0-doc/setup.html#Windows">Tomcat setup
+    <p>For more information about installing Tomcat on Windows OS, see the <a href="http://tomcat.apache.org/tomcat-8.0-doc/setup.html#Windows">Tomcat setup
       guide</a> for installation on different platforms.</p>
   </div>
   <ol>
-    <li><a href="http://tomcat.apache.org/download-70.cgi">Download</a> current version of the Tomcat 7 servlet container.</li>
-    <p>At the time of this workshop, that is version <em>7.0.42</em>. We will be using the binary tar.gz file:</p>
+    <li><a href="http://tomcat.apache.org/download-80.cgi">Download</a> current version of the Tomcat 8 servlet container.</li>
+    <p>At the time of this workshop, that is version <em>8.0.24</em>. We will be using the binary tar.gz file:</p>
 
-    <p><code>apache-tomcat-7.0.42.tar.gz</code></p>
-    <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-7.0-doc/setup.html">installation instructions</a>.</li>
+    <p><code>apache-tomcat-8.0.24.tar.gz</code></p>
+    <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-8.0-doc/setup.html">installation instructions</a>.</li>
     <p>Copy the binary tar.gz file into the installation directory (<code>/usr/local/tds/</code> in this example):</p>
 
 <pre>
@@ -136,12 +145,12 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
 /usr/local/tds
 
 <strong>$</strong> ls -l
-<strong>-rw-r--r-- 1 tds workshop 7955948 Jul 15 09:35 apache-tomcat-7.0.42.tar.gz</strong>
+<strong>-rw-r--r-- 1 tds workshop 7955948 Jul 15 09:35 apache-tomcat-8.0.24.tar.gz</strong>
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
 drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
-drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25
--rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.8u51
+-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
@@ -154,20 +163,20 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
     <p>Unpack the archive file:</p>
 
 <pre>
-<strong>$</strong> tar xvzf apache-tomcat-7.0.42.tar.gz
+<strong>$</strong> tar xvzf apache-tomcat-8.0.24.tar.gz
 </pre>
 
     <p>This will create a Tomcat directory:</p>
 
 <pre>
 <strong>$</strong> ls -l
-<strong>drwxr-xr-x 9 tds workshop 4096 Jul 15 09:37 apache-tomcat-7.0.42</strong>
--rw-r--r-- 1 tds workshop  7955948 Jul 15 09:35 apache-tomcat-7.0.42.tar.gz
+<strong>drwxr-xr-x 9 tds workshop 4096 Jul 15 09:37 apache-tomcat-8.0.24</strong>
+-rw-r--r-- 1 tds workshop  7955948 Jul 15 09:35 apache-tomcat-8.0.24.tar.gz
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
 drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
-drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.7.0_25
--rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-7u25-linux-x64.tar.gz
+drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.8u51
+-rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
 drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
@@ -191,7 +200,7 @@ drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
     <li>Examine the Tomcat directory structure, aka <code>${tomcat_home}</code>.</li>
     <p>Move into <code>${tomcat_home}</code> and do a long listing:</p>
 <pre>
-<strong>$</strong> cd apache-tomcat-7.0.42
+<strong>$</strong> cd apache-tomcat-8.0.24
 <strong>$</strong> ls -l
 drwxr-xr-x 2 tds workshop  4096 Jul 15 09:37 bin
 drwxr-xr-x 2 tds workshop  4096 Jul  2 01:59 conf
@@ -253,7 +262,7 @@ drwxr-xr-x 2 tds workshop  4096 Jul  2 01:57 work
     <p>Run the <code>startup.sh</code> script in the Tomcat <code>bin/</code> directory:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42
+/usr/local/tds/apache-tomcat-8.0.24
 
 <strong>$</strong> bin/startup.sh
 </pre>
@@ -263,13 +272,13 @@ drwxr-xr-x 2 tds workshop  4096 Jul  2 01:57 work
 
 <pre>
 <strong>$</strong> ps -ef | grep tomcat
-tds      21912     1 29 09:39 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-7.0.42/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-7.0.42/endorsed -classpath /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-7.0.42 -Dcatalina.home=/usr/local/tds/apache-tomcat-7.0.42 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-7.0.42/temp org.apache.catalina.startup.Bootstrap start
+tds      21912     1 29 09:39 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-8.0.24/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-8.0.24/endorsed -classpath /usr/local/tds/apache-tomcat-8.0.24/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-8.0.24/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-8.0.24 -Dcatalina.home=/usr/local/tds/apache-tomcat-8.0.24 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-8.0.24/temp org.apache.catalina.startup.Bootstrap start
 tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
 </pre>
 
     <p>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</p>
 
-    <p><a href="images/congratulations.png" target="_blank"><img src="images/congratulations.png" width="300" alt="Tomcat Default Home Page"/></a></p>
+    <p><img src="images/congratulations.png" width="300" alt="Tomcat Default Home Page"/></p>
 
     <li>See if you can shutdown Tomcat.</li>
     <p>Run the <code>shutdown.sh</code> script in the Tomcat <code>bin/</code> directory:</p>
@@ -292,7 +301,7 @@ tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
   </div>
 
 
-  <h3>Setting <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_BASE</code></h3>
+  <h3>Setting <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code>, <code>$CATALINA_BASE</code>, and <code>$CONTENT_ROOT</code></h3>
 
   <div id="note" class="info">
     <h4>Tomcat on Windows</h4>
@@ -314,7 +323,7 @@ tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
 
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42
+/usr/local/tds/apache-tomcat-8.0.24
 
 <strong>$</strong> cd bin
 <strong>$</strong> vi setenv.sh
@@ -324,21 +333,44 @@ tds      21933 21675  0 09:39 pts/1    00:00:00 grep tomcat
 <pre>
 #!/bin/sh
 #
-# ENVARS for Tomcat and TDS environment
+# ENVARS for Tomcat
 #
-JAVA_HOME="/usr/local/tds/jdk1.7.0_25"
-export JAVA_HOME
+export CATALINA_HOME="/usr/local/tomcat"
 
-JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs"
+export CATALINA_BASE="/usr/local/tomcat"
+
+export JAVA_HOME="/usr"
+
+# TDS specific ENVARS
+#
+# Define where the TDS content directory will live
+#   THIS IS CRITICAL and there is NO DEFAULT - the
+#   TDS will not start without this.
+#
+CONTENT_ROOT=-Dtds.content.root.path=/usr/local/tomcat/content
+
+# set java prefs related variables (used by the wms service, for example)
+JAVA_PREFS_ROOTS="-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs \
+                  -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs"
+
+#
+# Some commonly used JAVA_OPTS settings:
+#
+NORMAL="-d64 -Xmx4096m -Xms512m -server -ea"
+HEAP_DUMP="-XX:+HeapDumpOnOutOfMemoryError"
+HEADLESS="-Djava.awt.headless=true"
+
+#
+# Standard setup.
+#
+JAVA_OPTS="$CONTENT_ROOT $NORMAL $MAX_PERM_GEN $HEAP_DUMP $HEADLESS $JAVA_PREFS_ROOTS"
+
 export JAVA_OPTS
-
-CATALINA_BASE="/usr/local/tds/apache-tomcat-7.0.42"
-export CATALINA_BASE
 </pre>
     <div id="note" class="info">
       <h4>Settings </h4>
 
-      <p>Whenever possible, Unidata recommends <code>-Xmx1500m</code> for 32-bit systems, and<code>-Xmx4096m</code> (or more) for 64-bit systems.</p>
+      <p>Whenever possible, Unidata recommends <code>-Xmx4096m</code> (or more) for 64-bit systems.</p>
     </div>
 
     <p>The parameters we pass to <code>$JAVA_OPTS</code>:</p>
@@ -351,15 +383,15 @@ export CATALINA_BASE
         will crash the server in some circumstances.
       </li>
       <li><code style="white-space: nowrap;">-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</code> allows the
-        <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS to write system preferences
+        <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS to write system preferences
         to a location that is writable by the Tomcat user.
       </li>
 
       <div id="note" class="ahead">
         <h4>Looking Ahead</h4>
 
-        <p>You will learn more about the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/WMS.html">TDS Web Map Service (WMS)</a> later on
-          in this workshop.</p>
+        <p>You will learn more about the <a href="/software/thredds/current/tds/reference/WMS.html">TDS Web Map Service (WMS)</a> later on
+          in this tutorial.</p>
       </div>
 
 
@@ -371,11 +403,11 @@ export CATALINA_BASE
 
 <pre>
 <strong>$</strong> ./startup.sh
-Using CATALINA_BASE:   /usr/local/tds/apache-tomcat-7.0.42
-Using CATALINA_HOME:   /usr/local/tds/apache-tomcat-7.0.42
-Using CATALINA_TMPDIR: /usr/local/tds/apache-tomcat-7.0.42/temp
-<strong>Using JRE_HOME: /usr/local/tds/jdk1.7.0_25</strong>
-Using CLASSPATH:       /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar
+Using CATALINA_BASE:   /usr/local/tds/apache-tomcat-8.0.24
+Using CATALINA_HOME:   /usr/local/tds/apache-tomcat-8.0.24
+Using CATALINA_TMPDIR: /usr/local/tds/apache-tomcat-8.0.24/temp
+<strong>Using JRE_HOME: /usr/local/tds/jdk1.8u51</strong>
+Using CLASSPATH:       /usr/local/tds/apache-tomcat-8.0.24/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-8.0.24/bin/tomcat-juli.jar
 </pre>
     <div id="expanded" class="question">
       <p>Did you notice any difference in the what is being reported to <code>STDOUT</code> during startup?</p>
@@ -385,8 +417,8 @@ Using CLASSPATH:       /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/us
 
 <pre>
 <strong>$</strong> ps -ef | grep tomcat
-tds      22007     1  9 09:44 pts/1    00:00:02 /usr/local/tds/jdk1.7.0_25/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-7.0.42/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager <strong>-Xmx4096m
-  -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/usr/local/tds/apache-tomcat-7.0.42/content/thredds/javaUtilPrefs</strong> -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-7.0.42/endorsed -classpath /usr/local/tds/apache-tomcat-7.0.42/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-7.0.42/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-7.0.42 -Dcatalina.home=/usr/local/tds/apache-tomcat-7.0.42 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-7.0.42/temp org.apache.catalina.startup.Bootstrap start
+tds      22007     1  9 09:44 pts/1    00:00:02 /usr/local/tds/jdk1.8u51/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-8.0.24/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager <strong>-Xmx4096m
+  -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/usr/local/tds/apache-tomcat-8.0.24/content/thredds/javaUtilPrefs</strong> -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-8.0.24/endorsed -classpath /usr/local/tds/apache-tomcat-8.0.24/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-8.0.24/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-8.0.24 -Dcatalina.home=/usr/local/tds/apache-tomcat-8.0.24 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-8.0.24/temp org.apache.catalina.startup.Bootstrap start
 tds      22030 21675  0 09:44 pts/1    00:00:00 grep tomcat
 </pre>
     <div id="note" class="info">
@@ -425,20 +457,20 @@ May 25, 2010 6:28:22 PM java.util.prefs.FileSystemPreferences syncWorld
 WARNING: Couldn't flush system prefs: java.util.prefs.BackingStoreException: /etc/.java/.systemPrefs/org create failed.
 </pre>
         <p>You will need to set the
-          <code><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/faq.html#javaUtilPrefs">java.util.prefs.systemRoot</a></code> system property
+          <code><a href="/software/thredds/current/tds/faq.html#javaUtilPrefs">java.util.prefs.systemRoot</a></code> system property
           in <code>$JAVA_OPTS</code> to a location that is writable by the user that Tomcat, e.g.:</p>
 <pre>
 #!/bin/sh
 #
 # ENVARS for Tomcat and TDS environment
 #
-JAVA_HOME="/usr/local/tds/jdk1.7.0_25"
+JAVA_HOME="/usr/local/tds/jdk1.8u51"
 export JAVA_HOME
 
 JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true <strong>-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</strong>"
 export JAVA_OPTS
 
-CATALINA_BASE="/usr/local/tds/apache-tomcat-7.0.42"
+CATALINA_BASE="/usr/local/tds/apache-tomcat-8.0.24"
 export CATALINA_BASE
 </pre>
       </ul>
@@ -461,7 +493,7 @@ export CATALINA_BASE
 
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/webapps
+/usr/local/tds/apache-tomcat-8.0.24/webapps
 <strong>$</strong> cd ../logs
 
 <strong>$</strong> ls -l
@@ -486,7 +518,7 @@ export CATALINA_BASE
     <li>Examining <code>catalina.out</code>.</li>
     <p>Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:</p>
 <pre>
-<strong>$</strong> tail -f /usr/local/tds/apache-tomcat-7.0.42/logs/catalina.out
+<strong>$</strong> tail -f /usr/local/tds/apache-tomcat-8.0.24/logs/catalina.out
 </pre>
     <p>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</p>
 
@@ -551,7 +583,7 @@ export CATALINA_BASE
   <p>Move into the Tomcat <code>conf/</code> directory and examine the <code>server.xml</code> file:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/logs
+/usr/local/tds/apache-tomcat-8.0.24/logs
 <strong>$</strong> cd ../conf
 
 <strong>$</strong> less server.xml
@@ -574,9 +606,7 @@ export CATALINA_BASE
 
     <tr>
       <td>
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/server.html"><code>
-          &lt;Server&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Server</code> element represents the entire
-          Catalina servlet container as a whole. It is the single outermost element in <code>server.xml</code></strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/server.html" title="The Server element represents the entire Catalina servlet container as a whole. It is the single outermost element in server.xml"><code>&lt;Server&gt;</code></a>
       </td>
       <td>
         1...1
@@ -588,24 +618,20 @@ export CATALINA_BASE
 
     <tr>
       <td style="padding-left: 20px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/globalresources.html"><code>
-          &lt;GlobalNamingResources&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>GlobalNamingResources</code>
-          element defines the global Java Naming and Directory Interface (JNDI) resources for the Server.</strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/globalresources.html" title="The GlobalNamingResources element defines the global Java Naming and Directory Interface (JNDI) resources for the Server."><code>&lt;GlobalNamingResources&gt;</code></a>
       </td>
       <td>
         0...*
       </td>
       <td>
         Needed to contain the <code>UserDatabase</code> that corresponds to the <code>UserDatabaseRealm</code> used to authenticate users. (Enabled by default.)
-
       </td>
     </tr>
 
     <tr>
       <td style="padding-left: 40px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/resources.html"><code>
-          &lt;Resource&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Resource</code> element represents a static
-          resource from which classes will be loaded and static files will be served.</strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/resources.html" title="The Resource element represents a static resource from which classes will be loaded and static files will be served."><code>
+          &lt;Resource&gt;</code></a>
       </td>
       <td>
         0...*
@@ -618,10 +644,8 @@ export CATALINA_BASE
 
     <tr>
       <td style="padding-left: 20px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/service.html"><code>
-          &lt;Service&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Service</code> element represents the
-          combination of one or more <code>Connector</code> components that share a single Engine component for processing incoming requests. The top Tomcat
-          <code>service</code> is named <code>Catalina</code> (hence the log file name of <code>catalina.out</code>).</strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/service.html" title="The Service element represents the combination of one or more Connector components that share a single Engine component for processing incoming requests. The top Tomcat service is named Catalina (hence the log file name of catalina.out)."><code>
+          &lt;Service&gt;</code></a>
       </td>
       <td>
         1...*
@@ -633,9 +657,8 @@ export CATALINA_BASE
 
     <tr>
       <td style="padding-left: 40px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/connectors.html"><code>
-          &lt;Connector&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Connector</code> element forward requests
-          to the <code>Engine</code> using a specific protocol and returns the results to the requesting client. </strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/connectors.html" title="The Connector element forward requests to the Engine using a specific protocol and returns the results to the requesting client. "><code>
+          &lt;Connector&gt;</code></a>
       </td>
       <td>
         1...*
@@ -648,9 +671,8 @@ export CATALINA_BASE
 
     <tr>
       <td style="padding-left: 40px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/engine.html"><code>
-          &lt;Engine&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Engine</code> element represents the entire
-          request processing machinery associated with a particular Catalina <code>Service</code>.</strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/engine.html" title="The Engine element represents the entire request processing machinery associated with a particular Catalina Service."><code>
+          &lt;Engine&gt;</code></a>
       </td>
       <td>
         1...1
@@ -662,9 +684,8 @@ export CATALINA_BASE
 
     <tr>
       <td style="padding-left: 60px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html"><code>
-          &lt;Realm&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Realm</code> element represents a "database" of
-          usernames, passwords, and roles (groups) assigned to those users. </strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/realm.html" title="The Realm element represents a database of usernames, passwords, and roles (groups) assigned to those users. "><code>
+          &lt;Realm&gt;</code></a>
       </td>
       <td>
         0...*
@@ -678,9 +699,8 @@ export CATALINA_BASE
 
     <tr>
       <td style="padding-left: 60px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html"><code>
-          &lt;Valve&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Valve</code> element represents a component
-          that will be inserted into the request processing pipeline for the associated containing element.</strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/valve.html" title="The Valve element represents a component that will be inserted into the request processing pipeline for the associated containing element."><code>
+          &lt;Valve&gt;</code></a>
       </td>
       <td>
         0...*
@@ -692,9 +712,8 @@ export CATALINA_BASE
     </tr>
     <tr>
       <td style="padding-left: 60px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/host.html"><code>
-          &lt;Host&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Host</code> element represents a virtual
-          host.</strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/host.html" title="The Host element represents a virtual host."><code>
+          &lt;Host&gt;</code></a>
       </td>
       <td>
         1...*
@@ -705,9 +724,8 @@ export CATALINA_BASE
     </tr>
     <tr>
       <td style="padding-left: 80px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html"><code>
-          &lt;Realm&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Realm</code> element represents a "database" of
-          usernames, passwords, and roles (groups) assigned to those users. </strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/realm.html" title="The Realm element represents a database of usernames, passwords, and roles (groups) assigned to those users. "><code>
+          &lt;Realm&gt;</code></a>
       </td>
       <td>
         0...*
@@ -719,9 +737,8 @@ export CATALINA_BASE
     </tr>
     <tr>
       <td style="padding-left: 80px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html"><code>
-          &lt;Valve&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Valve</code> element represents a component
-          that will be inserted into the request processing pipeline for the associated containing element.</strong></a>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/config/valve.html" title="The Valve element represents a component that will be inserted into the request processing pipeline for the associated containing element."><code>
+          &lt;Valve&gt;</code></a>
       </td>
       <td>
         0...*
@@ -749,7 +766,7 @@ export CATALINA_BASE
   <p>Open the <code>tomcat-users.xml</code> file:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/conf
+/usr/local/tds/apache-tomcat-8.0.24/conf
 
 <strong>$</strong> less tomcat-users.xml
 </pre>
@@ -770,9 +787,8 @@ export CATALINA_BASE
 
     <tr>
       <td>
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html"><code>
-          &lt;tomcat-users&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>tomcat-users</code> element represents
-          the single outermost element in <code>tomcat-users.xml</code></strong>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/realm-howto.html" title="The tomcat-users element represents the single outermost element in tomcat-users.xml"><code>
+          &lt;tomcat-users&gt;</code></a>
       </td>
       <td>
         1...1
@@ -784,9 +800,8 @@ export CATALINA_BASE
 
     <tr>
       <td style="padding-left: 20px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html"><code>
-          &lt;role&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>role</code> element defines one role or group a
-          user can belong to.</strong>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/realm-howto.html" title="The role element defines one role or group a user can belong to."><code>
+          &lt;role&gt;</code></a>
       </td>
       <td>
         1...*
@@ -799,9 +814,8 @@ export CATALINA_BASE
 
     <tr>
       <td style="padding-left: 20px">
-        <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html"><code>
-          &lt;user&gt;</code><strong><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>user</code> element represents one valid
-          user.</strong>
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-8.0-doc/realm-howto.html" title="The user element represents one valid user."><code>
+          &lt;user&gt;</code></a>
       </td>
       <td>
         1...*
@@ -837,14 +851,14 @@ export CATALINA_BASE
     <h4>Upgrading the TDS</h4>
 
     <p>A <a href="Checklist.html">maintenance checklist</a> and contains helpful information about upgrading the TDS.
-      <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/UpgradingTo4.3.html">New features</a> and
-      <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/UpgradingTo4.3.html">configuration changes</a> made between TDS versions are listed for
+      <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/UpgradingTo4.6.html">New features</a> and
+      <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/UpgradingTo4.6.html">configuration changes</a> made between TDS versions are listed for
       each release. </p>
   </div>
 
   <ol>
-    <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.3/current/thredds.war">Download</a> the TDS WAR file from Unidata's web site.</li>
-    <p>We will be using the current <em>TDS 4.3.18 (snapshot) version</em> for this workshop:</p>
+    <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war">Download</a> the TDS WAR file from Unidata's web site.</li>
+    <p>We will be using the current <em>TDS 4.6.2 version</em> for this workshop:</p>
 
     <p><code>thredds.war</code></p>
     <li>Deploy the TDS in Tomcat.</li>
@@ -852,7 +866,7 @@ export CATALINA_BASE
 
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/bin
+/usr/local/tds/apache-tomcat-8.0.24/bin
 <strong>$</strong> cd ../webapps
 
 <strong>$</strong> mv ~/thredds.war .
@@ -883,12 +897,12 @@ drwxr-xr-x  3 tds workshop     4096 Jul 15 09:37 ROOT
 
     <p>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed:</p>
 
-    <p><a href="images/tds.png" target="_blank"><img src="images/tds.png" width="300" alt="THREDDS Distribution Catalog"/></a></p>
+    <p><img src="images/tds.png" width="300" alt="THREDDS Distribution Catalog"/></p>
     <li>Confirm the creation of the TDS <code>content/</code> directory.</li>
     <p>Move into <code>${tomcat_home}</code> and do a long listing:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/webapps
+/usr/local/tds/apache-tomcat-8.0.24/webapps
 <strong>$</strong> cd ..
 
 <strong>$</strong> ls -l
@@ -932,7 +946,7 @@ drwxr-xr-x 3 tds workshop  4096 Jul 15 09:39 work
     <h4>More about <code>manager</code></h4>
 
     <p>For more information about the Tomcat <code>manager</code> application, see the Tomcat
-      <a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Manager App HOW-TO</a> documentation.</p>
+      <a href="http://tomcat.apache.org/tomcat-8.0-doc/manager-howto.html">Manager App HOW-TO</a> documentation.</p>
   </div>
 
 
@@ -956,7 +970,7 @@ drwxr-xr-x 3 tds workshop  4096 Jul 15 09:39 work
     You will be prompted to login via BASIC authentication, which will end in failure since we do not yet have permission to access the <code>manager</code>
     application:</p>
 
-  <p><a href="images/manager401.png" target="_blank"><img src="images/manager401.png" width="300" alt="Manager app with 401 response code"></a></p>
+  <p><img src="images/manager401.png" width="300" alt="Manager app with 401 response code"></p>
 
   <div id="expanded" class="question">
     <p>Based on what we know about Tomcat configuration, which file in the Tomcat <code>conf/</code> directory should we edit to grant ourselves access to the
@@ -1006,7 +1020,7 @@ drwxr-xr-x 3 tds workshop  4096 Jul 15 09:39 work
       this time logging in using the <code>name</code> and <code>password</code> specified in <code>tomcat-users.xml</code>: </p>
 
 
-    <p><a href="images/manager.png" target="_blank"><img src="images/manager.png" width="300" alt="Tomcat manager application"></a></p>
+    <p><img src="images/manager.png" width="300" alt="Tomcat manager application"></p>
 
 
     <p>Voil&#224;! You should have access to the <code>manager</code> application.</p>
@@ -1034,7 +1048,7 @@ drwxr-xr-x 3 tds workshop  4096 Jul 15 09:39 work
       directory have been removed:</p>
 <pre>
 <strong>$</strong> pwd
-/usr/local/tds/apache-tomcat-7.0.42/conf
+/usr/local/tds/apache-tomcat-8.0.24/conf
 <strong>$</strong> cd ../webapps
 
 <strong>$</strong> ls -l
@@ -1047,7 +1061,7 @@ drwxr-xr-x  3 tds workshop     4096 Jul 15 09:37 ROOT
     <li>Deploy the TDS using the <code>manager</code> application.</li>
     <p>Upload the TDS WAR file using the <code>Deploy</code> section of the <code>manager</code> application:</p>
 
-    <p><a href="images/deploy.png" target="_blank"><img src="images/deploy.png" height="182" width="500" alt="Deploy the TDS"></a></p>
+    <p><img src="images/deploy.png" height="182" width="500" alt="Deploy the TDS"></p>
 
     <p>Confirm the deployment went as planned by accessing the TDS using your browser:
       <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a></p>

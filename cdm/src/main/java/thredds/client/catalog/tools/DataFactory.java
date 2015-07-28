@@ -674,7 +674,8 @@ public class DataFactory {
 
   private Access findAccessByServiceType(List<Access> accessList, ServiceType type) {
     for (Access a : accessList) {
-      if (type.toString().equalsIgnoreCase(a.getService().getServiceTypeName()))
+      ServiceType stype = a.getService().getType();
+      if (stype != null && stype.toString().equalsIgnoreCase(type.toString()))
         return a;
     }
     return null;

@@ -4,34 +4,6 @@
   <title>Production Server Overview</title>
   <link rel="stylesheet" href="tutorial2.css" type="text/css"/>
   <script type="text/javascript" src="workshopNav.js"></script>
-  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
-  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-
-  <script>
-    $(function () {
-      $("a.example").click(function () {
-        var id = $(this).attr("id");
-        $.ajax({
-          url: "examples/" + id + ".html",
-          cache: false
-        }).done(function (html) {
-              $("a#" + id + ".example").after("<div id='" + id + "'></div>");
-              $("div#" + id).dialog({
-                minWidth: 600,
-                resizable: true,
-                modal: true,
-                buttons: {
-                  Close: function () {
-                    $("div#" + id).remove();
-                    $(this).dialog("destroy");
-                  }
-                }
-              });
-              $("div#" + id).append(html);
-            });
-      });
-    });
-  </script>
 </head>
 <body>
 
@@ -49,13 +21,11 @@
     <li><a a href="#install">Tomcat Process User/Group and $CATALINA_HOME Permissions</a></li>
     <li><a a href="#unused">Removing Unused Web Applications</a></li>
     <li><a a href="#digested">Using Digested Passwords</a></li>
-    <li><a a href="#ssl">Enabling SSL Encryption</a></li>
+    <li><a a href="#ssl">Enabling TSL/SSL Encryption</a></li>
     <li><a a href="#manager">Securing the Tomcat <code>manager</code> Application</a></li>
     <li><a a href="#ports">Blocking Non-Essential Port Access At The Firewall</a></li>
     <li><a a href="#access">Restricting Access To The TDS By Remote IP Address Or Host</a></li>
-
     <li><a a href="#proxy">Reverse Proxy</a></li>
-    <li><a a href="#jvm">Running Tomcat with a Security Manager</a></li>
     <li><a a href="#shutdown">Protecting the Tomcat <code>SHUTDOWN</code> Port</a></li>
   </ul>
 
@@ -104,7 +74,7 @@
     <li><a href="http://tomcat.apache.org/lists.html">Tomcat</code> mailing lists</a><br> Various tomcat-related mailing lists, including
       <code>tomcat-announce</code> which is a low volume list for release announcements and security vulnerabilities.
     </li>
-    <li><a href="http://java.sun.com/javase/technologies/security/">Java SE Security</a><br> Sun's Java security page which includes a chronology of Java
+    <li><a href="http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136007.html">Java SE Security</a><br> Oracle's Java security page which includes a chronology of Java
       security issues and user forums.
     </li>
     <li><a href="http://www.unidata.ucar.edu/mailing_lists/archives/thredds/"><code>thredds</code> mailing list</a><br> The THREDDS mailing list where announcements of new releases will
@@ -140,18 +110,119 @@
     <li>We <em>strongly discourage</em> running Tomcat as the <code>root</code> user and recommend creating an unprivileged, dedicated user and group for running
       the Tomcat process.
 
-      <a id="tomcatUserAndGroup" class="example">
-        Create a dedicated user and group for running Tomcat
-      </a>
+    <div id="expanded" class="exercise">
+    <h5>Create a dedicated user/group for running Tomcat</h5>
+    <p>In this example, both the user and group names will be names <code>tomcat</code>, and the user's home directory, aka <code>${tomcat_home}</code>, is <code>/opt/tomcat</code>
+  (notice the symlink below). The groupadd and useradd commands were run as the root:</p>
+<pre>
+<strong>#</strong> groupadd tomcat
+<strong>#</strong> useradd -g tomcat -d /opt/tomcat tomcat
+<strong>#</strong> passwd tomcat
+</pre>
+    </div>
 
 
     </li>
     <li>We also recommend restricting the permissions of the Tomcat user/group within <code>${tomcat_home}</code>.
 
+    <div id="expanded" class="exercise">
+<h5>Restrict the permissions in <code>${tomcat_home}</code></h5>
+<ol>
+  <li>Change the user/group ownership <code>${tomcat_home}</code> to the <code>tomcat</code> user and <code>tomcat</code> group:</li>
+<pre>
+<strong>#</strong> cd /opt
+<strong>#</strong> chown -R tomcat:tomcat apache-tomcat-8.0.24
+<strong>#</strong> ls -ld  *tomcat*
+drwxr-xr-x  9 <strong>tomcat tomcat</strong>  4096 Jul 15 16:03 apache-tomcat-8.0.24
+</pre>
+  <li>Change the user/ownership of the <code>${tomcat_home}/conf</code> directory to be owned by the <code>root</code> user, have a group of <code>tomcat</code>
+    and have a permission of user/group read only:
+  </li>
 
-      <a id="tomcatHomePerms" class="example">
-        Restrict the permissions in <code>${tomcat_home}</code>
+<pre>
+<strong>#</strong> cd /opt/tomcat
+<strong>#</strong> ls -l
+total 92
+drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:05 bin
+drwxr-xr-x 2 tomcat  tomcat  4096 Jul 18 12:18 conf
+drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:03 lib
+drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 logs
+drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:03 temp
+drwxr-xr-x 7 tomcat  tomcat  4096 Jul 15 16:04 webapps
+drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
+
+<strong>#</strong> chown -R root:tomcat conf
+<strong>#</strong> chmod -R 440 conf/*
+<strong>#</strong> ls -l conf
+total 92
+-r--r----- 1 root    tomcat  9978 Feb  2 12:06 catalina.policy
+-r--r----- 1 root    tomcat  3713 Feb  2 12:06 catalina.properties
+-r--r----- 1 root    tomcat  1395 Feb  2 12:06 context.xml
+-r--r----- 1 root    tomcat  1353 Jul 18 12:14 keystore
+-r--r----- 1 root    tomcat  3257 Feb  2 12:06 logging.properties
+-r--r----- 1 root    tomcat  6814 Jul 18 12:18 server.xml
+-r--r----- 1 root    tomcat   210 Jul 18 12:10 tomcat-users.xml
+-r--r----- 1 root    tomcat 51835 Feb  2 12:06 web.xml
+</pre>
+
+  <li>Change the user/ownership of the <code>${tomcat_home}/bin</code> and <code>${tomcat_home}/lib</code> directories to be owned by the <code>root</code> user
+    and have a group of <code>tomcat</code>:
+  </li>
+<pre>
+<strong>#</strong> chown -R root:tomcat lib
+<strong>#</strong> chown -R root:tomcat bin
+<strong>#</strong> ls -l
+total 92
+drwxr-xr-x 2 root    tomcat  4096 Jul 15 16:05 bin
+drwxr-xr-x 2 root    tomcat  4096 Jul 18 12:18 conf
+drwxr-xr-x 2 root    tomcat  4096 Jul 15 16:03 lib
+drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 logs
+drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:03 temp
+drwxr-xr-x 7 tomcat  tomcat  4096 Jul 15 16:04 webapps
+drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
+</pre>
+
+  <li>Change the user/group permissions of the <code>${tomcat_home}/conf</code> directory and its subdirectories to give the <code>root</code> user and <code>tomcat</code> group read/write permissions. (Depending on the web applications you are running and/or your virtual host configurations,  Tomcat will create a <code>${tomcat_home}/conf/Catalina</code>) directory with corresponding subdirectories and files for <a href="https://tomcat.apache.org/tomcat-8.0-doc/virtual-hosting-howto.html#Configuring_Your_Contexts">context</a> information.  Allowing the <code>tomcat</code> group to write to  <code>${tomcat_home}/conf</code> allow this and prevent errors from appearing in your Tomcat logs.)
+  </li>
+<pre>
+<strong>#</strong> pwd
+<strong>#</strong> /opt/apache-tomcat-8.0.24
+<strong>#</strong> find conf -type d -exec chmod 775 {} \; -print
+<strong>#</strong> ls -l
+total 220
+total 92
+drwxr-xr-x 2 root    tomcat  4096 Jul 15 16:05 bin
+drwxrwxr-x 2 root    tomcat  4096 Jul 18 12:18 conf
+drwxr-xr-x 2 root    tomcat  4096 Jul 15 16:03 lib
+drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 logs
+drwxr-xr-x 2 tomcat  tomcat  4096 Jul 15 16:03 temp
+drwxr-xr-x 7 tomcat  tomcat  4096 Jul 15 16:04 webapps
+drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
+</pre>
+
+
+  <li>Change the user/group permissions of the files in <code>${tomcat_home}/conf</code> directory to give the <code>root</code> user and <code>tomcat</code> group has read-only permissions:
+  </li>
+<pre>
+<strong>#</strong> cd conf
+<strong>#</strong> find . -type f -exec chmod 440 {} \; -print
+<strong>#</strong> ls -l
+total 220
+drwxr-xr-x 3 root tomcat   4096 2013-12-26 15:24 Catalina
+-r--r----- 1 root tomcat  12374 2015-07-01 14:23 catalina.policy
+-r--r----- 1 root tomcat   7086 2015-07-01 14:23 catalina.properties
+-r--r----- 1 root tomcat   1577 2015-07-01 14:23 context.xml
+-r--r----- 1 root tomcat   2899 2015-04-17 15:42 logging.properties
+-r--r----- 1 root tomcat   2330 2015-04-22 10:33 server.xml
+-r--r----- 1 root tomcat   1460 2015-04-24 14:33 tomcat-users.xml
+-r--r----- 1 root tomcat   1846 2015-07-01 14:23 tomcat-users.xsd
+-r--r----- 1 root tomcat 166582 2015-07-01 14:23 web.xml
+</pre>
+</ol>
+
+
       </a>
+    </div>
 
     </li>
   </ul>
@@ -189,7 +260,7 @@
         in <code>tomcat-users.xml</code>. If you are not planning to do a lot of virtual hosting in Tomcat this application should be removed.
       </li>
       <li>The <code>examples</code> application should probably be removed from a production server to minimize security exposure.</li>
-      <li>The <code>docs</code> are a copy of the <a href="http://tomcat.apache.org/tomcat-7.0-doc/">Tomcat documentation found online</a>. Unless you have need
+      <li>The <code>docs</code> are a copy of the <a href="http://tomcat.apache.org/tomcat-8.0-doc/">Tomcat documentation found online</a>. Unless you have need
         for a local copy, removing <code>docs</code> would help to tidy-up <code>${tomcat_home}/webapps</code>.
       </li>
     </ul>
@@ -208,8 +279,8 @@
   <div id="note" class="info">
     <h4>Tomcat Realms</h4>
 
-    <p>A <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html">realm</a> element represents a "database" of usernames, passwords, and roles
-      (similar to Unix groups) assigned to those users. </p>
+    <p>A <a href="http://tomcat.apache.org/tomcat-8.0-doc/config/realm.html">realm</a> element represents a "database" of usernames, passwords, and roles
+      (similar to Unix groups) assigned to those users. </p>Transport Layer Security
   </div>
 
   <ul>
@@ -223,21 +294,158 @@
     </li>
   </ul>
 
-  <a id="digestedPasswords" class="example">
-    Configure Tomcat to use digested passwords
-  </a>
+
+    <div id="expanded" class="exercise">
+<h5><a name="useDigest"></a>Configure Tomcat to use digested passwords</h5>
+
+<ol>
+  <li>First we need to enable digest passwords support in Tomcat by modifying a couple of Tomcat Realms in the <code>server.xml</code> file in the Tomcat <code>conf/</code>
+    directory.
+  </li>
+
+  <p>A <a href="http://tomcat.apache.org/tomcat-8.0-doc/config/realm.html">Tomcat Realm</a> represents a "database" of usernames, passwords, and roles assigned
+    to tomcat users.</p>
+
+  <table>
+    <tr>
+      <th>
+        Realm Name
+      </th>
+      <th>
+        Purpose
+      </th>
+    </tr>
+
+    <tr>
+      <td>
+        <code>UserDatabaseRealm</code>
+      </td>
+      <td>
+        The <code>UserDatabaseRealm</code> is enabled by default and reads clear text user password information stored in <code>tomcat-users.xml</code>.
+      </td>
+    </tr>
+
+
+    <tr>
+      <td>
+        <code>MemoryRealm</code>
+      </td>
+      <td>
+        The <code>MemoryRealm</code> reads the user password information stored in the <code>tomcat-users.xml</code> in a specified encrypted format.
+      </td>
+    </tr>
+  </table>
+
+
+  <p>Open the <code>server.xml</code> with your favorite editor:</p>
+<pre>
+<strong>$</strong> vi server.xml
+</pre>
+  <p>Locate the <code>UserDatabaseRealm</code> (in the <code>LockOutRealm</code>, right above the <code>Host</code> element) and comment it out:</p>
+<pre>
+&lt;!-- Use the LockOutRealm to prevent attempts to guess user passwords
+     via a brute-force attack --&gt;
+&lt;Realm className="org.apache.catalina.realm.LockOutRealm"&gt;
+  &lt;!-- This Realm uses the UserDatabase configured in the global JNDI
+       resources under the key "UserDatabase".  Any edits
+       that are performed against this UserDatabase are immediately
+       available for use by the Realm.  --&gt;
+     <strong>&lt;!--
+       &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+       resourceName="UserDatabase"/&gt;
+       --&gt;</strong>
+&lt;/Realm&gt;
+
+&lt;Host name="localhost"  appBase="webapps"
+      unpackWARs="true" autoDeploy="true"&gt;
+</pre>
+
+
+  <p>Now add the following <code>MemoryRealm</code> information below the commented out <code>UserDatabaseRealm</code>:</p>
+
+
+<pre>
+&lt;!-- Use the LockOutRealm to prevent attempts to guess user passwords
+     via a brute-force attack --&gt;
+&lt;Realm className="org.apache.catalina.realm.LockOutRealm"&gt;
+  &lt;!-- This Realm uses the UserDatabase configured in the global JNDI
+       resources under the key "UserDatabase".  Any edits
+       that are performed against this UserDatabase are immediately
+       available for use by the Realm.  --&gt;
+     &lt;!--
+      &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+         resourceName="UserDatabase"/&gt;
+     --&gt;
+      <strong>&lt;Realm className="org.apache.catalina.realm.MemoryRealm"
+        digest="SHA" /&gt;</strong>
+&lt;/Realm&gt;
+
+&lt;Host name="localhost"  appBase="webapps"
+      unpackWARs="true" autoDeploy="true"&gt;
+</pre>
+  <li><a name="makeDigest"></a>Create a SHA encrypted version of your password.</li>
+  <p>Tomcat provides a script (<code>${tomcat_home}/bin/digest.sh</code>) that will encrypt a password string according to the algorithm specified. Use this
+    script as follows with the password you made for yourself previously:</p>
+
+<pre>
+<strong>$</strong> /home/tds/apache-tomcat-8.0.24/bin/digest.sh -a SHA secret
+secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
+</pre>
+
+  <li>Update <code>tomcat-users.xml</code>.</li>
+  <p>Replace your clear-text password in <code>tomcat-users.xml</code> with the encrypted version:</p>
+
+<pre>
+&lt;tomcat-users&gt;
+    &lt;role rolename="manager-gui"/&gt;
+    &lt;user username="admin" 
+          password="<strong>e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4</strong>"
+          roles="manager-gui"/&gt;
+&lt;/tomcat-users&gt;
+</pre>
+
+
+  <div id="note" class="info">
+    <h4>BASIC authentication</h4>
+
+    <p>Since we are using BASIC authentication, you will need to clear any authenticated sessions in your browser to test whether digested passwords have been
+      enabled.</p>
+  </div>
+
+  <li>Verify digest passwords have been successfully enabled in Tomcat.</li>
+  <p>Restart Tomcat and verify digest passwords have been successfully enabled by logging into the Tomcat <code>manager</code> application using your password
+    in clear text: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></p>
+
+</ol>
+<div id="expanded" class="troubleshooting">
+  <h4>Troubleshooting</h4>
+  <ul>
+    <li>Check the XML syntax in <code>tomcat-users.xml</code> and <code>server.xml</code> to make sure it is well-formed and without error.</li>
+    <li>Did you restart Tomcat after you made your changes to <code>tomcat-users.xml</code> and <code>server.xml</code> ?</li>
+    <li>Any errors will be reported in the <code>catalina.out</code> file in the Tomcat <code>logs/</code> directory.</li>
+    <li>You do not need to type the encrypted version of your password into the browser (the browser auto-magically encrypts your password for you before it
+      transmits it to the server).
+    </li>
+  </ul>
+</div>
+
+
+
+
+
+    </dev>
 
 </div>
 <!-- end Using Digested Passwords section -->
 
 <div id="section">
-  <h2><a name="ssl">Enabling SSL Encryption</a></h2>
+  <h2><a name="ssl">Enabling TSL/SSL Encryption</a></h2>
 
   <div id="note" class="info">
-    <h4>How SSL works</h4>
+    <h4>How TSL/SSL works</h4>
 
-    <p>For more information on how SSL works, Wikipedia details the <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security#How_it_works">steps
-      involved</a> during an SSL transaction.</p>
+    <p>For more information on how SSL works, Wikipedia details the <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security">steps
+      involved</a> during an TSL/SSL transaction.</p>
   </div>
 
   <h3>Rationale</h3>
@@ -251,14 +459,14 @@
     <li>Any intercepted information that is encrypted also adds a layer of security (the attacker must take the extra step of unencrypting the data to view the
       message).
     </li>
-    <li>Secure Sockets Layer (SSL), and more recently Transport Layer Security (TLS), is a cryptographic protocol that provides security and data integrity for
+    <li>Transport Layer Security (TLS), and formerly Secure Sockets Layer (SSL), is a cryptographic protocol that provides security and data integrity for
       communications over TCP/IP networks.
     </li>
-    <li>SSL allows applications to communicate across a network in a way designed to prevent eavesdropping, tampering, and message forgery.</li>
-    <li>SSL uses a cryptographic system that uses two keys to encrypt data: a public key known to everyone and a private or secret key known only to the
+    <li>TSL/SSL allows applications to communicate across a network in a way designed to prevent eavesdropping, tampering, and message forgery.</li>
+    <li>TSL/SSL uses a cryptographic system that uses two keys to encrypt data: a public key known to everyone and a private or secret key known only to the
       recipient of the message.
     </li>
-    <li>By convention, URLs that require an SSL connection start with <code>https</code> instead of <code>http</code>.</li>
+    <li>By convention, URLs that require an TSL/SSL connection start with <code>https</code> instead of <code>http</code>.</li>
   </ul>
 
 
@@ -270,7 +478,7 @@
     <p>A certificate signed by a CA says, <em>"Trust me - the CA agrees I am who I say I am."</em></p>
   </div>
 
-  <h3>SSL certificates</h3>
+  <h3>TSL/SSL certificates</h3>
   <ul>
     <li>A public key certificate is an electronic document which incorporates a digital signature to bind together a public key with identity information of the
       certificate user.
@@ -291,11 +499,11 @@
 
   <h3>Certificate <code>keystore</code> file</h3>
   <ul>
-    <li>A <code>keystore</code> file stores the details of the SSL certificate necessary to make the protocol secured.</li>
-    <li>The Tomcat documentation includes a section on <a href="http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html#Prepare_the_Certificate_Keystore">importing
+    <li>A <code>keystore</code> file stores the details of the TSL/SSL certificate necessary to make the protocol secured.</li>
+    <li>The Tomcat documentation includes a section on <a href="http://tomcat.apache.org/tomcat-8.0-doc/ssl-howto.html#Prepare_the_Certificate_Keystore">importing
       your certificate into a keystore</a> file.
     </li>
-    <li>Tomcat uses the <code>keystore</code> file for SSL transactions. Example:</li>
+    <li>Tomcat uses the <code>keystore</code> file for TSL/SSL transactions. Example:</li>
   </ul>
   <pre> &lt;Connector protocol=&quot;HTTP/1.1&quot; port=&quot;8443&quot; maxThreads=&quot;200&quot; 
     scheme=&quot;https&quot; secure=&quot;true&quot; SSLEnabled=&quot;true&quot;
@@ -304,30 +512,134 @@
     clientAuth=&quot;false&quot; sslProtocol=&quot;TLS&quot;/&gt;</pre>
   
 
+    <div id="expanded" class="exercise">
+    <h5><a name="sslinTomcat"></a>Enabling TSL/SSL in Tomcat</h5>
+<ol>
+  <li>Modify the Tomcat configuration to enable TSL/SSL:</li>
 
-  <a id="enablingSSL" class="example">
-    Enabling SSL in Tomcat
-  </a>
+
+  <div id="expanded" class="question">
+    <p>Based on what we know about Tomcat configuration, which file in <code>${tomcat_home}/conf</code> should we edit to to enable TSL/SSL?</p>
+  </div>
+
+  <p>Open <code>${tomcat_home}/conf/server.xml</code> with your favorite editor:</p>
+<pre>
+<strong>$</strong> vi server.xml
+</pre>
+  <p>Locate the <code>Java HTTP/1.1 Connector</code> listening on port 8080 and verify it is redirecting TSL/SSL traffic to port 8443:</p>
+<pre>
+&lt;Connector port="8080" 
+           protocol="HTTP/1.1"
+           connectionTimeout="20000"
+           <strong>redirectPort="8443"</strong> /&gt;
+</pre>
+  <p>Find and uncomment the <code>SSL HTTP/1.1 Connector</code> listening on port 8443 to activate this connector:</p>
+<pre>
+&lt;Connector port="8443" 
+           protocol="HTTP/1.1" 
+           SSLEnabled="true"
+           maxThreads="150" 
+           scheme="https" 
+           secure="true"
+           clientAuth="false" 
+           sslProtocol="TLS" /&gt;
+</pre>
+  <p>Add a <code>keystoreFile</code> attribute to the <code>SSL HTTP/1.1 Connector</code> to tell Tomcat where to find your keystore:</p>
+<pre>
+&lt;Connector port="8443" 
+           protocol="HTTP/1.1" 
+           SSLEnabled="true"
+           maxThreads="150" 
+           scheme="https" 
+           secure="true"
+           clientAuth="false" 
+           sslProtocol="TLS" 
+           <strong>keystoreFile="/home/tds/apache-tomcat-8.0.24/conf/keystore"</strong> /&gt;
+</pre>
+
+  <p>Since we opted to not use the default <code>keystore password</code>, we need to specify the new password so Tomcat can open the file:</p>
+<pre>
+&lt;Connector port="8443" 
+           protocol="HTTP/1.1" 
+           SSLEnabled="true"
+           maxThreads="150" 
+           scheme="https" 
+           secure="true"
+           clientAuth="false" 
+           sslProtocol="TLS" 
+           keystoreFile="/home/tds/apache-tomcat-8.0.24/conf/keystore"
+           <strong>keystorePass="foobar"</strong> /&gt;
+</pre>
+
+  <li>Verify TSL/SSL has been enabled.</li>
 
 
-  <h3>Configuring web applications for SSL</h3>
+  <p>Restart Tomcat:</p>
+<pre>
+<strong>$</strong> ${tomcat_home}/bin/shutdown.sh
+<strong>$</strong> ${tomcat_home}/bin/startup.sh
+</pre>
+
+  <p>Verify Tomcat is listening on port 8443 by running the <code>netstat</code> command:</p>
+
+<pre>
+<strong>$</strong> netstat -an | grep tcp | grep 8443
+</pre>
+  <div id="note" class="info">
+    <h4><code>man netstat</code></h4>
+
+    <p>Run <code>man netstat</code> in your terminal window to learn more about this command.</p>
+  </div>
+
+  <p><code>netstat</code> (short for <strong>net</strong>work <strong>stat</strong>istics) is available on Unix, Unix-like, and Windows NT-based operating systems. It is a
+    command-line tool that displays:</p>
+  <ul class="little">
+    <li> network connections (both incoming and outgoing)</li>
+    <li> routing tables</li>
+    <li> and a number of network interface statistics</li>
+  </ul>
+
+
+  <p>Look for the following in the output:</p>
+<pre>
+tcp        0      0 :::<strong>8443</strong>              :::*                  LISTEN
+</pre>
+
+
+  <div id="expanded" class="troubleshooting">
+    <h4>Troubleshooting</h4>
+    <ul>
+      <li>Check the XML syntax in <code>server.xml</code> to make sure it is well-formed and without error.</li>
+      <li>When generating the self-signed certificate, the last password (the <code>key password</code>) and <code>keystore password</code> should be the same (<code>changeit</code>).
+        If they differ, Tomcat cannot open the keystore and you will get this error: <code>java.io.IOException: Cannot recover key</code>.
+      </li>
+      <li>Did you restart Tomcat after you made your changes to <code>server.xml</code>?</li>
+      <li>Did you specify the full path to the <code>keystore</code> file in <code>server.xml</code>?</li>
+    </ul>
+  </div>
+
+</ol>
+    </div>
+
+
+  <h3>Configuring web applications for TSL/SSL</h3>
 
   <div id="note" class="ahead">
     <h4>Looking Ahead</h4>
 
-    <p>Other than the compelling security reasons, you will want to enable SSL to take advantage of a couple of monitoring and debugging tools: the
+    <p>Other than the compelling security reasons, you will want to enable TSL/SSL to take advantage of a couple of monitoring and debugging tools: the
       <a href="http://localhost:8080/thredds/admin/debug">TDS Remote Management Tool</a>, and the <a href="tdsMonitor.html">TdsMonitor Tool</a> -- both of which
-      (out-of-the-box) require SSL to access.</p>
+      (out-of-the-box) require TSL/SSL to access.</p>
   </div>
 
   <ul>
-    <li>The web application deployment descriptor, aka <code>web.xml</code>, specifies if all or parts of it need to be accessed via SSL.</li>
+    <li>The web application deployment descriptor, aka <code>web.xml</code>, specifies if all or parts of it need to be accessed via TSL/SSL.</li>
     <li>Deployment descriptors are found in the <code>WEB-INF</code> directory of the web application: <code>${tomcat_home}/webapps/application_name/WEB-INF/web.xml</code>.
     </li>
     <li>By convention, Tomcat and other servlet containers will read the web application deployment descriptors for initialization parameters and
       container-managed security constraints upon application deployment.
     </li>
-    <li><em>The TDS has been pre-configured to require that SSL encryption is enabled in order to access the both the
+    <li><em>The TDS has been pre-configured to require that TSL/SSL encryption is enabled in order to access the both the
       <a href="http://localhost:8080/thredds/admin/debug">TDS Remote Management Tool</a>, and the <a href="tdsMonitor.html">TdsMonitor Tool</a>.</em></li>
     <p><code>web.xml</code> from the TDS Remote Management Tool:</p>
 
@@ -357,7 +669,7 @@
       <h4>Configuration help</h4>
 
       <p>For more information on how to configure security requirements for a web application in a deployment descriptor, see:
-        <a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bncbe.html">Defining Security Requirements for Web Applications</a>.</p>
+        <a href="https://docs.oracle.com/javaee/7/tutorial/partsecurity.htm#GIJRP">Defining Security Requirements for Web Applications</a>.</p>
     </div>
 
 
@@ -369,7 +681,7 @@
       </li>
       <ol class="little">
         <li>Specify <code>CONFIDENTIAL</code> when the application requires that data be transmitted so as to prevent other entities from observing the contents
-          of the transmission. (E.g., via SSL.)
+          of the transmission. (E.g., via TSL/SSL.)
         </li>
         <li>Specify <code>INTEGRAL</code> when the application requires that the data be sent between client and server in such a way that it cannot be changed
           in transit.
@@ -378,16 +690,48 @@
       </ol>
     </ul>
 
-    <a id="accessingTDSMonitoringAndDebuggingTools" class="example">
-      Accessing TDS Monitoring and Debugging Tools
-    </a>
+
+    <div id="expanded" class="exercise">
+      <h5>Accessing TDS Monitoring and Debugging Tools</h5>
+<p>Other than the compelling security reasons, you will want to enable TSL/SSL to take advantage of a couple of monitoring and debugging tools: the
+  <a href="http://localhost:8080/thredds/admin/debug">TDS Remote Management Tool</a>, and the <a href="tdsMonitor.html">TdsMonitor Tool</a> -- both of which
+  (out-of-the-box) require TSL/SSL to access.</p>
+<ol>
+
+
+  <li>Enable TSL/SSL in Tomcat</li>
+  <p>If Tomcat has not already been configured to run via TSL/SSL, follow the tutorial in the previous section to <a href="#sslinTomcat">Enable TSL/SSL in
+    Tomcat</a>.</p>
+
+
+  <li>Modify <code>${tomcat_home}/conf/tomcat-users.xml</code> to add the new <code>tdsConfig</code> and <code>tdsMonitor</code> roles. Add these roles to your
+    list of roles:
+  </li>
+<pre>
+&lt;tomcat-users&gt;
+    &lt;role rolename="manager-gui"/&gt;
+    <strong>&lt;role rolename="tdsConfig"/&gt;
+      &lt;role rolename="tdsMonitor"/&gt;</strong>
+    &lt;user username="admin" 
+          password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" 
+          roles="manager-gui,<strong>tdsConfig, tdsMonitor</strong>"/&gt;
+&lt;/tomcat-users&gt;
+</pre>
+  <li>Restart Tomcat</li>
+
+    </dev>
+
+
+
   </ul>
   <h3>Resources</h3>
   <ul>
-    <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html">SSL Configuration HOW-TO</a><br> The Apache Tomcat document detailing how to enable
-      SSL.
+    <li><a href="https://www.ssllabs.com/ssltest/">Qualys SSL Server Test</a><br> is a free online service that analyzes the configuration of any <i>public</i> TSL/SSL web server. <b>Note</b>: be sure to check the <i>Do not show the results on the boards</i> box if you do not want your results to be public.</i> 
     </li>
-    <li><a href="http://tomcat.apache.org/migration.html#Manager_application">Tomcat Migration Guide</a><br> A document detailing the various changes between
+    <li><a href="http://tomcat.apache.org/tomcat-8.0-doc/ssl-howto.html">TSL/SSL Configuration HOW-TO</a><br> The Apache Tomcat document detailing how to enable
+      TSL/SSL.
+    </li>
+    <li><a href="http://tomcat.apache.org/migration.html">Tomcat Migration Guide</a><br> A document detailing the various changes between
       Tomcat versions.
     </li>
     <li><a href="http://www.sslshopper.com/article-when-are-self-signed-certificates-acceptable.html">When are self-signed certificates acceptable?</a><br> A
@@ -416,7 +760,7 @@
     <li>Not enabled by default.</li>
     <li>Allows Tomcat administrators to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat.</li>
     <li>If exploited, an attacker can use the <code>manager</code> application to install programs on your server willy-nilly.</li>
-    <li>If you choose to enable the <code>manager</code> application, we <em>highly recommend</em> enabling digested passwords and SSL encryption for the <code>manager</code>.
+    <li>If you choose to enable the <code>manager</code> application, we <em>highly recommend</em> enabling digested passwords and TSL/SSL encryption for the <code>manager</code>.
     </li>
     <li>Restricting access to the <code>manager</code> application to a small subset of IP addressess or host names using a Tomcat valve, etc., is also a good
       idea.
@@ -424,16 +768,155 @@
     <li>Uninstall this application if you don't plan to use it.</li>
   </ul>
 
-  <a id="tomcatManagerSSL" class="example">
-    Enabling SSL for the Tomcat <code>manager</code> application
-  </a>
+
+    <div id="expanded" class="exercise">
+   <h3>Enabling TSL/SSL for the Tomcat <code>manager</code> application</h3>
+<ol>
+  <li>Modify the deployment descriptor of the Tomcat <code>manager</code> application.</li>
+  <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code>manager</code> application:</p>
+<pre>
+<strong>$</strong> vi ${tomcat_home}/webapps/manager/WEB-INF/web.xml
+</pre>
+  <p>Locate the <code>&lt;security-constraint&gt;</code> elements (near the bottom of the file):</p>
+<pre>
+&lt;!-- Define a Security Constraint on this Application --&gt;
+&lt;!-- NOTE:  None of these roles are present in the default users file --&gt;
+&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;
+      HTML Manager interface (for humans)
+    &lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+     &lt;role-name&gt;manager-gui&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+&lt;/security-constraint&gt;
+&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;
+      Text Manager interface (for scripts)
+    &lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/text/*&lt;/url-pattern&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+     &lt;role-name&gt;manager-script&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+&lt;/security-constraint&gt;
+&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;JMX Proxy interface&lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+     &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+&lt;/security-constraint&gt;
+&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;Status interface&lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+     &lt;role-name&gt;manager-gui&lt;/role-name&gt;
+     &lt;role-name&gt;manager-script&lt;/role-name&gt;
+     &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
+     &lt;role-name&gt;manager-status&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+&lt;/security-constraint&gt;
+
+</pre>
+  <p>The Tomcat 8 version of the <code>manager</code> application deployment descriptor contains a <code>&lt;security-constraint&gt;</code> section for each of
+    the four possible <code>ContactPaths</code> (as per <a href="http://tomcat.apache.org/migration.html">Manager Application section of the
+      Tomcat Migration Guide</a>).</p>
+
+  <p>Add a <code>&lt;user-data-constraint&gt;</code> with a <code>&lt;transport-guarantee&gt;</code> of <code>CONFIDENTIAL</code> for the desired <code>ContactPaths</code>
+    to to enable port-forwarding to port 8443:</p>
+<pre>
+&lt;!-- Define a Security Constraint on this Application --&gt;
+&lt;!-- NOTE:  None of these roles are present in the default users file --&gt;
+&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;
+     HTML Manager interface (for humans)
+    &lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/html/*&lt;/url-pattern&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+     &lt;role-name&gt;manager-gui&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+  <strong>&lt;user-data-constraint&gt;
+    &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+  &lt;/user-data-constraint&gt;</strong>
+&lt;/security-constraint&gt;
+
+&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;
+     Text Manager interface (for scripts)
+    &lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/text/*&lt;/url-pattern&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+     &lt;role-name&gt;manager-script&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+  <strong>&lt;user-data-constraint&gt;
+    &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+  &lt;/user-data-constraint&gt;</strong>
+&lt;/security-constraint&gt;
+
+&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;JMX Proxy interface&lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/jmxproxy/*&lt;/url-pattern&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+     &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;  
+<strong>  &lt;user-data-constraint&gt;
+    &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+  &lt;/user-data-constraint&gt;
+</strong>&lt;/security-constraint&gt;
+
+&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;Status interface&lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/status/*&lt;/url-pattern&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+     &lt;role-name&gt;manager-gui&lt;/role-name&gt;
+     &lt;role-name&gt;manager-script&lt;/role-name&gt;
+     &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
+     &lt;role-name&gt;manager-status&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+ <strong> &lt;user-data-constraint&gt;
+   &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+  &lt;/user-data-constraint&gt;</strong>
+&lt;/security-constraint&gt;</pre>
+<li>Verify TSL/SSL has been enabled for the Tomcat <code>manager</code> application.</li>
+  <p>Restart Tomcat and verify TSL/SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li>
+  </p>
+  <p><img src="../images/managerssl.png" alt="Tomcat manager authentication prompt"></p>
+  <li>NOTE: You will have to redo this every time you upgrade Tomcat.</li>
+</ol>
+  
+  <div id="expanded" class="troubleshooting">
+    <h4>Troubleshooting</h4>
+    <ul>
+      <li>        Check the XML syntax in <code>web.xml</code> to make sure it is well-formed and without error.      </li>
+      <li>        Did you specify a <code>&lt;transport-guarantee&gt;</code> of <code>CONFIDENTIAL</code>?      </li>
+      <li>        Did you restart Tomcat after you made your changes to <code>web.xml</code>?      </li>
+    </ul>
+  </div>
+
+  </div>
 
   <h3>Resources</h3>
   <ul>
-    <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Manager App HOW-TO</a><br> The Apache Tomcat document referencing how to use and
+    <li><a href="http://tomcat.apache.org/tomcat-8.0-doc/manager-howto.html">Manager App HOW-TO</a><br> The Apache Tomcat document referencing how to use and
       configure the <code>manager</code> application.
     </li>
-    <li><a href="http://tomcat.apache.org/migration.html#Manager_application">Tomcat Migration Guide</a><br> A document detailing the various changes between
+    <li><a href="http://tomcat.apache.org/migration.html">Tomcat Migration Guide</a><br> A document detailing the various changes between
       Tomcat versions contains a section dedicated to the <code>manager</code> application.
     </li>
   </ul>
@@ -484,7 +967,7 @@
   <div id="note" class="info">
     <h4>Tomcat Valves</h4>
 
-    <p>A <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html">valve</a> element represents a component that will be inserted into the request
+    <p>A <a href="http://tomcat.apache.org/tomcat-8.0-doc/config/valve.html">valve</a> element represents a component that will be inserted into the request
       processing pipeline for the associated Catalina container. </p>
   </div>
   <ul>
@@ -529,7 +1012,7 @@
 
   <h3>Resources</h3>
   <ul>
-    <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html">The Valve Component</a><br> Tomcat documentation about the various
+    <li><a href="http://tomcat.apache.org/tomcat-8.0-doc/config/valve.html">The Valve Component</a><br> Tomcat documentation about the various
       <code>valve</code> components available for use.
     </li>
   </ul>

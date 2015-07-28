@@ -667,7 +667,7 @@ public class HTTPMethod implements AutoCloseable
     protected boolean sessionCompatible(String other)
     {
         try {
-            return sessionCompatible(HTTPAuthScope.urlToScope(other));
+            return sessionCompatible(HTTPAuthUtil.urlToScope(other));
         } catch (HTTPException e) {
             return false;
         }
@@ -697,17 +697,15 @@ public class HTTPMethod implements AutoCloseable
         String surl = session.getSessionURL();
         // Creat a authscope from the url
         AuthScope scope;
-        String[] principalp = new String[]{null};
         if(surl == null)
             scope = session.getRealm();
         else
-            scope = HTTPAuthScope.urlToScope(HTTPAuthPolicy.BASIC, surl, principalp);
+            scope = HTTPAuthUtil.urlToScope(surl, HTTPAuthSchemes.BASIC);
 
         // Provide a credentials (provider) to enact the process
         // We use the a caching instance so we can intercept getCredentials
         // requests to check the cache.
-        HTTPCachingProvider hap = new HTTPCachingProvider(this.session.getAuthStore(),
-            scope, principalp[0]);
+        HTTPCachingProvider hap = new HTTPCachingProvider(this.session.getAuthStore());
 
         // New in httpclient 4.2; will need to change in 4.3
         this.session.setAuthentication(hap);

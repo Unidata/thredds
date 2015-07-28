@@ -49,6 +49,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.util.*;
+import ucar.httpservices.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -56,10 +57,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.log.LoggerFactory;
-import ucar.httpservices.HTTPException;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -171,7 +168,7 @@ public class Tdm {
     for (String name : serverNames) {
       HTTPSession session = new HTTPSession(name);
       // AuthScope scope = new AuthScope(ANY_HOST, -1, ANY_REALM, "Digest");
-      session.setCredentialsProvider(new CredentialsProvider() {
+      session.setCredentialsProvider(name,new CredentialsProvider() {
         public Credentials getCredentials(AuthScope scope) {
           //System.out.printf("getCredentials called %s %s%n", user, pass);
           return new UsernamePasswordCredentials(user, pass);

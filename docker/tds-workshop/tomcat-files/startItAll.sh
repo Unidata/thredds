@@ -13,14 +13,13 @@ echo "Starting tomcat..."
 #   first time and an external content directory is not
 #   mounted with a `docker -v` option.
 #
-echo "Waiting for tomcat to start..."
+echo "Waiting for the TDS to start..."
 while [ ! -f /usr/local/tomcat/content/thredds/threddsConfig.xml ]
 do
   sleep 0.5s
 done
 
 echo "Starting the TDM"
-
 #
 # Get the docker container IP, add the https and add the port number to 
 #   the IP address. The SSL enabled port number is assumed to be 8443.
@@ -28,9 +27,11 @@ echo "Starting the TDM"
 IP=`/sbin/ip route | awk '/scope/ { print $9 }'`
 IP="https://$IP:8443/"
 echo `cat /usr/local/tomcat/content/tdm/runTdm.sh`$IP > /usr/local/tomcat/content/tdm/runTdm.sh 
-
 /bin/bash /usr/local/tomcat/content/tdm/runTdm.sh&
 
+echo "Chaning permissions to play nice with shared data volumes..."
+chmod -R o+rw content/thredds logs/
+
 echo "Let's play!"
-cat /usr/local/tomcat/content/tdm/runTdm.sh
-/bin/bash
+/bin/bash --login
+

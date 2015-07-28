@@ -34,10 +34,7 @@ package ucar.nc2.util.net;
 
 import org.apache.http.HttpEntity;
 import org.junit.Test;
-import ucar.httpservices.HTTPException;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPFormBuilder;
-import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.*;
 import ucar.nc2.util.UnitTestCommon;
 
 import java.io.*;
@@ -96,7 +93,6 @@ public class TestFormBuilder extends UnitTestCommon
 
     File attach3file = null;
 
-
     //////////////////////////////////////////////////
     // Constructor(s)
 
@@ -152,23 +148,9 @@ public class TestFormBuilder extends UnitTestCommon
             throws Exception
     {
         // Try to create a tmp file
-        String tmppath = System.getenv("TEMP");
-        if(tmppath == null || tmppath.length() == 0)
-            tmppath = "/tmp";
-        File tmpdir = new File(tmppath);
-        if(!tmpdir.exists() || !tmpdir.canWrite())
-            throw new IOException("Cannot create temp file: no tmp dir");
-        try {
-            attach3file = File.createTempFile("attach3", ".txt", tmpdir);
-            attach3file.deleteOnExit();
-        } catch (IOException e) {
-            throw new IOException("Cannot create temp file");
-        }
+	attach3file = HTTPUtil.fillTempFile("attach3.txt", ATTACHTEXT);
+        attach3file.deleteOnExit();
 
-        // Fill with the value of ATTACHTEXT
-        FileOutputStream fw = new FileOutputStream(attach3file);
-        fw.write(ATTACHTEXT.getBytes(HTTPFormBuilder.ASCII));
-        fw.close();
         pass = true;
         try {
             HTTPFormBuilder builder = buildForm(true);
@@ -228,10 +210,16 @@ public class TestFormBuilder extends UnitTestCommon
         builder.add("hardware", HARDWAREENTRY);
 
         if(multipart) {
-            builder.add("attachmentOne", EXTRATEXT.getBytes(HTTPFormBuilder.ASCII), "extra.html");
-            builder.add("attachmentTwo", BUNDLETEXT.getBytes(HTTPFormBuilder.ASCII), "bundle.xidv");
-            if(attach3file != null)
+            // Use bytes
+            builder.add("attachmentOne", EXTRATEXT.getBytes(HTTPUtil.ASCII), "extra.html");
+            // Use Inputstream
+            byte[] bytes = BUNDLETEXT.getBytes(HTTPUtil.UTF8);
+            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+            builder.add("attachmentTwo", bis, "bundle.xidv");
+            if(attach3file != null) {
+                // Use File
                 builder.add("attachmentThree", attach3file);
+            }
         }
         return builder;
     }

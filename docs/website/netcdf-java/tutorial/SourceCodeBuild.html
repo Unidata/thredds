@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>Building THREDDS from source code</title>
+<link rel="stylesheet" href="./../../tds/tutorial/tutorial_adoc.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>Building THREDDS from source code</h1>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_assembly">Assembly</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>THREDDS source code is hosted on <a href="https://github.com/Unidata/thredds">GitHub</a>, and—as of v4.6.1—we use
+<a href="https://gradle.org/">Gradle</a> to build it. Ant and Maven builds are no longer supported.
+THREDDS includes the NetCDF-Java client libraries, the TDS server, the TDM indexer, and other related packages.
+To build, you need <a href="https://git-scm.com/">Git</a> and
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK 7+</a> installed.</p>
+</div>
+<div class="paragraph">
+<p>First, clone the THREDDS repository from Github:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git clone git://github.com/Unidata/thredds.git thredds</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll have a new folder named <code>thredds</code> in your working directory. Change into it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cd thredds</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default, the current branch head is set to <code>master</code>, which is our main development branch.
+If you&#8217;d like to build a released version instead—v4.6.2, for example—you&#8217;ll need to checkout that version:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git checkout v4.6.2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, use the <a href="https://docs.gradle.org/current/userguide/gradle_wrapper.html">Gradle wrapper</a>
+to execute the <code>assemble</code> task:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./gradlew assemble</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There will be various artifacts within the <code>&lt;subproject&gt;/build/libs/</code> subdirectories. For example, the TDS WAR file
+will be in <code>tds/build/libs/</code>. The <a href="http://stackoverflow.com/questions/11947037/what-is-an-uber-jar">uber jars</a>,
+such as toolsUI.jar and netcdfAll.jar, will be found in <code>build/libs/</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_publishing">Publishing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>NetCDF-Java is comprised of several modules, many of which you can use within your own projects, as described
+<a href="../reference/BuildDependencies.html">here</a>. At Unidata, we publish the artifacts that those modules generate to
+our <a href="https://artifacts.unidata.ucar.edu/index.html#view-repositories">Nexus repository</a>.</p>
+</div>
+<div class="paragraph">
+<p>However, it may happen that you need artifacts for the in-development version of THREDDS, which we usually don&#8217;t
+upload to Nexus. Never fear: you can build them yourself and publish them to your local Maven repository!</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git checkout master
+./gradlew publishToMavenLocal</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will find the artifacts in <code>~/.m2/repository/edu/ucar/</code>. If you&#8217;re building your projects using Maven, artifacts
+in your local repo will be preferred over remote ones by default; you don&#8217;t have to do any additional configuration
+in order for them to be picked up. If you&#8217;re building with Gradle, you&#8217;ll need to do
+<a href="https://docs.gradle.org/current/userguide/dependency_management.html#sub:maven_local">a little more work</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-07-21 16:48:50 MDT
+</div>
+</div>
+</body>
+</html>

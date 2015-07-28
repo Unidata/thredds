@@ -1,26 +1,251 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>Untitled Document</title>
-  <link href="../../cdm.css" rel="stylesheet" type="text/css"/>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>ToolsUI</title>
+<link rel="stylesheet" href="./../../cdm.css">
 </head>
-
-<body>
-<h1>ToolsUI Reference</h1>
-
-<p>&nbsp;</p>
-
-<h2>Viewer Tab</h2>
-
-<h3>Show data values</h3>
-
-<p>Select a variable in the right table, right click for context menu and choose &quot;NcDump Data&quot;. That takes you to the &quot;NcDump Variable Data&quot;
-  popup window. The full extent of the variable's indexes are shown in F90 form (<em>start:end:stride</em>), where start and stop are inclusive and 0 based. For
-  example:</p>
-<blockquote>
-  <p><strong>varName(0:105483:1, 0:0:1, 0:0:1, 0:0:1)</strong></p>
-</blockquote>
-<p>You may now edit that spec to dump just the values you want. Its a good idea to make the number of values reasonably small if possible.</p>
+<body class="article">
+<div id="header">
+<h1>ToolsUI</h1>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_running_toolsui">Running ToolsUI</a>
+<ul class="sectlevel2">
+<li><a href="#_download_and_run_locally">Download and run locally</a></li>
+<li><a href="#_launch_from_web_start">Launch from Web Start</a></li>
+</ul>
+</li>
+<li><a href="#_tabs">Tabs</a>
+<ul class="sectlevel2">
+<li><a href="#_viewer">Viewer</a></li>
+<li><a href="#_writer">Writer</a></li>
+<li><a href="#_ncdump">NCDump</a></li>
+<li><a href="#_coordsys">CoordSys</a></li>
+<li><a href="#_featuretypes">FeatureTypes</a></li>
+<li><a href="#_thredds">THREDDS</a></li>
+<li><a href="#_ncml">NcML</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_running_toolsui">Running ToolsUI</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_download_and_run_locally">Download and run locally</h3>
+<div class="paragraph">
+<p>You can download <code>toolsUI.jar</code> from either the NetCDF-Java
+<a href="/downloads/netcdf/netcdf-java-4/index.jsp">downloads</a> or
+<a href="../../documentation.htm#current">documentation</a> pages.
+You can then run the ToolsUI application using a command similar to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>java -Xmx1g -jar toolsUI.jar</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, on many operating systems, you can simply double-click the JAR file.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_launch_from_web_start">Launch from Web Start</h3>
+<div class="paragraph">
+<p>Simply click <a href="../../webstart/netCDFtools.jnlp">here</a> to launch ToolsUI from your browser.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tabs">Tabs</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_viewer">Viewer</h3>
+<div class="paragraph">
+<p>The Viewer tab reads a dataset and displays its metadata in a tabular format.</p>
+</div>
+<div class="sect3">
+<h4 id="_testing_dataset_readability">Testing dataset readability</h4>
+<div class="paragraph">
+<p>The NetCDF-Java library can read data from a wide variety of <a href="../formats/FileTypes.html">scientific data formats</a>.
+To check that your dataset can be read by NetCDF-Java, try to open it in the Viewer tab. You can open it in two ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Enter the URL or file path of the dataset in the "dataset" field. Then hit the "Enter" key.</p>
+</li>
+<li>
+<p>Click the folder icon and select the file in the FileChooser dialog that pops up.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the dataset can be opened, you will see its dimensions, variables, and other details in the window. For example:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="viewer1.png" alt="Viewer tab"></span></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_showing_data_values">Showing data values</h4>
+<div class="paragraph">
+<p>Select a variable in the table, right-click to open its context menu, and choose "NCdump Data".
+The "NCDump Variable Data" dialog will pop up. Here you can print (i.e. "dump") its values to the screen.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8201;&#8212;&#8201;using <a href="http://www.adt.unipd.it/corsi/Bianco/www.pcc.qub.ac.uk/tec/courses/f90/stu-notes/F90_notesMIF_5.html#HEADING41">Fortran 90 array section syntax</a>
+(<code>start:end:stride</code>)&#8201;&#8212;&#8201;you can print (i.e. "dump") all or part of the variable&#8217;s values to the screen. By default,
+the full extent of the variable&#8217;s dimensions are shown, where <code>start</code> and <code>end</code> are inclusive and zero-based.
+For example:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="ncdump_variable_data1.png" alt="Full extent"></span></p>
+</div>
+<div class="paragraph">
+<p>However, you can edit that section to dump just the values you want. For example:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="ncdump_variable_data2.png" alt="Sliced"></span></p>
+</div>
+<div class="paragraph">
+<p>In general, it&#8217;s a good idea to make the number of values dumped reasonably small, if possible.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_writer">Writer</h3>
+<div class="paragraph">
+<p>The Writer tab takes a dataset in <a href="../formats/FileTypes.html">any format that NetCDF-Java can understand</a> and writes
+it out to NetCDF. Several NetCDF "flavors" are supported:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>netcdf3</p>
+</li>
+<li>
+<p>netcdf4</p>
+</li>
+<li>
+<p>netcdf4_classic</p>
+</li>
+<li>
+<p>netcdf3c</p>
+</li>
+<li>
+<p>netcdf3c64</p>
+</li>
+<li>
+<p>ncstream</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note: to write to NetCDF-4, you must have the <a href="../netcdf4Clibrary.html">C library loaded</a>.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="writer1.png" alt="Writer tab"></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ncdump">NCDump</h3>
+<div class="paragraph">
+<p>The NCDump tab offers functionality similar to&#8212;&#8203;albeit more limited than&#8212;&#8203;the
+<a href="https://www.unidata.ucar.edu/software/netcdf/docs/ncdump-man-1.html">ncdump</a> utility. The string that you enter in
+the "Command" field should be of the form:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;filename&gt; [-unsigned] [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="ncdump1.png" alt="NCDump tab"></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_coordsys">CoordSys</h3>
+<div class="paragraph">
+<p>The CoordSys tab displays the coordinate systems that NetCDF-Java identified in the dataset.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="coordsys1.png" alt="CoordSys tab"></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_featuretypes">FeatureTypes</h3>
+<div class="paragraph">
+<p>The sub-tabs of FeatureTypes provide detailed information about the various
+<a href="../FeatureDatasets/Overview.html">scientific feature types</a> that a CDM dataset can contain.</p>
+</div>
+<div class="sect3">
+<h4 id="_featuretypes_grids">FeatureTypes &#8594; Grids</h4>
+<div class="paragraph">
+<p>The Grids sub-tab can be used to determine if a dataset contains grids or not. Simply try to open the dataset, the
+same way you did in the <a href="#_viewer">Viewer</a> tab. If rows of metadata are displayed in the tables, the dataset is gridded;
+otherwise it&#8217;s not (or perhaps NetCDF-Java just doesn&#8217;t recognize it as such).</p>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;ve opened the gridded data, you can click the <span class="image"><img src="redrawButton.jpg" alt="Grid Viewer"></span> button to display the
+"Grid Viewer" dialog. Press the other <span class="image"><img src="redrawButton.jpg" alt="Grid Viewer"></span> button in the dialog to visualize your grid.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="gridViewer1.png" alt="Grid Viewer"></span></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_featuretypes_pointfeature">FeatureTypes &#8594; PointFeature</h4>
+<div class="paragraph">
+<p>The PointFeature sub-tab can be used to determine if a dataset contains
+<a href="../FeatureDatasets/PointFeatures.html">point features</a> or not. Simply try to open the dataset, the same way you did
+in the <a href="#_viewer">Viewer</a> tab. If a metadata row appears in the top-left table, the dataset is "pointed"; otherwise it&#8217;s not
+(or perhaps NetCDF-Java just doesn&#8217;t recognize it as such). Note that the middle-left table will populate as soon as
+you choose a row in the top-left table. Similarly, the bottom table will populate as soon as you choose a row in the
+middle-left table.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="pointFeature1.png" alt="PointFeature sub-tab"></span></p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_thredds">THREDDS</h3>
+<div class="paragraph">
+<p>The THREDDS tab acts as a client to THREDDS servers. Simply input the URL of a catalog and the available datasets will
+be displayed, just as if you were navigating a THREDDS server with your browser. The difference is that when you
+select a dataset in the left window and then click on the "Open File", "Open CoordSys", or "Open dataset" buttons,
+ToolsUI will automatically switch to the appropriate tab and show metadata about that dataset.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="thredds1.png" alt="THREDDS tab"></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ncml">NcML</h3>
+<div class="paragraph">
+<p>When you open a dataset in the NcML tab, an NcML document containing all its metadata will be generated. From here,
+it&#8217;s easy to modify the dataset using the <a href="../../ncml/Tutorial.html">powers of NcML</a> and write the document out to
+disk.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="ncml1.png" alt="NcML tab"></span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-07-22 19:50:27 MDT
+</div>
+</div>
 </body>
 </html>
