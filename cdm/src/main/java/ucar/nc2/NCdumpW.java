@@ -840,6 +840,10 @@ public class NCdumpW {
     if (s.getRank() > 0) {
       writeNcMLDimension(s, out);
     }
+    else {
+      out.format("'")
+    }
+    
     out.format(">%n");
 
     indent.incr();
