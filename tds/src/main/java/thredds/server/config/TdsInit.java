@@ -308,7 +308,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     startupLog.info("TdsInit:  AggregationCache= " + dir + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs);
 
     /* 4.3.15: grib index file placement, using DiskCache2  */
-    String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File(tdsContext.getThreddsDirectory().getPath(), "/cache/grib/").getPath());
+    String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File(tdsContext.getThreddsDirectory(), "/cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = ThreddsConfig.getBoolean("GribIndex.alwaysUse", false);
     Boolean gribIndexNeverUse = ThreddsConfig.getBoolean("GribIndex.neverUse", false);
     String gribIndexPolicy = ThreddsConfig.get("GribIndex.policy", null);

@@ -39,6 +39,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
 
 /**
@@ -46,8 +49,12 @@ import thredds.servlet.ServletUtil;
  *
  * @author caron
  */
+@Component
 public class TomcatAuthorizer implements Authorizer {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TomcatAuthorizer.class);
+
+  @Autowired
+  private TdsContext tdsContext;
 
   private boolean useSSL = false;
   private String sslPort = "8443";
@@ -77,8 +84,8 @@ public class TomcatAuthorizer implements Authorizer {
     session.setAttribute("origRequest", ServletUtil.getRequest(req));
     session.setAttribute("role", role);
 
-    String urlr = useSSL ? "https://" + req.getServerName() + ":"+ sslPort + ServletUtil.getContextPath()+"/restrictedAccess/" + role :
-                           "http://" + req.getServerName() + ":"+ req.getServerPort() + ServletUtil.getContextPath()+"/restrictedAccess/" + role;
+    String urlr = useSSL ? "https://" + req.getServerName() + ":"+ sslPort + tdsContext.getContextPath()+"/restrictedAccess/" + role :
+                           "http://" + req.getServerName() + ":"+ req.getServerPort() + tdsContext.getContextPath()+"/restrictedAccess/" + role;
 
     if (log.isDebugEnabled()) log.debug("redirect to = {}", urlr);
     res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);

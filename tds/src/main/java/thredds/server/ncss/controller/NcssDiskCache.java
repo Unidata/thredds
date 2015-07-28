@@ -46,7 +46,6 @@ import ucar.nc2.util.DiskCache2;
 @Component
 @Immutable
 public final class NcssDiskCache {
-  private static final String defaultCachePath = "/cache/ncss";
 
   @Autowired
   private TdsContext tdsContext;
@@ -57,7 +56,7 @@ public final class NcssDiskCache {
   public NcssDiskCache() {
 
     //maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
-    this.cachePath = ThreddsConfig.get("NetcdfSubsetService.dir", ServletUtil.getContentPath() + defaultCachePath);
+    this.cachePath = ThreddsConfig.get("NetcdfSubsetService.dir", new File(tdsContext.getThreddsDirectory(), "/cache/ncss/").getPath());
     File cacheDir = new File(cachePath);
     if (!cacheDir.exists()) {
       if (!cacheDir.mkdirs()) {

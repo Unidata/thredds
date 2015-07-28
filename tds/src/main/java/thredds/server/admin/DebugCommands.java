@@ -301,9 +301,9 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new Action("showSystemProperties", "Show Server info") {
+    act = new Action("showSystemProperties", "Show System Properties") {
       public void doAction(Event e) {
-        ServletUtil.showServerInfo(e.pw);
+        ServletUtil.showSystemProperties(e.pw);
       }
     };
     debugHandler.addAction(act);
@@ -323,13 +323,6 @@ public class DebugCommands {
     debugHandler.addAction(act);
 
     act = new Action("showSecurity", "Show Security info") {
-      public void doAction(Event e) {
-        e.pw.println(ServletUtil.showSecurity(e.req, "admin"));
-      }
-    };
-    debugHandler.addAction(act);
-
-    act = new Action("showSpringControllers", "Show Spring Controllers info") {
       public void doAction(Event e) {
         e.pw.println(ServletUtil.showSecurity(e.req, "admin"));
       }

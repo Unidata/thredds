@@ -884,19 +884,6 @@ public class ToolsUI extends JPanel {
     AbstractAction logoAction = new AbstractAction() {
       public void actionPerformed(ActionEvent evt) {
         new MySplashScreen();
-        /* final SplashScreen splash = SplashScreen.getSplashScreen();
-               if (splash == null) {
-                   System.out.println("SplashScreen.getSplashScreen() returned null");
-                   return;
-               }
-               Graphics2D g = splash.createGraphics();
-               if (g == null) {
-                   System.out.println("g is null");
-                   return;
-               }
-        Image image = Resource.getImage("/resources/nj22/ui/pix/ring2.jpg");
-        g.drawImage(image, null, null);  */
-
       }
     };
     BAMutil.setActionProperties(logoAction, null, "Logo", false, 'L', 0);
@@ -6189,13 +6176,13 @@ public class ToolsUI extends JPanel {
               "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
               "<b>" + getVersion() + "</b>" +
               "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
-              "<br><b><i>Developers:</b>John Caron, Ethan Davis, Sean Arms, Dennis Heimbinger, Lansing Madry, Ryan May, Christian Ward-Garrison</i></b>" +
+              "<br><b><i>Developers:</b>John Caron, Sean Arms, Dennis Heimbinger, Ryan May, Christian Ward-Garrison</i></b>" +
               "</center>" +
               "<br><br>With thanks to these <b>Open Source</b> contributors:" +
               "<ul>" +
               "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
               "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>" +
-              "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
+              "<li><b>Apache Jakarta Commons</b> libraries: (http://jakarta.apache.org/commons/)</li>" +
               "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (http://www.unidata.ucar.edu/software/IDV/)</li>" +
               "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>" +
               "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
@@ -6220,7 +6207,7 @@ public class ToolsUI extends JPanel {
       icon.setOpaque(true);
       icon.setBackground(new Color(0xFFECEC));
 
-      JLabel threddsLogo = new JLabel(Resource.getIcon(BAMutil.getResourcePath() + "threddsLogo.png", false));
+      JLabel threddsLogo = new JLabel(Resource.getIcon(BAMutil.getResourcePath() + "cdm.png", false));
       threddsLogo.setBackground(new Color(0xFFECEC));
       threddsLogo.setOpaque(true);
 

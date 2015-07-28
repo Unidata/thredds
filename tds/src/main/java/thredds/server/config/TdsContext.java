@@ -42,7 +42,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.util.Log4jWebConfigurer;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.servlet.ServletUtil;
 import thredds.util.filesource.*;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
@@ -136,7 +135,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
     // Set the context path, eg "thredds"
     contextPath = servletContext.getContextPath();
-    ServletUtil.setContextPath(contextPath);
     InvDatasetFeatureCollection.setContextName(contextPath);
 
     // Set the root directory and source.
@@ -147,9 +145,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       throw new IllegalStateException(msg);
     }
     this.servletRootDirectory = new File(rootPath);
-    BasicDescendantFileSource rootDirSource = new BasicDescendantFileSource(this.servletRootDirectory);
-    this.servletRootDirectory = rootDirSource.getRootDirectory();
-    ServletUtil.setRootPath(rootDirSource.getRootDirectoryPath());
 
     // Set the startup (initial install) content directory and source.
     this.startupContentDirectory = new File(this.servletRootDirectory, this.contentStartupPathProperty);
@@ -216,7 +211,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       logServerStartup.error(message);
       throw new IllegalStateException(message);
     }
-    ServletUtil.setContentPath(contentDirSource.getRootDirectoryPath());
 
     // public content
     this.publicContentDirectory = new File(this.threddsDirectory, "public");

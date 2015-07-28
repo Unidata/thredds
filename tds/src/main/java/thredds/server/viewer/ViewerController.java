@@ -33,6 +33,7 @@
 
 package thredds.server.viewer;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 
@@ -48,6 +49,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
 import ucar.unidata.util.StringUtil2;
@@ -56,6 +58,9 @@ import ucar.unidata.util.StringUtil2;
 @RequestMapping("/view")
 public class ViewerController {
   private static Logger log = LoggerFactory.getLogger(ViewerController.class);
+
+  @Autowired
+  private TdsContext tdsContext;
 
   @Autowired
   ViewerService viewerService;
@@ -70,11 +75,14 @@ public class ViewerController {
 
     params.setViewer(params.getViewer() + ".jnlp"); //??
 
-    //Check paths
-    String template = viewerService.getViewerTemplate(ServletUtil.getRootPath() + "/WEB-INF/views/" + params.getViewer());
+    //Check paths LOOK lame
+    File viewPath = new File(tdsContext.getServletRootDirectory(), "/WEB-INF/views/" + params.getViewer());
+    String template = viewerService.getViewerTemplate(viewPath.getPath());
 
-    if (template == null)
-      template = viewerService.getViewerTemplate(ServletUtil.getContentPath() + "views/" + params.getViewer());
+    if (template == null) {
+      viewPath = new File(tdsContext.getContentRootDir(), "views/" + params.getViewer());
+      template = viewerService.getViewerTemplate(viewPath.getPath());
+    }
     if (template == null) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;

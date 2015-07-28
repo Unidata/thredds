@@ -80,7 +80,7 @@ public class WCSController {
     allowRemote = ThreddsConfig.getBoolean("WCS.allowRemote", false);
     deleteImmediately = ThreddsConfig.getBoolean("WCS.deleteImmediately", deleteImmediately);
     maxFileDownloadSize = ThreddsConfig.getBytes("WCS.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
-    String cache = ThreddsConfig.get("WCS.dir", ServletUtil.getContentPath() + "cache/wcs/");
+    String cache = ThreddsConfig.get("WCS.dir", new File(tdsContext.getThreddsDirectory(), "/cache/wcs/").getPath());
     File cacheDir = new File(cache);
     cacheDir.mkdirs();
 
