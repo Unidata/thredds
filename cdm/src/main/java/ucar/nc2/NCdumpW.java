@@ -841,7 +841,7 @@ public class NCdumpW {
       writeNcMLDimension(s, out);
     }
     else {
-      out.format("'")
+      out.format("'");
     }
     
     out.format(">%n");
