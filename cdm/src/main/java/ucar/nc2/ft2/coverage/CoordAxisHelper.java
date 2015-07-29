@@ -324,14 +324,11 @@ class CoordAxisHelper {
   }
 
   // look does min < max when !isAscending ?
-  // look specialize when only one point
+  // look could specialize when only one point
   private CoverageCoordAxis subsetValues(double minValue, double maxValue) {
-    double[] subsetValues = null;
-    int minIndex, maxIndex;
-    int count2 = 0;
 
-    minIndex = findCoordElementBounded(minValue, Mode.min);
-    maxIndex = findCoordElementBounded(maxValue, Mode.max);
+    int minIndex = findCoordElementBounded(minValue, Mode.min);
+    int maxIndex = findCoordElementBounded(maxValue, Mode.max);
     int count = maxIndex - minIndex + 1;
 
     if (minIndex < 0)
@@ -341,6 +338,14 @@ class CoordAxisHelper {
     if (count <= 0)
       throw new IllegalArgumentException("no points in subset");
 
+    return subsetValues(minIndex, maxIndex);
+  }
+
+  public CoverageCoordAxis subsetValues(int minIndex, int maxIndex) {
+    double[] subsetValues = null;
+    int count = maxIndex - minIndex + 1;
+
+    int count2 = 0;
     double[] values = axis.getValues();  // will be null for regular
     switch (axis.getSpacing()) {
 
@@ -371,6 +376,7 @@ class CoordAxisHelper {
     result.setIndexRange(minIndex, maxIndex, 1);
     return result;
   }
+
 
   /*
    * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords

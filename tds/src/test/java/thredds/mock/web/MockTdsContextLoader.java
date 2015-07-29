@@ -23,45 +23,23 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 	private TdsContentRootPath tdsContentRootPath;
 
 	public ApplicationContext loadContext(MergedContextConfiguration mcc) throws Exception {
-
 		return loadContext( mcc.getLocations() );
-
 	}
 	
 	@Override
 	public ApplicationContext loadContext(String... locations) throws Exception {
-	
 		final MockServletContext servletContext = new MockTdsServletContext();			
 		final MockServletConfig servletConfig = new MockServletConfig(servletContext);
-		
-		// Initialize the File Cache 
-		//initFileCache();
-		
 		final XmlWebApplicationContext webApplicationContext = new XmlWebApplicationContext();
 
 		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,	webApplicationContext);
 		webApplicationContext.setServletConfig(servletConfig);
 		webApplicationContext.setConfigLocations(locations);
-		
-//		webApplicationContext.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor(){
-//			@Override
-//			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory){
-//			
-//				//servletContext and servletConfig can be autowired by the servlet tests (OpendapServlet, fileServlet...)							
-//				beanFactory.registerResolvableDependency(MockServletContext.class, servletContext );
-//				beanFactory.registerResolvableDependency(MockServletConfig.class, servletConfig );
-//				
-//				
-//			}
-//		});		
-
-				
 		webApplicationContext.refresh();
 
 		TdsContext tdsContext = webApplicationContext.getBean(TdsContext.class);
 		checkContentRootPath(webApplicationContext, tdsContext);
-		
-		
+
 		webApplicationContext.registerShutdownHook();
 
 		return webApplicationContext;
@@ -72,20 +50,6 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
-	//No longer needed?
-//	private void initFileCache() {
-//		// Mock file cache...needed for running init method in thredds.server.views.FileView
-//		// CdmInit will set again the file cache through the its init method
-//		int min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 10);
-//		int max = ThreddsConfig.getInt("HTTPFileCache.maxFiles", 20);
-//		int secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 17 * 60);
-//		if (max > 0) {
-//			ServletUtil.setFileCache(new FileCache("HTTP File Cache", min, max,	-1, secs));
-//
-//		}
-//	}
 	
 	/**
 	 * If the test is annotated with TdsContentPath, override the contentRootPath with the provided path  

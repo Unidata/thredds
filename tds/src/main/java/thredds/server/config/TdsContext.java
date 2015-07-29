@@ -119,6 +119,10 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     this.servletContext = servletContext;
   }
 
+  public ServletContext getServletContext() {
+    return servletContext;
+  }
+
   @Override
   public void destroy() {
     logServerStartup.info("TdsContext: shutdownLogging()");

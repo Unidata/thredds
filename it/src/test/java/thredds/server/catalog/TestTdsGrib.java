@@ -117,7 +117,7 @@ public class TestTdsGrib {
 
     Dataset full = cat.findDatasetByID("HRRR/analysis/TP");
     Assert.assertNotNull(full);
-    Assert.assertEquals(10, full.getAccess().size());
+    Assert.assertEquals(9, full.getAccess().size());
     Assert.assertNull(full.getAccess(ServiceType.Resolver));
     Assert.assertNull(full.getAccess(ServiceType.HTTPServer));
     Assert.assertNotNull(full.getAccess(ServiceType.CdmRemote));
@@ -149,7 +149,7 @@ public class TestTdsGrib {
       } else {
         CatalogRef catref = (CatalogRef) ds;
         Catalog cat2 = TdsLocalCatalog.openFromURI(catref.getURI());
-        testCat(cat2, 10, false, "GridServices", 11);
+        testCat(cat2, 9, false, "GridServices", 11);
         break;
       }
     }

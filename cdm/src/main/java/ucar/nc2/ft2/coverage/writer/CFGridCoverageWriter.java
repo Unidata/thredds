@@ -186,14 +186,14 @@ public class CFGridCoverageWriter {
     }
 
     // write the grid data
-      for (Coverage grid : subsetDataset.getCoverages()) {
-        // LOOK - we need to call readData on the original
-        Coverage gridOrg = gdsOrg.findCoverage(grid.getName());
-        GeoReferencedArray array = gridOrg.readData(subsetParams);
+    for (Coverage grid : subsetDataset.getCoverages()) {
+      // LOOK - we need to call readData on the original
+      Coverage gridOrg = gdsOrg.findCoverage(grid.getName());
+      GeoReferencedArray array = gridOrg.readData(subsetParams);
 
-        Variable v = writer.findVariable(grid.getName());
-        if (show) System.out.printf("write grid %s%n", v.getNameAndDimensions());
-        writer.write(v, array.getData());
+      Variable v = writer.findVariable(grid.getName());
+      if (show) System.out.printf("write grid %s%n", v.getNameAndDimensions());
+      writer.write(v, array.getData());
     }
 
     //updateGeospatialRanges(writer, llrect );

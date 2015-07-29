@@ -45,15 +45,22 @@ public class CoverageSubsetter {
     List<CoverageCoordAxis> coordAxes = new ArrayList<>();
     List<CoverageTransform> coordTransforms = new ArrayList<>();
 
-    // subset non-horiz axes
+    // subset non-dependent non-horiz axes
     for (CoverageCoordAxis orgAxis : orgCoordAxis.values()) {
-      if (!orgAxis.getAxisType().isHoriz())
+      if (!orgAxis.getAxisType().isHoriz() && orgAxis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent)
         coordAxes.add( orgAxis.subset(params));
     }
     // subset horiz axes
     for (HorizCoordSys hcs : horizSet) {
       HorizCoordSys hcsSubset = hcs.subset(params);
       coordAxes.addAll( hcsSubset.getCoordAxes());
+    }
+    // subset dependent axes
+    for (CoverageCoordAxis orgAxis : orgCoordAxis.values()) {
+      if (!orgAxis.getAxisType().isHoriz() && orgAxis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
+        CoverageCoordAxis1D from = findIndependentAxis(orgAxis.getDependsOn(), coordAxes);
+        coordAxes.add(orgAxis.subsetDependent(from));
+      }
     }
 
     // subset coordSys, coverages, transforms
@@ -79,5 +86,12 @@ public class CoverageSubsetter {
             coordSys, coordTransforms, coordAxes, coverages, org.reader);  // use org.reader -> subset always in coord space !
   }
 
+  CoverageCoordAxis1D findIndependentAxis(String want, List<CoverageCoordAxis> axes) {
+    String name = want == null ? null : want.trim();
+    for (CoverageCoordAxis axis : axes)
+      if (axis instanceof CoverageCoordAxis1D && axis.getName().equalsIgnoreCase(name))
+        return (CoverageCoordAxis1D) axis;
+    return null;
+  }
 
 }

@@ -102,6 +102,8 @@ abstract public class CoverageCoordAxis {
 
   abstract public CoverageCoordAxis subset(SubsetParams params);
 
+  abstract public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D from);
+
   abstract public CoverageCoordAxis subset(double minValue, double maxValue);
 
   abstract public Array getCoordsAsArray() throws IOException;

@@ -3,24 +3,9 @@
          xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
          xmlns:xlink="http://www.w3.org/1999/xlink">
 
-  <service name="latest" serviceType="Resolver" base=""/>
-
-  <service name="all" base="" serviceType="compound">
-    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
-    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
-    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
-    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
-    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/"/>
-    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
-    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
-    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
-    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
-  </service>
-
   <featureCollection featureType="FMRC" name="GFS_CONUS_80km_nc" path="testGFSfmrc">
 
     <metadata inherited="true">
-      <serviceName>all</serviceName>
       <dataType>Grid</dataType>
       <dataFormat>NetCDF</dataFormat>
 
@@ -42,7 +27,6 @@
   <featureCollection featureType="FMRC" name="NAM FMRC" path="testNAMfmrc">
 
     <metadata inherited="true">
-      <serviceName>all</serviceName>
       <dataType>Grid</dataType>
       <dataFormat>NetCDF</dataFormat>
     </metadata>
@@ -75,7 +59,6 @@
   <featureCollection name="POLCOMS-Irish-Sea" featureType="FMRC" path="NCOF/POLCOMS/IRISH_SEA">
 
     <metadata inherited="true">
-      <serviceName>all</serviceName>
       <dataType>Grid</dataType>
       <dataFormat>NetCDF</dataFormat>
     </metadata>

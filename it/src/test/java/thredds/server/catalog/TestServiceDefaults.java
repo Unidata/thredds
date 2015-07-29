@@ -22,7 +22,7 @@ public class TestServiceDefaults {
     Assert.assertEquals(3, cat.getServices().size());
 
     check(cat, "all", 9);
-    check(cat, "GridServices", 11);
+    check(cat, "GridServices", 10);
     check(cat, "opendapOnly", 1);
 
     Service localServices = cat.findService("opendapOnly");

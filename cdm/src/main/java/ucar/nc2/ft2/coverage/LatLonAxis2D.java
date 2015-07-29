@@ -73,6 +73,11 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   }
 
   @Override
+  public LatLonAxis2D subsetDependent(CoverageCoordAxis1D from) {
+    return null; // LOOK
+  }
+
+  @Override
   public Array getCoordsAsArray() throws IOException {
     double[] values = getValues();
     return Array.factory(DataType.DOUBLE, shape, values);

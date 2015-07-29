@@ -39,7 +39,7 @@ public class ThreddsConfigTest {
 	public void testGet(){
 		assertEquals("THREDDS Support", ThreddsConfig.get( "serverInformation.contact.name", null));
 		assertEquals("true", ThreddsConfig.get( "CatalogServices.allowRemote", null));
-		assertEquals("true", ThreddsConfig.get( "WMS.allow", null));
+		assertEquals(null, ThreddsConfig.get( "WMS.allow", null));
 		assertEquals( 52428800, ThreddsConfig.getBytes( "NetcdfSubsetService.maxFileDownloadSize", -1L));
 	}
 	

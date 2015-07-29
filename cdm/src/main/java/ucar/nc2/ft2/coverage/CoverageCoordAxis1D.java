@@ -319,5 +319,11 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return this.copy();
   }
 
+  @Override
+  public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn) {
+    CoordAxisHelper helper = new CoordAxisHelper(this);
+    return helper.subsetValues(dependsOn.getMinIndex(), dependsOn.getMaxIndex()); // LOOK not dealing with stride
+  }
+
 }
 

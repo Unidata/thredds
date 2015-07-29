@@ -118,7 +118,7 @@ public class NcssShowFeatureDatasetInfo {
       return new ModelAndView("threddsXmlView", "Document", doc);
 
     } else {
-      String xslt = isPoint ? "ncssGridAsPoint" : "ncssGrid";
+      String xslt = isPoint ? "ncss/ncssGridAsPoint.xsl" : "ncss/ncssGrid.xsl";   // see XsltForHtmlView
       Map<String, Object> model = new HashMap<>();
       model.put("Document", doc);
       model.put("Transform", xslt);
@@ -139,7 +139,7 @@ public class NcssShowFeatureDatasetInfo {
     //accept list for Grid requests
     Element grids = new Element("Grid");
     for (SupportedFormat sf : SupportedOperation.GRID_REQUEST.getSupportedFormats()) {
-      gridAsPoint.addContent(new Element("accept").addContent(sf.getFormatName()).setAttribute("displayName", sf.getFormatName()));
+      grids.addContent(new Element("accept").addContent(sf.getFormatName()).setAttribute("displayName", sf.getFormatName()));
     }
 
     elem.addContent(gridAsPoint);
