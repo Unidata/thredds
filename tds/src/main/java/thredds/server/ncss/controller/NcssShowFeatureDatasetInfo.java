@@ -43,6 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
+import thredds.server.ncss.format.SupportedOperation;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -106,24 +107,18 @@ public class NcssShowFeatureDatasetInfo {
   }
 
   public ModelAndView showGridForm(CoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) throws IOException {
-    boolean netcdf4IsAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
     CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
 
+    Document doc = writer.makeDatasetDescription();
+    Element root = doc.getRootElement();
+    root.setAttribute("location", datsetUrlPath);
+    root.addContent(makeAcceptList());
+
     if (wantXml) {
-      Document datasetDescription = writer.makeDatasetDescription();
-      Element root = datasetDescription.getRootElement();
-      root.setAttribute("location", datsetUrlPath);
-      if (netcdf4IsAvailable)
-        addNetcdf4Format(datasetDescription, "/gridDataset");
+      return new ModelAndView("threddsXmlView", "Document", doc);
 
-      return new ModelAndView("threddsXmlView", "Document", datasetDescription);
-
-    } else { // LOOK WTF ??
+    } else {
       String xslt = isPoint ? "ncssGridAsPoint" : "ncssGrid";
-      Document doc = writer.makeDatasetDescription();
-      if (netcdf4IsAvailable)
-        addNetcdf4Format(doc, "/gridForm");
-
       Map<String, Object> model = new HashMap<>();
       model.put("Document", doc);
       model.put("Transform", xslt);
@@ -131,25 +126,40 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  private void addNetcdf4Format(Document datasetDescriptionDoc, String rootElementName) {
-    String xPathForGridElement = rootElementName + "/AcceptList/Grid";
-    addElement(datasetDescriptionDoc, xPathForGridElement, new Element("accept").addContent("netcdf4").setAttribute("displayName", "netcdf4"));
+  private Element makeAcceptList() {
 
-    String xPathForGridAsPointElement = rootElementName + "/AcceptList/GridAsPoint";
-    addElement(datasetDescriptionDoc, xPathForGridAsPointElement, new Element("accept").addContent("netcdf4")
-            .setAttribute("displayName", "netcdf4"));
+    // add accept list
+    Element elem = new Element("AcceptList");
+    //accept list for Grid As Point requests
+    Element gridAsPoint = new Element("GridAsPoint");
+    for (SupportedFormat sf : SupportedOperation.GRID_AS_POINT_REQUEST.getSupportedFormats()) {
+      gridAsPoint.addContent(new Element("accept").addContent(sf.getFormatName()).setAttribute("displayName", sf.getFormatName()));
+    }
+
+    //accept list for Grid requests
+    Element grids = new Element("Grid");
+    for (SupportedFormat sf : SupportedOperation.GRID_REQUEST.getSupportedFormats()) {
+      gridAsPoint.addContent(new Element("accept").addContent(sf.getFormatName()).setAttribute("displayName", sf.getFormatName()));
+    }
+
+    elem.addContent(gridAsPoint);
+    elem.addContent(grids);
+    return elem;
   }
 
-  private void addElement(Document datasetDescriptionDoc, String xPath, Element element) {
+  private void addElement(Document doc, String xPath, Element element) {
     try {
       XPath gridXpath = XPath.newInstance(xPath);
-      Element acceptListParent = (Element) gridXpath.selectSingleNode(datasetDescriptionDoc);
+      Element acceptListParent = (Element) gridXpath.selectSingleNode(doc);
       if (acceptListParent != null)
         acceptListParent.addContent(element);
       else
         System.out.printf("Cant find xPath '%s'%n", xPath);
+
     } catch (JDOMException je) {
       throw new RuntimeException(je);
     }
   }
+
+
 }

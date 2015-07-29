@@ -50,6 +50,11 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   }
 
   @Override
+  public int[] getShape() {
+    return shape;
+  }
+
+  @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
     f.format("%s  %s%n", indent, Misc.showInts(shape));

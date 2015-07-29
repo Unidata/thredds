@@ -35,6 +35,7 @@ package thredds.server.ncss.format;
 
 import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -49,15 +50,16 @@ public enum SupportedOperation {
   DATASET_INFO_REQUEST("Dataset info request", XML_FILE),
   DATASET_BOUNDARIES_REQUEST("Dataset grid boundaries request", WKT, JSON),
   GRID_REQUEST("Grid data request", NETCDF3, NETCDF4, NETCDF4EXT),
-  POINT_REQUEST("Point data request", XML_STREAM, XML_FILE, CSV_STREAM, CSV_FILE, NETCDF3, NETCDF4, NETCDF4EXT),
-  STATION_REQUEST("Station data request", XML_STREAM, XML_FILE, CSV_STREAM, CSV_FILE, NETCDF3, NETCDF4, NETCDF4EXT, WATERML2);
+  GRID_AS_POINT_REQUEST("Grid as point request", CSV_STREAM, CSV_FILE, XML_STREAM, XML_FILE, NETCDF3, NETCDF4, NETCDF4EXT),
+  POINT_REQUEST("Point data request", CSV_STREAM, CSV_FILE, XML_STREAM, XML_FILE, NETCDF3, NETCDF4, NETCDF4EXT),
+  STATION_REQUEST("Station data request", CSV_STREAM, CSV_FILE, XML_STREAM, XML_FILE, NETCDF3, NETCDF4, NETCDF4EXT, WATERML2);
 
   private final String operationName;
   private final List<SupportedFormat> supportedFormats;
 
   SupportedOperation(String operationName, SupportedFormat... formats) {
     this.operationName = operationName;
-    this.supportedFormats = Collections.unmodifiableList(Arrays.asList(formats));
+    this.supportedFormats = Arrays.asList(formats);
     assert this.supportedFormats.size() > 0;
   }
 
@@ -66,11 +68,20 @@ public enum SupportedOperation {
   }
 
   public List<SupportedFormat> getSupportedFormats() {
-    return supportedFormats;
+    List<SupportedFormat> result = new ArrayList<>();
+    for (SupportedFormat sf : supportedFormats) {
+      if (FormatsAvailabilityService.isFormatAvailable(sf))
+        result.add(sf);
+    }
+    return result;
   }
 
   public SupportedFormat getDefaultFormat() {
-    return supportedFormats.get(0);
+    for (SupportedFormat sf : supportedFormats) {
+      if (FormatsAvailabilityService.isFormatAvailable(sf))
+        return sf;
+    }
+    return null;
   }
 
   public SupportedFormat getSupportedFormat(String want) throws UnsupportedResponseFormatException {

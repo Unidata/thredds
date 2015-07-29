@@ -36,12 +36,13 @@ abstract public class CoverageCoordAxis {
     discontiguousInterval   // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1..
   }
 
+
   public enum DependenceType {
-    independent,             // time(time)
-    dependent,               // reftime(time), lat(x,y)
+    independent,             // has its own dimension, is a coordinate variable, eg x(x)
+    dependent,               // aux coordinate, reftime(time) or time_bounds(time);
     scalar,                  // reftime
-    twoD
-  }                   // time(reftime, time)
+    twoD                     // time(reftime, time), lat(x,y)
+  }
 
   protected final String name;
   protected final String units, description;
@@ -127,7 +128,6 @@ abstract public class CoverageCoordAxis {
     return ncoords;
   }
 
-
   public Spacing getSpacing() {
     return spacing;
   }
@@ -181,6 +181,12 @@ abstract public class CoverageCoordAxis {
     Indent indent = new Indent(2);
     toString(f, indent);
     return f.toString();
+  }
+
+  public int[] getShape() {
+    if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
+      return new int[0];
+    return new int[] {ncoords};
   }
 
   public void toString(Formatter f, Indent indent) {

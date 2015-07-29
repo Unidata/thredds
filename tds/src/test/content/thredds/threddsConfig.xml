@@ -43,7 +43,6 @@
   </HTTPFileCache>
 
   <NetcdfSubsetService>
-    <allow>true</allow>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
    <!--maxFileDownloadSize>2097152</maxFileDownloadSize-->
@@ -59,26 +58,17 @@
   </FeatureCollection>
 
   <WCS>
-    <allow>true</allow>
     <allowRemote>false</allowRemote>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </WCS>
 
   <WMS>
-    <allow>true</allow>
     <allowRemote>false</allowRemote>
     <allowFeatureInfo>true</allowFeatureInfo>
     <maxImageWidth>5000</maxImageWidth>
     <maxImageHeight>5000</maxImageHeight>
   </WMS>
-
-  <!-- Enable NCISO service.   -->
-  <NCISO>
-  	<ncmlAllow>true</ncmlAllow>
-  	<uddcAllow>true</uddcAllow>
-  	<isoAllow>true</isoAllow>
-  </NCISO>
 
   <!-- Enable DLwriter service but disable on remote catalogs.
        -->

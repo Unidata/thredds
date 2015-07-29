@@ -37,6 +37,7 @@ import java.io.File;
 
 import net.jcip.annotations.Immutable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
@@ -44,19 +45,23 @@ import thredds.server.config.ThreddsConfig;
 import ucar.nc2.util.DiskCache2;
 
 @Component
-@Immutable
+@DependsOn("TdsContext")
 public final class NcssDiskCache {
 
   @Autowired
   private TdsContext tdsContext;
 
-  private final DiskCache2 diskCache;
-  private final String cachePath;
+  private DiskCache2 diskCache;
+  private String cachePath;
 
   public NcssDiskCache() {
+  }
+
+  public void init() {
 
     //maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
-    this.cachePath = ThreddsConfig.get("NetcdfSubsetService.dir", new File(tdsContext.getThreddsDirectory(), "/cache/ncss/").getPath());
+    String defaultPath = new File(tdsContext.getThreddsDirectory(), "/cache/ncss/").getPath();
+    this.cachePath = ThreddsConfig.get("NetcdfSubsetService.dir", defaultPath);
     File cacheDir = new File(cachePath);
     if (!cacheDir.exists()) {
       if (!cacheDir.mkdirs()) {

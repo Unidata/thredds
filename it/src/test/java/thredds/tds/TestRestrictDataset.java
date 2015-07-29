@@ -32,6 +32,7 @@
  */
 package thredds.tds;
 
+import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.Assert;
 import org.junit.Test;
@@ -114,7 +115,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
+      session.setCredentialsProvider(AuthScope.ANY, new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -139,7 +140,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
+      session.setCredentialsProvider(AuthScope.ANY, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -166,7 +167,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "secret666")));
+      session.setCredentialsProvider(AuthScope.ANY, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "secret666")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();

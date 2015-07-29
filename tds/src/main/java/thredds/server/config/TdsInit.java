@@ -52,6 +52,7 @@ import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.catalog.ConfigCatalogCache;
 import thredds.server.catalog.DatasetScan;
+import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.util.LoggerFactorySpecial;
@@ -114,6 +115,9 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
   @Autowired
   private AllowedServices allowedServices;
+
+  @Autowired
+  private NcssDiskCache ncssDiskCache;
 
   private Timer cdmDiskCacheTimer;
   private boolean wasInitialized;
@@ -252,6 +256,7 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     allowedServices.finish(); // finish when we know everything is wired
     InvDatasetFeatureCollection.setAllowedServices(allowedServices);
     DatasetScan.setLatestService(allowedServices.getStandardService(StandardService.resolver));
+    allowedServices.makeDebugActions();
 
     /* <Netcdf4Clibrary>
        <libraryPath>C:/cdev/lib/</libraryPath>
@@ -320,6 +325,9 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     gribCache.setNeverUseCache(gribIndexNeverUse);
     GribIndexCache.setDiskCache2(gribCache);
     startupLog.info("TdsInit: GribIndex=" + gribCache);
+
+    // LOOK just create the diskCache here and send it in
+    ncssDiskCache.init();
 
     // LOOK is this used ??
     // 4.3.16

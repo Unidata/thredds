@@ -44,6 +44,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     }
   }
 
+  @Override
   public int[] getShape() {
     return shape;
   }

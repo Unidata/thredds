@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.Service;
 import thredds.client.catalog.ServiceType;
+import thredds.server.admin.DebugCommands;
 import thredds.server.config.TdsContext;
 import ucar.nc2.constants.FeatureType;
 
@@ -71,6 +72,9 @@ public class AllowedServices {
   @Autowired
   private TdsContext tdsContext;
 
+  @Autowired
+  private DebugCommands debugCommands;
+
   private Map<StandardService, AllowedService> allowed = new HashMap<>();
   private List<String> allowedGridServiceNames, allowedPointServiceNames, allowedRadialServiceNames;
   private List<Service> allowedGridServices = new ArrayList<>();
@@ -89,7 +93,7 @@ public class AllowedServices {
     }
   }
 
-    // allows users to turn off services in ThreddsConfig, but not override the default
+  // allows users to turn off services in ThreddsConfig
   public void setAllow(StandardService service, Boolean allow) {
     if (allow == null) return;
     AllowedService as = allowed.get(service);
@@ -215,6 +219,10 @@ public class AllowedServices {
     return globalServices.get(name);
   }
 
+  public Collection<Service> getGlobalServices() {
+    return globalServices.values();
+  }
+
   /////////////////////////////////////////////
   // used by old-style config catalogs for error checking and messages
 
@@ -253,6 +261,57 @@ public class AllowedServices {
       }
     }
     return null;
+  }
+
+  public void makeDebugActions() {
+    DebugCommands.Category debugHandler = debugCommands.findCategory("Catalogs");
+    DebugCommands.Action act;
+
+    act = new DebugCommands.Action("showServices", "Show standard and global services") {
+      public void doAction(DebugCommands.Event e) {
+        e.pw.printf("%n<h3>Global Services</h3>%n");
+        for (Service s : getGlobalServices()) {
+          if (s.getType() == ServiceType.Compound) {
+            e.pw.printf(" <b>%s </b>(Compound):%n", s.getName());
+            for (Service sn : s.getNestedServices())
+              e.pw.printf("   <b>%s:</b> %s%n", sn.getName(), sn.toString());
+            e.pw.printf("%n");
+
+          } else {
+            e.pw.printf(" <b>%s:</b> %s%n", s.getName(), s.toString());
+          }
+        }
+        e.pw.printf("%n<h3>Grid Services</h3>%n");
+        for (Service s : allowedGridServices) {
+          e.pw.printf(" <b>%s:</b> %s%n", s.getName(), s.toString());
+        }
+        e.pw.printf("%n<h3>Point Services</h3>%n");
+        for (Service s : allowedPointServices) {
+          e.pw.printf(" <b>%s:</b> %s%n", s.getName(), s.toString());
+        }
+        e.pw.printf("%n<h3>Radial Services</h3>%n");
+        for (Service s : allowedRadialServices) {
+          e.pw.printf(" <b>%s:</b> %s%n", s.getName(), s.toString());
+        }
+      }
+    };
+    debugHandler.addAction(act);
+
+
+    /* act = new DebugCommands.Action("reinit", "Reinitialize") {
+      public void doAction(DebugCommands.Event e) {
+        try {
+          singleton.reinit();
+          e.pw.println("reinit ok");
+
+        } catch (Exception e1) {
+          e.pw.println("Error on reinit " + e1.getMessage());
+          log.error("Error on reinit " + e1.getMessage());
+        }
+      }
+    };
+    debugHandler.addAction(act); */
+
   }
 
 

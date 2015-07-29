@@ -49,7 +49,6 @@ import thredds.servlet.ServletUtil;
  *
  * @author caron
  */
-@Component
 public class TomcatAuthorizer implements Authorizer {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TomcatAuthorizer.class);
 

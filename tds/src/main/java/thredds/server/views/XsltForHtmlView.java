@@ -36,7 +36,7 @@ public class XsltForHtmlView extends AbstractView {
     String transform = (String) model.get("Transform");
     String resourceName = "/WEB-INF/xsl/"+transform+".xsl";
     Resource resource = new ClassPathResource(resourceName);
-    try (InputStream is = resource.getInputStream()) {      // could cache the xslt
+    try (InputStream is = resource.getInputStream()) {
       Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(is));
       transformer.setParameter("tdsContext", req.getContextPath());
 

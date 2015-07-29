@@ -23,7 +23,6 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class DataRootHandlerTest {
 
-
 	@Autowired
 	NcssDiskCache ncssDiskCache;
 
