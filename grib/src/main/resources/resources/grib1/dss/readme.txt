@@ -39,4 +39,8 @@ DSS GRIB1 table notes
        WMO_GRIB1.34-241.200.xml
   - add to resources/grib1/dss/lookupTables.txt
 
+7/29/2015
+  comment out  7-15-131 (WMO_GRIB1.7-15.131.xml) since ncep scraped looks better
+
+
 
