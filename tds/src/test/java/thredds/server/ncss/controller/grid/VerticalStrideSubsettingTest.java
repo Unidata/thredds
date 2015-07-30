@@ -145,7 +145,7 @@ public class VerticalStrideSubsettingTest {
 		
 	}
 	
-	// @Test
+	@Test
 	public void shoudGetVerticalStridedSubset() throws Exception{
 
 		mockMvc.perform(requestBuilder)

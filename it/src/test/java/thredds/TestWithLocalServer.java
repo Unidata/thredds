@@ -107,14 +107,18 @@ public class TestWithLocalServer {
     return null;
   }
 
-  public static String testWithHttpGet(Credentials cred, String endpoint, ContentType expectContentType) {
+  public static String testWithHttpGet(Credentials cred, String endpoint, int expectedStatus, ContentType expectContentType) {
     System.out.printf("testOpenXml req = '%s'%n", endpoint);
 
+    int pos = endpoint.indexOf("?");
+    String url = pos < 0 ? endpoint : endpoint.substring(0, pos);
+
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentials(endpoint, cred);
+      session.setCredentials(url, cred);
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
-      Assert.assertEquals(200, statusCode);
+      Assert.assertEquals(expectedStatus, statusCode);
+      if (expectedStatus != 200) return "ok";
 
       String response = method.getResponseAsString();
       assert response.length() > 0;

@@ -25,35 +25,54 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestAdminDebug {
-    static CredentialsProvider provider = new HTTPBasicProvider("caron", "secret666");
-    Credentials cred = new UsernamePasswordCredentials("caron", "secret666");
+  static CredentialsProvider provider = new HTTPBasicProvider("caron", "secret666");
+  static Credentials cred = new UsernamePasswordCredentials("caron", "secret666");
+  static Credentials credBad = new UsernamePasswordCredentials("bad", "worse");
 
-    @Parameterized.Parameters(name = "{0}")
-    public static List<Object[]> getTestParameters() {
+  @Parameterized.Parameters(name = "{0}")
+  public static List<Object[]> getTestParameters() {
 
-      List<Object[]> result = new ArrayList<>(10);
-      result.add(new Object[]{"admin/debug?General/showTdsContext"});
-      result.add(new Object[]{"admin/dir/content/thredds/logs/"});
-      result.add(new Object[]{"admin/dir/logs/"});
-      result.add(new Object[]{"admin/dir/catalogs/"});
-      result.add(new Object[]{"admin/spring/showControllers"});
+    List<Object[]> result = new ArrayList<>(10);
+    result.add(new Object[]{"admin/debug?General/showTdsContext"});
+    result.add(new Object[]{"admin/dir/content/thredds/logs/"});
+    result.add(new Object[]{"admin/dir/logs/"});
+    result.add(new Object[]{"admin/dir/catalogs/"});
+    result.add(new Object[]{"admin/spring/showControllers"});
 
-      return result;
-    }
-    private static final boolean show = true;
+    return result;
+  }
 
-    String url;
+  private static final boolean show = true;
 
-    public TestAdminDebug(String url) {
-      this.url = url;
-    }
+  String url;
 
-    @Test
-    public void testOpenHtml() {
-      String endpoint = TestWithLocalServer.withPath(url);
-      //String response = TestWithLocalServer.testWithHttpGet(provider, endpoint, ContentType.html);
-      String response = TestWithLocalServer.testWithHttpGet(cred, endpoint, ContentType.html);
-      if (show)
-        System.out.printf("%s%n", response);
-    }
+  public TestAdminDebug(String url) {
+    this.url = url;
+  }
+
+  @Test
+  public void testOpenHtml() {
+    String endpoint = TestWithLocalServer.withPath(url);
+    //String response = TestWithLocalServer.testWithHttpGet(provider, endpoint, ContentType.html);
+    String response = TestWithLocalServer.testWithHttpGet(cred, endpoint, 200, ContentType.html);
+    if (show)
+      System.out.printf("%s%n", response);
+  }
+
+  @Test
+  public void testOpenHtml2() {
+    String endpoint = TestWithLocalServer.withPath(url);
+    String response = TestWithLocalServer.testWithHttpGet(provider, endpoint, ContentType.html);
+    if (show)
+      System.out.printf("%s%n", response);
+  }
+
+  @Test
+  public void testOpenHtmlFail() {
+    String endpoint = TestWithLocalServer.withPath(url);
+    //String response = TestWithLocalServer.testWithHttpGet(provider, endpoint, ContentType.html);
+    String response = TestWithLocalServer.testWithHttpGet(credBad, endpoint, 401, ContentType.html);
+    if (show)
+      System.out.printf("%s%n", response);
+  }
 }

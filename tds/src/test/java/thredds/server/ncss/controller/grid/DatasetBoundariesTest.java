@@ -81,7 +81,7 @@ public class DatasetBoundariesTest {
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
 	}
 	
-	//@Test
+	@Test
 	public void defaultContentType() throws Exception {
 		
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path);

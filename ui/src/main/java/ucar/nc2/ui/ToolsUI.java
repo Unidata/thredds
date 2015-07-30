@@ -4053,186 +4053,6 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
 
-  /* private class NcmlPanel extends OpPanel {
-    NetcdfDataset ds = null;
-    String ncmlLocation = null;
-    AbstractButton gButt = null;
-    boolean useG;
-
-    void closeOpenFiles() throws IOException {
-      if (ds != null) ds.close();
-      ds = null;
-    }
-
-    NcmlPanel(PreferencesExt p) {
-      super(p, "dataset:");
-
-      AbstractAction gAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          Boolean state = (Boolean) getValue(BAMutil.STATE);
-          useG = state.booleanValue();
-          String tooltip = useG ? "use NcML-G" : "dont use NcML-G";
-          gButt.setToolTipText(tooltip);
-          //doit( cb.getSelectedItem()); // called from cb action listener
-        }
-      };
-      useG = prefs.getBoolean("gState", false);
-      String tooltip2 = useG ? "use NcML-G" : "dont use NcML-G";
-      BAMutil.setActionProperties(gAction, "G", tooltip2, true, 'G', -1);
-      gAction.putValue(BAMutil.STATE, new Boolean(useG));
-      gButt = BAMutil.addActionToContainer(buttPanel, gAction);
-
-      AbstractAction saveAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          String location = (ds == null) ? ncmlLocation : ds.getLocation();
-          if (location == null) location = "test";
-          int pos = location.lastIndexOf(".");
-          if (pos > 0)
-            location = location.substring(0, pos);
-          String filename = fileChooser.chooseFilenameToSave(location + ".ncml");
-          if (filename == null) return;
-          doSave(ta.getText(), filename);
-        }
-      };
-      BAMutil.setActionProperties(saveAction, "Save", "Save NcML", false, 'S', -1);
-      BAMutil.addActionToContainer(buttPanel, saveAction);
-
-      AbstractAction netcdfAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          String location = (ds == null) ? ncmlLocation : ds.getLocation();
-          if (location == null) location = "test";
-          int pos = location.lastIndexOf(".");
-          if (pos > 0)
-            location = location.substring(0, pos);
-
-          String filename = fileChooser.chooseFilenameToSave(location + ".nc");
-          if (filename == null) return;
-          doWriteNetCDF(ta.getText(), filename);
-        }
-      };
-      BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF", false, 'N', -1);
-      BAMutil.addActionToContainer(buttPanel, netcdfAction);
-
-      AbstractAction transAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          doTransform(ta.getText());
-        }
-      };
-      BAMutil.setActionProperties(transAction, "Import", "read textArea through NcMLReader\n write NcML back out via resulting dataset", false, 'T', -1);
-      BAMutil.addActionToContainer(buttPanel, transAction);
-    }
-
-    boolean process(Object o) {
-      ncmlLocation = (String) o;
-      if (ncmlLocation.endsWith(".xml") || ncmlLocation.endsWith(".ncml")) {
-        if (!ncmlLocation.startsWith("http:") && !ncmlLocation.startsWith("file:"))
-          ncmlLocation = "file:" + ncmlLocation;
-        String text = IO.readURLcontents(ncmlLocation);
-
-        ta.setText(text);
-      } else {
-        writeNcml(ncmlLocation);
-      }
-      return true;
-    }
-
-    boolean writeNcml(String location) {
-      boolean err = false;
-
-      try {
-        if (ds != null) ds.close();
-      } catch (IOException ioe) {
-      }
-
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      try {
-        String result;
-        ds = openDataset(location, addCoords, null);
-        if (ds == null) {
-          ta.setText("Failed to open <" + location + ">");
-        } else {
-          if (useG) {
-            boolean showCoords = Debug.isSet("NcML/ncmlG-showCoords");
-            ds.writeNcMLG(bos, showCoords, null);
-            result = bos.toString();
-          } else {
-            result = new NcMLWriter().writeXML(ds);
-          }
-          ta.setText(result);
-          ta.gotoTop();
-        }
-
-      } catch (FileNotFoundException ioe) {
-        ta.setText("Failed to open <" + location + ">");
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        ta.setText(bos.toString());
-        err = true;
-      }
-
-      return !err;
-    }
-
-    void doWriteNetCDF(String text, String filename) {
-      if (debugNcmlWrite) {
-        System.out.println("filename=" + filename);
-        System.out.println("text=" + text);
-      }
-      try {
-        ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes());
-        NcMLReader.writeNcMLToFile(bis, filename);
-        JOptionPane.showMessageDialog(this, "File successfully written");
-      } catch (Exception ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-      }
-    }
-
-    // read text from textArea through NcMLReader
-    // then write it back out via resulting dataset
-    void doTransform(String text) {
-      try {
-        StringReader reader = new StringReader(text);
-        NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ncd.writeNcML(bos, null);
-        ta.setText(bos.toString());
-        ta.gotoTop();
-        JOptionPane.showMessageDialog(this, "File successfully transformed");
-
-      } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-      }
-    }
-
-    void doSave(String text, String filename) {
-      if (debugNcmlWrite) {
-        System.out.println("filename=" + filename);
-        System.out.println("text=" + text);
-      }
-
-      try {
-        IO.writeToFile(text, new File(filename));
-        JOptionPane.showMessageDialog(this, "File successfully written");
-      } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-      }
-      // saveNcmlDialog.setVisible(false);
-    }
-
-    void save() {
-      super.save();
-    }
-
-  } */
-
-  /////////////////////////////////////////////////////////////////////
-
   private class NcmlEditorPanel extends OpPanel {
     NcmlEditor editor;
 
@@ -4254,9 +4074,7 @@ public class ToolsUI extends JPanel {
       super.save();
       editor.save();
     }
-
   }
-
 
   ////////////////////////////////////////////////////////
 
@@ -6117,35 +5935,6 @@ public class ToolsUI extends JPanel {
     }
   }
 
-/*  private class NioPanel extends OpPanel {
-
-    NioPanel(PreferencesExt prefs) {
-      super( prefs, "read NIO", "filename:");
-    }
-
-    void process(Object o) {
-      String fname = (String) o;
-      try {
-        ucar.nc2.nio.NetcdfFile nioFile = new ucar.nc2.nio.NetcdfFile( fname);
-        ta.setText( nioFile.getDebugReadInfo());
-        ta.append( "--------------------------\n");
-        ta.append( nioFile.toString());
-
-        Iterator iter = nioFile.getVariableIterator();
-        while (iter.hasNext()) {
-          ucar.nc2.nio.Variable v = (ucar.nc2.nio.Variable) iter.next();
-          v.read();
-          ta.append(" "+v.getName()+" read OK\n");
-        }
-
-        nioFile.close();
-      } catch (IOException ioe) {
-        ta.setText( "IOException on "+fname+"\n"+ioe.getMessage());
-        ioe.printStackTrace();
-      }
-    }
-  } */
-
 ///////////////////////////////////////////////////////////////////////////////
 // Dynamic proxy for Debug
 
@@ -6205,17 +5994,17 @@ public class ToolsUI extends JPanel {
       main.setBorder(new javax.swing.border.LineBorder(Color.BLACK));
       main.setBackground(new Color(0xFFECEC));
 
-      JLabel icon = new JLabel(new ImageIcon(BAMutil.getImage("netcdfUI")));
-      icon.setOpaque(true);
-      icon.setBackground(new Color(0xFFECEC));
+      JLabel ring = new JLabel(new ImageIcon(BAMutil.getImage("netcdfUI")));
+      ring.setOpaque(true);
+      ring.setBackground(new Color(0xFFECEC));
 
       JLabel threddsLogo = new JLabel(Resource.getIcon(BAMutil.getResourcePath() + "cdm.png", false));
       threddsLogo.setBackground(new Color(0xFFECEC));
       threddsLogo.setOpaque(true);
 
-      main.add(icon, BorderLayout.NORTH);
+      main.add(threddsLogo, BorderLayout.NORTH);
       main.add(lab1, BorderLayout.CENTER);
-      main.add(threddsLogo, BorderLayout.SOUTH);
+      main.add(ring, BorderLayout.SOUTH);
       getContentPane().add(main);
       pack();
 
