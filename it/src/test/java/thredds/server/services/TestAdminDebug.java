@@ -12,6 +12,8 @@ import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.httpservices.HTTPBasicProvider;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.NotJenkins;
+import ucar.unidata.test.util.NotTravis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.List;
  * @since 7/6/2015
  */
 @RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
+@Category({NeedsCdmUnitTest.class, NotJenkins.class})
 public class TestAdminDebug {
   static CredentialsProvider provider = new HTTPBasicProvider("caron", "secret666");
   static Credentials cred = new UsernamePasswordCredentials("caron", "secret666");

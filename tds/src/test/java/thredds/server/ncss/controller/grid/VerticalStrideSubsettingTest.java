@@ -73,10 +73,10 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
  * not sure we are going to support vertical strides.
  *
  */
-@RunWith(SpringJUnit4ParameterizedClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
-@Category(NeedsCdmUnitTest.class)
+//@RunWith(SpringJUnit4ParameterizedClassRunner.class)
+//@WebAppConfiguration
+//@ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
+//@Category(NeedsCdmUnitTest.class)
 public class VerticalStrideSubsettingTest {
 	
 	@Autowired
@@ -145,7 +145,7 @@ public class VerticalStrideSubsettingTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void shoudGetVerticalStridedSubset() throws Exception{
 
 		mockMvc.perform(requestBuilder)

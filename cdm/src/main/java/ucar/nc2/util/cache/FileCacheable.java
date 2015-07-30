@@ -51,21 +51,21 @@ public interface FileCacheable {
    * The location of the FileCacheable. This must be sufficient for FileFactory.factory() to create the FileCacheable object
    * @return location
    */
-  public String getLocation();
+  String getLocation();
 
   /**
    * Close the FileCacheable, release all resources.
    * Must call cache.release(this) if cache is not null.
    * @throws IOException on io error
    */
-  public void close() throws IOException;
+  void close() throws IOException;
 
   /**
    * Get last modified date of underlying file(s).
    * If changed since it was stored in the cache, it will be closed and recreated with FileFactory
    * @return a sequence number (typically file date), 0 if cannot change
    */
-  public long getLastModified();
+  long getLastModified();
 
   /**
    * If the FileCache is not null, FileCacheable.close() must call FileCache.release()
@@ -80,13 +80,21 @@ public interface FileCacheable {
    *
    * @param fileCache must store this, use it on close as above.
    */
-  public void setFileCache( FileCacheIF fileCache);
+  void setFileCache( FileCacheIF fileCache);
 
-  // release any resources like file handles
-  public void release() throws IOException;
+  /**
+   * Release any system resources like file handles.
+   * Optional, implement only if you are able to reacquire.
+   * Used when object is made inactive in cache.
+   * @throws IOException
+   */
+  void release() throws IOException;
 
-  // reacquire any resources like file handles
-  public void reacquire() throws IOException;
-
+  /**
+   * Reacquire any resources like file handles
+   * Used when reactivating in cache.
+   * @throws IOException
+   */
+  void reacquire() throws IOException;
 
 }

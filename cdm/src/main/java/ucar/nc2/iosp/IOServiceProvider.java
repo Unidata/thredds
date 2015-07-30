@@ -68,7 +68,7 @@ public interface IOServiceProvider {
     * @return true if valid.
     * @throws java.io.IOException if read error
     */
-  public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) throws IOException;
+  boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) throws IOException;
 
   /**
    * Open existing file, and populate ncfile with it. This method is only called by the
@@ -81,7 +81,7 @@ public interface IOServiceProvider {
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if read error
    */
-  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
+  void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException;
 
   /**
@@ -97,7 +97,7 @@ public interface IOServiceProvider {
    * @throws ucar.ma2.InvalidRangeException if invalid section
    * @see ucar.ma2.Range
    */
-  public ucar.ma2.Array readData(ucar.nc2.Variable v2, Section section)
+  ucar.ma2.Array readData(ucar.nc2.Variable v2, Section section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
@@ -113,13 +113,13 @@ public interface IOServiceProvider {
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+  long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
-  public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+  long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
-  public long readToOutputStream(ucar.nc2.Variable v2, Section section, OutputStream out)
+  long readToOutputStream(ucar.nc2.Variable v2, Section section, OutputStream out)
           throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
@@ -129,7 +129,7 @@ public interface IOServiceProvider {
    * @throws IOException on read error
    * @throws InvalidRangeException if section spec is invalid
    */
-  public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
+  ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
 
   /**
    * Get the structure iterator. iosps with top level sequences must override.
@@ -140,7 +140,7 @@ public interface IOServiceProvider {
    * @return the data iterator
    * @throws java.io.IOException if problem reading data
    */
-  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
+  StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
 
   /**
    * Close the file.
@@ -148,7 +148,7 @@ public interface IOServiceProvider {
    * and to free any other resources it has used.
    * @throws IOException if read error
    */
-  public void close() throws IOException;
+  void close() throws IOException;
 
   /**
    * Extend the NetcdfFile if the underlying dataset has changed
@@ -158,13 +158,22 @@ public interface IOServiceProvider {
    * @return true if the NetcdfFile was extended.
    * @throws IOException if a read error occured when accessing the underlying dataset.
    */
-  public boolean syncExtend() throws IOException;
+  boolean syncExtend() throws IOException;
 
-  // optionally release any resources like file handles
-  public void release() throws IOException;
+  /**
+   * Release any system resources like file handles.
+   * Optional, implement only if you are able to reacquire.
+   * Used when object is made inactive in cache.
+   * @throws IOException
+   */
+  void release() throws IOException;
 
-  // reacquire any resources like file handles
-  public void reacquire() throws IOException;
+  /**
+   * Reacquire any resources like file handles
+   * Used when reactivating in cache.
+   * @throws IOException
+   */
+  void reacquire() throws IOException;
 
   //public long getLastModified();  LOOK: dont add this for backwards compatibility. Probably add back in in version 5
 
@@ -173,38 +182,38 @@ public interface IOServiceProvider {
    * @param message opaque message sent to the IOSP object when its opened (not when isValidFile() is called)
    * @return opaque return, may be null.
    */
-  public Object sendIospMessage( Object message);
+  Object sendIospMessage( Object message);
 
   /** Debug info for this object.
    * @param o which object
    * @return debug info for this object
    */
-  public String toStringDebug(Object o);
+  String toStringDebug(Object o);
 
   /** Show debug / underlying implementation details
    * @return debug info
    */
-  public String getDetailInfo();
+  String getDetailInfo();
 
   /**
    * Get a unique id for this file type.
    * @return registered id of the file type
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
-  public String getFileTypeId();
+  String getFileTypeId();
 
   /**
    * Get the version of this file type.
    * @return version of the file type
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
-  public String getFileTypeVersion();
+  String getFileTypeVersion();
 
   /**
    * Get a human-readable description for this file type.
    * @return description of the file type
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
-  public String getFileTypeDescription();
+  String getFileTypeDescription();
 
 }
