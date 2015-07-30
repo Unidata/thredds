@@ -32,16 +32,19 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.*;
+import net.jcip.annotations.Immutable;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.nc2.util.Indent;
+import ucar.unidata.util.StringUtil2;
 
+import java.nio.ByteBuffer;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
-import java.nio.ByteBuffer;
 import java.util.Map;
-
-import net.jcip.annotations.Immutable;
-import ucar.nc2.util.Indent;
 
 /**
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
@@ -258,7 +261,7 @@ public class Attribute extends CDMNode {
         if (i != 0) f.format(", ");
         String val = getStringValue(i);
         if (val != null)
-          f.format("\"%s\"", NCdumpW.encodeString(val));
+          f.format("\"%s\"", encodeString(val));
       }
     } else {
       f.format(" = ");
@@ -283,6 +286,18 @@ public class Attribute extends CDMNode {
     }
   }
 
+  private static char[] org = {'\b', '\f', '\n', '\r', '\t', '\\', '\'', '\"'};
+  private static String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\\'", "\\\""};
+
+  /**
+   * Replace special characters '\t', '\n', '\f', '\r'.
+   *
+   * @param s string to quote
+   * @return equivilent string replacing special chars
+   */
+  static public String encodeString(String s) {
+    return StringUtil2.replace(s, org, replace);
+  }
 
   ///////////////////////////////////////////////////////////////////////////////
 

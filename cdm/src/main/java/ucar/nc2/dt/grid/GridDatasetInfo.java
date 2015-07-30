@@ -33,10 +33,22 @@
 
 package ucar.nc2.dt.grid;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -48,15 +60,11 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.Parameter;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
 
 /**
  * A helper class to GridDataset; creates a GridDataset XML document.
@@ -66,6 +74,8 @@ import java.util.*;
  * @author caron
  */
 public class GridDatasetInfo {
+	private static final Logger logger = LoggerFactory.getLogger(GridDatasetInfo.class);
+
 	private ucar.nc2.dt.GridDataset gds;
 	private String path;
 
@@ -341,6 +351,8 @@ public class GridDatasetInfo {
 	private Element writeAxis2(CoordinateAxis axis, String name) {
 		if (axis == null) return null;
 
+		NcMLWriter ncmlWriter = new NcMLWriter();
+
 		Element varElem = new Element(name);
 		varElem.setAttribute("name", axis.getFullName());
 		varElem.setAttribute("shape", getShapeString(axis.getShape())); // axis.getDimensionsString());
@@ -354,11 +366,17 @@ public class GridDatasetInfo {
 
 		// attributes
 		for (Attribute att : axis.getAttributes())
-			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+			varElem.addContent(ncmlWriter.makeAttributeElement(att));
 
-		Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, false);
-		values.setAttribute("npts", Long.toString(axis.getSize()));
-		varElem.addContent(values);
+		try {
+			Element values = ncmlWriter.makeValuesElement(axis, false);
+			values.setAttribute("npts", Long.toString(axis.getSize()));
+			varElem.addContent(values);
+		} catch (IOException e) {
+			String message = String.format(
+					"Couldn't read values for %s. Omitting <values> element.", axis.getFullName());
+			logger.warn(message, e);
+		}
 
 		return varElem;
 	}
@@ -451,6 +469,7 @@ public class GridDatasetInfo {
   }  */
 
 	private Element writeAxis(CoordinateAxis axis) {
+		NcMLWriter ncmlWriter = new NcMLWriter();
 
 		Element varElem = new Element("axis");
 		varElem.setAttribute("name", axis.getFullName());
@@ -465,13 +484,18 @@ public class GridDatasetInfo {
 
 		// attributes
 		for (Attribute att : axis.getAttributes()) {
-			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+			varElem.addContent(ncmlWriter.makeAttributeElement(att));
 		}
 
 		if (axis.getRank() == 1) {
-			Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, true);
-			//values.setAttribute("npts", Long.toString(axis.getSize()));
-			varElem.addContent(values);
+			try {
+				Element values = ncmlWriter.makeValuesElement(axis, true);
+				varElem.addContent(values);
+			} catch (IOException e) {
+				String message = String.format(
+						"Couldn't read values for %s. Omitting <values> element.", axis.getFullName());
+				logger.warn(message, e);
+			}
 		}
 
 		return varElem;
@@ -584,6 +608,8 @@ public class GridDatasetInfo {
 	}
 
 	private Element writeGrid(GridDatatype grid) {
+		NcMLWriter ncmlWriter = new NcMLWriter();
+
 		Element varElem = new Element("grid");
 		varElem.setAttribute("name", grid.getFullName());
 
@@ -612,7 +638,7 @@ public class GridDatasetInfo {
 
 		// attributes
 		for (ucar.nc2.Attribute att : grid.getAttributes()) {
-			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+			varElem.addContent(ncmlWriter.makeAttributeElement(att));
 		}
 
 		return varElem;

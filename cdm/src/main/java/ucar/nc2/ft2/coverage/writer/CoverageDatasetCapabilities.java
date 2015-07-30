@@ -33,25 +33,31 @@
  */
 package ucar.nc2.ft2.coverage.writer;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-import ucar.ma2.DataType;
-import ucar.nc2.Attribute;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.Misc;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionRect;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.nc2.Attribute;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.ft2.coverage.CoordSysSet;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageTransform;
+import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.util.Misc;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 /**
  * Helper class to create a DatasetCapabilities XML document for CoverageDataset
@@ -62,6 +68,8 @@ import java.util.List;
 public class CoverageDatasetCapabilities {
   private CoverageDataset gcd;
   private String path;
+
+  private final NcMLWriter ncmlWriter = new NcMLWriter();
 
   public CoverageDatasetCapabilities(CoverageDataset gds, String path) {
     this.gcd = gds;
@@ -143,7 +151,6 @@ public class CoverageDatasetCapabilities {
   }
 
   private Element writeAxis(CoverageCoordAxis axis) throws IOException {
-
     Element varElem = new Element("axis");
     varElem.setAttribute("name", axis.getName());
     varElem.setAttribute("shape", Misc.showInts(axis.getShape()));
@@ -160,7 +167,7 @@ public class CoverageDatasetCapabilities {
 
     // attributes
     for (Attribute att : axis.getAttributes()) {
-      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+      varElem.addContent(ncmlWriter.makeAttributeElement(att));
     }
 
 		/*
@@ -171,11 +178,21 @@ public class CoverageDatasetCapabilities {
     for (String s : dependsOn)
 		 */
 
-    Element values;
-    if (axis.isRegular()) {
-      values = new Element("values");
-    } else {
-      values = ucar.nc2.ncml.NcMLWriter.writeValues(axis.getCoordsAsArray(), null, false);
+    Element values = new Element("values");
+    if (!axis.isRegular()) {
+      Array array = axis.getCoordsAsArray();
+      boolean isRealType = (array.getDataType() == DataType.DOUBLE) || (array.getDataType() == DataType.FLOAT);
+      IndexIterator iter = array.getIndexIterator();
+
+      StringBuilder buff = new StringBuilder();
+      buff.append(isRealType ? iter.getDoubleNext() : iter.getIntNext());
+
+      while (iter.hasNext()) {
+        buff.append(" ");
+        buff.append(isRealType ? iter.getDoubleNext() : iter.getIntNext());
+      }
+
+      values.setText(buff.toString());
     }
 
     values.setAttribute("spacing", axis.getSpacing().toString());
@@ -298,7 +315,8 @@ public class CoverageDatasetCapabilities {
     ctElem.setAttribute("name", ct.getName());
     ctElem.setAttribute("transformType", ct.isHoriz() ? "Projection" : "Vertical");
     for (Attribute param : ct.getAttributes()) {
-      Element pElem = NcMLWriter.writeAttribute(param, "parameter", null);
+      Element pElem = ncmlWriter.makeAttributeElement(param);
+      pElem.setName("parameter");
       ctElem.addContent(pElem);
     }
     return ctElem;
@@ -333,7 +351,7 @@ public class CoverageDatasetCapabilities {
 
     // attributes
     for (ucar.nc2.Attribute att : grid.getAttributes()) {
-      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+      varElem.addContent(ncmlWriter.makeAttributeElement(att));
     }
 
     return varElem;

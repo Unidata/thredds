@@ -32,36 +32,55 @@
  */
 package ucar.nc2;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URL;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.StringTokenizer;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import javax.annotation.Nonnull;
+import org.jdom2.Element;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.ma2.StructureDataIterator;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.util.Indent;
-import ucar.nc2.util.EscapeStrings;
-import ucar.ma2.*;
-import ucar.nc2.util.rc.RC;
-import ucar.unidata.io.UncompressInputStream;
-import ucar.unidata.io.InMemoryRandomAccessFile;
-import ucar.unidata.io.bzip2.CBZip2InputStream;
-import ucar.nc2.util.DiskCache;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.IO;
+import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
-import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.DiskCache;
+import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.util.IO;
+import ucar.nc2.util.Indent;
+import ucar.nc2.util.rc.RC;
+import ucar.unidata.io.InMemoryRandomAccessFile;
+import ucar.unidata.io.UncompressInputStream;
+import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.util.StringUtil2;
-
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.GZIPInputStream;
-import java.net.URL;
-import java.net.URI;
-import java.io.*;
-import java.nio.channels.WritableByteChannel;
-import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
@@ -1287,9 +1306,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * CDL representation of Netcdf header info, non strict
    */
   public String toNcML(String url) throws IOException {
-    Formatter out = new Formatter();
-    NCdumpW.writeNcML(this, out, NCdumpW.WantValues.none, url);
-    return out.toString();
+    NcMLWriter ncmlWriter = new NcMLWriter();
+    ncmlWriter.setWriteVariablesPredicate(NcMLWriter.writeNoVariablesPredicate);
+
+    Element netcdfElement = ncmlWriter.makeNetcdfElement(this, url);
+    return ncmlWriter.writeToString(netcdfElement);
   }
 
   ///////////////////////////////////////////////////////////////////
@@ -1354,25 +1375,30 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   /**
    * Write the NcML representation: dont show coodinate values
    *
-   * @param os  : write to this Output Stream.
+   * @param os  : write to this OutputStream. Will be closed at end of the method.
    * @param uri use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException if error
-   * @see NCdumpW#writeNcML
+   * @see NcMLWriter#writeToStream
    */
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
-    NCdumpW.writeNcML(this, new OutputStreamWriter(os, CDM.utf8Charset), false, uri);
+    NcMLWriter ncmlWriter = new NcMLWriter();
+    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
+    ncmlWriter.writeToStream(netcdfElem, os);
   }
 
   /**
    * Write the NcML representation: dont show coodinate values
    *
-   * @param writer : write to this Writer, should have encoding of UTF-8 if applicable
+   * @param writer : write to this Writer, should have encoding of UTF-8 if applicable. Will be closed at end of the
+   *               method.
    * @param uri    use this for the url attribute; if null use getLocation().
    * @throws IOException if error
-   * @see NCdumpW#writeNcML
+   * @see NcMLWriter#writeToWriter
    */
   public void writeNcML(java.io.Writer writer, String uri) throws IOException {
-    NCdumpW.writeNcML(this, writer, false, uri);
+    NcMLWriter ncmlWriter = new NcMLWriter();
+    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
+    ncmlWriter.writeToWriter(netcdfElem, writer);
   }
 
   /**

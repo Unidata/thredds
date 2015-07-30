@@ -32,25 +32,50 @@
  */
 package ucar.nc2.ncml;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
+import ucar.ma2.Section;
 import ucar.nc2.Attribute;
-import ucar.nc2.dataset.*;
+import ucar.nc2.Dimension;
+import ucar.nc2.EnumTypedef;
+import ucar.nc2.FileWriter2;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Sequence;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.SequenceDS;
+import ucar.nc2.dataset.StructureDS;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.AliasTranslator;
-import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
-
-import org.jdom2.*;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.XMLOutputter;
+import ucar.nc2.write.Nc4Chunking;
 import ucar.unidata.util.StringUtil2;
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
 import static ucar.unidata.util.StringUtil2.getTokens;
 
 /**
@@ -699,9 +724,12 @@ public class NcMLReader {
       if ((isSharedS != null) && isSharedS.equalsIgnoreCase("false"))
         isShared = false;
 
-      int len = Integer.parseInt(lengthS);
-      if (isUnknown)
+      int len;
+      if (isUnknown) {
         len = Dimension.VLEN.getLength();
+      } else {
+        len = Integer.parseInt(lengthS);
+      }
 
       if (debugConstruct) System.out.println(" add new dim = " + name);
       g.addDimension(new Dimension(name, len, isShared, isUnlimited, isUnknown));

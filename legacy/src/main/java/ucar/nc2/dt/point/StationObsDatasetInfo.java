@@ -33,26 +33,31 @@
 
 package ucar.nc2.dt.point;
 
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.FeatureType;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
-import ucar.nc2.dataset.*;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.dt.*;
-import ucar.unidata.geoloc.LatLonRect;
-
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.output.Format;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.StationObsDataset;
+import ucar.nc2.dt.TypedDatasetFactory;
+import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.units.DateFormatter;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Parameter;
-
-import java.util.*;
-import java.util.zip.GZIPOutputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.FileOutputStream;
-import java.io.File;
 
 /**
  * A helper class to StationObsDataset; creates XML documents.
@@ -293,6 +298,7 @@ public class StationObsDatasetInfo {
   }
 
   private Element writeVariable(VariableSimpleIF v) {
+    NcMLWriter ncmlWriter = new NcMLWriter();
 
     Element varElem = new Element("variable");
     varElem.setAttribute("name", v.getShortName());
@@ -305,7 +311,7 @@ public class StationObsDatasetInfo {
     Iterator atts = v.getAttributes().iterator();
     while (atts.hasNext()) {
       ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+      varElem.addContent(ncmlWriter.makeAttributeElement(att));
     }
 
     return varElem;
