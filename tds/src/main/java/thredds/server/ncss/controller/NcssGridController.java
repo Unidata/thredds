@@ -187,7 +187,7 @@ public class NcssGridController extends AbstractNcssController {
 
     try (CoverageDataset gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
       if (gcd == null) return null; // restricted dataset
-      return ncssShowDatasetInfo.showGridForm(gcd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
+      return ncssShowDatasetInfo.showGridFormTh(gcd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
     }
   }
 

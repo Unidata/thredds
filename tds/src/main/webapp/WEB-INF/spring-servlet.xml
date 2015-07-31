@@ -21,15 +21,8 @@
     <property name="location" value="/WEB-INF/view.xml"/>
   </bean>
 
-  <bean id="jspResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-    <property name="order" value="2"/>
-    <property name="prefix" value="/WEB-INF/jsp/"/>
-    <property name="suffix" value=".jsp"/>
-  </bean>
-
   <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
-    <property name="prefix" value="/WEB-INF/templates/"/>
+    <property name="prefix" value="/WEB-INF/"/>
     <property name="suffix" value=".html"/>
     <property name="templateMode" value="HTML5"/>
     <property name="cacheable" value="false"/>
@@ -41,8 +34,16 @@
 
   <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
     <property name="templateEngine" ref="templateEngine"/>
-    <property name="order" value="1"/>
-    <property name="viewNames" value="thymeleaf/*"/>
+    <property name="order" value="2"/>
+    <property name="viewNames" value="templates/*"/>
+  </bean>
+
+  <!-- must be last -->
+  <bean id="jspResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="order" value="9"/>
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
   </bean>
 
 </beans>

@@ -106,6 +106,26 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
+  public ModelAndView showGridFormTh(CoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) throws IOException {
+
+
+    if (wantXml) {
+      CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
+      Document doc = writer.makeDatasetDescription();
+     Element root = doc.getRootElement();
+     root.setAttribute("location", datsetUrlPath);
+     root.addContent(makeAcceptList());
+      return new ModelAndView("threddsXmlView", "Document", doc);
+
+    } else {
+
+      Map<String, Object> model = new HashMap<>();
+      model.put("name", gcd.getName());
+      model.put("coverageSets", gcd.getCoverageSets());
+      return new ModelAndView("templates/ncssGridth", model);
+    }
+  }
+
   public ModelAndView showGridForm(CoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) throws IOException {
     CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
 
