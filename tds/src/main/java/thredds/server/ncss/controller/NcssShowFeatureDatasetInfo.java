@@ -73,7 +73,7 @@ public class NcssShowFeatureDatasetInfo {
         return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncss/ncssPobs.xsl");
 
       default:
-        throw new IllegalStateException("Unsupported feature type "+ft);
+        throw new IllegalStateException("Unsupported feature type " + ft);
     }
   }
 
@@ -92,7 +92,7 @@ public class NcssShowFeatureDatasetInfo {
     if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4EXT)) {
       String xPathForGridElement = "capabilities/AcceptList";
       addElement(doc, xPathForGridElement,
-               new Element("accept").addContent("netcdf4ext").setAttribute("displayName", SupportedFormat.NETCDF4EXT.getFormatName()));
+              new Element("accept").addContent("netcdf4ext").setAttribute("displayName", SupportedFormat.NETCDF4EXT.getFormatName()));
     }
 
     if (wantXml) {
@@ -106,22 +106,19 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  public ModelAndView showGridFormTh(CoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) throws IOException {
-
-
+  public ModelAndView showGridFormTh(CoverageDataset gcd, String datsetUrlPath, boolean wantXml) throws IOException {
     if (wantXml) {
       CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
       Document doc = writer.makeDatasetDescription();
-     Element root = doc.getRootElement();
-     root.setAttribute("location", datsetUrlPath);
-     root.addContent(makeAcceptList());
+      Element root = doc.getRootElement();
+      root.setAttribute("location", datsetUrlPath);
+      root.addContent(makeAcceptList());
       return new ModelAndView("threddsXmlView", "Document", doc);
 
     } else {
-
       Map<String, Object> model = new HashMap<>();
-      model.put("name", gcd.getName());
-      model.put("coverageSets", gcd.getCoverageSets());
+      model.put("gcd", gcd);
+      model.put("path", datsetUrlPath);
       return new ModelAndView("templates/ncssGridth", model);
     }
   }

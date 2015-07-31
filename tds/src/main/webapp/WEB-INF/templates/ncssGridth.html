@@ -4,9 +4,9 @@
 <head>
   <title>NCSS Grid Form</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <!-- link rel="StyleSheet" type="text/css" href="/thredds/style/ncss/main.css"/>
+  <link rel="StyleSheet" type="text/css" href="/thredds/style/ncss/main.css"/>
   <link rel="StyleSheet" type="text/css" href="/thredds/style/ncss/layout.css"/>
-  <link rel="StyleSheet" type="text/css" href="/thredds/style/ncss/form.css"/ -->
+  <link rel="StyleSheet" type="text/css" href="/thredds/style/ncss/form.css"/>
   <link rel="StyleSheet" type="text/css" href="/thredds/js/lib/OpenLayers-2.12/theme/default/style.css"/>
   <script type="text/javascript">
     var context = '/thredds';
@@ -52,68 +52,227 @@
       var headTag = document.getElementsByTagName("head")[0];
       headTag.appendChild(jsfile);
     })();
+
+
   </script>
 
 </head>
 
 <body onload="Ncss.initGridDataset();">
-
-<h1>Dataset <span th:text="${name}">name</span></h1>
-
-<form id="form" method="GET" action="/thredds/ncss/grib/NCEP/GEFS/Global_1p0deg_Ensemble/members-analysis/GEFS_Global_1p0deg_Ensemble_ana_20150719_1200.grib2">
-  <h2>Select Variable(s):</h2>
-
-  <div th:each="covSet : ${coverageSets}">
-    <h3>With Coordinate System <span th:text="${covSet.coordSys.name}">coordSys name</span></h3>
-    <blockquote>
-      <div th:each="cov : ${covSet.coverages}">
-        <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="var" value="Geopotential_height_surface_ens"/>
-        <span th:text="${cov.name}">Coverage Name</span>=
-        <span th:text="${cov.description}">Coverage Description</span>
-        <br/>
+<div id="header">
+  <div id="dataset">
+    <h1> NetCDF Subset Service for Grids <a href="pointDataset.html">(Point)</a></h1>
+  </div>
+  <div id="unidata">
+    <div id="title">
+      <div id="service">
+        <span class="bold">THREDDS data server</span>
+        <span class="service">NetCDF Subset Service</span>
       </div>
-    </blockquote>
-  </div>
-
-  <div class="borderLightGrey">
-    <br/>
-    <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="addLatLon" value="true"/>
-    <label>Add 2D Lat/Lon to file (if needed for CF compliance):</label>
-    <br/>
-  </div>
-  <h3>Choose Output Format:</h3>
-  <blockquote>
-    <div class="borderLightGrey">
-      <label class="sized">Format: </label>
-      <select onchange="Ncss.buildAccessUrl()" name="accept" size="1">
-        <option value="netcdf">netcdf</option>
-        <option value="netcdf4">netcdf4</option>
-      </select>
     </div>
-  </blockquote>
+    <div id="logo">
+      <span></span>
+    </div>
+  </div>
+</div>
 
-  <table>
-    <tr>
-      <td colspan="2" class="center">
-        <h3>NCSS Request URL:</h3>
-        <pre id="urlBuilder"/>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" class="center">
-        <input class="button" type="submit" value="Submit"/>
-        <input class="button" type="button" onclick="Ncss.resetForm()" value="Reset"/>
-      </td>
-    </tr>
-  </table>
+<div id="container">
+  <div id="dataheader">
+    <h2>Dataset <span th:text="${path}">name</span></h2>
 
-</form>
+    <h3>
+      <span>Base Time:</span>
+      <span class="black">2015-07-17T00:00:00Z</span>
+    </h3>
+  </div>
 
+  <form id="form" method="GET"
+        action="/thredds/ncss/grib/NCEP/GEFS/Global_1p0deg_Ensemble/members-analysis/GEFS_Global_1p0deg_Ensemble_ana_20150719_1200.grib2">
+    <table class="simple">
+      <tr valign="top">
+        <td class="leftCol">
+          <h3>Select Variable(s):</h3>
+
+          <div th:each="covSet : ${gcd.coverageSets}">
+            <bold>With Coordinate System <span th:text="${covSet.coordSys.name}">coordSys name</span></bold>
+            <blockquote>
+              <div th:each="cov : ${covSet.coverages}">
+                <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="var" value="Coverage Name" th:value="${cov.name}"/>
+                <span th:text="${cov.name}">Coverage Name</span>=
+                <span th:text="${cov.description}">Coverage Description</span>
+                <br/>
+              </div>
+            </blockquote>
+          </div>
+        </td>
+        <td class="rightCol">
+          <h3>Choose Spatial Subset:</h3>
+
+          <div id="gridPreviewFrame">
+            <div id="gridPreview"/>
+          </div>
+          <br clear="all"/>
+
+          <div id="inputLatLonSubset" class="selected">
+            <span class="bold">Lat/lon subset</span>
+          </div>
+          <div id="inputCoordSubset" class="unselected">
+            <span class="bold">Coordinate subset</span>
+          </div>
+          <div id="areaInput" class="clear">
+            <div id="spatialSubset">
+              <div id="latlonSubset" class="absoluteTopLeft borderLightGrey">
+                <span class="bold">Bounding box, in decimal degrees (initial extents are approximate):</span>
+
+                <div class="top">
+                  <span>north</span>
+                  <br/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="north" size="8" value="90.0000"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_north" size="8" value="90.0000"/>
+                </div>
+                <div>
+                  west
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="west" size="8" value="0.0000"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_west" size="8" value="0.0000"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="east" size="8" value="359.5000"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_east" size="8" value="359.5000"/>
+                  east
+                </div>
+                <div class="top">
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="south" size="8" value="-77.5000"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_south" size="8" value="-77.5000"/>
+                  <br/>
+                  <span>south</span>
+                </div>
+                <div>
+                  <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="disableLLSubset" id="disableLLSubset"/>
+                  <span>Disable horizontal subsetting</span>
+                </div>
+                <span class="blueLink" id="resetLatLonbbox">reset to full extension</span>
+              </div>
+              <div id="coordinateSubset" class="hidden absoluteTopLeft borderLightGrey">
+                <span class="bold">Bounding box, in projection coords:</span>
+
+                <div class="top">
+                  <span>maxy</span>
+                  <br/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxy" size="8" value="90.25"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxy" size="8" value="90.25"/>
+                </div>
+                <div>
+                  minx
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="minx" size="8" value="-0.25"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_minx" size="8" value="-0.25"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxx" size="8" value="359.75"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxx" size="8" value="359.75"/>
+                  maxx
+                </div>
+                <div class="top">
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="miny" size="8" value="-77.75"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_miny" size="8" value="-77.75"/>
+                  <br/>
+                  <span>miny</span>
+                </div>
+                <div>
+                  <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="disableProjSubset" id="disableProjSubset"/>
+                  <span>Disable horizontal subsetting</span>
+                </div>
+                <span class="blueLink" id="resetProjbbox">reset to full extension</span>
+              </div>
+            </div>
+          </div>
+          <br clear="all"/>
+          <br clear="all"/>
+
+          <div class="borderLightGrey">
+            <span class="bold">Horizontal Stride:</span>
+            <input onchange="Ncss.buildAccessUrl()" type="text" name="horizStride" size="5" value="1"/>
+          </div>
+          <h3>Choose Time Subset:</h3>
+
+          <div id="inputTimeRange" class="selected">
+            <span class="bold">Time range</span>
+          </div>
+          <div id="inputSingleTime" class="unselected">
+            <span class="bold">Single time</span>
+          </div>
+          <div id="timeInput" class="clear">
+            <div id="temporalSubsetWithStride">
+              <div id="timeRangeSubset" class="absoluteTopLeft borderLightGrey">
+                <label class="sized">Start:</label>
+                <input onchange="Ncss.buildAccessUrl()" type="text" name="time_start" size="21" value="2015-07-17T00:00:00Z"/>
+                <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_time_start" size="21" value="2015-07-17T00:00:00Z"/>
+                <br/>
+                <label class="sized">End:</label>
+                <input onchange="Ncss.buildAccessUrl()" type="text" name="time_end" size="21" value="2015-08-07T18:00:00Z"/>
+                <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_time_end" size="21" value="2015-08-07T18:00:00Z"/>
+                <br/>
+                <label class="sized">Stride:</label>
+                <input onchange="Ncss.buildAccessUrl()" type="text" name="timeStride" size="5" value="1"/>
+                <br/>
+                <span class="blueLink" id="resetTimeRange">reset to full extension</span>
+              </div>
+              <div id="singleTimeSubset" class="hidden absoluteTopLeft borderLightGrey">
+                <label class="sized">Time:</label>
+                <input onchange="Ncss.buildAccessUrl()" type="text" name="time" size="21" disabled="disabled" value="2015-08-07T18:00:00Z"/>
+              </div>
+            </div>
+          </div>
+          <h3>Choose Vertical Level:</h3>
+
+          <div id="inputSingleLevel" class="selected">
+            <span class="bold">Single Level</span>
+          </div>
+          <div id="inputVerticalStride" class="unselected">
+            <span class="bold">Vertical Stride</span>
+          </div>
+          <div id="verticalLevelInput" class="clear">
+            <div id="verticalSubset">
+              <div id="singleLevel" class="absoluteTopLeft borderLightGrey">
+                <label class="sized">Level:</label>
+                <input onchange="Ncss.buildAccessUrl()" type="text" name="vertCoord" size="10"/>
+              </div>
+              <div id="strideLevels" class="absoluteTopLeft hidden borderLightGrey">
+                <label class="sized">Stride:</label>
+                <input onchange="Ncss.buildAccessUrl()" type="text" name="vertStride" disabled="disabled" value="1" size="10"/>
+              </div>
+            </div>
+          </div>
+          <div class="borderLightGrey">
+            <br/>
+            <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="addLatLon" value="true"/>
+            <label>Add 2D Lat/Lon to file (if needed for CF compliance):</label>
+            <br/>
+          </div>
+          <h3>Choose Output Format:</h3>
+
+          <div class="borderLightGrey">
+            <label class="sized">Format:</label>
+            <select onchange="Ncss.buildAccessUrl()" name="accept" size="1">
+              <option value="netcdf">netcdf</option>
+              <option value="netcdf4">netcdf4</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="center">
+          <h3>NCSS Request URL:</h3>
+          <pre id="urlBuilder"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="center">
+          <input class="button" type="submit" value="Submit"/>
+          <input class="button" type="button" onclick="Ncss.resetForm()" value="Reset"/>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
 
 <hr/>
-<h3>
-  <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service Documentation</a>
-</h3>
+<h3><a href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service Documentation</a></h3>
 
 </body>
 
