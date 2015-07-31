@@ -32,13 +32,22 @@
 
 package ucar.nc2.stream;
 
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.remote.PointDatasetRemote;
-import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
+import org.jdom2.output.XMLOutputter;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.point.remote.PointDatasetRemote;
+import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
@@ -46,11 +55,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.input.SAXBuilder;
 
 /**
  * Factory for FeatureDataset using CdmrRemote protocol. GRID, POINT, STATION so far
@@ -71,12 +75,16 @@ public class CdmrFeatureDataset {
     Document doc = getCapabilities(endpoint);
     Element root = doc.getRootElement();
     Element elem = root.getChild("featureDataset");
-    String fType = elem.getAttribute("type").getValue();  // LOOK, may be multiple types
     String uri = elem.getAttribute("url").getValue();
 
-    if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= %s url=%s%n", endpoint, fType, uri);
+    // Often, CdmRemoteController won't be able to figure out the FeatureType of a dataset and as a result,
+    // the capabilites document it returns won't contain an /cdmRemoteCapabilities/featureDataset/@type attribute.
+    Attribute typeAttrib = elem.getAttribute("type");  // Could be null if attribute doesn't exist.
 
-    FeatureType ft = FeatureType.getType(fType);
+    // If the "type" attribute exists, use it; otherwise use wantFeatureType.
+    FeatureType ft = (typeAttrib != null) ? FeatureType.getType(typeAttrib.getValue()) : wantFeatureType;
+
+    if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= %s url=%s%n", endpoint, ft, uri);
 
     if (ft == null || ft == FeatureType.NONE || ft == FeatureType.GRID) {
       CdmRemote ncremote = new CdmRemote(uri);
@@ -95,28 +103,20 @@ public class CdmrFeatureDataset {
   }
 
   static private org.jdom2.Document getCapabilities(String endpoint) throws IOException {
-    org.jdom2.Document doc;
-    InputStream in = null;
-    try {
-      in = CdmRemote.sendQuery(endpoint, "req=capabilities");
-      SAXBuilder builder = new SAXBuilder(false);
-      doc = builder.build(in);  // closes in when done ??
+    try (InputStream in = CdmRemote.sendQuery(endpoint, "req=capabilities")) {
+      SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
+      org.jdom2.Document doc = builder.build(in);
 
-    } catch (Throwable t) {
-      throw new IOException(t);
+      if (showXML) {
+        System.out.printf("*** endpoint = %s %n", endpoint);
+        XMLOutputter xmlOut = new XMLOutputter();
+        System.out.printf("*** CdmrFeatureDataset/showParsedXML = %n %s %n", xmlOut.outputString(doc));
+      }
 
-    } finally {
-      //if (in != null)
-      //  in.close();
+      return doc;
+    } catch (JDOMException e) {
+      throw new IOException(e);
     }
-
-    if (showXML) {
-      System.out.printf("*** endpoint = %s %n", endpoint);
-      XMLOutputter xmlOut = new XMLOutputter();
-      System.out.printf("*** CdmrFeatureDataset/showParsedXML = %n %s %n", xmlOut.outputString(doc));
-    }
-
-    return doc;
   }
 
   public static void main(String args[]) throws IOException {

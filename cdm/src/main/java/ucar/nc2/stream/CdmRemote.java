@@ -130,6 +130,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest) System.out.printf(" took %d msecs %n", took);
   }
 
+  // Closes is.
   public CdmRemote(InputStream is, String location ) throws IOException {
     long start = System.currentTimeMillis();
     remoteURI = location;
@@ -140,6 +141,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       this.location = SCHEME + remoteURI;
 
     } finally {
+      is.close();
     }
     long took = System.currentTimeMillis() - start;
     if (showRequest) System.out.printf(" took %d msecs %n", took);
@@ -164,7 +166,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     // sbuff.append( URLEncoder.encode(f.toString(), "UTF-8")); // LOOK dont % escape query; entire thing varname and section
 
     if (showRequest)
-      System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " section= " + section + " url=" + f);
+      System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " section= " + section + " " +
+              "url=" + f);
 
     try (
       HTTPMethod method = HTTPFactory.Get(httpClient,f.toString())) {
@@ -187,7 +190,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         }
       }
 
-      InputStream is = method.getResponseAsStream();
+      InputStream is = method.getResponseAsStream();  // Closed by HTTPMethod.close().
       NcStreamReader reader = new NcStreamReader();
       NcStreamReader.DataResult result = reader.readData(is, this);
 
@@ -209,35 +212,34 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
   }
 
-  public static InputStream sendQuery(String remoteURI, String query) throws IOException
-  {
+  public static InputStream sendQuery(String remoteURI, String query) throws IOException {
     long start = System.currentTimeMillis();
-
-    InputStream stream = null;
-    int statusCode = 0;
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
     sbuff.append(query);
 
-    if(showRequest)
-      System.out.printf(" CdmRemote sendQuery= %s", sbuff);
+    if (showRequest) System.out.printf(" CdmRemote sendQuery= %s", sbuff);
 
+    HTTPMethod method = HTTPFactory.Get(sbuff.toString());
     try {
-        try (
-            HTTPMethod method = HTTPFactory.Get(sbuff.toString()) // use temp session
-        ) {
-            statusCode = method.execute();
-            if(statusCode == 404)
-                throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
-            if(statusCode >= 300)
-                throw new IOException(method.getPath() + " " + method.getStatusLine());
-            stream = method.getResponseBodyAsStream();
-            if(showRequest) System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
-            return stream;
-        }
-    } catch (HTTPException he) {
-        throw new IOException(he);
+      int statusCode = method.execute();
+      if (statusCode == 404) {
+        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+      } else if (statusCode >= 400) {
+        throw new IOException(method.getPath() + " " + method.getStatusLine());
+      }
+
+      InputStream stream = method.getResponseBodyAsStream();
+      if (showRequest) System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
+
+      // Leave the stream open. We must also leave the HTTPMethod open because the two are linked:
+      // calling close() on one object causes the other object to be closed as well.
+      return stream;
+    } catch (IOException e) {
+      // Close the HTTPMethod if there was an exception; otherwise leave it open.
+      method.close();
+      throw e;
     }
   }
 
