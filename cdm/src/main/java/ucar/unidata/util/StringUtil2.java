@@ -337,6 +337,7 @@ public class StringUtil2 {
    * @return equivilent string using entities for any special chars
    */
   static public String quoteHtmlContent(String x) {
+    if (x == null) return null;
     return replace(x, htmlIn, htmlOut);
   }
 
@@ -352,6 +353,7 @@ public class StringUtil2 {
    * @return equivilent string using entities for any special chars
    */
   static public String quoteXmlContent(String x) {
+    if (x == null) return null;
     return replace(x, xmlInC, xmlOutC);
   }
 

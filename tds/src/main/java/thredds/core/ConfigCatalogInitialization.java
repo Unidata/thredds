@@ -554,9 +554,9 @@ public class ConfigCatalogInitialization {
       f.format("    catalogScan=%d%n", catalogScan);
       f.format("    datasetRoot=%d%n%n", datasetRoot);
 
-      f.format("DatasetExt.total_count %d%n", DatasetExt.total_count);
-      f.format("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
-      float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
+      f.format("DatasetExt.total_count %d%n", DatasetTrackerInfo.total_count);
+      f.format("DatasetExt.total_nbytes %d%n", DatasetTrackerInfo.total_nbytes);
+      float avg = DatasetTrackerInfo.total_count == 0 ? 0 : ((float) DatasetTrackerInfo.total_nbytes) / DatasetTrackerInfo.total_count;
       f.format("DatasetExt.avg_nbytes %5.0f%n", avg);
 
       counters.show(f);

@@ -9,6 +9,8 @@ import thredds.client.catalog.Dataset;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
 
+import java.io.Externalizable;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -128,5 +130,13 @@ public class DatasetTrackerInMem implements DatasetTracker {
 
   @Override
   public void save() {
+  }
+
+  @Override
+  public void showDB(Formatter f) {
+    f.format("DatasetTrackerInMem%n");
+    for (Map.Entry<String, String> entry : ncmlDatasetHash.entrySet()) {
+      f.format(" %s == %s%n", entry.getKey(), entry.getValue());
+    }
   }
 }

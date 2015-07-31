@@ -2,6 +2,8 @@ package thredds.server.catalog.tracker;
 
 import net.openhft.chronicle.map.ChronicleMap;
 import net.openhft.chronicle.map.ChronicleMapBuilder;
+import org.jdom2.Element;
+import org.jdom2.output.XMLOutputter;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.server.catalog.DatasetScan;
@@ -10,6 +12,8 @@ import thredds.server.catalog.FeatureCollectionRef;
 import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Formatter;
+import java.util.Map;
 
 /**
  * Description
@@ -138,22 +142,38 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     if (path == null)
       return false;
 
+    String ncml = null;
+    if (hasNcml) {
+      // want the ncml string representation
+      Element ncmlElem = dataset.getNcmlElement();
+      XMLOutputter xmlOut = new XMLOutputter();
+      ncml = xmlOut.outputString(ncmlElem);
+    }
+
     changed = true;
-    DatasetExt dsext = new DatasetExt(0, dataset, hasNcml);
+    DatasetTrackerInfo dsext = new DatasetTrackerInfo(0, dataset.getRestrictAccess(), ncml);
     datasetMap.put(path, dsext);
     return true;
   }
 
   public String findResourceControl(String path) {
-    DatasetExt dext = (DatasetExt) datasetMap.get(path);
+    DatasetTrackerInfo dext = (DatasetTrackerInfo) datasetMap.get(path);
     if (dext == null) return null;
     return dext.getRestrictAccess();
   }
 
   public String findNcml(String path) {
-    DatasetExt dext = (DatasetExt) datasetMap.get(path);
+    DatasetTrackerInfo dext = (DatasetTrackerInfo) datasetMap.get(path);
     if (dext == null) return null;
     return dext.getNcml();
+  }
+
+  @Override
+  public void showDB(Formatter f) {
+    f.format("ChronicleMap %s%n", dbFile.getPath());
+    for (Map.Entry<String, Externalizable> entry : datasetMap.entrySet()) {
+      f.format(" '%s' == %s%n", entry.getKey(), entry.getValue());
+    }
   }
 
 }

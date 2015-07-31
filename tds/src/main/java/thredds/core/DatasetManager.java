@@ -58,6 +58,7 @@ import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.cache.FileFactory;
+import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -118,10 +119,6 @@ public class DatasetManager implements InitializingBean {
   }
 
   public DatasetManager() {
-  }
-
-  void reinit() {
-    datasetSources = new ArrayList<>();
   }
 
   public String getLocationFromRequestPath(String reqPath) {
@@ -429,14 +426,14 @@ public class DatasetManager implements InitializingBean {
     DebugCommands.Category debugHandler = debugCommands.findCategory("Catalogs");
     DebugCommands.Action act;
 
-/*    act = new DebugCommands.Action("showCatalogExt", "Show known catalogs") {
+    act = new DebugCommands.Action("showDatasetTrackerDB", "Show DatasetTracker database") {
       public void doAction(DebugCommands.Event e) {
-        for (CatalogExt catExt : datasetTracker.getCatalogs()) {
-          e.pw.println(catExt.getCatRelLocation());
-        }
+        Formatter f = new Formatter();
+        datasetTracker.showDB(f);
+        e.pw.println(StringUtil2.quoteHtmlContent(f.toString()));
       }
     };
-    debugHandler.addAction(act);  */
+    debugHandler.addAction(act);
 
   }
 

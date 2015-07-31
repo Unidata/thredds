@@ -67,10 +67,10 @@ public class NcssShowFeatureDatasetInfo {
     FeatureType ft = fd.getFeatureType();
     switch (ft) {
       case STATION:
-        return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncssSobs");
+        return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncss/ncssSobs.xsl");
 
       case POINT:
-        return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncssPobs");
+        return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncss/ncssPobs.xsl");
 
       default:
         throw new IllegalStateException("Unsupported feature type "+ft);

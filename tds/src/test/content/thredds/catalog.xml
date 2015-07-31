@@ -184,11 +184,6 @@
         <dataType>Grid</dataType>
       </metadata>
 
-      <filter>
-        <include wildcard="*.nc" collection="false"/>
-        <exclude wildcard="/*" collection="true"/>
-      </filter>
-
       <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true">
         <attribute name="name" value="value"/>
         <variable name="Temperature" orgName="T"/>
@@ -198,6 +193,11 @@
           <remove type="attribute" name="description"/>
         </variable>
       </ncml:netcdf>
+
+      <filter>
+        <include wildcard="*.nc" collection="false"/>
+        <exclude wildcard="/*" collection="true"/>
+      </filter>
 
     </datasetScan>
 

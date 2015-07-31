@@ -33,7 +33,6 @@
  */
 package thredds.server.opendap;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;

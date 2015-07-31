@@ -3,6 +3,9 @@ package thredds.server.catalog.tracker;
 
 import thredds.client.catalog.Dataset;
 
+import java.util.Formatter;
+import java.util.Map;
+
 /**
  * Description
  *
@@ -56,6 +59,10 @@ public class DatasetTrackerNoop implements DatasetTracker {
   @Override
   public boolean reinit() {
     return true;
+  }
+
+  @Override
+  public void showDB(Formatter f) {
   }
 
 }

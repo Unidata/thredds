@@ -138,7 +138,7 @@ public class TestTdsGrib {
   public void testDefaultGribServices() throws IOException {
     String catalog = "/catalog/grib.v5/NDFD/CONUS_5km/catalog.xml";  // no service name, should use GRID default
     Catalog cat = TdsLocalCatalog.open(catalog);
-    testCat(cat, 10, true, null, 0);
+    testCat(cat, 9, true, null, 0);
 
     Dataset top = cat.getDatasets().get(0);
     Assert.assertTrue(!top.hasAccess());

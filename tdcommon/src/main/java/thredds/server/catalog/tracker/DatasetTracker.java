@@ -4,9 +4,10 @@ package thredds.server.catalog.tracker;
 import thredds.client.catalog.Dataset;
 import thredds.server.catalog.ConfigCatalog;
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
- * Describe
+ * DatasetTracker interface
  *
  * @author caron
  * @since 6/6/2015
@@ -24,7 +25,9 @@ public interface DatasetTracker extends AutoCloseable {
   boolean trackDataset(Dataset ds, Callback callback);
   String findResourceControl(String path);
   String findNcml(String path);
-  //DatasetExt findDatasetExt(String path);  // LOOK Needed ?
+
+  // debug
+  void showDB(Formatter f);
 
   interface Callback {
     void hasDataRoot(DataRootExt dataRoot);
