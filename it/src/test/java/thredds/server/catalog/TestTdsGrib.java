@@ -149,7 +149,7 @@ public class TestTdsGrib {
       } else {
         CatalogRef catref = (CatalogRef) ds;
         Catalog cat2 = TdsLocalCatalog.openFromURI(catref.getURI());
-        testCat(cat2, 9, false, "GridServices", 11);
+        testCat(cat2, 9, false, "GridServices", 10);
         break;
       }
     }

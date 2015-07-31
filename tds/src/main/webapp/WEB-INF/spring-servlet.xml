@@ -26,6 +26,7 @@
     <property name="suffix" value=".html"/>
     <property name="templateMode" value="HTML5"/>
     <property name="cacheable" value="false"/>
+    <property name="characterEncoding" value="UTF-8" />
   </bean>
 
   <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
@@ -36,9 +37,10 @@
     <property name="templateEngine" ref="templateEngine"/>
     <property name="order" value="2"/>
     <property name="viewNames" value="templates/*"/>
+    <property name="characterEncoding" value="UTF-8" />
   </bean>
 
-  <!-- must be last -->
+  <!-- must be last in order -->
   <bean id="jspResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
     <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
     <property name="order" value="9"/>

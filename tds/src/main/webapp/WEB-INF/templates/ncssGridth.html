@@ -27,15 +27,13 @@
       var headTag = document.getElementsByTagName("head")[0];
       var jQueryfile = document.createElement('script');
       jQueryfile.setAttribute("type", "text/javascript");
-      jQueryfile.setAttribute("src",
-          context + "/js/lib/jquery-1.7.2.min.js");
+      jQueryfile.setAttribute("src", context + "/js/lib/jquery-1.7.2.min.js");
       headTag.appendChild(jQueryfile);
 
       //OpenLayers.js
       var olfile = document.createElement('script');
       olfile.setAttribute("type", "text/javascript");
-      olfile.setAttribute("src",
-          context + "/js/lib/OpenLayers-2.12/OpenLayers.js");
+      olfile.setAttribute("src", context + "/js/lib/OpenLayers-2.12/OpenLayers.js");
       headTag.appendChild(olfile);
 
       //ncssApp.js
@@ -45,7 +43,7 @@
       var headTag = document.getElementsByTagName("head")[0];
       headTag.appendChild(ncssAppfile);
 
-      //form.js
+      //gridDatasetForm.js
       var jsfile = document.createElement('script');
       jsfile.setAttribute("type", "text/javascript");
       jsfile.setAttribute("src", context + "/js/ncss/gridDatasetForm.js");
@@ -61,7 +59,7 @@
 <body onload="Ncss.initGridDataset();">
 <div id="header">
   <div id="dataset">
-    <h1> NetCDF Subset Service for Grids <a href="pointDataset.html">(Point)</a></h1>
+    <h1> NetCDF Subset Service for Grids</h1>
   </div>
   <div id="unidata">
     <div id="title">
@@ -78,16 +76,15 @@
 
 <div id="container">
   <div id="dataheader">
-    <h2>Dataset <span th:text="${path}">name</span></h2>
+    <h2>
+      <span>Dataset:</span>
+      <span id="datasetPath" class="black" th:text="${datasetPath}">datasetPath</span>
+    </h2>
+    <h4> <a href="pointDataset.html">(Click for Grid as Point form)</a></h4>
 
-    <h3>
-      <span>Base Time:</span>
-      <span class="black">2015-07-17T00:00:00Z</span>
-    </h3>
   </div>
 
-  <form id="form" method="GET"
-        action="/thredds/ncss/grib/NCEP/GEFS/Global_1p0deg_Ensemble/members-analysis/GEFS_Global_1p0deg_Ensemble_ana_20150719_1200.grib2">
+  <form id="form" method="GET" action="datasetPath" th:attr="action=${datasetPath}">
     <table class="simple">
       <tr valign="top">
         <td class="leftCol">
@@ -107,7 +104,6 @@
         </td>
         <td class="rightCol">
           <h3>Choose Spatial Subset:</h3>
-
           <div id="gridPreviewFrame">
             <div id="gridPreview"/>
           </div>
@@ -119,6 +115,7 @@
           <div id="inputCoordSubset" class="unselected">
             <span class="bold">Coordinate subset</span>
           </div>
+
           <div id="areaInput" class="clear">
             <div id="spatialSubset">
               <div id="latlonSubset" class="absoluteTopLeft borderLightGrey">
@@ -150,6 +147,7 @@
                 </div>
                 <span class="blueLink" id="resetLatLonbbox">reset to full extension</span>
               </div>
+
               <div id="coordinateSubset" class="hidden absoluteTopLeft borderLightGrey">
                 <span class="bold">Bounding box, in projection coords:</span>
 
@@ -181,6 +179,7 @@
               </div>
             </div>
           </div>
+
           <br clear="all"/>
           <br clear="all"/>
 
@@ -188,8 +187,8 @@
             <span class="bold">Horizontal Stride:</span>
             <input onchange="Ncss.buildAccessUrl()" type="text" name="horizStride" size="5" value="1"/>
           </div>
-          <h3>Choose Time Subset:</h3>
 
+          <h3>Choose Time Subset:</h3>
           <div id="inputTimeRange" class="selected">
             <span class="bold">Time range</span>
           </div>
@@ -218,8 +217,8 @@
               </div>
             </div>
           </div>
-          <h3>Choose Vertical Level:</h3>
 
+          <h3>Choose Vertical Level:</h3>
           <div id="inputSingleLevel" class="selected">
             <span class="bold">Single Level</span>
           </div>
@@ -238,14 +237,16 @@
               </div>
             </div>
           </div>
-          <div class="borderLightGrey">
-            <br/>
-            <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="addLatLon" value="true"/>
-            <label>Add 2D Lat/Lon to file (if needed for CF compliance):</label>
-            <br/>
-          </div>
-          <h3>Choose Output Format:</h3>
 
+          <div id="addLatLon" class="borderLightGrey">
+            <span class="bold">Add 2D Lat/Lon to file (if needed for CF compliance)</span>
+            <br/>
+            <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="addLatLon" value="true" />
+            <label>Add Lat/Lon variables</label>
+            <br />
+          </div>
+
+          <h3>Choose Output Format:</h3>
           <div class="borderLightGrey">
             <label class="sized">Format:</label>
             <select onchange="Ncss.buildAccessUrl()" name="accept" size="1">
@@ -253,6 +254,7 @@
               <option value="netcdf4">netcdf4</option>
             </select>
           </div>
+
         </td>
       </tr>
       <tr>

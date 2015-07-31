@@ -118,7 +118,7 @@ public class NcssShowFeatureDatasetInfo {
     } else {
       Map<String, Object> model = new HashMap<>();
       model.put("gcd", gcd);
-      model.put("path", datsetUrlPath);
+      model.put("datasetPath", datsetUrlPath);
       return new ModelAndView("templates/ncssGridth", model);
     }
   }
