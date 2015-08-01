@@ -59,7 +59,6 @@ public class HorizCoordSys {
     return null;
   }
 
-
   public List<CoverageCoordAxis> getCoordAxes() throws InvalidRangeException {
     List<CoverageCoordAxis> result = new ArrayList<>();
     if (xaxis != null) result.add(xaxis);
@@ -67,6 +66,14 @@ public class HorizCoordSys {
     if (lataxis != null) result.add(lataxis);
     if (lonaxis != null) result.add(lonaxis);
     return result;
+  }
+
+  public boolean getHasProjection() {
+    return hasProjection;
+  }
+
+  public boolean getHasLatLon() {
+    return hasLatLon;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////

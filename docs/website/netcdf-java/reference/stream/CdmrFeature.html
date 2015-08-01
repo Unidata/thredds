@@ -137,15 +137,28 @@ coordname=minvalue:maxvalue</pre>
   <li>You may specify a vertical coordinate as a double. The closest value is returned. If not specified,  all vertical levels are returned.</li>
 </ul>
 <h4><strong>Temporal subsetting:</strong></h4>
+<ol>
+  <li>none: use first time period of the  latest run</li>
+  <li>runtime: use first time period of the  closest run</li>
+  <li>time: use closest time period of Best</li>
+  <li>time range: intersect time range of Best</li>
+  <li>runtime, time: use closest time of the  closest run</li>
+  <li>runtime, time range: intersect  time range of the  closest run</li>
+</ol>
 <ul>
   <li>You may specify a time range, or a  time point (<em>time</em>). If both, only the time point is used. If neither, return the latest time.</li>
   <li>A time range <em>(time_start, time_end, time_duration</em>) will request all times that intersect the range (<em>timeStride</em> is used if present).</li>
   <li>A time point will request the time that is closest to that time.</li>
   <li>If you set <em>time</em>=&quot;all&quot;, then  all times are returned (<em>timeStride</em> is used if present). All other time parameters are ignored.</li>
   <li>time duration: 1)   udunit&#32;time&#32;unit&#32;string or&#32;2) <a rel="nofollow" href="#W3Cduration">W3C time duration</a></li>
-  <li>datetime: isoString or &quot;present&quot;</li>
+  <li>datetime: isoString or &quot;latest&quot; (&quot;present&quot; == &quot;latest&quot; for backwardds compatibility.</li>
   <li>The dataset determines what Calendar is used, so you must use that calendar.</li>
 </ul>
+<ol>
+  <li>does dataset have runtime?</li>
+  <li>does datasset have 2D and Best ?</li>
+  <li>single horizCoordSys, make seperate datasets (or group?) if needed??</li>
+</ol>
 <h4>Interval coordinate:</h4>
 <ul>
   <li>If the  coordinate is an <em>interval coordinate</em> (common for vertical or time coordinates), it has a lower and upper bound, eg (2.0-10.0).</li>

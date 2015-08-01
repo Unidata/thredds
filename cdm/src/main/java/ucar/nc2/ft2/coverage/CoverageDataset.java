@@ -181,6 +181,10 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
     return coordAxes;
   }
 
+  public HorizCoordSys getHorizCoordSys() {
+    return coordSys.get(0).getHorizCoordSys(); // LOOK kludge
+  }
+
   @Override
   public String toString() {
     Formatter f = new Formatter();

@@ -112,7 +112,7 @@
           <div id="inputLatLonSubset" class="selected">
             <span class="bold">Lat/lon subset</span>
           </div>
-          <div id="inputCoordSubset" class="unselected">
+          <div id="inputCoordSubset" class="unselected" th:if="${gcd.horizCoordSys.hasProjection}">
             <span class="bold">Coordinate subset</span>
           </div>
 
@@ -124,20 +124,20 @@
                 <div class="top">
                   <span>north</span>
                   <br/>
-                  <input onchange="Ncss.buildAccessUrl()" type="text" name="north" size="8" value="90.0000"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_north" size="8" value="90.0000"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="north" size="8" value="90.0000" th:attr="value=${gcd.latLonBoundingBox.latMax}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_north" size="8" value="90.0000" th:attr="value=${gcd.latLonBoundingBox.latMax}"/>
                 </div>
                 <div>
                   west
-                  <input onchange="Ncss.buildAccessUrl()" type="text" name="west" size="8" value="0.0000"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_west" size="8" value="0.0000"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="text" name="east" size="8" value="359.5000"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_east" size="8" value="359.5000"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="west" size="8" value="0.0000" th:attr="value=${gcd.latLonBoundingBox.lonMin}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_west" size="8" value="0.0000" th:attr="value=${gcd.latLonBoundingBox.lonMin}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="east" size="8" value="360.000" th:attr="value=${gcd.latLonBoundingBox.lonMax}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_east" size="8" value="360.0000" th:attr="value=${gcd.latLonBoundingBox.lonMax}"/>
                   east
                 </div>
                 <div class="top">
-                  <input onchange="Ncss.buildAccessUrl()" type="text" name="south" size="8" value="-77.5000"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_south" size="8" value="-77.5000"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="south" size="8" value="-90.0000" th:attr="value=${gcd.latLonBoundingBox.latMin}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_south" size="8" value="-90.0000" th:attr="value=${gcd.latLonBoundingBox.latMin}"/>
                   <br/>
                   <span>south</span>
                 </div>
@@ -148,26 +148,26 @@
                 <span class="blueLink" id="resetLatLonbbox">reset to full extension</span>
               </div>
 
-              <div id="coordinateSubset" class="hidden absoluteTopLeft borderLightGrey">
+              <div id="coordinateSubset" class="hidden absoluteTopLeft borderLightGrey" th:if="${gcd.horizCoordSys.hasProjection}">
                 <span class="bold">Bounding box, in projection coords:</span>
 
                 <div class="top">
                   <span>maxy</span>
                   <br/>
-                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxy" size="8" value="90.25"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxy" size="8" value="90.25"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxy" size="8" value="maxy" th:attr="value=${gcd.projBoundingBox.maxY}" />
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxy" size="8" value="maxy" th:attr="value=${gcd.projBoundingBox.maxY}"/>
                 </div>
                 <div>
                   minx
-                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="minx" size="8" value="-0.25"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_minx" size="8" value="-0.25"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxx" size="8" value="359.75"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxx" size="8" value="359.75"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="minx" size="8" value="minx" th:attr="value=${gcd.projBoundingBox.minX}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_minx" size="8" value="minx" th:attr="value=${gcd.projBoundingBox.minX}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxx" size="8" value="maxx" th:attr="value=${gcd.projBoundingBox.maxX}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxx" size="8" value="maxx" th:attr="value=${gcd.projBoundingBox.maxX}"/>
                   maxx
                 </div>
                 <div class="top">
-                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="miny" size="8" value="-77.75"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_miny" size="8" value="-77.75"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="miny" size="8" value="miny" th:attr="value=${gcd.projBoundingBox.minY}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_miny" size="8" value="miny" th:attr="value=${gcd.projBoundingBox.minY}"/>
                   <br/>
                   <span>miny</span>
                 </div>
@@ -199,12 +199,12 @@
             <div id="temporalSubsetWithStride">
               <div id="timeRangeSubset" class="absoluteTopLeft borderLightGrey">
                 <label class="sized">Start:</label>
-                <input onchange="Ncss.buildAccessUrl()" type="text" name="time_start" size="21" value="2015-07-17T00:00:00Z"/>
-                <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_time_start" size="21" value="2015-07-17T00:00:00Z"/>
+                <input onchange="Ncss.buildAccessUrl()" type="text" name="time_start" value="time_start" th:attr="value=${gcd.calendarDateRange.start}"/>
+                <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_time_start" value="time_start" th:attr="value=${gcd.calendarDateRange.start}"/>
                 <br/>
                 <label class="sized">End:</label>
-                <input onchange="Ncss.buildAccessUrl()" type="text" name="time_end" size="21" value="2015-08-07T18:00:00Z"/>
-                <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_time_end" size="21" value="2015-08-07T18:00:00Z"/>
+                <input onchange="Ncss.buildAccessUrl()" type="text" name="time_end" value="time_start" th:attr="value=${gcd.calendarDateRange.end}"/>
+                <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_time_end" value="time_end" th:attr="value=${gcd.calendarDateRange.end}"/>
                 <br/>
                 <label class="sized">Stride:</label>
                 <input onchange="Ncss.buildAccessUrl()" type="text" name="timeStride" size="5" value="1"/>
@@ -213,7 +213,7 @@
               </div>
               <div id="singleTimeSubset" class="hidden absoluteTopLeft borderLightGrey">
                 <label class="sized">Time:</label>
-                <input onchange="Ncss.buildAccessUrl()" type="text" name="time" size="21" disabled="disabled" value="2015-08-07T18:00:00Z"/>
+                <input onchange="Ncss.buildAccessUrl()" type="text" name="time" size="21" disabled="disabled" value="time_end" th:attr="value=${gcd.calendarDateRange.end}"/>
               </div>
             </div>
           </div>
