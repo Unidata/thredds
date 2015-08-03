@@ -47,6 +47,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -173,7 +174,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   private InvDatasetImpl makeDatasetFromCollection( boolean isTop, InvCatalogImpl parentCatalog, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
-    // StateGrib localState = (StateGrib) state;
+    if (fromGc == null)
+      throw new FileNotFoundException("Grib Collection '"+getCollectionName()+"' does not exist or is empty");
 
     String dsName = isTop ? getName() : makeCollectionShortName(fromGc.getName());
     InvDatasetImpl result = new InvDatasetImpl(this);
