@@ -57,7 +57,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static public final String SCHEME = PROTOCOL+":";
 
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
-  static private boolean showRequest = true;
+  static private boolean showRequest = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
@@ -121,13 +121,19 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest) System.out.printf(" took %d msecs %n", took);
   }
 
+  // Closes is.
   public CdmRemote(InputStream is, String location ) throws IOException {
     long start = System.currentTimeMillis();
     remoteURI = location;
 
-    NcStreamReader reader = new NcStreamReader();
-    reader.readStream(is, this);
-    this.location = SCHEME + remoteURI;
+    try {
+      NcStreamReader reader = new NcStreamReader();
+      reader.readStream(is, this);
+      this.location = SCHEME + remoteURI;
+
+    } finally {
+      is.close();
+    }
     long took = System.currentTimeMillis() - start;
     if (showRequest) System.out.printf(" took %d msecs %n", took);
   }
@@ -174,7 +180,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         }
       }
 
-      InputStream is = method.getResponseAsStream();
+      InputStream is = method.getResponseAsStream();  // Closed by HTTPMethod.close().
       NcStreamReader reader = new NcStreamReader();
       NcStreamReader.DataResult result = reader.readData(is, this);
 
@@ -209,28 +215,27 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
     sbuff.append(query);
+    if (showRequest) System.out.printf(" CdmRemote sendQuery= %s", sbuff);
 
-    if(showRequest)
-      System.out.printf(" CdmRemote sendQuery= %s", sbuff);
-
-    try (HTTPMethod method = HTTPFactory.Get(session, sbuff.toString()) ) {
+    HTTPMethod method = HTTPFactory.Get(session, sbuff.toString());
+    try {
       int statusCode = method.execute();
-
-      if (statusCode == 404)
-        throw new FileNotFoundException(getErrorMessage(method));
-
-      if (statusCode >= 300)
-        throw new IOException(getErrorMessage(method));
+      if (statusCode == 404) {
+        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+      } else if (statusCode >= 400) {
+        throw new IOException(method.getPath() + " " + method.getStatusLine());
+      }
 
       InputStream stream = method.getResponseBodyAsStream();
       if (showRequest) System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
+
+      // Leave the stream open. We must also leave the HTTPMethod open because the two are linked:
+      // calling close() on one object causes the other object to be closed as well.
       return stream;
-
-    } catch (HTTPException he) {
-      throw new IOException(he);
-
-    } catch (IOException ioe) {
-      throw ioe;
+    } catch (IOException e) {
+      // Close the HTTPMethod if there was an exception; otherwise leave it open.
+      method.close();
+      throw e;
     }
   }
 

@@ -4,8 +4,11 @@ package thredds.server.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import thredds.TestWithLocalServer;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.DataFactory;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
 import ucar.ma2.Array;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -14,9 +17,12 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.units.DateType;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.IO;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -130,6 +136,23 @@ public class TestTdsGrib {
     Assert.assertNull(latest.getAccess(ServiceType.CdmRemote));
   }
 
+  @Test
+  public void testMissingCollection() throws IOException {
+    String catalogPath = TestWithLocalServer.withPath("catalog/Grib/Nonexist/catalog.xml");
+    try (HTTPMethod method = HTTPFactory.Get(null, catalogPath)) {
+      int statusCode = method.execute();
+      assert statusCode == 404;       // not 500
+    }
+  }
+
+  @Test
+  public void testEmptyCollection() throws IOException {
+    String catalogPath = TestWithLocalServer.withPath("catalog/Grib/Emptiness/catalog.xml");
+    try (HTTPMethod method = HTTPFactory.Get(null, catalogPath)) {
+      int statusCode = method.execute();
+      assert statusCode == 404;       // not 500
+    }
+  }
 
   ///////////////////////////////////////////////////
   // work with catalogs with service elements removed
