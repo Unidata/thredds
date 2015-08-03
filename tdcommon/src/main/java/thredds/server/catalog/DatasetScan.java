@@ -165,9 +165,6 @@ public class DatasetScan extends CatalogRef {
     String id = this.getId();
     if (id == null) id = config.path;
     String parentId = (dataDirReletive.length() > 1) ? id + "/" + dataDirReletive : id + "/";
-
-    // translate any properties         LOOK this should be done at configure time
-    //String scanDir = ConfigCatalog.translateAlias(config.scanDir);
     String dataDirComplete = (dataDirReletive.length() > 1) ? config.scanDir + "/" + dataDirReletive : config.scanDir;
 
     // Setup and create catalog builder.
@@ -423,26 +420,29 @@ public class DatasetScan extends CatalogRef {
    * @param orgPath    the part of the baseURI that is the path
    * @param baseURI the base URL for the catalog, used to resolve relative URLs.
    * @return the resolver catalog for this path (uses version 1.1) or null if build unsuccessful.
-   *
-  public Catalog makeLatestResolvedCatalog(String orgPath, URI baseURI) throws IOException {
+   */
 
-    // Get the dataset path.
-    String dataDirReletive = translatePathToLocation(orgPath);
+  public CatalogBuilder makeCatalogForLatest(String orgPath, URI baseURI) throws IOException {
+   // Get the dataset location.
+    String dataDirReletive = translatePathToReletiveLocation(orgPath, config.path);
     if (dataDirReletive == null) {
       String tmpMsg = "makeCatalogForDirectory(): Requesting path <" + orgPath + "> must start with \"" + config.path + "\".";
       log.error(tmpMsg);
       return null;
     }
+    if (!dataDirReletive.endsWith("/"))
+      dataDirReletive += "/";
     String parentPath = (dataDirReletive.length() > 1) ? config.path + "/" + dataDirReletive : config.path + "/";
-    String parentId = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive : this.getId() + "/";
-
-    // translate any properties
-    // String scanDir = ConfigCatalog.translateAlias(config.scanDir);
+    String id = this.getId();
+    if (id == null) id = config.path;
+    String parentId = (dataDirReletive.length() > 1) ? id + "/" + dataDirReletive : id + "/";
     String dataDirComplete = (dataDirReletive.length() > 1) ? config.scanDir + "/" + dataDirReletive : config.scanDir;
 
     // Setup and create catalog builder.
     CatalogBuilder catBuilder = new CatalogBuilder();
     catBuilder.setBaseURI(baseURI);
+    assert this.getParentCatalog() != null;
+
     for (Service s : this.getParentCatalog().getServices())
       catBuilder.addService(s);
 
@@ -483,8 +483,8 @@ public class DatasetScan extends CatalogRef {
     }
 
     // make the catalog
-    return catBuilder.makeCatalog();
-  }  */
+    return catBuilder;
+  }
 
 
 }

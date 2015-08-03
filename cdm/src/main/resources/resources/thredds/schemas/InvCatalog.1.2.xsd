@@ -598,10 +598,10 @@
           <xsd:sequence>
             <xsd:element ref="filter" minOccurs="0"/>
             <xsd:element ref="namer" minOccurs="0"/>
-            <xsd:element type="fileSortType" name="filesSort" minOccurs="0"/>
+            <xsd:element name="filesSort" type="fileSortType" minOccurs="0"/>
             <xsd:element ref="sort" minOccurs="0"/>           <!-- deprecated, use filesSort -->
-            <xsd:element ref="addLatest" minOccurs="0"/>
-            <xsd:element ref="addProxies" minOccurs="0"/>
+            <xsd:element name="addLatest" type="addLatestType" minOccurs="0"/>
+            <xsd:element ref="addProxies" minOccurs="0"/>      <!-- deprecated, use addLatest -->
             <xsd:element ref="addTimeCoverage" minOccurs="0"/>
           </xsd:sequence>
 
@@ -657,41 +657,12 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="addLatest">              <!-- use 'latest' attribute for simple case -->
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element ref="simpleLatest" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
-  <!-- Allow addition of proxy datasets (e.g., latest). -->
-  <xsd:element name="addProxies">
-    <xsd:complexType>
-      <xsd:choice minOccurs="0" maxOccurs="unbounded">
-        <xsd:element ref="simpleLatest"/>
-        <xsd:element ref="latestComplete"/>
-      </xsd:choice>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="simpleLatest">
-    <xsd:complexType>
-      <xsd:attribute name="name" type="xsd:string"/>
-      <xsd:attribute name="top" type="xsd:boolean"/>
-      <xsd:attribute name="isResolver" type="xsd:boolean"/>
-      <xsd:attribute name="serviceName" type="xsd:string"/>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="latestComplete">
-    <xsd:complexType>
-      <xsd:attribute name="name" type="xsd:string"/>
-      <xsd:attribute name="top" type="xsd:boolean"/>
-      <xsd:attribute name="serviceName" type="xsd:string"/>
-      <xsd:attribute name="isResolver" type="xsd:boolean"/>
-      <xsd:attribute name="lastModifiedLimit" type="xsd:float"/>
-    </xsd:complexType>
-  </xsd:element>
+  <xsd:complexType name="addLatestType">
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="top" type="xsd:boolean"/>
+    <xsd:attribute name="serviceName" type="xsd:string"/>
+    <xsd:attribute name="lastModifiedLimit" type="xsd:float"/> <!-- minutes -->
+  </xsd:complexType>
 
   <xsd:element name="addTimeCoverage">
     <xsd:complexType>
@@ -699,6 +670,16 @@
       <xsd:attribute name="datasetPathMatchPattern" type="xsd:string"/>
       <xsd:attribute name="startTimeSubstitutionPattern" type="xsd:string"/>
       <xsd:attribute name="duration" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- legacy -->
+  <xsd:element name="addProxies">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="simpleLatest" type="addLatestType"/>
+        <xsd:element name="latestComplete" type="addLatestType"/>
+      </xsd:choice>
     </xsd:complexType>
   </xsd:element>
 

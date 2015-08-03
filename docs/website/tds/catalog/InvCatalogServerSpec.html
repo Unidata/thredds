@@ -75,11 +75,11 @@
 <hr />
 <h3><a name="datasetScan_Element" id="datasetScan_Element"></a><em>The datasetScan</em> Element</h3>
 <p>A <em>datasetScan</em> can be used wherever a dataset element is allowed. However, do not put nested datasets inside a datasetScan element.</p>
-<pre>&lt;xsd:element name=&quot;datasetScan&quot; substitutionGroup=&quot;dataset&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:complexContent&gt;<br/>      &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br/>        &lt;xsd:sequence&gt;<br/>          &lt;xsd:element ref=&quot;filter&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;<br />          &lt;xsd:element ref=&quot;namer&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;<br />          &lt;xsd:element ref=&quot;sort&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;         <br />          &lt;xsd:element ref=&quot;addLatest&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;<br />          &lt;xsd:element ref=&quot;addProxies&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;<br />          &lt;xsd:element ref=&quot;addTimeCoverage&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;<br/>        &lt;/xsd:sequence&gt;<br/><br/>        &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>        &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot;/&gt;<br/>        &lt;xsd:attribute name=&quot;addLatest&quot; type=&quot;xsd:boolean&quot;/&gt;    
+<pre>&lt;xsd:element name=&quot;datasetScan&quot; substitutionGroup=&quot;dataset&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:complexContent&gt;<br/>      &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br/>        &lt;xsd:sequence&gt;<br/>          &lt;xsd:element ref=&quot;filter&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;<br />          &lt;xsd:element ref=&quot;namer&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;<br />          &lt;xsd:element ref=&quot;sort&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;              &lt;!--&#32;deprecated,&#32;use&#32;filesSort&#32;--&gt;   <br />          &lt;xsd:element&#32;name=&quot;addLatest&quot;&#32;type=&quot;addLatestType&quot;&#32;minOccurs=&quot;0&quot;/&gt;<br />          &lt;xsd:element ref=&quot;addProxies&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;         &lt;!--&#32;deprecated,&#32;use&#32;addLatest&#32;--&gt;<br />          &lt;xsd:element ref=&quot;addTimeCoverage&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;<br/>        &lt;/xsd:sequence&gt;<br/><br/>        &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>        &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot;/&gt;<br/>        &lt;xsd:attribute name=&quot;addLatest&quot; type=&quot;xsd:boolean&quot;/&gt;    
       &lt;/xsd:extension&gt;<br/>    &lt;/xsd:complexContent&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;</pre>
-<p>The <em>datasetScan</em> element generates nested THREDDS catalogs by scanning the directory named in the <em>location</em> attribute, and creating a
-  <em>dataset</em> for each file found, and a <em>catalogRef</em> for each subdirectory. The <em>path</em> attribute is used to create the URL for these files and
-  catalogs. The path must be globally unique over all paths for the TDS. Do not put leading or trailing slashes on the path. The location must be an absolute path.<br/>
+<p>The <em>datasetScan</em> element generates nested THREDDS catalogs by scanning the directory named in the <em><strong>location</strong></em> attribute, and creating a
+  <em>dataset</em> for each file found, and a <em>catalogRef</em> for each subdirectory. The <em><strong>path</strong></em> attribute is used to create the URL for these files and
+catalogs. The path must be globally unique over all paths for the TDS. Do not put leading or trailing slashes on the path. The location must be an absolute path. The <strong><em>addLatest</em></strong> attribute is the simplest possible way to add a <em>latest resolver service</em> to a datasetScan.<br/>
 </p>
 
 <p>A <em>datasetScan</em> element is in the dataset substitutionGroup, so it can
@@ -211,39 +211,22 @@ So, when cataloged, this dataset would end up  like this (note that only the nam
 </pre>
 <h3><a id="addLatest_Element"></a>addLatest Element<br/>
 </h3>
-<pre>&lt;xsd:element name=&quot;addLatest&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:sequence&gt;<br/>      &lt;xsd:element name=&quot;simpleLatest&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>    &lt;/xsd:sequence&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;<br/>
-</pre>
-<p>The <em>addLatest</em> element is deprecated in favor of the <em>addProxies</em> element.</p>
-
-<h3><a name="addProxies_Element" id="addProxies_Element"></a>addProxies Element<br/>
-</h3>
-<pre>&lt;xsd:element name=&quot;addProxies&quot;&gt;<br/>  &lt;xsd:complexType&gt;<br/>    &lt;xsd:sequence&gt;<br/>      &lt;xsd:element name=&quot;simpleLatest&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;  &lt;!-- not used --&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>      &lt;xsd:element name=&quot;latestComplete&quot; minOccurs=&quot;0&quot;&gt;<br/>        &lt;xsd:complexType&gt;<br/>          &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;top&quot; type=&quot;xsd:boolean&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;serviceName&quot; type=&quot;xsd:string&quot;/&gt;  &lt;!-- not used --&gt;<br/>          &lt;xsd:attribute name=&quot;lastModifiedLimit&quot; type=&quot;xsd:float&quot;/&gt;<br/>        &lt;/xsd:complexType&gt;<br/>      &lt;/xsd:element&gt;<br/>    &lt;/xsd:sequence&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;<br/></pre>
-<p>The <em>addProxies</em> element<strong></strong> provides a place for
-  describing proxy datasets to be added to each collection
-  dataset under a datasetScan.<br/>
-</p>
-
-<p>Currently, two types of proxy datasets
-  are supported. They are both intended to proxy the &quot;latest&quot; dataset in
-  the scanned collection. The first type of proxy dataset, specified by
-  the <em>simpleLatest</em> element, adds a dataset that proxies the existing dataset whose name is
-  lexigraphically greatest. This dataset will be the &quot;latest&quot; if the
-  dataset name contains a timestamp. The <em>simpleLatest</em> element may contain a <em>name</em> attribute which is used as the name of the proxy dataset, and the <em>top</em> attribute which indicates if
+<pre>&lt;xsd:complexType&#32;name=&quot;addLatestType&quot;&gt;<br />&#32;&#32;&lt;xsd:attribute&#32;name=&quot;name&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />&#32;&#32;&lt;xsd:attribute&#32;name=&quot;top&quot;&#32;type=&quot;xsd:boolean&quot;/&gt;<br />&#32;&#32;&lt;xsd:attribute&#32;name=&quot;serviceName&quot;&#32;type=&quot;xsd:string&quot;/&gt;<br />&#32;&#32;&lt;xsd:attribute&#32;name=&quot;lastModifiedLimit&quot;&#32;type=&quot;xsd:float&quot;/&gt;  &lt;!-- minutes --&gt;<br />&lt;/xsd:complexType&gt;<br/></pre>
+<p>This adds a latest proxy dataset (name is
+  lexigraphically greatest in the scan). The  <em>name</em> attribute will set the name of the proxy dataset, and the <em>top</em> attribute  indicates if
   the proxy dataset should appear at the top
   or bottom of the list of dataset in this collection. Default behavior
   in the TDS if any these attributes are missing is to name the dataset
   &quot;latest.xml&quot;, and place the dataset at
-  the top of the collection.<br/>
-</p>
-
-<p>The second type of proxy dataset, specified by the <em>latestComplete</em> element, is the same as the simple latest except that it will exclude
+  the top of the collection. If <em>lastModifedLimit</em> attribute is set, the TDS will exclude
   any dataset that was last modified within the number of minutes
-  specified by the <em>lastModifedLimit</em> attribute. It must contain all the attributes allowed in the <em>simpleLatest</em> element plus the <em>lastModifiedLimit</em>
-  attribute.<br/>
+  specified by the <em>lastModifedLimit</em> attribute. <br/>
 </p>
-
 <p>An example is available in the <a href="../reference/DatasetScan.html#Adding_Proxy_Datasets">TDS datasetsScan documentation</a>.</p>
 
+<h3><a name="addProxies_Element" id="addProxies_Element"></a>addProxies Element </h3>
+<p>For backwards compatibility, addProxies can still be used, with the same functionality as addLatest:</p>
+<pre>&lt;!--&#32;legacy&#32;--&gt;<br />&lt;xsd:element&#32;name=&quot;addProxies&quot;&gt;<br />&#32;&#32;&lt;xsd:complexType&gt;<br />&#32;&#32;&#32;&#32;&lt;xsd:choice&#32;minOccurs=&quot;0&quot;&#32;maxOccurs=&quot;unbounded&quot;&gt;<br />&#32;&#32;&#32;&#32;&#32;&#32;&lt;xsd:element&#32;name=&quot;simpleLatest&quot;&#32;type=&quot;addLatestType&quot;/&gt;<br />&#32;&#32;&#32;&#32;&#32;&#32;&lt;xsd:element&#32;name=&quot;latestComplete&quot;&#32;type=&quot;addLatestType&quot;/&gt;<br />&#32;&#32;&#32;&#32;&lt;/xsd:choice&gt;<br />&#32;&#32;&lt;/xsd:complexType&gt;<br />&lt;/xsd:element&gt;<br/></pre>
 <h3><a name="addTimeCoverage_Element" id="addTimeCoverage_Element"></a>addTimeCoverage Element<br/>
 </h3>
 <pre>  &lt;xsd:element name=&quot;addTimeCoverage&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:attribute name=&quot;datasetNameMatchPattern&quot; type=&quot;xsd:string&quot;/&gt;<br/>      &lt;xsd:attribute name=&quot;datasetPathMatchPattern&quot; type=&quot;xsd:string&quot;/&gt;<br/>      &lt;xsd:attribute name=&quot;startTimeSubstitutionPattern&quot; type=&quot;xsd:string&quot;/&gt;<br/>      &lt;xsd:attribute name=&quot;duration&quot; type=&quot;xsd:string&quot;/&gt;<br/>    &lt;/xsd:complexType&gt;<br/>  &lt;/xsd:element&gt;<br/></pre>

@@ -57,8 +57,29 @@ public class TestTdsDatasetScan {
   }
 
   @Test
-  public void testLatest() throws IOException {
-    Catalog cat = TdsLocalCatalog.open("catalog/testGFSfmrc/files/latest.xml");
+  public void testDatasetScanForLatest() throws IOException {
+    Catalog parent = TdsLocalCatalog.open("catalog/testGridScan/catalog.xml");
+    Service latestService = parent.findService("Resolver");
+    Assert.assertNotNull(latestService);
+
+    List<Dataset> topDatasets = parent.getDatasets();
+    Assert.assertEquals(1, topDatasets.size());
+    Dataset topDataset = topDatasets.get(0);
+
+    List<Dataset> dss = topDataset.getDatasets();
+    Assert.assertTrue(dss.size() > 0);
+
+    Dataset latestDataset = topDataset.findDatasetByName("latest.xml");
+    Assert.assertNotNull(latestDataset);
+    Access latestAccess = latestDataset.getAccess(ServiceType.Resolver);
+    Assert.assertNotNull(latestAccess);
+    Assert.assertEquals(latestService, latestAccess.getService());
+  }
+
+    @Test
+   public void testLatestResolver() throws IOException {
+    Catalog cat = TdsLocalCatalog.open("catalog/testGridScan/latest.xml");
+
     List<Dataset> dss = cat.getDatasets();
     assert (dss.size() == 1);
 
@@ -68,12 +89,7 @@ public class TestTdsDatasetScan {
 
     assert ds.getID() != null;
     assert ds.getDataSize() > 0.0;
-
-    List<thredds.client.catalog.ThreddsMetadata.Vocab> keywords = ds.getKeywords();
-    Assert.assertEquals("Number of keywords", 2, keywords.size());
-
-    DateRange dr = ds.getTimeCoverage();
-    Assert.assertNotNull("TimeCoverage", dr);
+    assert ds.getId().endsWith("GFS_CONUS_80km_20120229_1200.grib1");;
   }
 
   @Test
@@ -107,7 +123,6 @@ public class TestTdsDatasetScan {
     assert top != null;
     List<Dataset> children = top.getDatasets();
     Assert.assertEquals(3, children.size()); // latest + 2
-
   }
 
   /*

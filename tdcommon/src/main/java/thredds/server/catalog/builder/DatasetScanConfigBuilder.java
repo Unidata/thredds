@@ -300,61 +300,19 @@ public class DatasetScanConfigBuilder {
     return Optional.empty();
   }
 
-  /*
-   <xsd:element name="addLatest">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element ref="simpleLatest" minOccurs="0" maxOccurs="1"/>
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
-    <!-- Allow addition of proxy datasets (e.g., latest). -->
-  <xsd:element name="addProxies">
-    <xsd:complexType>
-      <xsd:choice minOccurs="0" maxOccurs="unbounded">
-        <xsd:element ref="simpleLatest"/>
-        <xsd:element ref="latestComplete"/>
-      </xsd:choice>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="simpleLatest">
-    <xsd:complexType>
-      <xsd:attribute name="name" type="xsd:string"/>
-      <xsd:attribute name="top" type="xsd:boolean"/>
-      <xsd:attribute name="isResolver" type="xsd:boolean"/>
-      <xsd:attribute name="serviceName" type="xsd:string"/>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="latestComplete">
-    <xsd:complexType>
-      <xsd:attribute name="name" type="xsd:string"/>
-      <xsd:attribute name="top" type="xsd:boolean"/>
-      <xsd:attribute name="serviceName" type="xsd:string"/>
-      <xsd:attribute name="isResolver" type="xsd:boolean"/>
-      <xsd:attribute name="lastModifiedLimit" type="xsd:float"/>
-    </xsd:complexType>
-  </xsd:element>
-   */
   protected DatasetScanConfig.AddLatest readDatasetScanAddProxies(Element addProxiesElem, Element addLatestElem, String addLatestAttribute) {
 
-    // handle old "addLatest attribute
+    // handle "addLatest attribute
     if (addLatestAttribute != null && addLatestAttribute.equalsIgnoreCase("true")) {
       return new DatasetScanConfig.AddLatest();  // use defaults
     }
 
-    // Handle old "addLatest" elements.
+    // Handle "addLatest" elements.
     if (addLatestElem != null) {
-      Element simpleLatestElem = addLatestElem.getChild("simpleLatest", Catalog.defNS);
-      if (simpleLatestElem == null)
-        return new DatasetScanConfig.AddLatest(); // if empty, use defaults
-      else
-        return readDatasetScanAddLatest(simpleLatestElem);
+      return readDatasetScanAddLatest(addLatestElem);
     }
 
-    // Handle all "addProxies" elements.
+    // Handle old "addProxies" elements.
     if (addProxiesElem != null) {
       for (Element curChildElem : addProxiesElem.getChildren()) {
 
@@ -363,42 +321,8 @@ public class DatasetScanConfigBuilder {
           return readDatasetScanAddLatest(curChildElem);
         }
 
-        // Handle "latestComplete" child elements.
-        else if (curChildElem.getName().equals("latestComplete")) {
-          // Get latest name.
-          String latestName = curChildElem.getAttributeValue("name");
-          if (latestName == null) {
-            errlog.format("WARN: readDatasetScanAddProxies(): unnamed latestComplete, skipping.%n");
-            continue;
-          }
-
-          // Does latest go on top or bottom of list.
-          Attribute topAtt = curChildElem.getAttribute("top");
-          boolean latestOnTop = true;
-          if (topAtt != null) {
-            try {
-              latestOnTop = topAtt.getBooleanValue();
-            } catch (DataConversionException e) {
-              latestOnTop = true;
-            }
-          }
-
-          // Get lastModifed limit.
-          String lastModLimitVal = curChildElem.getAttributeValue("lastModifiedLimit");
-          long lastModLimit;
-          if (lastModLimitVal == null)
-            lastModLimit = 60; // Default to one hour
-          else
-            lastModLimit = Long.parseLong(lastModLimitVal);
-
-          // Get isResolver.
-          String isResolverString = curChildElem.getAttributeValue("isResolver");  // WTF ?
-          boolean isResolver = true;
-          if (isResolverString != null)
-            if (isResolverString.equalsIgnoreCase("false"))
-              isResolver = false;
-
-          return new DatasetScanConfig.AddLatest(latestName, latestOnTop, isResolver, lastModLimit);
+        if (curChildElem.getName().equals("latestComplete")) {
+          return readDatasetScanAddLatest(curChildElem);
         }
       }
     }
@@ -406,38 +330,48 @@ public class DatasetScanConfigBuilder {
     return null;
   }
 
+  /*
+   <xsd:complexType name="addLatestType">
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="top" type="xsd:boolean"/>
+    <xsd:attribute name="serviceName" type="xsd:string"/>
+    <xsd:attribute name="lastModifiedLimit" type="xsd:float"/> <!-- minutes -->
+  </xsd:complexType>
+   */
 
-  private DatasetScanConfig.AddLatest readDatasetScanAddLatest(Element simpleLatestElem) {
-    // Default values is simpleLatestElem is null.
+
+  private DatasetScanConfig.AddLatest readDatasetScanAddLatest(Element addLatestElem) {
+
     String latestName = "latest.xml";
+    String serviceName = "Resolver";
     boolean latestOnTop = true;
     boolean isResolver = true;
 
-    // If simpleLatestElem exists, read values.
-    if (simpleLatestElem != null) {
-      // Get latest name.
-      String tmpLatestName = simpleLatestElem.getAttributeValue("name");
-      if (tmpLatestName != null)
-        latestName = tmpLatestName;
+    String tmpLatestName = addLatestElem.getAttributeValue("name");
+    if (tmpLatestName != null)
+      latestName = tmpLatestName;
 
-      // Does latest go on top or bottom of list.
-      Attribute topAtt = simpleLatestElem.getAttribute("top");
-      if (topAtt != null) {
-        try {
-          latestOnTop = topAtt.getBooleanValue();
-        } catch (DataConversionException e) {
-          latestOnTop = true;
-        }
+    String tmpserviceName = addLatestElem.getAttributeValue("serviceName");
+     if (tmpserviceName != null)
+       serviceName = tmpserviceName;
+
+     // Does latest go on top or bottom of list.
+    Attribute topAtt = addLatestElem.getAttribute("top");
+    if (topAtt != null) {
+      try {
+        latestOnTop = topAtt.getBooleanValue();
+      } catch (DataConversionException e) {
+        latestOnTop = true;
       }
-
-      // Get isResolver.
-      String isResolverString = simpleLatestElem.getAttributeValue("isResolver");
-      if (isResolverString != null)
-        if (isResolverString.equalsIgnoreCase("false"))
-          isResolver = false;
     }
 
-    return new DatasetScanConfig.AddLatest(latestName, latestOnTop, isResolver, -1);
+    // Get lastModifed limit.
+    String lastModLimitVal = addLatestElem.getAttributeValue("lastModifiedLimit");
+    long lastModLimit = -1;
+    if (lastModLimitVal != null)
+      lastModLimit = Long.parseLong(lastModLimitVal) * 60 * 1000; // convert minutes to millisecs
+
+    return new DatasetScanConfig.AddLatest(latestName, serviceName, latestOnTop, lastModLimit);
   }
 
 /*

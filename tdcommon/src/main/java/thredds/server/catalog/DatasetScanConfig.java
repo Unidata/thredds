@@ -65,7 +65,6 @@ public class DatasetScanConfig {
             ", path='" + path + '\'' +
             ", scanDir='" + scanDir + '\'' +
             ", restrictAccess='" + restrictAccess + '\'' +
-  //          ", addDatasetSize=" + addDatasetSize +
             ", isSortIncreasing=" + getSortFilesAscending() +
             ", ncmlElement=" + ncmlElement +
             ", filters=" + filters +
@@ -107,21 +106,21 @@ public class DatasetScanConfig {
   }
 
   public static class AddLatest {
-    String latestName;
-    boolean latestOnTop, isResolver;
-    long lastModLimit;
+    String latestName, serviceName;
+    boolean latestOnTop;
+    long lastModLimit;  // millisecs
 
     public AddLatest() {
       latestName = "latest.xml";
+      serviceName = "Resolver";
       latestOnTop = true;
-      isResolver = true;
       lastModLimit = -1;
     }
 
-    public AddLatest(String latestName, boolean latestOnTop, boolean isResolver, long lastModLimit) {
+    public AddLatest(String latestName, String serviceName, boolean latestOnTop, long lastModLimit) {
       this.latestName = latestName;
+      this.serviceName = serviceName;
       this.latestOnTop = latestOnTop;
-      this.isResolver = isResolver;
       this.lastModLimit = lastModLimit;
     }
   }

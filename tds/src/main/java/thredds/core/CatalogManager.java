@@ -93,11 +93,7 @@ public class CatalogManager {
 
   // barfola on the return type
   private Object makeDynamicCatalog(String path, URI baseURI) throws IOException {
-    // private CatalogBuilder makeDynamicCatalog(String path, URI baseURI) throws IOException {
-
-    // Make sure this is a dynamic catalog request.
-    //if (!path.endsWith("catalog.xml") && !path.endsWith("/latest.xml"))
-    //  return null;
+    boolean isLatest = path.endsWith("/latest.xml");
 
     // strip off the filename
     int pos = path.lastIndexOf("/");
@@ -113,20 +109,22 @@ public class CatalogManager {
     if (match.dataRoot.getFeatureCollection() != null) {
       InvDatasetFeatureCollection fc = featureCollectionCache.get(match.dataRoot.getFeatureCollection());
 
-      boolean isLatest = path.endsWith("/latest.xml");
       if (isLatest)
         return fc.makeLatest(match.remaining, path, baseURI);
       else
         return fc.makeCatalog(match.remaining, path, baseURI);
     }
 
-    // if (path.endsWith("/latest.xml")) return null; // latest is not handled here  LOOK are you sure ??
-
     // DatasetScan
     DatasetScan dscan = match.dataRoot.getDatasetScan();
     if (dscan != null) {
       if (log.isDebugEnabled()) log.debug("makeDynamicCatalog(): Calling DatasetScan.makeCatalogForDirectory( " + baseURI + ", " + path + ").");
-      CatalogBuilder cat = dscan.makeCatalogForDirectory(workPath, baseURI);
+      CatalogBuilder cat;
+
+      if (isLatest)
+        cat = dscan.makeCatalogForLatest(workPath, baseURI);
+      else
+        cat = dscan.makeCatalogForDirectory(workPath, baseURI);
 
       if (null == cat)
         log.error("makeDynamicCatalog(): DatasetScan.makeCatalogForDirectory failed = " + workPath);
