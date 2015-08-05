@@ -49,6 +49,7 @@ import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1Variable;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -329,7 +330,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   @Immutable
   public class GroupGC {
     final Dataset ds;
-    final GribHorizCoordSystem horizCoordSys;
+    public final GribHorizCoordSystem horizCoordSys;
     final List<VariableIndex> variList;
     final List<Coordinate> coords;      // shared coordinates
     final int[] filenose;               // key for GC.fileMap
@@ -682,7 +683,22 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, GribCollectionImmutable.this, this, false);
     }
 
-    @Immutable
+    public String makeVariableUnits() {
+       if (isGrib1)
+         return Grib1Iosp.makeVariableUnits((Grib1Customizer) cust, GribCollectionImmutable.this, this);
+       else
+         return Grib2Iosp.makeVariableUnits((Grib2Customizer) cust, this);
+     }
+
+    public String makeVariableDescription() {
+       if (isGrib1)
+         return Grib1Iosp.makeVariableLongName((Grib1Customizer) cust, getCenter(), getSubcenter(), getTableVersion(), getParameter(),
+                     getLevelType(), isLayer(), getIntvType(), getIntvName(), getProbabilityName());
+       else
+         return Grib2Iosp.makeVariableLongName((Grib2Customizer) cust, this, config.gribConfig.useGenType);
+     }
+
+     @Immutable
     public final class Info {
       final int tableVersion;   // grib1 only : can vary by variable
       final int discipline;     // grib2 only

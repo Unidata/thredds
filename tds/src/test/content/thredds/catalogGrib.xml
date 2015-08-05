@@ -26,7 +26,7 @@
     </metadata>
 
     <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
-    <!-- update startup="true" trigger="allow"/ -->
+    <update startup="nocheck" />
     <tdm rewrite="test" rescan="0 0/5 * * * ? *" />
     <gribConfig datasetTypes="Best LatestFile Files"/>
 

@@ -212,6 +212,13 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       this.refDate = refDate;
     }
 
+    public Builder2(CoordinateTimeIntv from) {
+      this.cust = null;
+      this.code = from.getCode();
+      this.timeUnit = from.getTimeUnit();
+      this.refDate = from.getRefDate();
+    }
+
     @Override
     public Object extract(Grib2Record gr) {
       TimeCoord.Tinv tinv;

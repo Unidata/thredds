@@ -412,19 +412,18 @@ public class HtmlWriting {
     sb.append("<head>\r\n");
     sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
     sb.append("<title>");
-    sb.append("Directory listing for ").append(path);
+    sb.append("Directory listing for ").append(dir.getPath()); // debug mode - show the actual file path
     sb.append("</title>\r\n");
     sb.append(this.getTdsCatalogCssLink()).append("\n");
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     sb.append("<h1>");
-    sb.append("Directory listing for ").append(path);
+    sb.append("Directory listing for ").append(dir.getPath());
 
-    // Render the link to our parent (if required)
+    /* Render the link to our parent (if required)
     String parentDirectory = path;
     if (parentDirectory.endsWith("/")) {
-      parentDirectory =
-              parentDirectory.substring(0, parentDirectory.length() - 1);
+      parentDirectory = parentDirectory.substring(0, parentDirectory.length() - 1);
     }
     int slash = parentDirectory.lastIndexOf('/');
     if (slash >= 0) {
@@ -441,13 +440,12 @@ public class HtmlWriting {
       sb.append("Up to ").append(parent);
       sb.append("</b>");
       sb.append("</a>");
-    }
+    } */
 
     sb.append("</h1>\r\n");
     sb.append("<HR size='1' noshade='noshade'>");
 
-    sb.append("<table width='100%' cellspacing='0'" +
-            " cellpadding='5' align='center'>\r\n");
+    sb.append("<table width='100%' cellspacing='0' cellpadding='5' align='center'>\r\n");
 
     // Render the column headings
     sb.append("<tr>\r\n");
@@ -470,8 +468,7 @@ public class HtmlWriting {
     for (File child : fileList) {
 
       String childname = child.getName();
-      if (childname.equalsIgnoreCase("WEB-INF") ||
-              childname.equalsIgnoreCase("META-INF")) {
+      if (childname.equalsIgnoreCase("WEB-INF") || childname.equalsIgnoreCase("META-INF")) {
         continue;
       }
 
@@ -479,9 +476,8 @@ public class HtmlWriting {
       //if (!endsWithSlash) childname = path + "/" + childname; // client removes last path if no slash
 
       sb.append("<tr");
-      if (shade) {
+      if (shade)
         sb.append(" bgcolor='#eeeeee'");
-      }
       sb.append(">\r\n");
       shade = !shade;
 
@@ -569,8 +565,7 @@ public class HtmlWriting {
     sb.append("</h1>");
     sb.append("<HR size='1' noshade='noshade'>");
 
-    sb.append("<table width='100%' cellspacing='0'" +
-            " cellpadding='5' align='center'>\r\n");
+    sb.append("<table width='100%' cellspacing='0' cellpadding='5' align='center'>\r\n");
 
     //////// Axis
     sb.append("<tr>\r\n");

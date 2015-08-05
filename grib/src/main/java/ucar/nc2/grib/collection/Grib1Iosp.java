@@ -198,8 +198,8 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public String makeVariableNameFromRecord(GribCollectionImmutable.VariableIndex v) {
-    return makeVariableNameFromRecord(gribCollection.getCenter(), gribCollection.getSubcenter(),  v.getTableVersion(), v.getParameter(),
-                v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
+    return makeVariableNameFromRecord(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(), v.getParameter(),
+            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
   private String makeVariableNameFromRecord(int center, int subcenter, int tableVersion, int paramNo,
@@ -228,7 +228,7 @@ public class Grib1Iosp extends GribIosp {
 
   public static String makeVariableName(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig, Grib1SectionProductDefinition pds) {
     return makeVariableNameFromTables(cust, gribConfig, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
-             pds.getLevelType(), cust.isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(), null);
+            pds.getLevelType(), cust.isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(), null);
   }
 
   private static String makeVariableNameFromTables(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig, int center, int subcenter, int version, int paramNo,
@@ -282,8 +282,13 @@ public class Grib1Iosp extends GribIosp {
             v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName(), v.getProbabilityName());
   }
 
-  public String makeVariableLongName(int center, int subcenter, int version, int paramNo, int levelType, boolean isLayer, int intvType,
-                                     String intvName, String probabilityName) {
+
+  public String makeVariableLongName(int center, int subcenter, int version, int paramNo, int levelType, boolean isLayer, int intvType, String intvName, String probabilityName) {
+    return makeVariableLongName(cust, center, subcenter, version, paramNo, levelType, isLayer, intvType, intvName, probabilityName);
+  }
+
+  static public String makeVariableLongName(Grib1Customizer cust, int center, int subcenter, int version, int paramNo, int levelType,
+                                            boolean isLayer, int intvType, String intvName, String probabilityName) {
     Formatter f = new Formatter();
 
     boolean isProb = (probabilityName != null && probabilityName.length() > 0);
@@ -317,6 +322,12 @@ public class Grib1Iosp extends GribIosp {
 
   public String makeVariableUnits(int center, int subcenter, int version, int paramNo) {
     Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo);
+    String val = (param == null) ? "" : param.getUnit();
+    return (val == null) ? "" : val;
+  }
+
+  static public String makeVariableUnits(Grib1Customizer cust, GribCollectionImmutable gribCollection, GribCollectionImmutable.VariableIndex vindex) {
+    Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
     String val = (param == null) ? "" : param.getUnit();
     return (val == null) ? "" : val;
   }

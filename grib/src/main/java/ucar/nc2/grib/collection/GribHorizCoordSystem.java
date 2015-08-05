@@ -37,7 +37,7 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GdsHorizCoordSys;
 
 /**
- * Encapsolates the raw gds; shared by the GroupHcs
+ * Encapsolates the GdsHorizCoordSys; shared by the GroupHcs
  *
  * @author caron
  * @since 11/10/2014

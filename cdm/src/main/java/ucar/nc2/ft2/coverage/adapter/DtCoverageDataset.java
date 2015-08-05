@@ -18,6 +18,7 @@ import java.util.*;
 
 /**
  * fork ucar.nc2.dt.grid for adaption of GridCoverage
+ * this class can evolve as needed and not worry about backwards compatibility
  *
  * @author caron
  * @since 5/26/2015

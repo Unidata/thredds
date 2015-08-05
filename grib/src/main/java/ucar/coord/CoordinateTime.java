@@ -202,6 +202,12 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       this.refDate = refDate;
     }
 
+    public Builder2(CoordinateTime from) {
+      this.code = from.getCode();
+      this.timeUnit = from.getTimeUnit();
+      this.refDate = from.getRefDate();
+    }
+
     @Override
     public Object extract(Grib2Record gr) {
       Grib2Pds pds = gr.getPDS();

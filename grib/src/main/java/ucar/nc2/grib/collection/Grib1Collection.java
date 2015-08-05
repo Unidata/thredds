@@ -45,9 +45,8 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.coverage.GribCoverageDataset;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -115,23 +114,28 @@ public class Grib1Collection extends GribCollectionImmutable {
   public CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
-      Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation()+"#"+group.getId(), null);
+      //Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
+      GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
+      return gribCov.makeCoverageDataset();
+
+      /* NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation()+"#"+group.getId(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       DtCoverageDataset gds = new DtCoverageDataset(ncd);
-      return DtCoverageAdapter.factory(gds);
+      return DtCoverageAdapter.factory(gds); */
 
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
         GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
         if (gc == null) return null;
+       // Grib1Iosp iosp = new Grib1Iosp(gc);
+        GribCoverageDataset gribCov = new GribCoverageDataset(gc, null, null);
+        return gribCov.makeCoverageDataset();
 
-        Grib1Iosp iosp = new Grib1Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
+        /* NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
         DtCoverageDataset gds = new DtCoverageDataset(ncd);
-        return DtCoverageAdapter.factory(gds);
+        return DtCoverageAdapter.factory(gds); */
       }
       return null;
     }
@@ -143,6 +147,5 @@ public class Grib1Collection extends GribCollectionImmutable {
       result.add(new Attribute(GribUtils.GEN_PROCESS, val));
     result.add(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB1.getDescription()));
   }
-
 
 }

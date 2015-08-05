@@ -35,8 +35,7 @@ package ucar.nc2.grib;
 import net.jcip.annotations.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.GaussianLatitudes;
 import ucar.unidata.util.StringUtil2;
@@ -133,6 +132,18 @@ public class GdsHorizCoordSys {
     StringBuilder result = new StringBuilder(name + "_" + ny + "X" + nx+"-"+getCenterLatLon());
     StringUtil2.replace(result, ". ","p-");
     return result.toString();
+  }
+
+  public ProjectionRect getProjectionBB() {
+    return new ProjectionRect(new ProjectionPointImpl(getStartX(), getStartY()), nx * dx, ny * dy);
+  }
+
+  public LatLonRect getLatLonBB() {
+    if (isLatLon()) {
+      return new LatLonRect(new LatLonPointImpl(getStartY(), getStartX()), ny * dy, nx * dx);
+    } else {
+      return proj.projToLatLonBB(getProjectionBB());
+    }
   }
 
   ////////////////////////////////////////////////

@@ -56,11 +56,7 @@ public class VertCoord { // implements Comparable<VertCoord> {
     }
 
     // sort by name
-    Collections.sort(temp, new Comparator<VertCoord>() {
-      public int compare(VertCoord o1, VertCoord o2) {
-        return o1.getName().compareTo(o2.getName());
-      }
-    });
+    Collections.sort(temp, (o1, o2) -> o1.getName().compareTo(o2.getName()));
 
     // disambiguate names
     String lastName = null;

@@ -43,8 +43,7 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
+import ucar.nc2.grib.coverage.GribCoverageDataset;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -86,11 +85,14 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Auto
   public CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename,
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-    ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
+    // ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
+    GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
+    return gribCov.makeCoverageDataset();
+
+    /* NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
-    return DtCoverageAdapter.factory(gds);
+    return DtCoverageAdapter.factory(gds); */
   }
 
   @Override
