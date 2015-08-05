@@ -200,7 +200,7 @@ position 17 though 30) and applies the link:SimpleDateFormat.html[SimpleDateForm
 
 When the date is in the directory name and not completely in the filename, you must use the **dateFormatMark**. For example with a file path
 
- _/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20111226/Run_1200.grib1_
+ /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20111226/Run_1200.grib1
 
 use
 
@@ -217,7 +217,7 @@ characters in the filename exactly.
 You might also need to put the SimpleDateFormat before the substring match, eg in the following, _stuff_ differs for each subdirectory, so you can't
 match on it:
 
- _/dataroot/stuff/20111226/Experiment-02387347.grib1_
+ /dataroot/stuff/20111226/Experiment-02387347.grib1
 
 However, you can match on _Experiment_ so you can use:
 
@@ -320,7 +320,7 @@ _rescan_ are ignored on an _update_ element for a GRIB collection.
 
 === tdm element (GRIB only)
 
-You must use the *tdm* element for GRIB collections that change. The link:TDM.html[TDM] is a seperate process that uses the same configuration
+You must use the *tdm* element for GRIB collections that change. The link:TDM.html[TDM] is a separate process that uses the same configuration
 catalogs as the TDS, and updates GRIB collections in the background. Example:
 
  <tdm rewrite="test" rescan="0 4,19,34,49 * * * ? *"  />
@@ -358,10 +358,10 @@ directory, it simply recreates the dataset using the current index.
 When a collection shows a list of files, the files will be sorted by increasing name. To use a decreasing sort, use the fileSort inside the
 featureCollection element:
 
-<featureCollection ... >
-  ...
-  <filesSort increasing = "false" />
-</featureCollection>
+ <featureCollection ... >
+   ...
+   <filesSort increasing = "false" />
+ </featureCollection>
 
 == Static vs. changing datasets
 
