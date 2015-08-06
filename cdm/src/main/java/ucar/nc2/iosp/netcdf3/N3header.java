@@ -156,10 +156,10 @@ public class N3header {
       int len = raf.readInt();
       Dimension dim;
       if (len == 0) {
-        dim = new Dimension(name, numrecs, true, true, false);
+        dim = new Dimension(name, numrecs, true, true);
         udim = dim;
       } else {
-        dim = new Dimension(name, len, true, false, false);
+        dim = new Dimension(name, len, true, false);
       }
 
       ncfile.addDimension(null, dim);

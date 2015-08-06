@@ -46,24 +46,19 @@ import java.util.*;
 public class Section {
   private List<Range> list;
   private boolean immutable = false;
-  private boolean isvariablelength = false;
 
   /**
    * Create Section from a shape array, assumes 0 origin.
    *
-   * @param shape array of lengths for each Range. 0 = EMPTY, < 0 = VLEN
+   * @param shape array of lengths for each Range. 0 = EMPTY
    */
   public Section(int[] shape) {
     list = new ArrayList<>();
     for (int aShape : shape) {
       if (aShape > 0)
         list.add(new Range(aShape));
-      else if (aShape == 0)
+      else //(aShape == 0)
         list.add(Range.EMPTY);
-      else {
-        list.add(Range.VLEN);
-        isvariablelength = true;
-      }
     }
   }
 
@@ -79,12 +74,8 @@ public class Section {
     for (int i = 0; i < shape.length; i++) {
       if (shape[i] > 0)
         list.add(new Range(origin[i], origin[i] + shape[i] - 1));
-      else if (shape[i] == 0)
+      else // (shape[i] == 0)
         list.add(Range.EMPTY);
-      else {
-        list.add(Range.VLEN);
-        isvariablelength = true;
-      }
     }
   }
 
@@ -101,12 +92,8 @@ public class Section {
     for (int i = 0; i < size.length; i++) {
       if (size[i] > 0)
         list.add(new Range(origin[i], origin[i] + size[i] - 1, stride[i]));
-      else if (size[i] == 0)
+      else // if (size[i] == 0)
         list.add(Range.EMPTY);
-      else {
-        list.add(Range.VLEN);
-        isvariablelength = true;
-      }
     }
   }
 
@@ -117,10 +104,6 @@ public class Section {
    */
   public Section(List<Range> from) {
     list = new ArrayList<>(from);
-    for (Range aFrom : from) {
-      if (aFrom == Range.VLEN)
-        isvariablelength = true;
-    }
   }
 
   /**
@@ -132,8 +115,6 @@ public class Section {
     list = new ArrayList<>();
     for (Range r : ranges) {
       list.add(r);
-      if (r == Range.VLEN)
-        isvariablelength = true;
     }
   }
 
@@ -282,29 +263,6 @@ public class Section {
     return new Section(results);
   }
 
-
-  /**
-   * Create a new Section by compacting each Range.
-   * first = first/stride, last=last/stride, stride=1.
-   *
-   * @return compacted Section
-   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
-   */
-  public Section removeVlen() throws InvalidRangeException {
-    boolean need = false;
-    for (Range r : list) {
-      if (r == Range.VLEN) need = true;
-    }
-    if (!need) return this;
-
-    List<Range> results = new ArrayList<>(getRank());
-    for (Range r : list) {
-      if (r != Range.VLEN) results.add(r);
-    }
-    return new Section(results);
-  }
-
-
   /**
    * Create a new Section by composing with a Section that is reletive to this Section.
    *
@@ -422,8 +380,7 @@ public class Section {
    *
    * @param other another section
    * @return true if intersection is non-empty
-   * @throws InvalidRangeException if want.getRank() not equal to this.getRank(),
-   *                               ignoring vlen
+   * @throws InvalidRangeException if want.getRank() not equal to this.getRank()
    */
   public boolean intersects(Section other) throws InvalidRangeException {
     if (!compatibleRank(other))
@@ -432,8 +389,6 @@ public class Section {
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
       Range r = other.getRange(j);
-      if (base == Range.VLEN || r == Range.VLEN)
-        continue;
       if (!base.intersects(r))
         return false;
     }
@@ -527,10 +482,8 @@ public class Section {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (size > 0)
       list.add(new Range(size));
-    else if (size == 0)
+    else // if (size == 0)
       list.add(Range.EMPTY);
-    else
-      list.add(Range.VLEN);
     return this;
   }
 
@@ -544,10 +497,7 @@ public class Section {
    */
   public Section appendRange(int first, int last) throws InvalidRangeException {
     if (immutable) throw new IllegalStateException("Cant modify");
-    if (last < 0)
-      list.add(Range.VLEN);
-    else
-      list.add(new Range(first, last));
+    list.add(new Range(first, last));
     return this;
   }
 
@@ -680,12 +630,8 @@ public class Section {
       if (r == null) {
         if (shape[i] > 0)
           list.set(i, new Range(shape[i]));
-        else if (shape[i] == 0)
+        else // (shape[i] == 0)
           list.set(i, Range.EMPTY);
-        else {
-          list.set(i, Range.VLEN);
-          isvariablelength = true;
-        }
       }
     }
   }
@@ -706,10 +652,6 @@ public class Section {
 
   public boolean isImmutable() {
     return immutable;
-  }
-
-  public boolean isVariableLength() {
-    return isvariablelength;
   }
 
   public boolean isStrided() {
@@ -798,38 +740,29 @@ public class Section {
   }
 
   /**
-   * Get rank excluding vlens.
+   * Get rank
    *
    * @return rank
    */
   public int getVlenRank() {
-    return list.size() - (isvariablelength ? 1 : 0);
+    return list.size();
   }
 
   /**
-   * Compare this section with another upto the vlen in either
+   * Compare this section with another
    */
   public boolean compatibleRank(Section other) {
     return (getRank() == other.getRank());
-      /*if((isVariableLength() && other.isVariableLength())
-          || (!isVariableLength() && !other.isVariableLength()))
-          return getRank() == other.getRank();
-      else if(isVariableLength() && !other.isVariableLength())
-          return getVlenRank() == other.getRank();
-      else // !isVariableLength() && other.isVariableLength()
-        return getRank() == other.getVlenRank(); */
   }
 
   /**
    * Compute total number of elements represented by the section.
-   * Any VLEN Ranges are effectively skipped.
    *
    * @return total number of elements
    */
   public long computeSize() {
     long product = 1;
     for (Range r : list) {
-      if (r != Range.VLEN)
         product *= r.length();
     }
     return product;
@@ -895,7 +828,6 @@ public class Section {
     for (int i = 0; i < list.size(); i++) {
       Range r = list.get(i);
       if (r == null) continue;
-      if (r == Range.VLEN) continue;
       if (r.last() >= shape[i])
         return "Illegal Range for dimension " + i + ": last requested " + r.last() + " > max " + (shape[i] - 1);
     }

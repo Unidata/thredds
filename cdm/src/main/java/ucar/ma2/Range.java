@@ -48,7 +48,6 @@ import java.util.StringTokenizer;
  * Ranges are monotonically increasing.
  * Elements must be nonnegative.
  * EMPTY is the empty Range.
- * VLEN is for variable length dimensions.
  * <p> Note last is inclusive, so standard iteration is
  * <pre>
  * for (int i=range.first(); i<=range.last(); i+= range.stride()) {
@@ -69,7 +68,6 @@ import java.util.StringTokenizer;
 public final class Range {
   public static final Range EMPTY = new Range();
   public static final Range ONE = new Range(1);
-  public static final Range VLEN = new Range(-1);
 
   private final int n; // number of elements
   private final int first; // first value in range
@@ -198,8 +196,6 @@ public final class Range {
   public Range compose(Range r) throws InvalidRangeException {
     if ((length() == 0) || (r.length() == 0))
       return EMPTY;
-    if (this == VLEN || r == VLEN)
-      return VLEN;
 if(false) {// Original version
     // Note that this version assumes that range r is
     // correct with respect to this.
@@ -239,9 +235,6 @@ if(false) {// Original version
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range shiftOrigin(int origin) throws InvalidRangeException {
-    if (this == VLEN)
-      return VLEN;
-
     int first = first() - origin;
     int stride = stride();
     int last = last() - origin;
@@ -259,9 +252,6 @@ if(false) {// Original version
   public Range intersect(Range r) throws InvalidRangeException {
     if ((length() == 0) || (r.length() == 0))
       return EMPTY;
-    if (this == VLEN || r == VLEN)
-      return VLEN;
-
     int last = Math.min(this.last(), r.last());
     int stride = stride() * r.stride();
 
@@ -309,9 +299,6 @@ if(false) {// Original version
   public boolean intersects(Range r) {
     if ((length() == 0) || (r.length() == 0))
       return false;
-    if (this == VLEN || r == VLEN)
-      return true;
-
     int last = Math.min(this.last(), r.last());
     int stride = stride() * r.stride();
 
@@ -367,9 +354,6 @@ if(false) {// Original version
   public Range union(Range r) throws InvalidRangeException {
     if (length() == 0)
       return r;
-    if (this == VLEN || r == VLEN)
-      return VLEN;
-
     if (r.length() == 0)
       return this;
 
@@ -528,8 +512,6 @@ if(false) {// Original version
   {
     if(this.n == 0)
         return "EMPTY";
-    else if(this.n < 0)
-        return "VLEN";
     else
       return first + ":" + last() + (stride > 1 ? ":" + stride : "");
   }

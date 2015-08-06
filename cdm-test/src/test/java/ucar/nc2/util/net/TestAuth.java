@@ -274,7 +274,7 @@ public class TestAuth extends UnitTestCommon
     {
         System.out.println("*** Testing: Http Basic Password Authorization");
         boolean pass = true;
-        for(AuthDataBasic data : basictests) {
+        for(AuthDataBasic data : basictests) b{
             System.out.println("Test global credentials provider");
             System.out.println("*** URL: " + data.url);
 

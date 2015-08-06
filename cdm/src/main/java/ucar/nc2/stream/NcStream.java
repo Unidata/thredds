@@ -126,8 +126,6 @@ public class NcStream {
     dimBuilder.setLength(dim.getLength());
     if (!dim.isShared())
       dimBuilder.setIsPrivate(true);
-    if (dim.isVariableLength())
-      dimBuilder.setIsVlen(true);
     if (dim.isUnlimited()) dimBuilder.setIsUnlimited(true);
     return dimBuilder;
   }
@@ -213,7 +211,6 @@ public class NcStream {
       builder.setCompress(NcStreamProto.Compress.DEFLATE);
       builder.setUncompressedSize(uncompressedLength);
     }
-    if (var.isVariableLength()) builder.setVdata(true);
     builder.setBigend(bo == ByteOrder.BIG_ENDIAN);
     builder.setVersion(2);
     return builder.build();
@@ -515,7 +512,7 @@ public class NcStream {
 
   static Dimension decodeDim(NcStreamProto.Dimension dim) {
     String name = (!dim.hasName() || dim.getName().length() == 0 ? null : dim.getName());
-    return new Dimension(name, (int) dim.getLength(), !dim.getIsPrivate(), dim.getIsUnlimited(), dim.getIsVlen());
+    return new Dimension(name, (int) dim.getLength(), !dim.getIsPrivate(), dim.getIsUnlimited());
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

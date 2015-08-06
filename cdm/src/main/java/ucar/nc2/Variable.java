@@ -102,7 +102,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   // protected List<Attribute> attributes = new ArrayList<>();
   protected AttributeContainerHelper attributes;
 
-  protected boolean isVariableLength = false;
   protected boolean isMetadata = false;
 
   protected Cache cache = new Cache();           // cache cannot be null
@@ -151,14 +150,12 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * Get the total number of elements in the Variable.
    * If this is an unlimited Variable, will use the current number of elements.
    * If this is a Sequence, will return 1.
-   * If variable length, will skip vlen dimensions
    *
    * @return total number of elements in the Variable.
    */
   public long getSize() {
     long size = 1;
     for (int aShape : shape) {
-      if (aShape >= 0)
         size *= aShape;
     }
     return size;
@@ -219,16 +216,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public boolean isScalar() {
     return getRank() == 0;
-  }
-
-  /**
-   * Does this variable have a variable length dimension?
-   * If so, it has as one of its dimensions Dimension.VLEN.
-   *
-   * @return true if Variable has a variable length dimension?
-   */
-  public boolean isVariableLength() {
-    return isVariableLength;
   }
 
   /*
@@ -389,12 +376,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
           int len = d.getLength();
           if (len > 0)
             list.add(new Range(d.getShortName(), 0, len - 1));
-          else if (len == 0)
+          else // (len == 0)
             list.add( Range.EMPTY); // LOOK empty not named
-          else {
-            assert d.isVariableLength();
-            list.add( Range.VLEN); // LOOK vlen not named
-          }
         }
         shapeAsSection = new Section(list).makeImmutable();
 
@@ -961,6 +944,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param useFullName use full name else short name. strict = true implies short name
    * @param strict      strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
    */
+/*
   public void getNameAndDimensions(Formatter buf, boolean useFullName, boolean strict) {
     useFullName = useFullName && !strict;
     String name = useFullName ? getFullName() : getShortName();
@@ -992,6 +976,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       if (getRank() > 0) buf.format(")");
     }
   }
+*/
 
   /**
    * CDL representation of Variable, not strict.
@@ -1085,7 +1070,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     if (getDataType() != o.getDataType()) return false;
     if (!getParentGroup().equals(o.getParentGroup())) return false;
     if ((getParentStructure() != null) && !getParentStructure().equals(o.getParentStructure())) return false;
-    if (isVariableLength() != o.isVariableLength()) return false;
     if (dimensions.size() != o.getDimensions().size()) return false;
     for (int i = 0; i < dimensions.size(); i++)
       if (!getDimension(i).equals(o.getDimension(i))) return false;
@@ -1106,7 +1090,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       result = 37 * result + getParentGroup().hashCode();
       if (getParentStructure() != null)
         result = 37 * result + getParentStructure().hashCode();
-      if (isVariableLength) result++;
       result = 37 * result + dimensions.hashCode();
       hashCode = result;
     }
@@ -1119,7 +1102,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     System.out.printf("%s isScalar %s%n", indent, isScalar());
     System.out.printf("%s dataType %s%n", indent, getDataType());
     System.out.printf("%s parentGroup %s = %d%n", indent, getParentGroup(), getParentGroup().hashCode());
-    System.out.printf("%s isVariableLength %s%n", indent, isVariableLength);
     System.out.printf("%s dimensions %d len=%d%n", indent, dimensions.hashCode(), dimensions.size());
     indent.incr();
     for (Dimension d : dimensions) {
@@ -1201,7 +1183,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     setParentGroup(from.group);
     setParentStructure(from.getParentStructure());
     this.isMetadata = from.isMetadata;
-    this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
     this.shape = from.getShape();
     this.sizeToCache = from.sizeToCache;
@@ -1343,12 +1324,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       //shape[i] = Math.max(dim.getLength(), 0); // LOOK
       // if (dim.isUnlimited() && (i != 0)) // LOOK only true for Netcdf-3
       //   throw new IllegalArgumentException("Unlimited dimension must be outermost");
-      if (dim.isVariableLength()) {
-        //if (dimensions.size() != 1)
-        //  throw new IllegalArgumentException("Unknown dimension can only be used in 1 dim array");
-        //else
-        isVariableLength = true;
-      }
     }
     this.shapeAsSection = null; // recalc next time its asked for
   }
@@ -1394,7 +1369,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   /**
    * Set the dimensions using all anonymous (unshared) dimensions
    *
-   * @param shape defines the dimension lengths. must be > 0, or -1 for VLEN
+   * @param shape defines the dimension lengths. must be > 0
    * @throws ucar.ma2.InvalidRangeException if any shape < 1
    */
   public void setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
@@ -1403,14 +1378,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     for (int i = 0; i < shape.length; i++) {
       if ((shape[i] < 1) && (shape[i] != -1))
         throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
-      Dimension anon;
-      if (shape[i] == -1) {
-        anon = Dimension.VLEN;
-        isVariableLength = true;
-      } else {
-        anon = new Dimension(null, shape[i], false, false, false);
-      }
-
+      Dimension anon = new Dimension(null, shape[i], false, false, false);
       dimensions.add(anon);
     }
     resetShape();
@@ -1532,7 +1500,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public boolean isCaching() {
     if (!this.cache.cachingSet) {
-      cache.isCaching = !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
+      cache.isCaching = (getSize() * getElementSize() < getSizeToCache());
       if (debugCaching) System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(), getSizeToCache());
       this.cache.cachingSet = true;
     }
@@ -1828,15 +1796,4 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return clone;
   }   */
 
-
-  ///////////////////////////////////////////////////////////////////////
-  // deprecated
-
-  /**
-   * @return isVariableLength()
-   * @deprecated use isVariableLength()
-   */
-  public boolean isUnknownLength() {
-    return isVariableLength;
-  }
 }

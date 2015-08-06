@@ -75,7 +75,6 @@ public interface VariableIF extends VariableSimpleIF {
 
     public boolean isCoordinateVariable();
     public boolean isMemberOfStructure();
-    public boolean isVariableLength();
     public boolean isMetadata();
     public ucar.nc2.Structure getParentStructure();
 
