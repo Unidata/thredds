@@ -1923,7 +1923,7 @@ public class DDS extends DStructure
 
         pw.print("<Dataset");
         if(getEncodedName() != null)
-            pw.print("name=\"" + DDSXMLParser.normalizeToXML(getEncodedName()) + "\"");
+            pw.print(" name=\"" + DDSXMLParser.normalizeToXML(getEncodedName()) + "\"");
         pw.println();
         pw.println("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
         pw.println("xmlns=\"" + opendapNameSpace + "\"");
