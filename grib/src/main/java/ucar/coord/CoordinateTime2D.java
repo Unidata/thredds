@@ -652,6 +652,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       return CalendarDate.of(run);
     }
 
+    public int getValue() {
+      if (time != null) return time;
+      else return tinv.getBounds2();
+    }
+
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;

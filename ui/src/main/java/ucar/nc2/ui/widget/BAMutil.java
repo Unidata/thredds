@@ -96,7 +96,9 @@ public class BAMutil {
     * @return the Icon or null if not found
     */
   public static ImageIcon getIcon( String name, boolean errMsg) {
-    return Resource.getIcon(defaultResourcePath+name+".gif", errMsg);
+    ImageIcon ii = Resource.getIcon(defaultResourcePath+name+".gif", errMsg);
+    if (ii == null) Resource.getIcon(defaultResourcePath+name+".png", errMsg);
+    return ii;
   }
 
   /** Get the named Image from the default resource (jar file).

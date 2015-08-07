@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  * Count number of times a value appears.
- * value may be string or int.
+ * value may be any Comparable; equals() is used for uniqueness.
  *
  * @author caron
  * @since 11/15/2014
@@ -15,12 +15,12 @@ public class Counters {
 
   public Counter add(String name) {
     CounterImpl c = new CounterImpl(name);
-    counters.add( c);
+    counters.add(c);
     map.put(name, c);
     return c;
   }
 
-  public void reset () {
+  public void reset() {
     for (Counter c : counters)
       c.reset();
   }
@@ -49,12 +49,12 @@ public class Counters {
      counter.count(value);
    }  */
 
-     public void addTo(Counters sub) {
-      for (Counter subC : sub.counters) {
-        Counter all = map.get(subC.getName());
-        all.addTo(subC);
-      }
+  public void addTo(Counters sub) {
+    for (Counter subC : sub.counters) {
+      Counter all = map.get(subC.getName());
+      all.addTo(subC);
     }
+  }
 
   public Counters makeSubCounters() {
     Counters result = new Counters();
@@ -66,14 +66,23 @@ public class Counters {
 
   public interface Counter {
     void show(Formatter f);
+
     String showRange();
+
     String getName();
+
     void addTo(Counter sub);
+
     int getUnique();
+
     Comparable getFirst();
+
     Comparable getLast();
+
     int getTotal();
+
     Counter setShowRange(boolean showRange);
+
     void reset();
   }
 
@@ -153,8 +162,8 @@ public class Counters {
           return "none";
 
         Formatter f = new Formatter();
-        this.first =  list.get(0);
-        this.last =  list.get(n-1);
+        this.first = list.get(0);
+        this.last = list.get(n - 1);
         f.format("%10s - %10s", first, last);
         range = f.toString();
       }

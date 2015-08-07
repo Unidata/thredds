@@ -3,13 +3,17 @@ package ucar.nc2.ui;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
-import ucar.nc2.grib.collection.*;
+import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Indent;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.util.Counters;
+import ucar.nc2.util.Indent;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
@@ -125,13 +129,13 @@ public class CdmIndex3Panel extends JPanel {
       }
     });
     varPopup.addAction("Show Files Used", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
-         if (bean != null && bean.group != null) {
-           showFileTable(gc, bean.group);
-         }
-       }
-     });
+      public void actionPerformed(ActionEvent e) {
+        GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+        if (bean != null && bean.group != null) {
+          showFileTable(gc, bean.group);
+        }
+      }
+    });
 
     varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollectionImmutable.VariableIndex", null);
 
@@ -159,17 +163,17 @@ public class CdmIndex3Panel extends JPanel {
       }
     });
     varPopup.addAction("Make Variable(s) GribConfig", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         List<VarBean> beans = varTable.getSelectedBeans();
-         infoTA.clear();
-         Formatter f = new Formatter();
-         for (VarBean bean : beans)
-           bean.makeGribConfig(f);
-         infoTA.appendLine(f.toString());
-         infoTA.gotoTop();
-         infoWindow.show();
-       }
-     });
+      public void actionPerformed(ActionEvent e) {
+        List<VarBean> beans = varTable.getSelectedBeans();
+        infoTA.clear();
+        Formatter f = new Formatter();
+        for (VarBean bean : beans)
+          bean.makeGribConfig(f);
+        infoTA.appendLine(f.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
 
 
     coordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates in group", "Coordinates", null);
@@ -215,41 +219,55 @@ public class CdmIndex3Panel extends JPanel {
       }
     });
 
+
+    varPopup.addAction("Show Resolution distribution", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          bean.showResolution(f);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
+
     varPopup.addAction("Compare", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         List beans = coordTable.getSelectedBeans();
-         if (beans.size() == 2) {
-           Formatter f = new Formatter();
-           CoordBean bean1 = (CoordBean) beans.get(0);
-           CoordBean bean2 = (CoordBean) beans.get(1);
-           if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
-             compareCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
-           else
-             compareCoords(f, bean1.coord, bean2.coord);
-           infoTA.setText(f.toString());
-           infoTA.gotoTop();
-           infoWindow.show();
-         }
-       }
-     });
+      public void actionPerformed(ActionEvent e) {
+        List beans = coordTable.getSelectedBeans();
+        if (beans.size() == 2) {
+          Formatter f = new Formatter();
+          CoordBean bean1 = (CoordBean) beans.get(0);
+          CoordBean bean2 = (CoordBean) beans.get(1);
+          if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
+            compareCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
+          else
+            compareCoords(f, bean1.coord, bean2.coord);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
 
     varPopup.addAction("Try to Merge", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         List beans = coordTable.getSelectedBeans();
-         if (beans.size() == 2) {
-           Formatter f = new Formatter();
-           CoordBean bean1 = (CoordBean) beans.get(0);
-           CoordBean bean2 = (CoordBean) beans.get(1);
-           if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
-             mergeCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
-           else
-             f.format("CoordinateTime2D only");
-           infoTA.setText(f.toString());
-           infoTA.gotoTop();
-           infoWindow.show();
-         }
-       }
-     });
+      public void actionPerformed(ActionEvent e) {
+        List beans = coordTable.getSelectedBeans();
+        if (beans.size() == 2) {
+          Formatter f = new Formatter();
+          CoordBean bean1 = (CoordBean) beans.get(0);
+          CoordBean bean2 = (CoordBean) beans.get(1);
+          if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
+            mergeCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
+          else
+            f.format("CoordinateTime2D only");
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
 
     // file popup window
     fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
@@ -361,17 +379,17 @@ public class CdmIndex3Panel extends JPanel {
             if (count == 0) f.format(" total   VariablePartitioned%n");
 
             PartitionCollectionImmutable.VariableIndexPartitioned vip = (PartitionCollectionImmutable.VariableIndexPartitioned) v;
-             int nparts = vip.getNparts();
-             int memEstBytes = 368 + nparts * 4;  // very rough
-             bytesTotal += memEstBytes;
-             f.format("%6d %-50s nparts=%6d%n", memEstBytes, bean.getName(), nparts);
+            int nparts = vip.getNparts();
+            int memEstBytes = 368 + nparts * 4;  // very rough
+            bytesTotal += memEstBytes;
+            f.format("%6d %-50s nparts=%6d%n", memEstBytes, bean.getName(), nparts);
 
           } else {
             if (count == 0) f.format(" total   SA  Variable%n");
             try {
               v.readRecords();
               SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
-              int ntracks  = sa.getTotalSize();
+              int ntracks = sa.getTotalSize();
               int nrecords = sa.getContent().size();
               int memEstForSA = 276 + nrecords * 40 + ntracks * 4;
               int memEstBytes = 280 + memEstForSA;
@@ -386,8 +404,8 @@ public class CdmIndex3Panel extends JPanel {
           count++;
         }
       }
-      int noSA =  bytesTotal - bytesSATotal;
-      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal/1000, bytesSATotal/1000, noSA/1000, coordsAllTotal/1000);
+      int noSA = bytesTotal - bytesSATotal;
+      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal / 1000, bytesSATotal / 1000, noSA / 1000, coordsAllTotal / 1000);
       f.format("%n");
     }
   }
@@ -406,18 +424,18 @@ public class CdmIndex3Panel extends JPanel {
 
         List<SortBySize> sortList = new ArrayList<>(g.getCoordinates().size());
         for (Coordinate vc : g.getCoordinates())
-           sortList.add(new SortBySize(vc, vc.estMemorySize()));
+          sortList.add(new SortBySize(vc, vc.estMemorySize()));
         Collections.sort(sortList);
 
         int coordsTotal = 0;
         f.format("  totalKB  type Coordinate%n");
         for (SortBySize ss : sortList) {
           Coordinate vc = (Coordinate) ss.obj;
-          f.format("  %6d %-8s %-40s%n", vc.estMemorySize()/1000, vc.getType(), vc.getName());
+          f.format("  %6d %-8s %-40s%n", vc.estMemorySize() / 1000, vc.getType(), vc.getName());
           bytesTotal += vc.estMemorySize();
           coordsTotal += vc.estMemorySize();
         }
-        f.format(" %7d KBytes%n", coordsTotal/1000);
+        f.format(" %7d KBytes%n", coordsTotal / 1000);
         f.format("%n");
         coordsAllTotal += coordsTotal;
 
@@ -429,17 +447,17 @@ public class CdmIndex3Panel extends JPanel {
             if (count == 0) f.format(" total   VariablePartitioned%n");
 
             PartitionCollectionImmutable.VariableIndexPartitioned vip = (PartitionCollectionImmutable.VariableIndexPartitioned) v;
-             int nparts = vip.getNparts();
-             int memEstBytes = 368 + nparts * 4;  // very rough
-             bytesTotal += memEstBytes;
-             f.format("%6d %-50s nparts=%6d%n", memEstBytes, bean.getName(), nparts);
+            int nparts = vip.getNparts();
+            int memEstBytes = 368 + nparts * 4;  // very rough
+            bytesTotal += memEstBytes;
+            f.format("%6d %-50s nparts=%6d%n", memEstBytes, bean.getName(), nparts);
 
           } else {
             if (count == 0) f.format(" total   SA  Variable%n");
             try {
               v.readRecords();
               SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
-              int ntracks  = sa.getTotalSize();
+              int ntracks = sa.getTotalSize();
               int nrecords = sa.getContent().size();
               int memEstForSA = 276 + nrecords * 40 + ntracks * 4;
               int memEstBytes = 280 + memEstForSA;
@@ -454,8 +472,8 @@ public class CdmIndex3Panel extends JPanel {
           count++;
         }
       }
-      int noSA =  bytesTotal - bytesSATotal;
-      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal/1000, bytesSATotal/1000, noSA/1000, coordsAllTotal/1000);
+      int noSA = bytesTotal - bytesSATotal;
+      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal / 1000, bytesSATotal / 1000, noSA / 1000, coordsAllTotal / 1000);
       f.format("%n");
     }
   }
@@ -481,10 +499,11 @@ public class CdmIndex3Panel extends JPanel {
     int n1 = coord1.getNruns();
     int n2 = coord2.getNruns();
     if (n1 != n2) {
-      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", n1, n2);     }
+      f.format("Coordinate 1 has %d runtimes, Coordinate 2 has %d runtimes, %n", n1, n2);
+    }
 
     int min = Math.min(n1, n2);
-    for (int idx=0; idx<min; idx++) {
+    for (int idx = 0; idx < min; idx++) {
       CoordinateTimeAbstract time1 = coord1.getTimeCoordinate(idx);
       CoordinateTimeAbstract time2 = coord2.getTimeCoordinate(idx);
       f.format("Run %d %n", idx);
@@ -509,7 +528,7 @@ public class CdmIndex3Panel extends JPanel {
     }
 
     int min = Math.min(n1, n2);
-     for (int idx=0; idx<min; idx++) {
+    for (int idx = 0; idx < min; idx++) {
       if (!runtimes1.getValue(idx).equals(runtimes2.getValue(idx)))
         f.format("Runtime 1 %s != %s runtime 2%n", runtimes1.getValue(idx), runtimes2.getValue(idx));
     }
@@ -532,7 +551,7 @@ public class CdmIndex3Panel extends JPanel {
 
   private Set<Object> makeCoordSet(CoordinateTime2D time2D) {
     Set<Object> result = new HashSet<>(100);
-    for (int runIdx=0; runIdx<time2D.getNruns(); runIdx++) {
+    for (int runIdx = 0; runIdx < time2D.getNruns(); runIdx++) {
       Coordinate coord = time2D.getTimeCoordinate(runIdx);
       for (Object val : coord.getValues())
         result.add(val);
@@ -552,12 +571,12 @@ public class CdmIndex3Panel extends JPanel {
   // orthogonal means that all the times can be made into a single time coordinate
   private boolean testOrthogonal(Formatter f, Coordinate c) {
     if (!(c instanceof CoordinateTime2D)) {
-      f.format("Must be CoordinateTime2D");
+      f.format("testOrthogonal only on CoordinateTime2D%n");
       return false;
     }
     CoordinateTime2D time2D = (CoordinateTime2D) c;
     List<CoordinateTimeAbstract> coords = new ArrayList<>();
-    for (int runIdx=0; runIdx<time2D.getNruns(); runIdx++) {
+    for (int runIdx = 0; runIdx < time2D.getNruns(); runIdx++) {
       coords.add(time2D.getTimeCoordinate(runIdx));
     }
     return testOrthogonal(f, coords);
@@ -566,7 +585,7 @@ public class CdmIndex3Panel extends JPanel {
   // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)
   private boolean testRegular(Formatter f, Coordinate c) {
     if (!(c instanceof CoordinateTime2D)) {
-      f.format("Must be CoordinateTime2D");
+      f.format("testRegular only on CoordinateTime2D%n");
       return false;
     }
     f.format("Test isRegular by Offset Hour%n");
@@ -574,7 +593,7 @@ public class CdmIndex3Panel extends JPanel {
 
     // group time coords by offset hour
     Map<Integer, List<CoordinateTimeAbstract>> hourMap = new HashMap<>();
-    for (int runIdx=0; runIdx<time2D.getNruns(); runIdx++) {
+    for (int runIdx = 0; runIdx < time2D.getNruns(); runIdx++) {
       CoordinateTimeAbstract coord = time2D.getTimeCoordinate(runIdx);
       CalendarDate runDate = coord.getRefDate();
       int hour = runDate.getHourOfDay();
@@ -783,9 +802,9 @@ public class CdmIndex3Panel extends JPanel {
       this.type = type;
 
       for (GribCollectionImmutable.VariableIndex vi : group.getVariables()) {
-         nrecords += vi.getNrecords();
-         ndups += vi.getNdups();
-         nmissing += vi.getNmissing();
+        nrecords += vi.getNrecords();
+        ndups += vi.getNdups();
+        nmissing += vi.getNmissing();
       }
     }
 
@@ -832,7 +851,7 @@ public class CdmIndex3Panel extends JPanel {
       return group.getVariables().size();
     }
 
-   public String getDescription() {
+    public String getDescription() {
       return group.getDescription();
     }
 
@@ -849,10 +868,143 @@ public class CdmIndex3Panel extends JPanel {
   public class CoordBean implements Comparable<CoordBean> {
     Coordinate coord;
     int idx;
+    double start, end, resol;
 
     // no-arg constructor
 
     public CoordBean() {
+    }
+
+    public CoordBean(Coordinate coord, int idx) {
+      this.coord = coord;
+      this.idx = idx;
+
+      if (coord instanceof CoordinateRuntime) {
+        CoordinateRuntime runtime = (CoordinateRuntime) coord;
+        List<Double> offsets = runtime.getOffsetsInTimeUnits();
+        int n = offsets.size();
+        start = offsets.get(0);
+        end = offsets.get(n - 1);
+        resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
+
+      } else if (coord instanceof CoordinateTime2D) {
+        CoordinateTime2D time = (CoordinateTime2D) coord;
+        List<? extends Object> offsets = time.getOffsetsSorted();
+        int n = offsets.size();
+        if (time.isTimeInterval()) {
+          start = ((TimeCoord.Tinv) offsets.get(0)).getBounds1();
+          end = ((TimeCoord.Tinv) offsets.get(n - 1)).getBounds2();
+          resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
+
+        } else {
+          start = (Integer) offsets.get(0);
+          end = (Integer) offsets.get(n - 1);
+          resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
+        }
+
+      } else if (coord instanceof CoordinateTime) {
+        CoordinateTime time = (CoordinateTime) coord;
+        List<Integer> offsets = time.getOffsetSorted();
+        int n = offsets.size();
+        start = offsets.get(0);
+        end = offsets.get(n - 1);
+        resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
+
+      } else if (coord instanceof CoordinateTimeIntv) {
+        CoordinateTimeIntv time = (CoordinateTimeIntv) coord;
+        List<TimeCoord.Tinv> offsets = time.getTimeIntervals();
+        int n = offsets.size();
+        start = offsets.get(0).getBounds1();
+        end = offsets.get(n - 1).getBounds2();
+        resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
+      }
+    }
+
+    private void showResolution(Formatter f) {
+      ucar.nc2.util.Counters counters = new Counters();
+      counters.add("resol");
+
+      if (coord instanceof CoordinateRuntime) {
+        CoordinateRuntime runtime = (CoordinateRuntime) coord;
+        List<Double> offsets = runtime.getOffsetsInTimeUnits();
+        for (int i = 0; i < offsets.size() - 1; i++) {
+          Double diff = offsets.get(i + 1) - offsets.get(i);
+          counters.count("resol", diff);
+        }
+
+      } else if (coord instanceof CoordinateTime2D) {
+        CoordinateTime2D time = (CoordinateTime2D) coord;
+        List<? extends Object> offsets = time.getOffsetsSorted();
+        if (time.isTimeInterval()) {
+          counters.add("intv");
+          for (int i = 0; i < offsets.size(); i++) {
+            int intv = ((TimeCoord.Tinv)offsets.get(i)).getBounds2() - ((TimeCoord.Tinv)offsets.get(i)).getBounds1();
+            counters.count("intv", intv);
+            if (i < offsets.size() - 1) {
+              int resol = ((TimeCoord.Tinv)offsets.get(i + 1)).getBounds1() - ((TimeCoord.Tinv)offsets.get(i)).getBounds1();
+              counters.count("resol", resol);
+            }
+          }
+
+        } else {
+          for (int i = 0; i < offsets.size() - 1; i++) {
+            int diff = (Integer) offsets.get(i + 1) - (Integer) offsets.get(i);
+            counters.count("resol", diff);
+          }
+        }
+
+      } else if (coord instanceof CoordinateTime) {
+        CoordinateTime time = (CoordinateTime) coord;
+        List<Integer> offsets = time.getOffsetSorted();
+        for (int i = 0; i < offsets.size() - 1; i++) {
+          int diff = offsets.get(i + 1) - offsets.get(i);
+          counters.count("resol", diff);
+        }
+
+      } else if (coord instanceof CoordinateTimeIntv) {
+        counters.add("intv");
+        CoordinateTimeIntv time = (CoordinateTimeIntv) coord;
+        List<TimeCoord.Tinv> offsets = time.getTimeIntervals();
+        for (int i = 0; i < offsets.size(); i++) {
+          int intv = offsets.get(i).getBounds2() - offsets.get(i).getBounds1();
+          counters.count("intv", intv);
+          if (i < offsets.size() - 1) {
+            int resol = offsets.get(i + 1).getBounds1() - offsets.get(i).getBounds1();
+            counters.count("resol", resol);
+          }
+        }
+      }
+      counters.show(f);
+    }
+
+    public double getStart() {
+      return start;
+    }
+
+    public double getEnd() {
+      return end;
+    }
+
+    public double getResol() {
+      return resol;
+    }
+
+    public String getValues() {
+      Formatter f = new Formatter();
+      if (coord instanceof CoordinateRuntime) {
+        CoordinateRuntime runtime = (CoordinateRuntime) coord;
+        f.format("%s %s", runtime.getFirstDate(), runtime.getLastDate());
+
+      } else if (coord instanceof CoordinateTime2D) {
+        CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+        CoordinateRuntime runtime = coord2D.getRuntimeCoordinate();
+        f.format("%s %s", runtime.getFirstDate(), runtime.getLastDate());
+
+      } else {
+        if (coord.getValues() == null) return "";
+        for (Object val : coord.getValues()) f.format("%s,", val);
+      }
+      return f.toString();
     }
 
     public String getType() {
@@ -866,27 +1018,6 @@ public class CdmIndex3Panel extends JPanel {
       } else {
         return coord.getType().toString();
       }
-    }
-
-    public CoordBean(Coordinate coord, int idx) {
-      this.coord = coord;
-      this.idx = idx;
-    }
-
-    public String getValues() {
-      Formatter f = new Formatter();
-      if (coord instanceof CoordinateRuntime) {
-        CoordinateRuntime runtime = (CoordinateRuntime) coord;
-        f.format("%s-%s", runtime.getFirstDate(), runtime.getLastDate());
-      } else if (coord instanceof CoordinateTime2D) {
-        CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-        CoordinateRuntime runtime = coord2D.getRuntimeCoordinate();
-        f.format("%s-%s", runtime.getFirstDate(), runtime.getLastDate());
-      } else {
-        if (coord.getValues() == null) return "";
-        for (Object val : coord.getValues()) f.format("%s,", val);
-      }
-      return f.toString();
     }
 
     public String getSize() {
@@ -923,7 +1054,7 @@ public class CdmIndex3Panel extends JPanel {
         intvName = timeiCoord.getTimeIntervalName();
       }
 
-      return (intvName == null) ? coord.getName() : coord.getName() + " (" + intvName+ ")";
+      return (intvName == null) ? coord.getName() : coord.getName() + " (" + intvName + ")";
     }
 
     @Override
@@ -949,7 +1080,7 @@ public class CdmIndex3Panel extends JPanel {
     public VarBean(GribCollectionImmutable.VariableIndex vindex, GribCollectionImmutable.GroupGC group) {
       this.v = vindex;
       this.group = group;
-      this.name =  vindex.makeVariableName();
+      this.name = vindex.makeVariableName();
     }
 
     /* public int getNRecords() {
