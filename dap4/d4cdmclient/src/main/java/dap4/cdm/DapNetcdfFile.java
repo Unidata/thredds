@@ -281,9 +281,6 @@ public class DapNetcdfFile extends ucar.nc2.NetcdfFile
                 throw new InvalidRangeException(String.format("Section rank != %s rank", cdmvar.getFullName()));
             List<Range> ranges = section.getRanges();
             // Case out the possibilities
-            if(CDMUtil.hasVLEN(ranges)) {
-                ranges = ranges.subList(0, ranges.size() - 1);// may produce empty list
-            }
             if(ranges.size() > 0 && !CDMUtil.isWhole(ranges, cdmvar))
                 result = result.sectionNoReduce(ranges);
         }

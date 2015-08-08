@@ -1588,7 +1588,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     buff.append(getDODSConstraintName(v));
 
     // add the selector if not a Sequence
-    if (!v.isVariableLength()) {
+    {
       List<Range> dodsSection = section.getRanges();
       if ((v.getDataType() == DataType.CHAR)) { // CHAR is mapped to DString
         int n = section.getRank();
@@ -1696,7 +1696,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     buff.append(getDODSConstraintName(s));
 
-    if (!s.isVariableLength()) // have to get the whole thing for a sequence !!
+    // have to get the whole thing for a sequence !!
       makeSelector(buff, subSection);
 
     return start + s.getRank();

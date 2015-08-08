@@ -918,9 +918,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @deprecated use getNameAndDimensions(StringBuilder buf)
    */
   public void getNameAndDimensions(StringBuffer buf) {
-    Formatter proxy = new Formatter();
-    getNameAndDimensions(proxy, true, false);
-    buf.append(proxy.toString());
+    StringBuilder bbuf = new StringBuilder();
+    getNameAndDimensions(bbuf);
+    buf.append(bbuf.toString());
   }
 
   /**
@@ -936,7 +936,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     buf.append(proxy.toString());
   }
 
-
   /**
    * Add display name plus the dimensions to the StringBuffer
    *
@@ -944,7 +943,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @param useFullName use full name else short name. strict = true implies short name
    * @param strict      strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
    */
-/*
+
   public void getNameAndDimensions(Formatter buf, boolean useFullName, boolean strict) {
     useFullName = useFullName && !strict;
     String name = useFullName ? getFullName() : getShortName();
@@ -959,9 +958,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
         if ((dimName != null) && strict)
           dimName = NetcdfFile.makeValidCDLName(dimName);
         if (i != 0) buf.format(", ");
-        if (myd.isVariableLength()) {
-          buf.format("*");
-        } else if (myd.isShared()) {
+        if (myd.isShared()) {
           if (!strict)
             buf.format("%s=%d", dimName, myd.getLength());
           else
@@ -976,7 +973,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       if (getRank() > 0) buf.format(")");
     }
   }
-*/
 
   /**
    * CDL representation of Variable, not strict.
@@ -1378,7 +1374,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     for (int i = 0; i < shape.length; i++) {
       if ((shape[i] < 1) && (shape[i] != -1))
         throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
-      Dimension anon = new Dimension(null, shape[i], false, false, false);
+      Dimension anon = new Dimension(null, shape[i], false, false);
       dimensions.add(anon);
     }
     resetShape();

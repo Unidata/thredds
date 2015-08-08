@@ -114,7 +114,7 @@ public class WriteT41_ncFlat {
       }
 
       int total_seq = countSeq(recordStruct);
-      Dimension seqD = ncfile.addDimension(null, "seq", total_seq, true, true, false);
+      Dimension seqD = ncfile.addDimension(null, "seq", total_seq, true, true);
 
       for (Variable v : recordStruct.getVariables()) {
         if (v.getDataType() != DataType.SEQUENCE) continue;

@@ -115,7 +115,7 @@ public class WriterCFPointDataset {
 
   private void createRecordVariables(List<? extends VariableSimpleIF> dataVars) {
 
-    ncfileOut.addDimension(null, new Dimension(recordDimName, 0, true, true, false));
+    ncfileOut.addDimension(null, new Dimension(recordDimName, 0, true, true));
 
     // time variable
     Variable timeVar = ncfileOut.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
@@ -160,7 +160,7 @@ public class WriterCFPointDataset {
     // add them
     for (Dimension d : dimSet) {
       if (isExtraDimension(d))
-        ncfileOut.addDimension(null, new Dimension(d.getShortName(), d.getLength(), true, false, d.isVariableLength()));
+        ncfileOut.addDimension(null, new Dimension(d.getShortName(), d.getLength(), true, false));
     }
 
     // add the data variables all using the record dimension

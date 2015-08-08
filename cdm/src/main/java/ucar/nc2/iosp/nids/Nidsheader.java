@@ -1492,8 +1492,8 @@ class Nidsheader{
         numX0 = 0; //rasp_i;
         numX = num_rows;
         numY = num_rows;
-        Dimension jDim = new Dimension("y", numY, true, false, false);
-        Dimension iDim = new Dimension("x", numX, true, false, false);
+        Dimension jDim = new Dimension("y", numY, true, false);
+        Dimension iDim = new Dimension("x", numX, true, false);
         dims.add( jDim);
         dims.add( iDim);
         ncfile.addDimension( null, iDim);

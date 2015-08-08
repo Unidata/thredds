@@ -78,7 +78,7 @@ public class WriteT42_ncRect {
         String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
         boolean isRecord = useName.equals("record");
         Dimension newD = ncfile.addDimension(useName, isRecord ? 0 : oldD.getLength(),
-                oldD.isShared(), isRecord, oldD.isVariableLength());
+                oldD.isShared(), isRecord);
         if (isRecord) recordDim = newD;
         if (debug) System.out.println("add dim= " + newD);
       }

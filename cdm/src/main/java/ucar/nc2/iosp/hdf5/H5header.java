@@ -812,7 +812,7 @@ public class H5header {
     //  d = g.findDimension(dimName); // then look in parent groups  LOOK
 
     if (d == null) { // create if not found
-      d = new Dimension(dimName, length, true, isUnlimited, false);
+      d = new Dimension(dimName, length, true, isUnlimited);
       d.setGroup(g);
       h5group.dimMap.put(dimName, d);
       h5group.dimList.add(d);

@@ -278,7 +278,7 @@ class Giniheader {
     cal.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
     String dstring = dformat.format(cal.getTime());
 
-    Dimension dimT = new Dimension("time", 1, true, false, false);
+    Dimension dimT = new Dimension("time", 1, true, false);
     ncfile.addDimension(null, dimT);
 
     String timeCoordName = "time";
@@ -592,8 +592,8 @@ class Giniheader {
     int velems;
     List<Dimension> dims = new ArrayList<>();
 
-    Dimension dimX = new Dimension("x", nx, true, false, false);
-    Dimension dimY = new Dimension("y", ny, true, false, false);
+    Dimension dimX = new Dimension("x", nx, true, false);
+    Dimension dimY = new Dimension("y", ny, true, false);
 
     ncfile.addDimension(null, dimY);
     ncfile.addDimension(null, dimX);

@@ -139,7 +139,7 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 		// add them
 		for (Dimension d : dimSet) {
 			if (!d.isUnlimited())
-				writer.addDimension(null, d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength());
+				writer.addDimension(null, d.getShortName(), d.getLength(), d.isShared(), false);
 		}
 
 		// add the data variables all using the record dimension

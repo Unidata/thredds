@@ -78,13 +78,6 @@ public class LayoutTiled implements Layout {
     this.chunkSize = chunkSize;
     this.elemSize = elemSize;
     this.want = wantSection;
-    if(this.want.isVariableLength()) {
-        // remove the varlen
-        List<Range> newrange = new ArrayList<>(this.want.getRanges());
-        newrange.remove(newrange.size()-1);
-        this.want = new Section(newrange);
-    }
-
     this.totalNelems = this.want.computeSize();
     this.totalNelemsDone = 0;
   }

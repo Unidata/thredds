@@ -96,7 +96,6 @@ public class TestDODSnestedSequence {
     assert v instanceof Structure;
     assert v instanceof DODSStructure;
     assert v.getRank() == 1;
-    assert v.isVariableLength();
 
     Array a = v.read();  // DODSNetcdfFile.readFromServer = <person1>
     assert a.getRank() == 1;
@@ -135,7 +134,6 @@ public class TestDODSnestedSequence {
     assert v instanceof Structure;
     assert v instanceof DODSStructure;
     assert v.getRank() == 1;
-    assert v.isVariableLength();
 
     /* Array sa = v.readAllStructures(null, true); // DODSNetcdfFile.readFromServer = <person1.stuff>
     assert sa.getRank() == 1;

@@ -228,10 +228,6 @@ public class DSPToCDM
             Dimension cdmdim = createDimensionRef(dim, cdmgroup, nodemap);
             cdmdims.add(cdmdim);
         }
-        if(dapvar.getSort() == DapSort.SEQUENCE) {
-            // Add the final vlen
-            cdmdims.add(Dimension.VLEN);
-        }
         cdmvar.setDimensions(cdmdims);
         // Create variable's attributes
         for(String key : dapvar.getAttributes().keySet()) {
@@ -250,12 +246,10 @@ public class DSPToCDM
     createDimension(DapDimension dapdim, Group cdmgroup, NodeMap nodemap)
         throws DapException
     {
-        if(dapdim.isVariableLength()) {
-            nodemap.put(dapdim, Dimension.VLEN);
-        } else if(dapdim.isShared()) {
+        if(dapdim.isShared()) {
             if(nodemap.containsKey(dapdim))
                 throw new DapException("Attempt to declare dimension twice:" + dapdim.getFQN());
-            Dimension cdmdim = new Dimension(dapdim.getShortName(), (int) dapdim.getSize(), true, false, dapdim.isVariableLength());
+            Dimension cdmdim = new Dimension(dapdim.getShortName(), (int) dapdim.getSize(), true, false);
             nodemap.put(dapdim, cdmdim);
             cdmgroup.addDimension(cdmdim);
         } else
@@ -270,7 +264,7 @@ public class DSPToCDM
         if(dim.isShared())
             cdmdim = (Dimension) nodemap.get(dim);
         else // anonymous
-            cdmdim = new Dimension(null, (int) dim.getSize(), false, false, false);
+            cdmdim = new Dimension(null, (int) dim.getSize(), false, false);
         if(cdmdim == null)
             throw new DapException("Unknown dimension: " + dim.getFQN());
         return cdmdim;

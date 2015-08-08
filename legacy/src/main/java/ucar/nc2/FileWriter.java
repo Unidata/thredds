@@ -159,7 +159,7 @@ public class FileWriter {
       for (Dimension oldD : fileIn.getDimensions()) {
         String useName = N3iosp.makeValidNetcdfObjectName(oldD.getShortName());
         Dimension newD = ncfile.addDimension(useName, oldD.isUnlimited() ? 0 : oldD.getLength(),
-                oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+                oldD.isShared(), oldD.isUnlimited());
         dimHash.put(newD.getShortName(), newD);
         if (debug) System.out.println("add dim= " + newD);
       }
@@ -556,7 +556,7 @@ public class FileWriter {
   public Dimension writeDimension(Dimension dim) {
     String useName = N3iosp.makeValidNetcdfObjectName(dim.getShortName());
     Dimension newDim = ncfile.addDimension(useName, dim.isUnlimited() ? 0 : dim.getLength(),
-            dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
+            dim.isShared(), dim.isUnlimited());
     dimHash.put(useName, newDim);
     if (debug) System.out.println("write dim= " + newDim);
     return newDim;

@@ -480,7 +480,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     int numObs = stations.size();
     //Trace.msg("GEMPAKSIOSP: now have " + numObs + " stations");
     Dimension record = new Dimension("record", numObs, true,
-            (numObs == 0), false);
+            (numObs == 0));
     ncfile.addDimension(null, record);
     List<Dimension> records = new ArrayList<>(1);
     records.add(record);

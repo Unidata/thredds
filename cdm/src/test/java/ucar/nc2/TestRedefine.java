@@ -53,7 +53,7 @@ public class TestRedefine {
       file.addGlobalAttribute(CDM.HISTORY, "lava");
       file.addGlobalAttribute("att8", "12345678");
 
-      file.addDimension(null, "time", 4, true, false, false);
+      file.addDimension(null, "time", 4, true, false);
 
     /* Add time */
       file.addVariable("time", DataType.DOUBLE, "time");

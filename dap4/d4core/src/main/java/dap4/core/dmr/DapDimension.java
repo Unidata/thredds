@@ -79,11 +79,6 @@ public class DapDimension extends DapNode implements DapDecl, Cloneable
         this.isshared = tf;
     }
 
-    public boolean isVariableLength()
-    {
-        return size == VARIABLELENGTH;
-    }
-
     //////////////////////////////////////////////////
     // Clone Interface
 

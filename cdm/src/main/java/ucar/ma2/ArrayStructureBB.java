@@ -189,12 +189,6 @@ public class ArrayStructureBB extends ArrayStructure {
 
   @Override
   public Array getArray(int recnum, StructureMembers.Member m) {
-    if (m.isVariableLength()) {
-      int offset = calcOffsetSetOrder(recnum, m);
-      int heapIndex = bbuffer.getInt(offset);
-      return (Array) heap.get( heapIndex);
-    }
-
     return super.getArray(recnum, m);
   }
 

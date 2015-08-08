@@ -692,20 +692,17 @@ public class NcMLReader {
 
       String isUnlimitedS = dimElem.getAttributeValue("isUnlimited");
       String isSharedS = dimElem.getAttributeValue("isShared");
-      String isUnknownS = dimElem.getAttributeValue("isVariableLength");
 
       boolean isUnlimited = (isUnlimitedS != null) && isUnlimitedS.equalsIgnoreCase("true");
-      boolean isUnknown = (isUnknownS != null) && isUnknownS.equalsIgnoreCase("true");
+      //boolean isUnknown = (isUnknownS != null) && isUnknownS.equalsIgnoreCase("true");
       boolean isShared = true;
       if ((isSharedS != null) && isSharedS.equalsIgnoreCase("false"))
         isShared = false;
 
       int len = Integer.parseInt(lengthS);
-      if (isUnknown)
-        len = Dimension.VLEN.getLength();
 
       if (debugConstruct) System.out.println(" add new dim = " + name);
-      g.addDimension(new Dimension(name, len, isShared, isUnlimited, isUnknown));
+      g.addDimension(new Dimension(name, len, isShared, isUnlimited));
 
     } else { // yes - modify it
       dim.setName(name);
@@ -713,7 +710,6 @@ public class NcMLReader {
       String lengthS = dimElem.getAttributeValue("length");
       String isUnlimitedS = dimElem.getAttributeValue("isUnlimited");
       String isSharedS = dimElem.getAttributeValue("isShared");
-      String isUnknownS = dimElem.getAttributeValue("isVariableLength");
 
       if (isUnlimitedS != null)
         dim.setUnlimited(isUnlimitedS.equalsIgnoreCase("true"));
@@ -721,10 +717,7 @@ public class NcMLReader {
       if (isSharedS != null)
         dim.setShared(!isSharedS.equalsIgnoreCase("false"));
 
-      if (isUnknownS != null)
-        dim.setVariableLength(isUnknownS.equalsIgnoreCase("true"));
-
-      if ((lengthS != null) && !dim.isVariableLength()) {
+      if ((lengthS != null)) {
         int len = Integer.parseInt(lengthS);
         dim.setLength(len);
       }

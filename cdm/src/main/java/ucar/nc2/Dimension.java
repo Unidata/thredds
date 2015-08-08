@@ -67,7 +67,7 @@ public class Dimension extends CDMNode implements Comparable {
    *
    * @return space-delineated String of Dimension names.
    */
-/*
+
   static public String makeDimensionsString(List<Dimension> dimensions) {
     if (dimensions == null) return "";
 
@@ -78,9 +78,7 @@ public class Dimension extends CDMNode implements Comparable {
 
       if (i != 0) buf.format(" ");
 
-      if (myd.isVariableLength()) {
-        buf.format("*");
-      } else if (myd.isShared()) {
+      if (myd.isShared()) {
         buf.format("%s", dimName);
       } else {
         //if (dimName != null)          // LOOK losing anon dim name
@@ -90,7 +88,6 @@ public class Dimension extends CDMNode implements Comparable {
     }
     return buf.toString();
   }
-*/
 
   /**
    * Create a dimension list using the dimensions names. The dimension is searched for recursively in the parent groups, so it must already have been added.
@@ -101,7 +98,7 @@ public class Dimension extends CDMNode implements Comparable {
    * @return list of dimensions
    * @throws IllegalArgumentException if cant find dimension or parse error.
    */
-/*
+
   static public List<Dimension> makeDimensionsList(Group parentGroup, String dimString) throws IllegalArgumentException {
 
     List<Dimension> newDimensions = new ArrayList<>();
@@ -113,12 +110,12 @@ public class Dimension extends CDMNode implements Comparable {
     StringTokenizer stoke = new StringTokenizer(dimString);
     while (stoke.hasMoreTokens()) {
       String dimName = stoke.nextToken();
-      Dimension d = dimName.equals("*") ? Dimension.VLEN : parentGroup.findDimension(dimName);
+      Dimension d = parentGroup.findDimension(dimName);
       if (d == null) {
         // if numeric - then its anonymous dimension
         try {
           int len = Integer.parseInt(dimName);
-          d = new Dimension(null, len, false, false, false);
+          d = new Dimension(null, len, false, false);
         } catch (Exception e) {
           throw new IllegalArgumentException("Dimension " + dimName + " does not exist");
         }
@@ -128,7 +125,6 @@ public class Dimension extends CDMNode implements Comparable {
 
     return newDimensions;
   }
-*/
 
   static public List<Dimension> makeDimensionsAnon(int[] shape) {
 
@@ -139,7 +135,7 @@ public class Dimension extends CDMNode implements Comparable {
     }
 
     for (int s : shape)
-      newDimensions.add(new Dimension(null, s, false, false, false));
+      newDimensions.add(new Dimension(null, s, false, false));
 
     return newDimensions;
   }
@@ -314,7 +310,7 @@ public class Dimension extends CDMNode implements Comparable {
    * @param length length of Dimension
    */
   public Dimension(String name, int length) {
-    this(name, length, true, false, false);
+    this(name, length, true, false);
   }
 
   /**
@@ -325,7 +321,7 @@ public class Dimension extends CDMNode implements Comparable {
    * @param isShared whether its shared or local to Variable.
    */
   public Dimension(String name, int length, boolean isShared) {
-    this(name, length, isShared, false, false);
+    this(name, length, isShared, false);
   }
 
   /**

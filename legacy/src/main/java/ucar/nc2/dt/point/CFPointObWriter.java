@@ -151,7 +151,7 @@ public class CFPointObWriter {
       if (pov.getLen() > 1) {
         List<Dimension> dims = new ArrayList<Dimension>(1);
         String suffix = (pov.getDataType() == DataType.STRING) || (pov.getDataType() == DataType.CHAR) ? "_strlen" : "_len";
-        dims.add(new Dimension(pov.getName() + suffix, pov.getLen(), false, false, false));
+        dims.add(new Dimension(pov.getName() + suffix, pov.getLen(), false, false));
         return dims;
       } else
         return new ArrayList<Dimension>(0);

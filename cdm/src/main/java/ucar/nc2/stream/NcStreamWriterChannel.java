@@ -130,7 +130,7 @@ public class NcStreamWriterChannel {
 
     // regular arrays
     long len = section.computeSize();
-    if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
+    if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE))
       len *= v.getElementSize(); // nelems for vdata, else nbytes
 
     size += NcStream.writeVInt(wbc, (int) len); // data len or number of objects

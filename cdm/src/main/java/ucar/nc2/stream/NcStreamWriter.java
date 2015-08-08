@@ -100,7 +100,7 @@ public class NcStreamWriter {
 
     // length of data uncompressed
     long uncompressedLength = section.computeSize();
-    if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
+    if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE))
       uncompressedLength *= v.getElementSize(); // nelems for vdata, else nbytes
 
     ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right

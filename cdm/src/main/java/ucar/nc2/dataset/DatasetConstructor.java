@@ -68,7 +68,7 @@ public class DatasetConstructor {
     // dimensions
     for (Dimension d : src.getDimensions()) {
       if (null == targetGroup.findDimensionLocal(d.getShortName())) {
-        Dimension newd = new Dimension(d.getShortName(), d.getLength(), d.isShared(), unlimitedOK && d.isUnlimited(), d.isVariableLength());
+        Dimension newd = new Dimension(d.getShortName(), d.getLength(), d.isShared(), unlimitedOK && d.isUnlimited());
         targetGroup.addDimension(newd);
       }
     }

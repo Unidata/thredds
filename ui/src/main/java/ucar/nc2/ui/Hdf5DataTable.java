@@ -126,7 +126,6 @@ public class Hdf5DataTable extends JPanel {
         infoTA.clear();
         Formatter f = new Formatter();
 
-        showVlen(f, mb);
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
       }
@@ -241,31 +240,6 @@ public class Hdf5DataTable extends JPanel {
   private void showStorage(Formatter f, VarBean bean) {
     try {
       bean.vinfo.countStorageSize(f);
-    } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
-  }
-
-  private void showVlen(Formatter f, VarBean bean) {
-    if (!bean.v.isVariableLength()) {
-      f.format("Variable %s must be variable length", bean.v.getFullName());
-      return;
-    }
-
-    try {
-      int countRows = 0;
-      long countElems = 0;
-      Array result = bean.v.read();
-      f.format("class = %s%n", result.getClass().getName());
-      while (result.hasNext()) {
-        Array line = (Array) result.next();
-        countRows++;
-        long size = line.getSize();
-        countElems += size;
-        f.format("  row %d size=%d%n", countRows, size);
-      }
-      float avg = (countRows == 0) ? 0 : ((float) countElems) / countRows;
-      f.format("%n  nrows = %d totalElems=%d avg=%f%n", countRows, countElems, avg);
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }

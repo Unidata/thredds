@@ -57,7 +57,7 @@ public class TestWriteFill  extends TestCase {
     // define dimensions
     Dimension latDim = ncfile.addDimension("lat", 6);
     Dimension lonDim = ncfile.addDimension("lon", 12);
-    Dimension timeDim = ncfile.addDimension(null, "time", 0, true, true, false);
+    Dimension timeDim = ncfile.addDimension(null, "time", 0, true, true);
 
     // define Variables
     ncfile.addVariable("temperature", DataType.DOUBLE, "lat lon");

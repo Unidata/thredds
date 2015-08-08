@@ -390,7 +390,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       m.setDataParam((int) vm.dataPos);
 
       // track if there is a heap
-      if (v2.getDataType() == DataType.STRING || v2.isVariableLength())
+      if (v2.getDataType() == DataType.STRING)
         hasHeap = true;
 
       // recurse

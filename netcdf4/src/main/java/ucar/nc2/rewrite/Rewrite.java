@@ -83,7 +83,7 @@ public class Rewrite {
       newGroup.addAttribute(att);
 
     for (Dimension dim : oldGroup.getDimensions()) {
-      ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), true, dim.isUnlimited(), dim.isVariableLength());
+      ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), true, dim.isUnlimited());
     }
 
     for (Variable v : oldGroup.getVariables()) {
@@ -95,7 +95,7 @@ public class Rewrite {
           dim.setName("anon"+anon);
           dim.setShared(true);
           anon++;
-          ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), true, dim.isUnlimited(), dim.isVariableLength());
+          ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), true, dim.isUnlimited());
         }
       }
 

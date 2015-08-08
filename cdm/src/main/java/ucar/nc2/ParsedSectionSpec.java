@@ -164,7 +164,7 @@ public class ParsedSectionSpec {
     sb.append(v.isMemberOfStructure() ? NetcdfFile.makeValidSectionSpecName(v.getShortName())
                                       : NetcdfFile.makeFullNameSectionSpec(v));
 
-    if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
+    if (!v.isScalar()) { // sequences cant be sectioned
       sb.append('(');
       for (int count=0; count<v.getRank(); count++) {
         Range r = ranges.get(count);

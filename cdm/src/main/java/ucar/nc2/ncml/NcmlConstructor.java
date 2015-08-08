@@ -265,19 +265,16 @@ public class NcmlConstructor {
     String lengthS = dimElem.getAttributeValue("length");
     String isUnlimitedS = dimElem.getAttributeValue("isUnlimited");
     String isSharedS = dimElem.getAttributeValue("isShared");
-    String isUnknownS = dimElem.getAttributeValue("isVariableLength");
 
     boolean isUnlimited = (isUnlimitedS != null) && isUnlimitedS.equalsIgnoreCase("true");
-    boolean isUnknown = (isUnknownS != null) && isUnknownS.equalsIgnoreCase("true");
+    //boolean isUnknown = (isUnknownS != null) && isUnknownS.equalsIgnoreCase("true");
     boolean isShared = true;
     if ((isSharedS != null) && isSharedS.equalsIgnoreCase("false"))
       isShared = false;
 
     int len = Integer.parseInt(lengthS);
-    if ((isUnknownS != null) && isUnknownS.equalsIgnoreCase("false"))
-      len = Dimension.VLEN.getLength();
 
-    Dimension dim = new Dimension(name, len, isShared, isUnlimited, isUnknown);
+    Dimension dim = new Dimension(name, len, isShared, isUnlimited);
 
     if (debugConstruct) System.out.println(" add new dim = " + dim);
     g.addDimension(dim);

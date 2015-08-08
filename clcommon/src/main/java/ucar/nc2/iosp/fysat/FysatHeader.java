@@ -184,7 +184,7 @@ public final class FysatHeader {
         String dstring = dformat.format(cal.getTime());
         ncfile.addAttribute(null, new Attribute("time_coverage", dstring));
         int nz = 1;
-        Dimension dimT = new Dimension("time", nz, true, false, false);
+        Dimension dimT = new Dimension("time", nz, true, false);
         ncfile.addDimension(null, dimT);
 
         String timeCoordName = "time";
@@ -294,11 +294,11 @@ public final class FysatHeader {
         Dimension dimY;
 
         if (proj != 4) {
-          dimX = new Dimension("x", nx, true, false, false);
-          dimY = new Dimension("y", ny, true, false, false);
+          dimX = new Dimension("x", nx, true, false);
+          dimY = new Dimension("y", ny, true, false);
         } else {
-          dimX = new Dimension("lon", nx, true, false, false);
-          dimY = new Dimension("lat", ny, true, false, false);
+          dimX = new Dimension("lon", nx, true, false);
+          dimY = new Dimension("lat", ny, true, false);
         }
 
         ncfile.addDimension(null, dimY);
@@ -503,7 +503,7 @@ public final class FysatHeader {
         String dstring = dformat.format(cal.getTime());
         ncfile.addAttribute(null, new Attribute("time_coverage_start", dstring));
         int nz = 1;
-        Dimension dimT = new Dimension("time", nz, true, false, false);
+        Dimension dimT = new Dimension("time", nz, true, false);
         ncfile.addDimension(null, dimT);
 
         // set time variable with time_coverage_start
@@ -600,8 +600,8 @@ public final class FysatHeader {
         int ny = gridprocuctSecondHeader.amountofVerticalSpacing;
         //int nz = 1;
 
-        Dimension dimX = new Dimension("lon", nx, true, false, false);
-        Dimension dimY = new Dimension("lat", ny, true, false, false);
+        Dimension dimX = new Dimension("lon", nx, true, false);
+        Dimension dimY = new Dimension("lat", ny, true, false);
 
         ncfile.addDimension(null, dimY);
         ncfile.addDimension(null, dimX);

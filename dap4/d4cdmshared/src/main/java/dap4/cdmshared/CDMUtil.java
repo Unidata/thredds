@@ -221,26 +221,6 @@ abstract public class CDMUtil
         return file;
     }
 
-    static public boolean
-    hasVLEN(List<Range> ranges)
-    {
-        if(ranges == null || ranges.size() == 0) return false;
-        return ranges.get(ranges.size() - 1) == Range.VLEN;
-    }
-
-    /**
-     * Test if any dimension is variable length
-     */
-    static public boolean
-    hasVLEN(Variable v)
-    {
-        for(Dimension dim : v.getDimensions()) {
-            if(dim.isVariableLength())
-                return true;
-        }
-        return false;
-    }
-
     static public DataType
     enumtypefor(DapType dt)
     {

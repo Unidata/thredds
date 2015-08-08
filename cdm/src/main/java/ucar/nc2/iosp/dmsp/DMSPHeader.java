@@ -418,7 +418,7 @@ public class DMSPHeader
     numRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_RECORDS.toString() ) );
     numHeaderRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_HEADER_RECORDS.toString() ) );
     numDataRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_DATA_RECORDS.toString() ) );
-    numDataRecordsDim = new Dimension( this.numDataRecordsDimName, numDataRecords, true, true, false);
+    numDataRecordsDim = new Dimension( this.numDataRecordsDimName, numDataRecords, true, true);
     numArtificialDataRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_ARTIFICIAL_DATA_RECORDS.toString() ) );
     if ( numHeaderRecords + numDataRecordsDim.getLength() + numArtificialDataRecords != numRecords )
     {

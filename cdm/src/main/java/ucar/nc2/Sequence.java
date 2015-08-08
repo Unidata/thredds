@@ -59,7 +59,6 @@ public class Sequence extends Structure {
     super(ncfile, group, parent, shortName);
 
     List<Dimension> dims = new ArrayList<>();
-    dims.add(Dimension.VLEN);
     setDimensions(dims);
     setDataType(DataType.SEQUENCE);
   }

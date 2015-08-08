@@ -63,7 +63,6 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
     this.ds = (DConstructor) dodsV.bt;
 
     if (ds instanceof DSequence) {
-      this.dimensions.add( Dimension.VLEN);
       this.shape = new int[1]; // scalar
     } else
       this.shape = new int[0]; // scalar
@@ -71,9 +70,6 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
     for (DodsV nested : dodsV.children) {
       dodsfile.addVariable(parentGroup, this, nested);
     }
-
-    if (ds instanceof DSequence)
-      isVariableLength = true;
 
     setSPobject(dodsV);
   }

@@ -87,12 +87,6 @@ abstract public class DapVariable extends DapNode implements DapDecl
     public void addDimension(DapDimension node)
         throws DapException
     {
-        // Enforce rulel that a Variable length dimension
-        // must be last
-        for(DapDimension d : dimensions) {
-            if(d.isVariableLength())
-                throw new DapException("Variable length dimension must always be last");
-        }
         dimensions.add(node);
     }
 

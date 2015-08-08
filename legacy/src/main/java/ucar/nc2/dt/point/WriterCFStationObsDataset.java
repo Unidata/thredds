@@ -172,7 +172,7 @@ public class WriterCFStationObsDataset {
     ncfile.addAttribute(null, new Attribute("geospatial_lon_max", Double.toString(llbb.getUpperRightPoint().getLongitude())));
 
     // add the dimensions
-    ncfile.addDimension(null, new Dimension(recordDimName, 0, true, true, false));
+    ncfile.addDimension(null, new Dimension(recordDimName, 0, true, true));
     ncfile.addDimension(null, new Dimension(stationDimName, nstns));
 
     // add the station Variables using the station dimension
@@ -242,7 +242,7 @@ public class WriterCFStationObsDataset {
     // add them
     for (Dimension d : dimSet) {
       if (!d.isUnlimited())
-        ncfile.addDimension(null, new Dimension(d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength()));
+        ncfile.addDimension(null, new Dimension(d.getShortName(), d.getLength(), d.isShared(), false));
     }
 
     // add the data variables all using the record dimension

@@ -265,7 +265,7 @@ public class WriterProfileObsDataset {
     // add them
     for (Dimension d : dimSet) {
       if (!d.isUnlimited())
-        ncfile.addDimension(d.getShortName(), d.getLength(), d.isShared(), false, d.isVariableLength());
+        ncfile.addDimension(d.getShortName(), d.getLength(), d.isShared(), false);
     }
 
     // add the data variables all using the record dimension

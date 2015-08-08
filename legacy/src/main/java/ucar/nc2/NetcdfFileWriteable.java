@@ -248,7 +248,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (!N3iosp.isValidNetcdfObjectName(dimName))
       throw new IllegalArgumentException("illegal netCDF-3 dimension name: "+dimName);
 
-    Dimension dim = new Dimension(dimName, length, true, false, false);
+    Dimension dim = new Dimension(dimName, length, true, false);
     super.addDimension(null, dim);
     return dim;
   }
@@ -260,16 +260,15 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @param length           size of dimension.
    * @param isShared         if dimension is shared
    * @param isUnlimited      if dimension is unlimited
-   * @param isVariableLength if dimension is variable length
    * @return the created dimension
    */
-  public Dimension addDimension(String dimName, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
+  public Dimension addDimension(String dimName, int length, boolean isShared, boolean isUnlimited) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
     if (!N3iosp.isValidNetcdfObjectName(dimName))
       throw new IllegalArgumentException("illegal netCDF-3 dimension name "+dimName);
 
-    Dimension dim = new Dimension(dimName, length, isShared, isUnlimited, isVariableLength);
+    Dimension dim = new Dimension(dimName, length, isShared, isUnlimited);
     super.addDimension(null, dim);
     return dim;
   }
@@ -281,7 +280,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @return the created dimension
    */
   public Dimension addUnlimitedDimension(String dimName) {
-    return addDimension(dimName, 0, true, true, false);
+    return addDimension(dimName, 0, true, true);
   }
 
   /**

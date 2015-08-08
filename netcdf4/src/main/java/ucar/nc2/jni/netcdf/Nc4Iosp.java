@@ -405,7 +405,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       String dname = makeString(name);
 
       boolean isUnlimited = containsInt(nunlimdimsp.getValue(), unlimdimids, i);
-      Dimension dim = new Dimension(dname, lenp.getValue().intValue(), true, isUnlimited, false);
+      Dimension dim = new Dimension(dname, lenp.getValue().intValue(), true, isUnlimited);
       ncfile.addDimension(g4.g, dim);
       if (debug) System.out.printf(" add Dimension %s (%d) %n", dim, dimids[i]);
     }
@@ -1912,10 +1912,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     // Compute rank up to the first VLEN
-    int prefixrank = 0;
-    for (; prefixrank < section.getRank(); prefixrank++) {
-      if (section.getRange(prefixrank) == Range.VLEN) break;
-    }
+    int prefixrank = section.getRank();
 
     ConvertedType ctype = convertDataType(userType.baseTypeid);
     //ArrayObject.D1 vlenArray = new ArrayObject.D1( dtype, len);

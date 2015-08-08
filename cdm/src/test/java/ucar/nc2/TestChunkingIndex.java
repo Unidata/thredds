@@ -83,7 +83,7 @@ public class TestChunkingIndex {
     Dimension d2 = new Dimension("2", 2);
     Dimension d10 = new Dimension("10", 10);
     Dimension d20 = new Dimension("20", 20);
-    Dimension dun = new Dimension("u", 0, true, true, false);
+    Dimension dun = new Dimension("u", 0, true, true);
 
     testOneStrategy(new Dimension[]{dun, d10, d20}, 50, 40);
     testOneStrategy(new Dimension[]{dun, d10, d20}, 500, 400);
@@ -125,7 +125,7 @@ public class TestChunkingIndex {
     Dimension d2 = new Dimension("2", 2);
     Dimension d10 = new Dimension("10", 10);
     Dimension d20 = new Dimension("20", 20);
-    Dimension dun = new Dimension("u", 0, true, true, false);
+    Dimension dun = new Dimension("u", 0, true, true);
 
     testRealStrategy(new Dimension[]{dun}, 8);
   }

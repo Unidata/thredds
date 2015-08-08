@@ -103,7 +103,7 @@ public class TestWriteRecord extends TestCase  {
       // define dimensions, including unlimited
       Dimension latDim = ncfile.addDimension("lat", 3);
       Dimension lonDim = ncfile.addDimension("lon", 4);
-      Dimension timeDim = ncfile.addDimension("time", 0, true, true, false);
+      Dimension timeDim = ncfile.addDimension("time", 0, true, true);
 
       // define Variables
 
@@ -292,7 +292,7 @@ public class TestWriteRecord extends TestCase  {
     // define dimensions, including unlimited
     Dimension latDim = ncfile.addDimension("lat", 64);
     Dimension lonDim = ncfile.addDimension("lon", 128);
-    Dimension timeDim = ncfile.addDimension(null, "time", 0, true, true, false);
+    Dimension timeDim = ncfile.addDimension(null, "time", 0, true, true);
 
     // define Variables
 

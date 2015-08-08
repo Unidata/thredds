@@ -161,7 +161,7 @@ public class FileWriter2 {
       Dimension newD = gdimHash.get(oldD.getShortName());
       if (newD == null) {
         newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-                oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+                oldD.isShared(), oldD.isUnlimited());
         gdimHash.put(oldD.getShortName(), newD);
         if (debug) System.out.println("add dim= " + newD);
       }
@@ -227,7 +227,7 @@ public class FileWriter2 {
     Map<String, Dimension> dimHash = new HashMap<>();
     for (Dimension oldD : fileIn.getDimensions()) {
       Dimension newD = writer.addDimension(null, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-              oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+              oldD.isShared(), oldD.isUnlimited());
       dimHash.put(oldD.getShortName(), newD);
       if (debug) System.out.println("add dim= " + newD);
     }
@@ -305,7 +305,7 @@ public class FileWriter2 {
     Map<String, Dimension> dimHash = new HashMap<>();
     for (Dimension oldD : oldGroup.getDimensions()) {
       Dimension newD = writer.addDimension(newGroup, oldD.getShortName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-              oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+              oldD.isShared(), oldD.isUnlimited());
       dimHash.put(oldD.getShortName(), newD);
       if (debug) System.out.println("add dim= " + newD);
     }

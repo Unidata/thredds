@@ -231,15 +231,10 @@ public class NcMLWriter {
   public static Element writeDimension(Dimension dim, Namespace ns) {
     Element dimElem = new Element("dimension", ns);
     dimElem.setAttribute("name", dim.getShortName());
-    if (dim.isVariableLength())
-      dimElem.setAttribute("length", "*");
-    else
-      dimElem.setAttribute("length", Integer.toString(dim.getLength()));
+    dimElem.setAttribute("length", Integer.toString(dim.getLength()));
 
     if (dim.isUnlimited())
       dimElem.setAttribute("isUnlimited", "true");
-    if (dim.isVariableLength())
-      dimElem.setAttribute("isVariableLength", "true");
 
     return dimElem;
   }
@@ -308,8 +303,6 @@ public class NcMLWriter {
       if (i > 0) buff.append(" ");
       if (dim.isShared())
         buff.append(dim.getShortName());
-      else if (dim.isVariableLength())
-        buff.append("*");
       else
         buff.append(dim.getLength());
     }

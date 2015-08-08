@@ -377,9 +377,6 @@ public class CDMDSP extends AbstractDSP
             // the same size. So, just go ahead and create
             // multiple instances.
             dapdim = (DapDimension) newNode(DapSort.DIMENSION);
-            if(cdmdim.isVariableLength())
-                dapdim.setSize(DapDimension.VARIABLELENGTH);
-            else
                 dapdim.setSize(cdmsize);
             dmr.addDecl(dapdim);
         } else { // Non anonymous; create in current group
@@ -445,8 +442,7 @@ public class CDMDSP extends AbstractDSP
         /* If this var has a variable length last dimension,
            then we must convert to a sequence.
 	*/
-        if(cdmdims != null && cdmdims.size() > 0
-                && cdmdims.get(cdmdims.size() - 1).isVariableLength()) {
+        if(cdmdims != null && cdmdims.size() > 0) {
             // Create the sequence using the dimensions of the variable
             // and the variable as the sequence field.
             dapvar = buildsequence(cdmbasevar);
@@ -759,8 +755,6 @@ public class CDMDSP extends AbstractDSP
                 if(declareddim == null)
                     throw new DapException("Unprocessed cdm dimension: " + cdmdim);
                 dapdim = (DapDimension) lookupNode(declareddim);
-            } else if(cdmdim.isVariableLength()) {// ignore
-                continue;
             } else {//anonymous
                 dapdim = builddim(cdmdim);
             }
@@ -863,7 +857,6 @@ public class CDMDSP extends AbstractDSP
     protected long
     dapsize(Dimension cdmdim)
     {
-        if(cdmdim.isVariableLength()) return DapDimension.VARIABLELENGTH;
         return (long) cdmdim.getLength();
     }
 

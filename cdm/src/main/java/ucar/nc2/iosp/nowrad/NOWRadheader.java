@@ -404,7 +404,7 @@ public class NOWRadheader {
 
     ProjectionImpl  nowradL(int hoff, float lat1, float lat2, float clat, float clon, float lat, float lon, Date dd) {
         List<Dimension> dims = new ArrayList<>();
-        Dimension dimT = new Dimension("time", 1, true, false, false);
+        Dimension dimT = new Dimension("time", 1, true, false);
 
         ncfile.addDimension(null, dimT);
 
@@ -430,8 +430,8 @@ public class NOWRadheader {
         ncfile.addVariable(null, taxis);
         dims.add(dimT);
 
-        Dimension jDim = new Dimension("y", numY, true, false, false);
-        Dimension iDim = new Dimension("x", numX, true, false, false);
+        Dimension jDim = new Dimension("y", numY, true, false);
+        Dimension iDim = new Dimension("x", numX, true, false);
 
         dims.add(jDim);
         dims.add(iDim);
@@ -533,7 +533,7 @@ public class NOWRadheader {
      */
     ProjectionImpl  nowrad(int hoff, float rlat1, float rlon1, float rlat2, float rlon2, float dlat, float dlon, Date dd) {
         List<Dimension> dims = new ArrayList<>();
-        Dimension dimT = new Dimension("time", 1, true, false, false);
+        Dimension dimT = new Dimension("time", 1, true, false);
 
         ncfile.addDimension(null, dimT);
 
@@ -559,8 +559,8 @@ public class NOWRadheader {
         ncfile.addVariable(null, taxis);
         dims.add(dimT);
 
-        Dimension jDim = new Dimension("lat", numY, true, false, false);
-        Dimension iDim = new Dimension("lon", numX, true, false, false);
+        Dimension jDim = new Dimension("lat", numY, true, false);
+        Dimension iDim = new Dimension("lon", numX, true, false);
 
         dims.add(jDim);
         dims.add(iDim);
