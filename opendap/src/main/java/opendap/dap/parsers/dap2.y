@@ -276,10 +276,10 @@ errorbody:
 		{errorbody(parsestate,$2,$3,$4,$5);}
 	;
 
-errorcode:  /*empty*/ {$$=null;} | SCAN_CODE    '=' WORD_WORD ';' {$$=$3;}
-errormsg:   /*empty*/ {$$=null;} | SCAN_MESSAGE '=' WORD_WORD ';' {$$=$3;}
-errorptype: /*empty*/ {$$=null;} | SCAN_PTYPE   '=' WORD_WORD ';' {$$=$3;}
-errorprog : /*empty*/ {$$=null;} | SCAN_PROG    '=' WORD_WORD ';' {$$=$3;}
+errorcode:  /*empty*/ {$$=null;} | SCAN_CODE    '=' WORD_WORD ';'   {$$=$3;}
+errormsg:   /*empty*/ {$$=null;} | SCAN_MESSAGE '=' WORD_STRING ';' {$$=$3;}
+errorptype: /*empty*/ {$$=null;} | SCAN_PTYPE   '=' WORD_WORD ';'   {$$=$3;}
+errorprog : /*empty*/ {$$=null;} | SCAN_PROG    '=' WORD_STRING ';' {$$=$3;}
 
 /* Note that variable names like "byte" are legal names
    and are disambiguated by context
