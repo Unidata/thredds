@@ -40,19 +40,20 @@
 
 package opendap.dap;
 
-import java.io.*;
-
-//import opendap.dap.parsers.ErrorParser;
 import opendap.dap.parsers.Dap2Parser;
 import opendap.dap.parsers.ParseException;
 
+import java.io.*;
+
+//import opendap.dap.parsers.ErrorParser;
+
 /**
  * Holds an exception thrown by OPeNDAP server to a client.
- * <p/>
+ * <p>
  * Unlike the other OPeNDAP exceptions, this one contains extra methods to
  * get the various fields sent by the server, and a <code>parse</code> method
  * to parse the <code>Error</code> sent from the server.
- *
+ * <p>
  * <h3>
  * This class will be changing it's name to opendap.dap.DAP2Exception.
  * I expect that it will be deprecated in the next release.
@@ -61,9 +62,9 @@ import opendap.dap.parsers.ParseException;
  *
  * @author jehamby
  * @version $Revision: 15901 $
- *
  */
-public class DAP2Exception extends Exception {
+public class DAP2Exception extends Exception
+{
 
     /**
      * Undefined error.
@@ -149,7 +150,8 @@ public class DAP2Exception extends Exception {
     /**
      * Construct an empty <code>DAP2Exception</code>.
      */
-    public DAP2Exception() {
+    public DAP2Exception()
+    {
         // this should never be seen, since this class overrides getMessage()
         // to display its own error message.
         super("DAP2Exception");
@@ -158,7 +160,8 @@ public class DAP2Exception extends Exception {
     /**
      * Construct a <code>DAP2Exception</code>.
      */
-    public DAP2Exception(String msg) {
+    public DAP2Exception(String msg)
+    {
         this();
         errorCode = UNKNOWN_ERROR;
         errorMessage = msg;
@@ -171,28 +174,43 @@ public class DAP2Exception extends Exception {
      * @param code the error core
      * @param msg  the error message
      */
-    public DAP2Exception(int code, String msg) {
+    public DAP2Exception(int code, String msg)
+    {
         this();
         errorCode = code;
         errorMessage = msg;
     }
 
     /**
-         * Construct a <code>DAP2Exception</code> with the given causal exception.
-         *
-         * @param cause the causing exception
-         */
-        public DAP2Exception(Exception cause) {
-            super(cause);
-            errorCode = 0;
-            errorMessage = cause.toString();
-        }
+     * Construct a <code>DAP2Exception</code> with the given causal exception.
+     *
+     * @param cause the causing exception
+     */
+    public DAP2Exception(Exception cause)
+    {
+        super(cause);
+        errorCode = 0;
+        errorMessage = cause.toString();
+    }
+
+    /**
+     * Construct a <code>DAP2Exception</code> with the given causal exception.
+     *
+     * @param cause the causing exception
+     */
+    public DAP2Exception(int code, Exception cause)
+    {
+        this(cause);
+        errorCode = code;
+    }
+
     /**
      * Returns the error code.
      *
      * @return the error code.
      */
-    public final int getErrorCode() {
+    public final int getErrorCode()
+    {
         return errorCode;
     }
 
@@ -201,7 +219,8 @@ public class DAP2Exception extends Exception {
      *
      * @return the error message.
      */
-    public final String getErrorMessage() {
+    public final String getErrorMessage()
+    {
         return errorMessage;
     }
 
@@ -210,7 +229,8 @@ public class DAP2Exception extends Exception {
      *
      * @return the program type.
      */
-    public final int getProgramType() {
+    public final int getProgramType()
+    {
         return programType;
     }
 
@@ -219,7 +239,8 @@ public class DAP2Exception extends Exception {
      *
      * @return the program source.
      */
-    public final String getProgramSource() {
+    public final String getProgramSource()
+    {
         return programSource;
     }
 
@@ -229,7 +250,8 @@ public class DAP2Exception extends Exception {
      * @return the detail message of this throwable object.
      */
     //Coverity[CALL_SUPER]
-    public String getMessage() {
+    public String getMessage()
+    {
         return errorMessage;
     }
 
@@ -238,7 +260,8 @@ public class DAP2Exception extends Exception {
      *
      * @param code the error code.
      */
-    public final void setErrorCode(int code) {
+    public final void setErrorCode(int code)
+    {
         errorCode = code;
     }
 
@@ -247,7 +270,8 @@ public class DAP2Exception extends Exception {
      *
      * @param msg the error message.
      */
-    public final void setErrorMessage(String msg) {
+    public final void setErrorMessage(String msg)
+    {
         errorMessage = msg;
     }
 
@@ -256,7 +280,8 @@ public class DAP2Exception extends Exception {
      *
      * @param type the program type.
      */
-    public final void setProgramType(int type) {
+    public final void setProgramType(int type)
+    {
         programType = type;
     }
 
@@ -265,7 +290,8 @@ public class DAP2Exception extends Exception {
      *
      * @param source the program source.
      */
-    public final void setProgramSource(String source) {
+    public final void setProgramSource(String source)
+    {
         programSource = source;
     }
 
@@ -276,18 +302,19 @@ public class DAP2Exception extends Exception {
      *
      * @param stream the text containing the <code>Error</code> to parse.
      */
-    public final boolean parse(InputStream stream) {
+    public final boolean parse(InputStream stream)
+    {
         Dap2Parser parser = new Dap2Parser(new DefaultFactory());
         String text;
-	try {
+        try {
             text = DConnect2.captureStream(stream);
-            if(parser.errparse(text,this) != Dap2Parser.DapERR) return false;
-	} catch (ParseException pe) {
-	    this.initCause(pe);
-	}catch (IOException pe) {
-	    this.initCause(pe);
-	}
-	return true;
+            if(parser.errparse(text, this) != Dap2Parser.DapERR) return false;
+        } catch (ParseException pe) {
+            this.initCause(pe);
+        } catch (IOException pe) {
+            this.initCause(pe);
+        }
+        return true;
     }
 
     /**
@@ -296,7 +323,8 @@ public class DAP2Exception extends Exception {
      *
      * @param os the <code>PrintWriter</code> to use for output.
      */
-    public void print(PrintWriter os) {
+    public void print(PrintWriter os)
+    {
         os.println("Error {");
         os.println("    code = " + errorCode + ";");
         if(errorMessage != null) os.println("    message = " + dumpword(errorMessage) + ";");
@@ -304,12 +332,13 @@ public class DAP2Exception extends Exception {
         if(programSource != null) os.println("    program = " + dumpword(programSource) + ";");
         os.println("};");
     }
+
     private String dumpword(String word)
     {
-        if (word == null)
-           return "";
+        if(word == null)
+            return "";
         else if(word.charAt(0) == '"')
-           return word;
+            return word;
         else
             return "\"" + word + "\"";
     }
@@ -320,8 +349,9 @@ public class DAP2Exception extends Exception {
      * @param os the <code>OutputStream</code> to use for output.
      * @see DAP2Exception#print(PrintWriter)
      */
-    public final void print(OutputStream os) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
+    public final void print(OutputStream os)
+    {
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, Util.UTF8)));
         print(pw);
         pw.flush();
     }

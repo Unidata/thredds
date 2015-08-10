@@ -35,7 +35,8 @@ package opendap.test;
 
 import ucar.nc2.util.UnitTestCommon;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
 
 // WARNING: assumes we are operating inside cdm directory
 // when invoked
@@ -95,12 +96,11 @@ abstract public class TestFiles extends UnitTestCommon
 
     }
 
-
-    String testdir = null;
-    String baselinedir = null;
-    String resultsdir = null;
-    String test = null;
-    String testname = null;
+    protected String testdir = null;
+    protected String baselinedir = null;
+    protected String resultsdir = null;
+    protected String test = null;
+    protected String testname = null;
 
     public TestFiles()
     {
@@ -189,6 +189,9 @@ abstract public class TestFiles extends UnitTestCommon
             "test4", "whoi"
     };
 
+    static String[] ddxtestfiles = {
+            "test.01"
+    };
 
     static String[] errtestfiles = {
             "test1"
@@ -200,6 +203,9 @@ abstract public class TestFiles extends UnitTestCommon
     };
 
     static String[] ddsxfails = {
+    };
+
+    static String[] ddxxfails = {
     };
 
     static String[] errxfails = {

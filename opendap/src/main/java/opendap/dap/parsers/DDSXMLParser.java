@@ -238,10 +238,10 @@ public class DDSXMLParser {
             parse(doc, targetDDS, fac, validation);
 
         } catch (JDOMException jde) {
-            throw new DDSException(opendap.dap.DAP2Exception.UNKNOWN_ERROR, jde.getMessage());
+            throw new DAP2Exception(jde);
         }
         catch (IOException ioe) {
-            throw new DDSException(opendap.dap.DAP2Exception.UNKNOWN_ERROR, ioe.getMessage());
+            throw new DAP2Exception(ioe);
         }
 
 

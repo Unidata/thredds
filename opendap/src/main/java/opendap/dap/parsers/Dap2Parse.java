@@ -115,7 +115,7 @@ public abstract class Dap2Parse
     /* Parse invocation interface */
     public int dapparse(String text, DDS dds, DAS das, DAP2Exception err) throws ParseException
     {
-//        setDebugLevel(1);
+        //setDebugLevel(1);
         ddsobject = dds;
         dasobject = das;
         errobject = (err == null ? new DAP2Exception() : err);
