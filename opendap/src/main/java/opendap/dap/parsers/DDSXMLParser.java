@@ -223,9 +223,8 @@ public class DDSXMLParser {
         try {
 
             // get a jdom parser to parse and validate the XML document.
-            SAXBuilder parser = new SAXBuilder("org.apache.xerces.parsers.SAXParser", validation);
-
-            // turn on validation
+            SAXBuilder parser = new SAXBuilder();
+            // optionally turn on validation
             parser.setFeature("http://apache.org/xml/features/validation/schema", validation);
 
             // parse the document into a hierarchical document
