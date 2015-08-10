@@ -32,27 +32,25 @@
  *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package ucar.nc2.ui;
+package ucar.nc2.ui.grib;
 
-import com.google.common.base.*;
 import com.google.common.base.Objects;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
 import ucar.coord.SparseArray;
 import ucar.nc2.grib.collection.*;
-import ucar.nc2.ui.grib.Grib2ReportPanel;
+import ucar.nc2.ui.ReportPanel;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.util.*;
 
 /**
- * Run through ncx indices and make reports
+ * Run through GRIB ncx indices and make reports
  *
  * @author caron
  * @since 5/15/2014
@@ -71,7 +69,7 @@ public class CdmIndexReportPanel extends ReportPanel {
 
   @Override
   public Object[] getOptions() {
-    return ucar.nc2.ui.CdmIndexReportPanel.Report.values();
+    return CdmIndexReportPanel.Report.values();
   }
 
   @Override
@@ -85,7 +83,6 @@ public class CdmIndexReportPanel extends ReportPanel {
           doMisplacedFields(f, dcm, useIndex, eachFile, extra);
           break;
       }
-
   }
 
   ///////////////////////////////////////////////

@@ -4,6 +4,7 @@ import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 
 import java.util.ArrayList;
@@ -52,6 +53,11 @@ public class TestCoordinate implements Coordinate {
   @Override
   public void showCoords(Formatter info) {
     //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
+  public Counters calcDistributions() {
+    return null;
   }
 
   @Override

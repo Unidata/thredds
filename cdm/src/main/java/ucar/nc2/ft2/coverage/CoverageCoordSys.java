@@ -176,7 +176,9 @@ public class CoverageCoordSys {
   public CoverageCoordAxis getAxis(AxisType type) {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-      if (axis.getAxisType() == type) {
+      if (axis == null)
+        System.out.printf("HEY axisName=%s%n", axisName);
+      else if (axis.getAxisType() == type) {
          return axis;
        }
      }

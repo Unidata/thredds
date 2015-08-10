@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
@@ -31,7 +32,7 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class TestCoverageClassification {
 
-  @Parameterized.Parameters(name="{0}")
+  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
@@ -85,7 +86,10 @@ public class TestCoverageClassification {
   @Test
   public void testFactory() throws IOException {
 
-    try (CoverageDataset gds = CoverageDatasetFactory.openCoverage(endpoint)) {
+    try (CoverageCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      assert cc != null;
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gds = cc.getCoverageDatasets().get(0);
       Assert.assertNotNull(endpoint, gds);
       Assert.assertEquals("NGrids", ncoverages, gds.getCoverageCount());
       Assert.assertEquals(expectType, gds.getCoverageType());

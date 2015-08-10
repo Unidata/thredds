@@ -88,7 +88,7 @@ public class TdsRequestedDataset {
   public static CoverageDataset getGridCoverage(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
-    return trd.openAsGridCoverage(request, response);
+    return trd.openAsCoverageDataset(request, response);
   }
 
   public static NetcdfFile getNetcdfFile(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
@@ -138,8 +138,8 @@ public class TdsRequestedDataset {
     return datasetManager.openPointDataset(request, response, path);
   }
 
-  public CoverageDataset openAsGridCoverage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    return datasetManager.openGridCoverage(request, response, path);
+  public CoverageDataset openAsCoverageDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    return datasetManager.openCoverageDataset(request, response, path);
   }
 
   public GridDataset openAsGridDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {

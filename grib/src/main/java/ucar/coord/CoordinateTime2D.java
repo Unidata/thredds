@@ -45,6 +45,7 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -269,6 +270,33 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       for (Coordinate time : times) {
         time.showCoords(info);
       }
+  }
+
+  @Override
+  public Counters calcDistributions() {
+    ucar.nc2.util.Counters counters = new Counters();
+    counters.add("resol");
+
+    List<? extends Object> offsets = getOffsetsSorted();
+    if (isTimeInterval()) {
+      counters.add("intv");
+      for (int i = 0; i < offsets.size(); i++) {
+        int intv = ((TimeCoord.Tinv)offsets.get(i)).getBounds2() - ((TimeCoord.Tinv)offsets.get(i)).getBounds1();
+        counters.count("intv", intv);
+        if (i < offsets.size() - 1) {
+          int resol = ((TimeCoord.Tinv)offsets.get(i + 1)).getBounds1() - ((TimeCoord.Tinv)offsets.get(i)).getBounds1();
+          counters.count("resol", resol);
+        }
+      }
+
+    } else {
+      for (int i = 0; i < offsets.size() - 1; i++) {
+        int diff = (Integer) offsets.get(i + 1) - (Integer) offsets.get(i);
+        counters.count("resol", diff);
+      }
+    }
+
+    return counters;
   }
 
   @Override

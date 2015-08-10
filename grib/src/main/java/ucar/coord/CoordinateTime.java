@@ -14,6 +14,7 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
@@ -98,6 +99,20 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     info.format("Time offsets: (%s) ref=%s %n", getUnit(), getRefDate());
      for (Integer cd : offsetSorted)
        info.format("   %3d%n", cd);
+  }
+
+  @Override
+  public Counters calcDistributions() {
+    ucar.nc2.util.Counters counters = new Counters();
+    counters.add("resol");
+
+    List<Integer> offsets = getOffsetSorted();
+    for (int i = 0; i < offsets.size() - 1; i++) {
+      int diff = offsets.get(i + 1) - offsets.get(i);
+      counters.count("resol", diff);
+    }
+
+    return counters;
   }
 
   @Override

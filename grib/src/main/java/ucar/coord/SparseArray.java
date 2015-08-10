@@ -123,7 +123,7 @@ public class SparseArray<T> {
     return ndups;
   }
 
-  public void showInfo(Formatter info, Counter all) {
+  public void showInfo(Formatter info, GribRecordStats all) {
     info.format("SparseArray shape=[%s] ", Misc.showInts(shape));
     info.format("ndups=%d, missing/total=%d/%d, density=%f%n", ndups, countMissing(), totalSize, getDensity());
 

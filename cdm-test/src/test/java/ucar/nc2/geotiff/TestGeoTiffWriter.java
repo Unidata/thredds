@@ -33,6 +33,7 @@
 
 package ucar.nc2.geotiff;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -118,8 +119,10 @@ public class TestGeoTiffWriter {
       System.out.printf("geotiff2 read coverage %s write %s%n", filename, gridOut2);
 
       GeoReferencedArray array;
-      try (CoverageDataset gcd = CoverageDatasetFactory.openCoverage(filename)) {
-        assert gcd != null;
+      try (CoverageCollection cc = CoverageDatasetFactory.open(filename)) {
+        assert cc != null;
+        Assert.assertEquals(1, cc.getCoverageDatasets().size());
+        CoverageDataset gcd = cc.getCoverageDatasets().get(0);
         Coverage coverage = gcd.findCoverage(field);
         assert coverage != null;
         array = coverage.readData(new SubsetParams()

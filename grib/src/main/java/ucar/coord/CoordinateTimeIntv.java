@@ -14,6 +14,7 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
@@ -118,6 +119,25 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     info.format("Time Interval offsets: (%s) ref=%s%n", getUnit(), getRefDate());
     for (TimeCoord.Tinv cd : timeIntervals)
       info.format("   (%3d - %3d)  %d%n", cd.getBounds1(), cd.getBounds2(), cd.getBounds2() - cd.getBounds1());
+  }
+
+  @Override
+  public Counters calcDistributions() {
+    ucar.nc2.util.Counters counters = new Counters();
+    counters.add("resol");
+    counters.add("intv");
+
+    List<TimeCoord.Tinv> offsets = getTimeIntervals();
+    for (int i = 0; i < offsets.size(); i++) {
+      int intv = offsets.get(i).getBounds2() - offsets.get(i).getBounds1();
+      counters.count("intv", intv);
+      if (i < offsets.size() - 1) {
+        int resol = offsets.get(i + 1).getBounds1() - offsets.get(i).getBounds1();
+        counters.count("resol", resol);
+      }
+    }
+
+    return counters;
   }
 
   @Override

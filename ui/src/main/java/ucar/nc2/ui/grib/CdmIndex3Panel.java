@@ -1,13 +1,15 @@
-package ucar.nc2.ui;
+package ucar.nc2.ui.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.ui.MFileTable;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -32,7 +34,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Read ncx3 index files.
+ * Show info in GRIB ncx3 index files.
  *
  * @author John
  * @since 12/5/13
@@ -869,6 +871,8 @@ public class CdmIndex3Panel extends JPanel {
     Coordinate coord;
     int idx;
     double start, end, resol;
+    Comparable resolMode;
+    ucar.nc2.util.Counters counters;
 
     // no-arg constructor
 
@@ -878,6 +882,8 @@ public class CdmIndex3Panel extends JPanel {
     public CoordBean(Coordinate coord, int idx) {
       this.coord = coord;
       this.idx = idx;
+      counters = coord.calcDistributions();
+      resolMode = counters.get("resol").getMode();
 
       if (coord instanceof CoordinateRuntime) {
         CoordinateRuntime runtime = (CoordinateRuntime) coord;
@@ -916,64 +922,25 @@ public class CdmIndex3Panel extends JPanel {
         int n = offsets.size();
         start = offsets.get(0).getBounds1();
         end = offsets.get(n - 1).getBounds2();
-        resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
+
+      } else if (coord instanceof CoordinateVert) {
+        CoordinateVert vert = (CoordinateVert) coord;
+        List<VertCoord.Level> offsets = vert.getLevelSorted();
+        int n = offsets.size();
+        if (vert.isLayer()) {
+          start = offsets.get(0).getValue1();
+          end = offsets.get(n - 1).getValue2();
+          resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
+        } else {
+          start = offsets.get(0).getValue1();
+          end = offsets.get(n - 1).getValue1();
+          resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
+        }
       }
+
     }
 
     private void showResolution(Formatter f) {
-      ucar.nc2.util.Counters counters = new Counters();
-      counters.add("resol");
-
-      if (coord instanceof CoordinateRuntime) {
-        CoordinateRuntime runtime = (CoordinateRuntime) coord;
-        List<Double> offsets = runtime.getOffsetsInTimeUnits();
-        for (int i = 0; i < offsets.size() - 1; i++) {
-          Double diff = offsets.get(i + 1) - offsets.get(i);
-          counters.count("resol", diff);
-        }
-
-      } else if (coord instanceof CoordinateTime2D) {
-        CoordinateTime2D time = (CoordinateTime2D) coord;
-        List<? extends Object> offsets = time.getOffsetsSorted();
-        if (time.isTimeInterval()) {
-          counters.add("intv");
-          for (int i = 0; i < offsets.size(); i++) {
-            int intv = ((TimeCoord.Tinv)offsets.get(i)).getBounds2() - ((TimeCoord.Tinv)offsets.get(i)).getBounds1();
-            counters.count("intv", intv);
-            if (i < offsets.size() - 1) {
-              int resol = ((TimeCoord.Tinv)offsets.get(i + 1)).getBounds1() - ((TimeCoord.Tinv)offsets.get(i)).getBounds1();
-              counters.count("resol", resol);
-            }
-          }
-
-        } else {
-          for (int i = 0; i < offsets.size() - 1; i++) {
-            int diff = (Integer) offsets.get(i + 1) - (Integer) offsets.get(i);
-            counters.count("resol", diff);
-          }
-        }
-
-      } else if (coord instanceof CoordinateTime) {
-        CoordinateTime time = (CoordinateTime) coord;
-        List<Integer> offsets = time.getOffsetSorted();
-        for (int i = 0; i < offsets.size() - 1; i++) {
-          int diff = offsets.get(i + 1) - offsets.get(i);
-          counters.count("resol", diff);
-        }
-
-      } else if (coord instanceof CoordinateTimeIntv) {
-        counters.add("intv");
-        CoordinateTimeIntv time = (CoordinateTimeIntv) coord;
-        List<TimeCoord.Tinv> offsets = time.getTimeIntervals();
-        for (int i = 0; i < offsets.size(); i++) {
-          int intv = offsets.get(i).getBounds2() - offsets.get(i).getBounds1();
-          counters.count("intv", intv);
-          if (i < offsets.size() - 1) {
-            int resol = offsets.get(i + 1).getBounds1() - offsets.get(i).getBounds1();
-            counters.count("resol", resol);
-          }
-        }
-      }
       counters.show(f);
     }
 
@@ -987,6 +954,10 @@ public class CdmIndex3Panel extends JPanel {
 
     public double getResol() {
       return resol;
+    }
+
+    public String getResolMode() {
+      return (resolMode == null) ? "scalar" : resolMode.toString();
     }
 
     public String getValues() {

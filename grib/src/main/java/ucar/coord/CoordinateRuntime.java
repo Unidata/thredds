@@ -5,6 +5,7 @@ import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -144,6 +145,20 @@ public class CoordinateRuntime implements Coordinate {
     int count = 0;
     for (int idx=0; idx<getSize(); idx++)
       info.format("   %s (%f)%n", getRuntimeDate(idx), udunits.get(count++));
+  }
+
+  @Override
+  public Counters calcDistributions() {
+    ucar.nc2.util.Counters counters = new Counters();
+    counters.add("resol");
+
+    List<Double> offsets = getOffsetsInTimeUnits();
+    for (int i = 0; i < offsets.size() - 1; i++) {
+      Double diff = offsets.get(i + 1) - offsets.get(i);
+      counters.count("resol", diff);
+    }
+
+    return counters;
   }
 
   @Override

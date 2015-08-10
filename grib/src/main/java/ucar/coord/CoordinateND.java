@@ -2,7 +2,6 @@ package ucar.coord;
 
 import net.jcip.annotations.Immutable;
 import ucar.ma2.Section;
-import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -46,7 +45,7 @@ public class CoordinateND<T> {
     info.format("%n");
   }  */
 
-  public void showInfo(Formatter info, Counter all) {
+  public void showInfo(Formatter info, GribRecordStats all) {
     for (Coordinate coord : coordinates)
        coord.showInfo(info, new Indent(2));
 

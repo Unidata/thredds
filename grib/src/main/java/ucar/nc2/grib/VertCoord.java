@@ -269,19 +269,21 @@ public class VertCoord { // implements Comparable<VertCoord> {
   }
 
   @Immutable
-  static public interface VertUnit {
+  public interface VertUnit {
 
-    public int getCode();
+    int getCode();
 
-    public String getUnits();
+    String getUnits();
 
-    public String getDatum();
+    String getDesc();
 
-    public boolean isLayer();
+    String getDatum();
 
-    public boolean isPositiveUp();
+    boolean isLayer();
 
-    public boolean isVerticalCoordinate();
+    boolean isPositiveUp();
+
+    boolean isVerticalCoordinate();
   }
 }
 

@@ -1,14 +1,7 @@
 /* Copyright */
 package ucar.nc2.ui.coverage2;
 
-import thredds.client.catalog.Access;
-import thredds.client.catalog.ServiceType;
-import thredds.client.catalog.Dataset;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.event.ActionCoordinator;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
@@ -32,9 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URI;
 import java.util.*;
 import java.util.List;
 
@@ -348,7 +338,7 @@ public class CoverageDisplay extends JPanel {
   // actions that control the dataset
   private void makeActionsDataset() {
 
-    // choose local dataset
+    /*  choose local dataset
     AbstractAction chooseLocalDatasetAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         String filename = fileChooser.chooseFilename();
@@ -911,7 +901,7 @@ public class CoverageDisplay extends JPanel {
     redrawLater();
   }
 
-  public void setDataset(Dataset ds) throws IOException {
+  /* public void setDataset(Dataset ds) throws IOException {
     if (ds == null) return;
 
     OpenDatasetTask openTask = new OpenDatasetTask(ds);
@@ -928,7 +918,7 @@ public class CoverageDisplay extends JPanel {
       }
     });
     pm.start(this, "Open Dataset " + ds.getName(), 100);
-  }
+  } */
 
   // assume that its done in the event thread
   boolean showDataset() {
@@ -989,7 +979,7 @@ public class CoverageDisplay extends JPanel {
     //gridTable.setDataset(controller.getFields());
   }
 
-  void setFieldsFromBeans(java.util.List<CoverageTable.GridBean> fields) {
+  void setFieldsFromBeans(java.util.List<CoverageTable.CoverageBean> fields) {
     fieldChooser.setCollection(fields.iterator());
   }
 
@@ -1365,7 +1355,7 @@ public class CoverageDisplay extends JPanel {
     }
   }
 
-  // open remote dataset in cancellable task
+  /* open remote dataset in cancellable task
   private class OpenDatasetTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
     URI endpoint = null;
 
@@ -1390,7 +1380,7 @@ public class CoverageDisplay extends JPanel {
       if (success) setDataset(gcd);
       done = true;
     }
-  }
+  } */
 
 }
 

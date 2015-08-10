@@ -66,8 +66,10 @@ public class TestGridCoverageReading {
   public void testGridCoverageDataset() throws IOException {
     System.out.printf("Test Dataset %s%n", endpoint);
 
-    try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {
-      Assert.assertNotNull(endpoint, gcs);
+    try (CoverageCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gcs = cc.getCoverageDatasets().get(0);
       //Assert.assertEquals("NGrids", ncoverages, gcs.getCoverageCount());
       Assert.assertEquals(expectType, gcs.getCoverageType());
 

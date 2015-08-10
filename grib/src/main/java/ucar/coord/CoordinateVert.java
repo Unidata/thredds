@@ -2,6 +2,7 @@ package ucar.coord;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -11,6 +12,7 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
@@ -119,6 +121,33 @@ public class CoordinateVert implements Coordinate {
     info.format("Levels: (%s)%n", getUnit());
     for (VertCoord.Level level : levelSorted)
       info.format("   %s%n", level);
+  }
+
+  @Override
+  public Counters calcDistributions() {
+    ucar.nc2.util.Counters counters = new Counters();
+    counters.add("resol");
+
+    if (isLayer) {
+      counters.add("intv");
+      for (int i = 0; i < levelSorted.size(); i++) {
+        double intv = (levelSorted.get(i)).getValue2() - (levelSorted.get(i)).getValue1();
+        counters.count("intv", intv);
+        if (i < levelSorted.size() - 1) {
+          double resol = (levelSorted.get(i + 1)).getValue1() - (levelSorted.get(i)).getValue1();
+          counters.count("resol", resol);
+        }
+      }
+
+    } else {
+
+      for (int i = 0; i < levelSorted.size() - 1; i++) {
+        double diff = levelSorted.get(i + 1).getValue1() - levelSorted.get(i).getValue1();
+        counters.count("resol", diff);
+      }
+    }
+
+    return counters;
   }
 
   @Override

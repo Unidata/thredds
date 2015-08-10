@@ -53,6 +53,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
@@ -310,7 +311,7 @@ public class DatasetManager implements InitializingBean {
   }
 
 
-  public CoverageDataset openGridCoverage(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+  public CoverageDataset openCoverageDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
@@ -323,12 +324,20 @@ public class DatasetManager implements InitializingBean {
       return gds;
     }
 
-    // otherwise assume its a local file
+    /* otherwise assume its a local file: LOOK GRIB
+    CoverageCollection cc = CoverageDatasetFactory.open(matchPath);
+    assert cc != null;
+    assert cc.getCoverageDatasets().size() == 1;
+    return cc.getCoverageDatasets().get(0);  */
+
     NetcdfFile ncfile = openNetcdfFile(req, res, reqPath);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
-    if (gds.getGrids().size() > 0)
-      return DtCoverageAdapter.factory(gds);
+    if (gds.getGrids().size() > 0) {
+      CoverageCollection cc = DtCoverageAdapter.factory(gds);
+      if (cc == null || cc.getCoverageDatasets().size() != 1) throw new FileNotFoundException("Not a Grid Dataset " + gds.getName());
+      return cc.getCoverageDatasets().get(0);
+    }
 
     gds.close();
     throw new IllegalArgumentException("Not a Grid Dataset " + gds.getName());

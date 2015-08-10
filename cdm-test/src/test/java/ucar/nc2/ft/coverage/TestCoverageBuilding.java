@@ -7,10 +7,7 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.adapter.*;
 import ucar.unidata.test.util.TestDir;
 
@@ -44,7 +41,10 @@ public class TestCoverageBuilding {
       Assert.assertNotNull("runtime axis", runAxis);
       assert runAxis.isScalar();
 
-      try (CoverageDataset cd = DtCoverageAdapter.factory(gds)) {
+      try (CoverageCollection cc = CoverageDatasetFactory.open(filename)) {
+        Assert.assertNotNull(filename, cc);
+        Assert.assertEquals(1, cc.getCoverageDatasets().size());
+        CoverageDataset cd = cc.getCoverageDatasets().get(0);
         Coverage cov = cd.findCoverage(gridName);
         Assert.assertNotNull(gridName, cov);
 
@@ -81,7 +81,10 @@ public class TestCoverageBuilding {
       assert !runAxis.isScalar();
       Assert.assertEquals(360, timeAxis.getSize());
 
-      try (CoverageDataset cd = DtCoverageAdapter.factory(gds)) {
+      try (CoverageCollection cc = CoverageDatasetFactory.open(filename)) {
+        Assert.assertNotNull(filename, cc);
+        Assert.assertEquals(1, cc.getCoverageDatasets().size());
+        CoverageDataset cd = cc.getCoverageDatasets().get(0);
         Coverage cov = cd.findCoverage(gridName);
         Assert.assertNotNull(gridName, cov);
 

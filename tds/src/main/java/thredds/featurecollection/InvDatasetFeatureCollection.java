@@ -47,9 +47,9 @@ import thredds.server.catalog.FeatureCollectionRef;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.log.LoggerFactory;
@@ -69,7 +69,7 @@ import java.util.*;
  *  the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
  *   match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
  * <p/>
- * The DatasetFeatureCollection object is created once and held in the DataRootHandler's collection of DataRoots.
+ * The DatasetFeatureCollection object is held in the DataRootManager's FeatureCollectionCache; it may get closed and recreated.
  *
  * @author caron
  * @since Mar 3, 2010
@@ -216,40 +216,12 @@ public abstract class InvDatasetFeatureCollection {
 
     Formatter errlog = new Formatter();
     datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
-
-    /*if (config.spec != null && config.spec.startsWith(MFileCollectionManager.CATALOG)) { // LOOK CHANGE THIS
-      datasetCollection = new CollectionManagerCatalog(config.collectionName, config.spec, null, errlog);
-    } else {
-      datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
-    } */
     topDirectory = datasetCollection.getRoot();
     String errs = errlog.toString();
     if (errs.length() > 0) logger.warn("MFileCollectionManager parse error = {} ", errs);
   }
 
-  /* stuff that shouldnt be done in a constructor - eg dont let 'this' escape
-  // LOOK maybe not best design to start tasks from here
-  // LOOK we want to get notified of events, but no longer initiate changes.
-  protected void finishConstruction() {
-    // CollectionUpdater.INSTANCE.scheduleTasks(config, this, logger);
-  }
-
-  /////////////////////// CollectionUpdater
-  @Override
-  public String getCollectionName() {
-    return config.collectionName;
-  }
-
-  // CollectionUpdater sends this message asynchronously
-  @Override
-  public void sendEvent(CollectionUpdateType type) {
-    try {
-      update(type);
-    } catch (IOException e) {
-      logger.error("Error processing event", e);
-    }
-  }  */
-
+  //////////////////////////////////////////////////////
   // called by eventBus
   @Subscribe
   public void processEvent(CollectionUpdateEvent event)  {
@@ -293,12 +265,6 @@ public abstract class InvDatasetFeatureCollection {
 
   protected void _showStatus(Formatter f, boolean summaryOnly, String type) throws IOException {
   }
-
-  /* protected String getId() {    // LOOK ?? maybe config.getId ??
-    String result =  parent.getId();
-    if (result == null) result = getPath();
-    return result;
-  }  */
 
   protected String getPath() {
     return parent.getUrlPath();
@@ -595,11 +561,13 @@ public abstract class InvDatasetFeatureCollection {
     return null;
   }
 
+  // LOOK Overridden in GRIB, what about Fmrc?
   public CoverageDataset getGridCoverage(String matchPath) throws IOException {
-    NetcdfDataset ncd = getNetcdfDataset(matchPath);
-    if (ncd == null) return null;
-    DtCoverageDataset gcd = new DtCoverageDataset(ncd);
-    return DtCoverageAdapter.factory(gcd);
+    CoverageCollection cc = CoverageDatasetFactory.open(matchPath);
+    if(cc == null) return null;
+
+    assert cc.getCoverageDatasets().size() == 1;  // LOOK probably want to use endpoint#datasetName ?
+    return cc.getCoverageDatasets().get(0);
   }
 
   ///////////////////////////////////////////////////////////////////////////////

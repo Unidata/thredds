@@ -79,6 +79,8 @@ public class Counters {
 
     Comparable getLast();
 
+    Comparable getMode();
+
     int getTotal();
 
     Counter setShowRange(boolean showRange);
@@ -183,6 +185,19 @@ public class Counters {
     @Override
     public Comparable getLast() {
       return last;
+    }
+
+    @Override
+    public Comparable getMode() {
+      int max = -1;
+      Comparable mode = null;
+      for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
+        if (entry.getValue() > max) {
+          max = entry.getValue();
+          mode = entry.getKey();
+        }
+      }
+      return mode;
     }
 
     @Override

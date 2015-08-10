@@ -42,6 +42,7 @@ import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
@@ -134,6 +135,19 @@ public class CoordinateEns implements Coordinate {
     info.format("Ensemble coords: (%s)%n", getUnit());
     for (EnsCoord.Coord level : ensSorted)
       info.format("   %s%n", level);
+  }
+
+  @Override
+  public Counters calcDistributions() {
+    ucar.nc2.util.Counters counters = new Counters();
+    counters.add("resol");
+
+    for (int i = 0; i < ensSorted.size() - 1; i++) {
+      int diff = ensSorted.get(i + 1).getEnsMember() - ensSorted.get(i).getEnsMember();
+      counters.count("resol", diff);
+    }
+
+    return counters;
   }
 
   @Override

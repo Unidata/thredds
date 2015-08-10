@@ -149,7 +149,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
 
   public ucar.nc2.time.Calendar getCalendar() {
     if (calendarDateRange != null)
-      return calendarDateRange.getStart().getCalendar();
+      return calendarDateRange.getStart().getCalendar();  // LOOK
     return ucar.nc2.time.Calendar.getDefault();
   }
 

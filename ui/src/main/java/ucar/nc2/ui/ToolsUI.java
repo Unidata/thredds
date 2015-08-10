@@ -4816,7 +4816,7 @@ public class ToolsUI extends JPanel {
     JSplitPane split;
     IndependentWindow viewerWindow;
 
-    CoverageDataset gcd = null;
+    CoverageCollection gcd = null;
 
     CoveragePanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);
@@ -4877,8 +4877,10 @@ public class ToolsUI extends JPanel {
       }
 
       try {
-        gcd = CoverageDatasetFactory.openCoverage(command);
-        setDataset(gcd);
+        gcd = CoverageDatasetFactory.open(command);
+        if (gcd == null) return false;
+        dsTable.setCollection(gcd);
+        setSelectedItem(command);
 
       } catch (IOException e) {
         e.printStackTrace();
@@ -4900,42 +4902,6 @@ public class ToolsUI extends JPanel {
       if (gcd != null) gcd.close();
       gcd = null;
       dsTable.clear();
-    }
-
-    /* void setDataset(NetcdfDataset newds) {
-      if (newds == null) return;
-      try {
-        if (ds != null) ds.close();
-      } catch (IOException ioe) {
-        System.out.printf("close failed %n");
-      }
-
-      Formatter parseInfo = new Formatter();
-      this.ds = newds;
-      try {
-        dsTable.setDataset(newds, parseInfo);
-      } catch (IOException e) {
-        String info = parseInfo.toString();
-        if (info.length() > 0) {
-          detailTA.setText(info);
-          detailWindow.show();
-        }
-        e.printStackTrace();
-        return;
-      }
-      setSelectedItem(newds.getLocation());
-    }  */
-
-    void setDataset(CoverageDataset gds) {
-      if (gds == null) return;
-
-      try {
-        dsTable.setDataset(gds);
-      } catch (IOException e) {
-        e.printStackTrace();
-        return;
-      }
-      setSelectedItem(gds.getName());
     }
 
     void save() {

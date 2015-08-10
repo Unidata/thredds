@@ -40,6 +40,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;

@@ -83,7 +83,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     logger.debug("Grib2CollectionBuilder {}: makeGroups", name);
     int fileno = 0;
-    Counter statsAll = new Counter(); // debugging
+    GribRecordStats statsAll = new GribRecordStats(); // debugging
 
     logger.debug(" dcm={}", dcm);
 
@@ -153,7 +153,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     // rectilyze each group independently
     List<Grib1CollectionWriter.Group> groups = new ArrayList<>(gdsMap.values());
     for (Grib1CollectionWriter.Group g : groups) {
-      Counter stats = new Counter(); // debugging
+      GribRecordStats stats = new GribRecordStats(); // debugging
       Grib1Rectilyser rect = new Grib1Rectilyser(g.records, g.gdsHashObject);
       rect.make(gribConfig, stats, errlog);
       g.gribVars = rect.gribvars;
@@ -240,7 +240,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash;
     }
 
-    public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
+    public void make(FeatureCollectionConfig.GribConfig config, GribRecordStats counter, Formatter info) throws IOException {
       CalendarPeriod userTimeUnit = config.userTimeUnit;
 
       // assign each record to unique variable using cdmVariableHash()
@@ -332,7 +332,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     public void showInfo(Formatter f, Grib1Customizer cust1) {
       //f.format("%nVariables%n");
       //f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
-      Counter all = new Counter();
+      GribRecordStats all = new GribRecordStats();
 
       for (VariableBag vb : gribvars) {
         f.format("Variable %s (%d)%n", Grib1Iosp.makeVariableName(cust, gribConfig, vb.first.getPDSsection()), vb.hashCode());

@@ -11,6 +11,7 @@ import ucar.coord.Coordinate;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionMutable;
 import ucar.nc2.grib.collection.PartitionCollectionMutable;
+import ucar.nc2.ui.grib.CdmIndex3Panel;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.util.StringUtil2;

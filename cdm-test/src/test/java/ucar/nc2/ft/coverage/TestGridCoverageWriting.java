@@ -10,6 +10,7 @@ import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.SubsetParams;
@@ -65,8 +66,10 @@ public class TestGridCoverageWriting {
     System.out.printf(" write to %s%n", tempFile.getAbsolutePath());
 
     // write the file
-    try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {
-      Assert.assertNotNull(endpoint, gcs);
+    try (CoverageCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gcs = cc.getCoverageDatasets().get(0);;
 
       for (String covName : covList) {
         Assert.assertNotNull(covName, gcs.findCoverage(covName));
@@ -78,8 +81,10 @@ public class TestGridCoverageWriting {
     }
 
     // open the new file as a Coverage
-    try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(tempFile.getPath())) {
-      Assert.assertNotNull(tempFile.getPath(), gcs);
+    try (CoverageCollection cc = CoverageDatasetFactory.open(tempFile.getPath())) {
+      Assert.assertNotNull(endpoint, cc);
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gcs = cc.getCoverageDatasets().get(0);
 
       for (String covName : covList) {
         Assert.assertNotNull(covName, gcs.findCoverage(covName));

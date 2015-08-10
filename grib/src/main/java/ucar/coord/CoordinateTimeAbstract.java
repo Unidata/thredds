@@ -89,6 +89,10 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     return periodName;
   }
 
+  public String getTimeUdUnit() {
+    return periodName + " since " + refDate;
+  }
+
   @Override
   public String getName() {
     return name;

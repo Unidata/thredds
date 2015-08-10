@@ -12,6 +12,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.time.CalendarDate;
@@ -81,8 +82,10 @@ public class TestGridCoverageMisc {
   public void testReadGridCoverageSlice() throws IOException {
     System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {
-      Assert.assertNotNull(endpoint, gcs);
+    try (CoverageCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gcs = cc.getCoverageDatasets().get(0);
       Coverage cover = gcs.findCoverage(covName);
 
       // check DtCoverageCS
@@ -130,8 +133,10 @@ public class TestGridCoverageMisc {
     if (!covName.contains("TwoD/Momentum_flux_u-component_surface_Mixed_intervals_Average")) return;  // cheater
     System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDataset gcs = CoverageDatasetFactory.openCoverage(endpoint)) {
-      Assert.assertNotNull(endpoint, gcs);
+    try (CoverageCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gcs = cc.getCoverageDatasets().get(0);
       Coverage cover = gcs.findCoverage(covName);
 
       // check DtCoverageCS

@@ -1,6 +1,7 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
@@ -9,6 +10,7 @@ import ucar.nc2.ft2.coverage.remote.CdmrFeatureDataset;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * factory for CoverageDataset
@@ -19,19 +21,19 @@ import java.lang.reflect.Method;
 public class CoverageDatasetFactory {
   static private final Logger logger = LoggerFactory.getLogger(CoverageDatasetFactory.class);
 
-  static public CoverageDataset openCoverage(String endpoint) throws IOException {
+  static public CoverageCollection open(String endpoint) throws IOException {
 
     // remote CdmrFeatureDataset
     if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME)) {
 
       endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
       CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
-      return reader.openCoverageDataset();
+      return new CoverageCollection(reader.openCoverageDataset(), reader.openCoverageDataset());
 
     } else if (endpoint.startsWith("http:")) {
       CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
       if (reader.isCmrfEndpoint()) {
-        return reader.openCoverageDataset();
+        return new CoverageCollection(reader.openCoverageDataset(), reader.openCoverageDataset());
       } // otherwise let it fall through
 
     } else if (endpoint.startsWith("file:")) {
@@ -41,8 +43,8 @@ public class CoverageDatasetFactory {
     // check if its GRIB collection
     try {
       Class<?> c = CoverageDatasetFactory.class.getClassLoader().loadClass("ucar.nc2.grib.coverage.GribCoverageDataset");
-      Method method = c.getMethod("openCoverage", String.class);
-      CoverageDataset result = (CoverageDataset) method.invoke(null, endpoint);
+      Method method = c.getMethod("open", String.class);
+      CoverageCollection result = (CoverageCollection) method.invoke(null, endpoint);
       if (result != null) return result;
     } catch (ClassNotFoundException e) {
       // ok, GRIB module not loaded, fall through

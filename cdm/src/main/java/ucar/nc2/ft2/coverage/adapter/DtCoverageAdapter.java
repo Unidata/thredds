@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
-  public static CoverageDataset factory(DtCoverageDataset proxy) {
+  public static CoverageCollection factory(DtCoverageDataset proxy) {
     DtCoverageAdapter reader = new DtCoverageAdapter(proxy);
 
     AttributeContainerHelper atts = new AttributeContainerHelper(proxy.getName());
@@ -61,9 +61,10 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         }
     }
 
-    return new CoverageDataset(proxy.getName(), proxy.getCoverageType(), atts,
+    CoverageDataset cd = new CoverageDataset(proxy.getName(), proxy.getCoverageType(), atts,
             proxy.getBoundingBox(), proxy.getProjBoundingBox(), proxy.getCalendarDateRange(),
             pcoordSys, transforms, axes, pgrids, reader);
+    return new CoverageCollection(reader, cd);
   }
 
   private static Coverage makeCoverage(DtCoverage dt, DtCoverageAdapter reader) {

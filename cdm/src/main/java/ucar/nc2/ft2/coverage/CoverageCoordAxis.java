@@ -177,6 +177,11 @@ abstract public class CoverageCoordAxis {
     return dependsOn;
   }
 
+  public boolean getHasData() {
+    return values != null;
+  }
+
+
   @Override
   public String toString() {
     Formatter f = new Formatter();

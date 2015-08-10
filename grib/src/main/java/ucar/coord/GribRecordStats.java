@@ -8,7 +8,7 @@ import java.util.Formatter;
  * @author John
  * @since 11/30/13
  */
-public class Counter {
+public class GribRecordStats {
     public int recordsTotal;
     public int recordsUnique;
     public int dups;
@@ -24,7 +24,7 @@ public class Counter {
       return f.toString();
     }
 
-    public void add(Counter c) {
+    public void add(GribRecordStats c) {
       this.recordsUnique += c.recordsUnique;
       this.dups += c.dups;
       this.vars += c.vars;

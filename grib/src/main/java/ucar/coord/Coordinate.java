@@ -1,5 +1,6 @@
 package ucar.coord;
 
+import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 
 import java.util.Formatter;
@@ -17,17 +18,18 @@ public interface Coordinate {
    */
   enum Type {runtime, time, timeIntv, vert, time2D, ens }  // cant change order, protobuf uses the ordinal
 
-  void showInfo(Formatter info, Indent indent);
-  void showCoords(Formatter info);
-
   List<? extends Object> getValues(); // get sorted list of values
   Object getValue(int idx);  // get the ith value
   int getIndex(Object val);  // LOOK assumes the values are unique;
   int getSize();             // how many values ??
-  int estMemorySize();       // estimated memory size in bytes (debugging)
 
   int getCode();
   Type getType();
   String getName();
   String getUnit();
+
+  void showInfo(Formatter info, Indent indent);
+  void showCoords(Formatter info);
+  Counters calcDistributions();
+  int estMemorySize();          // estimated memory size in bytes (debugging)
 }
