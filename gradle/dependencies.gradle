@@ -141,6 +141,9 @@ libraries["jcip-annotations"] = "net.jcip:jcip-annotations:1.0"
 
 libraries["jdom2"] = "org.jdom:jdom2:2.0.4"
 
+// It appears that jdom2 is unable to find xerces using jdk 1.8
+libraries["xerces"] = "xerces:xercesImpl:2.11.0"
+
 libraries["je"] = "com.sleepycat:je:4.0.92"
 
 libraries["jna"] = "net.java.dev.jna:jna:4.1.0"
@@ -219,10 +222,12 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
         // Dragged in by xmlbeans
         exclude group: 'stax', module: 'stax-api'
 
+	// Note: it appears that xerces is not part of jdk 1.8,
+        // or has been renamed.
         // Xerces comes with Java 1.6+
         // This SHOULD be okay, but see http://stackoverflow.com/questions/1167757
         // Dragged in by 52n-oxf-xmlbeans
-        exclude group: 'xerces', module: 'xercesImpl'
+//        exclude group: 'xerces', module: 'xercesImpl'
 
         // This is an old version of the servlet API: v2. We're using v3.
         // Dragged in by httpunit.
