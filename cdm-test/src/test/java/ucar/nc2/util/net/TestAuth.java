@@ -51,15 +51,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
-import org.junit.experimental.categories.Category;
-
-    /*
-     For some reason TestAuth.testSSH is failing
-     on a missing class.
-     Probably because of a switch to jdk1.8.
-     Needs further investigation.
-    */
-@Category(NotJenkins.class)
 public class TestAuth extends UnitTestCommon
 {
     static final String BADPASSWORD = "bad";
