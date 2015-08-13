@@ -123,7 +123,14 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     return time2runtime[timeIdx];
   }
 
+  @Override
+  public int getNCoords() {
+    return getSize();
+  }
 
+  public double getOffsetInTimeUnits(CalendarDate start) {
+    return timeUnit.getOffset(start, getRefDate());
+  }
   ////////////////////////////////////////
 
   /**

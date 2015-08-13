@@ -175,6 +175,8 @@ public class SparseArray<T> {
       f.format(" %d %s %n", count++, record);
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////
+
   // separate out the mutable part
   public static class Builder<T> {
     private int[] shape;    // multidim sizes

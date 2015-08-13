@@ -30,9 +30,9 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
   public FmrcTimeAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
                            DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                           double[] values, CoordAxisReader reader) {
+                           double[] values, CoordAxisReader reader, boolean isSubset) {
 
-    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
+    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
   }
 
   @Override
@@ -62,11 +62,11 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
     f.format("%s%n", NCdumpW.toString(data, getName()+" values", null));
   }
 
-  @Override
-  public FmrcTimeAxis2D copy() {
-    return new FmrcTimeAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType,
-                          dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
-  }
+  //@Override
+  //public FmrcTimeAxis2D copy() {
+  //  return new FmrcTimeAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType,
+  //                        dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
+  //}
 
   @Override
   public CoverageCoordAxis subset(SubsetParams params) {
@@ -88,7 +88,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       return time1D.subset(params);
     }
 
-    return copy();
+    return this;
   }
 
   @Override
@@ -137,7 +137,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       return new CoverageCoordAxis1D(name, units, description, dataType, axisType,
               AttributeContainerHelper.filter(attributes.getAttributes(), "_Coordinate"),
               dependenceType, dependsOn, spacing, n, values[0], values[n - 1],
-              0.0, values, reader);
+              0.0, values, reader, true);
     }
 
     if (spacing == Spacing.discontiguousInterval) {
@@ -153,7 +153,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       return new CoverageCoordAxis1D(name, units, description, dataType, axisType,
               AttributeContainerHelper.filter(attributes.getAttributes(), "_Coordinate"),
               dependenceType, dependsOn, spacing, n/2, values[0], values[n - 1],
-              0.0, values, reader);
+              0.0, values, reader, true);
     }
 
     return null;

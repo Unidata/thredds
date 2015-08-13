@@ -68,8 +68,8 @@ public class HorizCoordSys {
     return result;
   }
 
-  public boolean getHasProjection() {
-    return hasProjection;
+  public CoverageTransform getTransform() {
+    return transform;
   }
 
   public boolean getHasLatLon() {
@@ -123,12 +123,21 @@ public class HorizCoordSys {
       }
     }
 
-    if (xaxisSubset == null) xaxisSubset = (xaxis == null) ? null : xaxis.copy();
-    if (yaxisSubset == null) yaxisSubset = (yaxis == null) ? null : yaxis.copy();
-    if (lataxisSubset == null) lataxisSubset = (lataxis == null) ? null : lataxis.copy();
-    if (lonaxisSubset == null) lonaxisSubset = (lonaxis == null) ? null : lonaxis.copy();
+    if (xaxisSubset == null) xaxisSubset = xaxis;
+    if (yaxisSubset == null) yaxisSubset = yaxis;
+    if (lataxisSubset == null) lataxisSubset = lataxis;
+    if (lonaxisSubset == null) lonaxisSubset = lonaxis;
 
     return new HorizCoordSys(xaxisSubset, yaxisSubset, lataxisSubset, lonaxisSubset, transform);
+  }
+
+  public CoverageCoordAxis getXAxis() {
+    return (xaxis != null) ? xaxis : lonaxis;
+  }
+
+  public CoverageCoordAxis getYAxis() {
+    return (yaxis != null) ? yaxis : lataxis;
+
   }
 
 }

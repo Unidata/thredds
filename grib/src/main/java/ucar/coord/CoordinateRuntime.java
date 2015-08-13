@@ -44,16 +44,16 @@ public class CoordinateRuntime implements Coordinate {
     return timeUnit;
   }
 
-  /* public long[] getRuntimesSorted() {
-    return runtimes;
-  }  */
-
   public CalendarDate getRuntimeDate(int idx) {
     return CalendarDate.of(runtimes[idx]);
   }
 
   public long getRuntime(int idx) {
     return runtimes[idx];
+  }
+
+  public String getPeriodName() {
+    return periodName;
   }
 
   /**
@@ -72,9 +72,18 @@ public class CoordinateRuntime implements Coordinate {
     return result;
   }
 
+  public double getOffsetInTimeUnits(CalendarDate start) {
+    return timeUnit.getOffset(start, getFirstDate());
+  }
+
   @Override
   public int getSize() {
     return runtimes.length;
+  }
+
+  @Override
+  public int getNCoords() {
+    return getSize();
   }
 
   @Override

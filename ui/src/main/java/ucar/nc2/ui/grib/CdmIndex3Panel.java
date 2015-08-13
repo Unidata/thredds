@@ -9,6 +9,7 @@ import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.ui.MFileTable;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -888,23 +889,27 @@ public class CdmIndex3Panel extends JPanel {
       if (coord instanceof CoordinateRuntime) {
         CoordinateRuntime runtime = (CoordinateRuntime) coord;
         List<Double> offsets = runtime.getOffsetsInTimeUnits();
+        double offsetFromMaster = runtime.getOffsetInTimeUnits(gc.getMasterFirstDate());
+
         int n = offsets.size();
-        start = offsets.get(0);
-        end = offsets.get(n - 1);
+        start = offsets.get(0) + offsetFromMaster;
+        end = offsets.get(n - 1) + offsetFromMaster;
         resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
 
       } else if (coord instanceof CoordinateTime2D) {
         CoordinateTime2D time = (CoordinateTime2D) coord;
         List<? extends Object> offsets = time.getOffsetsSorted();
         int n = offsets.size();
+        //double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
+
         if (time.isTimeInterval()) {
-          start = ((TimeCoord.Tinv) offsets.get(0)).getBounds1();
-          end = ((TimeCoord.Tinv) offsets.get(n - 1)).getBounds2();
+          start = ((TimeCoord.Tinv) offsets.get(0)).getBounds1(); // + offsetFromMaster;
+          end = ((TimeCoord.Tinv) offsets.get(n - 1)).getBounds2(); // + offsetFromMaster;
           resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
 
         } else {
-          start = (Integer) offsets.get(0);
-          end = (Integer) offsets.get(n - 1);
+          start = (Integer) offsets.get(0); // + offsetFromMaster;
+          end = (Integer) offsets.get(n - 1); // + offsetFromMaster;
           resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
         }
 
@@ -912,16 +917,18 @@ public class CdmIndex3Panel extends JPanel {
         CoordinateTime time = (CoordinateTime) coord;
         List<Integer> offsets = time.getOffsetSorted();
         int n = offsets.size();
-        start = offsets.get(0);
-        end = offsets.get(n - 1);
+        double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
+        start = offsets.get(0) + offsetFromMaster;
+        end = offsets.get(n - 1) + offsetFromMaster;
         resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
 
       } else if (coord instanceof CoordinateTimeIntv) {
         CoordinateTimeIntv time = (CoordinateTimeIntv) coord;
         List<TimeCoord.Tinv> offsets = time.getTimeIntervals();
+        double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
         int n = offsets.size();
-        start = offsets.get(0).getBounds1();
-        end = offsets.get(n - 1).getBounds2();
+        start = offsets.get(0).getBounds1() + offsetFromMaster;
+        end = offsets.get(n - 1).getBounds2() + offsetFromMaster;
 
       } else if (coord instanceof CoordinateVert) {
         CoordinateVert vert = (CoordinateVert) coord;

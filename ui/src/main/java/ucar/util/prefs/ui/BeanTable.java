@@ -65,7 +65,7 @@ import java.util.List;
  * <pre>
  *     static public String editableProperties() { return "ID serverName active writeDirectory"; }
  * </pre>
- * or as an instance method with a no parameter contructor
+ * or as an instance method with a no parameter constructor
  * <pre>
  *   MyClass() {}
  *   public String editableProperties() { return "ID serverName active writeDirectory"; }
@@ -75,6 +75,11 @@ import java.util.List;
  * <pre>
  *   static public String hiddenProperties() { return "hideThisProperty DDDirectory"; }
  * </pre>
+ * * or as an instance method with a no parameter constructor
+  * <pre>
+  *   MyClass() {}
+  *   public String hiddenProperties() { return "ID serverName active writeDirectory"; }
+  * </pre>
  * <p/>
  * The data can be made persistent through a PreferencesExt store.
  * The width and order of the columns is persistent.
@@ -127,7 +132,7 @@ public class BeanTable extends JPanel {
     this.store = pstore;
     this.innerbean = bean;
 
-    beans = (store != null) ? (ArrayList<Object>) store.getBean("beanList", new ArrayList()) : new ArrayList<Object>();
+    beans = (store != null) ? (ArrayList<Object>) store.getBean("beanList", new ArrayList()) : new ArrayList<>();
     model = new TableBeanModel(beanClass);
     init(header, tooltip);
 
@@ -304,7 +309,7 @@ public class BeanTable extends JPanel {
    * @see #setSelectionMode
    */
   public List getSelectedBeans() {
-    ArrayList<Object> list = new ArrayList<Object>();
+    ArrayList<Object> list = new ArrayList<>();
     int[] viewRowIndices = jtable.getSelectedRows();
     for (int viewRowIndex : viewRowIndices) {
       int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
@@ -322,7 +327,7 @@ public class BeanTable extends JPanel {
    * @see BeanTable#setSelectionMode(int).
    */
   public ArrayList<Object> getSelectedCells() {
-    ArrayList<Object> list = new ArrayList<Object>();
+    ArrayList<Object> list = new ArrayList<>();
     int[] viewRowIndices = jtable.getSelectedRows();
     int[] viewColumnIndices = jtable.getSelectedColumns();
     for (int i = 0; i < viewRowIndices.length; i++)
@@ -371,7 +376,7 @@ public class BeanTable extends JPanel {
 
   public void setBeans(List beans) {
     if (beans == null)
-      beans = new ArrayList<Object>(); // empty list
+      beans = new ArrayList<>(); // empty list
     this.beans = beans;
     model.fireTableDataChanged(); // this should make the jtable update
     revalidate();  // LOOK soemtimes it doesnt, try this
@@ -479,7 +484,7 @@ public class BeanTable extends JPanel {
       e.printStackTrace();
     }
 
-    List<PropertyCol> propCols = new ArrayList<PropertyCol>();
+    List<PropertyCol> propCols = new ArrayList<>();
     HidableTableColumnModel tableColumnModel = (HidableTableColumnModel) jtable.getColumnModel();
     Enumeration<TableColumn> columns = tableColumnModel.getColumns(false);
 
@@ -614,7 +619,7 @@ public class BeanTable extends JPanel {
    * Does the reflection on the bean objects
    */
   protected class TableBeanModel extends AbstractTableModel {
-    protected List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
+    protected List<PropertyDescriptor> properties = new ArrayList<>();
 
     protected TableBeanModel() {
 
@@ -673,8 +678,8 @@ public class BeanTable extends JPanel {
           try {
             hiddenProperties = (String) m.invoke(null, (Object[]) null);
             if (debugBean) System.out.println(" hiddenProperties: " + hiddenProperties);
-          } catch (Exception ee) {
 
+          } catch (Exception ee) {
             if (innerbean != null) {
               try {
                 hiddenProperties = (String) m.invoke(innerbean, (Object[]) null);  // try non static
@@ -886,7 +891,7 @@ public class BeanTable extends JPanel {
     }
   }
 
-
+  //////////////////////////////////////////////////////////////////////////////////////
   // testing
 
   static public class TestBean {

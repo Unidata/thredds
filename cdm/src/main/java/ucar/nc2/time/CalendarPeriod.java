@@ -227,6 +227,7 @@ public class CalendarPeriod {
 
   // offset from start to end, in these units
   public int getOffset(CalendarDate start, CalendarDate end) {
+    if (start.equals(end)) return 0;
     Period p = new Period(start.getDateTime(), end.getDateTime(), getPeriodType());
     return p.get(getDurationFieldType());
   }

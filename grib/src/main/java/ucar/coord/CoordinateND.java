@@ -115,47 +115,6 @@ public class CoordinateND<T> {
       return saBuilder.finish();
     }
 
-    /* private SparseArray<T> buildSparseArray(List<T> records, Formatter info) {
-       int count = 0;
-       for (Coordinate coord : coordb) {
-         if (coord.getType() == Coordinate.Type.time2D) count++;
-         count++;
-       }
-       int[] sizeArray = new int[count];
-       count = 0;
-       for (Coordinate coord : coordb) {
-          if (coord.getType() == Coordinate.Type.time2D) {
-            CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-            sizeArray[count++] = coord2D.getNruns();
-            sizeArray[count++] = coord2D.getNtimes();
-
-          } else {
-            sizeArray[count++] = coord.getSize();
-          }
-        }
-
-       SparseArray.Builder<T> saBuilder = new SparseArray.Builder<>(sizeArray);
-
-       int[] index = new int[coordb.size()];
-       for (T gr : records) {
-         int count2 = 0;
-         for (CoordinateBuilder<T> builder : builders) {
-           if (coord.getType() == Coordinate.Type.time2D) {
-            CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-            sizeArray[count++] = coord2D.getNruns();
-            sizeArray[count++] = coord2D.getNtimes();
-
-          } else {
-             index[count2++] = builder.getIndex(gr);
-           }
-         }
-
-         saBuilder.add(gr, info, index);
-       }
-
-       return saBuilder.finish();
-     }  */
-
      /**
      * Reindex the sparse array, based on the new Coordinates.
      * Do this by running all the Records through the Coordinates, assigning each to a new spot in the new sparse array.
@@ -216,7 +175,7 @@ public class CoordinateND<T> {
     //////////////////////////////////////////////
 
      // a quick lookup of values from prev coordinate to current coordinate.
-    private static interface IndexMapIF {
+    private interface IndexMapIF {
       int map(int oldIndex);
     }
 

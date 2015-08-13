@@ -262,17 +262,17 @@ message CoordAxis {
     if (dependenceType == CoverageCoordAxis.DependenceType.twoD && axisType == AxisType.Time) {
 
       return new FmrcTimeAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
-                 spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader);
+                 spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
 
     } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
 
       return new LatLonAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn, shape,
-                 spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader);
+                 spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
 
     } else {
 
       return new CoverageCoordAxis1D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
-              spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader);
+              spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
     }
   }
 
@@ -292,7 +292,7 @@ message Coverage {
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
       atts.add(NcStream.decodeAtt(patt));
 
-    return new Coverage(proto.getName(), dataType, atts, proto.getCoordSys(), proto.getUnits(), proto.getDescription(), reader);
+    return new Coverage(proto.getName(), dataType, atts, proto.getCoordSys(), proto.getUnits(), proto.getDescription(), reader, null);
   }
 
   static public AxisType convertAxisType(CdmrFeatureProto.AxisType dtype) {

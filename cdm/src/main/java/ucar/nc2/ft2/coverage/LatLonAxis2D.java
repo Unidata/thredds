@@ -26,8 +26,8 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   public LatLonAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes, DependenceType dependenceType,
                       List<String> dependsOn, int[] shape, Spacing spacing, int ncoords, double startValue, double endValue, double resolution, double[] values,
-                      CoordAxisReader reader) {
-    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
+                      CoordAxisReader reader, boolean isSubset) {
+    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
     this.shape = shape;
   }
 
@@ -55,16 +55,16 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     f.format("%s  %s%n", indent, Misc.showInts(shape));
   }
 
-  @Override
-  public LatLonAxis2D copy() {
-    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, shape,
-            spacing, ncoords, startValue, endValue, resolution, values, reader);
-  }
+  //@Override
+  //public LatLonAxis2D copy() {
+  //  return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, shape,
+  //          spacing, ncoords, startValue, endValue, resolution, values, reader);
+  //}
 
   @Override
   public LatLonAxis2D subset(SubsetParams params) {  // LOOK wrong
     return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, shape,
-            spacing, ncoords, startValue, endValue, resolution, values, reader);
+            spacing, ncoords, startValue, endValue, resolution, values, reader, true);
   }
 
   @Override

@@ -41,6 +41,12 @@ public class CoverageCollection implements AutoCloseable {
     return datasets;
   }
 
+  public CoverageDataset findCoverageDataset( CoverageCoordSys.Type type) {
+    for (CoverageDataset cd : datasets)
+      if (cd.getCoverageType() == type) return cd;
+    return null;
+  }
+
   public void showInfo(Formatter result) {
   }
 }

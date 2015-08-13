@@ -75,9 +75,7 @@ public class TestSection extends TestCase {
     }
 
     // section
-    Range [] ranges = {new Range(m1, m2), null, null};
-    secA = (ArrayDouble) A.section( Range.parseSpec(m1+":"+m2+",:,:") );
-
+    secA = (ArrayDouble) A.section( new Section(m1+":"+m2+",:,:").getRanges() );
   }
 
   public void testSection() {
@@ -122,7 +120,7 @@ public class TestSection extends TestCase {
   public void testRangeIterator() {
     IndexIterator iter;
     try {
-      iter = A.getRangeIterator( Range.parseSpec(m1+":"+m2+",:,:") );
+      iter = A.getRangeIterator( new Section(m1+":"+m2+",:,:").getRanges() );
     } catch (InvalidRangeException e) {
       System.out.println("testMAsection failed == "+ e);
       return;
@@ -144,7 +142,7 @@ public class TestSection extends TestCase {
   public void testSectionReduce() {
     ArrayDouble secA2;
     try {
-      secA2 = (ArrayDouble) A.section( Range.parseSpec("2,:,:") );
+      secA2 = (ArrayDouble) A.section( new Section("2,:,:").getRanges() );
     } catch (InvalidRangeException e) {
       System.out.println("testSectionReduce failed == "+ e);
       return;
@@ -180,7 +178,7 @@ public class TestSection extends TestCase {
   }
 
   public void testSectionNoReduce() throws InvalidRangeException {
-    ArrayDouble secA2 = (ArrayDouble) A.sectionNoReduce( Range.parseSpec("2,:,:") );
+    ArrayDouble secA2 = (ArrayDouble) A.sectionNoReduce( new Section("2,:,:").getRanges() );
 
     Index ima = secA2.getIndex();
     int [] shape = ima.getShape();
@@ -213,9 +211,9 @@ public class TestSection extends TestCase {
   }
 
   public void testDoubleRange() throws InvalidRangeException {
-    ArrayDouble secA2 = (ArrayDouble) A.section( Range.parseSpec("2,:,:")  );
+    ArrayDouble secA2 = (ArrayDouble) A.section( new Section("2,:,:").getRanges()  );
 
-    ArrayDouble secA1 = (ArrayDouble) secA2.section( Range.parseSpec(":,1")  );
+    ArrayDouble secA1 = (ArrayDouble) secA2.section( new Section(":,1").getRanges()  );
 
     Index ima = secA1.getIndex();
 
@@ -243,10 +241,10 @@ public class TestSection extends TestCase {
   }
 
   public void testDoubleRange2() throws InvalidRangeException {
-    ArrayDouble secA2 = (ArrayDouble) A.section( Range.parseSpec("2,:,:")  );
+    ArrayDouble secA2 = (ArrayDouble) A.section( new Section("2,:,:").getRanges()  );
     secA2 = (ArrayDouble) secA2.reduce();
 
-    ArrayDouble secA1 = (ArrayDouble) secA2.section( Range.parseSpec(":,1")  );
+    ArrayDouble secA1 = (ArrayDouble) secA2.section( new Section(":,1").getRanges()  );
 
     Index ima = secA1.getIndex();
 
@@ -274,7 +272,7 @@ public class TestSection extends TestCase {
   }
 
   public void testRange3() throws InvalidRangeException {
-    ArrayDouble secA2 = (ArrayDouble) A.section( Range.parseSpec(1+":"+(m-2)+",0:"+(n-2)+",1:"+(p-1)) );
+    ArrayDouble secA2 = (ArrayDouble) A.section( new Section(1+":"+(m-2)+",0:"+(n-2)+",1:"+(p-1)).getRanges() );
 
     Index imaOrg = A.getIndex();
     Index ima = secA2.getIndex();
@@ -335,7 +333,7 @@ public class TestSection extends TestCase {
   }
 
   public void testSliceOne() throws InvalidRangeException {
-    ArrayDouble secA1 = (ArrayDouble) A.sectionNoReduce( Range.parseSpec("1,0:"+(n-2)+",1:"+(p-1)) );
+    ArrayDouble secA1 = (ArrayDouble) A.sectionNoReduce( new Section("1,0:"+(n-2)+",1:"+(p-1)).getRanges() );
 
     int [] shape = secA1.getShape();
     assert( secA1.getRank() == 3);
@@ -364,7 +362,7 @@ public class TestSection extends TestCase {
   }
 
   public void testSectionCopy() throws InvalidRangeException {
-    ArrayDouble secA2 = (ArrayDouble) A.section(Range.parseSpec(1+":"+(m-2)+",0:"+(n-2)+",1:"+(p-1))).copy();
+    ArrayDouble secA2 = (ArrayDouble) A.section( new Section(1+":"+(m-2)+",0:"+(n-2)+",1:"+(p-1)).getRanges() ).copy();
 
     Index imaOrg = A.getIndex();
     Index ima = secA2.getIndex();

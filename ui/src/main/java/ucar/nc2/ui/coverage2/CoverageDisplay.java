@@ -961,7 +961,7 @@ public class CoverageDisplay extends JPanel {
 
   public void setDataset(ucar.nc2.ui.coverage2.CoverageTable dsTable) {
     this.coverageDataset = dsTable.getCoverageDataset();
-    setFieldsFromBeans(dsTable.getGridBeans());
+    setFieldsFromBeans(dsTable.getCoverageBeans());
 
     startOK = false; // wait till redraw is hit before drawing
     showDataset();

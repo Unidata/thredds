@@ -62,7 +62,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
 
     for (Coverage coverage : coverages) {
       coverageMap.put(coverage.getName(), coverage);
-      CoordSysSet gset = map.get(coverage.getCoordSysName());
+      CoordSysSet gset = map.get(coverage.getCoordSysName());             // duplicates get eliminated here
       if (gset == null) {
         gset = new CoordSysSet(findCoordSys(coverage.getCoordSysName())); // must use findByName because objects arent wired up yet
         map.put(coverage.getCoordSysName(), gset);

@@ -10,7 +10,8 @@ import ucar.unidata.geoloc.ProjectionRect;
 import java.util.*;
 
 /**
- * Helper class to create logical subsets
+ * Helper class to create logical subsets.
+ * Used by CFwriter
  *
  * @author caron
  * @since 7/12/2015
@@ -68,7 +69,7 @@ public class CoverageSubsetter {
       coordSys.add( new CoverageCoordSys(orgCs));
 
     for (Coverage orgCov : orgCoverages)
-      coverages.add( new Coverage(orgCov));
+      coverages.add( new Coverage(orgCov, null));
 
     for (String tname : coordTransformSet) {
       CoverageTransform t = org.findCoordTransform(tname);

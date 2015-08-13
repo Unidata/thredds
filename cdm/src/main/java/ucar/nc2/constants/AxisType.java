@@ -107,4 +107,8 @@ public enum AxisType {
     return this == Time || this == RunTime || this == TimeOffset;
   }
 
+  public boolean isVert() {
+    return this == Height || this == Pressure || this == GeoZ;
+  }
+
 }

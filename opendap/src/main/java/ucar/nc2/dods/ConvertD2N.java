@@ -613,7 +613,7 @@ public class ConvertD2N {
 
     if (section == null)
      section = ncVar.getRanges();
-    int[] shape = Range.getShape( section);
+    int[] shape = new Section(section).getShape();
     int total = (int) Index.computeSize(shape);
 
     //// deal with strlen = 1 silliness

@@ -68,7 +68,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   }
 
   private static Coverage makeCoverage(DtCoverage dt, DtCoverageAdapter reader) {
-    return new Coverage(dt.getName(), dt.getDataType(), dt.getAttributes(), dt.getCoordinateSystem().getName(), dt.getUnitsString(), dt.getDescription(), reader);
+    return new Coverage(dt.getName(), dt.getDataType(), dt.getAttributes(), dt.getCoordinateSystem().getName(), dt.getUnitsString(), dt.getDescription(), reader, dt);
   }
 
   private static CoverageCoordSys makeCoordSys(DtCoverageCS dt) {
@@ -154,7 +154,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       }
 
       return new CoverageCoordAxis1D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
-              ncoords, startValue, endValue, resolution, values, reader);
+              ncoords, startValue, endValue, resolution, values, reader, false);
     }
 
     // TwoD case
@@ -196,18 +196,15 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     // Fmrc Time
     if (axisType == AxisType.Time) {
-
       dependsOn = Lists.newArrayList(dtCoordAxis.getDimension(0).getFullName());  // only the first dimension
-
       return new FmrcTimeAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
-              ncoords, startValue, endValue, resolution, values, reader);
+              ncoords, startValue, endValue, resolution, values, reader, false);
     }
 
     // 2D Lat Lon
     if (axisType == AxisType.Lat || axisType == AxisType.Lon) {
-
       return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, dtCoordAxis.getShape(),
-              spacing, ncoords, startValue, endValue, resolution, values, reader);
+              spacing, ncoords, startValue, endValue, resolution, values, reader, false);
     }
 
     throw new IllegalStateException("Dont know what to do with axis " + dtCoordAxis.getFullName());
@@ -248,7 +245,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
   @Override
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
-    DtCoverage grid = proxy.findGridByName(coverage.getName());
+    DtCoverage grid = (DtCoverage) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
     CoverageCoordSys subsetCoordSys = orgCoordSys.subset(params);
 

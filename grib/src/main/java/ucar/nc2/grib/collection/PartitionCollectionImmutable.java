@@ -621,7 +621,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   }
 
   @Immutable
-  class DataRecord extends GribIosp.DataRecord {
+  class DataRecord extends GribDataReader.DataRecord {
     final PartitionCollectionImmutable usePartition;
     final int partno; // partition index in usePartition
 
@@ -632,7 +632,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     }
 
     @Override
-    public int compareTo(GribIosp.DataRecord o) {
+    public int compareTo(GribDataReader.DataRecord o) {
       DataRecord op = (DataRecord) o;
       int rp = usePartition.getName().compareTo(op.usePartition.getName());
       if (rp != 0) return rp;

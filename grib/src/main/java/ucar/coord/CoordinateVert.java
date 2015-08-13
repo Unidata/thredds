@@ -45,6 +45,31 @@ public class CoordinateVert implements Coordinate {
     return levelSorted;
   }
 
+  public int findIndexContaining(double need) {
+    if (isLayer()) {
+      for (int i=0; i<levelSorted.size(); i++) {
+        VertCoord.Level level = levelSorted.get(i);
+        if (level.getValue1() <= need && need <= level.getValue2()) return i;
+        if (level.getValue1() >= need && need >= level.getValue2()) return i; // kinda lame
+      }
+      return -1;
+
+    } else {
+      double bestDiff = Double.MAX_VALUE;
+      int bestIdx = 0;
+      for (int i=0; i<levelSorted.size(); i++) {
+        VertCoord.Level level = levelSorted.get(i);
+        double diff = Math.abs(need - level.getValue1());
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestIdx = i;
+        }
+      }
+      return bestIdx;
+    }
+  }
+
+
   @Override
   public List<? extends Object> getValues() {
     return levelSorted;
@@ -65,6 +90,11 @@ public class CoordinateVert implements Coordinate {
   @Override
   public int getSize() {
     return levelSorted.size();
+  }
+
+  @Override
+  public int getNCoords() {
+    return getSize();
   }
 
   @Override

@@ -319,6 +319,12 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return (vals == null) ? 0 : vals.size();
   }
 
+
+  @Override
+  public int getNCoords() {
+    return getOffsetsSorted().size();
+  }
+
   @Override
   public int estMemorySize() {
     return 864 + nruns * (48+4)  + ntimes * 24;  // nruns * (calendar date + integer)  + ntimes + integer)

@@ -94,6 +94,11 @@ public class CoordinateEns implements Coordinate {
   }
 
   @Override
+  public int getNCoords() {
+    return getSize();
+  }
+
+  @Override
   public int estMemorySize() {
     return 160 + getSize() * ( 8 + Misc.referenceSize);
   }

@@ -36,7 +36,7 @@ import java.util.List;
 
 /**
  * Indexes for Multidimensional arrays. An Index refers to a particular element of an array.
- * <p/>
+ * <p>
  * This is a generalization of index as int[]. Its main function is
  * to do the index arithmetic to translate an n-dim index into a 1-dim index.
  * The user obtains this by calling getIndex() on an Array.
@@ -46,11 +46,12 @@ import java.util.List;
  * @see Array
  */
 
-public class  Index implements Cloneable {
+public class Index implements Cloneable {
   public static final Index0D scalarIndexImmutable = new Index0D(); // immutable, so can be shared
 
   /**
    * Generate a subclass of Index optimized for this array's rank
+   *
    * @param shape use this shape
    * @return a subclass of Index optimized for this array's rank
    */
@@ -152,6 +153,7 @@ public class  Index implements Cloneable {
 
   /**
    * General case Index - use when you want to manipulate current elements yourself
+   *
    * @param rank rank of the Index
    */
   protected Index(int rank) {
@@ -164,6 +166,7 @@ public class  Index implements Cloneable {
 
   /**
    * Constructor for subclasses only.
+   *
    * @param _shape describes an index section: slowest varying comes first (row major)
    */
   protected Index(int[] _shape) {
@@ -175,13 +178,14 @@ public class  Index implements Cloneable {
     stride = new int[rank];
     size = computeStrides(shape, stride);
     offset = 0;
-    hasvlen = (shape.length > 0 && shape[shape.length-1] < 0);
+    hasvlen = (shape.length > 0 && shape[shape.length - 1] < 0);
   }
 
   /**
    * Constructor that lets you set the strides yourself.
    * This is used as a counter, not a description of an index section.
-   * @param _shape Index shape
+   *
+   * @param _shape  Index shape
    * @param _stride Index stride
    */
   public Index(int[] _shape, int[] _stride) {
@@ -195,7 +199,7 @@ public class  Index implements Cloneable {
     current = new int[rank];
     size = computeSize(shape);
     offset = 0;
-    hasvlen = (shape.length > 0 && shape[shape.length-1] < 0);
+    hasvlen = (shape.length > 0 && shape[shape.length - 1] < 0);
   }
 
   /**
@@ -217,11 +221,11 @@ public class  Index implements Cloneable {
       throw new IllegalArgumentException();
 
     Index i = (Index) this.clone();
-    if(shape[index] >= 0) {// !vlen case
-        i.offset += stride[index] * (shape[index] - 1);
-        i.stride[index] = -stride[index];
+    if (shape[index] >= 0) { // !vlen case
+      i.offset += stride[index] * (shape[index] - 1);
+      i.stride[index] = -stride[index];
     }
-     i.fastIterator = false;
+    i.fastIterator = false;
     i.precalc(); // any subclass-specific optimizations
     return i;
   }
@@ -246,7 +250,7 @@ public class  Index implements Cloneable {
       if (r == null)
         continue;
       if (r == Range.VLEN)
-          continue;
+        continue;
       if ((r.first() < 0) || (r.first() >= shape[ii]))
         throw new InvalidRangeException("Bad range starting value at index " + ii + " == " + r.first());
       if ((r.last() < 0) || (r.last() >= shape[ii]))
@@ -306,7 +310,7 @@ public class  Index implements Cloneable {
       if (r == null)
         continue;
       if (r == Range.VLEN)
-          continue;
+        continue;
       if ((r.first() < 0) || (r.first() >= shape[ii]))
         throw new InvalidRangeException("Bad range starting value at index " + ii + " == " + r.first());
       if ((r.last() < 0) || (r.last() >= shape[ii]))
@@ -443,6 +447,7 @@ public class  Index implements Cloneable {
 
   /**
    * Get the number of dimensions in the array.
+   *
    * @return the number of dimensions in the array.
    */
   public int getRank() {
@@ -451,7 +456,8 @@ public class  Index implements Cloneable {
 
   /**
    * Get the shape: length of array in each dimension.
-   * @return  the shape
+   *
+   * @return the shape
    */
   public int[] getShape() {
     int[] result = new int[shape.length];  // optimization over clone
@@ -461,8 +467,9 @@ public class  Index implements Cloneable {
 
   /**
    * Get the length of the ith dimension.
-   * @return  the ith dimension length
+   *
    * @param index which dimension. must be in [0, getRank())
+   * @return the ith dimension length
    */
   public int getShape(int index) {
     return shape[index];
@@ -470,6 +477,7 @@ public class  Index implements Cloneable {
 
   /**
    * Get an index iterator for traversing the array in canonical order.
+   *
    * @param maa the array to iterate through
    * @return an index iterator for traversing the array in canonical order.
    * @see IndexIterator
@@ -496,6 +504,7 @@ public class  Index implements Cloneable {
 
   /**
    * Get the total number of elements in the array.
+   *
    * @return the total number of elements in the array.
    */
   public long getSize() {
@@ -505,12 +514,13 @@ public class  Index implements Cloneable {
   /**
    * Get the current element's index into the 1D backing array.
    * VLEN stops processing.
+   *
    * @return the current element's index into the 1D backing array.
    */
   public int currentElement() {
     int value = offset;                 // NB: dont have to check each index again
     for (int ii = 0; ii < rank; ii++) { // general rank
-      if(shape[ii] < 0) break;//vlen
+      if (shape[ii] < 0) break;//vlen
       value += current[ii] * stride[ii];
     }
     return value;
@@ -519,6 +529,7 @@ public class  Index implements Cloneable {
 
   /**
    * Get the current counter.
+   *
    * @return copy of the current counter.
    */
   public int[] getCurrentCounter() {
@@ -530,12 +541,16 @@ public class  Index implements Cloneable {
   /**
    * Set the current counter from the 1D "current element"
    * currElement = offset + stride[0]*current[0] + ...
+   *
    * @param currElement set to this value
    */
   public void setCurrentCounter(int currElement) {
     currElement -= offset;
     for (int ii = 0; ii < rank; ii++) { // general rank
-      if(shape[ii] < 0) {current[ii] = -1; break;}
+      if (shape[ii] < 0) {
+        current[ii] = -1;
+        break;
+      }
       current[ii] = currElement / stride[ii];
       currElement -= current[ii] * stride[ii];
     }
@@ -551,10 +566,13 @@ public class  Index implements Cloneable {
   public int incr() {
     int digit = rank - 1;
     while (digit >= 0) {
-      if(shape[digit] < 0) {current[digit] = -1; continue;} // do not increment vlen
+      if (shape[digit] < 0) {
+        current[digit] = -1;
+        continue;
+      } // do not increment vlen
       current[digit]++;
-      if(current[digit] < shape[digit])
-          break;                        // normal exit
+      if (current[digit] < shape[digit])
+        break;                        // normal exit
       current[digit] = 0;               // else, carry
       digit--;
     }
@@ -573,23 +591,24 @@ public class  Index implements Cloneable {
     if (index.length != rank)
       throw new ArrayIndexOutOfBoundsException();
     if (rank == 0) return this;
-    int prefixrank = (hasvlen ? rank : rank -1);
+    int prefixrank = (hasvlen ? rank : rank - 1);
     System.arraycopy(index, 0, current, 0, prefixrank);
-    if(hasvlen) current[prefixrank] = -1;
+    if (hasvlen) current[prefixrank] = -1;
     return this;
   }
 
 
   /**
    * set current element at dimension dim to v
-   * @param dim set this dimension
+   *
+   * @param dim   set this dimension
    * @param value to this value
    */
   public void setDim(int dim, int value) {
     if (value < 0 || value >= shape[dim])  // check index here
       throw new ArrayIndexOutOfBoundsException();
-    if(shape[dim] >= 0) //!vlen
-        current[dim] = value;
+    if (shape[dim] >= 0) //!vlen
+      current[dim] = value;
   }
 
   /**
@@ -791,6 +810,7 @@ public class  Index implements Cloneable {
 
   /**
    * String representation
+   *
    * @return String representation
    */
   public String toStringDebug() {

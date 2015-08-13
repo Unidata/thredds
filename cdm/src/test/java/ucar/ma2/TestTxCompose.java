@@ -70,7 +70,7 @@ public class TestTxCompose extends TestCase {
       // section
     try {
       Range [] ranges = {new Range(m1, m2), null, null};
-      secA = (ArrayDouble) A.section( Range.parseSpec(m1+":"+m2+",:,:"));
+      secA = (ArrayDouble) A.section( new Section(m1+":"+m2+",:,:").getRanges());
     } catch (InvalidRangeException e) {
       fail("testMAsection failed == "+ e);
       return;
@@ -176,7 +176,7 @@ public class TestTxCompose extends TestCase {
     int ival = 2;
 
     try {
-      secA2 = (ArrayDouble) A.section( Range.parseSpec(ival+",:,:") );
+      secA2 = (ArrayDouble) A.section( new Section(ival+",:,:").getRanges() );
     } catch (InvalidRangeException e) {
       System.out.println("testDoubleRange2 failed == "+ e);
       return;

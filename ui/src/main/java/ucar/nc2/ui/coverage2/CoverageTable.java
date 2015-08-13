@@ -11,8 +11,6 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -30,8 +28,8 @@ public class CoverageTable extends JPanel {
   private PreferencesExt prefs;
   private CoverageCollection coverageCollection;
 
-  private BeanTable dsTable, covTable, csysTable, axisTable, transTable;
-  private JSplitPane split, split2, split3, split4;
+  private BeanTable dsTable, covTable, csysTable, axisTable;
+  private JSplitPane split, split2, split3;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
   private CoverageDataset currDataset;
@@ -48,10 +46,33 @@ public class CoverageTable extends JPanel {
       }
     });
 
-    covTable = new BeanTable(CoverageBean.class, (PreferencesExt) prefs.node("CoverageBeans"), false, "Coverages", "ucar.nc2.ft2.coverage.Coverage", null);
+    covTable = new BeanTable(CoverageBean.class, (PreferencesExt) prefs.node("CoverageBeans"), false, "Coverages", "ucar.nc2.ft2.coverage.Coverage", new CoverageBean());
+    /* covTable.addListSelectionListener(e -> {
+      CoverageBean bean = (CoverageBean) covTable.getSelectedBean();
+        for (Object cbean : csysTable.getBeans()) {
+      if (null != bean) {   // find the coordinate system
+          CoordSysBean csysBean = (CoordSysBean) cbean;
+          if (csysBean.getName().equals(bean.coordSysName))
+            csysTable.setSelectedBean(csysBean);
+        }
+      }
+    });  */
+
     csysTable = new BeanTable(CoordSysBean.class, (PreferencesExt) prefs.node("CoverageCoordSysBeans"), false, "CoverageCoordSys", "ucar.nc2.ft2.coverage.CoverageCoordSys", null);
+    csysTable.addListSelectionListener(e -> {
+      CoordSysBean bean = (CoordSysBean) csysTable.getSelectedBean();
+      if (null != bean) {   // find the coverages
+        List result = new ArrayList();
+        for (Object cbean : covTable.getBeans()) {
+          CoverageBean covBean = (CoverageBean) cbean;
+          if (covBean.getCoordSysName().equals(bean.getName()))
+            result.add(covBean);
+        }
+        covTable.setSelectedBeans(result);
+      }
+    });
+
     axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("CoverageCoordAxisBeans"), false, "CoverageCoordAxes", "ucar.nc2.ft2.coverage.CoverageCoordAxis", null);
-    transTable = new BeanTable(CoordTransBean.class, (PreferencesExt) prefs.node("CoverageTransformBeans"), false, "CoverageTransforms", "ucar.nc2.ft2.coverage.CoverageTransform", null);
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -65,14 +86,11 @@ public class CoverageTable extends JPanel {
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, csysTable);
     split2.setDividerLocation(prefs.getInt("splitPos2", 200));
 
-    split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, transTable);
+    split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, axisTable);
     split3.setDividerLocation(prefs.getInt("splitPos3", 200));
 
-    split4 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split3, axisTable);
-    split4.setDividerLocation(prefs.getInt("splitPos4", 200));
-
     setLayout(new BorderLayout());
-    add(split4, BorderLayout.CENTER);
+    add(split3, BorderLayout.CENTER);
 
     // context menu
     JTable jtable = covTable.getJTable();
@@ -82,6 +100,31 @@ public class CoverageTable extends JPanel {
         CoverageBean vb = (CoverageBean) covTable.getSelectedBean();
         infoTA.clear();
         infoTA.appendLine(vb.geogrid.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
+
+    jtable = csysTable.getJTable();
+    csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
+    csPopup.addAction("Show CoordSys", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordSysBean bean = (CoordSysBean) csysTable.getSelectedBean();
+        infoTA.clear();
+        infoTA.appendLine(bean.gcs.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
+    csPopup.addAction("Show Transforms", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordSysBean bean = (CoordSysBean) csysTable.getSelectedBean();
+        infoTA.clear();
+        for (CoverageTransform ct : bean.gcs.getTransforms())
+          infoTA.appendLine(ct.toString());
+        HorizCoordSys hcs = bean.gcs.getHorizCoordSys();
+        if (hcs.getTransform() != null)
+          infoTA.appendLine(hcs.getTransform().toString());
         infoTA.gotoTop();
         infoWindow.show();
       }
@@ -206,21 +249,19 @@ public class CoverageTable extends JPanel {
     covTable.clearBeans();
     csysTable.clearBeans();
     axisTable.clearBeans();
-    transTable.clearBeans();
     currDataset = null;
   }
 
   public void save() {
+    dsTable.saveState(false);
     covTable.saveState(false);
     csysTable.saveState(false);
     axisTable.saveState(false);
-    transTable.saveState(false);
 
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
     prefs.putInt("splitPos3", split3.getDividerLocation());
-    prefs.putInt("splitPos4", split4.getDividerLocation());
   }
 
   public void showInfo(Formatter result) {
@@ -247,13 +288,8 @@ public class CoverageTable extends JPanel {
 
     List<CoordSysBean> csList = new ArrayList<>();
     for (CoverageCoordSys gcs : coverageDataset.getCoordSys())
-      csList.add(new CoordSysBean(coverageDataset, gcs));
+      csList.add(new CoordSysBean(gcs));
     csysTable.setBeans(csList);
-
-    List<CoordTransBean> transList = new ArrayList<>();
-    for (CoverageTransform t : coverageDataset.getCoordTransforms())
-      transList.add(new CoordTransBean(t));
-    transTable.setBeans(transList);
 
     List<AxisBean> axisList = new ArrayList<>();
     for (CoverageCoordAxis axis : coverageDataset.getCoordAxes())
@@ -271,7 +307,7 @@ public class CoverageTable extends JPanel {
     return currDataset;
   }
 
-  public List<CoverageBean> getGridBeans() {
+  public List<CoverageBean> getCoverageBeans() {
     return (List<CoverageBean>) covTable.getBeans();
   }
 
@@ -298,6 +334,10 @@ public class CoverageTable extends JPanel {
       return cds.getName();
     }
 
+    public String getType() {
+      return cds.getCoverageType().toString();
+    }
+
     public String getCalendar() {
       return cds.getCalendar().toString();
     }
@@ -313,7 +353,10 @@ public class CoverageTable extends JPanel {
 
 
   public class CoverageBean implements NamedObject {
-    // static public String editableProperties() { return "title include logging freq"; }
+
+    public String hiddenProperties() {  // for BeanTable
+      return "value";
+    }
 
     Coverage geogrid;
     String name, desc, units, coordSysName;
@@ -326,109 +369,62 @@ public class CoverageTable extends JPanel {
     // create from a dataset
     public CoverageBean(Coverage geogrid) {
       this.geogrid = geogrid;
-      setName(geogrid.getName());
-      setDescription(geogrid.getDescription());
-      setUnits(geogrid.getUnits());
-      setDataType(geogrid.getDataType());
-      setCoordSysName(geogrid.getCoordSysName());
-
-      /* collect dimensions
-      StringBuffer buff = new StringBuffer();
-      java.util.List dims = geogrid.getDimensions();
-      for (int j = 0; j < dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
-        if (j > 0) buff.append(",");
-        buff.append(dim.getLength());
-      }
-      setShape(buff.toString());
-
-      CoverageCS gcs = geogrid.getCoordinateSystem();
-      x = getAxisName(gcs.getXHorizAxis());
-      y = getAxisName(gcs.getYHorizAxis());
-      z = getAxisName(gcs.getVerticalAxis());
-      t = getAxisName(gcs.getTimeAxis());
-
-      Formatter f = new Formatter();
-      List<ucar.nc2.Dimension> domain = gcs.getDomain();
-      int count = 0;
-      for (ucar.nc2.Dimension d : geogrid.getDimensions()) {
-        if (!domain.contains(d)) {
-          if (count++ > 0) f.format(",");
-          f.format("%s",d.getShortName());
-        }
-      }
-      extra = f.toString();  */
+      name = geogrid.getName();
+      desc = (geogrid.getDescription());
+      units = (geogrid.getUnits());
+      dataType = (geogrid.getDataType());
+      coordSysName = (geogrid.getCoordSysName());
     }
 
     public String getName() {
       return name;
     }
 
-    public Object getValue() {
-      return geogrid;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-
     public String getDescription() {
       return desc;
     }
 
-    public void setDescription(String desc) {
-      this.desc = desc;
+    @Override
+    public Object getValue() {
+      return geogrid;
     }
 
     public String getUnits() {
       return units;
     }
 
-    public void setUnits(String units) {
-      this.units = units;
-    }
-
     public String getCoordSysName() {
       return coordSysName;
-    }
-
-    public void setCoordSysName(String coordSysName) {
-      this.coordSysName = coordSysName;
     }
 
     public DataType getDataType() {
       return dataType;
     }
-
-    public void setDataType(DataType dataType) {
-      this.dataType = dataType;
-    }
   }
 
   public class CoordSysBean {
     private CoverageCoordSys gcs;
-    private String coordTrans, axisNames;
+    private String coordTrans, runtimeName, timeName, ensName, vertName;
     private int nIndAxis = 0;
 
     // no-arg constructor
     public CoordSysBean() {
     }
 
-    public CoordSysBean(CoverageDataset gds, CoverageCoordSys gcs) {
+    public CoordSysBean(CoverageCoordSys gcs) {
       this.gcs = gcs;
 
       Formatter buff = new Formatter();
       for (String ct : gcs.getTransformNames())
         buff.format("%s,", ct);
-      setCoordTransforms(buff.toString());
+      coordTrans = buff.toString();
 
-      Formatter f = new Formatter();
-      for (String name : gcs.getAxisNames()) {
-        f.format("%s,", name);
-        CoverageCoordAxis axis = gds.findCoordAxis(name);
-        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) nIndAxis++;
+      for (CoverageCoordAxis axis : gcs.getAxes()) {
+         if (axis.getAxisType() == AxisType.RunTime) runtimeName = axis.getName();
+         else if (axis.getAxisType().isTime()) timeName = axis.getName();
+         else if (axis.getAxisType() == AxisType.Ensemble) ensName = axis.getName();
+         else if (axis.getAxisType().isVert()) vertName = axis.getName();
       }
-      setAxisNames(f.toString());
     }
 
     public String getName() {
@@ -448,20 +444,24 @@ public class CoverageTable extends JPanel {
       return gcs.getAxisNames().size();
     }
 
-    public String getAxisNames() {
-      return axisNames;
+    public String getRuntime() {
+      return runtimeName;
     }
 
-    public void setAxisNames(String axisNames) {
-      this.axisNames = axisNames;
+    public String getTime() {
+      return timeName;
     }
+
+    public String getEns() {
+       return ensName;
+     }
+
+    public String getVert() {
+       return vertName;
+     }
 
     public String getCoordTransforms() {
       return coordTrans;
-    }
-
-    public void setCoordTransforms(String coordTrans) {
-      this.coordTrans = coordTrans;
     }
   }
 
@@ -503,7 +503,6 @@ public class CoverageTable extends JPanel {
     DataType dataType;
     AxisType axisType;
     long nvalues;
-    double resolution;
     boolean indepenent;
 
     // no-arg constructor
@@ -514,53 +513,32 @@ public class CoverageTable extends JPanel {
     public AxisBean(CoverageCoordAxis v) {
       this.axis = v;
 
-      setName(v.getName());
-      setDataType(v.getDataType());
-      setAxisType(v.getAxisType());
-      setUnits(v.getUnits());
-      setDescription(v.getDescription());
-      setNvalues(v.getNcoords());
-      setResolution(v.getResolution());
+      name = (v.getName());
+      dataType = (v.getDataType());
+      axisType = (v.getAxisType());
+      units = (v.getUnits());
+      desc = (v.getDescription());
+      nvalues = (v.getNcoords());
     }
 
     public String getName() {
       return name;
     }
 
-    public void setName(String name) {
-      this.name = name;
-    }
-
     public String getAxisType() {
       return axisType == null ? "" : axisType.name();
-    }
-
-    public void setAxisType(AxisType axisType) {
-      this.axisType = axisType;
     }
 
     public String getDescription() {
       return desc;
     }
 
-    public void setDescription(String desc) {
-      this.desc = desc;
-    }
-
     public String getUnits() {
       return units;
     }
 
-    public void setUnits(String units) {
-      this.units = (units == null) ? "null" : units;
-    }
-
     public DataType getDataType() {
       return dataType;
-    }
-
-    public void setDataType(DataType dataType) {
-      this.dataType = dataType;
     }
 
     public String getSpacing() {
@@ -572,24 +550,16 @@ public class CoverageTable extends JPanel {
       return nvalues;
     }
 
-    public void setNvalues(long nvalues) {
-      this.nvalues = nvalues;
+    public double getStartValue() {
+      return axis.getStartValue();
     }
 
-    public String getStartValue() {
-      return String.format("%8.3f", axis.getStartValue());
+    public double getEndValue() {
+      return axis.getEndValue();
     }
 
-    public String getEndValue() {
-      return String.format("%8.3f", axis.getEndValue());
-    }
-
-    public String getResolution() {
-      return String.format("%8.3f", resolution);
-    }
-
-    public void setResolution(double resolution) {
-      this.resolution = resolution;
+    public double getResolution() {
+      return axis.getResolution();
     }
 
     public boolean getHasData() {

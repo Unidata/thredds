@@ -148,7 +148,7 @@ public class TestIterator {
   public void testSectionIter() {
 
     try {
-      secA = (ArrayDouble) A.section( Range.parseSpec(m1+":"+m2+",:,:") );
+      secA = (ArrayDouble) A.section( new Section(m1+":"+m2+",:,:").getRanges() );
     } catch (InvalidRangeException e) {
       System.out.println("testMAsection failed == "+ e);
       return;
@@ -180,7 +180,7 @@ public class TestIterator {
     public void testSectionRank2() {
       ArrayDouble secA2;
       try {
-        secA2 = (ArrayDouble) A.section( Range.parseSpec("2,:,:") );
+        secA2 = (ArrayDouble) A.section( new Section("2,:,:").getRanges() );
       } catch (InvalidRangeException e) {
         System.out.println("testMAsectionrank2 failed == "+ e);
         return;

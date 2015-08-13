@@ -161,7 +161,7 @@ public class TestMAMath extends TestCase {
       MAMath.setDouble(A, 1.0);
       assert( MAMath.sumDouble(A) == ((double) dim0*dim1*dim2));
 
-      List<Range> ranges = Range.parseSpec(":,:,1");
+      List<Range> ranges = new Section(":,:,1").getRanges();
       Array secA = A.section(ranges);
       MAMath.setDouble(secA, 0.0);
 

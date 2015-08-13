@@ -48,13 +48,10 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.*;
 import java.util.Formatter;
@@ -165,9 +162,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   protected abstract void addVariableAttributes(Variable v, GribCollectionImmutable.VariableIndex vindex);
 
-  protected abstract void show(RandomAccessFile rafData, long pos) throws IOException;
+  // protected abstract void show(RandomAccessFile rafData, long pos) throws IOException;
 
-  protected abstract float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException;
+  // protected abstract float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException;
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -851,7 +848,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
   }
 
-
   private String searchCoord(Grib2Utils.LatLonCoordType type, List<GribCollectionImmutable.VariableIndex> list) {
     if (type == null) return null;
 
@@ -915,10 +911,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     try {
       Array result;
-      if (isPartitioned)
-        result = readDataFromPartition(v2, section, null);
-      else
-        result = readDataFromCollection(v2, section, null);
+      GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v2.getSPobject();
+      GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
+      result = dataReader.readData(section, v2.getShape());
 
       long took = System.currentTimeMillis() - start;
       if (debugTime) System.out.println("  read data took=" + took + " msec ");
@@ -930,24 +925,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
   }
 
-  // LOOK this is by Variable - might want to do over variables, so only touch a file once, if multiple variables in a file
-  @Override
-  public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    long start = System.currentTimeMillis();
-
-    /* if (isPartitioned)
-      streamDataFromPartition(v2, section, channel);
-    else */
-    readDataFromCollection(v2, section, channel);
-
-    long took = System.currentTimeMillis() - start;
-    if (debugTime) System.out.println("  read data took=" + took + " msec ");
-    return 0;
+  /* private Array readDataFromCollectionNew(Variable v, Section section) throws IOException, InvalidRangeException {
+    GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v.getSPobject();
+    GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
+    return dataReader.readDataFromCollection(vindex, section, v.getShape());
   }
 
-///////////////////////////////////////////////////////
 
   private Array readDataFromCollection(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
     GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v.getSPobject();
@@ -964,7 +947,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     int[] indexWanted = new int[sectionLen - 2];                              // place to put the iterator result
 
     // collect all the records that need to be read
-    DataReader dataReader = new DataReader(vindex);
+    // this assumes that the coordinates reflect the vindex.sparseArray exactly
+    GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
     int count = 0;
     while (iterWanted.hasNext()) {
       int sourceIndex = iterWanted.next(indexWanted);
@@ -972,184 +956,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
 
     // sort by file and position, then read
-    DataReceiverIF dataReceiver = channel == null ? new DataReceiver(section, yRange, xRange) : new ChannelReceiver(channel, yRange, xRange);
+    GribDataReader.DataReceiverIF dataReceiver = (channel == null) ? new GribDataReader.DataReceiver(section) : new GribDataReader.ChannelReceiver(channel, yRange, xRange);
     dataReader.read(dataReceiver);
     return dataReceiver.getArray();
   }
-
-  static class DataRecord implements Comparable<DataRecord> {
-    int resultIndex; // index into the result array
-    int fileno;
-    long dataPos;  // grib1 - start of GRIB record; grib2 - start of drs (data record)
-    long bmsPos;  // if non zero, use alternate bms
-    int scanMode;
-    GdsHorizCoordSys hcs;
-
-    DataRecord(int resultIndex, int fileno, long dataPos, long bmsPos, int scanMode, GdsHorizCoordSys hcs) {
-      this.resultIndex = resultIndex;
-      this.fileno = fileno;
-      this.dataPos = dataPos; // (dataPos == 0) && !isGrib1 ? GribCollection.MISSING_RECORD : dataPos; // 0 also means missing in Grib2
-      this.bmsPos = bmsPos;
-      this.scanMode = scanMode;
-      this.hcs = hcs;
-    }
-
-    @Override
-    public int compareTo(DataRecord o) {
-      int r = Misc.compare(fileno, o.fileno);
-      if (r != 0) return r;
-      return Misc.compare(dataPos, o.dataPos);
-    }
-
-    // debugging
-    public void show(GribCollectionImmutable gribCollection) throws IOException {
-      String dataFilename = gribCollection.getFilename( fileno);
-      System.out.printf(" fileno=%d filename=%s datapos=%d%n", fileno, dataFilename, dataPos);
-    }
-  }
-
-  protected class DataReader {
-    GribCollectionImmutable.VariableIndex vindex;
-    List<DataRecord> records = new ArrayList<>();
-
-    private DataReader(GribCollectionImmutable.VariableIndex vindex) {
-      this.vindex = vindex;
-    }
-
-    void addRecord(int sourceIndex, int resultIndex) {
-      GribCollectionImmutable.Record record = vindex.getRecordAt(sourceIndex);
-      if (debugRead) {
-        System.out.printf("GribIosp debugRead sourceIndex=%d resultIndex=%d record is null=%s%n", sourceIndex, resultIndex, record == null);
-      }
-      if (record != null)   // LOOK why not just store the Record ??
-        records.add(new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos, record.scanMode, vindex.group.getGdsHorizCoordSys()));
-    }
-
-    void read(DataReceiverIF dataReceiver) throws IOException {
-      Collections.sort(records);
-
-      int currFile = -1;
-      RandomAccessFile rafData = null;
-      try {
-        for (DataRecord dr : records) {
-          if (debugIndexOnly || debugGbxIndexOnly) {
-            debugIndexOnlyCount++;
-            // if (debugIndexOnlyShow) dr.show(gribCollection);
-            dataReceiver.setDataToZero();
-            continue;
-          }
-
-          if (dr.fileno != currFile) {
-            if (rafData != null) rafData.close();
-            rafData = gribCollection.getDataRaf(dr.fileno);
-            currFile = dr.fileno;
-          }
-
-          if (dr.dataPos == GribCollectionMutable.MISSING_RECORD) continue;
-
-          if (debugRead && rafData != null) { // for validation
-            show(rafData, dr.dataPos);
-          }
-
-          float[] data = readData(rafData, dr);
-          GdsHorizCoordSys hcs = vindex.group.getGdsHorizCoordSys();
-          dataReceiver.addData(data, dr.resultIndex, hcs.nx);
-        }
-      } finally {
-        if (rafData != null) rafData.close();  // make sure its closed even on exception
-      }
-    }
-  }
-
-  private interface DataReceiverIF {
-    void addData(float[] data, int resultIndex, int nx) throws IOException;
-    void setDataToZero();
-    Array getArray();
-  }
-
-  static private class DataReceiver implements DataReceiverIF {
-    private Array dataArray;
-    private Range yRange, xRange;
-    private int horizSize;
-
-    DataReceiver(Section section, Range yRange, Range xRange) {
-      // prefill primitive array efficiently
-      int len = (int) section.computeSize();
-      float[] data = new float[len];
-      for (int i = 0; i < len; i++)
-        data[i] = Float.NaN;
-
-      dataArray = Array.factory(DataType.FLOAT, section.getShape(), data);
-      this.yRange = yRange;
-      this.xRange = xRange;
-      this.horizSize = yRange.length() * xRange.length();
-    }
-
-    @Override
-    public void addData(float[] data, int resultIndex, int nx) throws IOException {
-      int start = resultIndex * horizSize;
-      int count = 0;
-      for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
-        for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
-          int dataIdx = y * nx + x;
-          dataArray.setFloat(start + count, data[dataIdx]);
-          count++;
-        }
-      }
-    }
-
-    // optimization
-    @Override
-    public void setDataToZero() {
-      float[] data = (float []) dataArray.get1DJavaArray(dataArray.getElementType());
-      for (int i = 0; i < data.length; i++)
-        data[i] = 0;
-    }
-
-
-    @Override
-    public Array getArray() {
-      return dataArray;
-    }
-  }
-
-  private static class ChannelReceiver implements DataReceiverIF {
-    private WritableByteChannel channel;
-    private DataOutputStream outStream;
-    private Range yRange, xRange;
-
-    ChannelReceiver(WritableByteChannel channel, Range yRange, Range xRange) {
-      this.channel = channel;
-      this.outStream = new DataOutputStream(Channels.newOutputStream(channel));
-      this.yRange = yRange;
-      this.xRange = xRange;
-    }
-
-    @Override
-    public void addData(float[] data, int resultIndex, int nx) throws IOException {
-      // LOOK: write some ncstream header
-      // outStream.write(header);
-
-      // now write the data
-      for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
-        for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
-          int dataIdx = y * nx + x;
-          outStream.writeFloat(data[dataIdx]);
-        }
-      }
-    }
-
-        // optimization
-    @Override
-    public void setDataToZero() { }
-
-    @Override
-    public Array getArray() {
-      return null;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////
 
   private Array readDataFromPartition(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
     PartitionCollectionImmutable.VariableIndexPartitioned vindexP = (PartitionCollectionImmutable.VariableIndexPartitioned) v.getSPobject(); // the variable in the partition collection
@@ -1163,7 +973,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     int[] useIndex = indexWanted;
 
     // collect all the records that need to be read
-    DataReaderPartitioned dataReader = new DataReaderPartitioned();
+    GribDataReader dataReader = GribDataReader.factory(gribCollection, vindexP);
     int resultPos = 0;
     while (iterWanted.hasNext()) {
       iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted array
@@ -1179,67 +989,40 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(useIndex);
       if (record == null) {
-        if (debug || debugRead) System.out.printf("readDataFromPartition missing data%n");
+        if (debugRead) System.out.printf("readDataFromPartition missing data%n");
         // vindexP.getDataRecord(indexWanted); // debug
         resultPos++;
         continue;
       }
       record.resultIndex = resultPos;
-      dataReader.addRecord(record);
+      dataReader.addPartitionedRecord(record);
       resultPos++;
     }
 
     // sort by file and position, then read
-    DataReceiverIF dataReceiver = channel == null ? new DataReceiver(section, yRange, xRange) : new ChannelReceiver(channel, yRange, xRange);
-    dataReader.read(dataReceiver);
+    GribDataReader.DataReceiverIF dataReceiver = (channel == null) ? new GribDataReader.DataReceiver(section) : new GribDataReader.ChannelReceiver(channel, yRange, xRange);
+    dataReader.readPartitioned(dataReceiver);
 
     return dataReceiver.getArray();
   }
 
-  private class DataReaderPartitioned {
-    List<PartitionCollectionImmutable.DataRecord> records = new ArrayList<>();
 
-    void addRecord(PartitionCollectionImmutable.DataRecord dr) {
-      if (dr != null) records.add(dr);
-    }
+  /* LOOK this is by Variable - might want to do over variables, so only touch a file once, if multiple variables in a file
+  @Override
+  public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+          throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
-    void read(DataReceiverIF dataReceiver) throws IOException {
-      Collections.sort(records);
+    long start = System.currentTimeMillis();
 
-      PartitionCollectionImmutable.DataRecord lastRecord = null;
-      RandomAccessFile rafData = null;
-      try {
+    /* if (isPartitioned)
+      streamDataFromPartition(v2, section, channel);
+    else
+    readDataFromCollection(v2, section, channel);
 
-        for (PartitionCollectionImmutable.DataRecord dr : records) {
-          if (debugIndexOnly || debugGbxIndexOnly) {
-            debugIndexOnlyCount++;
-            if (debugIndexOnlyShow) dr.show();
-            dataReceiver.setDataToZero();
-            continue;
-          }
-
-          if ((rafData == null) || !dr.usesSameFile(lastRecord)) {
-            if (rafData != null) rafData.close();
-            rafData = dr.usePartition.getRaf(dr.partno, dr.fileno);
-          }
-          lastRecord = dr;
-
-          if (dr.dataPos == GribCollectionMutable.MISSING_RECORD) continue;
-
-          if (debugRead) { // for validation
-            show(rafData, dr.dataPos);
-          }
-
-          float[] data = readData(rafData, dr);
-          GdsHorizCoordSys hcs = dr.hcs;
-          dataReceiver.addData(data, dr.resultIndex, hcs.nx);
-        }
-
-      } finally {
-        if (rafData != null) rafData.close();  // make sure its closed even on exception
-      }
-    }
-  }
+    long took = System.currentTimeMillis() - start;
+    if (debugTime) System.out.println("  read data took=" + took + " msec ");
+    return 0;
+  } */
 
   ///////////////////////////////////////
   // debugging back door

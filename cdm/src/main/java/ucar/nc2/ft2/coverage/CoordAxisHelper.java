@@ -372,7 +372,7 @@ class CoordAxisHelper {
 
     CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
             axis.getAttributes(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
-            count, axis.getCoord(minIndex), axis.getCoord(maxIndex), axis.getResolution(), subsetValues, axis.reader);
+            count, axis.getCoord(minIndex), axis.getCoord(maxIndex), axis.getResolution(), subsetValues, axis.reader, true);
     result.setIndexRange(minIndex, maxIndex, 1);
     return result;
   }
@@ -415,7 +415,7 @@ class CoordAxisHelper {
 
     CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
             axis.getAttributes(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
-            1, axis.getCoord(want_index), axis.getCoord(want_index), axis.getResolution(), subsetValues, axis.reader);
+            1, axis.getCoord(want_index), axis.getCoord(want_index), axis.getResolution(), subsetValues, axis.reader, true);
     result.setIndexRange(want_index, want_index, 1);
     return result;
   }
@@ -443,7 +443,7 @@ class CoordAxisHelper {
 
     CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
             axis.getAttributes(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
-            1, start, end, axis.getResolution(), subsetValues, axis.reader);
+            1, start, end, axis.getResolution(), subsetValues, axis.reader, true);
     result.setIndexRange(last, last, 1);
     return result;
   }

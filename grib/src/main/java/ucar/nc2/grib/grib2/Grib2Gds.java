@@ -47,6 +47,7 @@ import java.util.Formatter;
 
 /**
  * Template-specific fields for Grib2SectionGridDefinition
+ * LOOK hashCode not right, cant use approximate float compare
  *
  * @author caron
  * @since 4/2/11

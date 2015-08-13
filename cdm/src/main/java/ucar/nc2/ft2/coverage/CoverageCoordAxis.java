@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
@@ -13,7 +14,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.NamedObject;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -60,13 +60,14 @@ abstract public class CoverageCoordAxis {
   protected final CoordAxisReader reader;
 
   protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
+  private boolean isSubset;
 
   // maybe lazy eval
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
 
   protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
                               DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                              double[] values, CoordAxisReader reader) {
+                              double[] values, CoordAxisReader reader, boolean isSubset) {
     this.name = name;
     this.units = units;
     this.description = description;
@@ -92,13 +93,14 @@ abstract public class CoverageCoordAxis {
       this.resolution = resolution;
 
     this.ncoords = ncoords;
+    this.isSubset = isSubset;
   }
 
   protected void setDataset(CoordSysContainer dataset) {
     // NOOP
   }
 
-  abstract public CoverageCoordAxis copy();
+  // abstract public CoverageCoordAxis copy();
 
   abstract public CoverageCoordAxis subset(SubsetParams params);
 
@@ -181,6 +183,9 @@ abstract public class CoverageCoordAxis {
     return values != null;
   }
 
+  public boolean isSubset() {
+    return isSubset;
+  }
 
   @Override
   public String toString() {
@@ -194,6 +199,12 @@ abstract public class CoverageCoordAxis {
     if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
       return new int[0];
     return new int[] {ncoords};
+  }
+
+  public Range getRange() {
+    if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
+      return Range.EMPTY;
+    return new Range(ncoords);
   }
 
   public void toString(Formatter f, Indent indent) {

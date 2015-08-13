@@ -90,12 +90,10 @@ public class CoordSysTable extends JPanel {
     }
 
     varTable = new BeanTable(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
-    varTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        if (null != vb.coordSysBean)
-          csTable.setSelectedBean(vb.coordSysBean);
-      }
+    varTable.addListSelectionListener(e -> {
+      VariableBean vb = (VariableBean) varTable.getSelectedBean();
+      if (null != vb.coordSysBean)
+        csTable.setSelectedBean(vb.coordSysBean);
     });
 
     csTable = new BeanTable(CoordinateSystemBean.class, (PreferencesExt) prefs.node("CoordinateSystemBean"), false);

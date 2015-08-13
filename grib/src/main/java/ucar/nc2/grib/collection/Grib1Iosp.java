@@ -38,7 +38,6 @@ package ucar.nc2.grib.collection;
 import ucar.nc2.constants.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.coord.CoordinateTimeAbstract;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
@@ -49,7 +48,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Formatter;
 
 /**
@@ -202,8 +200,7 @@ public class Grib1Iosp extends GribIosp {
             v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
-  private String makeVariableNameFromRecord(int center, int subcenter, int tableVersion, int paramNo,
-                                 int levelType, boolean isLayer, int intvType, String intvName) {
+  private String makeVariableNameFromRecord(int center, int subcenter, int tableVersion, int paramNo, int levelType, boolean isLayer, int intvType, String intvName) {
     Formatter f = new Formatter();
 
     f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);  // "VAR_7-15--1-20_L1";
@@ -232,7 +229,7 @@ public class Grib1Iosp extends GribIosp {
   }
 
   private static String makeVariableNameFromTables(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig, int center, int subcenter, int version, int paramNo,
-                                 int levelType, boolean isLayer, int intvType, String intvName) {
+                                 int levelType, boolean isLayer, int timeRangeIndicator, String intvName) {
     Formatter f = new Formatter();
 
     Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo); // code table 2
@@ -258,14 +255,14 @@ public class Grib1Iosp extends GribIosp {
       if (isLayer) f.format("_layer");
     }
 
-    if (intvType >= 0) {
-      GribStatType stat = Grib1WmoTimeType.getStatType(intvType);
+    if (timeRangeIndicator >= 0) {
+      GribStatType stat = cust.getStatType(timeRangeIndicator);
       if (stat != null) {
         if (intvName != null) f.format("_%s", intvName);
         f.format("_%s", stat.name());
       } else {
         if (intvName != null) f.format("_%s", intvName);
-        f.format("_%d", intvType);
+        // f.format("_%d", timeRangeIndicator);
       }
     }
 
@@ -302,7 +299,7 @@ public class Grib1Iosp extends GribIosp {
       f.format("%s", param.getDescription());
 
     if (intvType >= 0) {
-      GribStatType stat = Grib1WmoTimeType.getStatType(intvType);
+      GribStatType stat = cust.getStatType(intvType);
       if (stat != null) f.format(" (%s %s)", intvName, stat.name());
       else if (intvName != null && intvName.length() > 0) f.format(" (%s)", intvName);
     }
@@ -431,6 +428,7 @@ public class Grib1Iosp extends GribIosp {
       v.addAttribute(new Attribute("Grib1_Probability_Type", vindex.getProbabilityName()));
   }
 
+  /*
   @Override
   protected void show(RandomAccessFile rafData, long dataPos) throws IOException {
     rafData.seek(dataPos);
@@ -456,7 +454,7 @@ public class Grib1Iosp extends GribIosp {
   @Override
   protected float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException {
     return Grib1Record.readData(rafData, dr.dataPos);
-  }
+  }  */
 
   public Object getLastRecordRead() {
     return Grib1Record.lastRecordRead;
@@ -465,7 +463,6 @@ public class Grib1Iosp extends GribIosp {
   public void clearLastRecordRead() {
     Grib1Record.lastRecordRead = null;
   }
-
 
   public Object getGribCustomizer() {
     return cust;

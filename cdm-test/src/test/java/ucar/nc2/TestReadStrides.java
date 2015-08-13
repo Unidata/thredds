@@ -248,7 +248,7 @@ public class TestReadStrides extends TestCase {
            ranges.add(r);
          }
 
-         System.out.println( v.getFullName()+" test range= "+Range.makeSectionSpec(ranges));
+         System.out.println( v.getFullName()+" test range= "+ new Section(ranges));
 
          Array sectionRead = v.read(ranges);
          Array sectionMake = allData.sectionNoReduce( ranges);

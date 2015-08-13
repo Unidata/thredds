@@ -45,13 +45,11 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.grib.GdsHorizCoordSys;
-import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
@@ -88,9 +86,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     TP,                // PC: Multiple Runtime Single Time Partition   [nruns, 1]
     TwoD,              // PC: TwoD time partition                      [nruns, ntimes]
     Best,              // PC: Best time partition                      [ntimes]
-    BestComplete,      // PC: Best complete time partition             [ntimes]
-    Analysis
-  }          // PC: Analysis only time partition (not done)  [ntimes]
+    BestComplete,      // PC: Best complete time partition (not done)  [ntimes]
+    Analysis           // PC: Analysis only time partition (not done)  [ntimes]
+  }
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
@@ -178,6 +176,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   public CoordinateRuntime getMasterRuntime() {
     return masterRuntime;
+  }
+
+  public CalendarDate getMasterFirstDate() {
+    return masterRuntime.getFirstDate();
   }
 
   public int getVersion() {
@@ -475,7 +477,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     public synchronized void readRecords() throws IOException {
       if (this.sa != null) return;
 
-      if (recordsLen == 0) return;
+      if (recordsLen == 0)
+        return;
       byte[] b = new byte[recordsLen];
 
       try (RandomAccessFile indexRaf = RandomAccessFile.acquire(indexFilename)) {
@@ -522,6 +525,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public synchronized Record getRecordAt(int sourceIndex) {
+      if (sa == null)
+        System.out.println("HEY");
       return sa.getContent(sourceIndex);
     }
 
@@ -561,6 +566,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return coordIndex;
     }
 
+    public Coordinate findCoordinate(String want) {
+      for (Coordinate coord : group.getCoordinates())
+        if (coord.getName().equals(want)) return coord;
+      return null;
+    }
+
     public SparseArray<Record> getSparseArray() {
       return sa;
     }
@@ -576,14 +587,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     public int getDiscipline() {
       return info.discipline;
     }
-
-    /* public byte[] getRawPds() {
-      return info.rawPds;
-    }
-
-    //public int getCdmHash() {
-    //  return info.cdmHash;
-    //} */
 
     public int getCategory() {
       return info.category;
@@ -694,12 +697,23 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     public String makeVariableDescription() {
        if (isGrib1)
          return Grib1Iosp.makeVariableLongName((Grib1Customizer) cust, getCenter(), getSubcenter(), getTableVersion(), getParameter(),
-                     getLevelType(), isLayer(), getIntvType(), getIntvName(), getProbabilityName());
+                 getLevelType(), isLayer(), getIntvType(), getIntvName(), getProbabilityName());
        else
          return Grib2Iosp.makeVariableLongName((Grib2Customizer) cust, this, config.gribConfig.useGenType);
      }
 
-     @Immutable
+    public GribTables.Parameter getGribParameter() {
+      if (isGrib1)
+        return ((Grib1Customizer) cust).getParameter(getCenter(), getSubcenter(), getVersion(), getParameter());
+      else
+        return ((Grib2Customizer) cust).getParameter(getDiscipline(), getCategory(), getParameter());
+    }
+
+    public GribStatType getStatType() {
+      return cust.getStatType(getIntvType());
+    }
+
+    @Immutable
     public final class Info {
       final int tableVersion;   // grib1 only : can vary by variable
       final int discipline;     // grib2 only

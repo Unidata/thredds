@@ -59,92 +59,6 @@ import java.util.Formatter;
 public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
 
-  /*
-   * A hash code to group records into a CDM variable
-   * Herein lies the semantics of a variable object identity.
-   * Read it and weep.
-   *
-   * @param cust       customizer
-   * @param gr         the Grib record
-   * @param gdsHash    can override the gdsHash
-   * @param intvMerge  should intervals be merged? default true
-   * @param useGenType should genProcessType be used in hash? default false
-   * @param logger     optionally log errors
-   * @return this record's hash code, identical hash means belongs to the same variable
-   *
-  public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType, org.slf4j.Logger logger) {
-    Grib2Pds pds2 = gr.getPDS();
-
-    int result = 17;
-
-    result += result * 31 + gr.getDiscipline();
-    result += result * 31 + pds2.getLevelType1();
-    if (Grib2Utils.isLayer(pds2)) result += result * 31 + 1;
-
-    if (gdsHash == 0)
-      result += result * 31 + gr.getGDS().hashCode(); // the horizontal grid
-    else
-      result += result * 31 + gdsHash;
-
-    result += result * 31 + pds2.getParameterCategory();
-    result += result * 31 + pds2.getTemplateNumber();
-
-    if (pds2.isTimeInterval()) {
-      if (!intvMerge) {
-        double size = 0;
-        try {
-          size = cust.getForecastTimeIntervalSizeInHours(pds2); // LOOK using an Hour here, but will need to make this configurable
-        } catch (Throwable t) {
-          if (logger != null) logger.error("Failed on file = "+gr.getFile(), t);
-        }
-        result += result * (int) (31 + (1000 * size)); // create new variable for each interval size - default not
-      }
-      result += result * 31 + pds2.getStatisticalProcessType(); // create new variable for each stat type
-    }
-
-    if (pds2.isSpatialInterval()) {
-       result += result * 31 + pds2.getStatisticalProcessType(); // template 15
-     }
-
-     result += result * 31 + pds2.getParameterNumber();
-
-    int ensDerivedType = -1;
-    if (pds2.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
-      Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds2;
-      ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
-      result += result * 31 + ensDerivedType;
-
-    } else if (pds2.isEnsemble()) {
-      result += result * 31 + 1;
-    }
-
-    // each probability interval generates a separate variable; could be a dimension instead
-    int probType = -1;
-    if (pds2.isProbability()) {
-      Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds2;
-      probType = pdsProb.getProbabilityType();
-      result += result * 31 + pdsProb.getProbabilityHashcode();
-    }
-
-    // if this uses any local tables, then we have to add the center id, and subcenter if present
-    if ((pds2.getParameterCategory() > 191) || (pds2.getParameterNumber() > 191) || (pds2.getLevelType1() > 191)
-            || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191)
-            || (ensDerivedType > 191) || (probType > 191)) {
-      Grib2SectionIdentification id = gr.getId();
-      result += result * 31 + id.getCenter_id();
-      if (id.getSubcenter_id() > 0)
-        result += result * 31 + id.getSubcenter_id();
-    }
-
-    // always use the GenProcessType when "error" (6 or 7) 2/8/2012
-    int genType = pds2.getGenProcessType();
-    if (genType == 6 || genType == 7 || (useGenType && genType > 0)) {
-      result += result * 31 + genType;
-    }
-
-    return result;
-  } */
-
   static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollectionImmutable gribCollection, 
                                                  GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
     Formatter f = new Formatter();
@@ -453,6 +367,7 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
+  /*
   @Override
   protected void show(RandomAccessFile rafData, long pos) throws IOException {
     Grib2Record gr = Grib2RecordScanner.findRecordByDrspos(rafData, pos);
@@ -471,12 +386,12 @@ public class Grib2Iosp extends GribIosp {
   }
 
   @Override
-  protected float[] readData(RandomAccessFile rafData, GribIosp.DataRecord dr) throws IOException {
+  protected float[] readData(RandomAccessFile rafData, GribDataReader.DataRecord dr) throws IOException {
     GdsHorizCoordSys hcs = dr.hcs;
     int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
     return Grib2Record.readData(rafData, dr.dataPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
             hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
-  }
+  } */
 
   public Object getLastRecordRead() {
     return Grib2Record.lastRecordRead;

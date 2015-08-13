@@ -1,5 +1,6 @@
 package ucar.coord;
 
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 
@@ -16,7 +17,23 @@ public interface Coordinate {
   /**
    * Enumerated list of coordinate types
    */
-  enum Type {runtime, time, timeIntv, vert, time2D, ens }  // cant change order, protobuf uses the ordinal
+  enum Type {
+    runtime(0, AxisType.RunTime),
+    time(1, AxisType.Time),
+    timeIntv(1, AxisType.Time),
+    vert(3, AxisType.Height),
+    time2D(1, AxisType.TimeOffset),
+    ens(2, AxisType.Ensemble);  // cant change order, protobuf uses the ordinal
+
+    public final int order;
+    public final AxisType axisType;
+
+    Type(int order, AxisType axisType) {
+      this.order = order;
+      this.axisType = axisType;
+    }
+
+  }
 
   List<? extends Object> getValues(); // get sorted list of values
   Object getValue(int idx);  // get the ith value
@@ -27,6 +44,7 @@ public interface Coordinate {
   Type getType();
   String getName();
   String getUnit();
+  int getNCoords();             // how many coords ??
 
   void showInfo(Formatter info, Indent indent);
   void showCoords(Formatter info);

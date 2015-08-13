@@ -81,6 +81,11 @@ public class TestCoordinate implements Coordinate {
   }
 
   @Override
+  public int getNCoords() {
+    return getSize();
+  }
+
+  @Override
   public int estMemorySize() {
     return 0;
   }

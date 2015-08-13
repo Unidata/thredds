@@ -24,10 +24,11 @@ public class Coverage implements IsMissingEvaluator {
   private final String units, description;
   private final String coordSysName;
   protected final CoverageReader reader;
+  protected final Object user;
 
   private CoverageCoordSys coordSys; // almost immutable
 
-  public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description, CoverageReader reader) {
+  public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description, CoverageReader reader, Object user) {
     this.name = name;
     this.dataType = dataType;
     this.atts = atts;
@@ -35,10 +36,11 @@ public class Coverage implements IsMissingEvaluator {
     this.units = units;
     this.description = description;
     this.reader = reader;
+    this.user = user;
   }
 
   // copy constructor
-  public Coverage(Coverage from) {
+  public Coverage(Coverage from, Object user) {
     this.name = from.getName();
     this.dataType = from.getDataType();
     this.atts = from.getAttributes();
@@ -46,6 +48,7 @@ public class Coverage implements IsMissingEvaluator {
     this.description = from.getDescription();
     this.coordSysName = from.getCoordSysName();
     this.reader = from.reader;
+    this.user = (user == null) ? from.user : user;
   }
 
   void setCoordSys (CoverageCoordSys coordSys) {
@@ -75,6 +78,10 @@ public class Coverage implements IsMissingEvaluator {
 
   public String getDescription() {
     return description;
+  }
+
+  public Object getUserObject() {
+    return user;
   }
 
   @Override

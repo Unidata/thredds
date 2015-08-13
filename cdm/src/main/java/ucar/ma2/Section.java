@@ -42,122 +42,7 @@ import java.util.*;
  *
  * @author caron
  */
-
 public class Section {
-  private List<Range> list;
-  private boolean immutable = false;
-  private boolean isvariablelength = false;
-
-  /**
-   * Create Section from a shape array, assumes 0 origin.
-   *
-   * @param shape array of lengths for each Range. 0 = EMPTY, < 0 = VLEN
-   */
-  public Section(int[] shape) {
-    list = new ArrayList<>();
-    for (int aShape : shape) {
-      if (aShape > 0)
-        list.add(new Range(aShape));
-      else if (aShape == 0)
-        list.add(Range.EMPTY);
-      else {
-        list.add(Range.VLEN);
-        isvariablelength = true;
-      }
-    }
-  }
-
-  /**
-   * Create Section from a shape and origin arrays.
-   *
-   * @param origin array of start for each Range
-   * @param shape  array of lengths for each Range
-   * @throws InvalidRangeException if origin < 0, or shape < 1.
-   */
-  public Section(int[] origin, int[] shape) throws InvalidRangeException {
-    list = new ArrayList<>();
-    for (int i = 0; i < shape.length; i++) {
-      if (shape[i] > 0)
-        list.add(new Range(origin[i], origin[i] + shape[i] - 1));
-      else if (shape[i] == 0)
-        list.add(Range.EMPTY);
-      else {
-        list.add(Range.VLEN);
-        isvariablelength = true;
-      }
-    }
-  }
-
-  /**
-   * Create Section from a shape, origin, and stride arrays.
-   *
-   * @param origin array of start for each Range
-   * @param size   array of lengths for each Range (last = origin + size -1)
-   * @param stride stride between consecutive elements, must be > 0
-   * @throws InvalidRangeException if origin < 0, or shape < 1.
-   */
-  public Section(int[] origin, int[] size, int[] stride) throws InvalidRangeException {
-    list = new ArrayList<>();
-    for (int i = 0; i < size.length; i++) {
-      if (size[i] > 0)
-        list.add(new Range(origin[i], origin[i] + size[i] - 1, stride[i]));
-      else if (size[i] == 0)
-        list.add(Range.EMPTY);
-      else {
-        list.add(Range.VLEN);
-        isvariablelength = true;
-      }
-    }
-  }
-
-  /**
-   * Create Section from a List<Range>.
-   *
-   * @param from the list of Range
-   */
-  public Section(List<Range> from) {
-    list = new ArrayList<>(from);
-    for (Range aFrom : from) {
-      if (aFrom == Range.VLEN)
-        isvariablelength = true;
-    }
-  }
-
-  /**
-   * Create Section from a variable length list of Ranges
-   *
-   * @param ranges the list
-   */
-  public Section(Range... ranges) {
-    list = new ArrayList<>();
-    for (Range r : ranges) {
-      list.add(r);
-      if (r == Range.VLEN)
-        isvariablelength = true;
-    }
-  }
-
-  /**
-   * Copy Constructor.
-   * Returned copy is mutable
-   *
-   * @param from the Section to copy
-   */
-  public Section(Section from) {
-    list = new ArrayList<>(from.getRanges());
-  }
-
-  /**
-   * Create Section from a List<Range>.
-   *
-   * @param from  the list of Range
-   * @param shape use this as default shape if any of the ranges are null.
-   * @throws InvalidRangeException if shape and range list done match
-   */
-  public Section(List<Range> from, int[] shape) throws InvalidRangeException {
-    list = new ArrayList<>(from);
-    setDefaults(shape);
-  }
 
   /**
    * Return a Section guaranteed to be non null, with no null Ranges, and within the bounds set by shape.
@@ -186,6 +71,110 @@ public class Section {
 
     // fill in any nulls
     return new Section(s.getRanges(), shape);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  private List<Range> list;
+  private boolean immutable = false;
+
+  /**
+   * Create Section from a shape array, assumes 0 origin.
+   *
+   * @param shape array of lengths for each Range. 0 = EMPTY, < 0 = VLEN
+   */
+  public Section(int[] shape) {
+    list = new ArrayList<>();
+    for (int aShape : shape) {
+      if (aShape > 0)
+        list.add(new Range(aShape));
+      else if (aShape == 0)
+        list.add(Range.EMPTY);
+      else {
+        list.add(Range.VLEN);
+      }
+    }
+  }
+
+  /**
+   * Create Section from a shape and origin arrays.
+   *
+   * @param origin array of start for each Range
+   * @param shape  array of lengths for each Range
+   * @throws InvalidRangeException if origin < 0, or shape < 1.
+   */
+  public Section(int[] origin, int[] shape) throws InvalidRangeException {
+    list = new ArrayList<>();
+    for (int i = 0; i < shape.length; i++) {
+      if (shape[i] > 0)
+        list.add(new Range(origin[i], origin[i] + shape[i] - 1));
+      else if (shape[i] == 0)
+        list.add(Range.EMPTY);
+      else {
+        list.add(Range.VLEN);
+      }
+    }
+  }
+
+  /**
+   * Create Section from a shape, origin, and stride arrays.
+   *
+   * @param origin array of start for each Range
+   * @param size   array of lengths for each Range (last = origin + size -1)
+   * @param stride stride between consecutive elements, must be > 0
+   * @throws InvalidRangeException if origin < 0, or shape < 1.
+   */
+  public Section(int[] origin, int[] size, int[] stride) throws InvalidRangeException {
+    list = new ArrayList<>();
+    for (int i = 0; i < size.length; i++) {
+      if (size[i] > 0)
+        list.add(new Range(origin[i], origin[i] + size[i] - 1, stride[i]));
+      else if (size[i] == 0)
+        list.add(Range.EMPTY);
+      else {
+        list.add(Range.VLEN);
+      }
+    }
+  }
+
+  /**
+   * Create Section from a List<Range>.
+   *
+   * @param from the list of Range
+   */
+  public Section(List<Range> from) {
+    list = new ArrayList<>(from);
+  }
+
+  /**
+   * Create Section from a variable length list of Ranges
+   *
+   * @param ranges the list
+   */
+  public Section(Range... ranges) {
+    list = new ArrayList<>();
+    Collections.addAll(list, ranges);
+  }
+
+  /**
+   * Copy Constructor.
+   * Returned copy is mutable
+   *
+   * @param from the Section to copy
+   */
+  public Section(Section from) {
+    list = new ArrayList<>(from.getRanges());
+  }
+
+  /**
+   * Create Section from a List<Range>.
+   *
+   * @param from  the list of Range
+   * @param shape use this as default shape if any of the ranges are null.
+   * @throws InvalidRangeException if shape and range list done match
+   */
+  public Section(List<Range> from, int[] shape) throws InvalidRangeException {
+    list = new ArrayList<>(from);
+    setDefaults(shape);
   }
 
   /* public Section subsection(int startElement, int endElement) throws InvalidRangeException {
@@ -234,7 +223,7 @@ public class Section {
     list = new ArrayList<>();
     Range range;
 
-    StringTokenizer stoke = new StringTokenizer(sectionSpec, "(),");
+    StringTokenizer stoke = new StringTokenizer(sectionSpec, "(),");  // LOOK deal with scatterRange {1,2,3}
     while (stoke.hasMoreTokens()) {
       String s = stoke.nextToken().trim();
       if (s.equals(":"))
@@ -283,13 +272,13 @@ public class Section {
   }
 
 
-  /**
+  /*
    * Create a new Section by compacting each Range.
    * first = first/stride, last=last/stride, stride=1.
    *
    * @return compacted Section
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
-   */
+   *
   public Section removeVlen() throws InvalidRangeException {
     boolean need = false;
     for (Range r : list) {
@@ -302,7 +291,7 @@ public class Section {
       if (r != Range.VLEN) results.add(r);
     }
     return new Section(results);
-  }
+  } */
 
 
   /**
@@ -418,12 +407,12 @@ public class Section {
   }
 
   /**
-   * See if this Section intersects with another Section. ignores strides
+   * See if this Section intersects with another Section. ignores strides, vlen
    *
    * @param other another section
    * @return true if intersection is non-empty
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank(),
-   *                               ignoring vlen
+   *
    */
   public boolean intersects(Section other) throws InvalidRangeException {
     if (!compatibleRank(other))
@@ -659,7 +648,7 @@ public class Section {
   }
 
   public Section subSection(int from, int endExclusive) {
-    return new Section(list.subList(from, endExclusive));
+    return new Section( list.subList(from, endExclusive));
   }
 
   /**
@@ -684,7 +673,6 @@ public class Section {
           list.set(i, Range.EMPTY);
         else {
           list.set(i, Range.VLEN);
-          isvariablelength = true;
         }
       }
     }
@@ -709,7 +697,9 @@ public class Section {
   }
 
   public boolean isVariableLength() {
-    return isvariablelength;
+    for (Range aFrom : list)
+      if (aFrom == Range.VLEN) return true;
+    return false;
   }
 
   public boolean isStrided() {
@@ -798,15 +788,6 @@ public class Section {
   }
 
   /**
-   * Get rank excluding vlens.
-   *
-   * @return rank
-   */
-  public int getVlenRank() {
-    return list.size() - (isvariablelength ? 1 : 0);
-  }
-
-  /**
    * Compare this section with another upto the vlen in either
    */
   public boolean compatibleRank(Section other) {
@@ -822,15 +803,15 @@ public class Section {
 
   /**
    * Compute total number of elements represented by the section.
-   * Any VLEN Ranges are effectively skipped.
+   * Any VLEN Ranges are skipped.
    *
    * @return total number of elements
    */
   public long computeSize() {
     long product = 1;
     for (Range r : list) {
-      if (r != Range.VLEN)
-        product *= r.length();
+      if (r == Range.VLEN) continue;
+      product *= r.length();
     }
     return product;
   }
@@ -968,17 +949,24 @@ public class Section {
   }
 
   public class Iterator {
-    private int[] odo = new int[getRank()];
+    private int[] odo = new int[getRank()];  // odometer - the current element LOOK could use Index, but must upgrade to using Range
+    private List<Range.Iterator> rangeIterList = new ArrayList<>();
     private int[] stride = new int[getRank()];
     private long done, total;
 
     Iterator(int[] shape) {
       int ss = 1;
-      for (int i = getRank() - 1; i >= 0; i--) {
-        odo[i] = getRange(i).first();
+      for (int i = getRank() - 1; i >= 0; i--) {  // fastest varying last
         stride[i] = ss;
         ss *= shape[i];
       }
+
+      for (int i = 0; i < getRank(); i++) {
+        Range.Iterator iter = getRange(i).getIterator();
+        odo[i] = iter.next();
+        rangeIterList.add(iter);
+      }
+
       done = 0;
       total = Index.computeSize(getShape()); // total in the section
     }
@@ -1008,23 +996,28 @@ public class Section {
       return next;
     }
 
-    /**
+    /*
      * Get the current index in the result array, ie in this section
      *
      * @return result index
-     */
+     *
     public int getResultIndex() {
       return (int) done - 1;
-    }
+    } */
 
     private void incr() {
       int digit = getRank() - 1;
       while (digit >= 0) {
-        Range r = getRange(digit);
-        odo[digit] += r.stride();
-        if (odo[digit] <= r.last())
-          break;  // normal exit
-        odo[digit] = r.first(); // else, carry
+        Range.Iterator iter = rangeIterList.get(digit);
+        if (iter.hasNext()) {
+          odo[digit] = iter.next();
+          break; // normal exit
+        }
+
+        // else, carry to next digit in the odometer
+        Range.Iterator iterReset = getRange(digit).getIterator();
+        odo[digit] = iterReset.next();
+        rangeIterList.set(digit, iterReset);
         digit--;
         assert digit >= 0; // catch screw-ups
       }
@@ -1036,6 +1029,6 @@ public class Section {
         value += odo[ii] * stride[ii];
       return value;
     }
-  }
+  } // Iterator
 
 }

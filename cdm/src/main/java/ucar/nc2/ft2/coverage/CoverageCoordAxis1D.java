@@ -30,17 +30,17 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
   public CoverageCoordAxis1D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
                                 DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue,
-                                double resolution, double[] values, CoordAxisReader reader) {
+                                double resolution, double[] values, CoordAxisReader reader, boolean isSubset) {
 
-    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
+    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
 
     this.minIndex = 0;
     this.maxIndex = ncoords-1;
   }
 
-  public CoverageCoordAxis1D copy() {
-    return new CoverageCoordAxis1D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
-  }
+  //public CoverageCoordAxis1D copy() {
+  //  return new CoverageCoordAxis1D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
+  //}
 
   public int getStride() {
     return stride;
@@ -229,9 +229,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
   public List<NamedObject> getCoordValueNames() {
     getValues();  // read in if needed
-    if (timeHelper != null) {
+    if (timeHelper != null)
       return timeHelper.getCoordValueNames(this);
-    }
 
     List<NamedObject> result = new ArrayList<>();
     for (int i = 0; i < ncoords; i++) {
@@ -287,7 +286,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
       case Time:
         if (params.isTrue(SubsetParams.allTimes))
-          return this.copy();
+          return this;   // LOOK why copy if its immutable ?
         if (params.isTrue(SubsetParams.latestTime))
           return helper.subsetLatest();
 
@@ -316,7 +315,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     }
 
     // otherwise take the entire axis
-    return this.copy();
+    return this;
   }
 
   @Override
