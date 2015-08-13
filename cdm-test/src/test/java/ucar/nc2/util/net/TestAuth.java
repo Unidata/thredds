@@ -223,18 +223,10 @@ public class TestAuth extends UnitTestCommon
         this("TestAuth", null);
     }
 
-    @Before
-    public void setUp()
-    {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
-    }
-
     @Test
     public void
     testSSH() throws Exception
     {
-        String version = System.getProperty("java.version");
-        Assume.assumeTrue("Version must be 1.8 (temporary)", version.startsWith("1.8"));
         boolean pass = true;
         String[] sshurls = {
                 "https://" + TestDir.dap2TestServer + "/dts/b31.dds"
