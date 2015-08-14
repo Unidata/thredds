@@ -20,7 +20,7 @@ dependencies {
     // These 3 are for CrawlableDatasetAmazonS3.
     compile libraries["commons-io"]
     compile libraries["ehcache-core"]
-    compile libraries["aws-java-sdk"]
+    compile libraries["aws-java-sdk-s3"]
 
     compile libraries["slf4j-api"]
 

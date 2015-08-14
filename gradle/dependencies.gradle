@@ -139,7 +139,7 @@ libraries["je"] = "com.sleepycat:je:4.0.92"
 
 libraries["jna"] = "net.java.dev.jna:jna:4.1.0"
 
-libraries["joda-time"] = "joda-time:joda-time:2.2"
+libraries["joda-time"] = "joda-time:joda-time:2.8.1"
 
 libraries["jsoup"] = "org.jsoup:jsoup:1.7.2"
 
@@ -194,7 +194,7 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.6"
 
-libraries["aws-java-sdk"] = "com.amazonaws:aws-java-sdk:1.10.11"
+libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.10.11"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
