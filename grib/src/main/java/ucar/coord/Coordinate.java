@@ -32,7 +32,6 @@ public interface Coordinate {
       this.order = order;
       this.axisType = axisType;
     }
-
   }
 
   List<? extends Object> getValues(); // get sorted list of values

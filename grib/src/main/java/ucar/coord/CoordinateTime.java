@@ -44,6 +44,20 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return offsetSorted;
   }
 
+  public int findIndexContaining(double need) {
+    double bestDiff = Double.MAX_VALUE;
+    int bestIdx = 0;
+    for (int i = 0; i < offsetSorted.size(); i++) {
+      Integer coord = offsetSorted.get(i);
+      double diff = Math.abs(need - coord);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestIdx = i;
+      }
+    }
+    return bestIdx;
+  }
+
   @Override
   public List<? extends Object> getValues() {
     return offsetSorted;
@@ -80,15 +94,15 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
     CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName + " since " + refDate.toString());
     CalendarDate start = cdu.makeCalendarDate(offsetSorted.get(0));
-    CalendarDate end = cdu.makeCalendarDate(offsetSorted.get(getSize()-1));
+    CalendarDate end = cdu.makeCalendarDate(offsetSorted.get(getSize() - 1));
     return CalendarDateRange.of(start, end);
   }
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s:", indent, getType());
-     for (Integer cd : offsetSorted)
-       info.format(" %3d,", cd);
+    for (Integer cd : offsetSorted)
+      info.format(" %3d,", cd);
     info.format(" (%d) %n", offsetSorted.size());
     if (time2runtime != null)
       info.format("%stime2runtime: %s", indent, Misc.showInts(time2runtime));
@@ -97,8 +111,8 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   @Override
   public void showCoords(Formatter info) {
     info.format("Time offsets: (%s) ref=%s %n", getUnit(), getRefDate());
-     for (Integer cd : offsetSorted)
-       info.format("   %3d%n", cd);
+    for (Integer cd : offsetSorted)
+      info.format("   %3d%n", cd);
   }
 
   @Override
@@ -141,7 +155,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     List<Integer> offsetSortedBest = new ArrayList<>(offsetSorted.size());
     int[] time2runtimeBest = new int[n];
     int count = 0;
-    for (int i=0; i<best.length; i++) {
+    for (int i = 0; i < best.length; i++) {
       int time = best[i];
       if (time >= 0) {
         time2runtimeBest[count] = time;
@@ -206,7 +220,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return new Builder(code);
   } */
 
-  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record>  {
+  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     private final int code;  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
     private final CalendarDate refDate;
@@ -242,13 +256,13 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<Integer> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add( (Integer) val);
+      for (Object val : values) offsetSorted.add((Integer) val);
       Collections.sort(offsetSorted);
       return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
     }
   }
 
-  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record>  {
+  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     final Grib1Customizer cust;
     final int code;  // pdsFirst.getTimeUnit()
     final CalendarPeriod timeUnit;
@@ -282,12 +296,11 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<Integer> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add( (Integer) val);
+      for (Object val : values) offsetSorted.add((Integer) val);
       Collections.sort(offsetSorted);
       return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
     }
   }
-
 
 
 }

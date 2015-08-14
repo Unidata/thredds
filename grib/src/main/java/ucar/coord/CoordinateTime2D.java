@@ -624,6 +624,13 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
   }
 
+  public int findIndexContaining(double need) {
+    if (!isOrthogonal)
+      throw new IllegalStateException();
+
+    return otime.findIndexContaining(need);
+  }
+
   /**
    * Get a sorted list of the unique time coordinates
    * @return List<Integer> or List<TimeCoord.Tinv>

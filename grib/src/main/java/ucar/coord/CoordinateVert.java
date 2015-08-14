@@ -69,7 +69,6 @@ public class CoordinateVert implements Coordinate {
     }
   }
 
-
   @Override
   public List<? extends Object> getValues() {
     return levelSorted;

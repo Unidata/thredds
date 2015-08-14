@@ -1,0 +1,100 @@
+= CDM Remote Feature For Grid (Coverage)
+:linkcss:
+:stylesheet: ../../cdm.css
+:w3cDate: http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate
+:w3cDuration: http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cduration
+
+CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM feature datasets, using
+link:NcStream.html[ncstream] as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
+two levels of services:
+
+1.  *link:CdmRemote.html[CdmRemote]* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
+CDM local datasets and *DODSNetcdfFile* provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.
+2.  *CdmrFeature* provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and
+Unidata's link:../../../tds/reference/services/NetcdfSubsetServiceReference.html[_NetCDF Subset Service_] __(NCSS)__. This API and protocol is redone
+in version 5.0.
+
+The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.
+
+'''''
+
+The client forms requests of the form **endpoint?query**, where query is one or more *_key=value_* parameters, as described below.
+
+Example request:
+
+---------------------------
+http://thredds-dev.unidata.ucar.edu/thredds/cdmrfeature/grid/grib/NCEP/GFS/Global_0p5deg/Best?req=data&var=Albedo_surface_Mixed_intervals_Average
+---------------------------
+
+See link:CdmrfGrammer.adoc[CdmrFeature Grammer] for a description of the on-the-wire protocol.
+You only need this if you are parsing these messages yourself (not using the Java or Python  library).
+
+=== Subsetting Parameters for Grid
+
+[width="100%",cols="20%,20%,20%,20%,20%",options="header",]
+|=====================================================================================================================================================
+|Parameter Name |Required  |Description / possible values                               |Constraints                                   |default
+|var            |yes       |Name of **variables**, separated by ',' (comma), or "all".  |Variables must be in the dataset description. |
+|north, south, east, west |no |Lat/lon bounding box, units of degrees_east, degrees_north a| south < north, west < east; if crossing 180 meridian, use east boundary > 180  |
+|minx, miny, maxx, maxy |no |Projection bounding box, in projection coordinate units (km) |min < max |
+|horizStride |no |Take only every nth point (both x and y) |  |1
+|time |no a| Time as a link:{w3cDate}[W3C date] or "latest" (the time slice closest to the requested time is returned) or "all" (all times are returned) |Must be a time within the dataset time range |_latest_ or _first in the run_
+|time_start, time_end, time_duration |no |Used to specify a time range (two of these must be present). Times may be a link:#W3Cdate[W3C date] or "latest". Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
+|timeOffset |no | Restrict to an offset from the runtime coordinate. Must use same time units as the dataset.  |Used only if Grid has a 2D time coordinate (runtime and forecast time) |
+|timeStride |no |Take only every nth time in the available series | Used with time_range or "all" | 1
+|runtime |no |Time as a link:{w3cDate}[W3C date] or "latest". Restrict to specified runtime coordinate. |Used only if Grid has a runtime coordinate. | _latest_
+|vertCoord |no |Restrict to specified vertical level coordinate value. |Used only if Grid has a vertical coordinate. |All the vertical levels will be returned
+|ensCoord |no |Restrict to specified ensemble coordinate. |Used only if Grid has an ensemble coordinate. |All the ensembles will be returned
+|=====================================================================================================================================================
+
+Variable subsetting::
+
+* You *must* specify a list of valid variable names, or "all".
+* variable names are case-sensitive and must be UTF8-escape encoded (or URL encoded?)
+
+Horizontal spatial subsetting::
+
+* you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire horizontal grid.
+
+Vertical spatial subsetting::
+
+* You may specify a vertical coordinate as a double. The closest value is returned. If not specified, all vertical levels are returned.
+
+Temporal subsetting::
+
+* You may specify a time range, or a time point. If both, only the time point is used. If neither, use the latest time.
+* A time range __(time_start, time_end, time_duration__) will request all times that intersect the range (__timeStride__ is used if present).
+* A time point will request the time that is closest to that time.
+* If you set __time="all"__, then all times are returned (__timeStride__ is used if present). All other time parameters are ignored.
+* time duration: 1) udunit time unit string or 2) link:{w3cDuration}[W3C time duration]
+* datetime: link:{w3cDate}[W3C date] or "latest"
+* The dataset determines what Calendar is used, so you must use that calendar.
+
+2D Time subsetting::
+
+* *runtime*=rundate or "latest": *time*="all" : get all times for that run
+* *runtime*=rundate or "latest": *time*="latest" : get latest time slice for that run
+* *runtime*=rundate, *time*=date : get the specific time slice
+* *runtime*=rundate, *timeRange*=dates : get the time slices
+* *timeOffset*=value : constant offset for all runtimes
+* *runtimeRange*=rundates, *timeOffset*=value : constant offset for specified runtimes
+* *runtimeRange*=rundates, **timeRange**=dates : get the time slices (NOT DONE)
+* *time*=date : constant forecast (NOT DONE)
+* the default for *time* for 2D datasest is _first in the run_
+**  no time params: use first time period of the latest run
+**  runtime only: use first time period of the closest run
+**  time only: use closest time period of Best
+**  time range: intersect time range of Best
+
+Interval coordinate::
+
+* If the coordinate is an _interval coordinate_ (common for vertical or time coordinates), it has a lower and upper bound, eg (2.0-10.0).
+* The request is still made with a single value. The interval that contains the requested value is used.
+* If the requested value is contained in more than one interval, the midpoint of the interval is calculated, and the closest midpoint to the requested
+value is used.
+
+'''''
+
+image:../../nc.gif[image] This document was last updated April 2015
+
+ 

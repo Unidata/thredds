@@ -32,6 +32,7 @@ public class TimeHelper {
     this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
   }
 
+  // get offset from runDate, in units of dateUnit
   public double convert(CalendarDate date) {
     long msecs = date.getDifferenceInMsecs(runDate);
     return msecs / duration;

@@ -1,6 +1,7 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage;
 
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,11 +17,12 @@ public class SubsetParams {
   public static final String latlonBB = "latlonBB";     // value = LatLonRect
   public static final String projBB = "projBB";         // value = ProjRect
   public static final String horizStride = "horizStride";  // value = Integer
-  public static final String vertCoord = "vertCoord";   // value = double
-  public static final String vertIndex = "vertIndex";   // value = integer    LOOK BAD
+  public static final String vertCoord = "vertCoord";   // value = Double
+  public static final String vertIndex = "vertIndex";   // value = Integer    LOOK BAD
   public static final String timeRange = "timeRange";   // value = CalendarDateRange
   public static final String time = "time";             // value = CalendarDate
   public static final String timeWindow = "timeWindow"; // value = TimeDuration
+  public static final String timeOffset = "timeOffset"; // value = Double
   public static final String timeStride = "timeStride"; // value = Integer
   public static final String allTimes = "allTimes";     // value = Boolean
   public static final String latestTime = "latestTime"; // value = Boolean
@@ -70,4 +72,11 @@ public class SubsetParams {
     return dval;
   }
 
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    for (Map.Entry<String,Object> entry : req.entrySet())
+      f.format(" %s == %s%n", entry.getKey(), entry.getValue());
+    return f.toString();
+  }
 }

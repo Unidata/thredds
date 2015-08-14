@@ -264,8 +264,6 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
       case Height:
         Double dval = params.getDouble(SubsetParams.vertCoord);
         if (dval != null) {
-          // LOOK problems when vertCoord doesnt match any coordinates in the axes
-          // LOOK problems when vertCoord is discontinuous interval
           return helper.subsetClosest(dval);
         }
         break;
@@ -286,7 +284,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
       case Time:
         if (params.isTrue(SubsetParams.allTimes))
-          return this;   // LOOK why copy if its immutable ?
+          return this;
         if (params.isTrue(SubsetParams.latestTime))
           return helper.subsetLatest();
 
@@ -300,9 +298,6 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         break;
 
       case RunTime:
-        if (params.isTrue(SubsetParams.latestRuntime))
-          return helper.subsetLatest();
-
         CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
         if (rundate != null)
           return helper.subset(rundate);
@@ -310,8 +305,9 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         CalendarDateRange rundateRange = (CalendarDateRange) params.get(SubsetParams.runtimeRange);
         if (rundateRange != null)
           return helper.subset(rundateRange);
-        break;
 
+        // default is latest
+        return helper.subsetLatest();
     }
 
     // otherwise take the entire axis

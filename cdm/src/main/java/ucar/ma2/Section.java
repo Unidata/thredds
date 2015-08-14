@@ -462,14 +462,31 @@ public class Section {
    * @return index section String specification
    */
   public String toString() {
-    StringBuilder sbuff = new StringBuilder();
+    Formatter sbuff = new Formatter();
     for (int i = 0; i < list.size(); i++) {
       Range r = list.get(i);
-      if (i > 0) sbuff.append(",");
+      if (i > 0) sbuff.format(",");
       if (r == null)
-        sbuff.append(":");
-      else
-        sbuff.append(r.toString());
+        sbuff.format(":");
+      else {
+        sbuff.format("%s", r.toString());
+      }
+    }
+    return sbuff.toString();
+  }
+
+  public String show() {
+    Formatter sbuff = new Formatter();
+    for (int i = 0; i < list.size(); i++) {
+      Range r = list.get(i);
+      if (i > 0) sbuff.format("%n");
+      if (r == null)
+        sbuff.format(":");
+      else {
+        if (r.getName() != null)
+          sbuff.format("%s=", r.getName());
+        sbuff.format("%s", r.toString());
+      }
     }
     return sbuff.toString();
   }

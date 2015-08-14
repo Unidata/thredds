@@ -331,7 +331,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     public Time2DSmoosher(CoordinateTime2D time2D) {
       this.time2D = time2D;
       this.offsets = time2D.getOffsetsSorted();
-      double offsetFromMaster = time2D.getOffsetInTimeUnits(gribCollection.getMasterFirstDate());
+      // double offsetFromMaster = time2D.getOffsetInTimeUnits(gribCollection.getMasterFirstDate());
     }
 
     @Override
@@ -357,7 +357,6 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     else
       substCoords.put(time2D.getName(), already.time2D.getName());
   }
-
 
   private void makeTime2DCoordAxis(List<CoverageCoordAxis> axes) {
     for (Time2DSmoosher smoosh : time2Dmap.keySet()) {
@@ -430,8 +429,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       atts.addAttribute(new Attribute(CDM.LONG_NAME, GribIosp.GRIB_VALID_TIME));
       atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
-      axes.add(new CoverageCoordAxis1D(time2D.getName(), time2D.getUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.TimeOffset, atts.getAttributes(),
-              CoverageCoordAxis.DependenceType.independent, new ArrayList<>(0), spacing, n, start, end, resol, values, this, false));
+      axes.add(new TimeOffsetAxis(time2D.getName(), time2D.getUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.TimeOffset, atts.getAttributes(),
+              CoverageCoordAxis.DependenceType.independent, new ArrayList<>(0), spacing, n, start, end, resol, values, this, false,
+              new TimeHelper(time2D.getTimeUdUnit(), atts.getAttributes())));
     }
   }
 
@@ -643,11 +643,11 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   @Override
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
-    GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) coverage.getUserObject();
-    vindex.readRecords();  // first time, read records and keep in memory
+    System.out.printf("GribCoverageDataset.readData%n%s%n",params);
 
+    GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    CoverageCoordSys subsetCoordSys = orgCoordSys.subset(params);
+    CoverageCoordSys subsetCoordSys = orgCoordSys.subset(params); // LOOK, can this be done without knowing more from the Grib coords? eg missing ??
 
     List<Coordinate> gribCoords = vindex.getCoordinates();
     int[] gribFullShape = new int[gribCoords.size()]; // the full shape of the sparseArray
@@ -668,12 +668,14 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
         case time:
         case timeIntv:
           covCoordSubset.add( subsetCoordSys.getAxis(AxisType.Time));
-          gribSubset.add( subsetTime(gribCoord, subsetCoordSys.getAxis(AxisType.Time)));
+          gribSubset.add( subsetTime( (CoordinateTimeAbstract) gribCoord, (CoverageCoordAxis1D) subsetCoordSys.getAxis(AxisType.Time)));
           break;
 
         case time2D:
-          covCoordSubset.add( subsetCoordSys.getAxis(AxisType.TimeOffset));
-          gribSubset.add( subsetTimeOffset((CoordinateTime2D) gribCoord, (CoverageCoordAxis1D) subsetCoordSys.getAxis(AxisType.TimeOffset)));
+          CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) subsetCoordSys.getAxis(AxisType.RunTime);
+          CoverageCoordAxis1D toAxis = (CoverageCoordAxis1D) subsetCoordSys.getAxis(AxisType.TimeOffset);
+          covCoordSubset.add( toAxis);
+          gribSubset.add( subsetTimeOffset((CoordinateTime2D) gribCoord, runAxis, toAxis));
           break;
 
         case vert:
@@ -695,6 +697,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     gribSubset.add( subsetCoordSys.getXAxis().getRange());
 
     Section gribSection = new Section(gribSubset);
+    System.out.printf("GribCoverageDataset.readData section=%n%s%n", gribSection.show());
 
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
     Array data =  dataReader.readData(gribSection, gribFullShape);
@@ -716,7 +719,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     if (idxIntoSA.size() == 1) {
       int wantIdx = idxIntoSA.get(0);
-      return new Range(wantIdx, wantIdx);
+      return new Range(gribCoord.getName(), wantIdx, wantIdx);
     } else {
       int[] vals = new int[idxIntoSA.size()];
       for (int i=0; i<idxIntoSA.size(); i++) vals[i] = idxIntoSA.get(i);
@@ -724,13 +727,55 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     }
   }
 
-  Range subsetTimeOffset(CoordinateTime2D gribCoord, CoverageCoordAxis1D covAxis) {
-    return new Range(gribCoord.getOffsetsSorted().size());
+  // this only allows for the case of rectangular (runtime, offset) or (runtime=1, time) queries.
+  // (runtime, offset=1) = constant offset
+  // (runtime=1, time) = constant runtime
+
+  // CANT DO YET (HOW - switch timeOffset to CoverageCoordAxis1D time)  (NO: dataReader.readData() only does rectangle. need new API)
+  // (runtime > 1, time=1)  = constant forecast   (must cut down the runtime based on the time request - only those that have it.
+  // (runtime > 1, time > 1).
+
+  Range subsetTimeOffset(CoordinateTime2D gribCoord, CoverageCoordAxis1D runAxis, CoverageCoordAxis1D toAxis) throws InvalidRangeException {
+
+    //double rundateVal = runAxis.getCoord(0);
+    //CalendarDate rundate = runAxis.makeDate(rundateVal);
+
+    List<Integer> idxIntoSA = new ArrayList<>(toAxis.getNcoords());
+    for (int i=0; i<toAxis.getNcoords(); i++) {
+      double val = toAxis.getCoord(i);
+      int idx =  gribCoord.findIndexContaining(val);
+      idxIntoSA.add(idx);
+    }
+
+    if (idxIntoSA.size() == 1) {
+      int wantIdx = idxIntoSA.get(0);
+      return new Range(gribCoord.getName(), wantIdx, wantIdx);
+    } else {
+      int[] vals = new int[idxIntoSA.size()];
+      for (int i=0; i<idxIntoSA.size(); i++) vals[i] = idxIntoSA.get(i);
+      return new RangeScatter(gribCoord.getName(), vals);
+    }
   }
 
-  Range subsetTime(Coordinate gribCoord, CoverageCoordAxis covAxis) {
-    return new Range(gribCoord.getSize());
-  }
+  Range subsetTime(CoordinateTimeAbstract gribCoord, CoverageCoordAxis1D covAxis) throws InvalidRangeException {
+    if (!covAxis.isSubset())
+      return new Range(gribCoord.getSize()); // get all of it
+
+    List<Integer> idxIntoSA = new ArrayList<>(covAxis.getNcoords());
+    for (int i=0; i<covAxis.getNcoords(); i++) {
+      double need = covAxis.getCoord(i);
+      int idx =  gribCoord.findIndexContaining(need);
+      idxIntoSA.add(idx);
+    }
+
+    if (idxIntoSA.size() == 1) {
+      int wantIdx = idxIntoSA.get(0);
+      return new Range(gribCoord.getName(), wantIdx, wantIdx);
+    } else {
+      int[] vals = new int[idxIntoSA.size()];
+      for (int i=0; i<idxIntoSA.size(); i++) vals[i] = idxIntoSA.get(i);
+      return new RangeScatter(gribCoord.getName(), vals);
+    }  }
 
   Range subsetVert(CoordinateVert gribCoord, CoverageCoordAxis1D covAxisSubset) throws InvalidRangeException {
     if (!covAxisSubset.isSubset())
@@ -745,7 +790,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     if (idxIntoSA.size() == 1) {
       int wantIdx = idxIntoSA.get(0);
-      return new Range(wantIdx, wantIdx);
+      return new Range(gribCoord.getName(), wantIdx, wantIdx);
     } else {
       int[] vals = new int[idxIntoSA.size()];
       for (int i=0; i<idxIntoSA.size(); i++) vals[i] = idxIntoSA.get(i);
@@ -753,8 +798,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     }
   }
 
-  Range subsetEns(Coordinate gribCoord, CoverageCoordAxis covAxis) {
-    return new Range(gribCoord.getSize());
+  Range subsetEns(Coordinate gribCoord, CoverageCoordAxis covAxis) throws InvalidRangeException {
+    return new Range(gribCoord.getName(), 0, gribCoord.getSize());
   }
 
   @Override

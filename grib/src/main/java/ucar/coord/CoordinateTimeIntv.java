@@ -44,6 +44,15 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return timeIntervals;
   }
 
+  public int findIndexContaining(double need) {
+    for (int i=0; i<timeIntervals.size(); i++) {
+      TimeCoord.Tinv tinv = timeIntervals.get(i);
+      if (tinv.getBounds1() <= need && need <= tinv.getBounds2()) return i;
+      if (tinv.getBounds1() >= need && need >= tinv.getBounds2()) return i; // kinda lame
+    }
+    return -1;
+  }
+
   @Override
   public List<? extends Object> getValues() {
     return timeIntervals;

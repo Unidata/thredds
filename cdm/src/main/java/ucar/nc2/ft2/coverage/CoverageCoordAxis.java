@@ -60,9 +60,9 @@ abstract public class CoverageCoordAxis {
   protected final CoordAxisReader reader;
 
   protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
-  private boolean isSubset;
+  private final boolean isSubset;
 
-  // maybe lazy eval
+  // may be lazy eval
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
 
   protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
@@ -96,16 +96,18 @@ abstract public class CoverageCoordAxis {
     this.isSubset = isSubset;
   }
 
+  // called after everything is wired in the dataset
   protected void setDataset(CoordSysContainer dataset) {
     // NOOP
   }
 
-  // abstract public CoverageCoordAxis copy();
-
+  // create a subset of this axis based on the SubsetParams. return this if no subset requested
   abstract public CoverageCoordAxis subset(SubsetParams params);
 
-  abstract public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D from);
+  // called only on dependent axes. pass in what if depends on
+  abstract public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn);
 
+  // called only on CoverageCoordAxis1D
   abstract public CoverageCoordAxis subset(double minValue, double maxValue);
 
   abstract public Array getCoordsAsArray() throws IOException;

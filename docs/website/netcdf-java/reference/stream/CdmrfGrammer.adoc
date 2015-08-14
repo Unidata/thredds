@@ -1,0 +1,112 @@
+= CdmrFeature Grammer (DRAFT)
+:linkcss:
+:stylesheet: ../../cdm.css
+:toc:
+
+This describes the on-the-wire protocol for CdmrFeature.
+Follows or reuses the link:NcstreamGrammer.html[NcStream grammer] whenever possible.
+
+== Grammer
+
+A __cdmrfstream__ is an ordered sequence of one or more messages:
+
+----------------------------------------------------------------------------------------------
+   cdmrfstream := MAGIC_START, {message}*, MAGIC_END
+   message := headerMessage | dataMessage | errorMessage
+   headerMessage := MAGIC_HEADER, vlenb, CdmrFeatureProto.GridCoverageDataset
+   dataMessage := MAGIC_DATA, vlenb, CdmrFeatureProto.DataResponse, arrayDataList
+   errorMessage := MAGIC_ERR, vlenb, NcStreamProto.Error
+
+   arrayDataList := vlenn, {arrayData}*vlenn
+   arrayData := vlenb, (byte)*vlenb
+
+   vlenb := variable length encoded positive integer = length of the following object in bytes
+   vlenn := variable length encoded positive integer = number of objects that follow
+   byte  := actual bytes of data, encoding described by the NcStreamProto.Data message
+
+primitives (same as ncstream):
+
+   MAGIC_START := 0x43, 0x44, 0x46, 0x53
+   MAGIC_HEADER:= 0xad, 0xec, 0xce, 0xda
+   MAGIC_DATA  := 0xab, 0xec, 0xce, 0xba
+   MAGIC_VDATA := 0xab, 0xef, 0xfe, 0xba
+   MAGIC_VEND  := 0xed, 0xef, 0xfe, 0xda
+   MAGIC_ERR   := 0xab, 0xad, 0xba, 0xda
+   MAGIC_END   := 0xed, 0xed, 0xde, 0xde
+----------------------------------------------------------------------------------------------
+
+The protobuf messages are defined by
+
+* *\{repo}/cdm/src/main/java/ucar/nc2/stream/ncStream.proto*
+* *\{repo}/cdm/src/main/java/ ucar/nc2/ft2/coverage/remote/cdmrfeature.proto*
+
+These are compiled by the protobuf compiler into Java, Python, and C code that does the actual encoding/decoding from the on-the-wire stream.
+
+== Messages
+
+=== Data Response Message
+
+The DataResponse has a list of GeoReferencedArray objects, which may share the same coordinate system. Following the Data Response Message are the
+actual data arrays, in the same order as the GeoReferencedArrays (see *arrayDataList* above in grammer)
+
+----------------------------------------------------------------------------------------------
+message DataResponse {
+  repeated CoordAxis coordAxes = 1;              # <1>
+  repeated CoordSys coordSys = 2;                # <2>
+  repeated CoordTransform coordTransforms = 3;   # <3>
+  repeated GeoReferencedArray geoArray = 4;      # <4>
+}
+----------------------------------------------------------------------------------------------
+
+<1>  _List<CoordAxis> coordAxes_ used in one or more of the returned GeoReferencedArray.
+<2>  _List<CoordSys> coordSys_ used in one or more of the returned GeoReferencedArray.
+<3>  _List<CoordTransform> coordTransforms_ used in one or more of the returned GeoReferencedArray.
+<4>  _List<GeoReferencedArray>geoArray_ are the results of the query.
+
+=== GeoReferencedArray
+
+-------------------------------------------------------------------------------------
+enum Compress {
+  NONE = 0;
+  DEFLATE = 1;
+}
+message GeoReferencedArray {
+  required string coverageName = 1;          # <1>
+  required DataType dataType = 2;            # <2>
+  optional bool bigend = 3 [default = true]; # <3>
+  optional uint32 version = 4 [default = 0];      # <4>
+  optional Compress compress = 5 [default = NONE];     # <5>
+  optional uint64 uncompressedSize = 6;            # <6>
+
+  repeated uint32 shape = 7;            # <7>
+  repeated string axisName = 8;         # <8>
+  required string coordSysName = 9;     # <9>
+}
+-------------------------------------------------------------------------------------
+
+<1>  full name of Coverage
+<2> _ucar.nc2.DataType_ for the returned array: *byte, short, int, long* (signed) or *ubyte, ushort, uint, ulong* (unsigned), or **float**, **double**.
+<3>  stored in big or small endian (reader makes right).
+<4>  version of the data storage format (not currently needed).
+<5>  compression algorithm.
+<6>  uncompressed size of the returned data, in bytes.
+<7>  int[] shape of returned array
+<8> String[] axisName, corresponding to shape.
+<9>  Reference to coordSys in the _DataResponse_ message.
+
+=== Data Array
+
+.  After decompression (if needed) the number of bytes of the data array is __uncompressedSize__.
+.  The number of elements of the array is _uncompressedSize_ / sizeof (__dataType__).
+.  The number of elements must match the _int[] shape_ array.
+.  The data elements are laid out sequentially in row-major order (first dimension varies slowest).
+.  The _int[] shape_ array describes how to interpret the data as a multidimensional array.
+.  For each dimension in the _shape_ array, there is a corresponding __axisName__, which refers to a _coordAxis_ in the Data Response message.
+.  The size of the _coordAxis_ must match the corrresponding _shape_ length.
+.  The values of the _coordAxis_ are coordinate values for the returned data array.
+
+'''''
+
+image:../../nc.gif[image] This document was last updated August 2015
+
+ 

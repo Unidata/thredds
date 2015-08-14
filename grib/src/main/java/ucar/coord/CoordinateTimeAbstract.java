@@ -160,5 +160,7 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
   public abstract CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal);
 
+  public abstract int findIndexContaining(double need);
+
 
 }
