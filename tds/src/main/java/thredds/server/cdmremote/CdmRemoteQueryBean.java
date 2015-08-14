@@ -34,6 +34,7 @@ package thredds.server.cdmremote;
 
 import java.util.Formatter;
 
+import ucar.nc2.stream.NcStreamCompression;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
@@ -71,6 +72,9 @@ public class CdmRemoteQueryBean {
 
   // type of response
   private String accept = "";
+
+  // type of compression
+  private NcStreamCompression compress = NcStreamCompression.none();
 
   // comma delimited list of variable names
   private String variables; // (forms) all some
@@ -163,6 +167,14 @@ public class CdmRemoteQueryBean {
     }
 
     return resType;
+  }
+
+  NcStreamCompression getCompression() {
+    return compress;
+  }
+
+  public void setDeflate(String level) {
+    compress = NcStreamCompression.deflate(Integer.parseInt(level));
   }
 
   SpatialSelection getSpatialSelection() {

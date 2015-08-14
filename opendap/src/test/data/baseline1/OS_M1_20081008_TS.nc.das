@@ -49,8 +49,8 @@ Attributes {
         String valid_max "1256054123";
     }
     PSAL {
-        Float32 missing_value -9.999999790e+33;
-        Float32 _FillValue -9.999999790e+33;
+        Float32 missing_value -9.99999979e+33;
+        Float32 _FillValue -9.99999979e+33;
         String long_name "Hourly sea_water_salinity";
         String units " ";
         String standard_name "sea_water_salinity";
@@ -61,16 +61,16 @@ Attributes {
         String history "From m1_ctd0001_20081008_original";
     }
     PSAL_QC {
-        Float32 missing_value -9.999999790e+33;
-        Float32 _FillValue -9.999999790e+33;
+        Float32 missing_value -9.99999979e+33;
+        Float32 _FillValue -9.99999979e+33;
         String long_name "quality flag";
         String units " ";
         String conventions "OceanSITES reference table 2";
         String history "From m1_ctd0001_20081008_original";
     }
     TEMP {
-        Float32 missing_value -9.999999790e+33;
-        Float32 _FillValue -9.999999790e+33;
+        Float32 missing_value -9.99999979e+33;
+        Float32 _FillValue -9.99999979e+33;
         String long_name "Hourly sea_water_temperature";
         String units "celsius";
         String standard_name "sea_water_temperature";
@@ -81,26 +81,26 @@ Attributes {
         String history "From m1_ctd0001_20081008_original";
     }
     TEMP_QC {
-        Float32 missing_value -9.999999790e+33;
-        Float32 _FillValue -9.999999790e+33;
+        Float32 missing_value -9.99999979e+33;
+        Float32 _FillValue -9.99999979e+33;
         String long_name "quality flag";
         String units " ";
         String conventions "OceanSITES reference table 2";
         String history "From m1_ctd0001_20081008_original";
     }
     TIME_QC {
-        Float32 missing_value -9.999999790e+33;
-        Float32 _FillValue -9.999999790e+33;
+        Float32 missing_value -9.99999979e+33;
+        Float32 _FillValue -9.99999979e+33;
         String long_name "Quality flag for time axis, 1: Good data";
     }
     POSITION_QC {
-        Float32 missing_value -9.999999790e+33;
-        Float32 _FillValue -9.999999790e+33;
+        Float32 missing_value -9.99999979e+33;
+        Float32 _FillValue -9.99999979e+33;
         String long_name "Quality flag for Latitude and Longitude axes, 1: Good data";
     }
     DEPTH_QC {
-        Float32 missing_value -9.999999790e+33;
-        Float32 _FillValue -9.999999790e+33;
+        Float32 missing_value -9.99999979e+33;
+        Float32 _FillValue -9.99999979e+33;
         String long_name "Quality flag for depth axis, 1: Good data";
     }
     NC_GLOBAL {

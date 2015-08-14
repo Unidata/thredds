@@ -286,6 +286,11 @@ public class LocalCatalogServiceController {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return null;
       }
+
+    } catch (FileNotFoundException e) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+      return null;
+
     } catch (IOException e) {
       log.error("handleRequestInternal(): Trouble writing to response.", e);
       return null;

@@ -55,6 +55,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private final int MISSING_INT = -9999;
   static private final float MISSING_FLOAT = Float.NaN;
   static public boolean isSC = false;
+  static public boolean isCC = false;
 
   public boolean isValidFileOld( RandomAccessFile raf) {
     try {
@@ -125,6 +126,9 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
       if(radarT.contains("CINRAD/SC") || radarT.contains("CINRAD/CD")) {
         isSC = true;
+        return true;
+      } else if(radarT.contains("CINRADC")) {
+        isCC = true;
         return true;
       }
       else {
@@ -292,7 +296,10 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     dims.add( gateDim);
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    v.setDataType(DataType.BYTE);
+    if(isCC)
+      v.setDataType(DataType.SHORT);
+    else
+      v.setDataType(DataType.BYTE);
     v.setDimensions(dims);
     ncfile.addVariable(null, v);
 
@@ -304,12 +311,16 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     b[0] = Cinrad2Record.MISSING_DATA;
     b[1] = Cinrad2Record.BELOW_THRESHOLD;
     Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
-
-    v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
+    if(isCC)
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, (short)-32768));
+    else
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
+    //v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
     v.addAttribute( new Attribute(CDM.ADD_OFFSET, new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
-    v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
+    if(!isCC)
+      v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     ArrayList dim2 = new ArrayList();
     dim2.add( scanDim);
@@ -417,7 +428,10 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   private void makeVariableNoCoords(NetcdfFile ncfile, int datatype, String shortName, String longName, Variable from) {
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    v.setDataType(DataType.BYTE);
+    if(isCC)
+      v.setDataType(DataType.SHORT);
+    else
+      v.setDataType(DataType.BYTE);
     v.setDimensions( from.getDimensions());
     ncfile.addVariable(null, v);
 
@@ -428,12 +442,15 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     b[0] = Cinrad2Record.MISSING_DATA;
     b[1] = Cinrad2Record.BELOW_THRESHOLD;
     Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
-
-    v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
+    if(isCC)
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, (short)-32768));
+    else
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
     v.addAttribute( new Attribute(CDM.ADD_OFFSET, new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
-    v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
+    if(!isCC)
+      v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
     v.addAttribute( new Attribute(_Coordinate.Axes, fromAtt));
@@ -596,12 +613,18 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
   private void readOneRadial(Cinrad2Record r, int datatype, Range gateRange, IndexIterator ii) throws IOException {
     if (r == null) {
-      for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride())
-        ii.setByteNext( Cinrad2Record.MISSING_DATA);
+      for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride()) {
+        if (isCC)
+          ii.setShortNext((short)-32768);
+        else
+          ii.setByteNext(Cinrad2Record.MISSING_DATA);
+      }
       return;
     }
     if(isSC)
       r.readData0(this.raf, datatype, gateRange, ii);
+    else if(isCC)
+      r.readData1(this.raf, datatype, gateRange, ii);
     else
       r.readData(this.raf, datatype, gateRange, ii);
   }

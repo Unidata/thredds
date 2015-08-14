@@ -41,7 +41,7 @@ public class TestERR extends TestDapParser {
   final static String TITLE = "DAP error body Parser Tests";
 
   public TestERR() {
-    setExtension(".err");
+    setExtensions(".err",".err");
   }
 
   @Test
