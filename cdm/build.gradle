@@ -14,9 +14,11 @@ dependencies {
     compile libraries["protobuf-java"]
     compile libraries["guava"]
     compile libraries["jcommander"]
-    compile 'com.amazonaws:aws-java-sdk:1.9.0'
-    compile 'commons-io:commons-io:2.4'
-    compile 'net.sf.ehcache:ehcache:2.10.0'
+
+    // These 3 are for CrawlableDatasetAmazonS3.
+    compile libraries["commons-io"]
+    compile libraries["ehcache-core"]
+    compile libraries["aws-java-sdk"]
 
     compile libraries["slf4j-api"]
 }

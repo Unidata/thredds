@@ -123,6 +123,8 @@ libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.1"
 
 libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.4.1"
 
+// This is pretty old, but TdsMonitor uses net.sf.ehcache.Statistics which is in v2.6.2 but not v2.10.0.
+// Not sure how difficult it would be to upgrade.
 libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
 
 libraries["jcip-annotations"] = "net.jcip:jcip-annotations:1.0"
@@ -187,6 +189,8 @@ libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.1.Fina
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.6"
+
+libraries["aws-java-sdk"] = "com.amazonaws:aws-java-sdk:1.10.11"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 

@@ -1,15 +1,31 @@
 package thredds.crawlabledataset;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.*;
-import net.sf.ehcache.*;
-import net.sf.ehcache.event.CacheEventListener;
-import org.apache.commons.io.IOUtils;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheException;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.event.CacheEventListener;
+import org.apache.commons.io.IOUtils;
 
 public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
 {
@@ -141,7 +157,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
             return Collections.emptyList();
         }
 
-        List<CrawlableDataset> list = new ArrayList<CrawlableDataset>();
+        List<CrawlableDataset> list = new ArrayList<>();
         for (ThreddsS3Object s3Object : listing)
         {
             CrawlableDatasetAmazonS3 crDs = new CrawlableDatasetAmazonS3(this, s3Object);
@@ -198,7 +214,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
     {
         private static String S3_PREFIX = "s3://";
         private static String S3_DELIMITER = "/";
-        private static HashMap<String, File> fileStore = new HashMap<String, File>();
+        private static HashMap<String, File> fileStore = new HashMap<>();
 
         public static String concat(String parent, String child)
         {
@@ -269,7 +285,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
 
         public static void deleteFileElement(Element element)
         {
-            File file = (File) fileStore.get(element.getObjectKey());
+            File file = fileStore.get(element.getObjectKey());
             if (null == file)
                 return;
 
@@ -296,14 +312,13 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
                 String s3Key = uriParts[1];
 
                 S3Object object = getS3Client().getObject(new GetObjectRequest(s3Bucket, s3Key));
-
                 File tmpFile = createTempFile(uri);
-
                 log.info(String.format("S3 Downloading 's3://%s/%s' to '%s'", s3Bucket, s3Key, tmpFile.toString()));
-                OutputStream os = new FileOutputStream(tmpFile);
-                InputStream is = object.getObjectContent();
 
-                IOUtils.copy(is, os);
+                try (InputStream is = object.getObjectContent();
+                        OutputStream os = new FileOutputStream(tmpFile)) {
+                    IOUtils.copy(is, os);
+                }
 
                 cache.put(new Element(uri, tmpFile));
 
@@ -311,7 +326,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
             }
             catch (Exception e)
             {
-                log.error(String.format(String.format("S3 Error downloading '%s'", uri)));
+                log.error(String.format("S3 Error downloading '%s'", uri));
                 e.printStackTrace();
             }
 
@@ -324,7 +339,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile
             if ((element = cache.get(uri)) != null)
                 return (List<ThreddsS3Object>) element.getObjectValue();
 
-            List<ThreddsS3Object> listing = new ArrayList<ThreddsS3Object>();
+            List<ThreddsS3Object> listing = new ArrayList<>();
 
             log.debug(String.format("S3 Listing '%s'", uri));
 

@@ -160,6 +160,8 @@ boolean testRuntimeHasDepNamed(Project project, String depName) {
 
 // FIXME: I'm not sure if either of these consider :it:integrationTest. That would make sense, because it hasn't been
 // evaluated yet. How best to fix?
+// UPDATE (2015-08-13): "testAll" is causing :it:integrationTest to run, but its report isn't being included in the
+// root report.
 
 task testAll(group: 'Build') {
     description = 'Runs all subproject Test tasks'
