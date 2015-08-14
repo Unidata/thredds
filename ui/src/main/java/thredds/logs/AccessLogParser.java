@@ -72,8 +72,13 @@ public class AccessLogParser implements LogReader.LogParser {
   public LogReader.Log nextLog(BufferedReader dataIS) throws IOException {
     String line = dataIS.readLine();
     if (line == null) return null;
-    return parseLog(line);
-
+    LogReader.Log resultLog = parseLog(line);
+    if (resultLog != null) {
+      return resultLog;
+    } else {
+      // todo: FIX ME...no likey recursy.
+      return nextLog(dataIS);
+    }
     /* try {
       //System.out.println("\n"+line);
       Matcher m = regPattern.matcher(line);

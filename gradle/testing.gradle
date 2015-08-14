@@ -122,6 +122,10 @@ configure(javaProjects) {
                 excludeCategories 'ucar.unidata.test.util.NotJenkins'
             }
 
+            if (isTravis) {
+                excludeCategories 'ucar.unidata.test.util.NotTravis'
+            }
+
             if (!isContentRootAvailable && !isJenkins) {     // Don't skip tests on Jenkins, except NotJenkins ones.
                 excludeCategories 'ucar.unidata.test.util.NeedsContentRoot'
             }
