@@ -58,8 +58,11 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
   }
 
   private List<CoordSysSet> wireObjectsTogether(List<Coverage> coverages) {
-    Map<String, CoordSysSet> map = new HashMap<>();
+    for (CoverageCoordAxis axis : coordAxes) {
+      axis.setDataset( this);
+    }
 
+    Map<String, CoordSysSet> map = new HashMap<>();
     for (Coverage coverage : coverages) {
       coverageMap.put(coverage.getName(), coverage);
       CoordSysSet gset = map.get(coverage.getCoordSysName());             // duplicates get eliminated here
@@ -94,11 +97,6 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
       else
         hcs = old;
       coordsys.setHorizCoordSys(hcs);
-    }
-
-    // wire in the "CoordSysContainer"
-    for (CoverageCoordAxis axis : coordAxes) {
-      axis.setDataset( this);
     }
 
     return csets;

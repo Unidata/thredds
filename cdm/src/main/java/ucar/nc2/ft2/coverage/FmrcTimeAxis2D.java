@@ -3,17 +3,13 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.Index;
-import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
-import ucar.nc2.util.NamedObject;
 
 import java.util.Formatter;
 import java.util.List;
@@ -28,11 +24,11 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   private int[] shape;
   private CoverageCoordAxis1D runCoord;
 
-  public FmrcTimeAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
+  public FmrcTimeAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
                            DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
                            double[] values, CoordAxisReader reader, boolean isSubset) {
 
-    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
+    super(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
   }
 
   @Override
@@ -135,7 +131,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
         values[count++] = subset.nextDouble();
 
       return new CoverageCoordAxis1D(name, units, description, dataType, axisType,
-              AttributeContainerHelper.filter(attributes.getAttributes(), "_Coordinate"),
+              AttributeContainerHelper.filter(attributes, "_Coordinate"),
               dependenceType, dependsOn, spacing, n, values[0], values[n - 1],
               0.0, values, reader, true);
     }
@@ -151,7 +147,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
         values[count++] = subset.nextDouble();
 
       return new CoverageCoordAxis1D(name, units, description, dataType, axisType,
-              AttributeContainerHelper.filter(attributes.getAttributes(), "_Coordinate"),
+              AttributeContainerHelper.filter(attributes, "_Coordinate"),
               dependenceType, dependsOn, spacing, n/2, values[0], values[n - 1],
               0.0, values, reader, true);
     }

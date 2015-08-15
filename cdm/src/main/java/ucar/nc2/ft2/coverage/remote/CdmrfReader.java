@@ -261,17 +261,17 @@ message CoordAxis {
 
     if (dependenceType == CoverageCoordAxis.DependenceType.twoD && axisType == AxisType.Time) {
 
-      return new FmrcTimeAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
+      return new FmrcTimeAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn,
                  spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
 
     } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
 
-      return new LatLonAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn, shape,
+      return new LatLonAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn, shape,
                  spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
 
     } else {
 
-      return new CoverageCoordAxis1D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts.getAttributes(), dependenceType, dependsOn,
+      return new CoverageCoordAxis1D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn,
               spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
     }
   }

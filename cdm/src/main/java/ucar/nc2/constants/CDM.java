@@ -64,6 +64,7 @@ public class CDM {
   public static final String SCALE_FACTOR = "scale_factor";
   public static final String TITLE = "title";
   public static final String UNITS = "units";
+  public static final String UDUNITS = "udunits";
   public static final String UNSIGNED = "_Unsigned";
   public static final String VALID_RANGE = "valid_range";
 

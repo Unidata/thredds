@@ -3,12 +3,10 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.time.Calendar;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
-import ucar.nc2.util.NamedObject;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -24,10 +22,10 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   private int[] shape;
   private CoverageCoordAxis[] dependentAxes;
 
-  public LatLonAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes, DependenceType dependenceType,
+  public LatLonAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts, DependenceType dependenceType,
                       List<String> dependsOn, int[] shape, Spacing spacing, int ncoords, double startValue, double endValue, double resolution, double[] values,
                       CoordAxisReader reader, boolean isSubset) {
-    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
+    super(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
     this.shape = shape;
   }
 
@@ -63,7 +61,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   @Override
   public LatLonAxis2D subset(SubsetParams params) {  // LOOK wrong
-    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, shape,
+    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, shape,
             spacing, ncoords, startValue, endValue, resolution, values, reader, true);
   }
 

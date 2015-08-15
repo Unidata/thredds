@@ -14,7 +14,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * A Coverage CoordSys
+ * A Coverage Coordinate System
  *
  * @author caron
  * @since 7/11/2015
@@ -25,8 +25,9 @@ public class CoverageCoordSys {
   public enum Type {General, Curvilinear, Grid, Swath, Fmrc}
 
   //////////////////////////////////////////////////
-  protected CoordSysContainer dataset; // almost immutable, need to wire these in after the constructor
-  private HorizCoordSys horizCoordSys;
+  protected CoordSysContainer dataset;  // almost immutable, need to wire these in after the constructor
+  private HorizCoordSys horizCoordSys;  // required
+  private Time2DCoordSys time2DCoordSys;// optional
 
   private final String name;
   private final List<String> axisNames;        // note not in order (?)
@@ -51,6 +52,14 @@ public class CoverageCoordSys {
   public void setDataset(CoordSysContainer dataset) {
     if (this.dataset != null) throw new RuntimeException("Cant change dataset once set");
     this.dataset = dataset;
+
+    // see if theres a Time2DCoordSys
+    for (CoverageCoordAxis axis : getAxes()) {
+      if (axis instanceof TimeOffsetAxis) {
+        if (this.time2DCoordSys != null) throw new RuntimeException("Cant have multipe TimeOffsetAxis in a CoverageCoordSys");
+        time2DCoordSys = new Time2DCoordSys((TimeOffsetAxis) axis);
+      }
+    }
   }
 
   void setHorizCoordSys(HorizCoordSys horizCoordSys) {
@@ -217,18 +226,24 @@ public class CoverageCoordSys {
 
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
-      if (!axis.getAxisType().isHoriz())
+      if (!axis.getAxisType().isHoriz() && !axis.isTime2D())
         subsetAxes.add(axis.subset(params));
     }
+
+    Time2DCoordSys subsetTime2D = null;
+    if (time2DCoordSys != null) {
+      subsetTime2D = time2DCoordSys.subset(params);
+      subsetAxes.addAll(subsetTime2D.getCoordAxes());
+    }
+
     HorizCoordSys orgHcs = getHorizCoordSys();
     HorizCoordSys subsetHcs = orgHcs.subset(params);
     subsetAxes.addAll(subsetHcs.getCoordAxes());
 
     CoverageCoordSys result = new CoverageCoordSys(this);
-    MyCoordSysContainer  fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
+    MyCoordSysContainer fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
     result.setDataset(fakeDataset);
     result.setHorizCoordSys(subsetHcs);
-
     return result;
   }
 

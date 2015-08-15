@@ -95,6 +95,6 @@ value is used.
 
 '''''
 
-image:../../nc.gif[image] This document was last updated April 2015
+image:../../nc.gif[image] This document was last updated August 2015
 
  

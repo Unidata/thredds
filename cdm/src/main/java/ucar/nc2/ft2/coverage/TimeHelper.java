@@ -1,7 +1,8 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage;
 
-import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
@@ -22,19 +23,29 @@ import java.util.List;
 public class TimeHelper {
   final Calendar cal;
   final CalendarDateUnit dateUnit;
-  final CalendarDate runDate;
+  final CalendarDate refDate;
   final double duration;
 
-  public TimeHelper(String units, List<Attribute> attributes) {
-    this.cal = getCalendarFromAttribute(attributes);
+  public TimeHelper(String units, AttributeContainer atts) {
+    this.cal = getCalendarFromAttribute(atts);
     this.dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
-    this.runDate = dateUnit.getBaseCalendarDate();
+    this.refDate = dateUnit.getBaseCalendarDate();
+    this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
+  }
+
+  public TimeHelper(AttributeContainer atts) {
+    String units = atts.findAttValueIgnoreCase(CDM.UDUNITS, null);
+    if (units == null)
+      units = atts.findAttValueIgnoreCase(CDM.UNITS, null);
+    this.cal = getCalendarFromAttribute(atts);
+    this.dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
+    this.refDate = dateUnit.getBaseCalendarDate();
     this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
   }
 
   // get offset from runDate, in units of dateUnit
   public double convert(CalendarDate date) {
-    long msecs = date.getDifferenceInMsecs(runDate);
+    long msecs = date.getDifferenceInMsecs(refDate);
     return msecs / duration;
   }
 
@@ -61,6 +72,10 @@ public class TimeHelper {
     return result;
   }
 
+  public CalendarDate getRefDate() {
+    return refDate;
+  }
+
   public CalendarDate makeDate(double value) {
     return dateUnit.makeCalendarDate(value);
   }
@@ -71,14 +86,13 @@ public class TimeHelper {
     return CalendarDateRange.of(start, end);
   }
 
-  public static ucar.nc2.time.Calendar getCalendarFromAttribute(List<Attribute> atts) {
-    Attribute cal = null;
-    for (Attribute att : atts) {
-      if (att.getFullName().equalsIgnoreCase(CF.CALENDAR))
-       cal = att;
-    }
+  public double getOffsetInTimeUnits(CalendarDate convertFrom, CalendarDate convertTo) {
+    return dateUnit.getTimeUnit().getOffset(convertFrom, convertTo);
+  }
+
+  public static ucar.nc2.time.Calendar getCalendarFromAttribute(AttributeContainer atts) {
+    String cal = atts.findAttValueIgnoreCase(CF.CALENDAR, null);
     if (cal == null) return null;
-    String s = cal.getStringValue();
-    return ucar.nc2.time.Calendar.get(s);
+    return ucar.nc2.time.Calendar.get(cal);
   }
 }

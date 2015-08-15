@@ -45,18 +45,18 @@ public class CoordinateVert implements Coordinate {
     return levelSorted;
   }
 
+  @Override
   public int findIndexContaining(double need) {
     if (isLayer()) {
-      for (int i=0; i<levelSorted.size(); i++) {
-        VertCoord.Level level = levelSorted.get(i);
-        if (level.getValue1() <= need && need <= level.getValue2()) return i;
-        if (level.getValue1() >= need && need >= level.getValue2()) return i; // kinda lame
-      }
-      return -1;
+      int idx = findSingleHit(need);
+      if (idx >= 0) return idx;
+      // multiple hits = choose closest to the midpoint
+      return findClosest(need);
 
     } else {
       double bestDiff = Double.MAX_VALUE;
       int bestIdx = 0;
+       // choose closest to level1
       for (int i=0; i<levelSorted.size(); i++) {
         VertCoord.Level level = levelSorted.get(i);
         double diff = Math.abs(need - level.getValue1());
@@ -67,6 +67,41 @@ public class CoordinateVert implements Coordinate {
       }
       return bestIdx;
     }
+  }
+
+   // return index if only one match, else -1
+  private int findSingleHit(double target) {
+    int hits = 0;
+    int idxFound = -1;
+    for (int i = 0; i < levelSorted.size(); i++) {
+      VertCoord.Level level = levelSorted.get(i);
+      if (contains(target, level)) {
+        hits++;
+        idxFound = i;
+      }
+    }
+    return hits == 1 ? idxFound : -1;
+  }
+
+  // return index of closest value to target
+  private int findClosest(double target) {
+    double minDiff =  Double.MAX_VALUE;
+    int idxFound = -1;
+    for (int i = 0; i < levelSorted.size(); i++) {
+      VertCoord.Level level = levelSorted.get(i);
+      double midpoint = (level.getValue1()+level.getValue2()) /2;
+      double diff =  Math.abs(midpoint - target);
+      if (diff < minDiff) {
+        minDiff = diff;
+        idxFound = i;
+      }
+    }
+    return idxFound;
+  }
+
+  private boolean contains(double target, VertCoord.Level level) {
+    if (level.getValue1() <= target && target <= level.getValue2()) return true;
+    return level.getValue1() >= target && target >= level.getValue2();
   }
 
   @Override

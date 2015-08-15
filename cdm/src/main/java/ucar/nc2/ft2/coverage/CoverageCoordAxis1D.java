@@ -4,6 +4,7 @@ package ucar.nc2.ft2.coverage;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -27,12 +28,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   // subset ??
   protected int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
   protected int stride = 1;
+  protected boolean isTime2D;
 
-  public CoverageCoordAxis1D(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
+  public CoverageCoordAxis1D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
                                 DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue,
                                 double resolution, double[] values, CoordAxisReader reader, boolean isSubset) {
 
-    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
+    super(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
 
     this.minIndex = 0;
     this.maxIndex = ncoords-1;
@@ -41,6 +43,15 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   //public CoverageCoordAxis1D copy() {
   //  return new CoverageCoordAxis1D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
   //}
+
+
+  public boolean isTime2D() {
+    return isTime2D;
+  }
+
+  public void setIsTime2D() {
+    this.isTime2D = true;
+  }
 
   public int getStride() {
     return stride;
@@ -319,6 +330,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     CoordAxisHelper helper = new CoordAxisHelper(this);
     return helper.subsetValues(dependsOn.getMinIndex(), dependsOn.getMaxIndex()); // LOOK not dealing with stride
   }
+
+  CoverageCoordAxis1D subset(int count, double start, double end, double[] values) {
+    return new CoverageCoordAxis1D(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
+            this.getAttributeContainer(), this.getDependenceType(), this.getDependsOnList(), this.getSpacing(),
+            count, start, end, this.getResolution(), values, this.reader, true);
+  }
+
 
 }
 

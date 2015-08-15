@@ -624,11 +624,20 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
   }
 
+  @Override
   public int findIndexContaining(double need) {
     if (!isOrthogonal)
       throw new IllegalStateException();
 
     return otime.findIndexContaining(need);
+  }
+
+  public int findIndexContaining(int runIdx, double value, CalendarDate refDateOfValue) {
+    if (!isOrthogonal)
+      throw new IllegalStateException();
+
+    int offset = timeUnit.getOffset(getRefDate(runIdx), refDateOfValue);
+    return otime.findIndexContaining(offset + value);
   }
 
   /**

@@ -44,13 +44,47 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return timeIntervals;
   }
 
+  @Override
   public int findIndexContaining(double need) {
-    for (int i=0; i<timeIntervals.size(); i++) {
-      TimeCoord.Tinv tinv = timeIntervals.get(i);
-      if (tinv.getBounds1() <= need && need <= tinv.getBounds2()) return i;
-      if (tinv.getBounds1() >= need && need >= tinv.getBounds2()) return i; // kinda lame
+    int idx = findSingleHit(need);
+    if (idx >= 0) return idx;
+    // multiple hits = choose closest to the midpoint
+    return findClosest(need);
+  }
+
+   // return index if only one match, else -1
+  private int findSingleHit(double target) {
+    int hits = 0;
+    int idxFound = -1;
+    for (int i = 0; i < timeIntervals.size(); i++) {
+      TimeCoord.Tinv level = timeIntervals.get(i);
+      if (contains(target, level)) {
+        hits++;
+        idxFound = i;
+      }
     }
-    return -1;
+    return hits == 1 ? idxFound : -1;
+  }
+
+  // return index of closest value to target
+  private int findClosest(double target) {
+    double minDiff =  Double.MAX_VALUE;
+    int idxFound = -1;
+    for (int i = 0; i < timeIntervals.size(); i++) {
+      TimeCoord.Tinv level = timeIntervals.get(i);
+      double midpoint = (level.getBounds1()+level.getBounds2()) /2;
+      double diff =  Math.abs(midpoint - target);
+      if (diff < minDiff) {
+        minDiff = diff;
+        idxFound = i;
+      }
+    }
+    return idxFound;
+  }
+
+  private boolean contains(double target, TimeCoord.Tinv level) {
+    if (level.getBounds1() <= target && target <= level.getBounds2()) return true;
+    return level.getBounds1() >= target && target >= level.getBounds2();
   }
 
   @Override

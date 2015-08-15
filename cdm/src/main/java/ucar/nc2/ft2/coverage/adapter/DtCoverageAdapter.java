@@ -4,9 +4,11 @@ package ucar.nc2.ft2.coverage.adapter;
 import com.google.common.collect.Lists;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.unidata.util.Parameter;
@@ -96,6 +98,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     AxisType axisType = dtCoordAxis.getAxisType();
     String units = dtCoordAxis.getUnitsString();
     String description = dtCoordAxis.getDescription();
+    AttributeContainer atts = dtCoordAxis.getAttributeContainer();
 
     CoverageCoordAxis.DependenceType dependenceType;
     List<String> dependsOn = new ArrayList<>();
@@ -153,7 +156,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         }
       }
 
-      return new CoverageCoordAxis1D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
+      return new CoverageCoordAxis1D(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing,
               ncoords, startValue, endValue, resolution, values, reader, false);
     }
 
@@ -197,13 +200,13 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     // Fmrc Time
     if (axisType == AxisType.Time) {
       dependsOn = Lists.newArrayList(dtCoordAxis.getDimension(0).getFullName());  // only the first dimension
-      return new FmrcTimeAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, spacing,
+      return new FmrcTimeAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributeContainer(), dependenceType, dependsOn, spacing,
               ncoords, startValue, endValue, resolution, values, reader, false);
     }
 
     // 2D Lat Lon
     if (axisType == AxisType.Lat || axisType == AxisType.Lon) {
-      return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributes(), dependenceType, dependsOn, dtCoordAxis.getShape(),
+      return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributeContainer(), dependenceType, dependsOn, dtCoordAxis.getShape(),
               spacing, ncoords, startValue, endValue, resolution, values, reader, false);
     }
 

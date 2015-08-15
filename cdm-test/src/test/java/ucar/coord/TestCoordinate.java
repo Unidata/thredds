@@ -81,6 +81,11 @@ public class TestCoordinate implements Coordinate {
   }
 
   @Override
+  public int findIndexContaining(double need) {
+    return -1;
+  }
+
+  @Override
   public int getNCoords() {
     return getSize();
   }

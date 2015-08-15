@@ -8,8 +8,7 @@ import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time.*;
 import ucar.nc2.ui.MFileTable;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -975,8 +974,8 @@ public class CdmIndex3Panel extends JPanel {
 
       } else if (coord instanceof CoordinateTime2D) {
         CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-        CoordinateRuntime runtime = coord2D.getRuntimeCoordinate();
-        f.format("%s %s", runtime.getFirstDate(), runtime.getLastDate());
+        CalendarDateRange dr = coord2D.makeCalendarDateRange(ucar.nc2.time.Calendar.proleptic_gregorian);
+        f.format("%s %s", dr.getStart(), dr.getEnd());
 
       } else {
         if (coord.getValues() == null) return "";

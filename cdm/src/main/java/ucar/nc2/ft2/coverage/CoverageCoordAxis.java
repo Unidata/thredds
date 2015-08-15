@@ -6,11 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
@@ -61,11 +63,12 @@ abstract public class CoverageCoordAxis {
 
   protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
   private final boolean isSubset;
+  private Boolean isTime2D;
 
   // may be lazy eval
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
 
-  protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, List<Attribute> attributes,
+  protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
                               DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
                               double[] values, CoordAxisReader reader, boolean isSubset) {
     this.name = name;
@@ -73,7 +76,7 @@ abstract public class CoverageCoordAxis {
     this.description = description;
     this.dataType = dataType;
     this.axisType = axisType;
-    this.attributes = new AttributeContainerHelper(name, attributes);
+    this.attributes = atts;
     this.dependenceType = dependenceType;
     this.dependsOn = dependsOn;
     this.spacing = spacing;
@@ -83,7 +86,9 @@ abstract public class CoverageCoordAxis {
     this.reader = reader; // used only if values == null
 
     if (axisType == AxisType.Time || axisType == AxisType.RunTime)
-      timeHelper = new TimeHelper(units, attributes);
+      timeHelper = new TimeHelper(units, atts);
+    else if (axisType == AxisType.TimeOffset)
+      timeHelper = new TimeHelper(atts);
     else
       timeHelper = null;
 
@@ -128,6 +133,10 @@ abstract public class CoverageCoordAxis {
 
   public List<Attribute> getAttributes() {
     return attributes.getAttributes();
+  }
+
+  public AttributeContainer getAttributeContainer() {
+    return new AttributeContainerHelper(name, attributes.getAttributes());
   }
 
   public int getNcoords() {
@@ -189,7 +198,11 @@ abstract public class CoverageCoordAxis {
     return isSubset;
   }
 
-  @Override
+  public boolean isTime2D() {
+     return false;
+   }
+
+   @Override
   public String toString() {
     Formatter f = new Formatter();
     Indent indent = new Indent(2);
@@ -206,7 +219,12 @@ abstract public class CoverageCoordAxis {
   public Range getRange() {
     if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
       return Range.EMPTY;
-    return new Range(ncoords);
+
+    try {
+      return new Range(name, 0, ncoords-1);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public void toString(Formatter f, Indent indent) {
@@ -257,6 +275,10 @@ abstract public class CoverageCoordAxis {
 
   public CalendarDateRange getDateRange() {
     return timeHelper.getDateRange(startValue, endValue);
+  }
+
+  public double getOffsetInTimeUnits(CalendarDate convertFrom, CalendarDate convertTo) {
+    return timeHelper.getOffsetInTimeUnits(convertFrom, convertTo);
   }
 
   ///////////////////////////////////////////////

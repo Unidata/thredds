@@ -90,6 +90,7 @@ public abstract class GribDataReader {
   }
 
   public Array readData(Section want, int[] saShape) throws IOException, InvalidRangeException {
+    System.out.printf("%nGribDataReader.want=%n%s%n",want.show());
     if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)
       return readDataFromPartition((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want, saShape);
     else
@@ -318,6 +319,8 @@ public abstract class GribDataReader {
       for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
         for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
           int dataIdx = y * nx + x;
+          if (dataIdx >= data.length)
+            System.out.println("HEY");
           dataArray.setFloat(start + count, data[dataIdx]);
           count++;
         }

@@ -137,7 +137,6 @@ public class HorizCoordSys {
 
   public CoverageCoordAxis getYAxis() {
     return (yaxis != null) ? yaxis : lataxis;
-
   }
 
 }

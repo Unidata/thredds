@@ -238,7 +238,6 @@ class CoordAxisHelper {
   }
 
   private int findCoordElementDiscontiguousInterval(double target, boolean bounded) {
-    ;
     int n = axis.getNcoords();
 
     if (axis.isAscending()) {
@@ -300,24 +299,24 @@ class CoordAxisHelper {
 
   //////////////////////////////////////////////////////////////
 
-  public CoverageCoordAxis subset(double minValue, double maxValue) {
+  public CoverageCoordAxis1D subset(double minValue, double maxValue) {
     return subsetValues(minValue, maxValue);
   }
 
-  public CoverageCoordAxis subsetClosest(double want) {
+  public CoverageCoordAxis1D subsetClosest(double want) {
     return subsetValuesClosest(want);
   }
 
-  public CoverageCoordAxis subsetLatest() {
+  public CoverageCoordAxis1D subsetLatest() {
     return subsetValuesLatest();
   }
 
-  public CoverageCoordAxis subset(CalendarDate date) {
+  public CoverageCoordAxis1D subset(CalendarDate date) {
     double want = axis.convert(date);
     return subsetValuesClosest(want);
   }
 
-  public CoverageCoordAxis subset(CalendarDateRange dateRange) {
+  public CoverageCoordAxis1D subset(CalendarDateRange dateRange) {
     double min = axis.convert(dateRange.getStart());
     double max = axis.convert(dateRange.getEnd());
     return subsetValues(min, max);
@@ -325,7 +324,7 @@ class CoordAxisHelper {
 
   // look does min < max when !isAscending ?
   // look could specialize when only one point
-  private CoverageCoordAxis subsetValues(double minValue, double maxValue) {
+  private CoverageCoordAxis1D subsetValues(double minValue, double maxValue) {
 
     int minIndex = findCoordElementBounded(minValue, Mode.min);
     int maxIndex = findCoordElementBounded(maxValue, Mode.max);
@@ -341,7 +340,7 @@ class CoordAxisHelper {
     return subsetValues(minIndex, maxIndex);
   }
 
-  public CoverageCoordAxis subsetValues(int minIndex, int maxIndex) {
+  public CoverageCoordAxis1D subsetValues(int minIndex, int maxIndex) {
     double[] subsetValues = null;
     int count = maxIndex - minIndex + 1;
 
@@ -370,9 +369,10 @@ class CoordAxisHelper {
         break;
     }
 
-    CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
-            axis.getAttributes(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
-            count, axis.getCoord(minIndex), axis.getCoord(maxIndex), axis.getResolution(), subsetValues, axis.reader, true);
+   // CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
+   //         axis.getAttributeContainer(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
+   //         count, axis.getCoord(minIndex), axis.getCoord(maxIndex), axis.getResolution(), subsetValues, axis.reader, true);
+    CoverageCoordAxis1D result = axis.subset(count, axis.getCoord(minIndex), axis.getCoord(maxIndex), subsetValues);
     result.setIndexRange(minIndex, maxIndex, 1);
     return result;
   }
@@ -384,7 +384,7 @@ class CoordAxisHelper {
    * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
    * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
    */
-  private CoverageCoordAxis subsetValuesClosest(double want) {
+  private CoverageCoordAxis1D subsetValuesClosest(double want) {
     double[] subsetValues = null;
 
     int want_index = findCoordElementBounded(want, Mode.closest);  // LOOK bounded
@@ -413,14 +413,15 @@ class CoordAxisHelper {
         break;
     }
 
-    CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
-            axis.getAttributes(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
-            1, axis.getCoord(want_index), axis.getCoord(want_index), axis.getResolution(), subsetValues, axis.reader, true);
+   // CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
+   //         axis.getAttributeContainer(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
+   //         1, axis.getCoord(want_index), axis.getCoord(want_index), axis.getResolution(), subsetValues, axis.reader, true);
+    CoverageCoordAxis1D result = axis.subset(1, axis.getCoord(want_index), axis.getCoord(want_index), subsetValues);
     result.setIndexRange(want_index, want_index, 1);
     return result;
   }
 
-  private CoverageCoordAxis subsetValuesLatest() {
+  private CoverageCoordAxis1D subsetValuesLatest() {
     double[] subsetValues = null;
 
     int last = axis.getNcoords()-1;
@@ -441,9 +442,10 @@ class CoordAxisHelper {
         break;
     }
 
-    CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
-            axis.getAttributes(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
-            1, start, end, axis.getResolution(), subsetValues, axis.reader, true);
+    //CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
+    //        axis.getAttributeContainer(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
+    //        1, start, end, axis.getResolution(), subsetValues, axis.reader, true);
+    CoverageCoordAxis1D result = axis.subset(1, start, end, subsetValues);
     result.setIndexRange(last, last, 1);
     return result;
   }

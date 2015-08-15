@@ -1282,6 +1282,10 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return attributes.getAttributes();
   }
 
+  public AttributeContainer getAttributeContainer() {
+    return new AttributeContainerHelper(getFullName(), attributes.getAttributes());
+  }
+
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
   }

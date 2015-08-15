@@ -89,6 +89,21 @@ public class CoordinateEns implements Coordinate {
   }
 
   @Override
+  public int findIndexContaining(double need) {
+    double bestDiff = Double.MAX_VALUE;
+    int bestIdx = 0;
+    for (int i = 0; i < ensSorted.size(); i++) {
+      EnsCoord.Coord coord = ensSorted.get(i);
+      double diff = Math.abs(need - coord.getEnsMember());
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestIdx = i;
+      }
+    }
+    return bestIdx;
+  }
+
+  @Override
   public int getSize() {
     return ensSorted.size();
   }

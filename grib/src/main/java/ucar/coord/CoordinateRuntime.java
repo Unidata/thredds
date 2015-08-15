@@ -140,6 +140,21 @@ public class CoordinateRuntime implements Coordinate {
   }
 
   @Override
+  public int findIndexContaining(double need) {
+    double bestDiff = Double.MAX_VALUE;
+    int bestIdx = 0;
+    for (int i = 0; i < runtimes.length; i++) {
+      long coord = runtimes[i];
+      double diff = Math.abs(need - coord);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestIdx = i;
+      }
+    }
+    return bestIdx;
+  }
+
+  @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s:", indent, getType());
     for (int idx=0; idx<getSize(); idx++)

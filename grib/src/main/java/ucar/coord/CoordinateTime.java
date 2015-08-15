@@ -44,6 +44,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return offsetSorted;
   }
 
+  @Override
   public int findIndexContaining(double need) {
     double bestDiff = Double.MAX_VALUE;
     int bestIdx = 0;

@@ -126,15 +126,15 @@ public class AttributeContainerHelper implements AttributeContainer {
     return att != null && atts.remove(att);
   }
 
-  static public List<Attribute> filter(List<Attribute> atts, String... remove) {
+  static public AttributeContainer filter(AttributeContainer atts, String... remove) {
     List<Attribute> result = new ArrayList<>();
-    for (Attribute att : atts) {
+    for (Attribute att : atts.getAttributes()) {
       boolean ok = true;
       for (String s : remove)
         if (att.getShortName().startsWith(s)) ok = false;
       if (ok) result.add(att);
     }
-    return result;
+    return new AttributeContainerHelper(atts.getName(), result);
   }
 
 }
