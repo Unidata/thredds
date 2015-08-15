@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.SubsetParams;
@@ -55,7 +55,7 @@ public class TestGridAsPointWriting {
       File tempFile = TestDir.getTempFile();
       System.out.printf(" write to %s%n", tempFile.getAbsolutePath());
 
-      try (CoverageCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
         Assert.assertNotNull(endpoint, cc);
         Assert.assertEquals(1, cc.getCoverageDatasets().size());
         CoverageDataset gds = cc.getCoverageDatasets().get(0);

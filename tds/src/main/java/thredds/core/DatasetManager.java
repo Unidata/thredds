@@ -53,7 +53,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
@@ -334,7 +334,7 @@ public class DatasetManager implements InitializingBean {
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
     if (gds.getGrids().size() > 0) {
-      CoverageCollection cc = DtCoverageAdapter.factory(gds);
+      CoverageDatasetCollection cc = DtCoverageAdapter.factory(gds);
       if (cc == null || cc.getCoverageDatasets().size() != 1) throw new FileNotFoundException("Not a Grid Dataset " + gds.getName());
       return cc.getCoverageDatasets().get(0);
     }

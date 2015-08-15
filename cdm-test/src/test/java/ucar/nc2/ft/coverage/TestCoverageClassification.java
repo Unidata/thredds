@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
@@ -86,7 +86,7 @@ public class TestCoverageClassification {
   @Test
   public void testFactory() throws IOException {
 
-    try (CoverageCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
       Assert.assertEquals(1, cc.getCoverageDatasets().size());
       CoverageDataset gds = cc.getCoverageDatasets().get(0);

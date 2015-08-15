@@ -47,7 +47,7 @@ import thredds.server.catalog.FeatureCollectionRef;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.time.CalendarDateRange;
@@ -563,7 +563,7 @@ public abstract class InvDatasetFeatureCollection {
 
   // LOOK Overridden in GRIB, what about Fmrc?
   public CoverageDataset getGridCoverage(String matchPath) throws IOException {
-    CoverageCollection cc = CoverageDatasetFactory.open(matchPath);
+    CoverageDatasetCollection cc = CoverageDatasetFactory.open(matchPath);
     if(cc == null) return null;
 
     assert cc.getCoverageDatasets().size() == 1;  // LOOK probably want to use endpoint#datasetName ?

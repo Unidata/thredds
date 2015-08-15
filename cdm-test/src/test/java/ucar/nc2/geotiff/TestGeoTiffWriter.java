@@ -119,7 +119,7 @@ public class TestGeoTiffWriter {
       System.out.printf("geotiff2 read coverage %s write %s%n", filename, gridOut2);
 
       GeoReferencedArray array;
-      try (CoverageCollection cc = CoverageDatasetFactory.open(filename)) {
+      try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
         assert cc != null;
         Assert.assertEquals(1, cc.getCoverageDatasets().size());
         CoverageDataset gcd = cc.getCoverageDatasets().get(0);

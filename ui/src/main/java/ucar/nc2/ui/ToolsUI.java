@@ -4816,7 +4816,7 @@ public class ToolsUI extends JPanel {
     JSplitPane split;
     IndependentWindow viewerWindow;
 
-    CoverageCollection gcd = null;
+    CoverageDatasetCollection gcd = null;
 
     CoveragePanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);

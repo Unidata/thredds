@@ -93,7 +93,7 @@ public class TestGridCoverageMisc {
   public void testReadGridCoverageSlice() throws IOException {    // read single slice
     System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
       CoverageDataset gcs = (type == null) ? cc.getCoverageDatasets().get(0) : cc.findCoverageDataset(type);
       Assert.assertNotNull("gcs", gcs);

@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class CoverageTable extends JPanel {
   private PreferencesExt prefs;
-  private CoverageCollection coverageCollection;
+  private CoverageDatasetCollection coverageCollection;
 
   private BeanTable dsTable, covTable, csysTable, axisTable;
   private JSplitPane split, split2, split3;
@@ -93,7 +93,21 @@ public class CoverageTable extends JPanel {
     add(split3, BorderLayout.CENTER);
 
     // context menu
-    JTable jtable = covTable.getJTable();
+    JTable jtable;
+
+    jtable= dsTable.getJTable();
+    PopupMenu dsPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
+    dsPopup.addAction("Show", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        DatasetBean bean = (DatasetBean) dsTable.getSelectedBean();
+        infoTA.clear();
+        infoTA.appendLine(bean.cds.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
+
+    jtable= covTable.getJTable();
     PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -269,7 +283,7 @@ public class CoverageTable extends JPanel {
     coverageCollection.showInfo(result);
   }
 
-  public void setCollection(CoverageCollection gds) {
+  public void setCollection(CoverageDatasetCollection gds) {
     this.coverageCollection = gds;
     clear();
 
@@ -344,6 +358,10 @@ public class CoverageTable extends JPanel {
 
     public int getNCoverages() {
       return cds.getCoverageCount();
+    }
+
+    public int getNCooordSys() {
+      return cds.getCoordSys().size();
     }
 
     public int getNAxes() {

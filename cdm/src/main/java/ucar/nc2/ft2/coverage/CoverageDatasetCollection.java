@@ -30,23 +30,59 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package ucar.nc2.ft2.coverage;
 
-import ucar.ma2.InvalidRangeException;
+import com.google.common.collect.Lists;
 
 import java.io.IOException;
+import java.util.Formatter;
+import java.util.List;
 
 /**
- * Abstraction to read the data in a coverage.
- * Makes it simpler to implement multiple versions of CoverageDataset + related classes.
+ * A Collection of CoverageDatasets.
+ * Needed because some endpoints (eg files) will have multiple CoverageDatasets.
+ * A CoverageDataset must have a single HorizCoordSys and Calendar.
+ * Grib collections often have multiple CoverageDatasets (TwoD, Best).
  *
- * @author caron
- * @since 7/13/2015
+ * @author John
+ * @since 8/8/2015
  */
-public interface CoverageReader extends AutoCloseable {
+public class CoverageDatasetCollection implements AutoCloseable {
+  private AutoCloseable closer;
+  private List<CoverageDataset> datasets;
 
-  // List<ArrayWithCoordinates> readData(List<Coverage> coverage, SubsetParams subset) throws IOException;
+  public CoverageDatasetCollection(AutoCloseable closer, CoverageDataset coverageDataset) {
+    this.closer = closer;
+    this.datasets = Lists.newArrayList(coverageDataset);
+  }
 
-  GeoReferencedArray readData(Coverage coverage, SubsetParams subset, boolean canonicalOrder) throws IOException, InvalidRangeException;
+  public CoverageDatasetCollection(AutoCloseable closer, List<CoverageDataset> datasets) {
+    this.closer = closer;
+    this.datasets = datasets;
+  }
 
+  @Override
+  public void close() throws IOException {
+    try {
+      closer.close();
+    } catch (IOException ioe) {
+      throw ioe;
+    } catch (Exception e) {
+      throw new IOException(e);
+    }
+  }
+
+  public List<CoverageDataset> getCoverageDatasets() {
+    return datasets;
+  }
+
+  public CoverageDataset findCoverageDataset( CoverageCoordSys.Type type) {
+    for (CoverageDataset cd : datasets)
+      if (cd.getCoverageType() == type) return cd;
+    return null;
+  }
+
+  public void showInfo(Formatter result) {
+  }
 }

@@ -385,6 +385,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return varMap.get(vi);
     }
 
+    public Optional<Coordinate> findCoordinate(String name) {
+      return coords.stream().filter(x -> x.getName().equals(name)).findFirst();
+    }
+
     public List<VariableIndex> getVariables() {
       return variList;
     }
