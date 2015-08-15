@@ -12,7 +12,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
@@ -63,7 +62,6 @@ abstract public class CoverageCoordAxis {
 
   protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
   private final boolean isSubset;
-  private Boolean isTime2D;
 
   // may be lazy eval
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
@@ -80,17 +78,17 @@ abstract public class CoverageCoordAxis {
     this.dependenceType = dependenceType;
     this.dependsOn = dependsOn;
     this.spacing = spacing;
-    this.startValue = startValue;
-    this.endValue = endValue;
     this.values = values;
     this.reader = reader; // used only if values == null
 
-    if (axisType == AxisType.Time || axisType == AxisType.RunTime)
-      timeHelper = new TimeHelper(units, atts);
-    else if (axisType == AxisType.TimeOffset)
-      timeHelper = new TimeHelper(atts);
-    else
-      timeHelper = null;
+    if (values == null) {
+      this.startValue = startValue;
+      this.endValue = endValue;
+    }  else {
+      this.startValue = values[0];
+      this.endValue = values[values.length-1];
+      // could also check if regular, and change spacing
+    }
 
     if (resolution == 0.0 && ncoords > 1)
       this.resolution = (endValue - startValue) / (ncoords - 1);
@@ -99,6 +97,13 @@ abstract public class CoverageCoordAxis {
 
     this.ncoords = ncoords;
     this.isSubset = isSubset;
+
+    if (axisType == AxisType.Time || axisType == AxisType.RunTime)
+      timeHelper = new TimeHelper(units, atts);
+    else if (axisType == AxisType.TimeOffset)
+      timeHelper = new TimeHelper(atts);
+    else
+      timeHelper = null;
   }
 
   // called after everything is wired in the dataset
@@ -202,6 +207,10 @@ abstract public class CoverageCoordAxis {
      return false;
    }
 
+  public boolean isInterval() {
+    return spacing == Spacing.contiguousInterval ||  spacing == Spacing.discontiguousInterval;
+  }
+
    @Override
   public String toString() {
     Formatter f = new Formatter();
@@ -228,13 +237,15 @@ abstract public class CoverageCoordAxis {
   }
 
   public void toString(Formatter f, Indent indent) {
-    indent.incr();
     f.format("%sCoordAxis '%s' (%s)%n", indent, name, getClass().getName());
-    f.format("%s  axisType=%s dataType=%s units='%s'%n", indent, axisType, dataType, units);
+    f.format("%s  axisType=%s dataType=%s units='%s'", indent, axisType, dataType, units);
+    if (timeHelper != null) f.format(" refDate=%s", timeHelper.getRefDate());
+    f.format("%n");
     f.format("%s  npts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (getResolution() != 0.0)
       f.format(" resolution=%f", resolution);
-    f.format(" %s :", getDependenceType());
+    f.format(" %s", getDependenceType());
+    if (dependsOn.size() > 0) f.format(" :");
     for (String s : dependsOn)
       f.format(" %s", s);
     f.format("%n");
@@ -244,22 +255,20 @@ abstract public class CoverageCoordAxis {
       switch (spacing) {
         case irregularPoint:
         case contiguousInterval:
-          f.format("%ncontiguous (%d)=", n);
+          f.format("%s  contiguous values (%d)=", indent, n);
           for (double v : values)
             f.format("%f,", v);
           f.format("%n");
           break;
 
         case discontiguousInterval:
-          f.format("%ndiscontiguous (%d)=", n);
+          f.format("%s  discontiguous values (%d)=", indent, n);
           for (int i = 0; i < n; i += 2)
             f.format("(%f,%f) ", values[i], values[i + 1]);
           f.format("%n");
           break;
       }
     }
-
-    indent.decr();
   }
 
   ///////////////////////////////////////////////

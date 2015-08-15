@@ -99,10 +99,16 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
     return helper.subsetValues(0, 0);
   }
 
-  TimeOffsetAxis subset(int count, double start, double end, double[] values) {
+  public CalendarDate makeDate(CalendarDate runDate, double val) {
+    double offset = timeHelper.getOffsetInTimeUnits(timeHelper.getRefDate(), runDate);
+    return timeHelper.makeDate(offset+val);
+  }
+
+
+  TimeOffsetAxis subset(int ncoords, double start, double end, double[] values) {
     return new TimeOffsetAxis(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
             this.getAttributeContainer(), this.getDependenceType(), this.getDependsOnList(), this.getSpacing(),
-            count, start, end, this.getResolution(), values, this.reader, true, reftimeName);
+            ncoords, start, end, this.getResolution(), values, this.reader, true, reftimeName);
   }
 
 }

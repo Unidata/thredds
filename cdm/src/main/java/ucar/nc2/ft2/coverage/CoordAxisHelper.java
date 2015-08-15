@@ -342,26 +342,26 @@ class CoordAxisHelper {
 
   public CoverageCoordAxis1D subsetValues(int minIndex, int maxIndex) {
     double[] subsetValues = null;
-    int count = maxIndex - minIndex + 1;
+    int ncoords = maxIndex - minIndex + 1;
 
     int count2 = 0;
     double[] values = axis.getValues();  // will be null for regular
     switch (axis.getSpacing()) {
 
       case irregularPoint:
-        subsetValues = new double[count];
+        subsetValues = new double[ncoords];
         for (int i = minIndex; i <= maxIndex; i++)
           subsetValues[count2++] = values[i];
         break;
 
       case contiguousInterval:
-        subsetValues = new double[count + 1];            // need npts+1
+        subsetValues = new double[ncoords + 1];            // need npts+1
         for (int i = minIndex; i <= maxIndex + 1; i++)
           subsetValues[count2++] = values[i];
         break;
 
       case discontiguousInterval:
-        subsetValues = new double[2 * count];            // need 2*npts
+        subsetValues = new double[2 * ncoords];            // need 2*npts
         for (int i = minIndex; i <= maxIndex; i += 2) {
           subsetValues[count2++] = values[i];
           subsetValues[count2++] = values[i + 1];
@@ -372,7 +372,7 @@ class CoordAxisHelper {
    // CoverageCoordAxis1D result = new CoverageCoordAxis1D(axis.getName(), axis.getUnits(), axis.getDescription(), axis.getDataType(), axis.getAxisType(),
    //         axis.getAttributeContainer(), axis.getDependenceType(), axis.getDependsOnList(), axis.getSpacing(),
    //         count, axis.getCoord(minIndex), axis.getCoord(maxIndex), axis.getResolution(), subsetValues, axis.reader, true);
-    CoverageCoordAxis1D result = axis.subset(count, axis.getCoord(minIndex), axis.getCoord(maxIndex), subsetValues);
+    CoverageCoordAxis1D result = axis.subset(ncoords, axis.getCoord(minIndex), axis.getCoord(maxIndex), subsetValues);
     result.setIndexRange(minIndex, maxIndex, 1);
     return result;
   }

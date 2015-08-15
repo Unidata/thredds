@@ -702,8 +702,6 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     gribSubset.add( subsetCoordSys.getXAxis().getRange());
 
     Section gribSection = new Section(gribSubset);
-    System.out.printf("GribCoverageDataset.readData section=%n%s%n", gribSection.show());
-
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
     Array data =  dataReader.readData(gribSection, gribFullShape);
 

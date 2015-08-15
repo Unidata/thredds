@@ -108,12 +108,12 @@ public class GdsHorizCoordSys {
   }
 
   public double getEndX() {
-    return startx + dx * nx;
+    return startx + dx * (nx-1);
   }
 
   public double getEndY() {
     if (gaussLats != null) return gaussLats.getDouble((int) gaussLats.getSize() - 1);
-    return starty + dy * ny;
+    return starty + dy * (ny-1);
   }
 
   public boolean isLatLon() {
@@ -135,12 +135,12 @@ public class GdsHorizCoordSys {
   }
 
   public ProjectionRect getProjectionBB() {
-    return new ProjectionRect(new ProjectionPointImpl(getStartX(), getStartY()), nx * dx, ny * dy);
+    return new ProjectionRect(new ProjectionPointImpl(getStartX(), getStartY()), getEndX() - getStartX(), getEndY() - getStartY());
   }
 
   public LatLonRect getLatLonBB() {
     if (isLatLon()) {
-      return new LatLonRect(new LatLonPointImpl(getStartY(), getStartX()), ny * dy, nx * dx);
+      return new LatLonRect(new LatLonPointImpl(getStartY(), getStartX()), dy * (ny-1), dx * (nx-1));
     } else {
       return proj.projToLatLonBB(getProjectionBB());
     }

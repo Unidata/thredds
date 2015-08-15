@@ -75,7 +75,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s   minIndex=%d maxIndex=%d stride=%d%n", indent, minIndex, maxIndex, stride);
+    f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s%n", indent, minIndex, maxIndex, stride, isTime2D, isSubset());
   }
 
 
@@ -331,10 +331,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return helper.subsetValues(dependsOn.getMinIndex(), dependsOn.getMaxIndex()); // LOOK not dealing with stride
   }
 
-  CoverageCoordAxis1D subset(int count, double start, double end, double[] values) {
+  CoverageCoordAxis1D subset(int ncoords, double start, double end, double[] values) {
     return new CoverageCoordAxis1D(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
             this.getAttributeContainer(), this.getDependenceType(), this.getDependsOnList(), this.getSpacing(),
-            count, start, end, this.getResolution(), values, this.reader, true);
+            ncoords, start, end, this.getResolution(), values, this.reader, true);
   }
 
 

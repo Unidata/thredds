@@ -33,7 +33,7 @@ public class Time2DCoordSys {
 
   public Time2DCoordSys subset(SubsetParams params) {
     CoverageCoordAxis1D runAxisSubset = (CoverageCoordAxis1D) runAxis.subset(params);
-    TimeOffsetAxis timeOffsetSubset = (TimeOffsetAxis) timeOffset.subset(params, runAxisSubset); // LOOK subset must also be a TimeOffsetAxis
+    TimeOffsetAxis timeOffsetSubset = (TimeOffsetAxis) timeOffset.subset(params, runAxisSubset);
     timeOffsetSubset.setRunAxis(runAxisSubset);
     return new Time2DCoordSys( timeOffsetSubset);
   }

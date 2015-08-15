@@ -489,7 +489,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   ///////////////////////////////////////////////////////////////////////////
 
 
-  // LOOK how come we arent using NetadataExtractor ??
+  // LOOK how come we arent using MetadataExtractor ??
   private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollectionImmutable.GroupGC group) {
     GdsHorizCoordSys gdsCoordSys = group.getGdsHorizCoordSys();
     LatLonRect llbb = GridCoordSys.getLatLonBoundingBox(gdsCoordSys.proj, gdsCoordSys.getStartX(), gdsCoordSys.getStartY(),
