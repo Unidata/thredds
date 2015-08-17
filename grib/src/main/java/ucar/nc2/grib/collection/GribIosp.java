@@ -67,6 +67,7 @@ import java.util.Formatter;
 public abstract class GribIosp extends AbstractIOServiceProvider {
   static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
   static public final String GRIB_VALID_TIME = "GRIB forecast or observation time";
+  static public final String GRIB_RUNTIME = "GRIB reference time";
 
   // do not use
   static public boolean debugRead = false;
@@ -458,7 +459,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_RUNTIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     /* String vsName = tcName + "_ISO";
@@ -517,7 +518,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
-    // the data is not generated until asked for to same space
+    // the data is not generated until asked for to save space
     if (!time2D.isTimeInterval()) {
       v.setSPobject(new Time2Dinfo(Time2DinfoType.off, time2D, null));
     } else {
@@ -536,7 +537,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       String refName = "ref"+tcName;
       Variable vref = ncfile.addVariable(g, new Variable(ncfile, g, null, refName, DataType.DOUBLE, tcName));
       vref.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-      vref.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
+      vref.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_RUNTIME));
       vref.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
       vref.addAttribute(new Attribute(CDM.UNITS, units));
       vref.setSPobject(new Time2Dinfo(Time2DinfoType.is1Dtime, time2D, null));
@@ -730,7 +731,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String tcName = "ref"+timeName;
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, timeName));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_RUNTIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
     v.addAttribute(new Attribute(CDM.UNITS, units));
 

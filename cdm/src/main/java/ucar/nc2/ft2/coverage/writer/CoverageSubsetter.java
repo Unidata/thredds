@@ -116,7 +116,7 @@ public class CoverageSubsetter {
 
     return new CoverageDataset(org.getName(), org.getCoverageType(), new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()),
             latLonBoundingBox, projBoundingBox, dateRange,
-            coordSys, coordTransforms, coordAxes, coverages, org.reader);  // use org.reader -> subset always in coord space !
+            coordSys, coordTransforms, coordAxes, coverages, org.getReader());  // use org.reader -> subset always in coord space !
   }
 
   CoverageCoordAxis1D findIndependentAxis(String want, List<CoverageCoordAxis> axes) {

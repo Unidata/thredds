@@ -105,7 +105,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s%n", indent, minIndex, maxIndex, stride, isTime2D, isSubset());
+    f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s%n", indent, minIndex, maxIndex, stride, isTime2D(), isSubset());
   }
 
 

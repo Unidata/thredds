@@ -46,7 +46,7 @@ import java.util.List;
  * @since 8/13/2015
  */
 public class TimeOffsetAxis extends CoverageCoordAxis1D {
-  private CoverageCoordAxis1D runAxis;
+  // private CoverageCoordAxis1D runAxis;
   private final String reftimeName;
 
   public TimeOffsetAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
@@ -55,25 +55,6 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
 
     super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
     this.reftimeName = reftimeName;
-  }
-
-  @Override
-  protected void setDataset(CoordSysContainer dataset) {
-    CoverageCoordAxis axis = dataset.findCoordAxis(reftimeName);
-    assert axis != null;
-    assert axis instanceof CoverageCoordAxis1D;
-    assert axis.getAxisType() == AxisType.RunTime;
-    runAxis = (CoverageCoordAxis1D) axis;
-  }
-
-  public CoverageCoordAxis1D getRunAxis() {
-    return runAxis;
-  }
-
-  public void setRunAxis(CoverageCoordAxis1D runAxis) {
-    if (this.runAxis != null) throw new RuntimeException("Cant change runAxis once set");
-    this.runAxis = runAxis;
-    this.runAxis.setIsTime2D();
   }
 
   public boolean isTime2D() {

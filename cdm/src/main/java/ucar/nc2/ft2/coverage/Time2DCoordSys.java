@@ -51,8 +51,8 @@ public class Time2DCoordSys {
   public final CoverageCoordAxis1D runAxis;
   public final TimeOffsetAxis timeOffset;
 
-  public Time2DCoordSys(TimeOffsetAxis timeOffset) {
-    this.runAxis = timeOffset.getRunAxis();
+  public Time2DCoordSys(CoverageCoordAxis1D runAxis, TimeOffsetAxis timeOffset) {
+    this.runAxis = runAxis;
     this.timeOffset = timeOffset;
   }
 
@@ -66,8 +66,7 @@ public class Time2DCoordSys {
   public Time2DCoordSys subset(SubsetParams params) {
     CoverageCoordAxis1D runAxisSubset = (CoverageCoordAxis1D) runAxis.subset(params);
     TimeOffsetAxis timeOffsetSubset = (TimeOffsetAxis) timeOffset.subset(params, runAxisSubset);
-    timeOffsetSubset.setRunAxis(runAxisSubset);
-    return new Time2DCoordSys( timeOffsetSubset);
+    return new Time2DCoordSys( runAxisSubset, timeOffsetSubset);
   }
 
 }

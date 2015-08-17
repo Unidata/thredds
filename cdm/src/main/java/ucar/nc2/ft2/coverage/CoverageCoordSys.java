@@ -85,11 +85,24 @@ public class CoverageCoordSys {
     this.dataset = dataset;
 
     // see if theres a Time2DCoordSys
+    TimeOffsetAxis timeOffsetAxis = null;
+    CoverageCoordAxis1D runtimeAxis = null;
+
     for (CoverageCoordAxis axis : getAxes()) {
-      if (axis instanceof TimeOffsetAxis) {
-        if (this.time2DCoordSys != null) throw new RuntimeException("Cant have multipe TimeOffsetAxis in a CoverageCoordSys");
-        time2DCoordSys = new Time2DCoordSys((TimeOffsetAxis) axis);
+      if (axis.getAxisType() == AxisType.TimeOffset) {
+        if (timeOffsetAxis != null) throw new RuntimeException("Cant have multiple TimeOffset Axes in a CoverageCoordSys");
+        timeOffsetAxis = (TimeOffsetAxis) axis;
       }
+      if (axis.getAxisType() == AxisType.RunTime) {
+        if (runtimeAxis != null) throw new RuntimeException("Cant have multiple RunTime axes in a CoverageCoordSys");
+        runtimeAxis = (CoverageCoordAxis1D) axis;
+       }
+     }
+
+    if (runtimeAxis != null && timeOffsetAxis != null) {
+      if (this.time2DCoordSys != null)
+         throw new RuntimeException("Cant have multipe Time2DCoordSys in a CoverageCoordSys");
+      time2DCoordSys = new Time2DCoordSys(runtimeAxis, timeOffsetAxis);
     }
   }
 

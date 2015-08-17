@@ -41,7 +41,7 @@ See link:CdmrfGrammer.adoc[CdmrFeature Grammer] for a description of the on-the-
 |time_start, time_end, time_duration |no |Used to specify a time range (two of these must be present). Times may be a link:#W3Cdate[W3C date] or "latest". Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
 |timeOffset|no | Restrict to an offset from the runtime coordinate. Must use same time units as the dataset.  |Used only if there is a 2D time coordinate (runtime and forecast time) |
 |timeStride|no |Take only every nth time in the available series | Used with time_range or "all" | 1
-|runtime   |no |Time as a link:{w3cDate}[W3C date] or "latest". Restrict to specified runtime coordinate. |Used only if there is a runtime coordinate. | _latest_
+|runtime   |no |Time as a link:{w3cDate}[W3C date] or "latest". Restrict to specified runtime coordinate. |Used only if there is an independent runtime coordinate. | _latest_
 |vertCoord |no |Restrict to specified vertical level coordinate value. |Used only if there is a vertical coordinate. |All the vertical levels will be returned
 |ensCoord  |no |Restrict to specified ensemble coordinate. |Used only if there is an ensemble coordinate. |All the ensembles will be returned
 |=====================================================================================================================================================

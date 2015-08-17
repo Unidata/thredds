@@ -123,7 +123,7 @@ public class TestCoverageSubset {
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
       if (timeAxis != null) {
         TimeOffsetAxis timeOffsetAxis = (TimeOffsetAxis) timeAxis;
-        CoverageCoordAxis1D runAxis = timeOffsetAxis.getRunAxis();
+        CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
         Assert.assertNotNull(AxisType.RunTime.toString(), runAxis);
         Assert.assertEquals(1, runAxis.getNcoords());
         double val = runAxis.getStartValue();
