@@ -106,7 +106,12 @@ public class BAMutil {
     * @return the Image or null if not found
     */
   public static Image getImage( String name) {
-    return Resource.getImage(defaultResourcePath+name+".gif");
+    Image ii;
+    if (name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".gif"))
+       ii = Resource.getImage(defaultResourcePath+name);
+    else
+       ii =  Resource.getImage(defaultResourcePath+name+".gif");
+    return ii;
   }
 
   /** Make a cursor from the named Image in the default resource (jar file)

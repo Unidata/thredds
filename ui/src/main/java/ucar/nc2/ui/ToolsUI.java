@@ -70,6 +70,7 @@ import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.ui.coverage2.CoverageViewer;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
@@ -1321,7 +1322,7 @@ public class ToolsUI extends JPanel {
     }
 
     if (s.getType() == ServiceType.CdmrFeature) {
-      openCoverageDataset(invAccess.getStandardUrlName());
+      openCoverageDataset(invAccess.getWrappedUrlName());
       return;
     }
 
@@ -4812,7 +4813,7 @@ public class ToolsUI extends JPanel {
 
   private class CoveragePanel extends OpPanel {
     ucar.nc2.ui.coverage2.CoverageTable dsTable;
-    ucar.nc2.ui.coverage2.CoverageDisplay display;
+    CoverageViewer display;
     JSplitPane split;
     IndependentWindow viewerWindow;
 
@@ -4853,7 +4854,7 @@ public class ToolsUI extends JPanel {
     private void makeDisplay() {
       viewerWindow = new IndependentWindow("Coverage Viewer", BAMutil.getImage("netcdfUI"));
 
-      display = new ucar.nc2.ui.coverage2.CoverageDisplay((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
+      display = new CoverageViewer((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
       display.addMapBean(new WorldMapBean());
       display.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", WorldDetailMap));
       display.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));

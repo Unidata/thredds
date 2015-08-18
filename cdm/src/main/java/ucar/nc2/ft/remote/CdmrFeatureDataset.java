@@ -61,7 +61,8 @@ import org.jdom2.input.SAXBuilder;
  * @since May 19, 2009
  */
 public class CdmrFeatureDataset {
-  static public final String SCHEME = "cdmrFeature:";
+  static public final String PROTOCOL = "cdmrFeature";
+  static public final String SCHEME = PROTOCOL + ":";
 
   static private boolean debug = false;
   static private boolean showXML = false;

@@ -35,8 +35,8 @@ import java.util.List;
  * @author John
  * @since 12/27/12
  */
-public class CoverageDisplay extends JPanel {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoverageDisplay.class);
+public class CoverageViewer extends JPanel {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoverageViewer.class);
 
   // constants
   private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250;   // quarter sec
@@ -137,7 +137,7 @@ public class CoverageDisplay extends JPanel {
   private boolean debugBeans = false, debugChooser = false, debugPrint = false, debugHelp = false;
   private boolean debugTask = false, debugThread = false;
 
-  public CoverageDisplay(PreferencesExt pstore, RootPaneContainer root, FileManager fileChooser, int defaultHeight) {
+  public CoverageViewer(PreferencesExt pstore, RootPaneContainer root, FileManager fileChooser, int defaultHeight) {
     this.store = pstore;
     this.fileChooser = fileChooser;
 

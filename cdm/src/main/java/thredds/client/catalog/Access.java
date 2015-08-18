@@ -35,6 +35,7 @@ package thredds.client.catalog;
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.stream.CdmRemote;
 
 import java.net.URI;
@@ -59,9 +60,6 @@ public class Access {                 // (5)
     this.service = service;
     this.dataFormatS = dataFormatS;
     this.dataSize = dataSize;
-    if (service == null) {
-      System.out.println("HEY");
-    }
   }
 
   public Dataset getDataset() {
@@ -140,6 +138,8 @@ public class Access {                 // (5)
       return DataFactory.SCHEME + uri;
     if (service.getType() == ServiceType.CdmRemote)
       return CdmRemote.SCHEME + uri;
+    if (service.getType() == ServiceType.CdmrFeature)
+      return CdmrFeatureDataset.SCHEME + uri;
     return uri.toString();
   }
 

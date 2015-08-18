@@ -47,14 +47,13 @@ import java.util.List;
  */
 public class TimeOffsetAxis extends CoverageCoordAxis1D {
   // private CoverageCoordAxis1D runAxis;
-  private final String reftimeName;
+  // private final String reftimeName;
 
   public TimeOffsetAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
                            CoverageCoordAxis.DependenceType dependenceType, List<String> dependsOn, CoverageCoordAxis.Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                           double[] values, CoordAxisReader reader, boolean isSubset, String reftimeName ) {
+                           double[] values, CoordAxisReader reader, boolean isSubset ) {
 
     super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
-    this.reftimeName = reftimeName;
   }
 
   public boolean isTime2D() {
@@ -121,7 +120,7 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
   TimeOffsetAxis subset(int ncoords, double start, double end, double[] values) {
     return new TimeOffsetAxis(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
             this.getAttributeContainer(), this.getDependenceType(), this.getDependsOnList(), this.getSpacing(),
-            ncoords, start, end, this.getResolution(), values, this.reader, true, reftimeName);
+            ncoords, start, end, this.getResolution(), values, this.reader, true);
   }
 
 }

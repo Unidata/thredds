@@ -55,14 +55,14 @@ public class GeoReferencedArray implements IsMissingEvaluator, CoordSysContainer
   private CoverageCoordSys csSubset;
   private List<CoverageCoordAxis> axes;
 
-  public GeoReferencedArray(String coverageName, DataType dataType, Array data, List<CoverageCoordAxis> axes) {
+  public GeoReferencedArray(String coverageName, DataType dataType, Array data, List<CoverageCoordAxis> axes, CoverageCoordSys.Type type) {
     this.coverageName = coverageName;
     this.dataType = dataType;
     this.data = data;
     this.axes = axes;
     List<String> names = axes.stream().map(CoverageCoordAxis::getName).collect(Collectors.toList());
 
-    this.csSubset = new CoverageCoordSys(coverageName, names, null, null);
+    this.csSubset = new CoverageCoordSys(coverageName, names, null, type);
     this.csSubset.setDataset(this);
   }
 
@@ -71,6 +71,7 @@ public class GeoReferencedArray implements IsMissingEvaluator, CoordSysContainer
     this.dataType = dataType;
     this.data = data;
     this.csSubset = csSubset;
+    this.axes = csSubset.getAxes();
   }
 
   public String getCoverageName() {

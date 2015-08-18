@@ -96,10 +96,11 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
       if (statusCode >= 300)
         throw new IOException(getErrorMessage(method));
 
+      int readLen = 0;
       Header h = method.getResponseHeader("Content-Length");
       if (h != null) {
         String s = h.getValue();
-        int readLen = Integer.parseInt(s);
+        readLen = Integer.parseInt(s);
       }
 
       CdmrfReader cdmrfReader = new CdmrfReader(endpoint);
@@ -109,6 +110,9 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
       // read Data message
       int psize = NcStream.readVInt(is);
+      if (psize < 0 || (psize > readLen && readLen > 0))
+        throw new IOException("Data transfer corrupted");
+
       byte[] dp = new byte[psize];
       NcStream.readFully(is, dp);
       CdmrFeatureProto.DataResponse dproto = CdmrFeatureProto.DataResponse.parseFrom(dp);

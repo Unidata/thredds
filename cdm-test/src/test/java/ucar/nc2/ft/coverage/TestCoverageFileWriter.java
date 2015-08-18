@@ -31,7 +31,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGridCoverageWriting {
+public class TestCoverageFileWriter {
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -53,7 +53,7 @@ public class TestGridCoverageWriting {
   List<String> covList;
   NetcdfFileWriter.Version version;
 
-  public TestGridCoverageWriting(String endpoint, List<String> covList, NetcdfFileWriter.Version version) {
+  public TestCoverageFileWriter(String endpoint, List<String> covList, NetcdfFileWriter.Version version) {
     this.endpoint = endpoint;
     this.covList = covList;
     this.version = version;

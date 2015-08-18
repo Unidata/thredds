@@ -95,7 +95,7 @@ public class CoverageTable extends JPanel {
     // context menu
     JTable jtable;
 
-    jtable= dsTable.getJTable();
+    jtable = dsTable.getJTable();
     PopupMenu dsPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
     dsPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -107,7 +107,7 @@ public class CoverageTable extends JPanel {
       }
     });
 
-    jtable= covTable.getJTable();
+    jtable = covTable.getJTable();
     PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -338,7 +338,8 @@ public class CoverageTable extends JPanel {
   public class DatasetBean {
     CoverageDataset cds;
 
-    public DatasetBean() {}
+    public DatasetBean() {
+    }
 
     public DatasetBean(CoverageDataset cds) {
       this.cds = cds;
@@ -354,6 +355,14 @@ public class CoverageTable extends JPanel {
 
     public String getCalendar() {
       return cds.getCalendar().toString();
+    }
+
+    public String getDateRange() {
+      return cds.getCalendarDateRange() == null ? "null" : cds.getCalendarDateRange().toString();
+    }
+
+    public String getLLBB() {
+      return cds.getLatLonBoundingBox() == null ? "null" : cds.getLatLonBoundingBox().toString();
     }
 
     public int getNCoverages() {
@@ -438,10 +447,10 @@ public class CoverageTable extends JPanel {
       coordTrans = buff.toString();
 
       for (CoverageCoordAxis axis : gcs.getAxes()) {
-         if (axis.getAxisType() == AxisType.RunTime) runtimeName = axis.getName();
-         else if (axis.getAxisType().isTime()) timeName = axis.getName();
-         else if (axis.getAxisType() == AxisType.Ensemble) ensName = axis.getName();
-         else if (axis.getAxisType().isVert()) vertName = axis.getName();
+        if (axis.getAxisType() == AxisType.RunTime) runtimeName = axis.getName();
+        else if (axis.getAxisType().isTime()) timeName = axis.getName();
+        else if (axis.getAxisType() == AxisType.Ensemble) ensName = axis.getName();
+        else if (axis.getAxisType().isVert()) vertName = axis.getName();
       }
     }
 
@@ -471,12 +480,12 @@ public class CoverageTable extends JPanel {
     }
 
     public String getEns() {
-       return ensName;
-     }
+      return ensName;
+    }
 
     public String getVert() {
-       return vertName;
-     }
+      return vertName;
+    }
 
     public String getCoordTransforms() {
       return coordTrans;
@@ -586,35 +595,41 @@ public class CoverageTable extends JPanel {
 
     public String getDependsOn() {
       if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.independent)
-        return axis.getDependenceType()+": "+axis.getDependsOn();
+        return axis.getDependenceType() + ": " + axis.getDependsOn();
       else
         return axis.getDependenceType().toString();
     }
 
     String showCoordValueDiffs() {
       Formatter f = new Formatter();
-      double[] values = axis.getValues();
-      int n = values.length;
       switch (axis.getSpacing()) {
+        case regular:
+          f.format("%n%s resolution=%f%n", axis.getSpacing(), axis.getResolution());
+          break;
+
         case irregularPoint:
         case contiguousInterval:
+          double[] values = axis.getValues();
+          int n = values.length;
           f.format("%n%s (npts=%d)%n", axis.getSpacing(), n);
-          for (int i=0; i<n-1; i++) {
-            double diff = values[i+1] - values[i];
-            f.format("%10f %10f == %10f%n", values[i], values[i+1], diff);
+          for (int i = 0; i < n - 1; i++) {
+            double diff = values[i + 1] - values[i];
+            f.format("%10f %10f == %10f%n", values[i], values[i + 1], diff);
           }
           f.format("%n");
           break;
 
         case discontiguousInterval:
-           f.format("%ndiscontiguous intervals (npts=%d)%n",n);
-           for (int i=0; i<n; i+=2) {
-             double diff = values[i + 1] - values[i];
-             f.format("(%10f,%10f) = %10f%n", values[i], values[i + 1], diff);
-           }
-           f.format("%n");
-           break;
-       }
+          values = axis.getValues();
+          n = values.length;
+          f.format("%ndiscontiguous intervals (npts=%d)%n", n);
+          for (int i = 0; i < n; i += 2) {
+            double diff = values[i + 1] - values[i];
+            f.format("(%10f,%10f) = %10f%n", values[i], values[i + 1], diff);
+          }
+          f.format("%n");
+          break;
+      }
       return f.toString();
     }
   }

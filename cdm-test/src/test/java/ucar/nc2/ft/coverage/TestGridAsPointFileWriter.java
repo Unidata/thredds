@@ -30,7 +30,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGridAsPointWriting {
+public class TestGridAsPointFileWriter {
 
     @Parameterized.Parameters(name = "{0}")
     public static List<Object[]> getTestParameters() {
@@ -43,7 +43,7 @@ public class TestGridAsPointWriting {
     List<String> covList;
     NetcdfFileWriter.Version version;
 
-    public TestGridAsPointWriting(String endpoint, List<String> covList, NetcdfFileWriter.Version version) {
+    public TestGridAsPointFileWriter(String endpoint, List<String> covList, NetcdfFileWriter.Version version) {
       this.endpoint = endpoint;
       this.covList = covList;
       this.version = version;

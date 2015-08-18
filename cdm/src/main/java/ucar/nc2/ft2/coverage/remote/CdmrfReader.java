@@ -300,6 +300,11 @@ message CoordAxis {
       return new LatLonAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn, shape,
                  spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
 
+    } else if (axisType == AxisType.TimeOffset) {
+
+      return new TimeOffsetAxis(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn,
+                    spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
+
     } else {
 
       return new CoverageCoordAxis1D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn,

@@ -368,6 +368,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   private Map<Time2DSmoosher, Time2DSmoosher> time2Dmap = new HashMap<>();
   private void addTime2DCoordAxis(CoordinateTime2D time2D) {
+    trackDateRange(time2D.makeCalendarDateRange(ucar.nc2.time.Calendar.proleptic_gregorian));
+
     Time2DSmoosher tester = new Time2DSmoosher( time2D);
     Time2DSmoosher already = time2Dmap.get(tester);
     if (already == null)
@@ -445,12 +447,12 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
       atts.addAttribute(new Attribute(CDM.UDUNITS, time2D.getTimeUdUnit()));
 
-      String reftimeName = time2D.getRuntimeCoordinate().getName();
-      String subst = substCoords.get(reftimeName);
-      if (subst != null) reftimeName = subst;
+      //String reftimeName = time2D.getRuntimeCoordinate().getName();
+      //String subst = substCoords.get(reftimeName);
+      //if (subst != null) reftimeName = subst;
 
       axes.add(new TimeOffsetAxis(time2D.getName(), time2D.getUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.TimeOffset, atts,
-              CoverageCoordAxis.DependenceType.independent, new ArrayList<>(0), spacing, n, start, end, resol, values, this, false, reftimeName));
+              CoverageCoordAxis.DependenceType.independent, new ArrayList<>(0), spacing, n, start, end, resol, values, this, false));
     }
   }
 
@@ -823,7 +825,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
     Array data =  dataReader.readData(gribSection, gribFullShape);
 
-    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, covCoordSubset);
+    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, covCoordSubset, subsetCoordSys.getType());
   }
 
   Range subsetRuntime(CoordinateRuntime gribCoord, CoverageCoordAxis1D covAxisSubset) throws InvalidRangeException {

@@ -122,7 +122,7 @@ public class ThreddsUI extends JPanel {
 
     // panel to show source
     sourcePane = new TextGetPutPane((PreferencesExt) store.node("getputPane"));
-    sourceWindow = new IndependentWindow("Source", BAMutil.getImage("thredds"), sourcePane);
+    sourceWindow = new IndependentWindow("Source", BAMutil.getImage("threddsIcon.png"), sourcePane);
     sourceWindow.setBounds((Rectangle) store.getBean(SOURCE_WINDOW_SIZE, new Rectangle(50, 50, 725, 450)));
 
     // panel to show xml data
