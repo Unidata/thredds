@@ -211,13 +211,14 @@ public class NcStream {
     return builder.build();
   }
 
-  static NcStreamProto.Data encodeDataProto(Variable var, Section section, boolean deflate, ByteOrder bo, int uncompressedLength) {
+  static NcStreamProto.Data encodeDataProto(Variable var, Section section, NcStreamProto.Compress compressionType,
+                                            ByteOrder bo, int uncompressedLength) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getFullNameEscaped());
     builder.setDataType(encodeDataType(var.getDataType()));
     builder.setSection(encodeSection(section));
-    if (deflate) {
-      builder.setCompress(NcStreamProto.Compress.DEFLATE);
+    builder.setCompress(compressionType);
+    if (compressionType != NcStreamProto.Compress.NONE) {
       builder.setUncompressedSize(uncompressedLength);
     }
     if (var.isVariableLength()) builder.setVdata(true);

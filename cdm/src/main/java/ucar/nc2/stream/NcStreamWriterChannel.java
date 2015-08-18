@@ -95,13 +95,13 @@ public class NcStreamWriterChannel {
     return size;
   }
 
-  public long sendData(Variable v, Section section, WritableByteChannel wbc, boolean deflate) throws IOException, InvalidRangeException {
+  public long sendData(Variable v, Section section, WritableByteChannel wbc, NcStreamCompression compress) throws IOException, InvalidRangeException {
     if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
 
     ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
     long size = 0;
     size += writeBytes(wbc, NcStream.MAGIC_DATA); // magic
-    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, deflate, bo, 0);
+    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, compress.type, bo, 0);
     byte[] datab = dataProto.toByteArray();
     size += NcStream.writeVInt(wbc, datab.length); // dataProto len
     size += writeBytes(wbc, datab); // dataProto
@@ -160,17 +160,28 @@ public class NcStreamWriterChannel {
     if (show) System.out.printf(" data starts at= %d%n", size);
 
     for (Variable v : ncfile.getVariables()) {
+      NcStreamCompression compress;
       Attribute compressAtt = v.findAttribute(CDM.COMPRESS);
-      boolean deflate = (compressAtt != null) && compressAtt.isString() && compressAtt.getStringValue().equalsIgnoreCase(CDM.COMPRESS_DEFLATE);
+      if (compressAtt != null && compressAtt.isString()) {
+        String compType = compressAtt.getStringValue();
+        if (compType.equalsIgnoreCase(CDM.COMPRESS_DEFLATE)) {
+          compress = NcStreamCompression.deflate();
+        } else {
+          if (show) System.out.printf(" Unknown compression type %s. Defaulting to none.%n", compType);
+          compress = NcStreamCompression.none();
+        }
+      } else {
+        compress = NcStreamCompression.none();
+      }
 
       long vsize = v.getSize() * v.getElementSize();
       //if (vsize < sizeToCache) continue; // in the header;
       if (show) System.out.printf(" var %s len=%d starts at= %d%n", v.getFullName(), vsize, size);
 
       if (vsize > maxChunk) {
-        size += copyChunks(wbc, v, maxChunk, deflate);
+        size += copyChunks(wbc, v, maxChunk, compress);
       } else {
-        size += sendData(v, v.getShapeAsSection(), wbc, deflate);
+        size += sendData(v, v.getShapeAsSection(), wbc, compress);
       }
     }
 
@@ -179,7 +190,7 @@ public class NcStreamWriterChannel {
     return size;
   }
 
-  private long copyChunks(WritableByteChannel wbc, Variable oldVar, long maxChunkSize, boolean deflate) throws IOException {
+  private long copyChunks(WritableByteChannel wbc, Variable oldVar, long maxChunkSize, NcStreamCompression compress) throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
     FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(oldVar.getShape());
     long size = 0;
@@ -187,7 +198,7 @@ public class NcStreamWriterChannel {
       try {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
-        size += sendData(oldVar, new Section(chunkOrigin, chunkShape), wbc, deflate);
+        size += sendData(oldVar, new Section(chunkOrigin, chunkShape), wbc, compress);
         index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
 
       } catch (InvalidRangeException e) {
