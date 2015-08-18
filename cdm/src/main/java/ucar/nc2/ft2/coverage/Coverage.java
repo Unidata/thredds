@@ -166,10 +166,6 @@ public class Coverage implements IsMissingEvaluator {
     return sb.toString();
   }
 
-  /* problem this violates coordinate-only data access. NA with cdmr
-  // used by CFGridCoverageWriter. this is asking that the coordinates dont change, eg only allow a rectangular subset of the (possibly) bigger grid
-  public abstract Array readSubset(List<Range> subset) throws IOException, InvalidRangeException;   */
-
   @Override
   public boolean hasMissing() {
     return true;

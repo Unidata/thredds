@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
  *
- *   Portions of this software were developed by the Unidata Program at the
- *   University Corporation for Atmospheric Research.
+ *  Portions of this software were developed by the Unidata Program at the
+ *  University Corporation for Atmospheric Research.
  *
- *   Access and use of this software shall impose the following obligations
- *   and understandings on the user. The user is granted the right, without
- *   any fee or cost, to use, copy, modify, alter, enhance and distribute
- *   this software, and any derivative works thereof, and its supporting
- *   documentation for any purpose whatsoever, provided that this entire
- *   notice appears in all copies of the software, derivative works and
- *   supporting documentation.  Further, UCAR requests that the user credit
- *   UCAR/Unidata in any publications that result from the use of this
- *   software or in any product that includes this software. The names UCAR
- *   and/or Unidata, however, may not be used in any advertising or publicity
- *   to endorse or promote any products or commercial entity unless specific
- *   written permission is obtained from UCAR/Unidata. The user also
- *   understands that UCAR/Unidata is not obligated to provide the user with
- *   any support, consulting, training or assistance of any kind with regard
- *   to the use, operation and performance of this software nor to provide
- *   the user with any updates, revisions, new versions or "bug fixes."
+ *  Access and use of this software shall impose the following obligations
+ *  and understandings on the user. The user is granted the right, without
+ *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  this software, and any derivative works thereof, and its supporting
+ *  documentation for any purpose whatsoever, provided that this entire
+ *  notice appears in all copies of the software, derivative works and
+ *  supporting documentation.  Further, UCAR requests that the user credit
+ *  UCAR/Unidata in any publications that result from the use of this
+ *  software or in any product that includes this software. The names UCAR
+ *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  to endorse or promote any products or commercial entity unless specific
+ *  written permission is obtained from UCAR/Unidata. The user also
+ *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  any support, consulting, training or assistance of any kind with regard
+ *  to the use, operation and performance of this software nor to provide
+ *  the user with any updates, revisions, new versions or "bug fixes."
  *
- *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package thredds.server.cdmrfeature;
@@ -70,6 +70,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.DeflaterOutputStream;
 
 /**
@@ -80,7 +81,7 @@ import java.util.zip.DeflaterOutputStream;
 @Controller
 @RequestMapping("/cdmrfeature/grid")
 public class CdmrGridController implements LastModified {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrGridController.class);
+  // private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrGridController.class);
   private static final boolean showReq = true;
   private static final boolean showRes = true;
 
@@ -195,18 +196,13 @@ public class CdmrGridController implements LastModified {
 
   private long sendDataResponse(List<GeoReferencedArray> arrays, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
 
-    Set<CoverageCoordSys> sysSet = new HashSet<>();
-    for (GeoReferencedArray array : arrays) {
-      sysSet.add(array.getCoordSysForData());
-    }
+    Set<CoverageCoordSys> sysSet = arrays.stream().map(GeoReferencedArray::getCoordSysForData).collect(Collectors.toSet());
 
     Set<CoverageTransform> transformSet = new HashSet<>();
     Set<CoverageCoordAxis> axisSet = new HashSet<>();
     for (CoverageCoordSys sys : sysSet) {
-      for (CoverageCoordAxis axis : sys.getAxes())
-        axisSet.add(axis);
-      for (CoverageTransform t : sys.getTransforms())
-        transformSet.add( t);
+      axisSet.addAll(sys.getAxes().stream().collect(Collectors.toList()));
+      transformSet.addAll(sys.getTransforms().stream().collect(Collectors.toList()));
     }
 
     CdmrfWriter cdmrfWriter = new CdmrfWriter();
