@@ -159,65 +159,12 @@ public class CdmRemoteController implements LastModified {
       Document doc = new Document(rootElem);
       rootElem.setAttribute("location", absPath);
 
-          ncfile.setLocation(datasetPath); // hide where the file is stored
-          String cdl = ncfile.toString();
-          res.setContentLength(cdl.length());
-          pw.write(cdl);
-          size = cdl.length();
-          break;
-        }
-
-        case ncml: {
-          res.setContentType(ContentType.xml.getContentHeader());
-          PrintWriter pw = res.getWriter();
-          ncfile.writeNcML(pw, absPath);
-          break;
-        }
-
-        case header: {
-          res.setContentType(ContentType.binary.getContentHeader());
-          res.setHeader("Content-Description", "ncstream");
-
-          OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-          //WritableByteChannel wbc = Channels.newChannel(out);
-          NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-          size = ncWriter.sendHeader(out);
-          out.flush();
-          break;
-        }
-
-        default: {
-          res.setContentType(ContentType.binary.getContentHeader());
-          res.setHeader("Content-Description", "ncstream");
-
-          size = 0;
-          //WritableByteChannel wbc = Channels.newChannel(out);
-          NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-          String query;
-          if(qb.getVar() != null)
-              query = qb.getVar();
-          else
-              query = req.getQueryString();
-
-          if ((query == null) || (query.length() == 0)) {
-            res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
-            return;
-          }
-
-          OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-          query = EscapeStrings.unescapeURLQuery(query);
-          StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
-          while (stoke.hasMoreTokens()) {
-            ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-            size += ncWriter.sendData(cer.v, cer.section, out, qb.getCompression());
-          }
-          out.flush();
-        }
-      } // end switch on req type
-
-      res.flushBuffer();
-      if (showReq)
-        System.out.printf("CdmRemoteController ok, size=%s%n", size);
+      Element elem = new Element("featureDataset");
+      FeatureType ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ncfile); // LOOK BAD - must figure out what is the featureType and save it
+      if (ftFromMetadata != null)
+        elem.setAttribute("type", ftFromMetadata.toString());
+      elem.setAttribute("url", absPath);
+      rootElem.addContent(elem);
 
       return new ModelAndView("threddsXmlView", "Document", doc);
     }
@@ -295,7 +242,7 @@ public class CdmRemoteController implements LastModified {
       StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
       while (stoke.hasMoreTokens()) {
         ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-        size += ncWriter.sendData(cer.v, cer.section, out, true);
+        size += ncWriter.sendData(cer.v, cer.section, out, qb.getCompression());
       }
       out.flush();
 
