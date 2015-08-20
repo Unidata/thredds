@@ -683,6 +683,25 @@ class Nidsheader{
                           bos.position(bos.position() + len);
                       }
                       break;
+                  case 0x0802:
+                      log.warn("Encountered unhandled packet code 0x0802 (contour color) -- reading past.");
+                      Divlen_divider = bos.getShort(); // Color marker
+                      if (Divlen_divider != 0x0002) {
+                          log.warn("Missing color marker!");
+                      }
+                      plen = 2;
+                      break;
+                  case 0x0E03:
+                      log.warn("Encountered unhandled packet code 0x0E03 (linked contours) -- reading past.");
+                      Divlen_divider = bos.getShort(); // Start marker
+                      if (Divlen_divider != 0x8000) {
+                          log.warn("Missing start marker!");
+                      }
+                      // Read past start x, y for now
+                      bos.getShort();
+                      bos.getShort();
+                      plen = 6 + bos.getShort();
+                      break;
 
                  default:
                       if ( pkcode == 0xAF1F  || pkcode == 16) {              /* radial image                  */

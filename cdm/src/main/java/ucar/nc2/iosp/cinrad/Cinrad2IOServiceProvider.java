@@ -55,6 +55,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private final int MISSING_INT = -9999;
   static private final float MISSING_FLOAT = Float.NaN;
   static public boolean isSC = false;
+  static public boolean isCC = false;
 
   public boolean isValidFileOld( RandomAccessFile raf) {
     try {
@@ -125,6 +126,9 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
       if(radarT.contains("CINRAD/SC") || radarT.contains("CINRAD/CD")) {
         isSC = true;
+        return true;
+      } else if(radarT.contains("CINRADC")) {
+        isCC = true;
         return true;
       }
       else {
@@ -596,12 +600,19 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
   private void readOneRadial(Cinrad2Record r, int datatype, Range gateRange, IndexIterator ii) throws IOException {
     if (r == null) {
-      for (int i=0; i< gateRange.length(); i++)
-        ii.setByteNext( Cinrad2Record.MISSING_DATA);
+      for (int i=0; i< gateRange.length(); i++) {
+        if (isCC)
+          ii.setShortNext((short) -32768);
+        else
+          ii.setByteNext(Cinrad2Record.MISSING_DATA);
+      }
       return;
     }
+    
     if(isSC)
       r.readData0(this.raf, datatype, gateRange, ii);
+    else if(isCC)
+      r.readData1(this.raf, datatype, gateRange, ii);
     else
       r.readData(this.raf, datatype, gateRange, ii);
   }

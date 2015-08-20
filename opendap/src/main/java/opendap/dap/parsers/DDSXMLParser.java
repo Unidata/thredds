@@ -223,9 +223,8 @@ public class DDSXMLParser {
         try {
 
             // get a jdom parser to parse and validate the XML document.
-            SAXBuilder parser = new SAXBuilder("org.apache.xerces.parsers.SAXParser", validation);
-
-            // turn on validation
+            SAXBuilder parser = new SAXBuilder();
+            // optionally turn on validation
             parser.setFeature("http://apache.org/xml/features/validation/schema", validation);
 
             // parse the document into a hierarchical document
@@ -238,10 +237,10 @@ public class DDSXMLParser {
             parse(doc, targetDDS, fac, validation);
 
         } catch (JDOMException jde) {
-            throw new DDSException(opendap.dap.DAP2Exception.UNKNOWN_ERROR, jde.getMessage());
+            throw new DAP2Exception(jde);
         }
         catch (IOException ioe) {
-            throw new DDSException(opendap.dap.DAP2Exception.UNKNOWN_ERROR, ioe.getMessage());
+            throw new DAP2Exception(ioe);
         }
 
 

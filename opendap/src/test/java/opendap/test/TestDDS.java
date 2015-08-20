@@ -41,16 +41,12 @@ public class TestDDS extends TestDapParser {
   final static String TITLE = "DAP DDS Parser Tests";
 
   public TestDDS() {
-    setExtension(".dds");
+    setExtensions(".dds",".dds");
   }
 
   @Test
   public void testDDS() throws Exception {
-    testDapParser();
-  }
-
-  public static void main(String args[]) throws Exception {
-    new TestDDS().testDDS();
+    runDapParser();
   }
 
 }

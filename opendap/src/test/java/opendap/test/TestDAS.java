@@ -41,7 +41,7 @@ public class TestDAS extends TestDapParser {
   final static String TITLE = "DAP DAS Parser Tests";
 
   public TestDAS() {
-    setExtension(".dds");
+    setExtensions(".das",".das");
   }
 
   @Test

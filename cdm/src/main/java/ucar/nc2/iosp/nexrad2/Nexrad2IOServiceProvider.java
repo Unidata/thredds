@@ -400,6 +400,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       List<Level2Record> group = groups.get(i);
       for (Level2Record r : group) {
         int radial = r.radial_num - 1;
+        if (radial >= nradials) {
+          radial %= nradials;
+        }
         mapScan[radial] = r;
       }
     }
@@ -546,6 +549,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         if (first == null) first = r;
 
         int radial = r.radial_num-1;
+        if (radial >= nradials) {
+          radial %= nradials;
+        }
         if(last_msecs != Integer.MIN_VALUE && (last_msecs - r.data_msecs ) > 80000000 ) {
              overMidNight = true;
         }

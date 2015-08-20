@@ -55,6 +55,7 @@ import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -172,7 +173,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return collectionName;
   }
 
+<<<<<<< HEAD:tds/src/main/java/thredds/featurecollection/InvDatasetFcGrib.java
   private DatasetBuilder makeDatasetFromCollection(URI catURI, boolean isTop, CatalogBuilder parentCatalog, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
+=======
+  private InvDatasetImpl makeDatasetFromCollection( boolean isTop, InvCatalogImpl parentCatalog, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
+    if (fromGc == null)
+      throw new FileNotFoundException("Grib Collection '"+getCollectionName()+"' does not exist or is empty");
+>>>>>>> 838b281... TDS give 404 not 500 on empty GRIB collection:tdcommon/src/main/java/thredds/catalog/InvDatasetFcGrib.java
 
     String dsName = isTop ? name : makeCollectionShortName(fromGc.getName());
     DatasetBuilder result = new DatasetBuilder(null);
