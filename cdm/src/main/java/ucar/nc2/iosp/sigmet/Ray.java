@@ -299,11 +299,11 @@ public class Ray {
       }
     }                     // ------ end of while for num_bins---------------------------------
 
-    for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
-      if (i >= bins)
+    for (int gateIdx : gateRange) {
+      if (gateIdx >= bins)
         ii.setFloatNext(Float.NaN);
       else
-        ii.setFloatNext(dd[i]);
+        ii.setFloatNext(dd[gateIdx]);
     }
 
   } // end of readData

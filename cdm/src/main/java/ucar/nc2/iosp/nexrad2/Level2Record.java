@@ -1150,21 +1150,22 @@ public class Level2Record {
       short[] data = new short[dataCount];
       raf.readShort(data, 0, dataCount);
 
-      for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
-        if (i >= dataCount)
+      for (int gateIdx : gateRange) {
+        if (gateIdx >= dataCount)
           ii.setShortNext(MISSING_DATA);
         else
-          ii.setShortNext(data[i]);
+          ii.setShortNext(data[gateIdx]);
       }
     } else {
+
       byte[] data = new byte[dataCount];
       raf.readFully(data);
       //short [] ds = convertunsignedByte2Short(data);
-      for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
-        if (i >= dataCount)
+      for (int gateIdx : gateRange) {
+        if (gateIdx >= dataCount)
           ii.setByteNext(MISSING_DATA);
         else
-          ii.setByteNext(data[i]);
+          ii.setByteNext(data[gateIdx]);
       }
 
     }

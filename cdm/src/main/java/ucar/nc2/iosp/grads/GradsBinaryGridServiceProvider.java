@@ -649,20 +649,10 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
 
     IndexIterator ii = dataArray.getIndexIterator();
 
-    // loop over ens
-    for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last();
-         ensIdx += ensRange.stride()) {
-      //loop over time
-      for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last();
-           timeIdx += timeRange.stride()) {
-        //loop over level
-        for (int levelIdx = levRange.first();
-             levelIdx <= levRange.last();
-             levelIdx += levRange.stride()) {
+    for (int ensIdx : ensRange)
+      for (int timeIdx : timeRange)
+        for (int levelIdx : levRange)
           readXY(v2, ensIdx, timeIdx, levelIdx, yRange, xRange, ii);
-        }
-      }
-    }
 
     return dataArray;
   }
@@ -741,14 +731,9 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     float[] data = readGrid(gridNum);
 
     // LOOK can improve with System.copy ??
-    for (int y = yRange.first(); y <= yRange.last();
-         y += yRange.stride()) {
-      for (int x = xRange.first(); x <= xRange.last();
-           x += xRange.stride()) {
-        int index = y * sizeX + x;
-        ii.setFloatNext(data[index]);
-      }
-    }
+    for (int y : yRange)
+      for (int x : xRange)
+        ii.setFloatNext(data[y * sizeX + x]);
   }
 
   /**

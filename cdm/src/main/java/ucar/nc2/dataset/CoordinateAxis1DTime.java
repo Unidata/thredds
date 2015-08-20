@@ -36,7 +36,6 @@ package ucar.nc2.dataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.time.*;
-import ucar.nc2.time.Calendar;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
@@ -99,9 +98,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     List<CalendarDate> cdates = getCalendarDates();
 
     List<CalendarDate> cdateSection = new ArrayList<>(cdates.size());
-    for (int i = r.first(), j = 0; i <= r.last(); i += r.stride(), ++j) {
-      cdateSection.add(cdates.get(i));
-    }
+    for (int idx : r)
+      cdateSection.add(cdates.get( idx));
+
     s.cdates = cdateSection;
     return s;
   }

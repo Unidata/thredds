@@ -1,8 +1,10 @@
 package ucar.ma2;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.util.Misc;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A Range of indices describes by a list, rather than start:stop:stride.
@@ -12,12 +14,28 @@ import java.util.*;
  * @author John
  * @since 8/12/2015
  */
+@Immutable
 public class RangeScatter extends Range {
-  int[] vals;
+  private int[] vals;
 
+  /**
+   * Ctor
+   * @param name optional name
+   * @param val  should be sorted
+   * @throws InvalidRangeException
+   */
   public RangeScatter(String name, int... val) throws InvalidRangeException {
     super(name, val[0], val[val.length-1], val.length);
     this.vals = val;
+  }
+
+  @Override
+  public Range copy(String name) {
+    try {
+      return new RangeScatter(name, vals);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
   }
 
   @Override
@@ -25,9 +43,8 @@ public class RangeScatter extends Range {
     int[] svals = new int[r.length()];
 
     int count = 0;
-    Iterator iter = r.getIterator();
-    while (iter.hasNext()) {
-      svals[count++] = element(iter.next());
+    for (int idx : r) {
+      svals[count++] = element(idx);
     }
     return new RangeScatter(name, svals);
   }
@@ -42,17 +59,14 @@ public class RangeScatter extends Range {
   @Override
   public Range intersect(Range r) throws InvalidRangeException {
     Set<Integer> sect = new HashSet<>();
-    Iterator iter = r.getIterator();
-    while (iter.hasNext()) {
-      sect.add(iter.next());
+    for (int idx : r) {
+      sect.add(idx);
     }
 
     List<Integer> result = new ArrayList<>();
-    Iterator iter2 = getIterator();
-    while (iter2.hasNext()) {
-      int val = iter2.next();
-      if (sect.contains(val))
-        result.add(val);
+    for (int idx : this) {
+      if (sect.contains(idx))
+        result.add(idx);
     }
 
     if (result.size() == 0) return EMPTY;
@@ -75,17 +89,12 @@ public class RangeScatter extends Range {
   @Override
   public RangeScatter union(Range r) throws InvalidRangeException {
     Set<Integer> union = new HashSet<>();
-    Iterator iter = r.getIterator();
-    while (iter.hasNext())
-      union.add(iter.next());
+    for (int idx : r)
+      union.add(idx);
+    for (int idx : this)
+      union.add(idx);
 
-    iter = getIterator();
-    while (iter.hasNext())
-      union.add(iter.next());
-
-    List<Integer> result = new ArrayList<>();
-    for (int val : union)
-        result.add(val);
+    List<Integer> result = union.stream().collect(Collectors.toList());
     Collections.sort(result);
 
     int[] svals = new int[result.size()];
@@ -158,11 +167,11 @@ public class RangeScatter extends Range {
   }
 
   @Override
-  public Iterator getIterator() {
+  public Iterator<Integer> iterator() {
     return new ScatterIterator();
   }
 
-  private class ScatterIterator extends Iterator {
+  private class ScatterIterator implements Iterator<Integer> {
     private int current = 0;
 
     @Override
@@ -171,7 +180,7 @@ public class RangeScatter extends Range {
     }
 
     @Override
-    public int next() {
+    public Integer next() {
       return vals[current++];
     }
   }

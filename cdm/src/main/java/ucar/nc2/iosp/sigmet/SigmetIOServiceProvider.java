@@ -780,8 +780,9 @@ channel.close();
       Range scanRange = section.getRange(0);
       Range radialRange = section.getRange(1);
       Range gateRange = section.getRange(2);
-      for (int i = scanRange.first(); i <= scanRange.last(); i += scanRange.stride()) {
-        readOneScan( groups.get(i), radialRange, gateRange, ii);
+
+      for (int scanIdx : scanRange) {
+        readOneScan( groups.get(scanIdx), radialRange, gateRange, ii);
       }
     }
     return data;
@@ -790,11 +791,11 @@ channel.close();
 
   private void readOneScan(List<Ray> mapScan, Range radialRange, Range gateRange, IndexIterator ii) throws IOException {
     int siz = mapScan.size();
-    for (int i = radialRange.first(); i <= radialRange.last(); i += radialRange.stride()) {
-      if (i >= siz)
+    for (int radialIdx : radialRange) {
+      if (radialIdx >= siz)
         readOneRadial(null, gateRange, ii);
       else {
-        Ray r = mapScan.get(i);
+        Ray r = mapScan.get(radialIdx);
         readOneRadial(r, gateRange, ii);
       }
     }
@@ -802,7 +803,7 @@ channel.close();
 
   private void readOneRadial(Ray r, Range gateRange, IndexIterator ii) throws IOException {
     if (r == null) {
-      for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride())
+      for (int i = 0; i < gateRange.length(); i++)
         ii.setFloatNext(Float.NaN);
       return;
     }

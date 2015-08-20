@@ -1,0 +1,278 @@
+image:images/unidataLogo.png[Unidata] Upgrading To TDS version 5
+----------------------------------------------------------------
+
+'''''
+
+Requirements
+~~~~~~~~~~~~
+
+* Java 8 is now required
+* Tomcat 8 (servlet 3.1)
+* On the command line when starting up Tomcat, you must specify *-Dtds.content.root.path=<content root>* where <content root> points to the top of the
+content directory. Note that this is **$\{tomcat}/content/**, not **$\{tomcat}/content/thredds/**. Dont forget the trailing slash. For example:
++
+-------------------------------------------------
+-Dtds.content.root.path=/opt/tomcat-home/content/
+-------------------------------------------------
+
+Overview
+~~~~~~~~
+
+The configuration catalogs and internal state of the TDS has been extensively reworked to be able to scale to large numbers of catalogs, datasets, and
+internal objects without excessive use of memory. A running TDS can be triggered to reread the configuration catalogs without having to restart. It
+can be configured to reread only changed catalogs, for fast incremental updates. Other features have been added to make writing configuration catalogs
+more maintainable, including the _catalogScan_ element, and default and standard services.
+
+The other major enhancement is that _GridDataset_ is being replaced by __GridCoverage__, to better support very large feature collections. The
+GridCoverage API works only with _coordinate values_ (not array indices), which solves various intractable problems that arise when using aray index
+subsetting on large collections.
+
+Deprecated classes and methods have been removed, and the module structure and third-party jar use has been improved.
+
+API Changes
+~~~~~~~~~~~
+
+Catalogs
+^^^^^^^^
+
+* All uses of classes in *thredds.catalog.\* * are deprecated. If you still need, you must add *legacy.jar* to your path.
+* TDS and CDM now use *thredds.server.catalog.\* * and *thredds.client.catalog.\* *
+
+Viewers
+^^^^^^^
+
+* *thredds.servlet.Viewer* has *InvDatasetImpl* changed to *Dataset*
+* *thredds.servlet.ViewerLinkProvider* has *InvDatasetImpl* changed to *Dataset*
+* *thredds.server.viewer.dataservice.ViewerService* has *InvDatasetImpl* changed to *Dataset*
+
+Coordinate Systems
+^^^^^^^^^^^^^^^^^^
+
+* *ucar.nc2.dataset.CoordTransBuilderIF* is split into *ucar.nc2.dataset.builder.HorizTransformBuilderIF* and *ucar.nc2.dataset.builder.VertTransformBuilderIF*
+* *HorizTransformBuilderIF* now uses *AttributeContainer* instead of *NetcdfDataset, Variable*
+* _CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv)_ is now _ProjectionCT makeCoordinateTransform(AttributeContainer ctv)_
+* Previously, the optional _false_easting_, and _false_northing_ should match the units of the x and y projection coordinates
+
+Feature Types
+^^^^^^^^^^^^^
+
+* *ucar.nc2.dt.TypedDatasetFactory* has been removed. Use *ucar.nc2.ft.FeatureDatasetFactoryManager*
+* *ucar.nc2.dt.grid* is deprecated (but not removed) and is replaced by *ucar.nc2.ft2.coverage*
+* *ucar.nc2.dt.point* and *ucar.nc2.dt.trajectory* has been removed, replaced by *ucar.nc2.ft.*
+
+Unsigned Types
+^^^^^^^^^^^^^^
+
+* *DataType* now has unsigned types: _UBYTE, USHORT, UINT, ULONG_
+* *Array, ArrayScalar, ArrayByte, ArrayInt, ArrayShort, ArrayLong* factory and constructor methods now require _isUnsigned_ parameter.
+* _Array.factory(class, shape) -> Array.factory(DataType, shape)_ or _Array.factory(dataType, class, shape)_
+* _Array.get1DJavaArray(Class) -> Array.get1DJavaArray(DataType)_ or _Array.get1DJavaArray(Class, isUnsigned)_
+* remove _Array.setUnsigned(), Variable.setUnsigned()_
+* _Variable.getUnsigned() -> Variable.getDataType().getUnsigned()_
+* _new Attribute(String name, List values) -> new Attribute(String name, List values, boolean isUnsigned)_
+* _StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, boolean isUnsigned, Number val ) -> StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, Number val )_
+
+Miscellaneous
+^^^^^^^^^^^^^
+
+* *ucar.nc2.util.DiskCache2*:
+** now has one cleanup thread for all instances of *DiskCache*
+** The _DiskCache2.exit()_ method is now static and needs only be called once.
+** _DiskCache2.setLogger()_ is removed.
+** _DiskCache2.cleanCache(File dir, StringBuffer sbuff, boolean isRoot)_ is now __DiskCache2.cleanCache(File dir, Formatter sbuff, boolean isRoot)__;
+** deprecated methods are removed: _setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) , setPolicy(int cachePathPolicy)_
+** logging of routine cache cleanup is now at the debug level
+
+* *ucar.ma2.Range*:
+** Previously could only be specified by _start:end:stride_
+** Now extended with subclasses *RangeScatter* and *RangeComposite*
+** You must use the iterator now to ensure correct functionality, so to iterate over the values of the Range, *_do not use_*:
+
+[source,java]
+----
+ for (int i=range.first(); i<=range.last(); i+= range.stride()) {    // DO NOT USE
+    ...
+----
+
+** Use instead:
+
+[source,java]
+----
+ for (int idx : range) {
+   ...
+----
+
+Catalog Schema changes
+~~~~~~~~~~~~~~~~~~~~~~
+
+Schema version is now 1.2.
+
+Client Catalogs
+^^^^^^^^^^^^^^^
+
+* *service* elements may not be nested inside of *dataset* elements, they must be directly contained in the *catalog* element.
+
+Server Configuration Catalogs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* the *catalogScan* element is now available, which scans a directory for catalog files (any file ending in xml)
+* the *datasetFmrc* element is no longer supported
+* *datasetRoot* elements may not be contained inside of *service* elements, they must be directly contained in the *catalog* element
+* *service* elements may not be nested inside of *dataset* elements, they must be directly contained in the *catalog* element.
+* *service* elements no longer need to be explicitly defined in each config catalog, but may reference user defined global services
+* if the *datatype/featureType* is defined for a dataset, then the *service* element may be ommited, and the default set of services for that
+*datatype* will be used.
+
+DatasetScan
+^^^^^^^^^^^
+
+* *addID* is no longer needed, ids are always added
+* *addDatasetSize* is no longer needed, the dataset size is always added
+* With **addLatest**, the *service* name is no longer used, it is always __Resolver__, and the correct service is automatically added. Use *addLatest*
+attribute for simple case.
+* *fileSort:* by default, datasets at each collection level are listed in increasing order by filename. To change to decreasing order, use the
+_link:reference/DatasetScan.html#filesSort[filesSort]_ element.
+* *sort:* deprecated in favor of *filesSort*
+* *User pluggable classes implementing UserImplType* (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl,
+crawlableDatasetSorterImpl) are no longer supported. (This was never officially released or documented).
+* DatasetScan details are link:catalog/InvCatalogServerSpec.html[here]
+
+Standard Services
+^^^^^^^^^^^^^^^^^
+
+* The TDS provides standard service elements, which know which services are appropriate for each Feature Type.
+* User defined services in the root catalog are global and can be referenced by name in any other config catalog.
+* User defined services in non-root catalogs are local to that catalog and override (by name) any global services.
+* All services are enabled unless explicitly disabled
+** Except for remote catalog services
+* Standard service details are link:reference/Services.html[here]
+
+FeatureCollections
+^^^^^^^^^^^^^^^^^^
+
+* The *link:reference/collections/FeatureCollections.html#update[update]* element default is now __startup="never"__, meaning do not update collection
+on startup, and use existing indices when the collection is accessed.
+* The *link:reference/collections/FeatureCollections.html#filesSort[fileSort]* element is now inside the *featureCollection* itself, so it can be
+processed uniformly for all types of feature collections. When a collection shows a list of files, the files will be sorted by increasing name. To use
+a decreasing sort, use the element *<filesSort increasing="false" />* inside the *featureCollection* element. This supercedes the old way of placing
+that element in the *<gribConfig>* element, or the older verbose *lexigraphicByName* element:
++
+-----------------------------------------------------------
+  <filesSort>
+    <lexigraphicByName increasing="false" />  // deprecated
+  </filesSort>
+-----------------------------------------------------------
+* Feature Collection details are link:reference/collections/FeatureCollections.html[here]
+
+Recommendations for 5.0 catalogs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Put all *datasetRoot* elements in root catalog.
+* Put all *catalogScan* elements in root catalog.
+* Use StandardServices when possible. Annotate your datasets with *featureType* / **dataType**.
+* Put all user-defined *service* elements in root catalog.
+* Only use user-defined *service* elements in non-root catalogs when they are experimental or truly a special case.
+
+CdmrFeature Service
+~~~~~~~~~~~~~~~~~~~
+
+A new TDS service has been added for remote access to CDM Feature Datasets.
+
+* Initial implementation for Coverage (Grid, FMRC, Swath) datasets, based on the new Coverage implementation in **ucar.nc2.ft2.coverage**.
+* Target is a python client that has full access to all of the coordinate information and coordinate based subsetting capabilities of the Java client.
+* Compatible / integrated with the Netcdf Subset Service (NCSS), using the same web API.
+
+ThreddsConfig.xml
+~~~~~~~~~~~~~~~~~
+
+* You no longer turn catalog caching on or off, but you can control how many catalogs are cached (see
+link:reference/ThreddsConfigXMLFile.html#CatalogCaching[here] for the new syntax). So the following is no longer used:
+
+[source,xml]
+----------------------
+<Catalog>
+  <cache>false</cache>
+</Catalog>
+----------------------
+* By default, most services are enabled, but may still be turned off in threddsConfig.xml.
+
+Recommendations for ESGF
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+You must determine the number of datasets that are contained in all of your catalogs. To get a report, enable
+link:reference/RemoteManagement.html[Remote Management], and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__. This may
+take 5-20 minutes, depending on the numbers of catalogs.
+
+Add the link:reference/ThreddsConfigXMLFile.html#CatalogCaching[ConfigCatalog] element to threddsConfig.xml:
+
+[source,xml]
+--------------------------------------------------------
+<ConfigCatalog>
+  <keepInMemory>100</keepInMemory>
+  <reread>check</reread>
+  <dir>/tomcat_home/content/thredds/cache/catalog/</dir>
+  <maxDatasets>1000000</maxDatasets>
+</ConfigCatalog>
+--------------------------------------------------------
+
+where:
+
+* *keepInMemory:* using the default value of 100 is probably good enough.
+* *reread:* use value of _check_ to only read changed catalogs when restarting TDS.
+* *dir* is where the catalog cache files are kept. Use the default directory (or symlink to another place) unless you have a good reason to change.
+* **maxDatasets**: this is the number you found in step 1. Typical values for ESGF are 1 - 7 million. This is a maximum, so its ok to make it bigger
+than you need.
+
+Here are some additional, optional changes you can make to increase maintainability:
+
+1.  Place all *datasetRoot* elements in the top catalog
+2.  Place all *service* elements in the root catalog (__catalog.xml__). These can be referencced from any catalog.
+3.  Remove *service* selements from non-root catalogs.
+4.  Add a *link:catalog/InvCatalogServerSpec.html#catalogScan[catalogScan]* element to the root catalog, replacing the list of catalogRefs listing all
+the other catalogs.
+* This assumes that other catalogs live in a subdirectory under the root, for example **$\{tds.content.root.path}/thredds/esgcet/**.
+
+For example:
+
+[source,xml]
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+<?xml version='1.0' encoding='UTF-8'?>
+<catalog name="ESGF Master Catalog" version="1.2"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
+      xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+      xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd">
+      
+ <datasetRoot location="/esg/data" path="esg_testroot"/> 
+ <datasetRoot location="/esg/arc/data/" path="esg_obs4MIPs"/>
+ <datasetRoot location="/esg/cordex/data/" path="esg_cordex"/>
+ <datasetRoot location="/esg/specs/data/" path="esg_specs"/>
+
+ <service base="/thredds/dodsC/" desc="OpenDAP" name="gridded" serviceType="OpenDAP">
+  <property name="requires_authorization" value="false"/>
+  <property name="application" value="Web Browser"/>
+ </service>
+
+ <service base="" name="fileservice" serviceType="Compound">
+  <service base="/thredds/fileServer/" desc="HTTPServer" name="HTTPServer" serviceType="HTTPServer">
+    <property name="requires_authorization" value="true"/>
+    <property name="application" value="Web Browser"/>
+    <property name="application" value="Web Script"/>
+  </service>
+  <service base="gsiftp://cmip-bdm1.badc.rl.ac.uk/" desc="GridFTP" name="GridFTPServer" serviceType="GridFTP">
+    <property name="requires_authorization" value="true"/> 
+    <property name="application" value="DataMover-Lite"/>
+  </service>
+  <service base="/thredds/dodsC/" desc="OpenDAP" name="OpenDAPFiles" serviceType="OpenDAP">
+    <property name="requires_authorization" value="false"/>
+    <property name="application" value="Web Browser"/>
+  </service>
+ </service>
+
+ <catalogScan name="ESGF catalogs" path="esgcet" location="esgcet" />
+
+</catalog>
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+'''''
+
+image:thread.png[TDS]This document was last updated July 2015. Send comments to the mailto:thredds@unidata.ucar.edu[THREDDS list].

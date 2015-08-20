@@ -34,6 +34,7 @@
 package ucar.ma2;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A section of multidimensional array indices.
@@ -656,11 +657,7 @@ public class Section {
     }
     if (!needed) return this;
 
-    List<Range> newList = new ArrayList<>(list.size());
-    for (Range r : list) {
-      if (r.length() > 1)
-        newList.add(r);
-    }
+    List<Range> newList = list.stream().filter(r -> r.length() > 1).collect(Collectors.toList());
     return new Section(newList);
   }
 
@@ -719,6 +716,9 @@ public class Section {
     return false;
   }
 
+  /**
+   * @deprecated dont assume evenly strided
+   */
   public boolean isStrided() {
     for (Range r : list) {
       if (r != null && r.stride() != 1) return false;
@@ -755,7 +755,8 @@ public class Section {
   /**
    * Get stride array using the Range.stride() values.
    *
-   * @return int[] origin
+   * @return int[] stride
+   * @deprecated dont assume evenly strided
    */
   public int[] getStride() {
     int[] result = new int[list.size()];
@@ -790,6 +791,7 @@ public class Section {
    *
    * @param i index of Range
    * @return stride of ith Range
+   * @deprecated dont assume evenly strided
    */
   public int getStride(int i) {
     return list.get(i).stride();
@@ -872,7 +874,7 @@ public class Section {
     int count = 0;
     Section result = new Section();
     for (Range r : getRanges()) {
-      Range nr = new Range(rangeNames.get(count++), r);
+      Range nr = r.copy(rangeNames.get(count++));
       result.appendRange(nr);
     }
     return result;
@@ -952,7 +954,7 @@ public class Section {
     return result;
   }
 
-
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /**
    * Iterate over a section, returning the index in an equivalent 1D array of shape[], and optionally the corresponding index[n]
    * So this is a section in a (possibly) larger array described by shape[].
@@ -967,7 +969,7 @@ public class Section {
 
   public class Iterator {
     private int[] odo = new int[getRank()];  // odometer - the current element LOOK could use Index, but must upgrade to using Range
-    private List<Range.Iterator> rangeIterList = new ArrayList<>();
+    private List<java.util.Iterator<Integer>> rangeIterList = new ArrayList<>();
     private int[] stride = new int[getRank()];
     private long done, total;
 
@@ -979,7 +981,7 @@ public class Section {
       }
 
       for (int i = 0; i < getRank(); i++) {
-        Range.Iterator iter = getRange(i).getIterator();
+        java.util.Iterator<Integer> iter = getRange(i).iterator();
         odo[i] = iter.next();
         rangeIterList.add(iter);
       }
@@ -1025,14 +1027,14 @@ public class Section {
     private void incr() {
       int digit = getRank() - 1;
       while (digit >= 0) {
-        Range.Iterator iter = rangeIterList.get(digit);
+        java.util.Iterator<Integer> iter = rangeIterList.get(digit);
         if (iter.hasNext()) {
           odo[digit] = iter.next();
           break; // normal exit
         }
 
         // else, carry to next digit in the odometer
-        Range.Iterator iterReset = getRange(digit).getIterator();
+        java.util.Iterator<Integer> iterReset = getRange(digit).iterator();
         odo[digit] = iterReset.next();
         rangeIterList.set(digit, iterReset);
         digit--;
@@ -1046,6 +1048,6 @@ public class Section {
         value += odo[ii] * stride[ii];
       return value;
     }
-  } // Iterator
+  } // Section.Iterator
 
 }

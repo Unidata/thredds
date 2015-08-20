@@ -391,8 +391,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
    * @throws IOException           problem reading from file
    * @throws InvalidRangeException invalid Range
    */
-  public Array readData(Variable v2, Section section)
-          throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     // long startTime = System.currentTimeMillis();
     Integer varIdx = varTable.get(v2);
     if (varIdx == null) {
@@ -410,7 +409,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     int nx = shape[count];
     count = 0;
 
-    Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
     Range timeRange = section.getRange(count++);
     Range zRange = haveZ
             ? section.getRange(count++)
@@ -419,11 +417,11 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     Range xRange = section.getRange(count);
     int grid_size = nx * ny * nz;
 
+    Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
     IndexIterator ii = dataArray.getIndexIterator();
 
     // loop over time
-    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last();
-         timeIdx += timeRange.stride()) {
+    for (int timeIdx : timeRange) {
 
       float[] data = new float[grid_size];
       float[] ranges = new float[2];
@@ -465,27 +463,9 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       }
       data = tmp_data;
 
-      if (zRange != null) {
-        for (int z = zRange.first(); z <= zRange.last();
-             z += zRange.stride()) {
-          for (int y = yRange.first(); y <= yRange.last();
-               y += yRange.stride()) {
-            for (int x = xRange.first(); x <= xRange.last();
-                 x += xRange.stride()) {
-              int index = z * nx * ny + y * nx + x;
-              ii.setFloatNext(data[index]);
-            }
-          }
-        }
-      } else {
-        for (int y = yRange.first(); y <= yRange.last();
-             y += yRange.stride()) {
-          for (int x = xRange.first(); x <= xRange.last();
-               x += xRange.stride()) {
-            int index = y * nx + x;
-            ii.setFloatNext(data[index]);
-          }
-        }
+      // copy the data into the array
+      for (float aData : data) {
+        ii.setFloatNext(aData);
       }
     }
 

@@ -427,20 +427,20 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     byte[] b = new byte[2];
     b[0] = Cinrad2Record.MISSING_DATA;
     b[1] = Cinrad2Record.BELOW_THRESHOLD;
-    Array missingArray = Array.factory(DataType.BYTE, new int[] {2}, b);
+    Array missingArray = Array.factory(DataType.BYTE, new int[]{2}, b);
 
     v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
-    v.addAttribute( new Attribute(CDM.ADD_OFFSET, new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
+    v.addAttribute(new Attribute(CDM.ADD_OFFSET, new Float(Cinrad2Record.getDatatypeAddOffset(datatype))));
     //v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
-    v.addAttribute( new Attribute(_Coordinate.Axes, fromAtt));
+    v.addAttribute(new Attribute(_Coordinate.Axes, fromAtt));
 
     Vgroup vgFrom = (Vgroup) from.getSPobject();
     Vgroup vg = new Vgroup(datatype, vgFrom.map);
-    v.setSPobject( vg);
+    v.setSPobject(vg);
   }
 
   private void makeCoordinateData(int datatype, Variable time, Variable elev, Variable azi, Variable nradialsVar,
@@ -579,8 +579,8 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     Array data = Array.factory(v2.getDataType(), section.getShape());
     IndexIterator ii = data.getIndexIterator();
 
-    for (int i=scanRange.first(); i<=scanRange.last(); i+= scanRange.stride()) {
-      Cinrad2Record[] mapScan = vgroup.map[i];
+    for (int scanIdx : scanRange) {
+      Cinrad2Record[] mapScan = vgroup.map[scanIdx];
       readOneScan(mapScan, radialRange, gateRange, vgroup.datatype, ii);
     }
 
@@ -588,15 +588,15 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   }
 
   private void readOneScan(Cinrad2Record[] mapScan, Range radialRange, Range gateRange, int datatype, IndexIterator ii) throws IOException {
-    for (int i=radialRange.first(); i<=radialRange.last(); i+= radialRange.stride()) {
-      Cinrad2Record r = mapScan[i];
+    for (int radialIdx : radialRange) {
+      Cinrad2Record r = mapScan[radialIdx];
       readOneRadial(r, datatype, gateRange, ii);
     }
   }
 
   private void readOneRadial(Cinrad2Record r, int datatype, Range gateRange, IndexIterator ii) throws IOException {
     if (r == null) {
-      for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride())
+      for (int i=0; i< gateRange.length(); i++)
         ii.setByteNext( Cinrad2Record.MISSING_DATA);
       return;
     }

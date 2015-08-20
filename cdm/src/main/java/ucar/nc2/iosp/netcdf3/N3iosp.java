@@ -508,7 +508,7 @@ public String NC_check_name(String name) {
     // loop over records
     byte[] result = structureArray.getByteBuffer().array();
     int count = 0;
-    for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
+    for (int recnum : recordRange) {
       if (debugRecord) System.out.println(" read record " + recnum);
       raf.seek(header.recStart + recnum * header.recsize); // where the record starts
 
@@ -624,20 +624,21 @@ public String NC_check_name(String name) {
     // LOOK this is the OTW layout based on netcdf-3
     // not sure this works but should give an idea of timing
     Range recordRange = section.getRange(0);
-    int stride = recordRange.stride();
+    /* int stride = recordRange.stride();
     if (stride == 1) {
       int first = recordRange.first();
       int n = recordRange.length();
       if (false) System.out.println(" read record " + first+" "+ n * header.recsize+" bytes ");
       return raf.readToByteChannel(out, header.recStart + first * header.recsize, n * header.recsize);
 
-    }  else {
-      for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
+    } else {  */
+
+    for (int recnum : recordRange) {
         if (debugRecord) System.out.println(" read record " + recnum);
         raf.seek(header.recStart + recnum * header.recsize); // where the record starts
         count += raf.readToByteChannel(out, header.recStart + recnum * header.recsize, header.recsize);
       }
-    }
+    // }
 
     return count;
   }
@@ -646,7 +647,7 @@ public String NC_check_name(String name) {
   // create new file
 
   protected boolean fill = true;
-  protected HashMap dimHash = new HashMap(50);
+  // protected HashMap dimHash = new HashMap(50);
 
   @Override
   public void create(String filename, ucar.nc2.NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile) throws IOException {
@@ -728,7 +729,7 @@ public String NC_check_name(String name) {
   private void writeRecordData(ucar.nc2.Structure s, Section section, ArrayStructure structureArray) throws java.io.IOException, ucar.ma2.InvalidRangeException {
     int countSrcRecnum = 0;
     Range recordRange = section.getRange(0);
-    for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
+    for (int recnum : recordRange) {
       StructureData sdata = structureArray.getStructureData(countSrcRecnum);
       writeRecordData(s, recnum, sdata);
       countSrcRecnum++;

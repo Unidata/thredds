@@ -50,10 +50,7 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
 import java.util.*;
 
 /**
@@ -314,11 +311,9 @@ public abstract class GribDataReader {
     public void addData(float[] data, int resultIndex, int nx) throws IOException {
       int start = resultIndex * horizSize;
       int count = 0;
-      for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
-        for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
+      for (int y : yRange) {
+        for (int x : xRange) {
           int dataIdx = y * nx + x;
-          if (dataIdx >= data.length)
-            System.out.println("HEY");
           dataArray.setFloat(start + count, data[dataIdx]);
           count++;
         }

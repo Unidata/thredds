@@ -169,13 +169,9 @@ public class ParsedSectionSpec {
       for (int count=0; count<v.getRank(); count++) {
         Range r = ranges.get(count);
         if (r == null)
-          r = new Range( 0, v.getDimension(count).getLength());
+          r = new Range( v.getDimension(count).getLength());
         if (count>0) sb.append(", ");
-        sb.append(r.first());
-        sb.append(':');
-        sb.append(r.last());
-        sb.append(':');
-        sb.append(r.stride());
+        sb.append(r);
       }
       sb.append(')');
     }

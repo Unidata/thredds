@@ -322,9 +322,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
     ByteBuffer bb = abb.getByteBuffer();
 
-    Range r = section.getRange(0);
-    for (int i = r.first(); i <= r.last(); i += r.stride()) {
-      Station station = stations.get(i);
+    Range range = section.getRange(0);
+    for (int idx : range) {
+      Station station = stations.get(idx);
       bb.put(station.r.stationId.getBytes(CDM.utf8Charset));
       bb.putFloat(station.r.lat);
       bb.putFloat(station.r.lon);
@@ -349,9 +349,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
     ByteBuffer bb = abb.getByteBuffer();
 
-    Range r = section.getRange(0);
-    for (int i = r.first(); i <= r.last(); i += r.stride()) {
-      Report report = reports.get(i);
+    Range range = section.getRange(0);
+    for (int idx : range) {
+      Report report = reports.get(idx);
       report.loadIndexData(bb);
     }
 
@@ -372,9 +372,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
     ByteBuffer bb = abb.getByteBuffer();
 
-    Range r = section.getRange(0);
-    for (int i = r.first(); i <= r.last(); i += r.stride()) {
-      Report report = reports.get(i);
+    Range range = section.getRange(0);
+    for (int idx : range) {
+      Report report = reports.get(idx);
       report.loadStructureData(abb, bb);
     }
 

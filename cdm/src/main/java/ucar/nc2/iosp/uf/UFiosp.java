@@ -359,8 +359,8 @@ public class UFiosp extends AbstractIOServiceProvider {
     Array data = Array.factory(v2.getDataType(), section.getShape());
     IndexIterator ii = data.getIndexIterator();
 
-    for (int i = scanRange.first(); i <= scanRange.last(); i += scanRange.stride()) {
-      Ray[] mapScan = vgroup.map[i];
+    for (int scanIdx : scanRange) {
+      Ray[] mapScan = vgroup.map[scanIdx];
       readOneScan(mapScan, radialRange, gateRange, vgroup.abbrev, ii);
     }
 
@@ -368,15 +368,15 @@ public class UFiosp extends AbstractIOServiceProvider {
   }
 
   private void readOneScan(Ray[] mapScan, Range radialRange, Range gateRange, String abbrev, IndexIterator ii) throws IOException {
-    for (int i = radialRange.first(); i <= radialRange.last(); i += radialRange.stride()) {
-      Ray r = mapScan[i];
+    for (int radialIdx : radialRange) {
+      Ray r = mapScan[radialIdx];
       readOneRadial(r, abbrev, gateRange, ii);
     }
   }
 
   private void readOneRadial(Ray r, String abbrev, Range gateRange, IndexIterator ii) throws IOException {
     if (r == null) {
-      for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride())
+      for (int i = 0; i < gateRange.length(); i++)
         ii.setShortNext(headerParser.getMissingData());
       return;
     }

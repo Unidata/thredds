@@ -195,14 +195,14 @@ public class Doradeiosp extends AbstractIOServiceProvider {
       }
       System.arraycopy(rayValues, 0, allValues, r*ncells, ncells);
   }    */
-      for (int r = radialRange.first(); r <= radialRange.last(); r += radialRange.stride()) {
+      for (int radialIdx : radialRange) {
         try {
-          rayValues = mySweep.getRayData(dp, r, rayValues);
+          rayValues = mySweep.getRayData(dp, radialIdx, rayValues);
         } catch (DoradeSweep.DoradeSweepException ex) {
           ex.printStackTrace();
         }
-        for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
-          ii.setFloatNext(rayValues[i]);
+        for (int gateIdx : gateRange) {
+          ii.setFloatNext(rayValues[gateIdx]);
         }
 
       }
@@ -211,8 +211,6 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     }
 
     return outputData;
-
-
   }
 
   public Array readData1(Variable v2, Section section, float[] values) {
@@ -220,8 +218,8 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     IndexIterator ii = data.getIndexIterator();
     Range radialRange = section.getRange(0);     // radial range can also be gate range
 
-    for (int r = radialRange.first(); r <= radialRange.last(); r += radialRange.stride()) {
-      ii.setFloatNext(values[r]);
+    for (int radialIdx : radialRange) {
+      ii.setFloatNext(values[radialIdx]);
     }
 
     return data;
@@ -232,8 +230,8 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     IndexIterator ii = data.getIndexIterator();
     Range radialRange = section.getRange(0);
 
-    for (int r = radialRange.first(); r <= radialRange.last(); r += radialRange.stride()) {
-      ii.setDoubleNext(values[r]);
+    for (int radialIdx : radialRange) {
+      ii.setDoubleNext(values[radialIdx]);
     }
 
     return data;

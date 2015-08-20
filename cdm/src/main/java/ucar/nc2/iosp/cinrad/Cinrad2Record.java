@@ -37,8 +37,6 @@
 package ucar.nc2.iosp.cinrad;
 
 import org.joda.time.DateTime;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.Range;
@@ -700,11 +698,11 @@ public class Cinrad2Record {
     byte[] data = new byte[dataCount];
     raf.readFully(data);
 
-    for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
-      if (i >= dataCount)
+    for (int gateIdx : gateRange) {
+      if (gateIdx >= dataCount)
         ii.setByteNext(MISSING_DATA);
       else
-        ii.setByteNext(data[i]);
+        ii.setByteNext(data[gateIdx]);
     }
 
   }
@@ -733,13 +731,13 @@ public class Cinrad2Record {
 
     //raf.readFully(data);
 
-    for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
-      if (i >= dataCount)
+    for (int gateIdx : gateRange) {
+      if (gateIdx >= dataCount)
         ii.setByteNext(MISSING_DATA);
       else {
         raf.read(b4);
-        data[i] = b4[j];
-        ii.setByteNext(data[i]);
+        data[gateIdx] = b4[j];
+        ii.setByteNext(data[gateIdx]);
       }
     }
 

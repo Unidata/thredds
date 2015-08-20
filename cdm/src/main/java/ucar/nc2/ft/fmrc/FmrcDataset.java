@@ -782,15 +782,11 @@ class FmrcDataset {
       try {
 
         // iterate over the desired runs
-        Range.Iterator runIter = runRange.getIterator();
-        while (runIter.hasNext()) {
-          int runIdx = runIter.next();
+        for (int runIdx : runRange) {
           //Date runDate = vstate.runTimes.get(runIdx);
 
           // iterate over the desired forecast times
-          Range.Iterator timeIter = timeRange.getIterator();
-          while (timeIter.hasNext()) {
-            int timeIdx = timeIter.next();
+          for (int timeIdx : timeRange) {
             Array result = null;
 
             // find the inventory for this grid, runtime, and hour
@@ -1068,9 +1064,7 @@ class FmrcDataset {
       try {
 
         // iterate over the desired forecast times
-        Range.Iterator timeIter = timeRange.getIterator();
-        while (timeIter.hasNext()) {
-          int timeIdx = timeIter.next();
+        for (int timeIdx : timeRange) {
           Array result = null;
 
           // find the inventory for this grid, runtime, and hour

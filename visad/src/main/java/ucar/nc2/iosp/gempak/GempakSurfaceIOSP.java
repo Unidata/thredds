@@ -199,14 +199,9 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
       ByteBuffer buf = ByteBuffer.wrap(bytes);
       array = new ArrayStructureBB(members, new int[]{size}, buf, 0);
 
-      //Trace.call1("GEMPAKSIOSP: readStandardData", section.toString());
-      for (int y = stationRange.first(); y <= stationRange.last();
-           y += stationRange.stride()) {
-        for (int x = timeRange.first(); x <= timeRange.last();
-             x += timeRange.stride()) {
-          GempakFileReader.RData vals =
-                  gemreader.DM_RDTR(x + 1, y + 1,
-                          GempakSurfaceFileReader.SFDT);
+      for (int stnIdx : stationRange) {
+        for (int timeIdx : timeRange) {
+          GempakFileReader.RData vals = gemreader.DM_RDTR(timeIdx + 1, stnIdx + 1, GempakSurfaceFileReader.SFDT);
           if (vals == null) {
             int k = 0;
             for (StructureMembers.Member member : mbers) {
@@ -307,11 +302,9 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
       }
       //boolean hasTime = (members.findMember(TIME_VAR) != null);
 
-      //Trace.call1("GEMPAKSIOSP: readShipData", section.toString());
       // fill out the station information
-      for (int x = recordRange.first(); x <= recordRange.last();
-           x += recordRange.stride()) {
-        GempakStation stn = stationList.get(x);
+      for (int recIdx : recordRange) {
+        GempakStation stn = stationList.get(recIdx);
         for (String varname : stnKeyNames) {
           if (members.findMember(varname) == null) {
             continue;
@@ -358,7 +351,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         }
         if (members.findMember(TIME_VAR) != null) {
           // put in the time
-          Date time = dateList.get(x);
+          Date time = dateList.get( recIdx);
           buf.putDouble(time.getTime() / 1000.d);
         }
 

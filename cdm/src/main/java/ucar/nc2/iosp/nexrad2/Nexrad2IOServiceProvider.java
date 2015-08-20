@@ -435,14 +435,14 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     if(datatype == Level2Record.SPECTRUM_WIDTH_HIGH){
        v.addAttribute( new Attribute("SNR_threshold" ,record.getDatatypeSNRThreshhold(datatype)));
     }
-    v.addAttribute( new Attribute("range_folding_threshold" ,record.getDatatypeRangeFoldingThreshhold(datatype)));
+    v.addAttribute(new Attribute("range_folding_threshold", record.getDatatypeRangeFoldingThreshhold(datatype)));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
-    v.addAttribute( new Attribute(_Coordinate.Axes, fromAtt));
+    v.addAttribute(new Attribute(_Coordinate.Axes, fromAtt));
 
     Vgroup vgFrom = (Vgroup) from.getSPobject();
     Vgroup vg = new Vgroup(datatype, vgFrom.map);
-    v.setSPobject( vg);
+    v.setSPobject(vg);
   }
 
   private void makeCoordinateData(int datatype, Variable time, Variable elev, Variable azi, Variable nradialsVar,
@@ -485,8 +485,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       }
 
       for (int j = nradials; j < maxRadials; j++) {
-        timeDataIter.setIntNext( MISSING_INT);
-        elevDataIter.setFloatNext( MISSING_FLOAT);
+        timeDataIter.setIntNext(MISSING_INT);
+        elevDataIter.setFloatNext(MISSING_FLOAT);
         aziDataIter.setFloatNext( MISSING_FLOAT);
       }
 
@@ -582,8 +582,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     Array data = Array.factory(v2.getDataType(), section.getShape());
     IndexIterator ii = data.getIndexIterator();
 
-    for (int i=scanRange.first(); i<=scanRange.last(); i+= scanRange.stride()) {
-      Level2Record[] mapScan = vgroup.map[i];
+    for (int scanIdx : scanRange) {
+      Level2Record[] mapScan = vgroup.map[scanIdx];
       readOneScan(mapScan, radialRange, gateRange, vgroup.datatype, ii);
     }
 
@@ -591,15 +591,15 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   }
 
   private void readOneScan(Level2Record[] mapScan, Range radialRange, Range gateRange, int datatype, IndexIterator ii) throws IOException {
-    for (int i=radialRange.first(); i<=radialRange.last(); i+= radialRange.stride()) {
-      Level2Record r = mapScan[i];
+    for (int radialIdx : radialRange) {
+      Level2Record r = mapScan[radialIdx];
       readOneRadial(r, datatype, gateRange, ii);
     }
   }
 
   private void readOneRadial(Level2Record r, int datatype, Range gateRange, IndexIterator ii) throws IOException {
     if (r == null) {
-      for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride())
+      for (int i=0; i<gateRange.length(); i++)
         ii.setByteNext( MISSING_DATA);
       return;
     }

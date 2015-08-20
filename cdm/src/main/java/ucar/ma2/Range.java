@@ -35,25 +35,22 @@ package ucar.ma2;
 
 import net.jcip.annotations.Immutable;
 
+import java.util.Iterator;
+
 /**
  * Represents a set of integers, used as an index for arrays.
- * It should be considered as a subset of the interval of integers [0, length-1] inclusive.
+ * No duplicates are allowed.
+ * It should be considered as a subset of the interval of integers [first(), last()] inclusive.
  * For example Range(1:11:3) represents the set of integers {1,4,7,10}
+ * Note that Range no longer is always strided or monotonic.
  * Immutable.
  * <p>
- * Ranges are monotonically increasing.
- * Elements must be nonnegative.
+ * Elements must be nonnegative and unique.
  * EMPTY is the empty Range.
  * VLEN is for variable length dimensions.
- * <p> Note last is inclusive, so standard iteration is
+ * <p> Standard iteration is
  * <pre>
- *  for (int i=range.first(); i<=range.last(); i+= range.stride()) {
- *    ...
- *  }
- * or use:
- *  Range.Iterator iter = timeRange.getIterator();
- *  while (iter.hasNext()) {
- *    int index = iter.next();
+ *  for (int idx : range) {
  *    ...
  *  }
  * </pre>
@@ -62,7 +59,7 @@ import net.jcip.annotations.Immutable;
  */
 
 @Immutable
-public class Range {
+public class Range implements Iterable<Integer>  {
   public static final Range EMPTY = new Range();
   public static final Range ONE = new Range(1);
   public static final Range VLEN = new Range(-1);
@@ -119,7 +116,7 @@ public class Range {
   }
 
   /**
-   * Create a range with a specified stride.
+   * Create a range with a specified values.
    *
    * @param first  first value in range
    * @param last   last value in range, inclusive
@@ -131,7 +128,7 @@ public class Range {
   }
 
   /**
-   * Create a named range with a specified stride.
+   * Create a named range with a specified name and values.
    *
    * @param name   name of Range
    * @param first  first value in range
@@ -146,6 +143,7 @@ public class Range {
       throw new InvalidRangeException("last (" + last + ") must be >= first (" + first + ")");
     if (stride < 1)
       throw new InvalidRangeException("stride (" + stride + ") must be > 0");
+
     this.name = name;
     this.first = first;
     this.stride = stride;
@@ -154,30 +152,16 @@ public class Range {
   }
 
   /**
-   * Copy Constructor
-   *
-   * @param r copy from here
-   */
-  public Range(Range r) {
-    first = r.first();
-    n = r.length();
-    stride = r.stride();
-    name = r.getName();
-    assert this.n != 0;
-  }
-
-  /**
    * Copy Constructor with name
    *
-   * @param name result name
-   * @param r    copy from here
+   * @param name copy this, with given name
    */
-  public Range(String name, Range r) {
-    this.name = name;
-    first = r.first();
-    n = r.length();
-    stride = r.stride();
-    assert this.n != 0;
+  public Range copy(String name) {
+    try {
+      return new Range(name, first(), last(), stride);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
   }
 
   /**
@@ -203,7 +187,7 @@ public class Range {
     int last = element(r.last());
     return new Range(name, first, last, stride);
 } else {//new version: handles versions all values of r. */
-    int sr_stride = stride() * r.stride();
+    int sr_stride = this.stride * r.stride;
     int sr_first = element(r.first()); // MAP(this,i) == element(i)
     int lastx = element(r.last());
     int sr_last = (last() < lastx ? last() : lastx); //min(last(),lastx)
@@ -219,8 +203,8 @@ public class Range {
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range compact() throws InvalidRangeException {
-    if (stride() == 1) return this;
-    int first = first() / stride();
+    if (stride == 1) return this;
+    int first = first() / stride;           // LOOK WTF ?
     int last = first + length() - 1;
     return new Range(name, first, last, 1);
   }
@@ -228,8 +212,8 @@ public class Range {
   /**
    * Create a new Range shifting this range by a constant factor.
    *
-   * @param origin subtract this from first, last
-   * @return shiften range
+   * @param origin subtract this from each element
+   * @return shifted range
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range shiftOrigin(int origin) throws InvalidRangeException {
@@ -237,7 +221,6 @@ public class Range {
       return VLEN;
 
     int first = first() - origin;
-    int stride = stride();
     int last = last() - origin;
     return new Range(name, first, last, stride);
   }
@@ -431,15 +414,7 @@ public class Range {
     return (want - first) % stride == 0;
   }
 
-  /**
-   * Get ith element; skip checking, for speed.
-   *
-   * @param i index of the element
-   * @return the i-th element of a range, no check
-   */
-  private int elementNC(int i) {
-    return first + i * stride;
-  }
+
 
   /**
    * @return first in range
@@ -457,11 +432,11 @@ public class Range {
 
   /**
    * @return stride, must be >= 1
+   * @deprecated use iterator(), dont assume evenly strided
    */
   public int stride() {
     return stride;
   }
-
 
   /**
    * Get name
@@ -470,34 +445,6 @@ public class Range {
    */
   public String getName() {
     return name;
-  }
-
-  /**
-   * Iterate over Range index
-   * Usage: <pre>
-   * Iterator iter = range.getIterator();
-   * while (iter.hasNext()) {
-   *   int index = iter.next();
-   *   doSomething(index);
-   * }
-   * </pre>
-   *
-   * @return Iterator over element indices
-   */
-  public Iterator getIterator() {
-    return new Iterator();
-  }
-
-  public class Iterator {
-    private int current = 0;
-
-    public boolean hasNext() {
-      return current < n;
-    }
-
-    public int next() {
-      return elementNC(current++);
-    }
   }
 
   /**
@@ -553,6 +500,39 @@ public class Range {
     result = 37 * result + last();
     result = 37 * result + stride();
     return result;
+  }
+
+  /////////////////////////////////////////////////////////
+
+  /**
+   * Iterate over Range index
+   * @return Iterator over element indices
+   * @deprecated use iterator() or foreach
+   */
+  public Iterator<Integer> getIterator() {
+    return new MyIterator();
+  }
+
+  @Override
+  public Iterator<Integer> iterator() {
+    return new MyIterator();
+  }
+
+  private class MyIterator implements java.util.Iterator<Integer> {
+    private int current = 0;
+    public boolean hasNext() {
+      return current < n;
+    }
+    public Integer next() {
+      return elementNC(current++);
+    }
+  }
+
+  /**
+   * Get ith element; skip checking, for speed.
+   */
+  private int elementNC(int i) {
+    return first + i * stride;
   }
 
 }

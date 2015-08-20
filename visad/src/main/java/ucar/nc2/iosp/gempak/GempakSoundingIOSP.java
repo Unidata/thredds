@@ -321,16 +321,15 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
       ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
       ByteBuffer buf = abb.getByteBuffer();
 
-      //Trace.call1("GEMPAKSIOSP: readMergedData" , section.toString());
-      for (int y = stationRange.first(); y <= stationRange.last(); y += stationRange.stride()) {
-        for (int x = timeRange.first(); x <= timeRange.last(); x += timeRange.stride()) {
+      for (int stnIdx : stationRange) {
+        for (int timeIdx : timeRange) {
           List<String> parts = (isMerged) ? ((GempakSoundingFileReader) gemreader).getMergedParts()
                   : ((GempakSoundingFileReader) gemreader).getUnmergedParts();
           boolean allMissing = true;
-          for (String part : parts) {
 
+          for (String part : parts) {
             List<GempakParameter> params = gemreader.getParameters(part);
-            GempakFileReader.RData vals = gemreader.DM_RDTR(x + 1, y + 1, part);
+            GempakFileReader.RData vals = gemreader.DM_RDTR(timeIdx + 1, stnIdx + 1, part);
             ArraySequence aseq;
             Sequence seq = (Sequence) pdata.findVariable(part);
             if (vals == null) {
