@@ -5,14 +5,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheException;
@@ -20,14 +21,16 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.event.CacheEventListener;
+import net.sf.ehcache.event.CacheEventListenerAdapter;
+import org.apache.http.HttpStatus;
 
 public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
     static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CrawlableDatasetAmazonS3.class);
 
     private final String path;
-    private ThreddsS3Object s3Object = null;
 
     private static final String EHCACHE_S3_OBJECT_KEY = "S3Objects";
+    private static final String EHCACHE_S3_OBJECT_METADATA_KEY = "S3ObjectMetadata";
     private static final String EHCACHE_S3_LISTING_KEY = "S3Listing";
     private static final int EHCACHE_MAX_OBJECTS = 1000;
     private static final int EHCACHE_TTL = 60;
@@ -38,22 +41,19 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
         this.path = path;
     }
 
-    private CrawlableDatasetAmazonS3(CrawlableDatasetAmazonS3 parent, ThreddsS3Object s3Object) {
-        this(S3Helper.concat(parent.getPath(), s3Object.key), null);
-        this.s3Object = s3Object;
-    }
-
     //////////////////////////////////////// Caching ////////////////////////////////////////
 
-    public static Cache getS3ObjectCache() {
-        return getS3Cache(EHCACHE_S3_OBJECT_KEY, new S3CacheEventListener());
+    public static Cache getS3ObjectMetadataCache() {
+        return getS3Cache(EHCACHE_S3_OBJECT_METADATA_KEY);
     }
 
     public static Cache getS3ListingCache() {
         return getS3Cache(EHCACHE_S3_LISTING_KEY);
     }
 
-    // These two could be static, but we're making them member functions instead so that they're more easily mockable.
+    public static Cache getS3ObjectCache() {
+        return getS3Cache(EHCACHE_S3_OBJECT_KEY, new S3CacheEventListener());
+    }
 
     public static Cache getS3Cache(String cacheName) {
         return getS3Cache(cacheName, null);
@@ -75,11 +75,28 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
         return cacheManager.getCache(cacheName);
     }
 
+    //////////////////////////////////////// Instance methods ////////////////////////////////////////
+
+    // Null means that the specified key does not exist in the bucket.
+    private ThreddsS3Object getS3Object() {
+        return S3Helper.getS3Metadata(path, getS3ObjectMetadataCache());
+    }
+
+    private List<ThreddsS3Object> getS3Listing() {
+        return S3Helper.listS3Dir(path, getS3ListingCache());
+    }
+
+
+
     //////////////////////////////////////// CrawlableDatasetFile ////////////////////////////////////////
 
     @Override
     public File getFile() {
-        return S3Helper.getS3File(path, getS3ObjectCache());
+        if (getS3Object() == null) {
+            return null;
+        } else {
+            return S3Helper.getS3File(path, getS3ObjectCache());
+        }
     }
 
     //////////////////////////////////////// CrawlableDataset ////////////////////////////////////////
@@ -101,20 +118,12 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
 
     @Override
     public boolean exists() {
-        // http://stackoverflow.com/questions/8303011/
-        // First, check if uri is a file using getObjectMetadata().
-        // If that fails, see if it is a virtual directory with listObjects().
-        // We can make ThreddsS3Object out of both calls.
-        return true;  // LOOK: seems wrong.
+        return getS3Object() != null || getS3Listing() != null;
     }
 
     @Override
     public boolean isCollection() {
-        if (null == s3Object) {
-            return true;
-        } else {
-            return s3Object.type == ThreddsS3Object.Type.DIR;
-        }
+        return !getS3Listing().isEmpty();
     }
 
     @Override
@@ -123,28 +132,24 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
             throw new IllegalArgumentException("Path must be relative <" + relativePath + ">.");
         }
 
-        ThreddsS3Object obj = new ThreddsS3Object(relativePath, ThreddsS3Object.Type.DIR);
-        return new CrawlableDatasetAmazonS3(this, obj);
+        return new CrawlableDatasetAmazonS3(S3Helper.concat(path, relativePath), getConfigObject());
     }
 
     @Override
     public List<CrawlableDataset> listDatasets() throws IOException {
-        if (!this.isCollection()) {
-            String tmpMsg = "This dataset <" + this.getPath() + "> is not a collection dataset.";
+        if (!isCollection()) {
+            String tmpMsg = String.format("'%s' is not a collection dataset.", path);
             log.error("listDatasets(): " + tmpMsg);
             throw new IllegalStateException(tmpMsg);
         }
 
-        List<ThreddsS3Object> listing = S3Helper.listS3Dir(this.path, getS3ListingCache());
-
-        if (listing.isEmpty()) {
-            log.error("listDatasets(): the underlying file [" + this.path + "] exists, but is empty");
-            return Collections.emptyList();
-        }
+        List<ThreddsS3Object> listing = S3Helper.listS3Dir(path, getS3ListingCache());
+        assert !listing.isEmpty() : "In S3, virtual directories are never empty.";
 
         List<CrawlableDataset> list = new ArrayList<>();
         for (ThreddsS3Object s3Object : listing) {
-            CrawlableDatasetAmazonS3 crDs = new CrawlableDatasetAmazonS3(this, s3Object);
+            CrawlableDatasetAmazonS3 crDs = new CrawlableDatasetAmazonS3(
+                    S3Helper.concat(path, s3Object.key), getConfigObject());
             list.add(crDs);
         }
 
@@ -153,18 +158,22 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
 
     @Override
     public long length() {
-        if (null != s3Object) {
+        ThreddsS3Object s3Object = getS3Object();
+        if (s3Object != null) {
             return s3Object.size;
         } else {
-            return -1;
+            // "this" may be a collection or non-existent. In both cases, we return 0.
+            return 0;
         }
     }
 
     @Override
     public Date lastModified() {
-        if (null != s3Object) {
+        ThreddsS3Object s3Object = getS3Object();
+        if (s3Object != null) {
             return s3Object.lastModified;
         } else {
+            // "this" may be a collection or non-existent. In both cases, we return null.
             return null;
         }
     }
@@ -200,6 +209,8 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
         private static String S3_DELIMITER = "/";
         private static HashMap<String, File> fileStore = new HashMap<>();
 
+        private static AmazonS3Client s3Client;
+
         public static String concat(String parent, String child) {
             if (child.isEmpty()) {
                 return parent;
@@ -217,7 +228,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
             return new File(uri).getName();
         }
 
-        public static String[] s3UriParts(String uri) throws Exception {
+        public static String[] s3UriParts(String uri) {
             if (uri.startsWith(S3_PREFIX)) {
                 uri = stripPrefix(uri, S3_PREFIX);
                 String[] parts = new String[2];
@@ -250,9 +261,13 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
         }
 
         private static AmazonS3Client getS3Client() {
-            // Use HTTP, it's much faster
-            AmazonS3Client s3Client = new AmazonS3Client();
-            s3Client.setEndpoint("http://s3.amazonaws.com");
+            if (s3Client == null) {
+                // Use HTTP, it's much faster
+                s3Client = new AmazonS3Client();
+                s3Client.setEndpoint("http://s3.amazonaws.com");
+                return s3Client;
+            }
+
             return s3Client;
         }
 
@@ -281,11 +296,87 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
             fileStore.remove(element.getObjectKey());
         }
 
-        // This fails when the uri points to a virtual directory:
-        // AmazonS3Exception: The specified key does not exist.
-        public static File getS3File(String uri, Cache cache) {
-            log.debug(String.format("S3 Downloading '%s'", uri));
+        public static ThreddsS3Object getS3Metadata(String uri, Cache cache) {
+            Element element;
+            if ((element = cache.get(uri)) != null) {
+                return (ThreddsS3Object) element.getObjectValue();
+            }
 
+            String[] uriParts = s3UriParts(uri);
+            String s3Bucket = uriParts[0];
+            String s3Key = uriParts[1];
+
+            try {
+                ObjectMetadata metadata = getS3Client().getObjectMetadata(s3Bucket, s3Key);
+                log.info(String.format("S3 Downloaded metadata '%s'", uri));
+
+                ThreddsS3Object threddsS3Object = new ThreddsS3Object(
+                        s3Key, metadata.getContentLength(), metadata.getLastModified(), ThreddsS3Object.Type.FILE);
+                cache.put(new Element(uri, threddsS3Object));
+
+                return threddsS3Object;
+            } catch (AmazonServiceException e) {
+                if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                    log.info(String.format("S3 No such key in bucket: '%s'", uri));
+                    return null;
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        public static List<ThreddsS3Object> listS3Dir(String uri, Cache cache) {
+            Element element;
+            if ((element = cache.get(uri)) != null) {
+                return (List<ThreddsS3Object>) element.getObjectValue();
+            }
+
+            String[] uriParts = s3UriParts(uri);
+            String s3Bucket = uriParts[0];
+            String s3Key = uriParts[1];
+
+            if (!s3Key.endsWith(S3_DELIMITER)) {
+                s3Key += S3_DELIMITER;
+            }
+
+            final ListObjectsRequest listObjectsRequest =
+                    new ListObjectsRequest().withBucketName(s3Bucket).withDelimiter(S3_DELIMITER);
+
+            if (!s3Key.equals(S3_DELIMITER)) {
+                // uri contains a bucket but no key, e.g. "s3://bucket".
+                listObjectsRequest.setPrefix(s3Key);
+            }
+
+            final ObjectListing objectListing = getS3Client().listObjects(listObjectsRequest);
+            log.info(String.format("S3 Downloaded listing '%s'", uri));
+
+            List<ThreddsS3Object> listing = new ArrayList<>();
+
+            for (final S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
+                listing.add(new ThreddsS3Object(
+                        stripPrefix(objectSummary.getKey(), s3Key),
+                        objectSummary.getSize(),
+                        objectSummary.getLastModified(),
+                        ThreddsS3Object.Type.FILE
+                ));
+            }
+
+            for (final String commonPrefix : objectListing.getCommonPrefixes()) {
+                String key = stripPrefix(commonPrefix, s3Key);
+                key = removeTrailingSlash(key);
+
+                listing.add(new ThreddsS3Object(key, ThreddsS3Object.Type.DIR));
+            }
+
+            if (listing.isEmpty()) {
+                log.info(String.format("S3 Not a virtual directory: '%s'", uri));
+            }
+
+            cache.put(new Element(uri, listing));
+            return listing;
+        }
+
+        public static File getS3File(String uri, Cache cache) {
             Element element;
             if ((element = cache.get(uri)) != null && ((File) element.getObjectValue()).exists()) {
                 return (File) element.getObjectValue();
@@ -296,110 +387,35 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
                 String s3Bucket = uriParts[0];
                 String s3Key = uriParts[1];
 
-                // Can instead use: getObject(final GetObjectRequest getObjectRequest, File destinationFile)
-//                S3Object object = getS3Client().getObject(new GetObjectRequest(s3Bucket, s3Key));
                 File tmpFile = createTempFile(uri);
-//                log.info(String.format("S3 Downloading 's3://%s/%s' to '%s'", s3Bucket, s3Key, tmpFile.toString()));
-//
-//                try (InputStream is = object.getObjectContent();
-//                        OutputStream os = new FileOutputStream(tmpFile)) {
-//                    IOUtils.copy(is, os);
-//                }
-
                 getS3Client().getObject(new GetObjectRequest(s3Bucket, s3Key), tmpFile);
-                log.info(String.format("S3 Downloaded 's3://%s/%s' to '%s'", s3Bucket, s3Key, tmpFile.toString()));
+                log.info(String.format("S3 Downloaded object '%s' to '%s'", uri, tmpFile.toString()));
 
                 cache.put(new Element(uri, tmpFile));
-
                 return tmpFile;
             } catch (Exception e) {
-                log.error(String.format("S3 Error downloading '%s'", uri));
+                log.error(String.format("S3 Error downloading object '%s'", uri));
                 e.printStackTrace();
             }
 
             return null;
         }
-
-        // NOTE: If a uri is a valid s3 directory, it is guaranteed to have one of these.
-        // In the S3 virtual directory hierarchy, there's no such thing as an empty directory.
-        public static List<ThreddsS3Object> listS3Dir(String uri, Cache cache) {
-            Element element;
-            if ((element = cache.get(uri)) != null) {
-                return (List<ThreddsS3Object>) element.getObjectValue();
-            }
-
-            List<ThreddsS3Object> listing = new ArrayList<>();
-
-            log.debug(String.format("S3 Listing '%s'", uri));
-
-            try {
-                String[] uriParts = s3UriParts(uri);
-                String s3Bucket = uriParts[0];
-                String s3Key = uriParts[1];
-
-                if (!s3Key.endsWith(S3_DELIMITER)) {
-                    s3Key += S3_DELIMITER;
-                }
-
-                final ListObjectsRequest listObjectsRequest =
-                        new ListObjectsRequest().withBucketName(s3Bucket).withDelimiter(S3_DELIMITER);
-
-                if (!s3Key.equals(S3_DELIMITER)) {
-                    // uri contains a bucket but no key, e.g. "s3://bucket".
-                    listObjectsRequest.setPrefix(s3Key);
-                }
-
-                final ObjectListing objectListing = getS3Client().listObjects(listObjectsRequest);
-
-                for (final S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
-                    listing.add(new ThreddsS3Object(
-                            stripPrefix(objectSummary.getKey(), s3Key),
-                            objectSummary.getSize(),
-                            objectSummary.getLastModified(),
-                            ThreddsS3Object.Type.FILE
-                    ));
-                }
-
-                for (final String commonPrefix : objectListing.getCommonPrefixes()) {
-                    String key = stripPrefix(commonPrefix, s3Key);
-                    key = removeTrailingSlash(key);
-
-                    listing.add(new ThreddsS3Object(key, ThreddsS3Object.Type.DIR));
-                }
-
-                cache.put(new Element(uri, listing));
-            } catch (Exception e) {
-                log.error(String.format("S3 Error listing '%s'", uri));
-                e.printStackTrace();
-            }
-
-            return listing;
-        }
     }
 
-    public static class S3CacheEventListener implements CacheEventListener {
+    public static class S3CacheEventListener extends CacheEventListenerAdapter {
+        @Override
         public void notifyElementRemoved(final Ehcache cache, final Element element) throws CacheException {
             S3Helper.deleteFileElement(element);
         }
 
+        @Override
         public void notifyElementExpired(final Ehcache cache, final Element element) {
             S3Helper.deleteFileElement(element);
         }
 
+        @Override
         public void notifyElementEvicted(Ehcache cache, Element element) {
             S3Helper.deleteFileElement(element);
-        }
-
-        public void notifyElementPut(final Ehcache cache, final Element element) throws CacheException {}
-
-        public void notifyElementUpdated(final Ehcache cache, final Element element) throws CacheException {}
-
-        public void notifyRemoveAll(Ehcache cache) {}
-
-        public void dispose() {}
-
-        public Object clone() throws CloneNotSupportedException {
-            return super.clone();
         }
     }
 }
