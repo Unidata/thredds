@@ -435,7 +435,7 @@ public class IospHelper {
         outStream.writeShort(iterA.getShortNext());
 
     } else if (classType == char.class) {  // LOOK why are we using chars anyway ?
-      byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(char.class));
+      byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(DataType.CHAR));
       outStream.write(pa, 0, pa.length);
 
     } else if (classType == byte.class) {
@@ -531,7 +531,7 @@ public class IospHelper {
         dataOut.writeShort(iterA.getShortNext());
 
     } else if (classType == char.class) {  // LOOK why are we using chars anyway ?
-      byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(char.class));
+      byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(DataType.CHAR));
       dataOut.write(pa, 0, pa.length);
 
     } else if (classType == byte.class) {
@@ -595,12 +595,9 @@ public class IospHelper {
     ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
     ArrayStructureBB.setOffsets(sm);
 
-    StructureDataIterator iter = as.getStructureDataIterator();
-    try {
+    try (StructureDataIterator iter = as.getStructureDataIterator()) {
       while (iter.hasNext())
         StructureDataDeep.copyToArrayBB(iter.next(), abb);
-    } finally {
-      iter.finish();
     }
     return abb;
   }
@@ -861,16 +858,13 @@ public class IospHelper {
   }
 
   static private void extractSectionFromSequence(ParsedSectionSpec child, ArraySequence outerData, IndexIterator to) throws IOException, InvalidRangeException {
-    StructureDataIterator sdataIter = outerData.getStructureDataIterator();
-    try {
+    try (StructureDataIterator sdataIter = outerData.getStructureDataIterator()) {
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
         StructureMembers.Member m = outerData.findMember(child.v.getShortName());
         Array innerData = sdata.getArray(child.v.getShortName());
         MAMath.copy(m.getDataType(), innerData.getIndexIterator(), to);
       }
-    } finally {
-      sdataIter.finish();
     }
   }
 

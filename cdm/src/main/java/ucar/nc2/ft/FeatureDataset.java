@@ -39,7 +39,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
-import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.*;
 
@@ -62,56 +61,56 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    *
    * @return FeatureType of data
    */
-  public FeatureType getFeatureType();
+  FeatureType getFeatureType();
 
   /**
    * Title of the dataset.
    *
    * @return the title of the dataset, or null
    */
-  public String getTitle();
+  String getTitle();
 
   /**
    * Text information about this dataset.
    *
    * @return any text information about this dataset, or null.
    */
-  public String getDescription();
+  String getDescription();
 
   /**
    * The URI location of the dataset
    *
    * @return the URI location of the dataset, or null
    */
-  public String getLocation();
+  String getLocation();
 
   /**
    * Calendar Date range for the entire dataset.
    *
    * @return the date range for the entire dataset, or null if unknown
    */
-  public CalendarDateRange getCalendarDateRange();
+  CalendarDateRange getCalendarDateRange();
 
   /**
    * Starting Calendar date for the entire dataset.
    *
    * @return the starting date for the entire dataset, or null if unknown
    */
-  public CalendarDate getCalendarDateStart();
+  CalendarDate getCalendarDateStart();
 
   /**
    * Ending Calendar date for the entire dataset.
    *
    * @return the ending date for the entire dataset, or null if unknown
    */
-  public CalendarDate getCalendarDateEnd();
+  CalendarDate getCalendarDateEnd();
 
   /**
    * The lat/lon boundingBox for the entire dataset.
    *
    * @return the lat/lon boundingBox for the entire dataset, or null if unknown.
    */
-  public ucar.unidata.geoloc.LatLonRect getBoundingBox();
+  ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
   /**
    * Caclulate date range and bounding box, even if the data has to be scanned.
@@ -120,14 +119,14 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    *
    * @throws java.io.IOException or read error.
    */
-  public void calcBounds() throws java.io.IOException;
+  void calcBounds() throws java.io.IOException;
 
   /**
    * List of global attributes.
    *
    * @return List of type ucar.nc2.Attribute, may be empty but not null
    */
-  public List<ucar.nc2.Attribute> getGlobalAttributes();
+  List<ucar.nc2.Attribute> getGlobalAttributes();
 
   /**
    * Return the global attribute with the given name, ignoring case.
@@ -135,7 +134,7 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    * @param name attribute name
    * @return the global attribute, or null
    */
-  public ucar.nc2.Attribute findGlobalAttributeIgnoreCase(String name);
+  ucar.nc2.Attribute findGlobalAttributeIgnoreCase(String name);
 
   /**
    * The data Variables available in this dataset.
@@ -145,7 +144,7 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    *
    * @return List of subclass of VariableSimpleIF, may be empty but not null
    */
-  public List<VariableSimpleIF> getDataVariables();
+  List<VariableSimpleIF> getDataVariables();
 
   /**
    * Get the named data Variable.
@@ -153,34 +152,34 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    * @param shortName of data Variable.
    * @return VariableSimpleIF or null if not found
    */
-  public VariableSimpleIF getDataVariable(String shortName);
+  VariableSimpleIF getDataVariable(String shortName);
 
   /**
    * Return underlying NetcdfFile, or null if none.
    *
    * @return the underlying NetcdfFile, or null if none.
    */
-  public ucar.nc2.NetcdfFile getNetcdfFile();
+  ucar.nc2.NetcdfFile getNetcdfFile();
 
   /**
    * Close all resources associated with this dataset.
    *
    * @throws java.io.IOException on i/o error
    */
-  public void close() throws java.io.IOException;
+  void close() throws java.io.IOException;
 
   /**
    * Show debug / underlying implementation details
    *
    * @param sf append info here
    */
-  public void getDetailInfo(java.util.Formatter sf);
+  void getDetailInfo(java.util.Formatter sf);
 
   /**
    * Show who is implementing
    * @return name of implementor
    */
-  public String getImplementationName();
+  String getImplementationName();
 
   /////////////////////////////////////////////////
   // deprecated
@@ -190,7 +189,7 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    * @return the date range for the entire dataset, or null if unknown
    * @deprecated use getCalendarDateRange
    */
-  public DateRange getDateRange();
+  DateRange getDateRange();
 
   /**
    * Starting date for the entire dataset.
@@ -198,7 +197,7 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    * @return the starting date for the entire dataset, or null if unknown
    * @deprecated use getCalendarDateStart
    */
-  public Date getStartDate();
+  Date getStartDate();
 
   /**
    * Ending date for the entire dataset.
@@ -206,6 +205,6 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    * @return the ending date for the entire dataset, or null if unknown
    * @deprecated use getCalendarDateEnd
    */
-  public Date getEndDate();
+  Date getEndDate();
 
 }

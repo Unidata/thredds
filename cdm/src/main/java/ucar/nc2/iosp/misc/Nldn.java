@@ -40,7 +40,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.CF;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -97,11 +96,6 @@ The specifics for the binary NLDN data record contained in the IDD is:
    * The magic mushroom
    */
   private static final String MAGIC = "NLDN";
-
-  /**
-   * The data structure
-   */
-  private Structure seq;
 
   /**
    * The structure members
@@ -187,7 +181,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
 
-    seq = new Sequence(ncfile, null, null, RECORD);
+    Structure seq = new Sequence(ncfile, null, null, RECORD);
     ncfile.addVariable(null, seq);
 
     /*
@@ -198,9 +192,9 @@ The specifics for the binary NLDN data record contained in the IDD is:
                           String units, AxisType type) {
     */
     Variable v = makeLightningVariable(ncfile, null, seq, TSEC, DataType.INT,
-                    "", "time of stroke", null,
-                    secondsSince1970,
-                    AxisType.Time);
+            "", "time of stroke", null,
+            secondsSince1970,
+            AxisType.Time);
     seq.addMemberVariable(v);
 
     v = makeLightningVariable(ncfile, null, seq, "nsec", DataType.INT,
@@ -428,10 +422,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
 
     @Override
     public boolean hasNext() throws IOException {
-      if (done < alreadyRead) {
-        return true;
-      }
-      return readHeader();
+      return done < alreadyRead || readHeader();
     }
 
     @Override
@@ -477,18 +468,10 @@ The specifics for the binary NLDN data record contained in the IDD is:
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public int getCurrentRecno() {
       return done - 1;
     }
 
-    @Override
-      public void finish() {
-        // ignored
-      }
   }
 
 

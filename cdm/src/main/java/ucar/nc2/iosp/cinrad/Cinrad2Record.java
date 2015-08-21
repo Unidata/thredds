@@ -905,11 +905,11 @@ public class Cinrad2Record {
     short[] data = new short[dataCount];
     raf.readShort(data, 0, dataCount);
 
-    for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
-      if (i >= dataCount)
+    for (int idx : gateRange) {
+      if (idx >= dataCount)
         ii.setShortNext((short)-32768);
       else
-        ii.setShortNext(data[i]);
+        ii.setShortNext(data[idx]);
     }
 
   }

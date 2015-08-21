@@ -51,25 +51,25 @@ public interface TrajectoryFeature extends PointFeatureCollection {
     * The number of points along the trajectory. May not be known until after iterating through the collection.
     * @return number of points along the trajectory, or -1 if not known.
     */
-   public int size();
+  int size();
 
   /**
    * DateRange for the points along the trajectory. May not be known until after iterating through the collection.
    * @return stating date for the trajectory, or null if not known
    */
-  public DateRange getDateRange();
+  DateRange getDateRange();
 
   /**
    * BoundingBox for the trajectory. May not be known until after iterating through the collection.
    * @return BoundingBox for the trajectory, or null if not known.
    */
-  public ucar.unidata.geoloc.LatLonRect getBoundingBox();
+  ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
   /**
    * The actual data of just this feature.
    * @return the actual data of this feature.
    * @throws java.io.IOException on i/o error
    */
-  public StructureData getFeatureData() throws IOException;
+  StructureData getFeatureData() throws IOException;
 
 }

@@ -67,10 +67,6 @@ public class SequenceIterator implements StructureDataIterator {
   }
 
   @Override
-  public void setBufferSize(int bytes) {
-  }
-
-  @Override
   public StructureDataIterator reset() {
     count = 0;
     return this;
@@ -80,10 +76,5 @@ public class SequenceIterator implements StructureDataIterator {
   public int getCurrentRecno() {
     return count;
   }
-
-  @Override
-      public void finish() {
-        // ignored
-      }
 
 }

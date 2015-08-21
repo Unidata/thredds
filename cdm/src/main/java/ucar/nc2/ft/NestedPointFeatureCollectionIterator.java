@@ -34,17 +34,25 @@ package ucar.nc2.ft;
 
 /**
  * An iterator over NestedPointFeatureCollection.
+ * Use try-with-resource to make sure resources are released:
+ * <pre>
+   try (NestedPointFeatureCollectionIterator iter = getIter()) {
+     while (iter.hasNext())
+       process(iter.next());
+   }
+   </pre>
+ *
  * @author caron
  * @since Mar 20, 2008
  */
-public interface NestedPointFeatureCollectionIterator {
+public interface NestedPointFeatureCollectionIterator extends AutoCloseable {
   
   /**
    * true if another Feature object is available
    * @return true if another Feature object is available
    * @throws java.io.IOException on i/o error
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Returns the next NestedPointFeatureCollection object
@@ -52,32 +60,32 @@ public interface NestedPointFeatureCollectionIterator {
    * @return the next NestedPointFeatureCollection object
    * @throws java.io.IOException on i/o error
    */
-  public NestedPointFeatureCollection next() throws java.io.IOException;
+  NestedPointFeatureCollection next() throws java.io.IOException;
 
   /**
    * Hint to use this much memory in buffering the iteration.
    * No guarentee that it will be used by the implementation.
    * @param bytes amount of memory in bytes
    */
-  public void setBufferSize( int bytes);
+  void setBufferSize( int bytes);
 
   /**
    * Make sure that the iterator is complete, and recover resources.
-   * You must complete the iteration (until hasNext() returns false) or call finish().
+   * You must complete the iteration (until hasNext() returns false) or call close().
    * may be called more than once.
    */
-  public void finish();
+  void close();
 
   /**
    * A filter on nestedPointFeatureCollection
    */
-  public interface Filter {
+  interface Filter {
     /**
      * Filter collections.
      * @param nestedPointFeatureCollection check this collection
      * @return true if the collection passes the filter
      */
-    public boolean filter(NestedPointFeatureCollection nestedPointFeatureCollection);
+    boolean filter(NestedPointFeatureCollection nestedPointFeatureCollection);
   }
 
 }

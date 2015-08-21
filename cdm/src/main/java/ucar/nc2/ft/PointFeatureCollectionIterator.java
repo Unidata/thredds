@@ -35,25 +35,24 @@ package ucar.nc2.ft;
 
 /**
  * An iterator over PointFeatureCollections.
+ * Use try-with-resource to make sure resources are released:
  * <pre>
-  try {
-   while (iter.hasNext())
-     process(iter.next());
-  } finally {
-    iter.finish();
+  try (PointFeatureCollectionIterator iter = getIter()) {
+    while (iter.hasNext())
+      process(iter.next());
   }
   </pre>
  *
  * @author caron
  */
-public interface PointFeatureCollectionIterator {
+public interface PointFeatureCollectionIterator extends AutoCloseable {
 
   /**
    * true if another PointFeatureCollection is available
    * @return true if another PointFeatureCollection is available
    * @throws java.io.IOException on i/o error
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Returns the next PointFeatureCollection
@@ -61,32 +60,39 @@ public interface PointFeatureCollectionIterator {
    * @return the next PointFeatureCollection 
    * @throws java.io.IOException on i/o error
    */
-  public PointFeatureCollection next() throws java.io.IOException;
+  PointFeatureCollection next() throws java.io.IOException;
 
   /**
    * Make sure that the iterator is complete, and recover resources.
-   * You must complete the iteration (until hasNext() returns false) or call finish().
+   * You must complete the iteration (until hasNext() returns false) or call close().
    * may be called more than once.
    */
-  public void finish();
+  void close();
+
+  /**
+   * @deprecated use try-with-resource
+   */
+  //default void finish() {
+  //  close();
+  //}
 
   /**
    * Hint to use this much memory in buffering the iteration.
    * No guarantee that it will be used by the implementation.
    * @param bytes amount of memory in bytes
    */
-  public void setBufferSize( int bytes);
+  void setBufferSize( int bytes);
 
   /**
    * A filter on PointFeatureCollection.
    */
-  public interface Filter {
+  interface Filter {
    /**
      * Filter collections.
      * @param pointFeatureCollection check this collection
      * @return true if the collection passes the filter
      */
-    public boolean filter(PointFeatureCollection pointFeatureCollection);
+    boolean filter(PointFeatureCollection pointFeatureCollection);
   }
 
 }

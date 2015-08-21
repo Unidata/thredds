@@ -116,8 +116,8 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
     public void setBufferSize(int bytes) { }
 
-    public void finish() {
-      structIter.finish();
+    public void close() {
+      structIter.close();
     }
 
   }

@@ -68,16 +68,13 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   @Override
   protected StationHelper createStationHelper() throws IOException {
     StationHelper stationHelper = new StationHelper();
-    StructureDataIterator siter = ft.getStationDataIterator(-1);
-    try {
+    try (StructureDataIterator siter = ft.getStationDataIterator(-1)) {
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
         StationFeature s = makeStation(stationData, siter.getCurrentRecno());
         if (s != null)
           stationHelper.addStation(s);
       }
-    } finally {
-      siter.finish();
     }
 
     return stationHelper;
@@ -104,7 +101,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       }
 
       @Override
-      public void finish() {
+      public void close() {
         // ignore
       }
 
@@ -202,8 +199,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         iter.setBufferSize(bytes);
       }
 
-      public void finish() {
-        iter.finish();
+      public void close() {
+        iter.close();
       }
     }
   }

@@ -34,7 +34,7 @@
 package ucar.ma2;
 
 /**
- * Describe
+ * see StructureDataIteratorMediated
  *
  * @author caron
  * @since 7/9/2014

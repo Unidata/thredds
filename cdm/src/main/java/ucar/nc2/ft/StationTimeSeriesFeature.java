@@ -50,12 +50,12 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
    * The number of points in the time series. May not be known until after iterating through the collection.
    * @return number of points in the time series, or -1 if not known.
    */
-  public int size();
+  int size();
 
   /**
    * @deprecated use subset(CalendarDateRange dateRange)
    */
-  public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException;
+  StationTimeSeriesFeature subset(DateRange dateRange) throws IOException;
 
   /**
    * Subset this collection by calendar dateRange
@@ -63,12 +63,12 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
    * @return subsetted collection, may be null if empty
    * @throws IOException on read error
    */
-  public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException;
+  StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException;
 
   /**
    * The actual data of just this feature.
    * @return the actual data of this feature.
    * @throws java.io.IOException on i/o error
    */
-  public StructureData getFeatureData() throws IOException;
+  StructureData getFeatureData() throws IOException;
 }

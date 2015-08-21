@@ -81,10 +81,6 @@ public class CDMArraySequence extends ArraySequence implements CDMArray
             return list[position++];
         }
 
-        public void setBufferSize(int bytes)
-        {
-        }
-
         public StructureDataIterator reset()
         {
             position = 0;
@@ -94,10 +90,6 @@ public class CDMArraySequence extends ArraySequence implements CDMArray
         public int getCurrentRecno()
         {
             return position;
-        }
-
-        public void finish()
-        {
         }
 
     }

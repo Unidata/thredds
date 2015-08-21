@@ -191,7 +191,7 @@ public class BufrDataProcess {
         indent.decr();
       }
     } finally {
-      sdataIter.finish();
+      sdataIter.close();
     }
 
     indent.decr();

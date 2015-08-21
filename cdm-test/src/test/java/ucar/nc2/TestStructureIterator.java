@@ -63,14 +63,11 @@ public class TestStructureIterator extends TestCase {
     assert (v.getDataType() == DataType.STRUCTURE);
 
     int count = 0;
-    StructureDataIterator si = v.getStructureIterator();
-    try {
+    try (StructureDataIterator si = v.getStructureIterator()) {
       while (si.hasNext()) {
         StructureData sd = si.next();
         count++;
       }
-    } finally {
-      si.finish();
     }
     assert count == v.getSize();
 

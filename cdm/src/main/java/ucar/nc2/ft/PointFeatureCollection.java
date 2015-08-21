@@ -52,19 +52,19 @@ public interface PointFeatureCollection extends FeatureCollection {
    * The udunit time unit string.
    * @return  time unit string, may not be null
    */
-  public DateUnit getTimeUnit();
+  DateUnit getTimeUnit();
 
   /**
    * The altitude unit string if it exists.
    * @return altitude unit string, may be null
    */
-  public String getAltUnits();
+  String getAltUnits();
 
   /**
    * Other variables needed for co,pleteness, eg joined coordinate variables
    * @return list of extra variables, may be empty not null
    */
-  public List<Variable> getExtraVariables();
+  List<Variable> getExtraVariables();
 
   /**
    * Use the internal iterator to check if there is another PointFeature in the iteration.
@@ -73,7 +73,7 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @throws java.io.IOException on read error
    * @see PointFeatureIterator#hasNext
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Use the internal iterator to get the next PointFeature in the iteration.
@@ -82,21 +82,19 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @throws java.io.IOException on read error
    * @see PointFeatureIterator#next
    */
-  public PointFeature next() throws java.io.IOException;
+  PointFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the PointFeatures in this Collection.
    * @throws java.io.IOException on read error
    */
-  public void resetIteration() throws IOException;
+  void resetIteration() throws IOException;
 
   /**
    * Make sure that the internal iterator is complete, and recover resources.
-   * You must complete the iteration (until hasNext() returns false)
-   *  or call finish().
-   * @see PointFeatureIterator#finish
+   * You must complete the iteration (until hasNext() returns false) or call finish().
    */
-  public void finish();
+  void finish();
 
   /**
     * Get an iterator over the PointFeatures of this collection. call PointFeatureIterator.finish() when done
@@ -104,13 +102,13 @@ public interface PointFeatureCollection extends FeatureCollection {
     * @return iterator over the PointFeatures of this collection
     * @throws IOException on read error
     */
-   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
+   PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
 
   /**
    * The number of points in the collection. May not be known until after iterating through the collection.
    * @return number of points in the collection, or -1 if not known.
    */
-  public int size();
+  int size();
 
   /**
    * Date range for the FeatureCollection. May not be known until after iterating through the collection.
@@ -118,21 +116,21 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @return the date range for the entire collection, or null if unknown
    * @deprecated use getCalendarDateRange()
    */
-  public DateRange getDateRange();
+  DateRange getDateRange();
 
   /**
    * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.
    *
    * @return the calendar date range for the entire collection, or null if unknown
    */
-  public CalendarDateRange getCalendarDateRange();
+  CalendarDateRange getCalendarDateRange();
 
   /**
    * The boundingBox for the FeatureCollection. May not be known until after iterating through the collection.
    *
    * @return the lat/lon boundingBox for the entire collection, or null if unknown.
    */
-  public ucar.unidata.geoloc.LatLonRect getBoundingBox();
+  ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
   /**
    * Set the date range for the FeatureCollection.
@@ -140,28 +138,28 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @param range the date range for the entire collection
    * @deprecated use setCalendarDateRange()
    */
-  public void setDateRange(DateRange range);
+  void setDateRange(DateRange range);
 
   /**
    * Set the calendar date range for the FeatureCollection.
    *
    * @param range the calendar date range for the entire collection
    */
-  public void setCalendarDateRange(CalendarDateRange range);
+  void setCalendarDateRange(CalendarDateRange range);
 
   /**
    * Set the boundingBox for the FeatureCollection.
    *
    * @param bb the lat/lon boundingBox for the entire collection.
    */
-  public void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb);
+  void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb);
 
   /**
    * Set the size of the FeatureCollection.
    *
    * @param npts size of the collection
    */
-  public void setSize(int npts);
+  void setSize(int npts);
 
   /**
    * Caclulate date range and bounding box, and size, even if the data has to be scanned.
@@ -170,7 +168,7 @@ public interface PointFeatureCollection extends FeatureCollection {
    *
    * @throws java.io.IOException or read error.
    */
-  public void calcBounds() throws java.io.IOException;
+  void calcBounds() throws java.io.IOException;
 
   /**
    * Subset this collection by boundingBox and/or dateRange
@@ -179,11 +177,11 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @return subsetted collection, may be null if empty
    * @throws IOException on read error
    */
-  public PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+  PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   /**
    * @deprecated use CalendarDateRange
    */
-  public PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
+  PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
 }

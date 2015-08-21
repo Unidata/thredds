@@ -63,7 +63,7 @@ public class NCdumpW {
   /**
    * Tell NCdumpW if you want values printed.
    */
-  static public enum WantValues {
+  public enum WantValues {
     none, coordsOnly, all
   }
 
@@ -628,9 +628,8 @@ public class NCdumpW {
   }
 
   static private void printStructureDataArray(PrintWriter out, ArrayStructure array, Indent indent, ucar.nc2.util.CancelTask ct) { // throws IOException {
-    StructureDataIterator sdataIter = array.getStructureDataIterator();
-    int count = 0;
-    try {
+    try (StructureDataIterator sdataIter = array.getStructureDataIterator()) {
+      int count = 0;
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
         out.println("\n" + indent + "{");
@@ -642,8 +641,6 @@ public class NCdumpW {
       }
     } catch (IOException e) {
       e.printStackTrace();  // shouldnt happen ?
-    } finally {
-      sdataIter.finish();
     }
   }
 
@@ -661,8 +658,7 @@ public class NCdumpW {
 
 
   static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) { // throws IOException {
-    StructureDataIterator iter = seq.getStructureDataIterator();
-    try {
+    try (StructureDataIterator iter = seq.getStructureDataIterator()) {
       while (iter.hasNext()) {
         StructureData sdata = iter.next();
         out.println("\n" + indent + "{");
@@ -672,8 +668,6 @@ public class NCdumpW {
       }
     } catch (IOException e) {
       e.printStackTrace();  // shouldnt happen ??
-    } finally {
-      iter.finish();
     }
   }
 

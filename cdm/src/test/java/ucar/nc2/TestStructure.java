@@ -128,19 +128,14 @@ public class TestStructure extends TestCase {
 
     // read with the iterator
     long totalIter = 0;
-    StructureDataIterator iter2 = record.getStructureIterator();
-    try {
+    try (StructureDataIterator iter2 = record.getStructureIterator()) {
       while (iter2.hasNext()) {
         StructureData sd = iter2.next();
-        Iterator viter = sd.getMembers().iterator();
-        while (viter.hasNext()) {
-          StructureMembers.Member m = (StructureMembers.Member) viter.next();
+        for (StructureMembers.Member m : sd.getMembers()) {
           Array data = sd.getArray(m);
           totalIter += data.getSize() * m.getDataType().getSize();
         }
       }
-    } finally {
-      iter2.finish();
     }
     Assert.assertEquals("Bytes through iteration", totalIter, totalOne);
   }
@@ -174,8 +169,7 @@ public class TestStructure extends TestCase {
 
     // read using iterator
     recnum = 0;
-    StructureDataIterator iter2 = record.getStructureIterator();
-    try {
+    try (StructureDataIterator iter2 = record.getStructureIterator()) {
       while (iter2.hasNext()) {
         StructureData s = iter2.next();
         Array rh = s.getArray("rh");
@@ -183,8 +177,6 @@ public class TestStructure extends TestCase {
         checkValues(rh, recnum); // check the values are right
         recnum++;
       }
-    } finally {
-      iter2.finish();
     }
   }
 

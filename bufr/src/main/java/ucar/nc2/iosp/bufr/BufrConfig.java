@@ -318,7 +318,7 @@ public class BufrConfig {
          }
        }
      } finally {
-       sdataIter.finish();
+       sdataIter.close();
      }
    }
 

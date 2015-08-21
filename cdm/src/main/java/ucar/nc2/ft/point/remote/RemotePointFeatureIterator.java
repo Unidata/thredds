@@ -28,7 +28,7 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
     this.featureMaker = featureMaker;
   }
 
-  public void finish() {
+  public void close() {
     if (finished) return;
     if (in != null)
       try { in.close(); }
@@ -57,7 +57,7 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
 
     } else if (mtype == PointStream.MessageType.End) {
       pf = null;
-      finish();
+      close();
       return false;
       
     } else if (mtype == PointStream.MessageType.Error) {
@@ -68,12 +68,12 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
       String errMessage = NcStream.decodeErrorMessage(proto);
 
       pf = null;
-      finish();
+      close();
       throw new IOException(errMessage);
 
     } else {
       pf = null;
-      finish();
+      close();
       throw new IOException("Illegal pointstream message type= "+mtype); // maybe kill the socket ?
     }
   }

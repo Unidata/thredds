@@ -164,4 +164,5 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
       }
     }
   }
+
 }

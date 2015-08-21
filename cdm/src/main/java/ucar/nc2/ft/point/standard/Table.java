@@ -89,7 +89,7 @@ public abstract class Table {
         return new TableMultidimStructure(ds, config);
 
       case MultidimInnerPsuedo: // the inner struct of a 2D multdim(outer, inner) without the unlimited dimension
-                                // the middle struct of a 3D multdim(outer, middle, inner) without the unlimited dimension
+        // the middle struct of a 3D multdim(outer, middle, inner) without the unlimited dimension
         return new TableMultidimInnerPsuedo(ds, config);
 
       case MultidimInnerPsuedo3D: // the inner struct of a 3D multdim(outer, middle, inner) without the unlimited dimension
@@ -183,12 +183,12 @@ public abstract class Table {
       nondataVars.add(name);
   }
 
-   // change shape of the data variables
-   protected void replaceDataVars(StructureMembers sm) {
-     for (StructureMembers.Member m : sm.getMembers()) {
-       VariableSimpleIF curr = this.cols.get(m.getName());
-       this.cols.put(m.getName(), VariableSimpleImpl.changeShape(curr, Dimension.makeDimensionsAnon(m.getShape())));
-     }
+  // change shape of the data variables
+  protected void replaceDataVars(StructureMembers sm) {
+    for (StructureMembers.Member m : sm.getMembers()) {
+      VariableSimpleIF curr = this.cols.get(m.getName());
+      this.cols.put(m.getName(), VariableSimpleImpl.changeShape(curr, Dimension.makeDimensionsAnon(m.getShape())));
+    }
   }
 
   /**
@@ -237,10 +237,10 @@ public abstract class Table {
 
   /**
    * A Structure, PsuedoStructure, or Sequence.
-   * <p/>
+   * <p>
    * Structure: defined by config.structName.
    * if config.vars if not null restricts to list of vars, must be members.
-   * <p/>
+   * <p>
    * PsuedoStructure: defined by variables with outer dimension = config.dim
    * So we find all Variables with signature v(outDim, ...) and make them into
    * <pre>
@@ -309,7 +309,7 @@ public abstract class Table {
 
     @Override
     public VariableDS findVariable(String axisName) {
-      String structPrefix =  struct.getShortName() +".";
+      String structPrefix = struct.getShortName() + ".";
       if (axisName.startsWith(structPrefix))
         axisName = axisName.substring(structPrefix.length());
       return (VariableDS) struct.findVariable(axisName);
@@ -327,7 +327,7 @@ public abstract class Table {
 
     @Override
     public String getName() {
-      return stype.toString()+"("+struct.getShortName()+")";
+      return stype.toString() + "(" + struct.getShortName() + ")";
     }
   }
 
@@ -339,11 +339,11 @@ public abstract class Table {
       // make members restricted to column names
       if (members == null) {
         StructureMembers orgMembers = sdata.getStructureMembers();
-        members = new StructureMembers(orgMembers.getName()+"RestrictToColumns");
+        members = new StructureMembers(orgMembers.getName() + "RestrictToColumns");
         for (String colName : cols.keySet()) {
-          StructureMembers.Member m =  orgMembers.findMember(colName);
+          StructureMembers.Member m = orgMembers.findMember(colName);
           if (m == null)
-            throw new IllegalStateException("Cant find "+colName);
+            throw new IllegalStateException("Cant find " + colName);
           members.addMember(m);
         }
       }
@@ -386,9 +386,9 @@ public abstract class Table {
       return as.getStructureDataIterator();
     }
 
-        @Override
+    @Override
     public String getName() {
-      return "ArrayStructure("+name+")";
+      return "ArrayStructure(" + name + ")";
     }
   }
 
@@ -398,7 +398,7 @@ public abstract class Table {
    * When theres no seperate station table, but info is duplicated in the obs structure.
    * Must have a ParentId child table
    * No variables are added to cols.
-   * <p/>
+   * <p>
    * Used by:
    * BufrCdm StationProfile type
    */
@@ -414,7 +414,7 @@ public abstract class Table {
     }
 
     @Override
-     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       return as.getStructureDataIterator();
     }
 
@@ -429,7 +429,7 @@ public abstract class Table {
   /**
    * Contiguous children, using start and numRecords variables in the parent. This assumes column store.
    * TableContiguous is the children, config.struct describes the cols.
-   * <p/>
+   * <p>
    * Used by:
    * UnidataPointObs
    * CFPointObs
@@ -499,7 +499,7 @@ public abstract class Table {
 
     @Override
     public String getName() {
-      return "Contig("+numRecordsVarName+")";
+      return "Contig(" + numRecordsVarName + ")";
     }
   }
 
@@ -510,7 +510,7 @@ public abstract class Table {
    * For efficiency, we scan this data and construct an IndexMap( parentIndex -> list of children),
    * i.e. we compute the inverse link, parent -> children.
    * TableParentIndex is the children, config.struct describes the cols.
-   * <p/>
+   * <p>
    * Used by:
    * CFPointObs
    */
@@ -560,17 +560,18 @@ public abstract class Table {
 
     @Override
     public String getName() {
-      return "Indexed("+parentIndexName+")";
+      return "Indexed(" + parentIndexName + ")";
     }
   }
 
   ///////////////////////////////////////////////////////
+
   /**
    * The children have a field containing the id of the parent.
    * For efficiency, we scan this data and construct an IndexMap( parentIndex -> list of children),
    * i.e. we compute the inverse link, parent -> children.
    * TableParentIndex is the children, config.struct describes the cols.
-   * <p/>
+   * <p>
    * Used by:
    * CFPointObs
    */
@@ -591,7 +592,7 @@ public abstract class Table {
 
         Array index = rpIndex.read();
         if (index instanceof ArrayChar)
-          index = ((ArrayChar)index).make1DStringArray();
+          index = ((ArrayChar) index).make1DStringArray();
 
         parentHash = new HashMap<>((int) (2 * index.getSize()));
 
@@ -620,7 +621,7 @@ public abstract class Table {
         this.indexMap[count] = info;
         parentData[count++] = info.sdata;
       }
-      ArrayStructure as = new ArrayStructureW(struct.makeStructureMembers(), new int[] {n}, parentData);
+      ArrayStructure as = new ArrayStructureW(struct.makeStructureMembers(), new int[]{n}, parentData);
 
       // find the parent TableConstruct and inject the ArrayStructure
       Table t = this;
@@ -642,7 +643,7 @@ public abstract class Table {
         recnumList.add(recnum);
         if (sdata != null) return;
         try {
-          sdata = struct.readStructure( recnum);
+          sdata = struct.readStructure(recnum);
         } catch (ucar.ma2.InvalidRangeException e) {
           log.error("TableParentId read recno=" + recnum, e);
           throw new RuntimeException(e.getMessage());
@@ -658,13 +659,13 @@ public abstract class Table {
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
       int parentIndex = cursor.getParentRecnum();
       ParentInfo info = indexMap[parentIndex];
-      List<Integer> index = (info == null) ? new ArrayList<Integer>() : info.recnumList;
+      List<Integer> index = (info == null) ? new ArrayList<>() : info.recnumList;
       return new StructureDataIteratorIndexed(struct, index);
     }
 
     @Override
     public String getName() {
-      return "ParentId("+parentIdName+")";
+      return "ParentId(" + parentIdName + ")";
     }
   }
 
@@ -673,7 +674,7 @@ public abstract class Table {
   /**
    * Linked list of children, using start variable in the parent, and next in the child.
    * TableLinkedList is the children, config.struct describes the cols.
-   * <p/>
+   * <p>
    * Used by:
    * UnidataPointObs
    */
@@ -696,9 +697,9 @@ public abstract class Table {
       return new StructureDataIteratorLinked(struct, firstRecno, -1, next);
     }
 
-        @Override
+    @Override
     public String getName() {
-      return "Linked("+start+"->"+next+")";
+      return "Linked(" + start + "->" + next + ")";
     }
   }
 
@@ -706,169 +707,171 @@ public abstract class Table {
 
   // the inner struct of a 2D multdim(outer, inner) with unlimited dimension
   public static class TableMultidimInner extends Table {
-     StructureMembers sm; // the inner structure members
-     Dimension inner, outer;
-     NetcdfDataset ds;
+    StructureMembers sm; // the inner structure members
+    Dimension inner, outer;
+    NetcdfDataset ds;
 
-     TableMultidimInner(NetcdfDataset ds, TableConfig config) {
-       super(ds, config);
-       this.ds = ds;
-       assert config.outerName != null;
-       assert config.innerName != null;
-       this.inner = ds.findDimension(config.innerName);
-       this.outer = ds.findDimension(config.outerName);
-       assert this.inner != null : config.innerName;
-       assert this.outer != null : config.outerName;
+    TableMultidimInner(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+      this.ds = ds;
+      assert config.outerName != null;
+      assert config.innerName != null;
+      this.inner = ds.findDimension(config.innerName);
+      this.outer = ds.findDimension(config.outerName);
+      assert this.inner != null : config.innerName;
+      assert this.outer != null : config.outerName;
 
-       sm = new StructureMembers(config.name);
-       if (config.vars != null) {
-         for (String name : config.vars) {
-           Variable v = ds.findVariable(name);
-           if (v == null) continue;
-           // cols.add(v);
-           int rank = v.getRank();
-           int[] shape = new int[rank - 2];
-           System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
-           sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
-           this.cols.put(v.getShortName(), v);
-         }
+      sm = new StructureMembers(config.name);
+      if (config.vars != null) {
+        for (String name : config.vars) {
+          Variable v = ds.findVariable(name);
+          if (v == null) continue;
+          // cols.add(v);
+          int rank = v.getRank();
+          int[] shape = new int[rank - 2];
+          System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
+          sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+          this.cols.put(v.getShortName(), v);
+        }
 
-       } else {
-         for (Variable v : ds.getVariables()) {
-           if (v.getRank() < 2) continue;
-           if (v.getDimension(0).equals(this.outer) && v.getDimension(1).equals(this.inner)) {
-             // cols.add(v);
-             int rank = v.getRank();
-             int[] shape = new int[rank - 2];
-             System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
-             sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
-             this.cols.put(v.getShortName(), v);
-           }
-         }
-       }
-
-       replaceDataVars(sm);
-     }
-
-     @Override
-     protected void showTableExtraInfo(String indent, Formatter f) {
-       f.format("%sStructureMembers=%s, dim=%s,%s%n", indent, sm.getName(), outer.getShortName(), inner.getShortName());
-     }
-
-     @Override
-     public String showDimension() {
-       return inner.getShortName();
-     }
-
-     @Override
-     public VariableDS findVariable(String axisName) {
-       return (VariableDS) ds.findVariable(axisName);
-     }
-
-     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-       StructureData parentStruct = cursor.getParentStructure();
-       if (parentStruct instanceof StructureDataProxy) parentStruct =  ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
-       ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
-       for (String colName : cols.keySet()) {
-         Array data = parentStruct.getArray(colName);
-         StructureMembers.Member childm = sm.findMember(colName);
-         childm.setDataArray(data);
-       }
-       return asma.getStructureDataIterator();
-     }
-
-      @Override
-      public String getName() {
-        return "Multidim(" + outer.getShortName()+"," + inner.getShortName() + ")";
+      } else {
+        for (Variable v : ds.getVariables()) {
+          if (v.getRank() < 2) continue;
+          if (v.getDimension(0).equals(this.outer) && v.getDimension(1).equals(this.inner)) {
+            // cols.add(v);
+            int rank = v.getRank();
+            int[] shape = new int[rank - 2];
+            System.arraycopy(v.getShape(), 2, shape, 0, rank - 2);
+            sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+            this.cols.put(v.getShortName(), v);
+          }
+        }
       }
-   }
+
+      replaceDataVars(sm);
+    }
+
+    @Override
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sStructureMembers=%s, dim=%s,%s%n", indent, sm.getName(), outer.getShortName(), inner.getShortName());
+    }
+
+    @Override
+    public String showDimension() {
+      return inner.getShortName();
+    }
+
+    @Override
+    public VariableDS findVariable(String axisName) {
+      return (VariableDS) ds.findVariable(axisName);
+    }
+
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      StructureData parentStruct = cursor.getParentStructure();
+      if (parentStruct instanceof StructureDataProxy)
+        parentStruct = ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
+      ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
+      for (String colName : cols.keySet()) {
+        Array data = parentStruct.getArray(colName);
+        StructureMembers.Member childm = sm.findMember(colName);
+        childm.setDataArray(data);
+      }
+      return asma.getStructureDataIterator();
+    }
+
+    @Override
+    public String getName() {
+      return "Multidim(" + outer.getShortName() + "," + inner.getShortName() + ")";
+    }
+  }
 
   public static class TableMultidimInner3D extends Table {
-     StructureMembers sm; // the inner structure members
-     Dimension dim, inner, middle;
-     NetcdfDataset ds;
+    StructureMembers sm; // the inner structure members
+    Dimension dim, inner, middle;
+    NetcdfDataset ds;
 
-     TableMultidimInner3D(NetcdfDataset ds, TableConfig config) {
-       super(ds, config);
-       this.ds = ds;
-       assert config.dimName != null;
-       assert config.outerName != null;
-       assert config.innerName != null;
-       this.dim = ds.findDimension(config.dimName);
-       this.inner = ds.findDimension(config.innerName);
-       this.middle = ds.findDimension(config.outerName);
+    TableMultidimInner3D(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+      this.ds = ds;
+      assert config.dimName != null;
+      assert config.outerName != null;
+      assert config.innerName != null;
+      this.dim = ds.findDimension(config.dimName);
+      this.inner = ds.findDimension(config.innerName);
+      this.middle = ds.findDimension(config.outerName);
 
-       sm = new StructureMembers(config.name);
-       if (config.vars != null) {
-         for (String name : config.vars) {
-           Variable v = ds.findVariable(name);
-           if (v == null) continue;
-           //cols.add(v);
-           int rank = v.getRank();
-           int[] shape = new int[rank - 3];
-           System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
-           sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
-           this.cols.put(v.getShortName(), v);
-         }
+      sm = new StructureMembers(config.name);
+      if (config.vars != null) {
+        for (String name : config.vars) {
+          Variable v = ds.findVariable(name);
+          if (v == null) continue;
+          //cols.add(v);
+          int rank = v.getRank();
+          int[] shape = new int[rank - 3];
+          System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
+          sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+          this.cols.put(v.getShortName(), v);
+        }
 
-       } else {
-         for (Variable v : ds.getVariables()) {
-           if (v.getRank() < 3) continue;
-           if (v.getDimension(0).equals(dim) && v.getDimension(1).equals(middle)  && v.getDimension(2).equals(inner )) {
-             //cols.add(v);
-             int rank = v.getRank();
-             int[] shape = new int[rank - 3];
-             System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
-             sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
-             this.cols.put(v.getShortName(), v);
-           }
-         }
-       }
-
-       replaceDataVars(sm);
-     }
-
-     @Override
-     protected void showTableExtraInfo(String indent, Formatter f) {
-       f.format("%sStructureMembers=%s, dim=%s%n", indent, sm.getName(), dim.getShortName());
-     }
-
-     @Override
-     public String showDimension() {
-       return dim.getShortName();
-     }
-
-     @Override
-     public VariableDS findVariable(String axisName) {
-       return (VariableDS) ds.findVariable(axisName);
-     }
-
-     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-       StructureData parentStruct = cursor.tableData[2];
-       if (parentStruct instanceof StructureDataProxy) parentStruct =  ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
-       int middleIndex = cursor.recnum[1];
-       ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
-       for (String colName : cols.keySet()) {
-         Array data = parentStruct.getArray(colName);
-         Array myData = data.slice(0, middleIndex);
-         StructureMembers.Member childm = sm.findMember(colName);
-         childm.setDataArray (myData.copy());           // must make copy - ArrayStucture doesnt deal with logical views
-       }
-       return asma.getStructureDataIterator();
-     }
-
-      @Override
-      public String getName() {
-        return "Multidim(" + dim.getShortName()+"," + middle.getShortName() +"," + inner.getShortName() + ")";
+      } else {
+        for (Variable v : ds.getVariables()) {
+          if (v.getRank() < 3) continue;
+          if (v.getDimension(0).equals(dim) && v.getDimension(1).equals(middle) && v.getDimension(2).equals(inner)) {
+            //cols.add(v);
+            int rank = v.getRank();
+            int[] shape = new int[rank - 3];
+            System.arraycopy(v.getShape(), 3, shape, 0, rank - 3);
+            sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+            this.cols.put(v.getShortName(), v);
+          }
+        }
       }
 
-   }
+      replaceDataVars(sm);
+    }
 
-   /**
+    @Override
+    protected void showTableExtraInfo(String indent, Formatter f) {
+      f.format("%sStructureMembers=%s, dim=%s%n", indent, sm.getName(), dim.getShortName());
+    }
+
+    @Override
+    public String showDimension() {
+      return dim.getShortName();
+    }
+
+    @Override
+    public VariableDS findVariable(String axisName) {
+      return (VariableDS) ds.findVariable(axisName);
+    }
+
+    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+      StructureData parentStruct = cursor.tableData[2];
+      if (parentStruct instanceof StructureDataProxy)
+        parentStruct = ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
+      int middleIndex = cursor.recnum[1];
+      ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
+      for (String colName : cols.keySet()) {
+        Array data = parentStruct.getArray(colName);
+        Array myData = data.slice(0, middleIndex);
+        StructureMembers.Member childm = sm.findMember(colName);
+        childm.setDataArray(myData.copy());           // must make copy - ArrayStucture doesnt deal with logical views
+      }
+      return asma.getStructureDataIterator();
+    }
+
+    @Override
+    public String getName() {
+      return "Multidim(" + dim.getShortName() + "," + middle.getShortName() + "," + inner.getShortName() + ")";
+    }
+
+  }
+
+  /**
    * Used for PsuedoStructure(station, time).
    * This is used for the inner table.
    * Need: config.inner, config.outer = config.dim, config.vars
-   * <p/>
+   * <p>
    * Used by:
    * CFpointObs
    */
@@ -911,10 +914,10 @@ public abstract class Table {
       }
     }
 
-           @Override
-      public String getName() {
-        return "MultidimPseudo(" + outer.getShortName()+"," + inner.getShortName() + ")";
-      }
+    @Override
+    public String getName() {
+      return "MultidimPseudo(" + outer.getShortName() + "," + inner.getShortName() + ")";
+    }
 
   }
 
@@ -947,7 +950,7 @@ public abstract class Table {
       int outerIndex = cursor.recnum[2];
       int middleIndex = cursor.recnum[1];
       try {
-        Section s = new Section().appendRange(outerIndex,outerIndex).appendRange(middleIndex,middleIndex);
+        Section s = new Section().appendRange(outerIndex, outerIndex).appendRange(middleIndex, middleIndex);
         ArrayStructure result = (ArrayStructure) struct.read(s);
         assert result.getSize() == 1;
         StructureData sdata = result.getStructureData(0); // should only be one
@@ -964,10 +967,10 @@ public abstract class Table {
       }
     }
 
-      @Override
-      public String getName() {
-        return "MultidimPsuedo(" + dim.getShortName()+"," + middle.getShortName() +"," + inner.getShortName() + ")";
-      }
+    @Override
+    public String getName() {
+      return "MultidimPsuedo(" + dim.getShortName() + "," + middle.getShortName() + "," + inner.getShortName() + ")";
+    }
 
   }
 
@@ -977,7 +980,7 @@ public abstract class Table {
    * Used for Structure(station, time).
    * This is used for the inner table, where the station index gets set, and all the structures for that
    * styation are read in at once. Then we just iterate over that ArrayStructure.
-   * <p/>
+   * <p>
    * Used by:
    * GempakCdm
    */
@@ -1014,9 +1017,9 @@ public abstract class Table {
   /**
    * A Structure inside of a parent Structure.
    * Name of child member inside parent Structure is config.nestedTableName
-    obsTable.structName = obsStruct.getName();
-    obsTable.nestedTableName = obsStruct.getShortName();
-   * <p/>
+   * obsTable.structName = obsStruct.getName();
+   * obsTable.nestedTableName = obsStruct.getShortName();
+   * <p>
    * Used by:
    * BufrCdm
    */
@@ -1060,7 +1063,7 @@ public abstract class Table {
       throw new IllegalStateException("Cant find nested table member = " + nestedTableName);
     }
 
-        @Override
+    @Override
     public String getName() {
       return "NestedStructure(" + nestedTableName + ")";
     }
@@ -1071,7 +1074,7 @@ public abstract class Table {
   /**
    * Table is a single StructureData, passed in as config.sdata.
    * Ok for sdata to be null
-   * <p/>
+   * <p>
    * Used by:
    * FslWindProfiler
    */
@@ -1107,9 +1110,9 @@ public abstract class Table {
    * NestedTable looks for instance of this, and
    * 1) increments the nesting level
    * 2) looks for coordinate variables at the top level.
-   * <p/>
+   * <p>
    * Adds a table at top of the tree, consisting only of coordinate variables
-   * <p/>
+   * <p>
    * Used by:
    * CFpointObs
    * GempakCdm
@@ -1138,7 +1141,7 @@ public abstract class Table {
       return new SingletonStructureDataIterator(sdata);
     }
 
-        @Override
+    @Override
     public String getName() {
       return "TopScalars";
     }
@@ -1180,10 +1183,6 @@ public abstract class Table {
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public StructureDataIterator reset() {
       count = 0;
       return this;
@@ -1194,11 +1193,6 @@ public abstract class Table {
     public int getCurrentRecno() {
       return count - 1;
     }
-
-    @Override
-      public void finish() {
-        // ignored
-      }
   }
 
   ////////////////////////////////////////////////////////////////

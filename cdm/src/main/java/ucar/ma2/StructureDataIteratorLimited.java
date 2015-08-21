@@ -79,8 +79,8 @@ public class StructureDataIteratorLimited implements StructureDataIterator {
   }
 
   @Override
-  public void finish() {
-    org.finish();
+  public void close() {
+    org.close();
   }
 
 }

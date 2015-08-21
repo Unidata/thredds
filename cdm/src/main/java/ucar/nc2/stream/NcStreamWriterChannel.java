@@ -112,16 +112,13 @@ public class NcStreamWriterChannel {
       DataOutputStream os = new DataOutputStream(Channels.newOutputStream(wbc));
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
       //coverity[FB.BC_UNCONFIRMED_CAST]
-      StructureDataIterator iter = seq.getStructureIterator(-1);
-      try {
+      try (StructureDataIterator iter = seq.getStructureIterator(-1)) {
         while (iter.hasNext()) {
           size += writeBytes(wbc, NcStream.MAGIC_VDATA); // magic
           ArrayStructureBB abb = StructureDataDeep.copyToArrayBB(iter.next());
           size += NcStream.encodeArrayStructure(abb, bo, os);
           count++;
         }
-      } finally {
-        iter.finish();
       }
       size += writeBytes(wbc, NcStream.MAGIC_VEND);
       if (show) System.out.printf(" NcStreamWriter sent %d sdata bytes = %d%n", count, size);

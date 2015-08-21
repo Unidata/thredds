@@ -83,12 +83,9 @@ public class StructureDataDeep extends StructureDataA {
       bb.order(bo);
     }
 
-    StructureDataIterator iter = as.getStructureDataIterator();
-    try {
+    try (StructureDataIterator iter = as.getStructureDataIterator()) {
       while (iter.hasNext())
         copyToArrayBB(iter.next(), abb);
-    } finally {
-      iter.finish();
     }
     return abb;
   }
@@ -110,12 +107,9 @@ public class StructureDataDeep extends StructureDataA {
       bb.order(bo);
     }
 
-    StructureDataIterator iter = as.getStructureDataIterator();
-    try {
+    try (StructureDataIterator iter = as.getStructureDataIterator()) {
       while (iter.hasNext())
         copyToArrayBB(iter.next(), abb);
-    } finally {
-      iter.finish();
     }
     return abb;
   }

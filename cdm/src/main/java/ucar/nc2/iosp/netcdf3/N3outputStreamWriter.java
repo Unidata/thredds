@@ -80,8 +80,7 @@ public class N3outputStreamWriter extends N3streamWriter {
       int nrec = 0;
 
       Structure recordVar = (Structure) ncfile.findVariable("record");
-      StructureDataIterator ii = recordVar.getStructureIterator();
-      try {
+      try (StructureDataIterator ii = recordVar.getStructureIterator()) {
         while (ii.hasNext()) {
           StructureData sdata = ii.next();
           int count = 0;
@@ -101,9 +100,6 @@ public class N3outputStreamWriter extends N3streamWriter {
           }
           nrec++;
         }
-
-      } finally {
-        ii.finish();
       }
       if (debugWriteData) System.out.println("wrote " + nrec + " records");
       stream.flush();

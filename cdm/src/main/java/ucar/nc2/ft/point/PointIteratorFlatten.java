@@ -73,10 +73,10 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
     collectionIter.setBufferSize(bytes);
   }
 
-  public void finish() {
+  public void close() {
     if (finished) return;
-    if (pfiter != null) pfiter.finish();
-    collectionIter.finish();
+    if (pfiter != null) pfiter.close();
+    collectionIter.close();
     finishCalcBounds();
     finished = true;
   }
@@ -88,7 +88,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
 
     PointFeatureCollection feature = nextCollection();
     if (feature == null) {
-      finish();
+      close();
       return false;
     }
 

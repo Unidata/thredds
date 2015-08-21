@@ -573,8 +573,7 @@ public class WriterProfileObsDataset {
 
     // extract stations
     int nrecs = 0;
-    StructureDataIterator iter = record.getStructureIterator();
-    try {
+    try (StructureDataIterator iter = record.getStructureIterator()) {
       while (iter.hasNext()) {
         StructureData sdata = iter.next();
         String name = sdata.getScalarString("staName");
@@ -588,8 +587,6 @@ public class WriterProfileObsDataset {
         }
         nrecs++;
       }
-    } finally {
-      iter.finish();
     }
 
     List<ucar.unidata.geoloc.Station> stnList = Arrays.asList(staHash.values().toArray(new ucar.unidata.geoloc.Station[staHash.size()]));
@@ -600,8 +597,7 @@ public class WriterProfileObsDataset {
     writer.writeHeader(stnList, varList, nrecs, "prMan");
 
     // extract records
-    iter = record.getStructureIterator();
-    try {
+    try (StructureDataIterator iter = record.getStructureIterator()) {
       while (iter.hasNext()) {
         StructureData sdata = iter.next();
         String name = sdata.getScalarString("staName");
@@ -625,8 +621,6 @@ public class WriterProfileObsDataset {
         }
 
       }
-    } finally {
-      iter.finish();
     }
     writer.finish();
 

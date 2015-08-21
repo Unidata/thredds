@@ -63,11 +63,6 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   protected String altUnits;
   protected List<Variable> extras;
 
-  /* protected PointCollectionImpl(String name) { //}, DateUnit timeUnit, String altUnits) {
-    this.name = name;
-    this.npts = -1;
-  }  */
-
   protected PointCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
     this.name = name;
     this.timeUnit = timeUnit;
@@ -83,7 +78,7 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     return altUnits;
   }
 
-  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<Variable>() : extras; }
+  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
 
   public void setDateRange(DateRange range) {
     this.dateRange = CalendarDateRange.of(range);
@@ -101,16 +96,11 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     if ((dateRange != null) && (boundingBox != null) && (size() > 0))
       return;
 
-    PointFeatureIterator iter = getPointFeatureIterator(-1);
-    iter.setCalculateBounds(this);
-    try {
+    try (PointFeatureIterator iter = getPointFeatureIterator(-1)) {
+      iter.setCalculateBounds(this);
       while (iter.hasNext())
         iter.next();
-
-    } finally {
-      iter.finish();
     }
-
   }
 
   public void setSize(int npts) {
@@ -130,7 +120,7 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
 
   public void finish() {
     if (localIterator != null)
-      localIterator.finish();
+      localIterator.close();
   }
 
   public PointFeature next() throws IOException {

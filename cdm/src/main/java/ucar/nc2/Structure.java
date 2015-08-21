@@ -485,11 +485,6 @@ public class Structure extends Variable {
         System.out.println("Iterator structureSize= "+structureSize+" readAtaTime= "+readAtaTime);
     }
 
-    @Override
-    public void finish() {
-      // ignored
-    }
-
   }
 
   /**
@@ -563,10 +558,6 @@ public class Structure extends Variable {
       // ignored
     }
 
-    @Override
-    public void finish() {
-      // ignored
-    }
   }
 
   ////////////////////////////////////////////

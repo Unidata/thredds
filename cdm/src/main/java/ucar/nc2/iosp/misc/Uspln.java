@@ -641,17 +641,8 @@ public class Uspln extends AbstractLightningIOSP {
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public int getCurrentRecno() {
       return numFlashes - 1;
-    }
-
-    @Override
-    public void finish() {
-      // ignored
     }
   }
 

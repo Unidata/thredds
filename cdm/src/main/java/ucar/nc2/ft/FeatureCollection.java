@@ -43,12 +43,12 @@ public interface FeatureCollection {
    * Get the name of this feature collection.
    * @return the name of this feature collection
    */
-  public String getName();
+  String getName();
 
   /**
    * All features in this collection have this feature type
    * @return the feature type
    */
-  public ucar.nc2.constants.FeatureType getCollectionFeatureType();
+  ucar.nc2.constants.FeatureType getCollectionFeatureType();
 
 }

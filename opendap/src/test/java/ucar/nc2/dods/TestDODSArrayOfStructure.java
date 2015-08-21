@@ -176,13 +176,10 @@ public class TestDODSArrayOfStructure  {
     assert v.getDataType() == DataType.STRUCTURE;
 
     DODSStructure struct = (DODSStructure) v;
-    StructureDataIterator iter = struct.getStructureIterator();
-    try {
+    try (StructureDataIterator iter = struct.getStructureIterator()) {
       while (iter.hasNext()) {
         StructureData sd = iter.next();
       }
-    } finally {
-      iter.finish();
     }
   }
 

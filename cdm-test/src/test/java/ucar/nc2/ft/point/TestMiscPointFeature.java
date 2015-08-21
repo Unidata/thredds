@@ -298,8 +298,7 @@ public class TestMiscPointFeature {
                   new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180)),
                   new DateRange(df.parse("1900-01-01"), df.parse("2100-01-01")));
 
-          PointFeatureIterator pfi = pfc.getPointFeatureIterator(-1);
-          try {
+          try (PointFeatureIterator pfi = pfc.getPointFeatureIterator(-1)) {
             while (pfi.hasNext()) {
               PointFeature pf = pfi.next();
               // the call to cursor.getParentStructure() in
@@ -309,8 +308,6 @@ public class TestMiscPointFeature {
               Station s = stsfc.getStation(pf);
               System.out.println("stn= " + s);
             }
-          } finally {
-            pfi.finish();
           }
         }
       }

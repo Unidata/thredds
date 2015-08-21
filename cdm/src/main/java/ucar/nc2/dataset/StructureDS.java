@@ -51,7 +51,7 @@ import java.util.Set;
  */
 
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDS.class);
+  // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDS.class);
 
   private EnhancementsImpl proxy; // API relies that this cant be null
 
@@ -567,8 +567,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     @Override
-    public void finish() {
-      orgIter.finish();
+    public void close() {
+      orgIter.close();
     }
   }
 

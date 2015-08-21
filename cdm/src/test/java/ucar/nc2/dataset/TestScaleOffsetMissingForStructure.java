@@ -43,55 +43,51 @@ import java.io.IOException;
 public class TestScaleOffsetMissingForStructure extends TestCase {
 
   public void testNetcdfFile() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfDataset.openFile(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc", null);
-    Variable v = ncfile.findVariable("testScale");
-    assert null != v;
-    assert v.getDataType() == DataType.SHORT;
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc", null)) {
+      Variable v = ncfile.findVariable("testScale");
+      assert null != v;
+      assert v.getDataType() == DataType.SHORT;
 
-    Array data = v.read();
-    Index ima = data.getIndex();
-    short val = data.getShort(ima);
-    assert val == -999;
+      Array data = v.read();
+      Index ima = data.getIndex();
+      short val = data.getShort(ima);
+      assert val == -999;
 
-    assert v.getUnitsString().equals("m");
-    v.addAttribute(new Attribute("units", "meters"));
-    assert v.getUnitsString().equals("meters");
+      assert v.getUnitsString().equals("m");
+      v.addAttribute(new Attribute("units", "meters"));
+      assert v.getUnitsString().equals("meters");
 
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    Structure s = (Structure) ncfile.findVariable("record");
-    assert (s != null);
+      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      Structure s = (Structure) ncfile.findVariable("record");
+      assert (s != null);
 
-    Variable v2 = s.findVariable("testScale");
-    Attribute att = v2.findAttribute("units");
-    assert att.getStringValue().equals("meters");
-    assert v2.getUnitsString().equals("meters");
+      Variable v2 = s.findVariable("testScale");
+      Attribute att = v2.findAttribute("units");
+      assert att.getStringValue().equals("meters");
+      assert v2.getUnitsString().equals("meters");
 
-    StructureData sdata = s.readStructure(0);
-    StructureMembers.Member m = sdata.findMember("testScale");
-    assert null != m;
-    assert m.getUnitsString().equals("meters");
+      StructureData sdata = s.readStructure(0);
+      StructureMembers.Member m = sdata.findMember("testScale");
+      assert null != m;
+      assert m.getUnitsString().equals("meters");
 
-    double dval = sdata.convertScalarDouble(m.getName());
-    assert dval == -999.0;
+      double dval = sdata.convertScalarDouble(m.getName());
+      assert dval == -999.0;
 
-    int count = 0;
-    StructureDataIterator siter = s.getStructureIterator();
-    try {
-      while (siter.hasNext()) {
-        sdata = siter.next();
-        m = sdata.findMember("testScale");
-        assert m.getUnitsString().equals("meters");
-
-        assert null != m;
-        dval = sdata.convertScalarDouble(m.getName());
-        double expect = (count == 0) ? -999.0 : 13.0;
-        assert dval == expect : dval + "!=" + expect;
-        count++;
+      int count = 0;
+      try (StructureDataIterator siter = s.getStructureIterator()) {
+        while (siter.hasNext()) {
+          sdata = siter.next();
+          m = sdata.findMember("testScale");
+          assert m != null;
+          assert m.getUnitsString().equals("meters");
+          dval = sdata.convertScalarDouble(m.getName());
+          double expect = (count == 0) ? -999.0 : 13.0;
+          assert dval == expect : dval + "!=" + expect;
+          count++;
+        }
       }
-    } finally {
-      siter.finish();
     }
-    ncfile.close();
   }
 
   public void testNetcdfDataset() throws IOException, InvalidRangeException {
@@ -146,40 +142,37 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
   }
 
   public void testNetcdfDatasetAttributes() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc");
-    VariableDS v = (VariableDS) ncfile.findVariable("testScale");
-    assert null != v;
-    assert v.getDataType() == DataType.FLOAT;
+    try (NetcdfDataset ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc")) {
+      VariableDS v = (VariableDS) ncfile.findVariable("testScale");
+      assert null != v;
+      assert v.getDataType() == DataType.FLOAT;
 
-    assert v.getUnitsString().equals("m");
-    v.addAttribute(new Attribute("units", "meters"));
-    assert v.getUnitsString().equals("meters");
+      assert v.getUnitsString().equals("m");
+      v.addAttribute(new Attribute("units", "meters"));
+      assert v.getUnitsString().equals("meters");
 
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    Structure s = (Structure) ncfile.findVariable("record");
-    assert (s != null);
+      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      Structure s = (Structure) ncfile.findVariable("record");
+      assert (s != null);
 
-    Variable v2 = s.findVariable("testScale");
-    assert v2.getUnitsString().equals("meters");
-    assert v2.getDataType() == DataType.FLOAT;
+      Variable v2 = s.findVariable("testScale");
+      assert v2.getUnitsString().equals("meters");
+      assert v2.getDataType() == DataType.FLOAT;
 
-    StructureData sdata = s.readStructure(0);
-    StructureMembers.Member m = sdata.findMember("testScale");
-    assert null != m;
-    assert m.getUnitsString().equals("meters") : m.getUnitsString();
-    assert m.getDataType() == DataType.FLOAT;
+      StructureData sdata = s.readStructure(0);
+      StructureMembers.Member m = sdata.findMember("testScale");
+      assert null != m;
+      assert m.getUnitsString().equals("meters") : m.getUnitsString();
+      assert m.getDataType() == DataType.FLOAT;
 
-    StructureDataIterator siter = s.getStructureIterator();
-    try {
-      while (siter.hasNext()) {
-        sdata = siter.next();
-        m = sdata.findMember("testScale");
-        assert null != m;
-        assert m.getUnitsString().equals("meters");
+      try (StructureDataIterator siter = s.getStructureIterator()) {
+        while (siter.hasNext()) {
+          sdata = siter.next();
+          m = sdata.findMember("testScale");
+          assert null != m;
+          assert m.getUnitsString().equals("meters");
+        }
       }
-    } finally {
-      siter.finish();
     }
-    ncfile.close();
   }
 }

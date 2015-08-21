@@ -165,8 +165,7 @@ public class WriteT41_ncFlat {
     int count = 0;
     int max = 0;
 
-    StructureDataIterator iter = recordStruct.getStructureIterator();
-    try {
+    try (StructureDataIterator iter = recordStruct.getStructureIterator()) {
       while (iter.hasNext()) {
         StructureData sdata = iter.next();
         ArraySequence seq1 = sdata.getArraySequence("seq1");
@@ -175,8 +174,6 @@ public class WriteT41_ncFlat {
         count++;
         max = Math.max(max, n);
       }
-    } finally {
-      iter.finish();
     }
     if (count > 0 && max > 0) {
       double avg = (double)total / count;
@@ -206,8 +203,7 @@ public class WriteT41_ncFlat {
 
         if (m.getDataType() == DataType.SEQUENCE) {
           ArraySequence seq1 = recordData.getArraySequence(m);
-          StructureDataIterator iter = seq1.getStructureDataIterator();
-          try {
+          try (StructureDataIterator iter = seq1.getStructureDataIterator()) {
             while (iter.hasNext()) {
               StructureData seqData = iter.next();
               for (StructureMembers.Member seqm : seqData.getMembers()) {
@@ -225,8 +221,6 @@ public class WriteT41_ncFlat {
               }
               seqCount++;
             }
-          } finally {
-            iter.finish();
           }
         } else {
 

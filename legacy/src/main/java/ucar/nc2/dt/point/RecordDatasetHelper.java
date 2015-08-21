@@ -232,8 +232,7 @@ public class RecordDatasetHelper {
     // read all the data, create a RecordObs
     ArrayList records = new ArrayList();
     int recno = 0;
-    StructureDataIterator ii = recordVar.getStructureIterator();
-    try {
+    try (StructureDataIterator ii = recordVar.getStructureIterator()) {
       while (ii.hasNext()) {
         StructureData sdata = ii.next();
         StructureMembers members = sdata.getStructureMembers();
@@ -283,8 +282,6 @@ public class RecordDatasetHelper {
         recno++;
         if ((cancel != null) && cancel.isCancel()) return null;
       }
-    } finally {
-      ii.finish();
     }
 
     boundingBox = new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));

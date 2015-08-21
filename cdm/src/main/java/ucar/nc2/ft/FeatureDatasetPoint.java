@@ -45,5 +45,5 @@ public interface FeatureDatasetPoint extends FeatureDataset {
    * These will all be of type PointFeatureCollection or NestedPointFeatureCollection.
    * @return list of FeatureCollections contained in this dataset
    */
-  public List<FeatureCollection> getPointFeatureCollectionList();
+  List<FeatureCollection> getPointFeatureCollectionList();
 }

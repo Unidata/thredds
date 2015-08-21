@@ -71,7 +71,7 @@ import java.util.List;
 
 /**
  * A Swing widget to view the contents of a ucar.nc2.dt2.PointFeatureDataset
- * <p/>
+ * <p>
  * If its a StationObsDataset, the available Stations are shown in a BeanTable.
  * The obs are shown in a StructureTable.
  *
@@ -487,15 +487,12 @@ public class PointFeatureDatasetViewer extends JPanel {
     List<PointObsBean> pointBeans = new ArrayList<>();
     int count = 0;
 
-    PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
-    iter.setCalculateBounds(pointCollection);
-    try {
+    try (PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1)) {
+      iter.setCalculateBounds(pointCollection);
       while (iter.hasNext() && (count++ < maxCount)) {
         PointFeature pob = iter.next();
         pointBeans.add(new PointObsBean(count++, pob, df));
       }
-    } finally {
-      iter.finish();
     }
 
     stnTable.setBeans(pointBeans);
@@ -735,18 +732,16 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private int setObservations(PointFeatureCollection pointCollection) throws IOException {
-    PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
-    //iter.setCalculateBounds(pointCollection);
-    List<PointFeature> obsList = new ArrayList<>();
-    int count = 0;
-    try {
+    try (PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1)) {
+      //iter.setCalculateBounds(pointCollection);
+      List<PointFeature> obsList = new ArrayList<>();
+      int count = 0;
       while (iter.hasNext() && (count++ < maxCount))
         obsList.add(iter.next());
-    } finally {
-      iter.finish();
+
+      setObservations(obsList);
+      return obsList.size();
     }
-    setObservations(obsList);
-    return obsList.size();
   }
 
   private void setStnProfileObservations(NestedPointFeatureCollection nestedPointCollection) throws IOException {

@@ -96,9 +96,9 @@ public class SequenceDS extends StructureDS {
     }
 
     @Override
-      public void finish() {
-        orgIter.finish();
-      }
+    public void close() {
+      orgIter.close();
+    }
   }
 
   @Override

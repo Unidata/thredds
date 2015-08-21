@@ -32,13 +32,14 @@
  */
 package ucar.nc2.stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.ma2.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -47,7 +48,6 @@ import java.util.zip.InflaterInputStream;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.IO;
 
 /**
  * Read an ncStream InputStream into a NetcdfFile.
@@ -57,6 +57,8 @@ import ucar.nc2.util.IO;
  * @since Feb 7, 2009
  */
 public class NcStreamReader {
+  static private final Logger logger = LoggerFactory.getLogger(NcStreamReader.class);
+
   private static final boolean debug = false;
 
   public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
@@ -226,6 +228,7 @@ public class NcStreamReader {
     private StructureData curr = null;
     private ByteOrder bo;
     private int count = 0;
+    private boolean done;
 
     StreamDataIterator(InputStream is, StructureMembers members, ByteOrder bo) {
       this.is = is;
@@ -235,7 +238,7 @@ public class NcStreamReader {
 
     @Override
     public boolean hasNext() throws IOException {
-      readNext();
+      if (!done) readNext();
       return (curr != null);
     }
 
@@ -259,14 +262,11 @@ public class NcStreamReader {
 
       } else if (NcStream.test(b, NcStream.MAGIC_VEND)) {
         curr = null;
+        close();
 
       } else {
         throw new IllegalStateException("bad stream");
       }
-    }
-
-    @Override
-    public void setBufferSize(int bytes) {
     }
 
     @Override
@@ -280,13 +280,14 @@ public class NcStreamReader {
     }
 
     @Override
-    public void finish() {
+    public void close() {
+      done = true;
       if (is != null) {
         try {
           is.close();
           is = null;
         } catch (IOException ioe) {
-          System.out.printf("NcStreamReader: Error closing input stream.");
+          logger.error("NcStreamReader: Error closing input stream.");
         }
       }
     }

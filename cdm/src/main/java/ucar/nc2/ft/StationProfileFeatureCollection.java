@@ -50,7 +50,7 @@ public interface StationProfileFeatureCollection extends NestedPointFeatureColle
    * @return true is there is another StationProfileFeature in the iteration.
    * @throws java.io.IOException on read error
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Use the internal iterator to get the next StationProfileFeature in the iteration.
@@ -58,13 +58,13 @@ public interface StationProfileFeatureCollection extends NestedPointFeatureColle
    * @return the next StationProfileFeature in the iteration
    * @throws java.io.IOException on read error
    */
-  public StationProfileFeature next() throws java.io.IOException;
+  StationProfileFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the StationProfileFeature in this Collection.
    * @throws java.io.IOException on read error
    */
-  public void resetIteration() throws IOException;
+  void resetIteration() throws IOException;
 
   /**
    * Get a subsetted StationProfileFeatureCollection
@@ -73,7 +73,7 @@ public interface StationProfileFeatureCollection extends NestedPointFeatureColle
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  public StationProfileFeatureCollection subset(List<Station> stations) throws IOException;
+  StationProfileFeatureCollection subset(List<Station> stations) throws IOException;
 
   /**
    * Get the StationProfileFeature for a specific Station.
@@ -82,7 +82,7 @@ public interface StationProfileFeatureCollection extends NestedPointFeatureColle
    * @return collection of data for this Station.
    * @throws java.io.IOException on i/o error
    */
-  public StationProfileFeature getStationProfileFeature(Station s) throws IOException;
+  StationProfileFeature getStationProfileFeature(Station s) throws IOException;
 
   /**
    * Get list of stations as StationFeatures
@@ -90,7 +90,6 @@ public interface StationProfileFeatureCollection extends NestedPointFeatureColle
    * @return list of stations as StationFeatures
    * @throws java.io.IOException on i/o error
    */
-  public List<StationFeature> getStationFeatures() throws IOException;
-
+  List<StationFeature> getStationFeatures() throws IOException;
 
 }

@@ -49,14 +49,14 @@ public interface SectionFeature extends NestedPointFeatureCollection {
    * The number of profiles along the trajectory.
    * @return number of profiles along the trajectory.
    */
-  public int size();
+  int size();
 
   /**
    * Use the internal iterator to check if there is another ProfileFeature in the iteration.
    * @return true is there is another ProfileFeature in the iteration.
    * @throws java.io.IOException on read error
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Use the internal iterator to get the next ProfileFeature in the iteration.
@@ -64,19 +64,19 @@ public interface SectionFeature extends NestedPointFeatureCollection {
    * @return the next ProfileFeature in the iteration
    * @throws java.io.IOException on read error
    */
-  public ProfileFeature next() throws java.io.IOException;
+  ProfileFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the ProfileFeature in this Collection.
    * @throws java.io.IOException on read error
    */
-  public void resetIteration() throws IOException;
+  void resetIteration() throws IOException;
 
   /**
    * The actual data of just this feature.
    * @return the actual data of this feature.
    * @throws java.io.IOException on i/o error
    */
-  public StructureData getFeatureData() throws IOException;
+  StructureData getFeatureData() throws IOException;
 
 }

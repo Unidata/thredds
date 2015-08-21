@@ -48,7 +48,7 @@ public interface SectionFeatureCollection extends NestedPointFeatureCollection {
    * @return true is there is another SectionFeature in the iteration.
    * @throws java.io.IOException on read error
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Use the internal iterator to get the next SectionFeature in the iteration.
@@ -56,12 +56,12 @@ public interface SectionFeatureCollection extends NestedPointFeatureCollection {
    * @return the next SectionFeature in the iteration
    * @throws java.io.IOException on read error
    */
-  public SectionFeature next() throws java.io.IOException;
+  SectionFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the SectionFeatures in this Collection.
    * @throws java.io.IOException on read error
    */
-  public void resetIteration() throws IOException;
+  void resetIteration() throws IOException;
 
 }

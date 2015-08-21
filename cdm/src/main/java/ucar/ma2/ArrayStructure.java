@@ -36,8 +36,8 @@ import ucar.nc2.util.Indent;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
-import java.nio.ByteBuffer;
 
 /**
  * Superclass for implementations of Array of StructureData.
@@ -80,7 +80,7 @@ import java.nio.ByteBuffer;
  * @see Array
  * @see StructureData
  */
-public abstract class ArrayStructure extends Array {
+public abstract class ArrayStructure extends Array implements Iterable<StructureData> {
 
   /* Implementation notes
      ArrayStructure contains the default implementation of storing the data in individual member arrays.
@@ -259,26 +259,26 @@ public abstract class ArrayStructure extends Array {
     return members.getStructureSize();
   }
 
+  public Iterator<StructureData> iterator() { // throws java.io.IOException {
+    return new ArrayStructureIterator();
+  }
+
   public StructureDataIterator getStructureDataIterator() { // throws java.io.IOException {
     return new ArrayStructureIterator();
   }
 
-  public class ArrayStructureIterator implements StructureDataIterator {
+  public class ArrayStructureIterator implements StructureDataIterator, Iterator<StructureData> {
     private int count = 0;
     private int size = (int) getSize();
 
     @Override
-    public boolean hasNext() throws IOException {
+    public boolean hasNext()  {
       return count < size;
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public StructureData next() {
       return getStructureData(count++);
-    }
-
-    @Override
-    public void setBufferSize(int bytes) {
     }
 
     @Override
@@ -290,10 +290,6 @@ public abstract class ArrayStructure extends Array {
     @Override
     public int getCurrentRecno() {
       return count - 1;
-    }
-
-    @Override
-    public void finish() {
     }
 
     // debugging

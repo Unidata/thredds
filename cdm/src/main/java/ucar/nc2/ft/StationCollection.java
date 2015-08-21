@@ -52,7 +52,7 @@ public interface StationCollection {
    * @return List of Station
    * @throws java.io.IOException on i/o error
    */
-  public List<Station> getStations() throws IOException;
+  List<Station> getStations() throws IOException;
 
   /**
    * Get all the Stations within a bounding box.
@@ -61,7 +61,7 @@ public interface StationCollection {
    * @return List of Station
    * @throws java.io.IOException on i/o error
    */
-  public List<Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+  List<Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
   /**
    * Translate list of station names to list of Stations. Skip any not found
@@ -69,7 +69,7 @@ public interface StationCollection {
    * @param stnNames list of stnNames
    * @return  corresponding list of Stations
    */
-  public List<Station> getStations( List<String> stnNames);
+  List<Station> getStations( List<String> stnNames);
 
   /**
    * Find a Station by name.
@@ -77,12 +77,12 @@ public interface StationCollection {
    * @param name name/id of the station
    * @return Station or null if not found
    */
-  public Station getStation(String name);
+  Station getStation(String name);
 
   /**
    * Get the bounding box including all the stations.
    * @return bounding box as a LatLonRect
    */
-  public LatLonRect getBoundingBox();  
+  LatLonRect getBoundingBox();
 
 }

@@ -52,31 +52,31 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
    * The udunit time unit string.
    * @return  time unit string, may not be null
    */
-  public DateUnit getTimeUnit();
+  DateUnit getTimeUnit();
 
   /**
    * The altitude unit string if it exists.
    * @return altitude unit string, may be null
    */
-  public String getAltUnits();
+  String getAltUnits();
 
   /**
    * Other variables needed for co,pleteness, eg joined coordinate variables
    * @return list of extra variables, may be empty not null
    */
-  public List<Variable> getExtraVariables();
+  List<Variable> getExtraVariables();
 
   /**
    * The number of elements in the collection. May not be known until after iterating through the collection.
    * @return number of elements in the collection, or -1 if not known.
    */
-  public int size();
+  int size();
 
   /**
    * If true, use getNestedPointFeatureCollectionIterator, otherwise use getPointFeatureCollectionIterator.
    * @return if multiple nested
    */
-  public boolean isMultipleNested();
+  boolean isMultipleNested();
 
   /**
    * Iterate through the collection, composed of PointFeatureCollection.  Use this only if isMultipleNested() = false.
@@ -84,7 +84,7 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
    * @return an iterator through PointFeatureCollection objects.
    * @throws java.io.IOException on read error
    */
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
 
   /**
    * Iterate through the collection, composed of NestedPointFeatureCollection.  Use this only if isMultipleNested() = true.
@@ -92,7 +92,7 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
    * @return an iterator through NestedPointFeatureCollection objects.
    * @throws java.io.IOException on read error
    */
-  public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+  NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
 
   /**
    * Get a subsetted NestedPointFeatureCollection based on a LatLonRect
@@ -101,7 +101,7 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  public NestedPointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+  NestedPointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
   /**
    *  Flatten into a PointFeatureCollection, discarding connectedness information. Optionally subset.
@@ -110,11 +110,11 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
    * @return a PointFeatureCollection, may be null if its empty.
    * @throws IOException on read error
    */
-  public PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+  PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   /**
    * @deprecated use  CalendarDateRange
    */
-  public PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
+  PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
 }

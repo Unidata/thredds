@@ -38,26 +38,25 @@ import ucar.nc2.units.DateRange;
 
 /**
  * An iterator over PointFeatures.
- * You must complete the iteration or call finish(). Best to put in a try/finally block like:
-  <pre>
-  try {
-   while (iter.hasNext())
-     process(iter.next());
-  } finally {
-    iter.finish();
+ * Use try-with-resource to make sure resources are released:
+ * <pre>
+  try (PointFeatureIterator iter = getIter()) {
+    while (iter.hasNext())
+      process(iter.next());
   }
   </pre>
+ *
  * @author caron
  * @since Feb 18, 2008
  */
-public interface PointFeatureIterator {
+public interface PointFeatureIterator extends AutoCloseable {
 
   /**
    * Check if another PointFeature is available
    * @return true if another PointFeature is available
    * @throws java.io.IOException on i/o error
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Returns the next PointFeature.
@@ -65,64 +64,64 @@ public interface PointFeatureIterator {
    * @return the next PointFeature
    * @throws java.io.IOException on i/o error
    */
-  public PointFeature next() throws java.io.IOException;
+  PointFeature next() throws java.io.IOException;
 
   /**
    * Make sure that the iterator is complete, and recover resources.
-   * You must complete the iteration (until hasNext() returns false) or call finish().
+   * You must complete the iteration (until hasNext() returns false) or call close().
    * may be called more than once.
    */
-  public void finish();
+  void close();
   
   /**
    * Hint to use this much memory in buffering the iteration.
    * No guarentee that it will be used by the implementation.
    * @param bytes amount of memory in bytes
    */
-  public void setBufferSize( int bytes);
+  void setBufferSize( int bytes);
 
   /**
    * If this is set, then the iterator will calculate the bounding box, time range, and size,
    *   and make it available through getBoundingBox(), getDateRange(), and getSize().
    * @param collection if not null, on complete iteration set the results into the collection.
    */
-  public void setCalculateBounds( PointFeatureCollection collection);
+  void setCalculateBounds( PointFeatureCollection collection);
 
    /**
    * Get BoundingBox after iteration is finished, if calcBounds was set true
    * @return BoundingBox of all returned points
    */
-  public LatLonRect getBoundingBox();
+  LatLonRect getBoundingBox();
 
   /**
    * Get DateRange of observation time after iteration is finished, if calcBounds was set true
    * @return DateRange of all returned points
    * @deprecated use getCalendarDateRange()
    */
-  public DateRange getDateRange();
+  DateRange getDateRange();
 
   /**
    * Get DateRange of observation time after iteration is finished, if calcBounds was set true
    * @return DateRange of all returned points
    */
-  public CalendarDateRange getCalendarDateRange();
+  CalendarDateRange getCalendarDateRange();
 
   /**
    * Get number of points after the iteration is finished, if calcBounds was set true
    * @return number of points in the iteration
    */
-  public int getCount();
+  int getCount();
 
   /**
    * A filter on PointFeatures
    */
-  public interface Filter {
+  interface Filter {
     /**
      * True if the PointFeature passes this filter
      * @param pointFeature the PointFeature to test
      * @return true if given pointFeature passes the filter
      */
-    public boolean filter(PointFeature pointFeature);
+    boolean filter(PointFeature pointFeature);
   }
 
 }

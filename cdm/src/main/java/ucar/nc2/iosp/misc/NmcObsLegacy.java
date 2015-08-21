@@ -711,9 +711,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         return abb.getStructureData(0);
       }
 
-      @Override
-      public void setBufferSize(int bytes) {
-      }
 
       @Override
       public StructureDataIterator reset() {
@@ -726,10 +723,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         return count - 1;
       }
 
-      @Override
-      public void finish() {
-        // ignored
-      }
     }
 
   }

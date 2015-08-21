@@ -51,7 +51,7 @@ public interface StationProfileFeature extends StationFeature, NestedPointFeatur
    * @return true is there is another ProfileFeature in the iteration.
    * @throws java.io.IOException on read error
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Use the internal iterator to get the next ProfileFeature in the iteration.
@@ -59,19 +59,19 @@ public interface StationProfileFeature extends StationFeature, NestedPointFeatur
    * @return the next ProfileFeature in the iteration
    * @throws java.io.IOException on read error
    */
-  public ProfileFeature next() throws java.io.IOException;
+  ProfileFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the ProfileFeature in this Collection.
    * @throws java.io.IOException on read error
    */
-  public void resetIteration() throws IOException;
+  void resetIteration() throws IOException;
 
   /**
    * The number of profiles in the time series. May not be known until after iterating through the collection.
    * @return number of profiles in the time series, or -1 if not known.
    */
-  public int size();
+  int size();
 
   /**
    * Subset this collection by dateRange
@@ -79,7 +79,7 @@ public interface StationProfileFeature extends StationFeature, NestedPointFeatur
    * @return subsetted collection, may be null if empty
    * @throws java.io.IOException on read error
    */
-  public StationProfileFeature subset(DateRange dateRange) throws IOException;
+  StationProfileFeature subset(DateRange dateRange) throws IOException;
 
 
   /**
@@ -87,7 +87,7 @@ public interface StationProfileFeature extends StationFeature, NestedPointFeatur
    * @return list of times in the time series of profiles.
    * @throws java.io.IOException on read error
    */
-  public List<Date> getTimes() throws IOException;
+  List<Date> getTimes() throws IOException;
 
   /**
    * Get a particular profile by date. Note that this may be as costly as iterating over the collection.
@@ -95,6 +95,6 @@ public interface StationProfileFeature extends StationFeature, NestedPointFeatur
    * @return profile whose date matches the given date
    * @throws java.io.IOException on read error
    */
-  public ProfileFeature getProfileByDate(Date date) throws IOException;
+  ProfileFeature getProfileByDate(Date date) throws IOException;
 
 }

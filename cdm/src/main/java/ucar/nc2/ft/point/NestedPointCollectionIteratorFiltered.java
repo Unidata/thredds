@@ -70,8 +70,8 @@ public class NestedPointCollectionIteratorFiltered implements NestedPointFeature
   }
 
   @Override
-  public void finish() {
-    npfciter.finish();
+  public void close() {
+    npfciter.close();
   }
 
   private boolean filter(NestedPointFeatureCollection pdata) {

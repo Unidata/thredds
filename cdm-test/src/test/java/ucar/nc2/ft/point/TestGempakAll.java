@@ -194,8 +194,7 @@ public class TestGempakAll {
       throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
     }
 
-    PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
-    try {
+    try (PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1)) {
       int numObs = 0;
       while (dataIterator.hasNext()) {
         PointFeature po = (PointFeature) dataIterator.next();
@@ -209,9 +208,6 @@ public class TestGempakAll {
       long took = System.currentTimeMillis() - start;
       System.out.printf("response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
               ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
-    } finally {
-      if (dataIterator != null)
-        dataIterator.finish();
     }
     long took = System.currentTimeMillis() - start;
     System.out.printf("%ntotal response took %d msecs%n", took);
@@ -264,24 +260,24 @@ public class TestGempakAll {
 
     DateRange track = null;
     DateFormatter df = new DateFormatter();
-    PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
     int numObs = 0;
-    while (dataIterator.hasNext()) {
-      PointFeature po = (PointFeature) dataIterator.next();
-      numObs++;
-      ucar.unidata.geoloc.EarthLocation el = po.getLocation();
-      StructureData structure = po.getData();
-      assert llr.contains(el.getLatLon()) : el.getLatLon() + " not in " + llr;
+    try (PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1)) {
+      while (dataIterator.hasNext()) {
+        PointFeature po = dataIterator.next();
+        numObs++;
+        ucar.unidata.geoloc.EarthLocation el = po.getLocation();
+        StructureData structure = po.getData();
+        assert llr.contains(el.getLatLon()) : el.getLatLon() + " not in " + llr;
 
-      Date obsDate = po.getObservationTimeAsDate();
-      assert dr.included(obsDate) : df.toDateTimeString(obsDate) + " not in " + dr;
-      if (numObs % 1000 == 0)
-        System.out.printf("%d el = %s %s %n", numObs, el, df.toDateTimeString(obsDate));
+        Date obsDate = po.getObservationTimeAsDate();
+        assert dr.included(obsDate) : df.toDateTimeString(obsDate) + " not in " + dr;
+        if (numObs % 1000 == 0)
+          System.out.printf("%d el = %s %s %n", numObs, el, df.toDateTimeString(obsDate));
 
-      if (track == null) track = new DateRange(obsDate, obsDate);
-      else track.extend(obsDate);
+        if (track == null) track = new DateRange(obsDate, obsDate);
+        else track.extend(obsDate);
+      }
     }
-    dataIterator.finish();
 
     long took = System.currentTimeMillis() - start;
     System.out.printf("%ntotal response took %d msecs nobs = %d range=%s %n==============%n", took, numObs, track);
@@ -324,19 +320,19 @@ public class TestGempakAll {
         throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
       }
 
-      PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
       int numObs = 0;
-      while (dataIterator.hasNext()) {
-        PointFeature po = (PointFeature) dataIterator.next();
-        numObs++;
-        ucar.unidata.geoloc.EarthLocation el = po.getLocation();
-        StructureData structure = po.getData();
-        assert llr.contains(el.getLatLon()) : el.getLatLon();
-        assert dr.included(po.getNominalTimeAsDate());
-        if (numObs % 1000 == 0)
-          System.out.printf("%d el = %s %n", numObs, el);
+      try (PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1)) {
+        while (dataIterator.hasNext()) {
+          PointFeature po = dataIterator.next();
+          numObs++;
+          ucar.unidata.geoloc.EarthLocation el = po.getLocation();
+          StructureData structure = po.getData();
+          assert llr.contains(el.getLatLon()) : el.getLatLon();
+          assert dr.included(po.getNominalTimeAsDate());
+          if (numObs % 1000 == 0)
+            System.out.printf("%d el = %s %n", numObs, el);
+        }
       }
-      dataIterator.finish();
 
       long took = System.currentTimeMillis() - start;
       System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, numObs,
@@ -485,11 +481,10 @@ public class TestGempakAll {
       throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
     }
 
-    PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1);
-    try {
+    try (PointFeatureIterator dataIterator = collection.getPointFeatureIterator(-1)) {
       int numObs = 0;
       while (dataIterator.hasNext()) {
-        PointFeature po = (PointFeature) dataIterator.next();
+        PointFeature po = dataIterator.next();
         if (numObs % 1000 == 0)
           System.out.printf("%d el = %s %n", numObs, po.getLocation());
         numObs++;
@@ -498,9 +493,6 @@ public class TestGempakAll {
       long took = System.currentTimeMillis() - start;
       System.out.printf("%s took %d msecs nobs = %d%n  seeks= %d Mbytes read= %d%n", what, took, numObs,
               ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes()/(1000 * 1000));
-    } finally {
-      if (dataIterator != null)
-        dataIterator.finish();
     }
   }
 

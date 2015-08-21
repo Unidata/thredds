@@ -53,24 +53,24 @@ public interface ProfileFeature extends PointFeatureCollection {
    * Nominal location of this profile
    * @return the nominal location of this profile
    */
-  public LatLonPoint getLatLon();
+  LatLonPoint getLatLon();
 
   /**
    * Nominal time of the profile
    * @return the nominal time of this profile
    */
-  public Date getTime();
+  Date getTime();
 
   /**
    * The number of points along the z axis. May not be known until after iterating through the collection.
    * @return number of points along the z axis, or -1 if not known.
    */
-  public int size();
+  int size();
 
   /**
    * The actual data of just this feature.
    * @return the actual data of this feature.
    * @throws java.io.IOException on i/o error
    */
-  public StructureData getFeatureData() throws IOException;
+  StructureData getFeatureData() throws IOException;
 }

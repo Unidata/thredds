@@ -64,8 +64,9 @@ public class Range implements Iterable<Integer>  {
   public static final Range ONE = new Range(1);
   public static final Range VLEN = new Range(-1);
 
-  protected final int n; // number of elements
+  protected final int length; // number of elements
   private final int first; // first value in range
+  private final int last; // last value in range, inclusive
   private final int stride; // stride, must be >= 1
   protected final String name; // optional name
 
@@ -73,8 +74,9 @@ public class Range implements Iterable<Integer>  {
    * Used for EMPTY
    */
   private Range() {
-    this.n = 0;
+    this.length = 0;
     this.first = 0;
+    this.last = 0;
     this.stride = 1;
     this.name = null;
   }
@@ -93,14 +95,15 @@ public class Range implements Iterable<Integer>  {
   /**
    * Create a range starting at zero, with unit stride.
    *
-   * @param length number of elements in the Rnage
+   * @param length number of elements in the Range
    */
   public Range(int length) {
     assert (length != 0);
     this.name = null;
     this.first = 0;
+    this.last = length-1;
     this.stride = 1;
-    this.n = length;
+    this.length = length;
   }
 
   /**
@@ -146,9 +149,80 @@ public class Range implements Iterable<Integer>  {
 
     this.name = name;
     this.first = first;
+    this.last = last;
     this.stride = stride;
-    this.n = Math.max(1 + (last - first) / stride, 1);
-    assert this.n != 0;
+    this.length = (1 + last - first) / stride;
+    assert this.length != 0;
+  }
+
+  protected Range(String name, int first, int last, int stride, int length) throws InvalidRangeException {
+    if (first < 0)
+      throw new InvalidRangeException("first (" + first + ") must be >= 0");
+    if (last < first)
+      throw new InvalidRangeException("last (" + last + ") must be >= first (" + first + ")");
+    if (stride < 1)
+      throw new InvalidRangeException("stride (" + stride + ") must be > 0");
+    if (length < (1 + last - first) / stride)
+      throw new InvalidRangeException("length (" + length + ") must be > (1 + last - first) / stride");
+
+    this.name = name;
+    this.first = first;
+    this.last = last;
+    this.stride = stride;
+    this.length = length;
+  }
+
+  /**
+   * @return name, or null if none
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return first in range
+   */
+  public int first() {
+    return first;
+  }
+
+  /**
+   * @return last in range, inclusive
+   */
+  public int last() {
+    return last;
+  }
+
+  /**
+   * @return the number of elements in the range.
+   */
+  public int length() {
+    return length;
+  }
+
+  /**
+   * @return stride, must be >= 1
+   * @deprecated use iterator(), dont assume evenly strided
+   */
+  public int stride() {
+    return stride;
+  }
+
+  /////////////////////////////////////////////
+
+  /**
+   * Is want contained in this Range?
+   *
+   * @param want index in the original Range
+   * @return true if the ith element would be returned by the Range iterator
+   */
+  public boolean contains(int want) {
+    if (want < first())
+      return false;
+    if (want > last())
+      return false;
+    if (stride == 1) return true;
+    return (want - first) % stride == 0;
   }
 
   /**
@@ -158,7 +232,7 @@ public class Range implements Iterable<Integer>  {
    */
   public Range copy(String name) {
     try {
-      return new Range(name, first(), last(), stride);
+      return new Range(name, first, last, stride, length);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen
     }
@@ -210,19 +284,35 @@ public class Range implements Iterable<Integer>  {
   }
 
   /**
-   * Create a new Range shifting this range by a constant factor.
+   * Get ith element
    *
-   * @param origin subtract this from each element
-   * @return shifted range
-   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * @param i index of the element
+   * @return the i-th element of a range.
+   * @throws InvalidRangeException i must be: 0 <= i < length
    */
-  public Range shiftOrigin(int origin) throws InvalidRangeException {
-    if (this == VLEN)
-      return VLEN;
+  public int element(int i) throws InvalidRangeException {
+    if (i < 0)
+      throw new InvalidRangeException("i must be >= 0");
+    if (i >= length)
+      throw new InvalidRangeException("i must be < length");
 
-    int first = first() - origin;
-    int last = last() - origin;
-    return new Range(name, first, last, stride);
+    return first + i * stride;
+  }
+
+  /**
+   * Get the index for this element: inverse of element
+   *
+   * @param want the element of the range
+   * @return index
+   * @throws InvalidRangeException if illegal elem
+   */
+  public int index(int want) throws InvalidRangeException {
+    if (want < first)
+      throw new InvalidRangeException("elem must be >= first");
+    int result = (want - first) / stride;
+    if (result > length)
+      throw new InvalidRangeException("elem must be <= first = n * stride");
+    return result;
   }
 
   /**
@@ -240,30 +330,30 @@ public class Range implements Iterable<Integer>  {
       return VLEN;
 
     int last = Math.min(this.last(), r.last());
-    int stride = stride() * r.stride();
+    int resultStride = stride * r.stride();
 
     int useFirst;
-    if (stride == 1) {
+    if (resultStride == 1) {  // both strides are 1
       useFirst = Math.max(this.first(), r.first());
 
-    } else if (stride() == 1) { // then r has a stride
+    } else if (stride == 1) { // then r has a stride
 
       if (r.first() >= first())
         useFirst = r.first();
       else {
-        int incr = (first() - r.first()) / stride;
-        useFirst = r.first() + incr * stride;
-        if (useFirst < first()) useFirst += stride;
+        int incr = (first() - r.first()) / resultStride;
+        useFirst = r.first() + incr * resultStride;
+        if (useFirst < first()) useFirst += resultStride;
       }
 
-    } else if (r.stride() == 1) { // then this has a stride
+    } else if (r.stride == 1) { // then this has a stride
 
       if (first() >= r.first())
         useFirst = first();
       else {
-        int incr = (r.first() - first()) / stride;
-        useFirst = first() + incr * stride;
-        if (useFirst < r.first()) useFirst += stride;
+        int incr = (r.first() - first()) / resultStride;
+        useFirst = first() + incr * resultStride;
+        if (useFirst < r.first()) useFirst += resultStride;
       }
 
     } else {
@@ -272,7 +362,7 @@ public class Range implements Iterable<Integer>  {
 
     if (useFirst > last)
       return EMPTY;
-    return new Range(name, useFirst, last, stride);
+    return new Range(name, useFirst, last, resultStride);
   }
 
   /**
@@ -290,20 +380,20 @@ public class Range implements Iterable<Integer>  {
       return true;
 
     int last = Math.min(this.last(), r.last());
-    int stride = stride() * r.stride();
+    int resultStride = stride * r.stride();
 
     int useFirst;
-    if (stride == 1) {
+    if (resultStride == 1) {   // both strides are 1
       useFirst = Math.max(this.first(), r.first());
 
-    } else if (stride() == 1) { // then r has a stride
+    } else if (stride == 1) { // then r has a stride
 
       if (r.first() >= first())
         useFirst = r.first();
       else {
-        int incr = (first() - r.first()) / stride;
-        useFirst = r.first() + incr * stride;
-        if (useFirst < first()) useFirst += stride;
+        int incr = (first() - r.first()) / resultStride;
+        useFirst = r.first() + incr * resultStride;
+        if (useFirst < first()) useFirst += resultStride;
       }
 
     } else if (r.stride() == 1) { // then this has a stride
@@ -311,9 +401,9 @@ public class Range implements Iterable<Integer>  {
       if (first() >= r.first())
         useFirst = first();
       else {
-        int incr = (r.first() - first()) / stride;
-        useFirst = first() + incr * stride;
-        if (useFirst < r.first()) useFirst += stride;
+        int incr = (r.first() - first()) / resultStride;
+        useFirst = first() + incr * resultStride;
+        if (useFirst < r.first()) useFirst += resultStride;
       }
 
     } else {
@@ -323,7 +413,6 @@ public class Range implements Iterable<Integer>  {
     return (useFirst <= last);
   }
 
-
   /**
    * If this range is completely past the wanted range
    *
@@ -332,6 +421,22 @@ public class Range implements Iterable<Integer>  {
    */
   public boolean past(Range want) {
     return (first() > want.last());
+  }
+
+  /**
+   * Create a new Range shifting this range by a constant factor.
+   *
+   * @param origin subtract this from each element
+   * @return shifted range
+   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   */
+  public Range shiftOrigin(int origin) throws InvalidRangeException {
+    if (this == VLEN)
+      return VLEN;
+
+    int first = first() - origin;
+    int last = last() - origin;
+    return new Range(name, first, last, stride);
   }
 
   /**
@@ -357,97 +462,6 @@ public class Range implements Iterable<Integer>  {
   }
 
   /**
-   * Get the number of elements in the range.
-   *
-   * @return the number of elements in the range.
-   */
-  public int length() {
-    return n;
-  }
-
-  /**
-   * Get ith element
-   *
-   * @param i index of the element
-   * @return the i-th element of a range.
-   * @throws InvalidRangeException i must be: 0 <= i < length
-   */
-  public int element(int i) throws InvalidRangeException {
-    if (i < 0)
-      throw new InvalidRangeException("i must be >= 0");
-    if (i >= n)
-      throw new InvalidRangeException("i must be < length");
-
-    return first + i * stride;
-  }
-
-  // inverse of element
-
-  /**
-   * Get the index for this element: inverse of element
-   *
-   * @param want the element of the range
-   * @return index
-   * @throws InvalidRangeException if illegal elem
-   */
-  public int index(int want) throws InvalidRangeException {
-    if (want < first)
-      throw new InvalidRangeException("elem must be >= first");
-    int result = (want - first) / stride;
-    if (result > n)
-      throw new InvalidRangeException("elem must be <= first = n * stride");
-    return result;
-  }
-
-  /**
-   * Is want contained in this Range?
-   *
-   * @param want index in the original Range
-   * @return true if the ith element would be returned by the Range iterator
-   */
-  public boolean contains(int want) {
-    if (want < first())
-      return false;
-    if (want > last())
-      return false;
-    if (stride == 1) return true;
-    return (want - first) % stride == 0;
-  }
-
-
-
-  /**
-   * @return first in range
-   */
-  public int first() {
-    return first;
-  }
-
-  /**
-   * @return last in range, inclusive
-   */
-  public int last() {
-    return first + (n - 1) * stride;
-  }
-
-  /**
-   * @return stride, must be >= 1
-   * @deprecated use iterator(), dont assume evenly strided
-   */
-  public int stride() {
-    return stride;
-  }
-
-  /**
-   * Get name
-   *
-   * @return name, or null if none
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
    * Find the first element in a strided array after some index start.
    * Return the smallest element k in the Range, such that <ul>
    * <li>k >= first
@@ -470,9 +484,9 @@ public class Range implements Iterable<Integer>  {
   }
 
   public String toString() {
-    if (this.n == 0)
+    if (this.length == 0)
       return "EMPTY";
-    else if (this.n < 0)
+    else if (this.length < 0)
       return "VLEN";
     else
       return first + ":" + last() + (stride > 1 ? ":" + stride : "");
@@ -486,19 +500,20 @@ public class Range implements Iterable<Integer>  {
     if (!(o instanceof Range)) return false;   // this catches nulls
     Range or = (Range) o;
 
-    if ((n == 0) && (or.n == 0)) // empty ranges are equal
+    if ((length == 0) && (or.length == 0)) // empty ranges are equal
       return true;
 
-    return (or.first == first) && (or.n == n) && (or.stride == stride);
+    return (or.first == first) && (or.length == length) && (or.stride == stride) && (or.last == last);
   }
 
   /**
    * Override Object.hashCode() to implement equals.
    */
   public int hashCode() {
-    int result = first();
-    result = 37 * result + last();
-    result = 37 * result + stride();
+    int result = first;
+    result = 37 * result + last;
+    result = 37 * result + stride;
+    result = 37 * result + length;
     return result;
   }
 
@@ -521,7 +536,7 @@ public class Range implements Iterable<Integer>  {
   private class MyIterator implements java.util.Iterator<Integer> {
     private int current = 0;
     public boolean hasNext() {
-      return current < n;
+      return current < length;
     }
     public Integer next() {
       return elementNC(current++);

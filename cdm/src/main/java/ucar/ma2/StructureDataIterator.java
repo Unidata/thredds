@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * An iterator over StructureData.
@@ -49,7 +50,7 @@ try {
  * @author caron
  * @since Feb 23, 2008
  */
-public interface StructureDataIterator {
+public interface StructureDataIterator extends AutoCloseable {
 
   /**
    * See if theres more StructureData in the iteration.
@@ -58,7 +59,7 @@ public interface StructureDataIterator {
    * @return true if more records are available
    * @throws java.io.IOException on read error
    */
-  public boolean hasNext() throws IOException;
+  boolean hasNext() throws IOException;
 
   /**
    * Get the next StructureData in the iteration.
@@ -66,7 +67,7 @@ public interface StructureDataIterator {
    * @return next StructureData record.
    * @throws java.io.IOException on read error
    */
-  public StructureData next() throws IOException;
+  StructureData next() throws IOException;
 
   /**
    * Hint to use this much memory in buffering the iteration.
@@ -74,29 +75,39 @@ public interface StructureDataIterator {
    *
    * @param bytes amount of memory in bytes
    */
-  public void setBufferSize(int bytes);
+  default void setBufferSize(int bytes)  {
+      // doan do nuthin
+    }
 
   /**
    * Start the iteration over again.
    *
    * @return a new or reset iterator.
    */
-  public StructureDataIterator reset();
+  StructureDataIterator reset();
 
-  public int getCurrentRecno();
+  int getCurrentRecno();
+
+  /**
+   * @deprecated use close() or try-with-resource
+  */
+   default void finish() {
+     close();
+   }
 
   /**
    * Make sure that the iterator is complete, and recover resources.
    * Best to put in a try/finally block like:
    * <pre>
- try {
-   while (iter.hasNext())
-    process(iter.next());
-  } finally {
-    iter.finish();
-  }
+   try (StructureDataIterator iter = obj.getStructureDataIterator()) {
+     while (iter.hasNext())
+      process(iter.next());
+    }
    </pre>
    */
-  public void finish();
+  default void close() {
+    // doan do nuthin
+  }
+
 
 }

@@ -693,13 +693,10 @@ public class BufrMessageViewer extends JPanel {
       if ((v != null) && (v instanceof Structure)) {
         Structure obs = (Structure) v;
         StandardFields.StandardFieldsFromStructure extract = new StandardFields.StandardFieldsFromStructure(center, obs);
-        StructureDataIterator iter = obs.getStructureIterator();
-        try {
+        try (StructureDataIterator iter = obs.getStructureIterator()) {
           while (iter.hasNext()) {
             beanList.add(new ObsBean(extract, iter.next()));
           }
-        } finally {
-          iter.finish();
         }
       }
     } catch (Exception ex) {
@@ -825,13 +822,10 @@ public class BufrMessageViewer extends JPanel {
       try {
         NetcdfFile ncd = makeBufrMessageAsDataset(m);
         SequenceDS v = (SequenceDS) ncd.findVariable(BufrIosp2.obsRecord);
-        StructureDataIterator iter = v.getStructureIterator(-1);
-        try {
+        try (StructureDataIterator iter = v.getStructureIterator(-1)) {
           while (iter.hasNext())
             iter.next();
 
-        } finally {
-          iter.finish();
         }
         setReadOk(true);
       } catch (IOException e) {

@@ -48,7 +48,7 @@ public interface ProfileFeatureCollection extends NestedPointFeatureCollection {
    * @return true is there is another ProfileFeature in the iteration.
    * @throws java.io.IOException on read error
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Use the internal iterator to get the next ProfileFeature in the iteration.
@@ -56,13 +56,13 @@ public interface ProfileFeatureCollection extends NestedPointFeatureCollection {
    * @return the next ProfileFeature in the iteration
    * @throws java.io.IOException on read error
    */
-  public ProfileFeature next() throws java.io.IOException;
+  ProfileFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the ProfileFeatures in this Collection.
    * @throws java.io.IOException on read error
    */
-  public void resetIteration() throws IOException;
+  void resetIteration() throws IOException;
 
   /**
    * Subset this collection by boundingBox
@@ -70,5 +70,5 @@ public interface ProfileFeatureCollection extends NestedPointFeatureCollection {
    * @return subsetted collection, may be null if empty
    * @throws IOException on read error
    */
-  public ucar.nc2.ft.ProfileFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+  ucar.nc2.ft.ProfileFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 }

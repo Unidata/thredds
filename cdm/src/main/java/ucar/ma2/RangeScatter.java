@@ -25,7 +25,7 @@ public class RangeScatter extends Range {
    * @throws InvalidRangeException
    */
   public RangeScatter(String name, int... val) throws InvalidRangeException {
-    super(name, val[0], val[val.length-1], val.length);
+    super(name, val[0], val[val.length-1], 1, val.length);
     this.vals = val;
   }
 
@@ -51,8 +51,8 @@ public class RangeScatter extends Range {
 
   @Override
   public RangeScatter shiftOrigin(int origin) throws InvalidRangeException {
-    int[] svals = new int[n];
-    for (int i=0; i<n; i++) svals[i] = vals[i] + origin;
+    int[] svals = new int[length];
+    for (int i=0; i< length; i++) svals[i] = vals[i] + origin;
     return new RangeScatter(name, svals);
   }
 
@@ -139,11 +139,11 @@ public class RangeScatter extends Range {
   public int getFirstInInterval(int start) {
     if (start > last()) return -1;
     if (start <= first()) return first();
-    for (int i=1; i<n; i++)
+    for (int i=1; i< length; i++)
       if (start > vals[i])
         return i-1;
 
-    return n-1;
+    return length -1;
   }
 
   @Override
@@ -176,7 +176,7 @@ public class RangeScatter extends Range {
 
     @Override
     public boolean hasNext() {
-      return current < n;
+      return current < length;
     }
 
     @Override

@@ -38,8 +38,6 @@ import ucar.nc2.constants.CDM;
 
 import java.io.*;
 import java.nio.ByteOrder;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
 
 /**
  * Write a NetcdfFile to an OutputStream using ncstream protocol
@@ -48,7 +46,7 @@ import java.util.zip.DeflaterOutputStream;
  * @since Feb 7, 2009
  */
 public class NcStreamWriter {
-  static private long maxChunk = 1 * 1000 * 1000; // 1 MByte
+  static private long maxChunk = 1000 * 1000; // 1 MByte
   static private int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
   static private int currentVersion = 1;
 
@@ -114,8 +112,7 @@ public class NcStreamWriter {
       int count = 0;
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
        //coverity[FB.BC_UNCONFIRMED_CAST]
-      StructureDataIterator iter = seq.getStructureIterator(-1);
-      try {
+      try (StructureDataIterator iter = seq.getStructureIterator(-1)) {
         while (iter.hasNext()) {
           size += writeBytes(out, NcStream.MAGIC_VDATA); // magic
           StructureData sdata = iter.next();
@@ -123,8 +120,6 @@ public class NcStreamWriter {
           size += NcStream.encodeArrayStructure(as, bo, out);
           count++;
         }
-      } finally {
-        iter.finish();
       }
       size += writeBytes(out, NcStream.MAGIC_VEND);
       if (show) System.out.printf(" NcStreamWriter sent %d seqData bytes = %d%n", count, size);

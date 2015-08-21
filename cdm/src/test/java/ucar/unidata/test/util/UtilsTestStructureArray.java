@@ -77,8 +77,7 @@ public class UtilsTestStructureArray {
   }
 
   private void testArrayStructureByIterator(ArrayStructure as) throws IOException {
-    StructureDataIterator si = as.getStructureDataIterator();
-    try {
+    try (StructureDataIterator si = as.getStructureDataIterator()) {
       while (si.hasNext()) {
         StructureData sdata = si.next();
 
@@ -91,8 +90,6 @@ public class UtilsTestStructureArray {
 
         testStructureData(sdata);
       }
-    } finally {
-      si.finish();
     }
   }
 

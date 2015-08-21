@@ -322,7 +322,7 @@ public abstract class Array {
     IndexIterator dataI = result.getIndexIterator();
     for (int i = 0; i < npts; i++) {
       double val = start + i * incr;
-      dataI.setDoubleNext(val);      // LOOK unsigned
+      dataI.setDoubleNext(val);
     }
     return result;
   }
@@ -392,7 +392,6 @@ public abstract class Array {
   protected final DataType dataType;
   protected final Index indexCalc;
   protected final int rank;
-  private IndexIterator ii;     // local iterator
 
   // for subclasses only
   protected Array(DataType dataType, int[] shape) {
@@ -1159,6 +1158,11 @@ public abstract class Array {
     sb.append(')');
     return sb.toString();
   }
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  // can we replace with replace with foreach ??
+
+  private IndexIterator ii;     // local iterator
 
   /**
    * Check if more elements in the local iterator.

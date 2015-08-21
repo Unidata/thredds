@@ -225,7 +225,7 @@ public class Bufr2Xml {
         staxWriter.writeEndElement();
       }
     } finally {
-      sdataIter.finish();
+      sdataIter.close();
     }
   }
 

@@ -60,7 +60,7 @@ public class FilteredPointFeatureIterator extends PointIteratorAbstract {
     public boolean hasNext() throws IOException {
         pointFeature = nextFilteredDataPoint();
         if (pointFeature == null) {
-            finish();
+            close();
             return false;
         } else {
             return true;
@@ -85,8 +85,8 @@ public class FilteredPointFeatureIterator extends PointIteratorAbstract {
     }
 
     @Override
-    public void finish() {
-        origIter.finish();
+    public void close() {
+        origIter.close();
         finishCalcBounds();
     }
 

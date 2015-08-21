@@ -101,7 +101,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
       public void setBufferSize(int bytes) {
       }
 
-      public void finish() {
+      public void close() {
       }
 
     };
@@ -250,7 +250,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   @Override
   public void finish() {
     if (localIterator != null)
-      localIterator.finish();
+      localIterator.close();
   }
 
   @Override

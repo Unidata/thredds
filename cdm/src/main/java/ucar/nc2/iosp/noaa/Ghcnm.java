@@ -1029,18 +1029,10 @@ public class Ghcnm extends AbstractIOServiceProvider {
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public int getCurrentRecno() {
       return recno - 1;
     }
 
-    @Override
-    public void finish() {
-      // ignored
-    }
   }
 
   private class StnDataIter implements StructureDataIterator {
@@ -1086,18 +1078,10 @@ public class Ghcnm extends AbstractIOServiceProvider {
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public int getCurrentRecno() {
       return countRead - 1;
     }
 
-    @Override
-    public void finish() {
-      // ignored
-    }
   }
 
   private class StructureDataAsciiGhcnm extends StructureDataAscii {
@@ -1157,8 +1141,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     int balony = 0;
     try (NetcdfFile ncfile = open(filename)) {
       Sequence seq = (Sequence) ncfile.findVariable(RECORD);
-      StructureDataIterator iter = seq.getStructureIterator(-1);
-      try {
+      try (StructureDataIterator iter = seq.getStructureIterator(-1)) {
         while (iter.hasNext()) {
           StructureData sdata = iter.next();
           StructureMembers.Member m = sdata.findMember(YEAR);
@@ -1170,8 +1153,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
          balony += data.getSize();
        } */
         }
-      } finally {
-        iter.finish();
       }
     }
     long took = System.currentTimeMillis() - start;
@@ -1200,8 +1181,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     int countDups = 0;
     NetcdfFile ncfile = open(filename);
     Sequence seq = (Sequence) ncfile.findVariable(STNS);
-    StructureDataIterator iter = seq.getStructureIterator(-1);
-    try {
+    try (StructureDataIterator iter = seq.getStructureIterator(-1)) {
       while (iter.hasNext()) {
         count++;
         StructureData sdata = iter.next();
@@ -1215,8 +1195,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
           if (wantDups) System.out.printf("  dup %d%n", stnid);
         }
       }
-    } finally {
-      iter.finish();
     }
     System.out.printf(" counts=%d dups=%d%n", count, countDups);
   }

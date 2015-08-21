@@ -62,9 +62,9 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
     orgIter.setBufferSize(bytes);
   }
 
-  public void finish() {
+  public void close() {
     if (finished) return;
-    orgIter.finish();
+    orgIter.close();
     finishCalcBounds();
     finished = true;
   }
@@ -72,7 +72,7 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
   public boolean hasNext() throws IOException {
     pointFeature = nextFilteredDataPoint();
     boolean done = (pointFeature == null);
-    if (done) finish();
+    if (done) close();
     return !done;
   }
 

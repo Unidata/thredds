@@ -125,9 +125,8 @@ public class ArraySequence extends ArrayStructure {
       result = Array.factory(dataType, rshape);
     }
 
-    StructureDataIterator sdataIter = getStructureDataIterator();
-    IndexIterator resultIter = result.getIndexIterator();
-    try {
+    try (StructureDataIterator sdataIter = getStructureDataIterator()) {
+      IndexIterator resultIter = result.getIndexIterator();
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
         StructureMembers.Member realm = sdata.getStructureMembers().findMember(proxym.getName());
@@ -206,10 +205,7 @@ public class ArraySequence extends ArrayStructure {
           // LOOK SEQUENCE, OPAQUE ??
         }
       }
-    } finally {
-      sdataIter.finish();
     }
-
 
     return result;
   }
@@ -218,12 +214,11 @@ public class ArraySequence extends ArrayStructure {
 
   private Array extractMemberArrayFromIteration(StructureMembers.Member proxym, int[] rshape) throws IOException {
     DataType dataType = proxym.getDataType();
-    StructureDataIterator sdataIter = getStructureDataIterator();
     Object dataArray = null;
     int count = 0;
     int initial = 1000;
 
-    try {
+    try (StructureDataIterator sdataIter = getStructureDataIterator()) {
       switch (dataType) {
         case DOUBLE: {
           ArrayList<Double> result = new ArrayList<>(initial);
@@ -374,9 +369,8 @@ public class ArraySequence extends ArrayStructure {
           return new ArrayStructureW(membersw, rshape, da);
         }
       }
-    } finally {
-      sdataIter.finish();
     }
+
     // create an array to hold the result
     rshape[0] = count;
     return Array.factory(dataType, rshape, dataArray);

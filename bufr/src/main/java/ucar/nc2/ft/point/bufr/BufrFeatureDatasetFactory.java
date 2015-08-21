@@ -297,9 +297,9 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           }
 
           @Override
-          public void finish() {
+          public void close() {
             System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getCount());
-            super.finish();
+            super.close();
           }
 
         }

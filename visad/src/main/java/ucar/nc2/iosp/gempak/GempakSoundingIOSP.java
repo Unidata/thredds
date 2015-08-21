@@ -551,15 +551,6 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     }
 
     /**
-     * Set the buffer size
-     *
-     * @param bytes the buffer size
-     */
-    @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    /**
      * Reset the iterator
      *
      * @return this
@@ -579,10 +570,6 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
       return -1;
     }
 
-    @Override
-    public void finish() {
-      // ignored
-    }
   }
 
   /**
@@ -591,20 +578,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    * @author Unidata Development Team
    */
   static private class SequenceIterator implements StructureDataIterator {
-
-    /**
-     * the number of records
-     */
-    // private int count;
-
-    /**
-     * the backing structure
-     */
     private ArrayStructure abb;
-
-    /**
-     * the iterator
-     */
     private StructureDataIterator siter;
 
     /**
@@ -675,8 +649,8 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     }
 
     @Override
-    public void finish() {
-      siter.finish();
+    public void close() {
+      siter.close();
     }
 
   }

@@ -175,8 +175,7 @@ public class WriteT42_ncRect {
         if (m.getDataType() == DataType.SEQUENCE) {
           int countLevel = 0;
           ArraySequence seq1 = recordData.getArraySequence(m);
-          StructureDataIterator iter = seq1.getStructureDataIterator();
-          try {
+          try (StructureDataIterator iter = seq1.getStructureDataIterator()) {
             while (iter.hasNext()) {
               StructureData seqData = iter.next();
               for (StructureMembers.Member seqm : seqData.getMembers()) {
@@ -196,8 +195,6 @@ public class WriteT42_ncRect {
               }
               countLevel++;
             }
-          } finally {
-            iter.finish();
           }
         } else {
 

@@ -97,17 +97,8 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
   }
 
   @Override
-  public void setBufferSize(int bytes) {
-  }
-
-  @Override
   public int getCurrentRecno() {
     return currRecno;
-  }
-
-  @Override
-  public void finish() {
-    // ignored
   }
 
 }

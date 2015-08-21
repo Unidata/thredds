@@ -48,27 +48,27 @@ public interface PointFeature {
    * Location of this observation
    * @return the location of this observation
    */
-  public EarthLocation getLocation();
+  EarthLocation getLocation();
 
  /**
    * Actual time of this observation.
    * Convert to Date with getTimeUnit().makeDate()
    * @return actual time of this observation.
    */
-  public double getObservationTime();
+  double getObservationTime();
 
   /**
    * Actual time of this observation, as a Date.
    * @return actual time of this observation, as a Date.
    * @deprecated use getObservationTimeAsCalendarDate()
    */
-  public Date getObservationTimeAsDate();
+  Date getObservationTimeAsDate();
 
   /**
    * Actual time of this observation, as a Date.
    * @return actual time of this observation, as a Date.
    */
-  public CalendarDate getObservationTimeAsCalendarDate();
+  CalendarDate getObservationTimeAsCalendarDate();
 
   /**
    * Nominal time of this observation.
@@ -76,20 +76,20 @@ public interface PointFeature {
    * When the nominal time is not given in the data, it is usually set to the observational time.
    * @return Nominal time of this observation.
    */
-  public double getNominalTime();
+  double getNominalTime();
 
   /**
    * Nominal time of this observation, as a Date.
    * @return Nominal time of this observation, as a Date.
    * @deprecated use getNominalTimeAsCalendarDate()
    */
-  public Date getNominalTimeAsDate();
+  Date getNominalTimeAsDate();
 
   /**
    * Nominal time of this observation, as a Date.
    * @return Nominal time of this observation, as a Date.
    */
-  public CalendarDate getNominalTimeAsCalendarDate();
+  CalendarDate getNominalTimeAsCalendarDate();
 
 
   /**
@@ -97,18 +97,18 @@ public interface PointFeature {
    * @return the actual data of this feature.
    * @throws java.io.IOException on i/o error
    */
-  public ucar.ma2.StructureData getFeatureData() throws java.io.IOException;
+  ucar.ma2.StructureData getFeatureData() throws java.io.IOException;
 
   /**
    * All the data of this observation, joined with data from all parent Features, if any.
    * @return the actual data of this observation.
    * @throws java.io.IOException on i/o error
    */
-  public ucar.ma2.StructureData getDataAll() throws java.io.IOException;
+  ucar.ma2.StructureData getDataAll() throws java.io.IOException;
 
   /**
    * @deprecated use getFeatureData() or getDataAll()
    */
-  public ucar.ma2.StructureData getData() throws java.io.IOException;
+  ucar.ma2.StructureData getData() throws java.io.IOException;
 
 }

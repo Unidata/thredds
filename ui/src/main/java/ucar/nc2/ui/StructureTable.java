@@ -543,12 +543,9 @@ public class StructureTable extends JPanel {
       if (readData) {
         sdataList = new ArrayList<>();
         try {
-          StructureDataIterator iter = seq.getStructureIterator();
-          try {
+          try (StructureDataIterator iter = seq.getStructureIterator()) {
             while (iter.hasNext())
               sdataList.add(iter.next());
-          } finally {
-            iter.finish();
           }
 
         } catch (IOException e) {
@@ -603,12 +600,9 @@ public class StructureTable extends JPanel {
 
       sdataList = new ArrayList<>();
       try {
-        StructureDataIterator iter = seq.getStructureDataIterator();
-        try {
+        try (StructureDataIterator iter = seq.getStructureDataIterator()) {
           while (iter.hasNext())
             sdataList.add(iter.next());  // LOOK lame -read at all once
-        } finally {
-          iter.finish();
         }
 
       } catch (IOException e) {

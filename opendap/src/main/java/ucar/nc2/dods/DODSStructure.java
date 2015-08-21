@@ -153,10 +153,6 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public StructureDataIterator reset() {
       row = 0;
       return this;
@@ -167,10 +163,6 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
       return row - 1;
     }
 
-    @Override
-      public void finish() {
-        // ignored
-      }
   }
 
   ////////////////////////////////////////////

@@ -92,8 +92,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       }
 
       @Override
-      public void finish() {
-        sdataIter.finish();
+      public void close() {
+        sdataIter.close();
       }
     };
   }
@@ -155,8 +155,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     }
 
     @Override
-    public void finish() {
-      iter.finish();
+    public void close() {
+      iter.close();
     }
 
   }

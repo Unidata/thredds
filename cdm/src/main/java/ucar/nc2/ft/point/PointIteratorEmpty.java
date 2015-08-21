@@ -52,7 +52,7 @@ public class PointIteratorEmpty extends PointIteratorAbstract {
     return null;
   }
 
-  public void finish() {
+  public void close() {
   }
 
   public void setBufferSize(int bytes) {

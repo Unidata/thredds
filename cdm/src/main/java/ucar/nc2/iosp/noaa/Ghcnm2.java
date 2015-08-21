@@ -708,18 +708,10 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public int getCurrentRecno() {
       return recno - 1;
     }
 
-    @Override
-      public void finish() {
-        // ignored
-      }
   }
 
   //////////////////////////////////////////////////////
@@ -788,18 +780,9 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public int getCurrentRecno() {
       return countRead - 1;
     }
-
-    @Override
-      public void finish() {
-        // ignored
-      }
   }
 
     ///////////////////////////////////////////

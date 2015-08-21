@@ -307,18 +307,10 @@ public class IgraPor extends AbstractIOServiceProvider {
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public int getCurrentRecno() {
       return recno - 1;
     }
 
-    @Override
-    public void finish() {
-      // ignored
-    }
   }
 
   // sequence of stations
@@ -397,7 +389,7 @@ public class IgraPor extends AbstractIOServiceProvider {
     }
 
     @Override
-    public void finish() {
+    public void close() {
       // ignored
     }
   }
@@ -490,16 +482,12 @@ public class IgraPor extends AbstractIOServiceProvider {
     }
 
     @Override
-    public void setBufferSize(int bytes) {
-    }
-
-    @Override
     public int getCurrentRecno() {
       return countRead - 1;
     }
 
     @Override
-    public void finish() {
+    public void close() {
       try {
         if (this.timeSeriesRaf != null && this.timeSeriesRaf != dataRaf) {
           timeSeriesRaf.close();
@@ -575,18 +563,10 @@ public class IgraPor extends AbstractIOServiceProvider {
         }
 
         @Override
-        public void setBufferSize(int bytes) {
-        }
-
-        @Override
         public int getCurrentRecno() {
           return countRead - 1;
         }
 
-        @Override
-        public void finish() {
-          // ignored
-        }
       }
     }
 

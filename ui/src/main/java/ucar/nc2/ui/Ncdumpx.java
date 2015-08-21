@@ -56,7 +56,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Print contents of an existing netCDF file, using a Writer.
- * <p/>
+ * <p>
  * A difference with ncdump is that the nesting of multidimensional array data is represented by nested brackets,
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h)
  *
@@ -436,7 +436,6 @@ public class Ncdumpx {
   }
 
   /**
-   *
    * @deprecated use toString()
    */
   static public String printArray(Array array, String name, CancelTask ct) {
@@ -584,12 +583,12 @@ public class Ncdumpx {
   private static void printByteBuffer(PrintWriter out, ByteBuffer bb, Indent indent) {
     out.print(indent + "0x");
     int last = bb.limit() - 1;
-    if(last < 0)
-        out.printf("00");
+    if (last < 0)
+      out.printf("00");
     else
-        for (int i = 0; i <= last; i++) {
-          out.printf("%02x", bb.get(i));
-        }
+      for (int i = 0; i <= last; i++) {
+        out.printf("%02x", bb.get(i));
+      }
   }
 
   static void printStringArray(PrintWriter out, Array ma, Indent indent, ucar.nc2.util.CancelTask ct) {
@@ -630,9 +629,8 @@ public class Ncdumpx {
   }
 
   static private void printStructureDataArray(PrintWriter out, ArrayStructure array, Indent indent, ucar.nc2.util.CancelTask ct) { // throws IOException {
-    StructureDataIterator sdataIter = array.getStructureDataIterator();
-    int count = 0;
-    try {
+    try (StructureDataIterator sdataIter = array.getStructureDataIterator()) {
+      int count = 0;
       while (sdataIter.hasNext()) {
         StructureData sdata = sdataIter.next();
         out.println("\n" + indent + "{");
@@ -644,8 +642,6 @@ public class Ncdumpx {
       }
     } catch (IOException e) {
       e.printStackTrace();  // shouldnt happen ?
-    } finally {
-      sdataIter.finish();
     }
   }
 
@@ -663,8 +659,7 @@ public class Ncdumpx {
 
 
   static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) { // throws IOException {
-    StructureDataIterator iter = seq.getStructureDataIterator();
-    try {
+    try (StructureDataIterator iter = seq.getStructureDataIterator()) {
       while (iter.hasNext()) {
         StructureData sdata = iter.next();
         out.println("\n" + indent + "{");
@@ -674,8 +669,6 @@ public class Ncdumpx {
       }
     } catch (IOException e) {
       e.printStackTrace();  // shouldnt happen ??
-    } finally {
-      iter.finish();
     }
   }
 
@@ -730,7 +723,7 @@ public class Ncdumpx {
   }
 
   static public void printArray(Array ma) {
-    PrintWriter out = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
+    PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out, CDM.utf8Charset));
     printArray(ma, out);
     out.flush();
   }

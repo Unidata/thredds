@@ -234,18 +234,13 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     }
 
     @Override
-    public void setBufferSize(int bufferSize) {
-      log.warn("Calling setBufferSize() on BUFR does nothing!");
-    }
-
-    @Override
     public int getCurrentRecno() {
       return recnum - 1;
     }
 
     @Override
-    public void finish() {
-      if (currIter != null) currIter.finish();
+    public void close() {
+      if (currIter != null) currIter.close();
       currIter = null;
       if (debugIter) System.out.printf("BUFR read recnum %d%n", recnum);
     }
@@ -300,18 +295,13 @@ public class BufrIosp2 extends AbstractIOServiceProvider {
     }
 
     @Override
-    public void setBufferSize(int bufferSize) {
-      log.warn("Calling setBufferSize() on BUFR does nothing!");
-    }
-
-    @Override
     public int getCurrentRecno() {
       return recnum - 1;
     }
 
     @Override
-    public void finish() {
-      if (currIter != null) currIter.finish();
+    public void close() {
+      if (currIter != null) currIter.close();
       currIter = null;
     }
   }

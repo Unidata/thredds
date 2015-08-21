@@ -81,8 +81,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   protected StationHelper createStationHelper() throws IOException {
     StationHelper stationHelper = new StationHelper();
 
-    StructureDataIterator siter = ft.getStationDataIterator(-1);
-    try {
+    try (StructureDataIterator siter = ft.getStationDataIterator(-1)) {
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
         StationTimeSeriesFeature s = makeStation(stationData, siter.getCurrentRecno());
@@ -90,8 +89,6 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
           stationHelper.addStation(s);
         }
       }
-    } finally {
-      siter.finish();
     }
 
     return stationHelper;

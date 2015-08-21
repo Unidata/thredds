@@ -180,8 +180,7 @@ public class Write2ncRect {
         if (m.getDataType() == DataType.STRUCTURE) {
           int countLevel = 0;
           ArrayStructure seq1 = recordData.getArrayStructure(m);
-          StructureDataIterator iter = seq1.getStructureDataIterator();
-          try {
+          try (StructureDataIterator iter = seq1.getStructureDataIterator()) {
             while (iter.hasNext()) {
               StructureData seqData = iter.next();
               for (StructureMembers.Member seqm : seqData.getMembers()) {
@@ -202,8 +201,6 @@ public class Write2ncRect {
               }
               countLevel++;
             }
-          } finally {
-            iter.finish();
           }
         } else {
 

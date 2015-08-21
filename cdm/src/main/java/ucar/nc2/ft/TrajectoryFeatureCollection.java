@@ -48,7 +48,7 @@ public interface TrajectoryFeatureCollection extends NestedPointFeatureCollectio
    * @return true is there is another TrajectoryFeature in the iteration.
    * @throws java.io.IOException on read error
    */
-  public boolean hasNext() throws java.io.IOException;
+  boolean hasNext() throws java.io.IOException;
 
   /**
    * Use the internal iterator to get the next TrajectoryFeature in the iteration.
@@ -56,13 +56,13 @@ public interface TrajectoryFeatureCollection extends NestedPointFeatureCollectio
    * @return the next TrajectoryFeature in the iteration
    * @throws java.io.IOException on read error
    */
-  public TrajectoryFeature next() throws java.io.IOException;
+  TrajectoryFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the TrajectoryFeatures in this Collection.
    * @throws java.io.IOException on read error
    */
-  public void resetIteration() throws IOException;
+  void resetIteration() throws IOException;
  
 }
 

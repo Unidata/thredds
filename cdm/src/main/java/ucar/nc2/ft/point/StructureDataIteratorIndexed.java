@@ -42,6 +42,7 @@ import java.util.Iterator;
 
 /**
  * A StructureDataIterator which takes a list of record numbers (in a structure).
+ *
  * @author caron
  * @since Feb 11, 2009
  */
@@ -64,7 +65,7 @@ public class StructureDataIteratorIndexed implements StructureDataIterator {
     StructureData sdata;
     currRecord = indexIter.next();
     try {
-      sdata = s.readStructure( currRecord);
+      sdata = s.readStructure(currRecord);
     } catch (ucar.ma2.InvalidRangeException e) {
       log.error("StructureDataIteratorIndexed.nextStructureData recno=" + currRecord, e);
       throw new IOException(e.getMessage());
@@ -84,16 +85,8 @@ public class StructureDataIteratorIndexed implements StructureDataIterator {
   }
 
   @Override
-  public void setBufferSize(int bytes) {}
-
-  @Override
   public int getCurrentRecno() {
     return currRecord;
   }
 
-      @Override
-      public void finish() {
-        // ignored
-      }
-  
 }

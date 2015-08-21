@@ -51,11 +51,8 @@ public class TestSequence {
 
   @Test
   public void testRead() throws IOException {
-    NetcdfFile ncfile = null;
 
-    try {
-      ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/point/200929100.ingest");
-
+    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/point/200929100.ingest")) {
       for (Variable v : ncfile.getVariables()) {
         System.out.println(" " + v.getShortName() + " == " + v.getFullName());
       }
@@ -78,14 +75,11 @@ public class TestSequence {
       System.out.printf(" count = %d%n", as.getStructureDataCount());
 
       int count = 0;
-      StructureDataIterator iter = as.getStructureDataIterator();
-      try {
+      try (StructureDataIterator iter = as.getStructureDataIterator()) {
         while (iter.hasNext()) {
           StructureData sdata = iter.next();
           count++;
         }
-      } finally {
-        iter.finish();
       }
       System.out.printf(" count = %d%n", count);
 
@@ -98,18 +92,13 @@ public class TestSequence {
       System.out.printf(" count2 = %d%n", count2);
 
       assert count2 == count;
-
-    } finally {
-      if (ncfile != null) ncfile.close();
     }
   }
 
   @Test
   public void testReadNestedSequence() throws IOException {
-    NetcdfFile ncfile = null;
 
-    try {
-      ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/bufr/userExamples/5900.20030601.rass");
+    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/bufr/userExamples/5900.20030601.rass")) {
 
       Variable v = ncfile.findVariable("obs");
       assert v != null;
@@ -132,34 +121,24 @@ public class TestSequence {
 
       // PrintWriter pw = new PrintWriter(System.out);
       int count = 0;
-      StructureDataIterator iter = as.getStructureDataIterator();
-      try {
+      try (StructureDataIterator iter = as.getStructureDataIterator()) {
         while (iter.hasNext()) {
           StructureData sdata = iter.next();
           ArraySequence nested = sdata.getArraySequence("seq1");
           if (count == 0) showArraySequence(nested);
           count++;
 
-          StructureDataIterator nestedIter = nested.getStructureDataIterator();
-          try {
+          try (StructureDataIterator nestedIter = nested.getStructureDataIterator()) {
             while (nestedIter.hasNext()) {
               StructureData nestedData = nestedIter.next();
               // NCdumpW.printStructureData(pw, nestedData);
               assert nestedData != null;
             }
-          } finally {
-            nestedIter.finish();
           }
         }
-
-      } finally {
-        iter.finish();
       }
       System.out.printf(" actual count = %d%n", count);
       System.out.printf(" ArraySequence.getStructureDataCount = %d%n", as.getStructureDataCount());
-
-    } finally {
-      if (ncfile != null) ncfile.close();
     }
   }
 

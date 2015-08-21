@@ -83,10 +83,20 @@ Miscellaneous
 ** deprecated methods are removed: _setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) , setPolicy(int cachePathPolicy)_
 ** logging of routine cache cleanup is now at the debug level
 
+* The following now implement *Iterable<>*, and so can be the target of *_foreach_*
+** ArrayStructure (replace _getStructureDataIterator()_)
+
 * *ucar.ma2.Range*:
 ** Previously could only be specified by _start:end:stride_
 ** Now extended with subclasses *RangeScatter* and *RangeComposite*
 ** You must use the iterator now to ensure correct functionality, so to iterate over the values of the Range, *_do not use_*:
+
+* The following now implement *AutoCloseable*, and so can be the target of *_try with resource_*
+** ArrayStructure (replace _finish()_)
+** PointFeatureCollectionIterator (replace _finish()_)
+** PointFeatureIterator
+** PointFeatureCollection
+** StationTimeSeriesFeatureCollection
 
 [source,java]
 ----

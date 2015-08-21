@@ -119,7 +119,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
       StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
 
-      PointFeatureCollection pc = null;
+      PointFeatureCollection pc;
       if (wantStationsubset)
         pc = stnCollection.flatten(stationsSubset, dateRange, varList);
       else
@@ -135,13 +135,13 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       if (pfIter == null) {
         pfIter = getNextIterator();
         if (pfIter == null) {
-          finish();
+          close();
           return false;
         }
       }
 
       if (!pfIter.hasNext()) {
-        pfIter.finish();
+        pfIter.close();
         currentDataset.close();
         if (CompositeDatasetFactory.debug)
           System.out.printf("CompositeStationCollectionFlattened.Iterator close dataset: %s%n", currentDataset.getLocation());
@@ -155,11 +155,11 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       return pfIter.next();
     }
 
-    public void finish() {
+    public void close() {
       if (finished) return;
 
       if (pfIter != null)
-        pfIter.finish();
+        pfIter.close();
       finishCalcBounds();
 
       if (currentDataset != null)

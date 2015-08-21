@@ -84,7 +84,7 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
 
     // all done
     feature = null;
-    finish();
+    close();
     return false;
   }
 
@@ -98,11 +98,11 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
     structIter.setBufferSize(bytes);
   }
 
-  public void finish() {
+  public void close() {
     if (finished) return;
     finishCalcBounds();
     finished = true;
-    structIter.finish();
+    structIter.close();
   }
 
   private StructureData nextStructureData() throws IOException {
