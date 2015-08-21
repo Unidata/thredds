@@ -33,6 +33,7 @@
 package ucar.nc2.util.net;
 
 import org.apache.http.HttpEntity;
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.httpservices.*;
 import ucar.nc2.util.UnitTestCommon;
@@ -139,7 +140,7 @@ public class TestFormBuilder extends UnitTestCommon
             exc.printStackTrace();
             pass = false;
         }
-        assertTrue("TestFormBuilder.simple: failed", pass);
+        Assert.assertTrue("TestFormBuilder.simple: failed", pass);
     }
 
     @Test
@@ -185,7 +186,7 @@ public class TestFormBuilder extends UnitTestCommon
             exc.printStackTrace();
             pass = false;
         }
-        assertTrue("TestFormBuilder.multipart: failed", pass);
+        Assert.assertTrue("TestFormBuilder.multipart: failed", pass);
     }
 
     protected HTTPFormBuilder buildForm(boolean multipart)

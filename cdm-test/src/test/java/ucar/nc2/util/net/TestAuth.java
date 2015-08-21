@@ -38,11 +38,11 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.junit.Assume;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ucar.httpservices.*;
 import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.NotJenkins;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.ThreddsServer;
 
@@ -203,24 +203,14 @@ public class TestAuth extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public TestAuth(String name, String testdir)
+    public TestAuth()
     {
-        super(name);
+        super("TestAuth");
         setTitle("DAP Authorization tests");
         // Make sure temp file exist
         temppath = getThreddsroot() + "/" + MODULE + "/" + TEMPROOT;
         new File(temppath).mkdirs();
         //HTTPSession.debugHeaders(true);
-    }
-
-    public TestAuth(String name)
-    {
-        this(name, null);
-    }
-
-    public TestAuth()
-    {
-        this("TestAuth", null);
     }
 
     @Before
@@ -248,7 +238,7 @@ public class TestAuth extends UnitTestCommon
                 int status = method.execute();
                 System.out.printf("\tstatus code = %d\n", status);
                 pass = (status == 200);
-                assertTrue("testSSH", pass);
+                Assert.assertTrue("testSSH", pass);
             }
         }
     }
@@ -293,8 +283,8 @@ public class TestAuth extends UnitTestCommon
                 this.result = invoke(session, data.url);
             }
             pass &= (this.result.status == 200 || this.result.status == 404); // non-existence is ok
-            assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
-            assertTrue("no content", this.result.contents.length > 0);
+            Assert.assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
+            Assert.assertTrue("no content", this.result.contents.length > 0);
         }
 
         for(AuthDataBasic data : basictests) {
@@ -308,11 +298,11 @@ public class TestAuth extends UnitTestCommon
                 this.result = invoke(session, data.url);
             }
             pass &= (this.result.status == 200 || this.result.status == 404); // non-existence is ok
-            assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
-            assertTrue("no content", this.result.contents.length > 0);
+            Assert.assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
+            Assert.assertTrue("no content", this.result.contents.length > 0);
 
         }
-        assertTrue("testBasic", pass);
+        Assert.assertTrue("testBasic", pass);
     }
 
     @Test
@@ -333,7 +323,7 @@ public class TestAuth extends UnitTestCommon
                 this.result = invoke(session, data.url);
             }
             pass &= (this.result.status == 200 || this.result.status == 404); // non-existence is ok
-            assertTrue("no content", this.result.contents.length > 0);
+            Assert.assertTrue("no content", this.result.contents.length > 0);
         }
 
         for(AuthDataBasic data : basictests) {
@@ -348,9 +338,9 @@ public class TestAuth extends UnitTestCommon
 
             }
             pass &= (this.result.status == 200 || this.result.status == 404); // non-existence is ok
-            assertTrue("no content", this.result.contents.length > 0);
+            Assert.assertTrue("no content", this.result.contents.length > 0);
         }
-        assertTrue("testBasic", pass);
+        Assert.assertTrue("testBasic", pass);
     }
 
 
@@ -372,7 +362,7 @@ public class TestAuth extends UnitTestCommon
                 this.result = invoke(session, data.url);
             }
             pass &= (this.result.status == 401); // bad password should fail
-            assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
+            Assert.assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
             // Look at the invalidation list
             List<HTTPCachingProvider.Auth> removed = HTTPCachingProvider.getTestList();
             if(removed.size() == 1) {
@@ -388,10 +378,10 @@ public class TestAuth extends UnitTestCommon
                     session.setCredentialsProvider(data.url, this.provider);
                     this.result = invoke(session, data.url);
                 }
-                assertTrue(result.status == 200);
+                Assert.assertTrue(result.status == 200);
             }
         }
-        assertTrue("testBasic", pass);
+        Assert.assertTrue("testBasic", pass);
     }
 
     @Test

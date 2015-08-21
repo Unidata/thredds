@@ -32,6 +32,7 @@
 
 package opendap.test;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.util.UnitTestCommon;
@@ -132,7 +133,7 @@ public class TestDuplicates extends UnitTestCommon
     }
     System.out.flush();
     System.err.flush();
-    assertTrue("Testing " + getTitle(), pass);
+    Assert.assertTrue("Testing " + getTitle(), pass);
   }
 
 

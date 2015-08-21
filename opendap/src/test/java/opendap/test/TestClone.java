@@ -35,6 +35,7 @@ package opendap.test;
 
 import opendap.dap.parsers.*;
 import opendap.dap.*;
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.unidata.test.Diff;
 
@@ -155,7 +156,7 @@ public class TestClone extends TestFiles {
         clonerdr.close();
         resultrdr.close();
         if (!pass)
-          assertTrue(testname, pass);
+          Assert.assertTrue(testname, pass);
       } catch (IOException ioe) {
         System.err.println("Close failure");
       }
