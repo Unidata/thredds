@@ -45,6 +45,7 @@ import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Nested Table implementation of ProfileCollection
@@ -66,21 +67,6 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
     return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
-  }
-
-  private ProfileIterator localIterator = null;
-  public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
-    return localIterator.hasNext();
-  }
-
-  // need covariant return to allow superclass to implement
-  public ProfileFeature next() throws IOException {
-    return localIterator.next();
-  }
-
-  public void resetIteration() throws IOException {
-    localIterator = (ProfileIterator) getPointFeatureCollectionIterator(-1);
   }
 
   public ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException {
@@ -210,6 +196,62 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
         return boundingBox.contains(profileFeature.getLatLon());
       }
     }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////
+
+  public Iterator<ProfileFeature> iterator() {
+    return new ProfileFeatureIterator();
+  }
+
+  private class ProfileFeatureIterator implements Iterator<ProfileFeature> {
+    PointFeatureCollectionIterator pfIterator;
+
+    public ProfileFeatureIterator() {
+      try {
+        this.pfIterator = getPointFeatureCollectionIterator(-1);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      try {
+        return pfIterator.hasNext();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public ProfileFeature next() {
+      try {
+        return (ProfileFeature) pfIterator.next();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  // deprecated
+
+  private ProfileIterator localIterator = null;
+
+  public boolean hasNext() throws IOException {
+    if (localIterator == null) resetIteration();
+    return localIterator.hasNext();
+  }
+
+  // need covariant return to allow superclass to implement
+  public ProfileFeature next() throws IOException {
+    return localIterator.next();
+  }
+
+  public void resetIteration() throws IOException {
+    localIterator = (ProfileIterator) getPointFeatureCollectionIterator(-1);
   }
 
 }

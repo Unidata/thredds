@@ -41,7 +41,7 @@ import java.io.IOException;
  * @author caron
  * @since Mar 19, 2008
  */
-public interface ProfileFeatureCollection extends NestedPointFeatureCollection {
+public interface ProfileFeatureCollection extends NestedPointFeatureCollection, Iterable<ProfileFeature> {
 
   /**
    * Use the internal iterator to check if there is another ProfileFeature in the iteration.

@@ -69,14 +69,14 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
     finished = true;
   }
 
-  public boolean hasNext() throws IOException {
+  public boolean hasNext() {
     pointFeature = nextFilteredDataPoint();
     boolean done = (pointFeature == null);
     if (done) close();
     return !done;
   }
 
-  public PointFeature next() throws IOException {
+  public PointFeature next() {
     if (pointFeature == null) return null;
     calcBounds(pointFeature);
     return pointFeature;
@@ -92,7 +92,7 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
     return true;
   }
 
-  private PointFeature nextFilteredDataPoint() throws IOException {
+  private PointFeature nextFilteredDataPoint() {
     if ( orgIter == null) return null;
     if (!orgIter.hasNext()) return null;
 

@@ -32,14 +32,12 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.SectionFeatureCollection;
-import ucar.nc2.ft.PointFeatureCollectionIterator;
-import ucar.nc2.ft.SectionFeature;
-import ucar.nc2.ft.NestedPointFeatureCollectionIterator;
+import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Superclass for implementations of SectionFeatureCollection: series of profiles along a trajectory
@@ -52,8 +50,6 @@ import java.io.IOException;
 
 public abstract class SectionCollectionImpl extends MultipleNestedPointCollectionImpl implements SectionFeatureCollection {
 
-  private NestedPointFeatureCollectionIterator localIterator;
-
   protected SectionCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.SECTION);
   }
@@ -62,21 +58,65 @@ public abstract class SectionCollectionImpl extends MultipleNestedPointCollectio
     throw new UnsupportedOperationException("SectionCollectionImpl does not implement getPointFeatureCollectionIterator()");
   }
 
-  public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
-    return localIterator.hasNext();
-  }
-
-  public SectionFeature next() throws IOException {
-    return (SectionFeature) localIterator.next();
-  }
-
-  public void resetIteration() throws IOException {
-    localIterator = getNestedPointFeatureCollectionIterator(-1);
-  }
-
   public SectionFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
     return null;
   }
+
+       /////////////////////////////////////////////////////////////////////////////////////
+
+  @Override
+  public Iterator<SectionFeature> iterator() {
+    return new SectionFeatureIterator();
+  }
+
+  private class SectionFeatureIterator implements Iterator<SectionFeature> {
+    NestedPointFeatureCollectionIterator pfIterator;
+
+    public SectionFeatureIterator() {
+      try {
+        this.pfIterator = getNestedPointFeatureCollectionIterator(-1);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      try {
+        return pfIterator.hasNext();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public SectionFeature next() {
+      try {
+        return (SectionFeature) pfIterator.next();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  // deprecated
+  protected NestedPointFeatureCollectionIterator localIterator;
+
+  public boolean hasNext() throws IOException {
+     if (localIterator == null) resetIteration();
+     return localIterator.hasNext();
+   }
+
+   public SectionFeature next() throws IOException {
+     return (SectionFeature) localIterator.next();
+   }
+
+   public void resetIteration() throws IOException {
+     localIterator = getNestedPointFeatureCollectionIterator(-1);
+   }
+
+
 
 }

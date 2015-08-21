@@ -41,7 +41,7 @@ import java.io.IOException;
 /**
  * A PointFeatureIterator which uses a StructureDataIterator to iterate over members of a Structure,
  * with optional filtering and calculation of time range and bounding box.
- * <p/>
+ * <p>
  * Subclass must implement makeFeature() to turn the StructureData into a PointFeature.
  *
  * @author caron
@@ -59,8 +59,9 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
 
   /**
    * Constructor
-   * @param structIter  original iterator
-   * @param filter      optional filter
+   *
+   * @param structIter original iterator
+   * @param filter     optional filter
    * @throws IOException
    */
   public PointIteratorFromStructureData(StructureDataIterator structIter, PointFeatureIterator.Filter filter) throws IOException {
@@ -68,27 +69,31 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
     this.filter = filter;
   }
 
-  public boolean hasNext() throws IOException {
-
-    while (true) {
-      StructureData sdata = nextStructureData();
-      if (sdata == null) break;
-      feature = makeFeature(structIter.getCurrentRecno(), sdata);
-      if (feature == null) continue;
-      if (feature.getLocation().isMissing()) {
-        continue;
+  public boolean hasNext() {
+    try {
+      while (true) {
+        StructureData sdata = nextStructureData();
+        if (sdata == null) break;
+        feature = makeFeature(structIter.getCurrentRecno(), sdata);
+        if (feature == null) continue;
+        if (feature.getLocation().isMissing()) {
+          continue;
+        }
+        if (filter == null || filter.filter(feature))
+          return true;
       }
-      if (filter == null || filter.filter(feature))
-        return true;
-    }
 
-    // all done
-    feature = null;
-    close();
-    return false;
+      // all done
+      feature = null;
+      close();
+      return false;
+
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
   }
 
-  public PointFeature next() throws IOException {
+  public PointFeature next() {
     if (feature == null) return null;
     calcBounds(feature);
     return feature;

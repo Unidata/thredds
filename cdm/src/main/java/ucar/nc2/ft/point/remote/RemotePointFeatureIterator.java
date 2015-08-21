@@ -31,8 +31,9 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
   public void close() {
     if (finished) return;
     if (in != null)
-      try { in.close(); }
-      catch (IOException ioe) {
+      try {
+        in.close();
+      } catch (IOException ioe) {
         //coverity[FB.DE_MIGHT_IGNORE]
       }
     in = null;
@@ -40,45 +41,50 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
     finished = true;
   }
 
-  public boolean hasNext() throws IOException {
+  public boolean hasNext() {
     if (finished) return false;
 
-    PointStream.MessageType mtype = PointStream.readMagic(in);
-    if (mtype == PointStream.MessageType.PointFeature) {
-      int len = NcStream.readVInt(in);
-      if (debug && (getCount() % 100 == 0))
-        System.out.println(" RemotePointFeatureIterator len= " + len + " count = " + getCount());
+    try {
+      PointStream.MessageType mtype = PointStream.readMagic(in);
+      if (mtype == PointStream.MessageType.PointFeature) {
+        int len = NcStream.readVInt(in);
+        if (debug && (getCount() % 100 == 0))
+          System.out.println(" RemotePointFeatureIterator len= " + len + " count = " + getCount());
 
-      byte[] b = new byte[len];
-      NcStream.readFully(in, b);
+        byte[] b = new byte[len];
+        NcStream.readFully(in, b);
 
-      pf = featureMaker.make(b);
-      return true;
+        pf = featureMaker.make(b);
+        return true;
 
-    } else if (mtype == PointStream.MessageType.End) {
-      pf = null;
-      close();
-      return false;
-      
-    } else if (mtype == PointStream.MessageType.Error) {
-      int len = NcStream.readVInt(in);
-      byte[] b = new byte[len];
-      NcStream.readFully(in, b);
-      NcStreamProto.Error proto = NcStreamProto.Error.parseFrom(b);
-      String errMessage = NcStream.decodeErrorMessage(proto);
+      } else if (mtype == PointStream.MessageType.End) {
+        pf = null;
+        close();
+        return false;
 
-      pf = null;
-      close();
-      throw new IOException(errMessage);
+      } else if (mtype == PointStream.MessageType.Error) {
+        int len = NcStream.readVInt(in);
+        byte[] b = new byte[len];
+        NcStream.readFully(in, b);
+        NcStreamProto.Error proto = NcStreamProto.Error.parseFrom(b);
+        String errMessage = NcStream.decodeErrorMessage(proto);
 
-    } else {
-      pf = null;
-      close();
-      throw new IOException("Illegal pointstream message type= "+mtype); // maybe kill the socket ?
+        pf = null;
+        close();
+        throw new IOException(errMessage);
+
+      } else {
+        pf = null;
+        close();
+        throw new IOException("Illegal pointstream message type= " + mtype); // maybe kill the socket ?
+      }
+
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
     }
   }
 
-  public PointFeature next() throws IOException {
+  public PointFeature next() {
     if (null == pf) return null;
     calcBounds(pf);
     return pf;

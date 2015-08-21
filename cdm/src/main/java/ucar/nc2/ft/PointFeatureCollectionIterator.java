@@ -72,9 +72,9 @@ public interface PointFeatureCollectionIterator extends AutoCloseable {
   /**
    * @deprecated use try-with-resource
    */
-  //default void finish() {
-  //  close();
-  //}
+  default void finish() {
+    close();
+  }
 
   /**
    * Hint to use this much memory in buffering the iteration.

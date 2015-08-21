@@ -53,7 +53,6 @@ import java.io.IOException;
  * @since Aug 28, 2009
  */
 
-
 public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CompositeStationCollectionFlattened.class);
 
@@ -130,28 +129,32 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       return result;
     }
 
-    public boolean hasNext() throws IOException {
-
-      if (pfIter == null) {
-        pfIter = getNextIterator();
+    public boolean hasNext() {
+      try {
         if (pfIter == null) {
-          close();
-          return false;
+          pfIter = getNextIterator();
+          if (pfIter == null) {
+            close();
+            return false;
+          }
         }
-      }
 
-      if (!pfIter.hasNext()) {
-        pfIter.close();
-        currentDataset.close();
-        if (CompositeDatasetFactory.debug)
-          System.out.printf("CompositeStationCollectionFlattened.Iterator close dataset: %s%n", currentDataset.getLocation());
-        pfIter = getNextIterator();
-        return hasNext();
+        if (!pfIter.hasNext()) {
+          pfIter.close();
+          currentDataset.close();
+          if (CompositeDatasetFactory.debug)
+            System.out.printf("CompositeStationCollectionFlattened.Iterator close dataset: %s%n", currentDataset.getLocation());
+          pfIter = getNextIterator();
+          return hasNext();
+        }
+        return true;
+
+      } catch (IOException ioe) {
+        throw new RuntimeException(ioe);
       }
-      return true;
     }
 
-    public PointFeature next() throws IOException {
+    public PointFeature next() {
       return pfIter.next();
     }
 

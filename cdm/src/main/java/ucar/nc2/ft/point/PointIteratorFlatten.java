@@ -44,7 +44,7 @@ import java.io.IOException;
 
 /**
  * Adapt a PointFeatureCollectionIterator to a PointFeatureIterator, by flattening all the iterators in the collection
- *   into a single iterator over PointFeatures. Optionally add date and space filters.
+ * into a single iterator over PointFeatures. Optionally add date and space filters.
  *
  * @author caron
  * @since Mar 19, 2008
@@ -59,14 +59,15 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
 
   /**
    * Constructor.
+   *
    * @param collectionIter iterator over the PointFeatureCollection
-   * @param filter_bb boundingbox, or null
-   * @param filter_date data range, or null
+   * @param filter_bb      boundingbox, or null
+   * @param filter_date    data range, or null
    */
   PointIteratorFlatten(PointFeatureCollectionIterator collectionIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
     this.collectionIter = collectionIter;
     if ((filter_bb != null) || (filter_date != null))
-      this.filter = new Filter( filter_bb, filter_date);
+      this.filter = new Filter(filter_bb, filter_date);
   }
 
   public void setBufferSize(int bytes) {
@@ -81,22 +82,26 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
     finished = true;
   }
 
-  public boolean hasNext() throws IOException {
-    
-    pointFeature = nextFilteredDataPoint();
-    if (pointFeature != null) return true;
+  public boolean hasNext() {
+    try {
+      pointFeature = nextFilteredDataPoint();
+      if (pointFeature != null) return true;
 
-    PointFeatureCollection feature = nextCollection();
-    if (feature == null) {
-      close();
-      return false;
+      PointFeatureCollection feature = nextCollection();
+      if (feature == null) {
+        close();
+        return false;
+      }
+
+      pfiter = feature.getPointFeatureIterator(-1);
+      return hasNext();
+
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
     }
-
-    pfiter = feature.getPointFeatureIterator(-1);
-    return hasNext();
   }
 
-  public PointFeature next() throws IOException {
+  public PointFeature next() {
     if (pointFeature == null) return null;
     calcBounds(pointFeature);
     return pointFeature;

@@ -50,7 +50,7 @@ import java.util.List;
 public abstract class PointIteratorMultidim implements PointFeatureIterator {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointIteratorMultidim.class);
 
-  protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
+  protected abstract PointFeature makeFeature(int recnum, StructureData sdata);
 
   private List<Variable> vars;
   private StructureMembers members;
@@ -78,7 +78,7 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     }
   }
 
-  public boolean hasNext() throws IOException {
+  public boolean hasNext() {
     while (count < npts) {
       StructureData sdata = nextStructureData();
       feature = makeFeature(count, sdata);
@@ -90,11 +90,11 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     return false;
   }
 
-  public PointFeature next() throws IOException {
+  public PointFeature next() {
     return feature;
   }
 
-  private StructureData nextStructureData() throws IOException {
+  private StructureData nextStructureData() {
     StructureDataW sdata = new StructureDataW(members);
 
     for (Variable var : vars) {
@@ -107,8 +107,8 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
         Array data = var.read(s);
         sdata.setMemberData(var.getShortName(), data);
 
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
+      } catch (InvalidRangeException | IOException e) {
+        throw new RuntimeException(e);
       }
 
     }

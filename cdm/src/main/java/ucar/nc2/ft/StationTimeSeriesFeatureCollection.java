@@ -46,36 +46,7 @@ import java.util.List;
  *
  * @author caron
  */
-public interface StationTimeSeriesFeatureCollection extends StationCollection, NestedPointFeatureCollection {
-
-  /**
-   * Use the internal iterator to check if there is another StationTimeSeriesFeature in the iteration.
-   * @return true is there is another StationTimeSeriesFeature in the iteration.
-   * @throws java.io.IOException on read error
-   */
-  boolean hasNext() throws java.io.IOException;
-
-  /**
-   * Use the internal iterator to get the next StationTimeSeriesFeature in the iteration.
-   * You must call hasNext() before you call this.
-   * @return the next StationTimeSeriesFeature in the iteration
-   * @throws java.io.IOException on read error
-   */
-  StationTimeSeriesFeature next() throws java.io.IOException;
-
-  /**
-   * Make sure that the internal iterator is complete, and recover resources.
-   * You must complete the iteration (until hasNext() returns false)
-   *  or call finish().
-   * @see PointFeatureIterator#close
-   */
-  void finish();
-
-  /**
-   * Reset the internal iterator for another iteration over the StationTimeSeriesFeatures in this Collection.
-   * @throws java.io.IOException on read error
-   */
-  void resetIteration() throws IOException;
+public interface StationTimeSeriesFeatureCollection extends StationCollection, NestedPointFeatureCollection, Iterable<StationTimeSeriesFeature> {
 
   /**
    * Get a subsetted StationCollection based on a list of Stations.
@@ -146,6 +117,9 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
     */
    PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // deprecated
+
   /**
     * Flatten into a PointFeatureCollection, discarding connectedness information.
     *
@@ -158,5 +132,32 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
     */
    PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
 
+  /**
+   * Use the internal iterator to check if there is another StationTimeSeriesFeature in the iteration.
+   * @return true is there is another StationTimeSeriesFeature in the iteration.
+   * @throws java.io.IOException on read error
+   */
+  boolean hasNext() throws java.io.IOException;
 
+  /**
+   * Use the internal iterator to get the next StationTimeSeriesFeature in the iteration.
+   * You must call hasNext() before you call this.
+   * @return the next StationTimeSeriesFeature in the iteration
+   * @throws java.io.IOException on read error
+   */
+  StationTimeSeriesFeature next() throws java.io.IOException;
+
+  /**
+   * Make sure that the internal iterator is complete, and recover resources.
+   * You must complete the iteration (until hasNext() returns false)
+   *  or call finish().
+   * @see PointFeatureIterator#close
+   */
+  void finish();
+
+  /**
+   * Reset the internal iterator for another iteration over the StationTimeSeriesFeatures in this Collection.
+   * @throws java.io.IOException on read error
+   */
+  void resetIteration() throws IOException;
 }

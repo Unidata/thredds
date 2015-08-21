@@ -44,6 +44,7 @@ import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * TrajectoryFeatureCollection using nested tables.
@@ -67,23 +68,8 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     return new TrajCollectionIterator( ft.getRootFeatureDataIterator(bufferSize));
   }
 
-  private TrajCollectionIterator localIterator = null;
-  public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
-    return localIterator.hasNext();
-  }
-
   public TrajectoryFeatureCollection subset(LatLonRect boundingBox) throws IOException {
     return new StandardTrajectoryCollectionSubset( this, boundingBox);
-  }
-
-  // need covariant return to allow superclass to implement
-  public TrajectoryFeature next() throws IOException {
-    return localIterator.next();
-  }
-
-  public void resetIteration() throws IOException {
-    localIterator = (TrajCollectionIterator) getPointFeatureCollectionIterator(-1);
   }
 
   private class TrajCollectionIterator implements PointFeatureCollectionIterator {
@@ -172,4 +158,60 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////
+
+  @Override
+  public Iterator<TrajectoryFeature> iterator() {
+    return new TrajectoryFeatureIterator();
+  }
+
+  private class TrajectoryFeatureIterator implements Iterator<TrajectoryFeature> {
+    PointFeatureCollectionIterator pfIterator;
+
+    public TrajectoryFeatureIterator() {
+      try {
+        this.pfIterator = getPointFeatureCollectionIterator(-1);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      try {
+        return pfIterator.hasNext();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public TrajectoryFeature next() {
+      try {
+        return (TrajectoryFeature) pfIterator.next();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  // deprecated
+
+  private TrajCollectionIterator localIterator = null;
+
+  public boolean hasNext() throws IOException {
+    if (localIterator == null) resetIteration();
+    return localIterator.hasNext();
+  }
+
+  // need covariant return to allow superclass to implement
+  public TrajectoryFeature next() throws IOException {
+    return localIterator.next();
+  }
+
+  public void resetIteration() throws IOException {
+    localIterator = (TrajCollectionIterator) getPointFeatureCollectionIterator(-1);
+  }
 }

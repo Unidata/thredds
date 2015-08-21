@@ -72,31 +72,36 @@ Unsigned Types
 * _new Attribute(String name, List values) -> new Attribute(String name, List values, boolean isUnsigned)_
 * _StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, boolean isUnsigned, Number val ) -> StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, Number val )_
 
-Miscellaneous
-^^^^^^^^^^^^^
+==== AutoCloseable
+* The following now implement *AutoCloseable*, and so can be the target of *_try-with-resource_* :
+** *ArrayStructure* (deprecate _finish()_)
+** *PointFeatureCollectionIterator* (deprecate _finish()_)
+** *PointFeatureIterator* extends _AutoCloseable, Iterator<PointFeature>_  (deprecate _finish()_)
+*** in order for *PointFeatureIterator* to implement _Iterator<PointFeature>_, the _hasNext()_ and _next()_ methods cannot throw _IOException_.
+The interface was changed to remove _throws IOException_ and now those are wrapped in _RuntimeException_.
 
-* *ucar.nc2.util.DiskCache2*:
-** now has one cleanup thread for all instances of *DiskCache*
-** The _DiskCache2.exit()_ method is now static and needs only be called once.
+==== Iterable
+* The following now implement *Iterable<>*, and so can be the target of *_foreach_* :
+** *ArrayStructure* implements _Iterable<StructureData>_ (replace _getStructureDataIterator()_)
+** *PointFeatureCollection* implements _Iterable<PointFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *StationTimeSeriesFeatureCollection* implements _Iterable<StationTimeSeriesFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *ProfileFeatureCollection* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *TrajectoryFeatureCollection* implements _Iterable<TrajectoryFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *StationProfileFeatureCollection* implements _Iterable<StationProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *SectionFeatureCollection* implements _Iterable<SectionFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+
+==== ucar.nc2.util.DiskCache2
+** all instances of *DiskCache2* now have one cleanup thread
+** The _DiskCache2.exit()_ method is now static and need only be called once when the application is exiting.
 ** _DiskCache2.setLogger()_ is removed.
 ** _DiskCache2.cleanCache(File dir, StringBuffer sbuff, boolean isRoot)_ is now __DiskCache2.cleanCache(File dir, Formatter sbuff, boolean isRoot)__;
 ** deprecated methods are removed: _setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) , setPolicy(int cachePathPolicy)_
-** logging of routine cache cleanup is now at the debug level
+** logging of routine cache cleanup is now at _DEBUG_ level
 
-* The following now implement *Iterable<>*, and so can be the target of *_foreach_*
-** ArrayStructure (replace _getStructureDataIterator()_)
-
-* *ucar.ma2.Range*:
+==== ucar.ma2.Range
 ** Previously could only be specified by _start:end:stride_
 ** Now extended with subclasses *RangeScatter* and *RangeComposite*
 ** You must use the iterator now to ensure correct functionality, so to iterate over the values of the Range, *_do not use_*:
-
-* The following now implement *AutoCloseable*, and so can be the target of *_try with resource_*
-** ArrayStructure (replace _finish()_)
-** PointFeatureCollectionIterator (replace _finish()_)
-** PointFeatureIterator
-** PointFeatureCollection
-** StationTimeSeriesFeatureCollection
 
 [source,java]
 ----

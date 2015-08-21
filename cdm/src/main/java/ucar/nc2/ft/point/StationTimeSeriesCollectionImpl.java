@@ -54,7 +54,6 @@ import java.io.IOException;
  */
 public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointCollectionImpl implements StationTimeSeriesFeatureCollection {
   private volatile StationHelper stationHelper;
-  protected PointFeatureCollectionIterator localIterator;
 
   public StationTimeSeriesCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.STATION);
@@ -123,17 +122,17 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return getStationHelper().getStationFeatures();
   }
 
-  public List<StationFeature> getStationFeatures( List<String> stnNames) {
+  public List<StationFeature> getStationFeatures(List<String> stnNames) {
     return getStationHelper().getStationFeaturesFromNames(stnNames);
   }
 
-  public List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+  public List<StationFeature> getStationFeatures(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
     return getStationHelper().getStationFeatures(boundingBox);
   }
 
   // might want to preserve the bb instead of the station list
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
-    return subset( getStations(boundingBox));
+    return subset(getStations(boundingBox));
   }
 
   // might need to override for efficiency
@@ -241,6 +240,48 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     throw new UnsupportedOperationException("StationFeatureCollection does not implement getNestedPointFeatureCollection()");
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////
+
+  public Iterator<StationTimeSeriesFeature> iterator() {
+    return new StationTimeSeriesFeatureIterator();
+  }
+
+  private class StationTimeSeriesFeatureIterator implements Iterator<StationTimeSeriesFeature> {
+    PointFeatureCollectionIterator pfIterator;
+
+    public StationTimeSeriesFeatureIterator() {
+      try {
+        this.pfIterator = getPointFeatureCollectionIterator(-1);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      try {
+        return pfIterator.hasNext();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public StationTimeSeriesFeature next() {
+      try {
+        return (StationTimeSeriesFeature) pfIterator.next();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  // deprecated
+
+  protected PointFeatureCollectionIterator localIterator;
+
   @Override
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();
@@ -254,7 +295,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   }
 
   @Override
- public StationTimeSeriesFeature next() throws IOException {
+  public StationTimeSeriesFeature next() throws IOException {
     return (StationTimeSeriesFeature) localIterator.next();
   }
 

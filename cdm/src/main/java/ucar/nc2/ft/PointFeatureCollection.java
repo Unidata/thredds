@@ -38,6 +38,7 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ import java.util.List;
  * @author caron
  * @since Mar 1, 2008
  */
-public interface PointFeatureCollection extends FeatureCollection {
+public interface PointFeatureCollection extends FeatureCollection, Iterable<PointFeature> {
 
   /**
    * The udunit time unit string.
@@ -66,57 +67,12 @@ public interface PointFeatureCollection extends FeatureCollection {
    */
   List<Variable> getExtraVariables();
 
-  /**
-   * Use the internal iterator to check if there is another PointFeature in the iteration.
-   * Note that this is not thread-safe; use getPointFeatureIterator() for a threadsafe iterator.
-   * @return true is there is another PointFeature in the iteration.
-   * @throws java.io.IOException on read error
-   * @see PointFeatureIterator#hasNext
-   */
-  boolean hasNext() throws java.io.IOException;
-
-  /**
-   * Use the internal iterator to get the next PointFeature in the iteration.
-   * You must call hasNext() before you call this.
-   * @return the next PointFeature in the iteration
-   * @throws java.io.IOException on read error
-   * @see PointFeatureIterator#next
-   */
-  PointFeature next() throws java.io.IOException;
-
-  /**
-   * Reset the internal iterator for another iteration over the PointFeatures in this Collection.
-   * @throws java.io.IOException on read error
-   */
-  void resetIteration() throws IOException;
-
-  /**
-   * Make sure that the internal iterator is complete, and recover resources.
-   * You must complete the iteration (until hasNext() returns false) or call finish().
-   */
-  void finish();
-
-  /**
-    * Get an iterator over the PointFeatures of this collection. call PointFeatureIterator.finish() when done
-    * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
-    * @return iterator over the PointFeatures of this collection
-    * @throws IOException on read error
-    */
-   PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
 
   /**
    * The number of points in the collection. May not be known until after iterating through the collection.
    * @return number of points in the collection, or -1 if not known.
    */
   int size();
-
-  /**
-   * Date range for the FeatureCollection. May not be known until after iterating through the collection.
-   *
-   * @return the date range for the entire collection, or null if unknown
-   * @deprecated use getCalendarDateRange()
-   */
-  DateRange getDateRange();
 
   /**
    * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.
@@ -131,14 +87,6 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @return the lat/lon boundingBox for the entire collection, or null if unknown.
    */
   ucar.unidata.geoloc.LatLonRect getBoundingBox();
-
-  /**
-   * Set the date range for the FeatureCollection.
-   *
-   * @param range the date range for the entire collection
-   * @deprecated use setCalendarDateRange()
-   */
-  void setDateRange(DateRange range);
 
   /**
    * Set the calendar date range for the FeatureCollection.
@@ -179,9 +127,71 @@ public interface PointFeatureCollection extends FeatureCollection {
    */
   PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
+  //////////////////////////////////////////////////////
+  // deprecated
+
+  /**
+   * Date range for the FeatureCollection. May not be known until after iterating through the collection.
+   *
+   * @return the date range for the entire collection, or null if unknown
+   * @deprecated use getCalendarDateRange()
+   */
+  DateRange getDateRange();
+
+  /**
+   * Set the date range for the FeatureCollection.
+   *
+   * @param range the date range for the entire collection
+   * @deprecated use setCalendarDateRange()
+   */
+  void setDateRange(DateRange range);
+
   /**
    * @deprecated use CalendarDateRange
    */
   PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
+
+  /**
+   * Use the internal iterator to check if there is another PointFeature in the iteration.
+   * Note that this is not thread-safe; use getPointFeatureIterator() for a threadsafe iterator.
+   * @return true is there is another PointFeature in the iteration.
+   * @throws java.io.IOException on read error
+   * @see PointFeatureIterator#hasNext
+   * @deprecated use foreach
+   */
+  boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Use the internal iterator to get the next PointFeature in the iteration.
+   * You must call hasNext() before you call this.
+   * @return the next PointFeature in the iteration
+   * @throws java.io.IOException on read error
+   * @see PointFeatureIterator#next
+   * @deprecated use foreach
+   */
+  PointFeature next() throws java.io.IOException;
+
+  /**
+   * Reset the internal iterator for another iteration over the PointFeatures in this Collection.
+   * @throws java.io.IOException on read error
+   * @deprecated use foreach
+   */
+  void resetIteration() throws IOException;
+
+  /**
+   * Make sure that the internal iterator is complete, and recover resources.
+   * You must complete the iteration (until hasNext() returns false) or call finish().
+   * @deprecated use foreach
+   */
+  void finish();
+
+  /**
+    * Get an iterator over the PointFeatures of this collection. call PointFeatureIterator.finish() when done
+    * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
+    * @return iterator over the PointFeatures of this collection
+    * @throws IOException on read error
+   * @deprecated use foreach
+    */
+   PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
 
 }

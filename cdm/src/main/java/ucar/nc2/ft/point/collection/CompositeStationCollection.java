@@ -79,7 +79,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     Formatter errlog = new Formatter();
     try (FeatureDatasetPoint openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog)) {
       if (openDataset == null)
-        throw new IllegalStateException("Cant open FeatureDatasetPoint "+ td.getLocation());
+        throw new IllegalStateException("Cant open FeatureDatasetPoint " + td.getLocation());
 
       StationHelper stationHelper = new StationHelper();
 
@@ -314,7 +314,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         Formatter errlog = new Formatter();
         currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
         if (currentDataset == null)
-         throw new IllegalStateException("Cant open FeatureDatasetPoint "+ td.getLocation());
+          throw new IllegalStateException("Cant open FeatureDatasetPoint " + td.getLocation());
 
         List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
@@ -331,28 +331,32 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         return stnFeature.getPointFeatureIterator(bufferSize);
       }
 
-      public boolean hasNext() throws IOException {
-        if (pfIter == null) {
-          pfIter = getNextIterator();
+      public boolean hasNext() {
+        try {
           if (pfIter == null) {
-            close();
-            return false;
+            pfIter = getNextIterator();
+            if (pfIter == null) {
+              close();
+              return false;
+            }
           }
-        }
 
-        if (!pfIter.hasNext()) {
-          pfIter.close();
-          currentDataset.close();
-          if (CompositeDatasetFactory.debug)
-            System.out.printf("CompositeStationFeatureIterator close dataset: %s%n", currentDataset.getLocation());
-          pfIter = getNextIterator();
-          return hasNext();
-        }
+          if (!pfIter.hasNext()) {
+            pfIter.close();
+            currentDataset.close();
+            if (CompositeDatasetFactory.debug)
+              System.out.printf("CompositeStationFeatureIterator close dataset: %s%n", currentDataset.getLocation());
+            pfIter = getNextIterator();
+            return hasNext();
+          }
 
-        return true;
+          return true;
+        } catch (IOException ioe) {
+          throw new RuntimeException(ioe);
+        }
       }
 
-      public PointFeature next() throws IOException {
+      public PointFeature next() {
         npts++;
         return pfIter.next();
       }

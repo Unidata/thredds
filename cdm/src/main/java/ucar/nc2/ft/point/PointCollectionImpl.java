@@ -44,6 +44,7 @@ import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -58,7 +59,6 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   protected LatLonRect boundingBox;
   protected CalendarDateRange dateRange;
   protected int npts;
-  protected PointFeatureIterator localIterator;
   protected DateUnit timeUnit;
   protected String altUnits;
   protected List<Variable> extras;
@@ -107,29 +107,11 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     this.npts = npts;
   }
 
-  ///////////////////////////////////////////////////////////////
 
   public String getName() {
     return name;
   }
 
-  public boolean hasNext() throws IOException {
-    if (localIterator == null) resetIteration();
-    return localIterator.hasNext();
-  }
-
-  public void finish() {
-    if (localIterator != null)
-      localIterator.close();
-  }
-
-  public PointFeature next() throws IOException {
-    return localIterator.next();
-  }
-
-  public void resetIteration() throws IOException {
-    localIterator = getPointFeatureIterator(-1);
-  }
 
   public int size() {
     return npts;
@@ -159,8 +141,12 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     return new PointCollectionSubset(this, boundingBox, dateRange);
   }
 
-  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new PointCollectionSubset(this, boundingBox, CalendarDateRange.of(dateRange));
+  public Iterator<PointFeature> iterator() {
+    try {
+      return getPointFeatureIterator(-1);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   // for subsetting, the best we can do in general is to filter the original iterator.
@@ -187,6 +173,35 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), this.boundingBox, this.dateRange);
     }
+
+  }
+
+
+  ///////////////////////////////////////////////////////////////////
+  // deprecated
+
+  protected PointFeatureIterator localIterator;
+
+  public boolean hasNext() throws IOException {
+    if (localIterator == null) resetIteration();
+    return localIterator.hasNext();
+  }
+
+  public void finish() {
+    if (localIterator != null)
+      localIterator.close();
+  }
+
+  public PointFeature next() throws IOException {
+    return localIterator.next();
+  }
+
+  public void resetIteration() throws IOException {
+    localIterator = getPointFeatureIterator(-1);
+  }
+
+  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    return new PointCollectionSubset(this, boundingBox, CalendarDateRange.of(dateRange));
   }
 
 }

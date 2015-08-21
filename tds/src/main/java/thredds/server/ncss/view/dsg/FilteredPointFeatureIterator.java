@@ -57,13 +57,17 @@ public class FilteredPointFeatureIterator extends PointIteratorAbstract {
     ///////////////////////////////////////////// PointFeatureIterator /////////////////////////////////////////////
 
     @Override
-    public boolean hasNext() throws IOException {
-        pointFeature = nextFilteredDataPoint();
-        if (pointFeature == null) {
-            close();
-            return false;
-        } else {
-            return true;
+    public boolean hasNext() {
+        try {
+            pointFeature = nextFilteredDataPoint();
+            if (pointFeature == null) {
+                close();
+                return false;
+            } else {
+                return true;
+            }
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
         }
     }
 
@@ -75,7 +79,7 @@ public class FilteredPointFeatureIterator extends PointIteratorAbstract {
     // PointFeatureIterator.next() doesn't actually specify the behavior for next() when there are no more elements,
     // but we can define a stronger contract.
     @Override
-    public PointFeature next() throws IOException {
+    public PointFeature next() {
         if (pointFeature == null) {
             return null;
         }

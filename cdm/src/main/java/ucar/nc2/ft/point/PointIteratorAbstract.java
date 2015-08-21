@@ -40,6 +40,8 @@ import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.units.DateRange;
 
+import java.util.Iterator;
+
 /**
  * Abstract superclass for PointFeatureIterator.
  * Mostly implements the bounds calculations.
@@ -47,7 +49,7 @@ import ucar.nc2.units.DateRange;
  * @author caron
  * @since May 11, 2009
  */
-public abstract class PointIteratorAbstract implements PointFeatureIterator {
+public abstract class PointIteratorAbstract implements PointFeatureIterator, Iterator<PointFeature> {
   protected boolean calcBounds = false;
   protected PointFeatureCollection collection;
 

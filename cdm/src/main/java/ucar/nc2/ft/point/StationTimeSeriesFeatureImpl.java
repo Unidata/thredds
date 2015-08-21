@@ -52,7 +52,6 @@ import java.io.IOException;
  * @author caron
  */
 
-
 public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl implements StationTimeSeriesFeature {
   protected Station s;
 

@@ -34,6 +34,7 @@
 package ucar.nc2.ft;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * A collection of TrajectoryFeatures
@@ -41,7 +42,7 @@ import java.io.IOException;
  * @author caron
  * @since Mar 19, 2008
  */
-public interface TrajectoryFeatureCollection extends NestedPointFeatureCollection {
+public interface TrajectoryFeatureCollection extends NestedPointFeatureCollection, Iterable<TrajectoryFeature> {
 
   /**
    * Use the internal iterator to check if there is another TrajectoryFeature in the iteration.

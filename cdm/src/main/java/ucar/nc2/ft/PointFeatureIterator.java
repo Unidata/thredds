@@ -36,6 +36,8 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.nc2.units.DateRange;
 
+import java.util.Iterator;
+
 /**
  * An iterator over PointFeatures.
  * Use try-with-resource to make sure resources are released:
@@ -49,22 +51,22 @@ import ucar.nc2.units.DateRange;
  * @author caron
  * @since Feb 18, 2008
  */
-public interface PointFeatureIterator extends AutoCloseable {
+public interface PointFeatureIterator extends AutoCloseable, Iterator<PointFeature> {
 
   /**
    * Check if another PointFeature is available
    * @return true if another PointFeature is available
-   * @throws java.io.IOException on i/o error
+   * @throws RuntimeException on i/o error
    */
-  boolean hasNext() throws java.io.IOException;
+  boolean hasNext();
 
   /**
    * Returns the next PointFeature.
    * You must call hasNext() before calling next(), even if you know it will return true.
    * @return the next PointFeature
-   * @throws java.io.IOException on i/o error
+   * @throws RuntimeException on i/o error
    */
-  PointFeature next() throws java.io.IOException;
+  PointFeature next();
 
   /**
    * Make sure that the iterator is complete, and recover resources.

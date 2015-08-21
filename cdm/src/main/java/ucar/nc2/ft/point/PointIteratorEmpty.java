@@ -44,11 +44,12 @@ import java.io.IOException;
  * @since Oct 1, 2009
  */
 public class PointIteratorEmpty extends PointIteratorAbstract {
-  public boolean hasNext() throws IOException {
+
+  public boolean hasNext() {
     return false;
   }
 
-  public PointFeature next() throws IOException {
+  public PointFeature next() {
     return null;
   }
 

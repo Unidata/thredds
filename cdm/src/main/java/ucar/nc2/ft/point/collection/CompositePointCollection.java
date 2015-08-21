@@ -109,6 +109,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     return iter;
   }
 
+
   @Override
   public CalendarDateRange update() throws IOException {
     return pointCollections.update();
@@ -128,41 +129,46 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     private PointFeatureIterator getNextIterator() throws IOException {
       if (!iter.hasNext()) return null;
       TimedCollection.Dataset td = iter.next();
+
       Formatter errlog = new Formatter();
       currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
       if (currentDataset == null)
-        throw new IllegalStateException("Cant open FeatureDatasetPoint "+ td.getLocation());
+        throw new IllegalStateException("Cant open FeatureDatasetPoint " + td.getLocation());
       if (CompositeDatasetFactory.debug)
         System.out.printf("CompositePointFeatureIterator open dataset %s%n", td.getLocation());
+
       List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
       PointFeatureCollection pc = (PointFeatureCollection) fcList.get(0);
       return pc.getPointFeatureIterator(bufferSize);
     }
 
-    public boolean hasNext() throws IOException {
-
-      if (pfIter == null) {
-        pfIter = getNextIterator();
+    public boolean hasNext() {
+      try {
         if (pfIter == null) {
-          close();
-          return false;
+          pfIter = getNextIterator();
+          if (pfIter == null) {
+            close();
+            return false;
+          }
         }
+
+        if (!pfIter.hasNext()) {
+          pfIter.close();
+          if (CompositeDatasetFactory.debug)
+            System.out.printf("CompositePointFeatureIterator open dataset %s%n", currentDataset.getLocation());
+          currentDataset.close();
+
+          pfIter = getNextIterator();
+          return hasNext();
+        }
+
+        return true;
+      } catch (IOException ioe) {
+        throw new RuntimeException(ioe);
       }
-
-      if (!pfIter.hasNext()) {
-        pfIter.close();
-        if (CompositeDatasetFactory.debug)
-          System.out.printf("CompositePointFeatureIterator open dataset %s%n", currentDataset.getLocation());
-        currentDataset.close();
-
-        pfIter = getNextIterator();
-        return hasNext();
-      }
-
-      return true;
     }
 
-    public PointFeature next() throws IOException {
+    public PointFeature next() {
       return pfIter.next();
     }
 
@@ -188,7 +194,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     }
   }
 
-  private class CompositePointFeatureIteratorMultithreaded extends PointIteratorAbstract {
+  /* private class CompositePointFeatureIteratorMultithreaded extends PointIteratorAbstract {
     private boolean finished = false;
     private int bufferSize = -1;
     private Iterator<TimedCollection.Dataset> iter;
@@ -205,7 +211,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
       Formatter errlog = new Formatter();
       currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
       if (currentDataset == null)
-        throw new IllegalStateException("Cant open FeatureDatasetPoint "+ td.getLocation());
+        throw new IllegalStateException("Cant open FeatureDatasetPoint " + td.getLocation());
       if (CompositeDatasetFactory.debug)
         System.out.printf("CompositePointFeatureIterator open dataset %s%n", td.getLocation());
       List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
@@ -213,7 +219,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
       return pc.getPointFeatureIterator(bufferSize);
     }
 
-    public boolean hasNext() throws IOException {
+    public boolean hasNext() {
 
       if (pfIter == null) {
         pfIter = getNextIterator();
@@ -233,7 +239,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
       return true;
     }
 
-    public PointFeature next() throws IOException {
+    public PointFeature next() {
       return pfIter.next();
     }
 
@@ -257,6 +263,6 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     public void setBufferSize(int bytes) {
       bufferSize = bytes;
     }
-  }
+  }  */
 
 }
