@@ -33,7 +33,7 @@ export JAVA_HOME
 NORMAL=&quot;-d64 -Xmx4090m -Xms512m -server&quot;
 MAX_PERM_GEN=&quot;-XX:MaxPermSize=256m&quot;
 HEADLESS=&quot;-Djava.awt.headless=true&quot;
-JAVA_PREFS_SYSTEM_ROOT=&quot;-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs&quot;
+JAVA_PREFS_SYSTEM_ROOT=&quot;-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs&quot;
 #             
 JAVA_OPTS=&quot;<strong>$CONTENT_ROOT</strong> $NORMAL $MAX_PERM_GEN $HEADLESS $JAVA_PREFS_SYSTEM_ROOT&quot;
 export JAVA_OPTS
@@ -48,7 +48,8 @@ not
 
 <strong> CONTENT_ROOT= &quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong></pre>
   <p>If the content root is not correctly set, you will see a message like: &quot;<strong>SEVERE: Error listenerStart</strong>&quot; in <strong>{tomcat}/logs/catalina.out</strong> and &quot;<strong>Error creating bean with name 'tdsContext'</strong>&quot;<strong>, </strong>and<strong> &quot;Content directory not a directory&quot;</strong> in  <strong>{$tomcat}/logs/localhost.log.</strong><strong></strong></p>
-  <p>We recommend that you use an absolute path, like <strong>/opt/tomcat/content</strong>, instead of a reletive path like <strong>&quot;../content&quot;</strong>.</p>
+  <p>We recommend that you use an absolute path, like <strong>/opt/tomcat/content</strong>, instead of a relative
+    path like <strong>&quot;../content&quot;</strong>.</p>
   <p>Note  that your catalogs are  under <strong>${tomcat}</strong><strong>/content/thredds</strong> but  <strong>tds.content.root.path</strong> does not include the <strong>thredds</strong> subdirectory.</p>
   <p>&nbsp;</p>
 </ul>
@@ -91,12 +92,18 @@ not
 <h2>API changes</h2>
 <h3>Client Catalog API</h3>
 <blockquote>
-  <p>The catalog processing classes in <strong>thredds.catalog</strong> package has been replaced by <strong>thredds.client.catalog</strong> everywhere in  client code. If you are using  <strong>thredds.catalog</strong>  in your code, please switch to <strong>thredds.catalog</strong>.<strong>client</strong>, as it is takes less memory and is better performant. The old classes are deprecated but still available, but in future versions they will be moved to <strong>legacy.jar</strong>, which you will need to seperately include in your classpath if needed.</p>
+  <p>The catalog processing classes in <strong>thredds.catalog2</strong> package have been replaced by
+    <strong>thredds.client.catalog</strong> everywhere in client code. If you are using <strong>thredds.catalog2</strong>
+    in your code, please switch to <strong>thredds.client.catalog</strong>, as it is takes less memory
+    and is better performant. The old classes are deprecated but still available, but in future versions they will be
+    moved to <strong>legacy.jar</strong>, which you will need to seperately include in your classpath if needed.</p>
 </blockquote>
 <h3>Internal changes</h3>
 <ul>
-  <li>We are now using <strong>gradle</strong> to do our builds. Maven will continue to be supported for now (version 4.6.0).</li>
-  <li>Using <strong>Coverity</strong> to find and fix more than 4000 defects. Defect count now &lt; 1 / 1000 LOC.</li>
+  <li>We are now using <a href="https://gradle.org/">Gradle</a> to do our builds.
+    Maven will continue to be supported for now (version 4.6.0).</li>
+  <li>Using <a href="https://scan.coverity.com/projects/388?tab=overview">Coverity</a> to find and fix more than 4000
+    defects. Defect count now &lt; 1 / 1000 LOC.</li>
 </ul>
 <p>&nbsp;</p>
 
@@ -109,7 +116,7 @@ not
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated June 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated Aug 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 
