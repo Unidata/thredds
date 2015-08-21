@@ -38,7 +38,6 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 /**

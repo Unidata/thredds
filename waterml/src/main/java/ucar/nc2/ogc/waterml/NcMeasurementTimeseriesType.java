@@ -24,14 +24,9 @@ public abstract class NcMeasurementTimeseriesType {
                 measurementTimeseries.addNewDefaultPointMetadata(), dataVar);
 
         // wml2:point[0..*]
-        stationFeat.resetIteration();
-        try {
-            while (stationFeat.hasNext()) {
-                // wml2:point
-                Point.initPoint(measurementTimeseries.addNewPoint(), stationFeat.next(), dataVar);
-            }
-        } finally {
-            stationFeat.finish();
+        for (PointFeature pf : stationFeat) {
+            // wml2:point
+            Point.initPoint(measurementTimeseries.addNewPoint(), pf, dataVar);
         }
 
         return measurementTimeseries;

@@ -23,9 +23,12 @@ internal objects without excessive use of memory. A running TDS can be triggered
 can be configured to reread only changed catalogs, for fast incremental updates. Other features have been added to make writing configuration catalogs
 more maintainable, including the _catalogScan_ element, and default and standard services.
 
-The other major enhancement is that _GridDataset_ is being replaced by __GridCoverage__, to better support very large feature collections. The
+The other major enhancement is that _GridDataset_ is replaced by __GridCoverage__, to better support very large feature collections. The
 GridCoverage API works only with _coordinate values_ (not array indices), which solves various intractable problems that arise when using aray index
 subsetting on large collections.
+
+A number of API enhancements have been made to take advantages of evolution is the Java language, for example _try-with-resource_ and _foreach_ constructs.
+The use of these make code simpler and more reliable.
 
 Deprecated classes and methods have been removed, and the module structure and third-party jar use has been improved.
 
@@ -50,7 +53,7 @@ Coordinate Systems
 
 * *ucar.nc2.dataset.CoordTransBuilderIF* is split into *ucar.nc2.dataset.builder.HorizTransformBuilderIF* and *ucar.nc2.dataset.builder.VertTransformBuilderIF*
 * *HorizTransformBuilderIF* now uses *AttributeContainer* instead of *NetcdfDataset, Variable*
-* _CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv)_ is now _ProjectionCT makeCoordinateTransform(AttributeContainer ctv)_
+* _CoordinateTransform.makeCoordinateTransform(NetcdfDataset ds, Variable ctv)_ is now _ProjectionCT makeCoordinateTransform(AttributeContainer ctv)_
 * Previously, the optional _false_easting_, and _false_northing_ should match the units of the x and y projection coordinates
 
 Feature Types
@@ -78,7 +81,7 @@ Unsigned Types
 ** *PointFeatureCollectionIterator* (deprecate _finish()_)
 ** *PointFeatureIterator* extends _AutoCloseable, Iterator<PointFeature>_  (deprecate _finish()_)
 *** in order for *PointFeatureIterator* to implement _Iterator<PointFeature>_, the _hasNext()_ and _next()_ methods cannot throw _IOException_.
-The interface was changed to remove _throws IOException_ and now those are wrapped in _RuntimeException_.
+The interface was changed to remove _throws IOException_, which now are wrapped in _RuntimeException_.
 
 ==== Iterable
 * The following now implement *Iterable<>*, and so can be the target of *_foreach_* :
@@ -87,7 +90,9 @@ The interface was changed to remove _throws IOException_ and now those are wrapp
 ** *StationTimeSeriesFeatureCollection* implements _Iterable<StationTimeSeriesFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
 ** *ProfileFeatureCollection* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
 ** *TrajectoryFeatureCollection* implements _Iterable<TrajectoryFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *StationProfileFeature* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
 ** *StationProfileFeatureCollection* implements _Iterable<StationProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *SectionFeature* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
 ** *SectionFeatureCollection* implements _Iterable<SectionFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
 
 ==== ucar.nc2.util.DiskCache2

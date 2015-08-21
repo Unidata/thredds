@@ -44,7 +44,7 @@ import java.util.List;
  * @author caron
  * @since Feb 29, 2008
  */
-public interface StationProfileFeature extends StationFeature, NestedPointFeatureCollection {
+public interface StationProfileFeature extends StationFeature, NestedPointFeatureCollection, Iterable<ProfileFeature> {
 
   /**
    * Use the internal iterator to check if there is another ProfileFeature in the iteration.
