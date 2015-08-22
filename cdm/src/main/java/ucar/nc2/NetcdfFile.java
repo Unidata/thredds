@@ -32,35 +32,53 @@
  */
 package ucar.nc2;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URL;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.StringTokenizer;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.ma2.StructureDataIterator;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.util.Indent;
-import ucar.nc2.util.EscapeStrings;
-import ucar.ma2.*;
-import ucar.nc2.util.rc.RC;
-import ucar.unidata.io.UncompressInputStream;
-import ucar.unidata.io.InMemoryRandomAccessFile;
-import ucar.unidata.io.bzip2.CBZip2InputStream;
-import ucar.nc2.util.DiskCache;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.IO;
+import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
-import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.DiskCache;
+import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.util.IO;
+import ucar.nc2.util.Indent;
+import ucar.nc2.util.rc.RC;
+import ucar.unidata.io.InMemoryRandomAccessFile;
+import ucar.unidata.io.UncompressInputStream;
+import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.util.StringUtil2;
-
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.GZIPInputStream;
-import java.net.URL;
-import java.net.URI;
-import java.io.*;
-import java.nio.channels.WritableByteChannel;
-import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
@@ -1010,7 +1028,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * @return Variable or null if not found.
    */
   public Variable findVariable(String fullNameEscaped) {
-    if (fullNameEscaped == null || fullNameEscaped.length() == 0) {
+    if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
       return null;
     }
 
@@ -1077,18 +1095,40 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   }
 
   /**
-   * Retrieve a dimension by fullName.
+   * Finds a Dimension with the specified full name. It may be nested in multiple groups.
+   * An embedded "/" is interpreted as a group separator. A leading slash indicates the root group. That slash may be
+   * omitted, but the {@code fullName} will be treated as if it were there. In other words, the first name token in
+   * {@code fullName} is treated as the short name of a Group or Dimension, relative to the root group.
    *
-   * @param name dimension full name, (using parent group names if not in the root group)
-   * @return the dimension, or null if not found
+   * @param fullName  Dimension full name, e.g. "/group/subgroup/dim".
+   * @return  the Dimension or {@code null} if it wasn't found.
    */
-  public Dimension findDimension(String name) {
-    if (name == null) return null;
-    for (Dimension d : dimensions) {
-      if (name.equals(d.getShortName()))
-        return d;
+  public Dimension findDimension(String fullName) {
+    if (fullName == null || fullName.isEmpty()) {
+      return null;
     }
-    return null;
+
+    Group group = rootGroup;
+    String dimShortName = fullName;
+
+    // break into group/group and dim
+    int pos = fullName.lastIndexOf('/');
+    if (pos >= 0) {
+      String groups = fullName.substring(0, pos);
+      dimShortName = fullName.substring(pos + 1);
+
+      StringTokenizer stoke = new StringTokenizer(groups, "/");
+      while (stoke.hasMoreTokens()) {
+        String token = NetcdfFile.makeNameUnescaped(stoke.nextToken());
+        group = group.findGroup(token);
+
+        if (group == null) {
+          return null;
+        }
+      }
+    }
+
+    return group.findDimensionLocal(dimShortName);
   }
 
   /**
