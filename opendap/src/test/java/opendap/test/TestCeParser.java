@@ -37,6 +37,7 @@ import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
 import opendap.servers.parsers.CeParser;
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
 //import opendap.dts.*;
@@ -557,7 +558,7 @@ public class TestCeParser extends UnitTestCommon
       }
       if (!generate && !pass) break;
     }
-    assertTrue("TestCeParser", pass || generate);
+    Assert.assertTrue("TestCeParser", pass || generate);
   }
 
 }

@@ -32,6 +32,8 @@
  */
 package opendap.test;
 
+import org.junit.Assert;
+import org.junit.Test;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
@@ -71,6 +73,7 @@ public class TestGrid1 extends UnitTestCommon
         setSystemProperties();
     }
 
+    @Test
     public void testGrid1()
             throws Exception
     {
@@ -92,7 +95,7 @@ public class TestGrid1 extends UnitTestCommon
             pass = false;
         }
 
-        assertTrue("TestGrid1: cannot find dataset", pass);
+        Assert.assertTrue("TestGrid1: cannot find dataset", pass);
 
         System.out.println("url: " + url);
 
@@ -116,7 +119,7 @@ public class TestGrid1 extends UnitTestCommon
                     pass = false;
             }
         }
-        assertTrue("Testing TestGrid1" + getTitle(), pass
+        Assert.assertTrue("Testing TestGrid1" + getTitle(), pass
 
         );
     }

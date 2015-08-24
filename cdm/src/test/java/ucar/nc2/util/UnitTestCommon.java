@@ -4,7 +4,6 @@
 
 package ucar.nc2.util;
 
-import junit.framework.TestCase;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -17,7 +16,7 @@ import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class UnitTestCommon extends TestCase
+public class UnitTestCommon
 {
     //////////////////////////////////////////////////
     // Static Constants
@@ -135,7 +134,6 @@ public class UnitTestCommon extends TestCase
 
     public UnitTestCommon(String name)
     {
-        super(name);
         this.name = name;
         setSystemProperties();
         initPaths();
@@ -197,6 +195,10 @@ public class UnitTestCommon extends TestCase
     public String getThreddsroot()
     {
         return this.threddsroot;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     //////////////////////////////////////////////////

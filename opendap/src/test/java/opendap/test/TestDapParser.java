@@ -37,8 +37,10 @@ import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.DDS;
 import opendap.dap.parsers.ParseException;
-import ucar.nc2.util.UnitTestCommon;
+import org.junit.Assert;
+import org.junit.Test;
 import ucar.unidata.test.Diff;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,6 +78,7 @@ abstract public class TestDapParser extends TestFiles
         setTitle("DAP Parser Tests");
     }
 
+    @Test
     public void
     testDapParser() throws Exception
     {
@@ -214,7 +217,7 @@ abstract public class TestDapParser extends TestFiles
         Diff diff = new Diff(test);
         boolean pass = !diff.doDiff(baseline, result);
         if(!pass)
-            assertTrue(testname, pass);
+            Assert.assertTrue(testname, pass);
         System.out.flush();
         System.err.flush();
     }

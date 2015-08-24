@@ -32,6 +32,9 @@
 
 package ucar.nc2.util.net;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -40,7 +43,6 @@ import ucar.nc2.util.Misc;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.ThreddsServer;
 
-import java.net.URI;
 import java.util.List;
 
 public class TestMisc extends UnitTestCommon
@@ -79,6 +81,7 @@ public class TestMisc extends UnitTestCommon
         "http://localhost:8081/%3c%3e%5e/%60/",
     };
 
+    @Test
     public void
     testEscapeStrings() throws Exception
     {
@@ -92,9 +95,10 @@ public class TestMisc extends UnitTestCommon
             if(!result.equals(esoutputs[i])) pass = false;
             System.out.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
         }
-        assertTrue("TestMisc.testEscapeStrings", pass);
+        Assert.assertTrue("TestMisc.testEscapeStrings", pass);
     }
 
+    @Test
     public void
     testUTF8Stream()
         throws Exception
@@ -136,26 +140,27 @@ public class TestMisc extends UnitTestCommon
         return ok;
     }
 
+    @Test
     public void
     testGetProtocols()
     {
         String tag = "TestMisc.testGetProtocols";
-        assertTrue(tag, protocheck("http://server/thredds/dodsC/", "http:"));
-        assertTrue(tag, protocheck("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best", "dods:"));
-        assertTrue(tag, protocheck("dap4://ucar.edu:8080/x/y/z", "dap4:"));
-        assertTrue(tag, protocheck("dap4:https://ucar.edu:8080/x/y/z", "dap4:https:"));
-        assertTrue(tag, protocheck("file:///x/y/z", "file:"));
-        assertTrue(tag, protocheck("file://c:/x/y/z", "file:"));
-        assertTrue(tag, protocheck("file:c:/x/y/z", "file:"));
-        assertTrue(tag, protocheck("file:/blah/blah/some_file_2014-04-13_16:00:00.nc.dds", "file:"));
-        assertTrue(tag, protocheck("/blah/blah/some_file_2014-04-13_16:00:00.nc.dds", ""));
-        assertTrue(tag, protocheck("c:/x/y/z", null));
-        assertTrue(tag, protocheck("x::a/y/z", null));
-        assertTrue(tag, protocheck("x::/y/z", null));
-        assertTrue(tag, protocheck("::/y/z", ""));
-        assertTrue(tag, protocheck("dap4:&/y/z", null));
-        assertTrue(tag, protocheck("file:x/z::a", "file:"));
-        assertTrue(tag, protocheck("x/z::a", null));
+        Assert.assertTrue(tag, protocheck("http://server/thredds/dodsC/", "http:"));
+        Assert.assertTrue(tag, protocheck("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best", "dods:"));
+        Assert.assertTrue(tag, protocheck("dap4://ucar.edu:8080/x/y/z", "dap4:"));
+        Assert.assertTrue(tag, protocheck("dap4:https://ucar.edu:8080/x/y/z", "dap4:https:"));
+        Assert.assertTrue(tag, protocheck("file:///x/y/z", "file:"));
+        Assert.assertTrue(tag, protocheck("file://c:/x/y/z", "file:"));
+        Assert.assertTrue(tag, protocheck("file:c:/x/y/z", "file:"));
+        Assert.assertTrue(tag, protocheck("file:/blah/blah/some_file_2014-04-13_16:00:00.nc.dds", "file:"));
+        Assert.assertTrue(tag, protocheck("/blah/blah/some_file_2014-04-13_16:00:00.nc.dds", ""));
+        Assert.assertTrue(tag, protocheck("c:/x/y/z", null));
+        Assert.assertTrue(tag, protocheck("x::a/y/z", null));
+        Assert.assertTrue(tag, protocheck("x::/y/z", null));
+        Assert.assertTrue(tag, protocheck("::/y/z", ""));
+        Assert.assertTrue(tag, protocheck("dap4:&/y/z", null));
+        Assert.assertTrue(tag, protocheck("file:x/z::a", "file:"));
+        Assert.assertTrue(tag, protocheck("x/z::a", null));
     }
 
 }
