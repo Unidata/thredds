@@ -420,10 +420,10 @@ class CoordAxisHelper {
     double[] subsetValues = null;
 
     int want_index = findCoordElementBounded(want, Mode.closest);  // LOOK bounded
-    if (want_index < 0) {
+    /* if (want_index < 0) {
       System.out.println("HEY");
       findCoordElementBounded(want, Mode.closest);
-    }
+    } */
 
     switch (axis.getSpacing()) {
       case contiguousInterval:

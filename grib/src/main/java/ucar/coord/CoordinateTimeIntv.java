@@ -104,7 +104,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     int idxFound = -1;
     for (int i = 0; i < timeIntervals.size(); i++) {
       TimeCoord.Tinv level = timeIntervals.get(i);
-      double midpoint = (level.getBounds1()+level.getBounds2()) /2;
+      double midpoint = (level.getBounds1()+level.getBounds2())/2.0;
       double diff =  Math.abs(midpoint - target);
       if (diff < minDiff) {
         minDiff = diff;

@@ -12,7 +12,7 @@ import thredds.server.catalog.CatalogScan;
  * @since 6/17/2015
  */
 public class CatalogScanBuilder extends DatasetBuilder {
-  String name, path, location, watch;
+  String path, location, watch;
 
   public CatalogScanBuilder(DatasetBuilder parent, String name, String path, String location, String watch) {
     super(parent);
@@ -24,7 +24,6 @@ public class CatalogScanBuilder extends DatasetBuilder {
 
   public CatalogScanBuilder(DatasetBuilder parent, CatalogScan from) {
     super(parent, from);
-    this.name = from.getName();
     this.path = from.getPath();
     this.location = from.getLocation();
     this.watch = from.getWatch();
