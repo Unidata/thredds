@@ -91,7 +91,7 @@ public interface StructureDataIterator extends AutoCloseable {
   /**
    * @deprecated use close() or try-with-resource
   */
-   default void finish() {
+  default void finish() {
      close();
    }
 

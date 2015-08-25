@@ -104,10 +104,6 @@ public class HorizCoordSys {
     return transform;
   }
 
-  public boolean getHasLatLon() {
-    return hasLatLon;
-  }
-
   /////////////////////////////////////////////////////////////////////////////////////
 
   public HorizCoordSys subset(SubsetParams params) throws InvalidRangeException {

@@ -32,7 +32,6 @@
  */
 package ucar.nc2.ft2.coverage.adapter;
 
-import com.google.common.collect.Lists;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -44,10 +43,7 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Adapt ucar.nc2.dt.GeoGridDataset to ucar.nc2.ft2.coverage.CoverageDataset
@@ -131,7 +127,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     AttributeContainer atts = dtCoordAxis.getAttributeContainer();
 
     CoverageCoordAxis.DependenceType dependenceType;
-    List<String> dependsOn = new ArrayList<>();
+    String dependsOn = null;
     if (dtCoordAxis.isIndependentCoordinate())
       dependenceType = CoverageCoordAxis.DependenceType.independent;
 
@@ -140,13 +136,17 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     else if (dtCoordAxis instanceof CoordinateAxis2D) {
       dependenceType = CoverageCoordAxis.DependenceType.twoD;
+      Formatter f = new Formatter();
       for (Dimension d : dtCoordAxis.getDimensions())  // LOOK axes may not exist
-        dependsOn.add(d.getFullName());
+        f.format("%s ", d.getFullName());
+      dependsOn = f.toString().trim();
 
     } else {
       dependenceType = CoverageCoordAxis.DependenceType.dependent;
+      Formatter f = new Formatter();
       for (Dimension d : dtCoordAxis.getDimensions())
-        dependsOn.add(d.getFullName());
+        f.format("%s ", d.getFullName());
+      dependsOn = f.toString().trim();
     }
 
     int ncoords = (int) dtCoordAxis.getSize();
@@ -186,7 +186,11 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         }
       }
 
-      return new CoverageCoordAxis1D(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing,
+      if (axisType == AxisType.TimeOffset)
+        return new TimeOffsetAxis(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing,
+                ncoords, startValue, endValue, resolution, values, reader, false);
+      else
+       return new CoverageCoordAxis1D(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing,
               ncoords, startValue, endValue, resolution, values, reader, false);
     }
 
@@ -229,7 +233,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     // Fmrc Time
     if (axisType == AxisType.Time) {
-      dependsOn = Lists.newArrayList(dtCoordAxis.getDimension(0).getFullName());  // only the first dimension
+      dependsOn = dtCoordAxis.getDimension(0).getFullName();  // only the first dimension
       return new FmrcTimeAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributeContainer(), dependenceType, dependsOn, spacing,
               ncoords, startValue, endValue, resolution, values, reader, false);
     }

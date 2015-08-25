@@ -52,24 +52,32 @@ import java.util.List;
  * @since 7/11/2015
  */
 public class TimeHelper {
+
+  static public TimeHelper factory(String units, AttributeContainer atts) {
+    if (units == null)
+      units = atts.findAttValueIgnoreCase(CDM.UDUNITS, null);
+    if (units == null)
+      units = atts.findAttValueIgnoreCase(CDM.UNITS, null);
+    Calendar cal = getCalendarFromAttribute(atts);
+    CalendarDateUnit dateUnit;
+    try {
+      dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
+      return new TimeHelper( cal, dateUnit);
+    } catch (IllegalArgumentException e) {
+      return null;
+    }
+  }
+
+  //////////////////////////////////////////////
+
   final Calendar cal;
   final CalendarDateUnit dateUnit;
   final CalendarDate refDate;
   final double duration;
 
-  public TimeHelper(String units, AttributeContainer atts) {
-    this.cal = getCalendarFromAttribute(atts);
-    this.dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
-    this.refDate = dateUnit.getBaseCalendarDate();
-    this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
-  }
-
-  public TimeHelper(AttributeContainer atts) {
-    String units = atts.findAttValueIgnoreCase(CDM.UDUNITS, null);
-    if (units == null)
-      units = atts.findAttValueIgnoreCase(CDM.UNITS, null);
-    this.cal = getCalendarFromAttribute(atts);
-    this.dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
+  private TimeHelper(Calendar cal, CalendarDateUnit dateUnit) {
+    this.cal = cal;
+    this.dateUnit = dateUnit;
     this.refDate = dateUnit.getBaseCalendarDate();
     this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
   }

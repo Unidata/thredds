@@ -32,7 +32,6 @@
  */
 package ucar.nc2.grib.coverage;
 
-import com.beust.jcommander.internal.Lists;
 import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,17 +44,18 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Misc;
-import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 
@@ -114,34 +114,33 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   private final GribCollectionImmutable.Dataset ds;
   private final GribCollectionImmutable.GroupGC group;
   private final CoverageCoordSys.Type coverageType;
-  private final boolean isLatLon;
-  private final String xaxisName, yaxisName;
+  private final boolean isGrib1, isLatLon, isCurvilinearOrthogonal;
 
   public GribCoverageDataset(GribCollectionImmutable gribCollection, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) {
     this.gribCollection = gribCollection;
     this.ds = (ds != null) ? ds : gribCollection.getDataset(0);
     this.group = (group != null) ? group : this.ds.getGroup(0);
+    this.isGrib1 = gribCollection.isGrib1;
+
+    GdsHorizCoordSys hcs = this.group.getGdsHorizCoordSys();
+    this.isLatLon = hcs.isLatLon(); // isGrib1 ? hcs.isLatLon() : Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter());
+    this.isCurvilinearOrthogonal = !isGrib1 && Grib2Utils.isCurvilinearOrthogonal(hcs.template, gribCollection.getCenter());
 
     // figure out coverageType
+    CoverageCoordSys.Type ct;
     switch (this.ds.getType()) {
       case MRC:
       case MRSTC:
       case TP:
       case TwoD:
-        coverageType = CoverageCoordSys.Type.Fmrc;
+        ct = CoverageCoordSys.Type.Fmrc;
         break;
       default:
-        coverageType = CoverageCoordSys.Type.Grid;
+        ct = CoverageCoordSys.Type.Grid;
     }
-
-    isLatLon = this.group.getGdsHorizCoordSys().proj instanceof LatLonProjection;
-    if (isLatLon) {
-      yaxisName = CF.LATITUDE;
-      xaxisName = CF.LONGITUDE;
-    } else {
-      yaxisName = "y";
-      xaxisName = "x";
-    }
+    if (isCurvilinearOrthogonal)
+      ct = CoverageCoordSys.Type.Curvilinear;
+    this.coverageType = ct;
   }
 
   /*
@@ -172,8 +171,14 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       transforms.add(projTransform);
     }
 
+    // potential variables - need to remove any 2D LatLon
+    List<GribCollectionImmutable.VariableIndex> vars = new ArrayList<>(group.getVariables());
+
     List<CoverageCoordAxis> axes = new ArrayList<>();
-    axes.addAll(makeHorizCoordinates());
+    if (isCurvilinearOrthogonal)
+      axes.addAll(makeHorizCoordinates2D(vars));
+    else
+      axes.addAll(makeHorizCoordinates());
 
     for (Coordinate axis : group.getCoordinates()) {
       switch (axis.getType()) {
@@ -199,19 +204,14 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     makeTime2DCoordAxis(axes);
 
     Map<String, CoverageCoordSys> coordSysSet = new HashMap<>();
-    for (GribCollectionImmutable.VariableIndex v : group.getVariables()) {
+    for (GribCollectionImmutable.VariableIndex v : vars) {
       CoverageCoordSys sys = makeCoordSys(v, transforms);
       coordSysSet.put(sys.getName(), sys);                    // duplicates get eliminated here
     }
     List<CoverageCoordSys> coordSys = new ArrayList<>(coordSysSet.values());
 
-    // all vars are coverages
-    List<Coverage> pgrids = group.getVariables().stream().map(this::makeCoverage).collect(Collectors.toList());
-    /* List<Coverage> pgrids = new ArrayList<>();
-    for (GribCollectionImmutable.VariableIndex v : group.getVariables()) {
-      pgrids.add(makeCoverage(v));
-    } */
-
+    // all vars that are left are coverages
+    List<Coverage> pgrids = vars.stream().map(this::makeCoverage).collect(Collectors.toList());
     GdsHorizCoordSys hcs = group.getGdsHorizCoordSys();
     return new CoverageDataset(name, coverageType, gatts, hcs.getLatLonBB(), hcs.getProjectionBB(), getCalendarDateRange(),
             coordSys, transforms, axes, pgrids, this);
@@ -235,23 +235,68 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       AttributeContainerHelper atts = new AttributeContainerHelper(CF.LATITUDE);
       atts.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       result.add(new CoverageCoordAxis1D(CF.LATITUDE, CDM.LAT_UNITS, null, DataType.FLOAT, AxisType.Lat, atts, CoverageCoordAxis.DependenceType.independent,
-              new ArrayList<>(0), CoverageCoordAxis.Spacing.regular, hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this, false));
+              null, CoverageCoordAxis.Spacing.regular, hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this, false));
 
       atts = new AttributeContainerHelper(CF.LONGITUDE);
       atts.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       result.add(new CoverageCoordAxis1D(CF.LONGITUDE, CDM.LON_UNITS, null, DataType.FLOAT, AxisType.Lon, atts, CoverageCoordAxis.DependenceType.independent,
-              new ArrayList<>(0), CoverageCoordAxis.Spacing.regular, hcs.nx, hcs.getStartX(), hcs.getEndX(), hcs.dx, null, this, false));
+              null, CoverageCoordAxis.Spacing.regular, hcs.nx, hcs.getStartX(), hcs.getEndX(), hcs.dx, null, this, false));
 
     } else {
       AttributeContainerHelper atts = new AttributeContainerHelper("y");
       atts.addAttribute(new Attribute(CDM.UNITS, "km"));
       result.add(new CoverageCoordAxis1D("y", "km", CF.PROJECTION_Y_COORDINATE, DataType.FLOAT, AxisType.GeoY, atts, CoverageCoordAxis.DependenceType.independent,
-              new ArrayList<>(0), CoverageCoordAxis.Spacing.regular, hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this, false));
+              null, CoverageCoordAxis.Spacing.regular, hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this, false));
 
       atts = new AttributeContainerHelper("x");
       atts.addAttribute(new Attribute(CDM.UNITS, "km"));
       result.add(new CoverageCoordAxis1D("x", "km", CF.PROJECTION_X_COORDINATE, DataType.FLOAT, AxisType.GeoX, atts, CoverageCoordAxis.DependenceType.independent,
-              new ArrayList<>(0), CoverageCoordAxis.Spacing.regular, hcs.nx, hcs.getStartX(), hcs.getEndX(), hcs.dx, null, this, false));
+              null, CoverageCoordAxis.Spacing.regular, hcs.nx, hcs.getStartX(), hcs.getEndX(), hcs.dx, null, this, false));
+    }
+
+    return result;
+  }
+
+  /**
+   * identify any variables that are really 2D lat/lon
+   * @param vars check this list, but remove lat/lon coordinates from it
+   * @return lat/lon coordinates
+   */
+  private List<CoverageCoordAxis> makeHorizCoordinates2D(List<GribCollectionImmutable.VariableIndex> vars) {
+    GdsHorizCoordSys hcs = group.getGdsHorizCoordSys();
+
+    List<GribCollectionImmutable.VariableIndex> remove = new ArrayList<>();
+    List<CoverageCoordAxis> result = new ArrayList<>();
+    for (GribCollectionImmutable.VariableIndex vindex : vars) {
+      Grib2Utils.LatLon2DCoord ll2d = Grib2Utils.getLatLon2DcoordType(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+      if (ll2d == null) continue;
+
+      AxisType axisType = ll2d.getAxisType();
+      String name = ll2d.toString();
+      AttributeContainerHelper atts = new AttributeContainerHelper(name);
+      atts.addAttribute(new Attribute(_Coordinate.Stagger, CDM.CurvilinearOrthogonal));
+      atts.addAttribute(new Attribute(CDM.StaggerType, ll2d.toString()));
+
+      int[] shape = new int[] {hcs.ny, hcs.nx};
+      int npts = hcs.ny * hcs.nx;
+
+      if (axisType == AxisType.Lat) {
+        atts.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+        result.add(new LatLonAxis2D(name, CDM.LAT_UNITS, vindex.makeVariableDescription(), DataType.FLOAT, AxisType.Lat, atts, CoverageCoordAxis.DependenceType.twoD,
+                null, shape, CoverageCoordAxis.Spacing.irregularPoint, npts, 0, 0, 0, null, this, false));
+      } else {
+
+        atts.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+        result.add(new LatLonAxis2D(name, CDM.LON_UNITS, vindex.makeVariableDescription(), DataType.FLOAT, AxisType.Lon, atts, CoverageCoordAxis.DependenceType.twoD,
+                null, shape, CoverageCoordAxis.Spacing.irregularPoint, npts, 0, 0, 0, null, this, false));
+      }
+
+      remove.add(vindex);
+    }
+
+    // have to do this after the loop is done
+    for (GribCollectionImmutable.VariableIndex vindex : remove) {
+      vars.remove(vindex);
     }
 
     return result;
@@ -285,7 +330,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
     CoverageCoordAxis1D result = new CoverageCoordAxis1D(runtime.getName(), units, "GRIB reference time", DataType.DOUBLE, AxisType.RunTime, atts,
-            dependence, new ArrayList<>(0), spacing, n, start, end, resol, null, this, false);
+            dependence, null, spacing, n, start, end, resol, null, this, false);
 
     // smoosh runtimes with similar start, end, resol
     RuntimeSmoosher tester = new RuntimeSmoosher(result);
@@ -366,7 +411,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
         int n = (int) ((smoosh.end - smoosh.start) / smoosh.resol);
         CoverageCoordAxis1D combined = new CoverageCoordAxis1D(smoosh.runtime.getName(), smoosh.runtime.getUnits(), GribIosp.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime,
                 new AttributeContainerHelper(smoosh.runtime.getName(), smoosh.runtime.getAttributes()),
-                smoosh.runtime.getDependenceType(), new ArrayList<>(0), CoverageCoordAxis.Spacing.regular, n, smoosh.start, smoosh.end, smoosh.resol, null, this, false);
+                smoosh.runtime.getDependenceType(), null, CoverageCoordAxis.Spacing.regular, n, smoosh.start, smoosh.end, smoosh.resol, null, this, false);
         axes.add(combined);
       }
     }
@@ -484,7 +529,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       //if (subst != null) reftimeName = subst;
 
       axes.add(new TimeOffsetAxis(time2D.getName(), time2D.getUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.TimeOffset, atts,
-              CoverageCoordAxis.DependenceType.independent, new ArrayList<>(0), spacing, n, start, end, resol, values, this, false));
+              CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, values, this, false));
     }
   }
 
@@ -524,7 +569,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     // LOOK lazy eval ?
     return new CoverageCoordAxis1D(refName, time.getTimeUdUnit(), GribIosp.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime, atts,
-            CoverageCoordAxis.DependenceType.dependent, Lists.newArrayList(time.getName()), spacing, length, 0, 0, 0, data, this, false);
+            CoverageCoordAxis.DependenceType.dependent, time.getName(), spacing, length, 0, 0, 0, data, this, false);
   }
 
   private CoverageCoordAxis makeCoordAxis(CoordinateTime time) {
@@ -547,7 +592,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
     return new CoverageCoordAxis1D(time.getName(), time.getTimeUdUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.Time, atts,
-            CoverageCoordAxis.DependenceType.independent, new ArrayList<>(0), spacing, n, start, end, resol, null, this, false);
+            CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, null, this, false);
   }
 
   private CoverageCoordAxis makeCoordAxis(CoordinateTimeIntv time) {
@@ -574,7 +619,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
     return new CoverageCoordAxis1D(time.getName(), time.getTimeUdUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.Time, atts,
-            CoverageCoordAxis.DependenceType.independent, new ArrayList<>(0), spacing, n, start, end, resol, null, this, false);
+            CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, null, this, false);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -634,7 +679,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CF.POSITIVE, vertCoord.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
 
     return new CoverageCoordAxis1D(vertCoord.getName(), vertCoord.getUnit(), null, DataType.DOUBLE, axisType, atts,
-            CoverageCoordAxis.DependenceType.independent, new ArrayList<>(0), spacing, n, values[0], values[values.length - 1], 0.0, values, this, false);
+            CoverageCoordAxis.DependenceType.independent, null, spacing, n, values[0], values[values.length - 1], 0.0, values, this, false);
   }
 
   private CoverageCoordAxis makeCoordAxis(CoordinateEns ensCoord) {
@@ -649,7 +694,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CDM.UNITS, units));
 
     return new CoverageCoordAxis1D(ensCoord.getName(), units, null, DataType.DOUBLE, AxisType.Ensemble, atts,
-            CoverageCoordAxis.DependenceType.independent, new ArrayList<>(0), CoverageCoordAxis.Spacing.irregularPoint, ensCoord.getSize(),
+            CoverageCoordAxis.DependenceType.independent, null, CoverageCoordAxis.Spacing.irregularPoint, ensCoord.getSize(),
             values[0], values[n - 1], 0.0, values, this, false);
   }
 
@@ -701,8 +746,32 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     Collections.sort(names, (o1, o2) -> o1.type.order - o2.type.order);
     List<String> axisNames = names.stream().map(o -> o.name).collect(Collectors.toList());
-    axisNames.add(yaxisName);
-    axisNames.add(xaxisName);
+    if (isCurvilinearOrthogonal) {
+      Grib2Utils.LatLonCoordType type = Grib2Utils.getLatLon2DcoordType(gribVar.makeVariableDescription());
+      switch (type) {
+        case U:
+          axisNames.add(Grib2Utils.LatLon2DCoord.U_Latitude.toString());
+          axisNames.add(Grib2Utils.LatLon2DCoord.U_Longitude.toString());
+          break;
+        case V:
+          axisNames.add(Grib2Utils.LatLon2DCoord.V_Latitude.toString());
+          axisNames.add(Grib2Utils.LatLon2DCoord.V_Longitude.toString());
+          break;
+        case P:
+          axisNames.add(Grib2Utils.LatLon2DCoord.P_Latitude.toString());
+          axisNames.add(Grib2Utils.LatLon2DCoord.P_Longitude.toString());
+          break;
+      }
+
+    } else if (isLatLon) {
+      axisNames.add(CF.LATITUDE);
+      axisNames.add(CF.LONGITUDE);
+
+    } else {
+      axisNames.add("y");
+      axisNames.add("x");
+    }
+
     return axisNames;
   }
 
@@ -812,7 +881,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     int[] gribFullShape = new int[gribCoords.size()]; // the full shape of the sparseArray
 
     List<CoverageCoordAxis> covCoordSubset = new ArrayList<>(gribCoords.size()+2);
-    List<Range> gribSubset = new ArrayList<>(gribCoords.size()+2);
+    List<RangeIterator> gribSubset = new ArrayList<>(gribCoords.size()+2);
 
     int count = 0;
     for (Coordinate gribCoord : gribCoords) {  // must be in the order of the grib coordinates
@@ -853,14 +922,14 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     covCoordSubset.add( subsetCoordSys.getXAxis());
     gribSubset.add(subsetCoordSys.getXAxis().getRange());
 
-    Section gribSection = new Section(gribSubset);
+    SectionIterable gribSection = new SectionIterable(gribSubset, gribFullShape);
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
-    Array data =  dataReader.readData(gribSection, gribFullShape);
+    Array data =  dataReader.readData(gribSection);
 
     return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, covCoordSubset, subsetCoordSys.getType());
   }
 
-  Range subsetRuntime(CoordinateRuntime gribCoord, CoverageCoordAxis1D covAxisSubset) throws InvalidRangeException {
+  RangeIterator subsetRuntime(CoordinateRuntime gribCoord, CoverageCoordAxis1D covAxisSubset) throws InvalidRangeException {
     if (!covAxisSubset.isSubset())
       return new Range(gribCoord.getSize()); // get all of it
 
@@ -890,7 +959,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   // (runtime > 1, time=1)  = constant forecast   (must cut down the runtime based on the time request - only those that have it.
   // (runtime > 1, time > 1).
 
-  Range subsetTimeOffset(CoordinateTime2D gribCoord, CoverageCoordAxis1D runAxis, CoverageCoordAxis1D toAxis) throws InvalidRangeException {
+  RangeIterator subsetTimeOffset(CoordinateTime2D gribCoord, CoverageCoordAxis1D runAxis, CoverageCoordAxis1D toAxis) throws InvalidRangeException {
 
     double rundateVal = runAxis.getCoord(0);
     CalendarDate rundate = runAxis.makeDate(rundateVal);
@@ -914,7 +983,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     }
   }
 
-  Range subset(Coordinate gribCoord, CoverageCoordAxis1D covAxisSubset) throws InvalidRangeException {
+  RangeIterator subset(Coordinate gribCoord, CoverageCoordAxis1D covAxisSubset) throws InvalidRangeException {
     if (!covAxisSubset.isSubset())
       return new Range(gribCoord.getSize()); // get all of it
 

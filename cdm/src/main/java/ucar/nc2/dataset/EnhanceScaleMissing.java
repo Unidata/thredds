@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
  *
- *   Portions of this software were developed by the Unidata Program at the
- *   University Corporation for Atmospheric Research.
+ *  Portions of this software were developed by the Unidata Program at the
+ *  University Corporation for Atmospheric Research.
  *
- *   Access and use of this software shall impose the following obligations
- *   and understandings on the user. The user is granted the right, without
- *   any fee or cost, to use, copy, modify, alter, enhance and distribute
- *   this software, and any derivative works thereof, and its supporting
- *   documentation for any purpose whatsoever, provided that this entire
- *   notice appears in all copies of the software, derivative works and
- *   supporting documentation.  Further, UCAR requests that the user credit
- *   UCAR/Unidata in any publications that result from the use of this
- *   software or in any product that includes this software. The names UCAR
- *   and/or Unidata, however, may not be used in any advertising or publicity
- *   to endorse or promote any products or commercial entity unless specific
- *   written permission is obtained from UCAR/Unidata. The user also
- *   understands that UCAR/Unidata is not obligated to provide the user with
- *   any support, consulting, training or assistance of any kind with regard
- *   to the use, operation and performance of this software nor to provide
- *   the user with any updates, revisions, new versions or "bug fixes."
+ *  Access and use of this software shall impose the following obligations
+ *  and understandings on the user. The user is granted the right, without
+ *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  this software, and any derivative works thereof, and its supporting
+ *  documentation for any purpose whatsoever, provided that this entire
+ *  notice appears in all copies of the software, derivative works and
+ *  supporting documentation.  Further, UCAR requests that the user credit
+ *  UCAR/Unidata in any publications that result from the use of this
+ *  software or in any product that includes this software. The names UCAR
+ *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  to endorse or promote any products or commercial entity unless specific
+ *  written permission is obtained from UCAR/Unidata. The user also
+ *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  any support, consulting, training or assistance of any kind with regard
+ *  to the use, operation and performance of this software nor to provide
+ *  the user with any updates, revisions, new versions or "bug fixes."
  *
- *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.dataset;
 
@@ -145,13 +145,13 @@ public interface EnhanceScaleMissing extends IsMissingEvaluator {
   /** true if Variable has missing data values
    * @return true if Variable has missing data values
    */
-  public boolean hasMissing();
+  boolean hasMissing();
 
   /** true if val is a missing data value.
    * @param val unpacked value
    * @return true if this value is a misssing value
    */
-  public boolean isMissing( double val );
+  boolean isMissing( double val );
 
   /** true if val is a missing data value.
    * if useNaNs is true (default) and the variable is of type float or double,
@@ -159,40 +159,40 @@ public interface EnhanceScaleMissing extends IsMissingEvaluator {
    * @param val unpacked value
    * @return true if this value is a misssing value
    */
-  public boolean isMissingFast( double val ); 
+  boolean isMissingFast( double val ); 
 
   /** true if Variable has valid_range, valid_min or valid_max attributes */
-  public boolean hasInvalidData();
+  boolean hasInvalidData();
   /** return the minimum value in the valid range */
-  public double getValidMin();
+  double getValidMin();
   /** return the maximum value in the valid range */
-  public double getValidMax();
+  double getValidMax();
   /** return true if val is outside the valid range */
-  public boolean isInvalidData( double val );
+  boolean isInvalidData( double val );
 
   /** true if Variable has _FillValue attribute */
-  public boolean hasFillValue();
+  boolean hasFillValue();
   /** return true if val equals the _FillValue  */
-  public boolean isFillValue( double val );
+  boolean isFillValue( double val );
 
   /** true if Variable has missing_value attribute */
-  public boolean hasMissingValue();
+  boolean hasMissingValue();
   /** return true if val equals a missing_value  */
-  public boolean isMissingValue( double val );
+  boolean isMissingValue( double val );
 
   /** set if _FillValue is considered isMissing(); better set in constructor if possible */
-  public void setFillValueIsMissing( boolean b);
+  void setFillValueIsMissing( boolean b);
   /** set if valid_range is considered isMissing(); better set in constructor if possible */
-  public void setInvalidDataIsMissing( boolean b);
+  void setInvalidDataIsMissing( boolean b);
   /** set if missing_data is considered isMissing(); better set in constructor if possible */
-  public void setMissingDataIsMissing( boolean b);
+  void setMissingDataIsMissing( boolean b);
   /** set whether to use NaNs for missing float/double values, for efficiency */
-  public void setUseNaNs(boolean useNaNs);
+  void setUseNaNs(boolean useNaNs);
   /** get whether to use NaNs for missing float/double values (for efficiency) */
-  public boolean getUseNaNs();
+  boolean getUseNaNs();
 
   /** true if Variable data will be converted using scale and offet */
-  public boolean hasScaleOffset();
+  boolean hasScaleOffset();
 
   /**
    * Convert data if hasScaleOffset, using scale and offset.
@@ -200,16 +200,16 @@ public interface EnhanceScaleMissing extends IsMissingEvaluator {
    * @param data convert this
    * @return converted data.
    */
-  public Array convertScaleOffsetMissing(Array data) throws IOException;
+  Array convertScaleOffsetMissing(Array data) throws IOException;
 
   /** Convert this byte value to a double, using scale/offset/missing value if applicable */
-  public double convertScaleOffsetMissing(byte value);
+  double convertScaleOffsetMissing(byte value);
   /** Convert this short value to a double, using scale/offset/missing value if applicable */
-  public double convertScaleOffsetMissing(short value);
+  double convertScaleOffsetMissing(short value);
   /** Convert this int value to a double, using scale/offset/missing value if applicable */
-  public double convertScaleOffsetMissing(int value);
+  double convertScaleOffsetMissing(int value);
   /** Convert this long value to a double, using scale/offset/missing value if applicable */
-  public double convertScaleOffsetMissing(long value);
+  double convertScaleOffsetMissing(long value);
   /** Convert this double value using scale/offset/missing value if applicable */
-  public double convertScaleOffsetMissing(double value); 
+  double convertScaleOffsetMissing(double value); 
 }

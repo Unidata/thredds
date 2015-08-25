@@ -32,6 +32,7 @@
 
 package ucar.ma2;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -47,11 +48,11 @@ public class TestRange {
     int nx = 1237;
     Range r = new Range(0,nx-1,9);
     System.out.printf("%s%n",r);
-    System.out.printf("%d %d %d %d%n",r.first(),r.last(),r.stride(),r.length());
-    assert r.first() == 0;
-    assert r.last() == 1233;
-    assert r.stride() == 9;
-    assert r.length() == 138;
+    System.out.printf("%d %d %d %d%n", r.first(), r.last(), r.stride(), r.length());
+    Assert.assertEquals(0, r.first());
+    Assert.assertEquals(9, r.stride());
+    Assert.assertEquals(138,  r.length());
+    Assert.assertEquals(1233,  r.last());
 
     Section s = new Section( r, r);
     Section.Iterator iter = s.getIterator(new int[] {nx, nx});
@@ -67,7 +68,7 @@ public class TestRange {
         count++;
       }
     }
-    assert count == 138 * 138;
+    Assert.assertEquals(138*138, count);
 
   }
 }

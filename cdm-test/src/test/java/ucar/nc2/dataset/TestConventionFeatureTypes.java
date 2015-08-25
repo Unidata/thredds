@@ -64,8 +64,8 @@ public class TestConventionFeatureTypes {
     for (File f :  TestDir.getAllFilesInDirectoryStandardFilter(dir)) {
       System.out.printf("Open FeatureDataset %s%n", f.getPath());
       try (FeatureDataset fd = FeatureDatasetFactoryManager.open(type, f.getPath(), null, new Formatter())) {
-        Assert.assertNotNull(fd);
-        Assert.assertEquals(type, fd.getFeatureType());
+        Assert.assertNotNull(f.getPath(), fd);
+        Assert.assertEquals(f.getPath(), type, fd.getFeatureType());
       }
 
     }

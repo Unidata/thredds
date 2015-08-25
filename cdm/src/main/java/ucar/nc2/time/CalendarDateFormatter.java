@@ -285,7 +285,7 @@ public class CalendarDateFormatter {
            }
 
           // allow 01:00, 1:00, 01 or 0100
-          int hourOffset = 0;
+          int hourOffset;
           int minuteOffset = 0;
           int posColon = zoneString.indexOf(':');
           if (posColon > 0) {

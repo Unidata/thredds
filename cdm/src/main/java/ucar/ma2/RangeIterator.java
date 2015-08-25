@@ -42,20 +42,11 @@ import java.util.function.Consumer;
  * @author John
  * @since 8/19/2015
  */
-public class RangeIterator implements Iterable<Integer> {
+public interface RangeIterator extends Iterable<Integer> {
 
   @Override
-  public Iterator<Integer> iterator() {
-    return null;
-  }
+  Iterator<Integer> iterator();
 
-  @Override
-  public void forEach(Consumer<? super Integer> action) {
+  int length();
 
-  }
-
-  @Override
-  public Spliterator<Integer> spliterator() {
-    return null;
-  }
 }

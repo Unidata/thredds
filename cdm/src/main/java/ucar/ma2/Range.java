@@ -59,7 +59,7 @@ import java.util.Iterator;
  */
 
 @Immutable
-public class Range implements Iterable<Integer>  {
+public class Range implements RangeIterator  {
   public static final Range EMPTY = new Range();
   public static final Range ONE = new Range(1);
   public static final Range VLEN = new Range(-1);
@@ -149,9 +149,11 @@ public class Range implements Iterable<Integer>  {
 
     this.name = name;
     this.first = first;
-    this.last = last;
     this.stride = stride;
-    this.length = (1 + last - first) / stride;
+    this.length = 1 + (last - first) / stride;
+    this.last = first + (this.length-1) * stride;
+    if (stride == 1)
+    assert this.last == last;
     assert this.length != 0;
   }
 

@@ -47,14 +47,14 @@ public interface LatLonPoint {
    *
    * @return longitude (degrees)
    */
-  public double getLongitude();
+  double getLongitude();
 
   /**
    * Returns the latitude, between +/- 90 degrees.
    *
    * @return latitude (degrees)
    */
-  public double getLatitude();
+  double getLatitude();
 
   /**
    * Returns true if this represents the same point as pt.
@@ -62,5 +62,5 @@ public interface LatLonPoint {
    * @param pt point to check
    * @return true if this represents the same point
    */
-  public boolean equals(LatLonPoint pt);
+  boolean equals(LatLonPoint pt);
 }

@@ -50,7 +50,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
 import java.util.*;
 import java.util.Formatter;
 
@@ -232,8 +231,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     String horizDims;
 
-    boolean isLatLon2D = !isGrib1 && Grib2Utils.isLatLon2D(hcs.template, gribCollection.getCenter());
-    boolean isLatLon = isGrib1 ? hcs.isLatLon() : Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter());
+    boolean isLatLon2D = !isGrib1 && Grib2Utils.isCurvilinearOrthogonal(hcs.template, gribCollection.getCenter());
+    boolean isLatLon = hcs.isLatLon(); // isGrib1 ? hcs.isLatLon() : Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter());
 
     if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
       horizDims = "lat lon";
@@ -411,14 +410,14 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
 
       // horiz coord system
-      if (isLatLon2D) {
+      if (isLatLon2D) { // special case of "LatLon Orthogononal"
         String s = searchCoord(Grib2Utils.getLatLon2DcoordType(desc), group.variList);
-        if (s == null) { // its a lat/lon coordinate
+        if (s == null) { // its a 2D lat/lon coordinate
           v.setDimensions(horizDims); // LOOK make this 2D and munge the units
           String units = desc.contains("Latitude of") ? CDM.LAT_UNITS : CDM.LON_UNITS;
           v.addAttribute(new Attribute(CDM.UNITS, units));
 
-        } else {
+        } else { // its a variable using the coordinates described by s
           coordinateAtt.format("%s ", s);
         }
       } else {
@@ -912,7 +911,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       Array result;
       GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v2.getSPobject();
       GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
-      result = dataReader.readData(section, v2.getShape());
+      SectionIterable sectionIter = new SectionIterable(section, v2.getShape());
+      result = dataReader.readData(sectionIter);
 
       long took = System.currentTimeMillis() - start;
       if (debugTime) System.out.println("  read data took=" + took + " msec ");

@@ -84,27 +84,33 @@ public abstract class GribDataReader {
     this.vindex = vindex;
   }
 
-  public Array readData(Section want, int[] saShape) throws IOException, InvalidRangeException {
-    System.out.printf("%nGribDataReader.want=%n%s%n",want.show());
+  /**
+   * Read the section of data described by want
+   * @param want which data do you want?
+   * @return data as an Array
+   * @throws IOException
+   * @throws InvalidRangeException
+   */
+  public Array readData(SectionIterable want) throws IOException, InvalidRangeException {
+    // System.out.printf("%nGribDataReader.want=%n%s%n", want.show());
     if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)
-      return readDataFromPartition((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want, saShape);
+      return readDataFromPartition((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want);
     else
-      return readDataFromCollection(vindex, want, saShape);
+      return readDataFromCollection(vindex, want);
   }
 
-  private Array readDataFromCollection(GribCollectionImmutable.VariableIndex vindex, Section want, int[] saShape) throws IOException, InvalidRangeException {
+  private Array readDataFromCollection(GribCollectionImmutable.VariableIndex vindex, SectionIterable want) throws IOException, InvalidRangeException {
     // first time, read records and keep in memory
     vindex.readRecords();
 
     int sectionLen = want.getRank();
-    Section sectionWanted = want.subSection(0, sectionLen - 2); // all but x, y
-    Section.Iterator iterWanted = sectionWanted.getIterator(saShape);
-    int[] indexWanted = new int[sectionLen - 2];                              // place to put the iterator result
+    SectionIterable sectionWanted = want.subSection(0, sectionLen - 2); // all but x, y
+    //SectionIterable.Iterator iterWanted = sectionWanted.iterator();
+    // int[] indexWanted = new int[sectionLen - 2];                              // place to put the iterator result
 
     // collect all the records that need to be read
     int count = 0;
-    while (iterWanted.hasNext()) {
-      int sourceIndex = iterWanted.next(indexWanted);
+    for  (int sourceIndex : sectionWanted) {
       addRecord(sourceIndex, count++);
     }
 
@@ -114,11 +120,11 @@ public abstract class GribDataReader {
     return dataReceiver.getArray();
   }
 
-  private Array readDataFromPartition(PartitionCollectionImmutable.VariableIndexPartitioned vindexP, Section section, int[] saShape) throws IOException, InvalidRangeException {
+  private Array readDataFromPartition(PartitionCollectionImmutable.VariableIndexPartitioned vindexP, SectionIterable section) throws IOException, InvalidRangeException {
 
     int sectionLen = section.getRank();
-    Section sectionWanted = section.subSection(0, sectionLen - 2); // all but x, y
-    Section.Iterator iterWanted = sectionWanted.getIterator(saShape);  // iterator over wanted indices in vindexP
+    SectionIterable sectionWanted = section.subSection(0, sectionLen - 2); // all but x, y
+    SectionIterable.SectionIterator iterWanted = sectionWanted.getIterator();  // iterator over wanted indices in vindexP
     int[] indexWanted = new int[sectionLen - 2];                              // place to put the iterator result
     int[] useIndex = indexWanted;
 
@@ -291,10 +297,10 @@ public abstract class GribDataReader {
 
   public static class DataReceiver implements DataReceiverIF {
     private Array dataArray;
-    private Range yRange, xRange;
+    private RangeIterator yRange, xRange;
     private int horizSize;
 
-    public DataReceiver(Section section) {
+    public DataReceiver(SectionIterable section) {
       int rank = section.getRank();
       this.yRange = section.getRange(rank - 2);  // last 2
       this.xRange = section.getRange(rank - 1);

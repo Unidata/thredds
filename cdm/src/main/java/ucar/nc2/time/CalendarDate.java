@@ -37,8 +37,6 @@ import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.chrono.ZonedChronology;
 
 /**
  * A Calendar Date. Replaces java.util.Date.
@@ -156,7 +154,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
 	  return CalendarDateFormatter.isoStringToCalendarDate(cal, isoDateString);
   }
 
-  public static CalendarDate parseISOformatOld(String calendarName, String isoDateString) {
+  /* public static CalendarDate parseISOformatOld(String calendarName, String isoDateString) {
 
      // Date date = CalendarDateFormatter.parseISODate(isoDateString);
  	   java.util.Date date = CalendarDateFormatter.isoStringToDate(isoDateString);
@@ -166,7 +164,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
      DateTime dt = new DateTime(date, chronology);
 
      return new CalendarDate(cal, dt);
-   }
+   } */
 
   /**
    * Get CalendarDate from udunit date string

@@ -451,6 +451,7 @@ public class CoverageTable extends JPanel {
         else if (axis.getAxisType().isTime()) timeName = axis.getName();
         else if (axis.getAxisType() == AxisType.Ensemble) ensName = axis.getName();
         else if (axis.getAxisType().isVert()) vertName = axis.getName();
+        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) nIndAxis++;
       }
     }
 

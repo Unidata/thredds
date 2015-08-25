@@ -45,14 +45,14 @@ public interface ProjectionPoint {
    *
    * @return the X coordinate
    */
-  public double getX();
+  double getX();
 
   /**
    * Get the Y coordinate
    *
    * @return the Y coordinate
    */
-  public double getY();
+  double getY();
 
   /**
    * Check for equality with the point in question
@@ -60,6 +60,6 @@ public interface ProjectionPoint {
    * @param pt point to check
    * @return true if it represents the same point
    */
-  public boolean equals(ProjectionPoint pt);
+  boolean equals(ProjectionPoint pt);
 
 }

@@ -61,7 +61,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   protected boolean isTime2D;
 
   public CoverageCoordAxis1D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                                DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue,
+                                DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue,
                                 double resolution, double[] values, CoordAxisReader reader, boolean isSubset) {
 
     super(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
@@ -374,7 +374,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
   CoverageCoordAxis1D subset(int ncoords, double start, double end, double[] values) {
     return new CoverageCoordAxis1D(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
-            this.getAttributeContainer(), this.getDependenceType(), this.getDependsOnList(), this.getSpacing(),
+            this.getAttributeContainer(), this.getDependenceType(), this.getDependsOn(), this.getSpacing(),
             ncoords, start, end, this.getResolution(), values, this.reader, true);
   }
 

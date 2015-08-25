@@ -272,9 +272,9 @@ public class DtCoverageCSBuilder {
     if (is2Dhoriz) {
       Set<Dimension> xyDomain = CoordinateSystem.makeDomain(Lists.newArrayList(xaxis, yaxis));
       if (timeAxis != null && CoordinateSystem.isSubsetOf(timeAxis.getDimensionsAll(), xyDomain))
-        return  CoverageCoordSys.Type.Swath;   // LOOK prob not exactly right
+        return CoverageCoordSys.Type.Swath;   // LOOK prob not exactly right
       else
-        return  CoverageCoordSys.Type.Curvilinear;
+        return CoverageCoordSys.Type.Curvilinear;
     }
 
     // what makes it a grid?

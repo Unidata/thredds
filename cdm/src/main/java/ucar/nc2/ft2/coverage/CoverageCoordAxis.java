@@ -35,10 +35,7 @@ package ucar.nc2.ft2.coverage;
 import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
@@ -46,8 +43,11 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 
@@ -98,7 +98,7 @@ abstract public class CoverageCoordAxis {
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
 
   protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                              DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
+                              DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
                               double[] values, CoordAxisReader reader, boolean isSubset) {
     this.name = name;
     this.units = units;
@@ -107,10 +107,16 @@ abstract public class CoverageCoordAxis {
     this.axisType = axisType;
     this.attributes = atts;
     this.dependenceType = dependenceType;
-    this.dependsOn = dependsOn;
     this.spacing = spacing;
     this.values = values;
     this.reader = reader; // used only if values == null
+    if (dependsOn != null && dependsOn.trim().length() > 0) {
+      List<String> temp = new ArrayList<>();
+      Collections.addAll(temp, StringUtil2.splitString(dependsOn));
+      this.dependsOn = Collections.unmodifiableList(temp);
+    } else {
+      this.dependsOn = Collections.emptyList();
+    }
 
     if (values == null) {
       this.startValue = startValue;
@@ -130,9 +136,9 @@ abstract public class CoverageCoordAxis {
     this.isSubset = isSubset;
 
     if (axisType == AxisType.Time || axisType == AxisType.RunTime)
-      timeHelper = new TimeHelper(units, atts);
+      timeHelper = TimeHelper.factory(units, atts);
     else if (axisType == AxisType.TimeOffset)
-      timeHelper = new TimeHelper(atts);
+      timeHelper = TimeHelper.factory(null, atts);
     else
       timeHelper = null;
   }
@@ -216,10 +222,10 @@ abstract public class CoverageCoordAxis {
   }
 
   public String getDependsOn() {
-    StringBuilder sb = new StringBuilder();
+    Formatter result = new Formatter();
     for (String name : dependsOn)
-      sb.append(name).append(" ");
-    return sb.toString();
+      result.format("%s ", name);
+    return result.toString().trim();
   }
 
   public List<String> getDependsOnList() {
@@ -256,7 +262,7 @@ abstract public class CoverageCoordAxis {
     return new int[] {ncoords};
   }
 
-  public Range getRange() {
+  public RangeIterator getRange() {
     if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
       return Range.EMPTY;
 
@@ -269,9 +275,11 @@ abstract public class CoverageCoordAxis {
 
   public void toString(Formatter f, Indent indent) {
     f.format("%sCoordAxis '%s' (%s)%n", indent, name, getClass().getName());
-    f.format("%s  axisType=%s dataType=%s units='%s'", indent, axisType, dataType, units);
+    f.format("%s  axisType=%s dataType=%s units='%s' desc='%s'", indent, axisType, dataType, units, description);
     if (timeHelper != null) f.format(" refDate=%s", timeHelper.getRefDate());
     f.format("%n");
+    AttributeContainerHelper.show(attributes, f);
+
     f.format("%s  npts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (getResolution() != 0.0)
       f.format(" resolution=%f", resolution);

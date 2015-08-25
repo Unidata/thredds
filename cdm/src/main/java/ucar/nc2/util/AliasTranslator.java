@@ -3,7 +3,6 @@ package ucar.nc2.util;
 
 import ucar.unidata.util.StringUtil2;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

@@ -85,22 +85,32 @@ public class CalendarPeriod {
       // eliminate plurals
     if (udunit.endsWith("s")) udunit = udunit.substring(0, udunit.length()-1);
 
-    if (udunit.equals("second") || udunit.equals("sec")) {
-      return Field.Second;
-    } else if (udunit.equals("millisecond") || udunit.equals("millisec") || udunit.equals("msec")) {
-      return Field.Millisec;
-    } else if (udunit.equals("minute") || udunit.equals("min")) {
-      return Field.Minute;
-    } else if (udunit.equals("hour") || udunit.equals("hr") || udunit.equals("h")) {
-      return Field.Hour;
-    } else if (udunit.equals("day") || udunit.equals("d")) {
-      return Field.Day;
-    } else if (udunit.equals("month") || udunit.equals("mon")) {
-      return Field.Month;
-    } else if (udunit.equals("year") || udunit.equals("yr")) {
-      return Field.Year;
-    } else {
-      throw new IllegalArgumentException("cant convert "+ udunit +" to CalendarPeriod");
+    switch (udunit) {
+      case "second":
+      case "sec":
+        return Field.Second;
+      case "millisecond":
+      case "millisec":
+      case "msec":
+        return Field.Millisec;
+      case "minute":
+      case "min":
+        return Field.Minute;
+      case "hour":
+      case "hr":
+      case "h":
+        return Field.Hour;
+      case "day":
+      case "d":
+        return Field.Day;
+      case "month":
+      case "mon":
+        return Field.Month;
+      case "year":
+      case "yr":
+        return Field.Year;
+      default:
+        throw new IllegalArgumentException("cant convert " + udunit + " to CalendarPeriod");
     }
   }
 

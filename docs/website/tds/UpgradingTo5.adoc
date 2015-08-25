@@ -35,11 +35,94 @@ Deprecated classes and methods have been removed, and the module structure and t
 API Changes
 ~~~~~~~~~~~
 
+Unsigned Types
+^^^^^^^^^^^^^^
+
+* *DataType* now has unsigned types: _UBYTE, USHORT, UINT, ULONG_
+* *Array, ArrayScalar, ArrayByte, ArrayInt, ArrayShort, ArrayLong* factory and constructor methods now require _isUnsigned_ parameter.
+* _Array.factory(class, shape) -> Array.factory(DataType, shape)_ or _Array.factory(dataType, class, shape)_
+* _Array.get1DJavaArray(Class) -> Array.get1DJavaArray(DataType)_ or _Array.get1DJavaArray(Class, isUnsigned)_
+* remove _Array.setUnsigned(), Variable.setUnsigned()_
+* _Variable.getUnsigned() -> Variable.getDataType().getUnsigned()_
+* _new Attribute(String name, List values) -> new Attribute(String name, List values, boolean isUnsigned)_
+* _StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, boolean isUnsigned, Number val ) -> StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, Number val )_
+
+==== AutoCloseable
+*AutoCloseable* was introduced in Java 7, along with the _try-with-resources_ language feature. Use of this feature makes code more readable
+and more reliable in ensuring that resources (like file handles) are released when done. We strongly recommend that you modify your code to take advantage of it
+wherever possible, eg:
+
+[source,java]
+----
+ try (NetcdfFile ncfile = NetcdfFile.open(location)) {
+    ...
+ } catch (IOException ioe) {
+   // handle ioe here, or propagate by not using catch clause
+ }
+----
+
+* The following now implement *AutoCloseable*, so can be the target of *_try-with-resource_* :
+** *NetcdfFile, NetcdfFileWriter*
+** *HTTPMethod, HTTPSession*
+** *FeatureDataset*, *CoverageDataset*, *CoverageDatasetCollection*
+** *CFPointWriter*, *Grib2NetcdfFile*
+** *ArrayStructure* (deprecate _finish()_)
+** *PointFeatureCollectionIterator* (deprecate _finish()_)
+** *StructureDataIterator*, *PointFeatureIterator*, *PointFeatureCollectionIterator*, *NestedPointFeatureCollectionIterator*,
+** *thredds.client.catalog.tools.DataFactory.Result*
+
+==== Iterable
+*Iterable* was introduced in Java 7, along with the _foreach_ language feature, and makes code more readable with less boilerplate, eg:
+
+[source,java]
+----
+ for (StructureData sdata : myArrayStructure) {
+    ...
+ }
+----
+
+* The following now implement *Iterable<>*, and so can be the target of *_foreach_* :
+** *Range* implements _Iterable<Integer>_ (replace _first()_,_last()_,_stride()_,)
+** *ArrayStructure* implements _Iterable<StructureData>_ (replace _getStructureDataIterator()_)
+** *PointFeatureIterator* extends Iterator<PointFeature>_  (deprecate _finish()_)
+*** in order for *PointFeatureIterator* to implement _Iterator<PointFeature>_, the _hasNext()_ and _next()_ methods cannot throw _IOException_.
+The interface is changed to remove _throws IOException_, which will now be wrapped in _RuntimeException_.
+** *PointFeatureCollection* implements _Iterable<PointFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *StationTimeSeriesFeatureCollection* implements _Iterable<StationTimeSeriesFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *ProfileFeatureCollection* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *TrajectoryFeatureCollection* implements _Iterable<TrajectoryFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *StationProfileFeature* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *StationProfileFeatureCollection* implements _Iterable<StationProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *SectionFeature* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+** *SectionFeatureCollection* implements _Iterable<SectionFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
+
+==== ucar.nc2.util.DiskCache2
+** all instances of *DiskCache2* now have one cleanup thread
+** The _DiskCache2.exit()_ method is now static and need only be called once when the application is exiting.
+** _DiskCache2.setLogger()_ is removed.
+** _DiskCache2.cleanCache(File dir, StringBuffer sbuff, boolean isRoot)_ is now __DiskCache2.cleanCache(File dir, Formatter sbuff, boolean isRoot)__;
+** deprecated methods are removed: _setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) , setPolicy(int cachePathPolicy)_
+** logging of routine cache cleanup is now at _DEBUG_ level
+
+==== ucar.ma2.Range
+** Currently specified by _start:end:stride_
+** In the future, will be extended with subclasses *RangeScatter* and *RangeComposite*
+** You should use the iterator now to ensure correct functionality. To iterate over the values of the Range:
+
+[source,java]
+----
+ for (int i=range.first(); i<=range.last(); i+= range.stride()) {    // REPLACE THIS
+    ...
+
+ for (int i : range) {  // USE THIS
+   ...
+----
+
 Catalogs
 ^^^^^^^^
 
-* All uses of classes in *thredds.catalog.\* * are deprecated. If you still need, you must add *legacy.jar* to your path.
-* TDS and CDM now use *thredds.server.catalog.\* * and *thredds.client.catalog.\* *
+* All uses of classes in *thredds.catalog.** are deprecated. If you still need these, you must add *legacy.jar* to your path.
+* TDS and CDM now use *thredds.server.catalog.** and *thredds.client.catalog.**
 
 Viewers
 ^^^^^^^
@@ -61,66 +144,7 @@ Feature Types
 
 * *ucar.nc2.dt.TypedDatasetFactory* has been removed. Use *ucar.nc2.ft.FeatureDatasetFactoryManager*
 * *ucar.nc2.dt.grid* is deprecated (but not removed) and is replaced by *ucar.nc2.ft2.coverage*
-* *ucar.nc2.dt.point* and *ucar.nc2.dt.trajectory* has been removed, replaced by *ucar.nc2.ft.*
-
-Unsigned Types
-^^^^^^^^^^^^^^
-
-* *DataType* now has unsigned types: _UBYTE, USHORT, UINT, ULONG_
-* *Array, ArrayScalar, ArrayByte, ArrayInt, ArrayShort, ArrayLong* factory and constructor methods now require _isUnsigned_ parameter.
-* _Array.factory(class, shape) -> Array.factory(DataType, shape)_ or _Array.factory(dataType, class, shape)_
-* _Array.get1DJavaArray(Class) -> Array.get1DJavaArray(DataType)_ or _Array.get1DJavaArray(Class, isUnsigned)_
-* remove _Array.setUnsigned(), Variable.setUnsigned()_
-* _Variable.getUnsigned() -> Variable.getDataType().getUnsigned()_
-* _new Attribute(String name, List values) -> new Attribute(String name, List values, boolean isUnsigned)_
-* _StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, boolean isUnsigned, Number val ) -> StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, Number val )_
-
-==== AutoCloseable
-* The following now implement *AutoCloseable*, and so can be the target of *_try-with-resource_* :
-** *ArrayStructure* (deprecate _finish()_)
-** *PointFeatureCollectionIterator* (deprecate _finish()_)
-** *PointFeatureIterator* extends _AutoCloseable, Iterator<PointFeature>_  (deprecate _finish()_)
-*** in order for *PointFeatureIterator* to implement _Iterator<PointFeature>_, the _hasNext()_ and _next()_ methods cannot throw _IOException_.
-The interface was changed to remove _throws IOException_, which now are wrapped in _RuntimeException_.
-
-==== Iterable
-* The following now implement *Iterable<>*, and so can be the target of *_foreach_* :
-** *ArrayStructure* implements _Iterable<StructureData>_ (replace _getStructureDataIterator()_)
-** *PointFeatureCollection* implements _Iterable<PointFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
-** *StationTimeSeriesFeatureCollection* implements _Iterable<StationTimeSeriesFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
-** *ProfileFeatureCollection* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
-** *TrajectoryFeatureCollection* implements _Iterable<TrajectoryFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
-** *StationProfileFeature* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
-** *StationProfileFeatureCollection* implements _Iterable<StationProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
-** *SectionFeature* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
-** *SectionFeatureCollection* implements _Iterable<SectionFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
-
-==== ucar.nc2.util.DiskCache2
-** all instances of *DiskCache2* now have one cleanup thread
-** The _DiskCache2.exit()_ method is now static and need only be called once when the application is exiting.
-** _DiskCache2.setLogger()_ is removed.
-** _DiskCache2.cleanCache(File dir, StringBuffer sbuff, boolean isRoot)_ is now __DiskCache2.cleanCache(File dir, Formatter sbuff, boolean isRoot)__;
-** deprecated methods are removed: _setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) , setPolicy(int cachePathPolicy)_
-** logging of routine cache cleanup is now at _DEBUG_ level
-
-==== ucar.ma2.Range
-** Previously could only be specified by _start:end:stride_
-** Now extended with subclasses *RangeScatter* and *RangeComposite*
-** You must use the iterator now to ensure correct functionality, so to iterate over the values of the Range, *_do not use_*:
-
-[source,java]
-----
- for (int i=range.first(); i<=range.last(); i+= range.stride()) {    // DO NOT USE
-    ...
-----
-
-** Use instead:
-
-[source,java]
-----
- for (int idx : range) {
-   ...
-----
+* *ucar.nc2.dt.point* and *ucar.nc2.dt.trajectory* has been removed, replaced by *ucar.nc2.ft.**
 
 Catalog Schema changes
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -295,4 +319,4 @@ For example:
 
 '''''
 
-image:thread.png[TDS]This document was last updated July 2015. Send comments to the mailto:thredds@unidata.ucar.edu[THREDDS list].
+image:thread.png[TDS]This document was last updated August 2015. Send comments to the mailto:thredds@unidata.ucar.edu[THREDDS list].

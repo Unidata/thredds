@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @since 8/12/2015
  */
 @Immutable
-public class RangeScatter extends Range {
+public class RangeScatter implements RangeIterator {
   private int[] vals;
 
   /**
@@ -25,11 +25,15 @@ public class RangeScatter extends Range {
    * @throws InvalidRangeException
    */
   public RangeScatter(String name, int... val) throws InvalidRangeException {
-    super(name, val[0], val[val.length-1], 1, val.length);
+    // super(name, val[0], val[val.length-1], 1, val.length);
     this.vals = val;
   }
 
-  @Override
+  public int length() {
+    return vals.length;
+  }
+
+ /* @Override
   public Range copy(String name) {
     try {
       return new RangeScatter(name, vals);
@@ -134,7 +138,7 @@ public class RangeScatter extends Range {
    *
    * @param start starting index
    * @return first in interval, else -1 if there is no such element.
-   */
+   *
   @Override
   public int getFirstInInterval(int start) {
     if (start > last()) return -1;
@@ -144,7 +148,7 @@ public class RangeScatter extends Range {
         return i-1;
 
     return length -1;
-  }
+  }                                */
 
   @Override
   public String toString() {
@@ -176,7 +180,7 @@ public class RangeScatter extends Range {
 
     @Override
     public boolean hasNext() {
-      return current < length;
+      return current < vals.length;
     }
 
     @Override

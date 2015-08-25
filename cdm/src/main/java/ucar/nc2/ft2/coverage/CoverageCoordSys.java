@@ -89,8 +89,13 @@ public class CoverageCoordSys {
     CoverageCoordAxis1D runtimeAxis = null;
 
     for (CoverageCoordAxis axis : getAxes()) {
+      if (axis == null || axis.getAxisType() == null)
+        System.out.println("HEY");
+
       if (axis.getAxisType() == AxisType.TimeOffset) {
         if (timeOffsetAxis != null) throw new RuntimeException("Cant have multiple TimeOffset Axes in a CoverageCoordSys");
+        if (!(axis instanceof TimeOffsetAxis))
+          System.out.println("HEY");
         timeOffsetAxis = (TimeOffsetAxis) axis;
       }
       if (axis.getAxisType() == AxisType.RunTime) {
@@ -242,6 +247,8 @@ public class CoverageCoordSys {
     List<CoverageCoordAxis> result = new ArrayList<>();
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
+      if (axis == null)
+        System.out.println("HEY");
       result.add(axis);
      }
     return result;

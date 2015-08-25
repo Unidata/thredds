@@ -33,8 +33,7 @@
 
 package ucar.nc2.grib.grib2;
 
-import ucar.nc2.grib.GribLevelType;
-import ucar.nc2.grib.VertCoord;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
@@ -60,6 +59,13 @@ public class Grib2Utils {
     }
 
     return sb.toString().trim();
+  }
+
+  static public String cleanupHeader(byte[] raw) {
+    String result = StringUtil2.cleanup(raw);
+    int pos = result.indexOf("data");
+    if (pos > 0) result = result.substring(pos);
+    return result;
   }
 
   static public String getVariableName(Grib2Record gr) {
@@ -117,13 +123,50 @@ public class Grib2Utils {
     return ((gridTemplate < 4) || ((gridTemplate >= 40) && (gridTemplate < 44)));
   }
 
-  // LatLon Orthonogonal
-  static public boolean isLatLon2D(int gridTemplate, int center) {
+  //////////////////////////////////////////////////////////////////////////////////
+  // pretty much lame stuff
+  // possibly move to Customizer
+
+  // check if grid template is "Curvilinear Orthogonal", (NCEP 204) methods below only used when thats true
+  static public boolean isCurvilinearOrthogonal(int gridTemplate, int center) {
     return ((center == 7) && (gridTemplate == 204));
   }
 
-  public enum LatLonCoordType {U, V, P}
+  // isLatLon2D is true, check parameter to see if its a 2D lat/lon coordinate
+  static public LatLon2DCoord getLatLon2DcoordType(int discipline, int category, int parameter) {
+    if ((discipline != 0) || (category != 2) || (parameter < 198 || parameter > 203)) return null;
+    switch (parameter) {
+      case 198:
+        return LatLon2DCoord.U_Latitude;
+      case 199:
+         return LatLon2DCoord.U_Longitude;
+      case 200:
+        return LatLon2DCoord.V_Latitude;
+      case 201:
+        return LatLon2DCoord.V_Longitude;
+      case 202:
+       return LatLon2DCoord.P_Latitude;
+      case 203:
+       return LatLon2DCoord.P_Longitude;
+    }
+    return null;
+  }
 
+  public enum LatLonCoordType {U, V, P }
+  public enum LatLon2DCoord {
+    U_Latitude, U_Longitude, V_Latitude, V_Longitude, P_Latitude, P_Longitude;
+
+    public AxisType getAxisType() {
+      return this.name().contains("Latitude") ? AxisType.Lat : AxisType.Lon;
+    }
+  }
+
+
+  /**
+   * This looks for snippets in the variable name/desc as to whether it wants U, V, or P 2D coordinates
+   * @param desc variable name/desc
+   * @return  U, V, or P for normal variables, null for the coordinates themselves
+   */
   static public LatLonCoordType getLatLon2DcoordType(String desc) {
     LatLonCoordType type;
     if (desc.contains("u-component")) type = LatLonCoordType.U;
@@ -133,10 +176,4 @@ public class Grib2Utils {
     return type;
   }
 
-  static public String cleanupHeader(byte[] raw) {
-    String result = StringUtil2.cleanup(raw);
-    int pos = result.indexOf("data");
-    if (pos > 0) result = result.substring(pos);
-    return result;
-  }
 }

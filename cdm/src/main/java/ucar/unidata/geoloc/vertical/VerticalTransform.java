@@ -58,7 +58,7 @@ public interface VerticalTransform {
      * @throws java.io.IOException problem reading the data
      * @throws ucar.ma2.InvalidRangeException timeIndex out of bounds
      */
-    public ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex) throws java.io.IOException, ucar.ma2.InvalidRangeException;
     
     /**
      * Get the 1D vertical coordinate array for this time step and
@@ -71,20 +71,20 @@ public interface VerticalTransform {
      * @throws java.io.IOException problem reading data
      * @throws ucar.ma2.InvalidRangeException _more_
      */
-   public ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException;    
+   ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException;
     
 
     /**
      * Get the unit string for the vertical coordinate.
      * @return unit string
      */
-    public String getUnitString();
+    String getUnitString();
 
     /**
      * Get whether this coordinate is time dependent.
      * @return true if time dependent
      */
-    public boolean isTimeDependent();
+    boolean isTimeDependent();
 
     /**
      *  Create a VerticalTransform as a section of an existing VerticalTransform.
@@ -96,6 +96,6 @@ public interface VerticalTransform {
      *  @return a new VerticalTransform for the given subset
      *  @throws ucar.ma2.InvalidRangeException if any Range is incompatible with the existing VerticalTransform
      */
-    public VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException;
+    VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException;
 }
 

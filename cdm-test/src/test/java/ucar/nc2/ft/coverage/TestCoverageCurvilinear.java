@@ -30,35 +30,57 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package ucar.nc2.ft.coverage;
 
-package ucar.nc2.dataset;
+import org.junit.Assert;
+import org.junit.Test;
+import ucar.nc2.ft2.coverage.*;
+import ucar.unidata.test.util.TestDir;
 
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateUnit;
+import java.io.IOException;
 
 /**
- * Helper class for time coordinates
+ * Description
  *
- * @author caron
- * @since 11/6/2014
+ * @author John
+ * @since 8/24/2015
  */
-public class CoordinateAxisTimeHelper {
-  private final ucar.nc2.time.Calendar calendar;
-  private final CalendarDateUnit dateUnit;
+public class TestCoverageCurvilinear {
 
-  public CoordinateAxisTimeHelper(Calendar calendar, String unitString) {
-    this.calendar = calendar;
-    this.dateUnit = (unitString == null) ? null : CalendarDateUnit.withCalendar(calendar, unitString); // this will throw exception on failure
+  @Test
+  public void TestGribCurvilinear() throws IOException {
+    String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";  // GRIB Curvilinear
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      assert cc != null;
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertNotNull(endpoint, gds);
+      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(7, gds.getCoverageCount());
+
+      HorizCoordSys hcs = gds.getHorizCoordSys();
+      Assert.assertNotNull(endpoint, hcs);
+      Assert.assertTrue(endpoint, hcs.hasLatLon);
+      Assert.assertTrue(endpoint, !hcs.hasProjection);
+      Assert.assertNull(endpoint, hcs.getTransform());
+    }
+
   }
 
-  public CalendarDate makeCalendarDateFromOffset(double offset) {
-    return dateUnit.makeCalendarDate(offset);
-}
+  @Test
+  public void TestNetcdfCurvilinear() throws IOException {
+    String endpoint = TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc";  // NetCDF Curvilinear
 
-  public CalendarDate makeCalendarDateFromOffset(String offset) {
-    return CalendarDateFormatter.isoStringToCalendarDate(calendar, offset);
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      assert cc != null;
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertNotNull(endpoint, gds);
+      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(22, gds.getCoverageCount());
+    }
+
   }
 
 }

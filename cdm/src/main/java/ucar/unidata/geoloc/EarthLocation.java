@@ -43,30 +43,30 @@ public interface EarthLocation {
    * latitude in decimal degrees north
    * @return latitude in decimal degrees north
    */
-  public double getLatitude();
+  double getLatitude();
 
   /**
    * longitude in decimal degrees east
    * @return longitude in decimal degrees east
    */
-  public double getLongitude();
+  double getLongitude();
 
   /**
    * altitude in meters;  missing = NaN.
    * LOOK: what is the reference surface ? for now assume mean sea level ???
    * @return altitude in meters;  missing = NaN.
    */
-  public double getAltitude();
+  double getAltitude();
 
   /**
    * Get the lat/lon location
    * @return lat/lon location
    */
-  public LatLonPoint getLatLon();
+  LatLonPoint getLatLon();
 
   /**
    * Are either lat or lon missing?
    * @return true if lat or lon is missing
    */
-  public boolean isMissing();
+  boolean isMissing();
 }

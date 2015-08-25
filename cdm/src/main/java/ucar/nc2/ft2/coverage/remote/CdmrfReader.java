@@ -53,6 +53,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -268,8 +269,12 @@ message CoordAxis {
     String name = proto.getName();
     DataType dataType = NcStream.convertDataType(proto.getDataType());
     CoverageCoordAxis.DependenceType dependenceType = convertDependenceType(proto.getDepend());
-    List<String> dependsOn = proto.getDependsOnList();
     CoverageCoordAxis.Spacing spacing = convertSpacing(proto.getSpacing());
+
+    Formatter result = new Formatter();
+    for (String s : proto.getDependsOnList())
+      result.format("%s ", s);
+    String dependsOn = result.toString().trim();
 
     AttributeContainerHelper atts = new AttributeContainerHelper("axis atts");
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())

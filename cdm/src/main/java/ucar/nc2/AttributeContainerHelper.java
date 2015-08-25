@@ -3,6 +3,7 @@ package ucar.nc2;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -135,6 +136,12 @@ public class AttributeContainerHelper implements AttributeContainer {
       if (ok) result.add(att);
     }
     return new AttributeContainerHelper(atts.getName(), result);
+  }
+
+  static public void show(AttributeContainer atts, Formatter f) {
+    for (Attribute att : atts.getAttributes()) {
+      f.format("%s%n", att);
+    }
   }
 
 }

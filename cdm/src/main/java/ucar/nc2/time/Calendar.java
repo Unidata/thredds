@@ -76,8 +76,8 @@ public enum Calendar {
   /**
    * Map of CF identifiers for calendar systems to joda-time Chronologies
    */
-  private static final Map<Calendar, Chronology> CHRONOLOGIES = new HashMap<Calendar, Chronology>();
-  private static final Map<Chronology, Calendar> CALENDARS = new HashMap<Chronology, Calendar>();
+  private static final Map<Calendar, Chronology> CHRONOLOGIES = new HashMap<>();
+  private static final Map<Chronology, Calendar> CALENDARS = new HashMap<>();
 
   static {
     // Implements the Gregorian/Julian calendar system which is the calendar system used in most of the world. Wherever possible,

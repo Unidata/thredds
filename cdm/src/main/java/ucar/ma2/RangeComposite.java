@@ -32,10 +32,6 @@
  */
 package ucar.ma2;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 
 /**
  * Description
@@ -43,26 +39,32 @@ import java.util.function.Consumer;
  * @author John
  * @since 8/19/2015
  */
-public class RangeComposite extends Range implements Iterable<Integer> {
+public class RangeComposite implements RangeIterator {
   Range[] ranges;
 
   public RangeComposite(String name, Range... r) throws InvalidRangeException {
-    super(name, 0, 1, r.length);  // what does first, last mean here ??
+    //super(name, 0, 1, r.length);  // what does first, last mean here ??
     this.ranges = r;
   }
 
-  @Override
+  /* @Override
   public Range copy(String name) {
     try {
       return new RangeComposite(name, ranges);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen
     }
-  }
+  }  */
 
   @Override
   public java.util.Iterator<Integer> iterator() {
     return null;
   }
+
+  @Override
+  public int length() {
+    return ranges.length;
+  }
+
 
 }

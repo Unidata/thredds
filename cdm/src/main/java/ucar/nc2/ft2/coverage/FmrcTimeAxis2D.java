@@ -43,7 +43,6 @@ import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * FmrcTimeAxis2D: time(runtime, time)
@@ -56,7 +55,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   private CoverageCoordAxis1D runCoord;
 
   public FmrcTimeAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                           DependenceType dependenceType, List<String> dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
+                           DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
                            double[] values, CoordAxisReader reader, boolean isSubset) {
 
     super(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
@@ -163,7 +162,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
       return new CoverageCoordAxis1D(name, units, description, dataType, axisType,
               AttributeContainerHelper.filter(attributes, "_Coordinate"),
-              dependenceType, dependsOn, spacing, n, values[0], values[n - 1],
+              dependenceType, getDependsOn(), spacing, n, values[0], values[n - 1],
               0.0, values, reader, true);
     }
 
@@ -179,7 +178,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
       return new CoverageCoordAxis1D(name, units, description, dataType, axisType,
               AttributeContainerHelper.filter(attributes, "_Coordinate"),
-              dependenceType, dependsOn, spacing, n/2, values[0], values[n - 1],
+              dependenceType, getDependsOn(), spacing, n/2, values[0], values[n - 1],
               0.0, values, reader, true);
     }
 

@@ -43,24 +43,24 @@ public interface Station extends EarthLocation, Comparable<Station> {
    * Station name or id. Must be unique within the collection
    * @return station name or id. May not be null.
    */
-  public String getName();
+  String getName();
 
   /**
    * WMO station id.
    * @return WMO station id, or null.
    */
-  public String getWmoId();
+  String getWmoId();
 
   /**
    * Station description
    * @return station description or null
    */
-  public String getDescription();
+  String getDescription();
 
   /**
    * get Number of obs at this station
    * @return Number of obs or -1 if unknown
    */
-  public int getNobs();
+  int getNobs();
 
 }
