@@ -727,6 +727,7 @@ public class DtCoverageCS {
          && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
       // first clip the request rectangle to the bounding box of the grid
       LatLonRect bb = getLatLonBoundingBox();
+      if (bb == null) throw new IllegalStateException("No LatLonBoundingBox");
       LatLonRect rect2 = bb.intersect(rect);
       if (null == rect2)
         throw new InvalidRangeException("Request Bounding box does not intersect Grid ");
@@ -946,6 +947,7 @@ public class DtCoverageCS {
    */
   public List<NamedObject> getTimes() {
     List<CalendarDate> cdates = getCalendarDates();
+    if (cdates == null) throw new IllegalStateException("No CalendarDates");
     List<NamedObject> times = new ArrayList<>( cdates.size());
     for (CalendarDate cd: cdates) {
       times.add(new ucar.nc2.util.NamedAnything(cd.toString(), "calendar date"));

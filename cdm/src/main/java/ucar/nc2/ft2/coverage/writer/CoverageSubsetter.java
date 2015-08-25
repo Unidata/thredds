@@ -39,6 +39,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -91,8 +92,11 @@ public class CoverageSubsetter {
     // subset dependent axes
     for (CoverageCoordAxis orgAxis : orgCoordAxis.values()) {
       if (!orgAxis.getAxisType().isHoriz() && orgAxis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
-        CoverageCoordAxis1D from = findIndependentAxis(orgAxis.getDependsOn(), coordAxes);
-        coordAxes.add(orgAxis.subsetDependent(from));
+        for (String want : orgAxis.getDependsOnList()) {
+          CoverageCoordAxis1D from = findIndependentAxis(want, coordAxes);
+          if (from == null) throw new IllegalStateException("Cants find "+want+" independent axis");
+          coordAxes.add(orgAxis.subsetDependent(from));
+        }
       }
     }
 

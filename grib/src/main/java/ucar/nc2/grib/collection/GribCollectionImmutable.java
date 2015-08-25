@@ -529,8 +529,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public synchronized Record getRecordAt(int sourceIndex) {
-      if (sa == null)
-        System.out.println("HEY");
       return sa.getContent(sourceIndex);
     }
 

@@ -89,9 +89,6 @@ public class CoverageCoordSys {
     CoverageCoordAxis1D runtimeAxis = null;
 
     for (CoverageCoordAxis axis : getAxes()) {
-      if (axis == null || axis.getAxisType() == null)
-        System.out.println("HEY");
-
       if (axis.getAxisType() == AxisType.TimeOffset) {
         if (timeOffsetAxis != null) throw new RuntimeException("Cant have multiple TimeOffset Axes in a CoverageCoordSys");
         if (!(axis instanceof TimeOffsetAxis))
@@ -137,7 +134,7 @@ public class CoverageCoordSys {
   public CoverageTransform getHorizTransform() {
     for (String name : getTransformNames()) {
       CoverageTransform ct = dataset.findCoordTransform(name);
-      if (ct.isHoriz()) return ct;
+      if (ct != null && ct.isHoriz()) return ct;
     }
     return null;
   }
@@ -235,7 +232,7 @@ public class CoverageCoordSys {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
       if (axis == null)
-        System.out.printf("HEY axisName=%s%n", axisName);
+        throw new IllegalStateException("Cant find "+axisName);
       else if (axis.getAxisType() == type) {
          return axis;
        }
@@ -248,7 +245,7 @@ public class CoverageCoordSys {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
       if (axis == null)
-        System.out.println("HEY");
+        throw new IllegalStateException("Cant find "+axisName);
       result.add(axis);
      }
     return result;

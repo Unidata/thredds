@@ -902,8 +902,10 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
         case vert:
           CoverageCoordAxis1D vertAxis = (CoverageCoordAxis1D) subsetCoordSys.getZAxis();
-          covCoordSubset.add(vertAxis);
-          gribSubset.add( subset(gribCoord, vertAxis));
+          if (vertAxis != null) {
+            covCoordSubset.add(vertAxis);
+            gribSubset.add(subset(gribCoord, vertAxis));
+          }
           break;
 
         case time:

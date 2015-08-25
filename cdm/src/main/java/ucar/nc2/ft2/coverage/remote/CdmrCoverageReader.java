@@ -147,6 +147,7 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
     Array data = Array.factory(arrayResponse.dataType, arrayResponse.shape, ByteBuffer.wrap(datab));
 
     CoverageCoordSys csys = dataResponse.findCoordSys( arrayResponse.coordSysName);
+    if (csys == null) throw new IOException("Misformed response - no coordsys");
     return new GeoReferencedArray(arrayResponse.coverageName, arrayResponse.dataType, data, csys);
   }
 

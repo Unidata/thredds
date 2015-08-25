@@ -58,6 +58,9 @@ public class TimeHelper {
       units = atts.findAttValueIgnoreCase(CDM.UDUNITS, null);
     if (units == null)
       units = atts.findAttValueIgnoreCase(CDM.UNITS, null);
+    if (units == null)
+        throw new IllegalStateException("No units");
+
     Calendar cal = getCalendarFromAttribute(atts);
     CalendarDateUnit dateUnit;
     try {

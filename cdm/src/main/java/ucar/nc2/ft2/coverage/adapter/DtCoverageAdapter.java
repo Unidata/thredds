@@ -207,6 +207,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     } else if (dtCoordAxis.isContiguous()) {
       spacing = CoverageCoordAxis.Spacing.contiguousInterval;
       ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+      if (bounds == null) throw new IllegalStateException("No bounds array");
       int[] shape = bounds.getShape();
       int count = 0;
       values = new double[ncoords+1];
@@ -220,6 +221,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     } else {
       spacing = CoverageCoordAxis.Spacing.discontiguousInterval;
       ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+      if (bounds == null) throw new IllegalStateException("No bounds array");
       int[] shape = bounds.getShape();
       int count = 0;
       values = new double[2 * ncoords];
@@ -316,6 +318,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   @Override
   public double[] readCoordValues(CoverageCoordAxis coordAxis) throws IOException {
     ucar.nc2.dataset.CoordinateAxis dtCoordAxis = proxy.getNetcdfDataset().findCoordinateAxis(coordAxis.getName());
+    if (dtCoordAxis == null) throw new IllegalStateException("Cants find Coordinate Axis "+coordAxis.getName());
 
     if (dtCoordAxis instanceof CoordinateAxis1D) {
 

@@ -502,11 +502,8 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private void setProfileCollection(ProfileFeatureCollection profileCollection) throws IOException {
     List<ProfileFeatureBean> beans = new ArrayList<>();
-
-    PointFeatureCollectionIterator iter = profileCollection.getPointFeatureCollectionIterator(-1);
-    while (iter.hasNext()) {
-      PointFeatureCollection pob = iter.next();
-      ProfileFeatureBean bean = new ProfileFeatureBean((ProfileFeature) pob);
+    for (ProfileFeature profile : profileCollection) {
+      ProfileFeatureBean bean = new ProfileFeatureBean(profile);
       if (bean.pf != null) // may have missing values
         beans.add(bean);
     }
@@ -518,11 +515,8 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private void setTrajectoryCollection(TrajectoryFeatureCollection trajCollection) throws IOException {
     List<TrajectoryFeatureBean> beans = new ArrayList<>();
-
-    PointFeatureCollectionIterator iter = trajCollection.getPointFeatureCollectionIterator(-1);
-    while (iter.hasNext()) {
-      PointFeatureCollection pob = iter.next();
-      TrajectoryFeatureBean trajBean = new TrajectoryFeatureBean((TrajectoryFeature) pob);
+    for (TrajectoryFeature traj : trajCollection) {
+      TrajectoryFeatureBean trajBean = new TrajectoryFeatureBean(traj);
       if (trajBean.pf != null) // may have missing values
         beans.add(trajBean);
     }
@@ -752,17 +746,16 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private void setStnProfileObservations(StationProfileFeature stationProfileFeature) throws IOException {
     List<PointFeatureCollection> pfcList = new ArrayList<>();
-    for  (PointFeatureCollection pfc : stationProfileFeature) {
+    for (PointFeatureCollection pfc : stationProfileFeature) {
       pfcList.add(pfc);
     }
     setStnProfiles(pfcList);
   }
 
   private void setSectionObservations(SectionFeature sectionFeature) throws IOException {
-    PointFeatureCollectionIterator iter = sectionFeature.getPointFeatureCollectionIterator(-1); // not multiple
     List<PointFeatureCollection> pfcList = new ArrayList<>();
-    while (iter.hasNext()) {
-      pfcList.add(iter.next());
+    for (PointFeatureCollection pfc : sectionFeature) {
+      pfcList.add(pfc);
     }
     setSectionProfiles(pfcList);
   }

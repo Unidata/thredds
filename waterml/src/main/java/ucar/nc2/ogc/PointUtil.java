@@ -41,23 +41,17 @@ public class PointUtil {
     public static void printPointFeatures(FeatureDatasetPoint fdPoint, PrintStream outStream) throws IOException {
         for (FeatureCollection featCol : fdPoint.getPointFeatureCollectionList()) {
             StationTimeSeriesFeatureCollection stationCol = (StationTimeSeriesFeatureCollection) featCol;
-            try (PointFeatureCollectionIterator pointFeatColIter = stationCol.getPointFeatureCollectionIterator(-1)) {
 
-                while (pointFeatColIter.hasNext()) {
-                    StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) pointFeatColIter.next();
-                    PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
+            for (StationTimeSeriesFeature stationFeat : stationCol) {
+                for (PointFeature pointFeature : stationFeat) {
+                    StructureData data = pointFeature.getDataAll();
 
-                    while (pointFeatIter.hasNext()) {
-                        PointFeature pointFeature = pointFeatIter.next();
-                        StructureData data = pointFeature.getData();
-
-                        for (StructureMembers.Member member : data.getMembers()) {
-                            Array memberData = data.getArray(member);
-                            outStream.printf("%s: %s    ", member.getName(), memberData);
-                        }
-
-                        outStream.println();
+                    for (StructureMembers.Member member : data.getMembers()) {
+                        Array memberData = data.getArray(member);
+                        outStream.printf("%s: %s    ", member.getName(), memberData);
                     }
+
+                    outStream.println();
                 }
             }
         }
