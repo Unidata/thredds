@@ -46,6 +46,6 @@ import java.io.IOException;
  */
 public interface StationFeature extends Station {
 
-  public StructureData getFeatureData() throws IOException;
+  StructureData getFeatureData() throws IOException;
 
 }

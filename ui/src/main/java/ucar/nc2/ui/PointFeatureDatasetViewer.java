@@ -535,12 +535,13 @@ public class PointFeatureDatasetViewer extends JPanel {
   private void setSectionCollection(SectionFeatureCollection sectionCollection) throws IOException {
     List<SectionFeatureBean> beans = new ArrayList<>();
 
-    NestedPointFeatureCollectionIterator iter = sectionCollection.getNestedPointFeatureCollectionIterator(-1);
-    while (iter.hasNext()) {
-      NestedPointFeatureCollection pob = iter.next();
-      SectionFeatureBean bean = new SectionFeatureBean((SectionFeature) pob);
-      if (bean.pf != null) // may have missing values
-        beans.add(bean);
+    try (NestedPointFeatureCollectionIterator iter = sectionCollection.getNestedPointFeatureCollectionIterator(-1)) {
+      while (iter.hasNext()) {
+        NestedPointFeatureCollection pob = iter.next();
+        SectionFeatureBean bean = new SectionFeatureBean((SectionFeature) pob);
+        if (bean.pf != null) // may have missing values
+          beans.add(bean);
+      }
     }
 
     stnTable.setBeans(beans);
@@ -713,42 +714,46 @@ public class PointFeatureDatasetViewer extends JPanel {
     } else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
       PointFeatureCollection pfc = stationCollection.flatten(null, (CalendarDateRange) null);
-      PointFeatureIterator iter = pfc.getPointFeatureIterator(-1);
       List<PointFeature> obsList = new ArrayList<>();
       int count = 0;
-      while (iter.hasNext() && (count++ < maxCount))
-        obsList.add(iter.next());
+      for (PointFeature pf : pfc){
+        if (count++ > maxCount) break;
+        obsList.add(pf);
+      }
       setObservations(obsList);
 
     } else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationCollection = (StationProfileFeatureCollection) selectedCollection;
-      PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
       List<PointFeature> obsList = new ArrayList<>();
       int count = 0;
-      while (iter.hasNext() && (count++ < maxCount))
-        obsList.add((PointFeature) iter.next());
+      for (StationProfileFeature spf : stationCollection) {
+        for (ProfileFeature pf : spf) {
+          for (PointFeature f : pf) {
+            if (count++ > maxCount) break;
+            obsList.add(f);
+          }
+        }
+      }
       setObservations(obsList);
     }
   }
 
   private int setObservations(PointFeatureCollection pointCollection) throws IOException {
-    try (PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1)) {
-      //iter.setCalculateBounds(pointCollection);
-      List<PointFeature> obsList = new ArrayList<>();
-      int count = 0;
-      while (iter.hasNext() && (count++ < maxCount))
-        obsList.add(iter.next());
-
-      setObservations(obsList);
-      return obsList.size();
+    int count = 0;
+    List<PointFeature> obsList = new ArrayList<>();
+    for (PointFeature pf : pointCollection) {
+      if (count++ > maxCount) break;
+      obsList.add(pf);
     }
+
+    setObservations(obsList);
+    return obsList.size();
   }
 
-  private void setStnProfileObservations(NestedPointFeatureCollection nestedPointCollection) throws IOException {
-    PointFeatureCollectionIterator iter = nestedPointCollection.getPointFeatureCollectionIterator(-1); // not multiple
+  private void setStnProfileObservations(StationProfileFeature stationProfileFeature) throws IOException {
     List<PointFeatureCollection> pfcList = new ArrayList<>();
-    while (iter.hasNext()) {
-      pfcList.add(iter.next());
+    for  (PointFeatureCollection pfc : stationProfileFeature) {
+      pfcList.add(pfc);
     }
     setStnProfiles(pfcList);
   }

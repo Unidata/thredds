@@ -86,11 +86,12 @@ class GridResponder {
   File getPointResponseFile(NcssGridParamsBean params, NetcdfFileWriter.Version version)
           throws NcssException, InvalidRangeException, ParseException, IOException {
 
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
-    SubsetParams subset = params.makeSubset(gcd.getCalendar());
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null)) { // default chunking - let user control at some point
+      SubsetParams subset = params.makeSubset(gcd.getCalendar());
 
-    DSGGridCoverageWriter dsgWriter = new DSGGridCoverageWriter(gcd, params.getVar(), subset);
-    dsgWriter.writePointFeatureCollection(writer);
+      DSGGridCoverageWriter dsgWriter = new DSGGridCoverageWriter(gcd, params.getVar(), subset);
+      dsgWriter.writePointFeatureCollection(writer);
+    }
 
     return new File(responseFilename);
   }

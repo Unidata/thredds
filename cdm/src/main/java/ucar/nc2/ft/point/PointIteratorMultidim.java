@@ -48,7 +48,7 @@ import java.util.List;
  * @since Mar 26, 2008
  */
 public abstract class PointIteratorMultidim implements PointFeatureIterator {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointIteratorMultidim.class);
+  // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointIteratorMultidim.class);
 
   protected abstract PointFeature makeFeature(int recnum, StructureData sdata);
 

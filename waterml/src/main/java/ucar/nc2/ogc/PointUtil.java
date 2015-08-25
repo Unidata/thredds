@@ -41,22 +41,23 @@ public class PointUtil {
     public static void printPointFeatures(FeatureDatasetPoint fdPoint, PrintStream outStream) throws IOException {
         for (FeatureCollection featCol : fdPoint.getPointFeatureCollectionList()) {
             StationTimeSeriesFeatureCollection stationCol = (StationTimeSeriesFeatureCollection) featCol;
-            PointFeatureCollectionIterator pointFeatColIter = stationCol.getPointFeatureCollectionIterator(-1);
+            try (PointFeatureCollectionIterator pointFeatColIter = stationCol.getPointFeatureCollectionIterator(-1)) {
 
-            while (pointFeatColIter.hasNext()) {
-                StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) pointFeatColIter.next();
-                PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
+                while (pointFeatColIter.hasNext()) {
+                    StationTimeSeriesFeature stationFeat = (StationTimeSeriesFeature) pointFeatColIter.next();
+                    PointFeatureIterator pointFeatIter = stationFeat.getPointFeatureIterator(-1);
 
-                while (pointFeatIter.hasNext()) {
-                    PointFeature pointFeature = pointFeatIter.next();
-                    StructureData data = pointFeature.getData();
+                    while (pointFeatIter.hasNext()) {
+                        PointFeature pointFeature = pointFeatIter.next();
+                        StructureData data = pointFeature.getData();
 
-                    for (StructureMembers.Member member : data.getMembers()) {
-                        Array memberData = data.getArray(member);
-                        outStream.printf("%s: %s    ", member.getName(), memberData);
+                        for (StructureMembers.Member member : data.getMembers()) {
+                            Array memberData = data.getArray(member);
+                            outStream.printf("%s: %s    ", member.getName(), memberData);
+                        }
+
+                        outStream.println();
                     }
-
-                    outStream.println();
                 }
             }
         }

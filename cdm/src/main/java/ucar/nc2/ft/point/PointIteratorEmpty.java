@@ -35,8 +35,6 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.PointFeature;
 
-import java.io.IOException;
-
 /**
  * An empty PointIterator.
  *
