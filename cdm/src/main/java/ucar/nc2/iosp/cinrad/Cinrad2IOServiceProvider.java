@@ -296,7 +296,10 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     dims.add( gateDim);
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    v.setDataType(DataType.UBYTE);
+    if(isCC)
+      v.setDataType(DataType.SHORT);
+    else
+      v.setDataType(DataType.UBYTE);
     v.setDimensions(dims);
     ncfile.addVariable(null, v);
 
@@ -308,12 +311,16 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     b[0] = Cinrad2Record.MISSING_DATA;
     b[1] = Cinrad2Record.BELOW_THRESHOLD;
     Array missingArray = Array.factory(DataType.BYTE, new int[] {2}, b);
-
-    v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
+    if(isCC)
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, (short)-32768));
+    else
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
+    //v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
     v.addAttribute( new Attribute(CDM.ADD_OFFSET, new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
-    //v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
+    //if (!isCC)
+    //  v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     ArrayList dim2 = new ArrayList();
     dim2.add( scanDim);
@@ -421,7 +428,10 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   private void makeVariableNoCoords(NetcdfFile ncfile, int datatype, String shortName, String longName, Variable from) {
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    v.setDataType(DataType.UBYTE);
+    if(isCC)
+      v.setDataType(DataType.SHORT);
+    else
+      v.setDataType(DataType.UBYTE);
     v.setDimensions( from.getDimensions());
     ncfile.addVariable(null, v);
 
@@ -431,12 +441,14 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     byte[] b = new byte[2];
     b[0] = Cinrad2Record.MISSING_DATA;
     b[1] = Cinrad2Record.BELOW_THRESHOLD;
-    Array missingArray = Array.factory(DataType.BYTE, new int[]{2}, b);
-
-    v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
+    Array missingArray = Array.factory(DataType.BYTE, new int[] {2}, b);
+    if(isCC)
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, (short)-32768));
+    else
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
-    v.addAttribute(new Attribute(CDM.ADD_OFFSET, new Float(Cinrad2Record.getDatatypeAddOffset(datatype))));
+    v.addAttribute( new Attribute(CDM.ADD_OFFSET, new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
     //v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);

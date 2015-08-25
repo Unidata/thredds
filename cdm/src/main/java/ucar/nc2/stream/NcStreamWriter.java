@@ -38,6 +38,7 @@ import ucar.nc2.constants.CDM;
 
 import java.io.*;
 import java.nio.ByteOrder;
+import java.util.zip.DeflaterOutputStream;
 
 /**
  * Write a NetcdfFile to an OutputStream using ncstream protocol

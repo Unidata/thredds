@@ -78,4 +78,15 @@
     <collection spec="${cdmUnitTest}/gribCollections/Emptiness/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
   </featureCollection>
 
+  <!-- test nonexistent GRIB collection directory -->
+  <featureCollection featureType="GRIB1" name="Nonexist" path="Grib/Nonexist">
+    <collection spec="${cdmUnitTest}/gribCollections/Nonexist/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
+  </featureCollection>
+
+  <!-- test empty GRIB collection directory -->
+  <featureCollection featureType="GRIB1" name="Emptiness" path="Grib/Emptiness">
+    <collection spec="${cdmUnitTest}/gribCollections/Emptiness/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
+  </featureCollection>
+
+
 </catalog>
