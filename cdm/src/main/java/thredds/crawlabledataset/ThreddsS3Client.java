@@ -20,8 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ThreddsS3Client {
     private static final Logger logger = LoggerFactory.getLogger(ThreddsS3Client.class);
-    public static final String S3_PREFIX = "s3://";
-    public static final String S3_DELIMITER = "/";
 
     private final AmazonS3Client s3Client;
 
@@ -31,19 +29,14 @@ public class ThreddsS3Client {
         s3Client.setEndpoint("http://s3.amazonaws.com");
     }
 
-    public ObjectMetadata getObjectMetadata(String uri) {
-        S3Uri s3Uri = new S3Uri(uri);
-        if (s3Uri.key.isEmpty()) {
-            throw new IllegalArgumentException(String.format("S3 URI contains no key: '%s'", uri));
-        }
-
+    public ObjectMetadata getObjectMetadata(S3URI s3uri) {
         try {
-            ObjectMetadata metadata = s3Client.getObjectMetadata(s3Uri.bucket, s3Uri.key);
-            logger.info(String.format("S3 Downloaded metadata '%s'", uri));
+            ObjectMetadata metadata = s3Client.getObjectMetadata(s3uri.getBucket(), s3uri.getKey());
+            logger.info(String.format("S3 Downloaded metadata '%s'", s3uri));
             return metadata;
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info(String.format("S3 No such key in bucket: '%s'", uri));
+                logger.info(String.format("S3 No such key in bucket: '%s'", s3uri));
                 return null;
             } else {
                 throw e;
@@ -53,59 +46,30 @@ public class ThreddsS3Client {
 
     // Listing is limited to ~1000 results.
     // Will never be null.
-    public ObjectListing listObjects(String uri) {
-        S3Uri s3Uri = new S3Uri(uri);
-
+    public ObjectListing listObjects(S3URI s3uri) {
         final ListObjectsRequest listObjectsRequest =
-                new ListObjectsRequest().withBucketName(s3Uri.bucket).withDelimiter(S3_DELIMITER);
+                new ListObjectsRequest().withBucketName(s3uri.getBucket()).withDelimiter(S3URI.S3_DELIMITER);
 
-        if (!s3Uri.key.isEmpty()) {
-            String prefix = s3Uri.key.endsWith(S3_DELIMITER) ? s3Uri.key : s3Uri.key + S3_DELIMITER;
-            listObjectsRequest.setPrefix(prefix);
+        if (s3uri.getKey() != null) {
+            listObjectsRequest.setPrefix(s3uri.getKeyWithTrailingDelimiter());
         }
 
         ObjectListing objectListing = s3Client.listObjects(listObjectsRequest);
-        logger.info(String.format("S3 Downloaded listing '%s'", uri));
+        logger.info(String.format("S3 Downloaded listing '%s'", s3uri));
         return objectListing;
     }
 
-    public File saveObjectToFile(String uri, File file) {
-        S3Uri s3Uri = new S3Uri(uri);
-        if (s3Uri.key.isEmpty()) {
-            throw new IllegalArgumentException(String.format("S3 URI contains no key: '%s'", uri));
-        }
-
+    public File saveObjectToFile(S3URI s3uri, File file) {
         try {
-            s3Client.getObject(new GetObjectRequest(s3Uri.bucket, s3Uri.key), file);
-            logger.info(String.format("S3 Downloaded object '%s' to '%s'", uri, file));
+            s3Client.getObject(new GetObjectRequest(s3uri.getBucket(), s3uri.getKey()), file);
+            logger.info(String.format("S3 Downloaded object '%s' to '%s'", s3uri, file));
             return file;
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info(String.format("S3 No such key in bucket: '%s'", uri));
+                logger.info(String.format("S3 No such key '%s' in bucket '%s'.", s3uri.getKey(), s3uri.getBucket()));
                 return null;
             } else {
                 throw e;
-            }
-        }
-    }
-
-    public static class S3Uri {
-        public final String bucket, key;
-
-        public S3Uri(String uri) {
-            if (uri.startsWith(S3_PREFIX)) {
-                uri = stripPrefix(uri, S3_PREFIX);
-                int delim = uri.indexOf(S3_DELIMITER);
-
-                if (delim == -1) {  // Handle case where uri includes bucket but no key, e.g. "s3://bucket".
-                    this.bucket = uri;
-                    this.key = "";
-                } else {
-                    this.bucket = uri.substring(0, delim);
-                    this.key = uri.substring(Math.min(delim + 1, uri.length()), uri.length());
-                }
-            } else {
-                throw new IllegalArgumentException(String.format("Not a valid s3 URI: '%s'", uri));
             }
         }
     }
@@ -117,10 +81,6 @@ public class ThreddsS3Client {
         File file = Files.createTempFile("S3Object", fileBasename).toFile();
         file.deleteOnExit();
         return file;
-    }
-
-    public static String stripPrefix(String key, String prefix) {
-        return key.replaceFirst(prefix, "");
     }
 
     public static String basename(String uri) {
