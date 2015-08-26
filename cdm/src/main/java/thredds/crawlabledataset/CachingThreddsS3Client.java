@@ -21,9 +21,9 @@ public class CachingThreddsS3Client {
 
     private final ThreddsS3Client threddsS3Client;
 
-    private final Cache<String, ObjectMetadata> objectMetadataCache;
-    private final Cache<String, ObjectListing> objectListingCache;
-    private final Cache<String, File> objectFileCache;
+    private final Cache<S3URI, ObjectMetadata> objectMetadataCache;
+    private final Cache<S3URI, ObjectListing> objectListingCache;
+    private final Cache<S3URI, File> objectFileCache;
 
     public CachingThreddsS3Client(ThreddsS3Client threddsS3Client) {
         this.threddsS3Client = threddsS3Client;
@@ -44,54 +44,54 @@ public class CachingThreddsS3Client {
                 .build();
     }
 
-    private static class ObjectFileCacheRemovalListener implements RemovalListener<String, File> {
+    private static class ObjectFileCacheRemovalListener implements RemovalListener<S3URI, File> {
         @Override
-        public void onRemoval(RemovalNotification<String, File> notification) {
+        public void onRemoval(RemovalNotification<S3URI, File> notification) {
             notification.getValue().delete();
         }
     }
 
 
-    public ObjectMetadata getObjectMetadata(String uri) {
+    public ObjectMetadata getObjectMetadata(S3URI s3uri) {
         ObjectMetadata metadata;
-        if ((metadata = objectMetadataCache.getIfPresent(uri)) != null) {
+        if ((metadata = objectMetadataCache.getIfPresent(s3uri)) != null) {
             return metadata;
         }
 
-        if ((metadata = threddsS3Client.getObjectMetadata(uri)) != null) {
-            objectMetadataCache.put(uri, metadata);
+        if ((metadata = threddsS3Client.getObjectMetadata(s3uri)) != null) {
+            objectMetadataCache.put(s3uri, metadata);
         }
 
         return metadata;
     }
 
-    public ObjectListing listObjects(String uri) {
+    public ObjectListing listObjects(S3URI s3uri) {
         ObjectListing objectListing;
-        if ((objectListing = objectListingCache.getIfPresent(uri)) != null) {
+        if ((objectListing = objectListingCache.getIfPresent(s3uri)) != null) {
             return objectListing;
         }
 
-        if ((objectListing = threddsS3Client.listObjects(uri)) != null) {
-            objectListingCache.put(uri, objectListing);
+        if ((objectListing = threddsS3Client.listObjects(s3uri)) != null) {
+            objectListingCache.put(s3uri, objectListing);
         }
 
         return objectListing;
     }
 
-    public File saveObjectToFile(String uri, File file) throws IOException {
+    public File saveObjectToFile(S3URI s3uri, File file) throws IOException {
         File cachedFile;
-        if ((cachedFile = objectFileCache.getIfPresent(uri)) != null && cachedFile.exists()) {
+        if ((cachedFile = objectFileCache.getIfPresent(s3uri)) != null && cachedFile.exists()) {
             if (file.equals(cachedFile)) {
                 return file;
             } else {
                 Files.copy(cachedFile, file);
-                objectFileCache.put(uri, file);  // cachedFile will be evicted from the cache.
+                objectFileCache.put(s3uri, file);  // cachedFile will be evicted from the cache.
                 return file;
             }
         }
 
-        if ((file = threddsS3Client.saveObjectToFile(uri, file)) != null) {
-            objectFileCache.put(uri, file);
+        if ((file = threddsS3Client.saveObjectToFile(s3uri, file)) != null) {
+            objectFileCache.put(s3uri, file);
         }
 
         return file;

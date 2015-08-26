@@ -1,5 +1,7 @@
 package thredds.crawlabledataset
 import spock.lang.Specification
+import ucar.nc2.NetcdfFile
+
 /**
  * @author cwardgar
  * @since 2015/08/14
@@ -41,17 +43,17 @@ class CrawlableDatasetAmazonS3Spec extends Specification {
 
     def "goof around"() {
         setup:
-        String path1 = "s3://imos-data/";
-        String path2 = "s3://imos-data/IMOS/ACORN"
+        String path1 = "s3://imos-data";
+        String path2 = "s3://imos-data/IMOS/ACORN/radial"
         String path3 = "s3://imos-data/index.html";
         String path4 = "s3://imos-data/IMOS/ANMN/AM/NRSYON/CO2/real-time/" +
                 "IMOS_ANMN-AM_KST_20140709T033000Z_NRSYON_FV00_NRSYON-CO2-1407-realtime-raw_END-20140901T060000Z_C-20150722T081042Z.nc"
 
-        CrawlableDatasetAmazonS3 crawlableDset = new CrawlableDatasetAmazonS3(path2, null)
-//        NetcdfFile ncFile = NetcdfFile.open(crawlableDset.file.absolutePath);
-//        println ncFile.toString()
+        CrawlableDatasetAmazonS3 crawlableDset = new CrawlableDatasetAmazonS3(path4, null)
+        NetcdfFile ncFile = NetcdfFile.open(crawlableDset.file.absolutePath);
+        println ncFile.toString()
 
-        expect:
+//        expect:
 //        println crawlableDset.path
 //        println crawlableDset.name
 //        println crawlableDset.parentDataset
@@ -62,9 +64,9 @@ class CrawlableDatasetAmazonS3Spec extends Specification {
 //        println crawlableDset.lastModified()
 
 //        and:
-        crawlableDset.listDatasets().each {
-            println "\t$it"
-        }
+//        crawlableDset.listDatasets().each {
+//            println "\t$it"
+//        }
 //        println crawlableDset.file?.text
     }
 }

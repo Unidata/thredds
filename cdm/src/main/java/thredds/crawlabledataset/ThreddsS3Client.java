@@ -1,8 +1,7 @@
 package thredds.crawlabledataset;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -76,37 +75,30 @@ public class ThreddsS3Client {
 
     /////////////////////////////////////// Static util ///////////////////////////////////////
 
-    public static File createTempFile(String uri) throws IOException {
-        String fileBasename = basename(uri);
-        File file = Files.createTempFile("S3Object", fileBasename).toFile();
-        file.deleteOnExit();
-        return file;
-    }
-
-    public static String basename(String uri) {
-        return new File(uri).getName();
-    }
-
-    public static String parent(String uri) {
-        int delim = uri.lastIndexOf(S3_DELIMITER);
-        return uri.substring(0, delim);
-    }
-
-    public static String concat(String parent, String child) {
-        if (child == null || child.isEmpty()) {
-            return parent;
-        } else {
-            return removeTrailingSlashes(parent) + S3_DELIMITER + removeTrailingSlashes(child);
-        }
-    }
-
-    public static String removeTrailingSlashes(String str) {
-        while (str.endsWith(S3_DELIMITER)) {
-            str = str.substring(0, str.length() - S3_DELIMITER.length());
-        }
-
-        return str;
-    }
+//    public static String basename(String uri) {
+//        return new File(uri).getName();
+//    }
+//
+//    public static String parent(String uri) {
+//        int delim = uri.lastIndexOf(S3_DELIMITER);
+//        return uri.substring(0, delim);
+//    }
+//
+//    public static String concat(String parent, String child) {
+//        if (child == null || child.isEmpty()) {
+//            return parent;
+//        } else {
+//            return removeTrailingSlashes(parent) + S3_DELIMITER + removeTrailingSlashes(child);
+//        }
+//    }
+//
+//    public static String removeTrailingSlashes(String str) {
+//        while (str.endsWith(S3_DELIMITER)) {
+//            str = str.substring(0, str.length() - S3_DELIMITER.length());
+//        }
+//
+//        return str;
+//    }
 
 
     public static void main(String[] args) {
@@ -116,12 +108,12 @@ public class ThreddsS3Client {
         String path2 = "s3://imos-data/IMOS";
         ThreddsS3Client client = new ThreddsS3Client();
 
-        ObjectMetadata metadata = client.getObjectMetadata(path1);
+        ObjectMetadata metadata = client.getObjectMetadata(new S3URI(path1));
         if (metadata != null) {
             System.out.println(metadata.getLastModified());
         }
 
-        ObjectListing listing = client.listObjects(path1);
+        ObjectListing listing = client.listObjects(new S3URI(path1));
         if (listing != null) {
             System.out.println("--------------Common Prefixes--------------");
             for (String prefix : listing.getCommonPrefixes()) {

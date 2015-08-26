@@ -85,36 +85,36 @@ public class EhCachingThreddsS3Client {
     }
 
 
-    public ObjectMetadata getObjectMetadata(String uri) {
+    public ObjectMetadata getObjectMetadata(S3URI s3uri) {
         Element element;
-        if ((element = getS3ObjectMetadataCache().get(uri)) != null) {
+        if ((element = getS3ObjectMetadataCache().get(s3uri)) != null) {
             return (ObjectMetadata) element.getObjectValue();
         }
 
-        ObjectMetadata metadata = threddsS3Client.getObjectMetadata(uri);
-        getS3ObjectMetadataCache().put(new Element(uri, metadata));
+        ObjectMetadata metadata = threddsS3Client.getObjectMetadata(s3uri);
+        getS3ObjectMetadataCache().put(new Element(s3uri, metadata));
         return metadata;
     }
 
-    public ObjectListing listObjects(String uri) {
+    public ObjectListing listObjects(S3URI s3uri) {
         Element element;
-        if ((element = getS3ListingCache().get(uri)) != null) {
+        if ((element = getS3ListingCache().get(s3uri)) != null) {
             return (ObjectListing) element.getObjectValue();
         }
 
-        ObjectListing objectListing = threddsS3Client.listObjects(uri);
-        getS3ListingCache().put(new Element(uri, objectListing));
+        ObjectListing objectListing = threddsS3Client.listObjects(s3uri);
+        getS3ListingCache().put(new Element(s3uri, objectListing));
         return objectListing;
     }
 
-    public ObjectMetadata saveObjectToFile(String uri, File file) throws IOException {
+    public ObjectMetadata saveObjectToFile(S3URI s3uri, File file) throws IOException {
         Element element;
-        if ((element = getS3ObjectCache().get(uri)) != null/* && ((File) element.getObjectValue()).exists()*/) {
+        if ((element = getS3ObjectCache().get(s3uri)) != null/* && ((File) element.getObjectValue()).exists()*/) {
             File cachedFile = (File) element.getObjectValue();
 
             if (!file.equals(cachedFile)) {
                 Files.copy(cachedFile, file);
-                getS3ObjectCache().put(new Element(uri, file));
+                getS3ObjectCache().put(new Element(s3uri, file));
             }
         }
 
