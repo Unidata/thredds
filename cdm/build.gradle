@@ -23,7 +23,7 @@ dependencies {
     compile libraries["aws-java-sdk-s3"]
 
     compile libraries["slf4j-api"]
-//    runtime libraries["slf4j-jdk14"]
+    runtime libraries["slf4j-jdk14"]
 
     testCompile libraries["groovy-all"]
     testCompile libraries["spock-core"]

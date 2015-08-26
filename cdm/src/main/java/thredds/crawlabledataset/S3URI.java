@@ -1,7 +1,7 @@
 package thredds.crawlabledataset;
 
 import java.io.File;
-import java.util.Objects;
+import com.google.common.base.Preconditions;
 
 /**
  * @author cwardgar
@@ -15,10 +15,11 @@ public class S3URI {
 
     /**
      * Creates a S3URI by extracting the S3 bucket and key names from {@code uri}. The key will have all trailing
-     * {@code #S3_DELIMITER delimiter}s removed from it.
+     * {@link #S3_DELIMITER delimiter}s removed from it.
      *
      * @param uri  an S3 URI in the form {@code s3://<bucket>/<key>}.
-     * @throws IllegalArgumentException  if {@code uri} is not valid.
+     * @throws IllegalArgumentException  if {@code uri} is not in the expected form or if the bucket or key are invalid.
+     * @see #S3URI(String, String)
      */
     public S3URI(String uri) {
         if (uri.startsWith(S3_PREFIX)) {
@@ -40,10 +41,11 @@ public class S3URI {
 
     /**
      * Creates a S3URI from the specified bucket and key. The key will have all trailing
-     * {@code #S3_DELIMITER delimiter}s removed from it.
+     * {@link #S3_DELIMITER delimiter}s removed from it.
      *
      * @param bucket  a bucket name. Must be non-{@code null} and at least 3 characters.
-     * @param key  a key. May be {@code null} but cannot be the empty string.
+     * @param key  a key. May be {@code null} but cannot be the empty string. Also, it may not contain consecutive
+     *             delimiters.
      * @throws IllegalArgumentException  if either argument fails the requirements.
      */
     public S3URI(String bucket, String key) throws IllegalArgumentException {
@@ -52,10 +54,10 @@ public class S3URI {
     }
 
     private static String checkBucket(String bucket) throws IllegalArgumentException {
-        Objects.requireNonNull(bucket, "bucket must be non-null");
+        Preconditions.checkNotNull(bucket, "Bucket must be non-null.");
         if (bucket.length() < 3) {
             throw new IllegalArgumentException(String.format(
-                    "Bucket names must be at least 3 characters: '%s'", bucket));
+                    "Bucket name '%s' must be at least 3 characters.", bucket));
         }
         return bucket;
     }
@@ -64,13 +66,17 @@ public class S3URI {
         if (key == null) {
             return null;
         } else if (key.equals("")) {
-            throw new IllegalArgumentException("Keys may not be the empty string.");
+            throw new IllegalArgumentException("Key may not be the empty string.");
         } else {
-            String normalizedKey = key;
-            while (normalizedKey.endsWith(S3_DELIMITER)) {
-                normalizedKey = normalizedKey.substring(0, normalizedKey.length() - S3_DELIMITER.length());
+            if (key.contains(S3_DELIMITER + S3_DELIMITER)) {  // Key contains consecutive delimiters.
+                throw new IllegalArgumentException(String.format("Key '%s' contains consecutive delimiters.", key));
             }
-            return normalizedKey;
+
+            if (key.endsWith(S3_DELIMITER)) {
+                return key.substring(0, key.length() - 1);  // Remove trailing delimiter.
+            } else {
+                return key;
+            }
         }
     }
 
@@ -149,12 +155,15 @@ public class S3URI {
      * Creates a new URI by resolving the specified path relative to {@code this}. If {@code key == null}, the key
      * of the returned URI will simply be {@code relativePath}.
      *
-     * @param relativePath  a path relative to {@code this}.
+     * @param relativePath  a path relative to {@code this}. Must be non-null and non-empty.
      * @return  the child URI.
      * @throws IllegalArgumentException  if the path starts with a {@link #S3_DELIMITER delimiter}.
      *      The path must be relative.
      */
     public S3URI getChild(String relativePath) throws IllegalArgumentException {
+        Preconditions.checkNotNull(relativePath, "relativePath must be non-null.");
+        Preconditions.checkArgument(!relativePath.isEmpty(), "relativePath must be non-empty");
+
         if (relativePath.startsWith(S3_DELIMITER)) {
             throw new IllegalArgumentException(String.format(
                     "Path '%s' should be relative but begins with the delimiter string '%s'.",
@@ -168,6 +177,11 @@ public class S3URI {
         }
     }
 
+    /**
+     * Returns a string representation of the URI in the form {@code s3://<bucket>/<key>}.
+     *
+     * @return  a string representation of the URI.
+     */
     @Override
     public String toString() {
         StringBuilder strBuilder = new StringBuilder();
