@@ -15,7 +15,7 @@ import com.google.common.io.Files;
  * @author cwardgar
  * @since 2015/08/22
  */
-public class CachingThreddsS3Client {
+public class CachingThreddsS3Client implements ThreddsS3Client {
     private static final long ENTRY_EXPIRATION_TIME = 60 * 10;  // In seconds.
     private static final long MAX_ENTRIES = 100;
 
@@ -52,6 +52,7 @@ public class CachingThreddsS3Client {
     }
 
 
+    @Override
     public ObjectMetadata getObjectMetadata(S3URI s3uri) {
         ObjectMetadata metadata;
         if ((metadata = objectMetadataCache.getIfPresent(s3uri)) != null) {
@@ -65,6 +66,7 @@ public class CachingThreddsS3Client {
         return metadata;
     }
 
+    @Override
     public ObjectListing listObjects(S3URI s3uri) {
         ObjectListing objectListing;
         if ((objectListing = objectListingCache.getIfPresent(s3uri)) != null) {
@@ -78,6 +80,7 @@ public class CachingThreddsS3Client {
         return objectListing;
     }
 
+    @Override
     public File saveObjectToFile(S3URI s3uri, File file) throws IOException {
         File cachedFile;
         if ((cachedFile = objectFileCache.getIfPresent(s3uri)) != null && cachedFile.exists()) {

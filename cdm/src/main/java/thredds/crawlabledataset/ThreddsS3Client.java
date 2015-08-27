@@ -1,129 +1,56 @@
 package thredds.crawlabledataset;
 
 import java.io.File;
+import java.io.IOException;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author cwardgar
- * @since 2015/08/22
+ * @since 2015/08/26
  */
-public class ThreddsS3Client {
-    private static final Logger logger = LoggerFactory.getLogger(ThreddsS3Client.class);
+public interface ThreddsS3Client {
+    /**
+     * Gets the metadata for the specified Amazon S3 object without actually fetching the object itself.
+     * The object metadata contains information such as content type, content disposition, etc.,
+     * as well as custom user metadata that can be associated with an object in Amazon S3.
+     *
+     * @param s3uri  the Amazon S3 URI of the object whose metadata is being retrieved.
+     * @return all Amazon S3 object metadata for the specified object.
+     *         Will be {@code null} if there is no S3 bucket with the specified name that has the specified key.
+     */
+    ObjectMetadata getObjectMetadata(S3URI s3uri);
 
-    private final AmazonS3Client s3Client;
+    /**
+     * Returns a listing of the objects located in the "virtual filesystem" at the specified URI.
+     * {@code s3uri.getKey()} is interpreted as a path, and only objects (accessible via
+     * {@link ObjectListing#getObjectSummaries}) or "directories" (accessible via
+     * {@link ObjectListing#getCommonPrefixes}) that have that prefix will be part of the returned listing.
+     * <p>
+     * NOTE: To manage large result sets, Amazon S3 uses pagination to split them into multiple responses.
+     * As a consequence, this listing will only include the first 1000-or-so results.
+     * <p>
+     * TODO: Extend this API so that it allows the retrieval of more than 1000 results.
+     *
+     * @param s3uri  the Amazon S3 URI of the "virtual directory" whose objects are being retrieved.
+     * @return  a listing of objects. Will be {@code null} if the specified URI does not denote an existing virtual
+     *          directory. Otherwise, the result will be non-null and non-empty. That is, it will have at least one
+     *          object summary or at least one common prefix.
+     * @see  com.amazonaws.services.s3.AmazonS3#listObjects(String)
+     */
+    ObjectListing listObjects(S3URI s3uri);
 
-    public ThreddsS3Client() {
-        // Use HTTP, it's much faster
-        s3Client = new AmazonS3Client();
-        s3Client.setEndpoint("http://s3.amazonaws.com");
-    }
-
-    public ObjectMetadata getObjectMetadata(S3URI s3uri) {
-        try {
-            ObjectMetadata metadata = s3Client.getObjectMetadata(s3uri.getBucket(), s3uri.getKey());
-            logger.info(String.format("S3 Downloaded metadata '%s'", s3uri));
-            return metadata;
-        } catch (AmazonServiceException e) {
-            if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info(String.format("S3 No such key in bucket: '%s'", s3uri));
-                return null;
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    // Listing is limited to ~1000 results.
-    // Will never be null.
-    public ObjectListing listObjects(S3URI s3uri) {
-        final ListObjectsRequest listObjectsRequest =
-                new ListObjectsRequest().withBucketName(s3uri.getBucket()).withDelimiter(S3URI.S3_DELIMITER);
-
-        if (s3uri.getKey() != null) {
-            listObjectsRequest.setPrefix(s3uri.getKeyWithTrailingDelimiter());
-        }
-
-        ObjectListing objectListing = s3Client.listObjects(listObjectsRequest);
-        logger.info(String.format("S3 Downloaded listing '%s'", s3uri));
-        return objectListing;
-    }
-
-    public File saveObjectToFile(S3URI s3uri, File file) {
-        try {
-            s3Client.getObject(new GetObjectRequest(s3uri.getBucket(), s3uri.getKey()), file);
-            logger.info(String.format("S3 Downloaded object '%s' to '%s'", s3uri, file));
-            return file;
-        } catch (AmazonServiceException e) {
-            if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info(String.format("S3 No such key '%s' in bucket '%s'.", s3uri.getKey(), s3uri.getBucket()));
-                return null;
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    /////////////////////////////////////// Static util ///////////////////////////////////////
-
-//    public static String basename(String uri) {
-//        return new File(uri).getName();
-//    }
-//
-//    public static String parent(String uri) {
-//        int delim = uri.lastIndexOf(S3_DELIMITER);
-//        return uri.substring(0, delim);
-//    }
-//
-//    public static String concat(String parent, String child) {
-//        if (child == null || child.isEmpty()) {
-//            return parent;
-//        } else {
-//            return removeTrailingSlashes(parent) + S3_DELIMITER + removeTrailingSlashes(child);
-//        }
-//    }
-//
-//    public static String removeTrailingSlashes(String str) {
-//        while (str.endsWith(S3_DELIMITER)) {
-//            str = str.substring(0, str.length() - S3_DELIMITER.length());
-//        }
-//
-//        return str;
-//    }
-
-
-    public static void main(String[] args) {
-        String path1 = "s3://imos-data/IMOS/ANMN/AM/NRSYON/CO2/real-time/" +
-                "IMOS_ANMN-AM_KST_20140709T033000Z_NRSYON_FV00_NRSYON-CO2-1407-realtime-raw_END-20140901T060000Z_C" +
-                "-20150722T081042Z.nc";
-        String path2 = "s3://imos-data/IMOS";
-        ThreddsS3Client client = new ThreddsS3Client();
-
-        ObjectMetadata metadata = client.getObjectMetadata(new S3URI(path1));
-        if (metadata != null) {
-            System.out.println(metadata.getLastModified());
-        }
-
-        ObjectListing listing = client.listObjects(new S3URI(path1));
-        if (listing != null) {
-            System.out.println("--------------Common Prefixes--------------");
-            for (String prefix : listing.getCommonPrefixes()) {
-                System.out.println("\t" + prefix);
-            }
-
-            System.out.println("--------------Object Summaries--------------");
-            for (S3ObjectSummary summary : listing.getObjectSummaries()) {
-                System.out.println("\t" + summary.getKey());
-            }
-        }
-    }
+    /**
+     * Gets the object metadata for the object stored in Amazon S3 under the specified bucket and key,
+     * and saves the object contents to the specified file.
+     *
+     * @param s3uri  the Amazon S3 URI of the object whose content is being saved.
+     * @param file  indicates the file (which might already exist) where to save the object content being downloading
+     *              from Amazon S3.
+     * @return  the file in which the Amazon S3 object's content was saved.
+     *          Returns {@code null} if there is no S3 bucket with the specified name that has the specified key.
+     * @throws IOException  if some I/O error occurred on the local filesystem while writing to file.
+     */
+    File saveObjectToFile(S3URI s3uri, File file) throws IOException;
 }

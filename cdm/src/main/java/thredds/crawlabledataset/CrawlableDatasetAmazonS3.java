@@ -2,10 +2,10 @@ package thredds.crawlabledataset;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -29,7 +29,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
     public CrawlableDatasetAmazonS3(S3URI s3uri, Object configObject) {
         super(s3uri.toString(), configObject);
         this.s3uri = s3uri;
-        this.threddsS3Client = new CachingThreddsS3Client(new ThreddsS3Client());
+        this.threddsS3Client = new CachingThreddsS3Client(new ThreddsS3ClientImpl());
     }
 
     //////////////////////////////////////// CrawlableDatasetFile ////////////////////////////////////////
@@ -37,18 +37,12 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
     @Override
     public File getFile() {
         try {
-            File tempFile = createTempFile(s3uri);
+            File tempFile = ThreddsS3ClientImpl.createTempFile(s3uri);
             return threddsS3Client.saveObjectToFile(s3uri, tempFile);
         } catch (IOException e) {
             logger.error(String.format("Could not save S3 object '%s' to file.", s3uri), e);
             return null;
         }
-    }
-
-    public static File createTempFile(S3URI s3uri) throws IOException {
-        File file = Files.createTempFile("S3Object", s3uri.getBaseName()).toFile();
-        file.deleteOnExit();
-        return file;
     }
 
     //////////////////////////////////////// CrawlableDataset ////////////////////////////////////////
@@ -75,8 +69,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
 
     @Override
     public boolean isCollection() {
-        ObjectListing listing = threddsS3Client.listObjects(s3uri);
-        return !listing.getCommonPrefixes().isEmpty() || !listing.getObjectSummaries().isEmpty();
+        return threddsS3Client.listObjects(s3uri) != null;
     }
 
     @Override
@@ -93,6 +86,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
         }
 
         ObjectListing objectListing = threddsS3Client.listObjects(s3uri);
+        assert objectListing != null : "We checked this in the inCollection() call above.";
         List<CrawlableDataset> list = new ArrayList<>();
 
         for (final S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {

@@ -25,9 +25,9 @@ public class EhCachingThreddsS3Client {
     private static final int EHCACHE_TTL = 60;
     private static final int EHCACHE_TTI = 60;
 
-    private final ThreddsS3Client threddsS3Client;
+    private final ThreddsS3ClientImpl threddsS3Client;
 
-    public EhCachingThreddsS3Client(ThreddsS3Client threddsS3Client) {
+    public EhCachingThreddsS3Client(ThreddsS3ClientImpl threddsS3Client) {
         this.threddsS3Client = threddsS3Client;
     }
 
