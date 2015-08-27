@@ -9,6 +9,14 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
     repositories {
         mavenCentral()
         maven {
+            // JitPack builds GitHub projects on demand and publishes ready-to-use packages.
+            // We need this because Spock requires CGLIB 3.2+ in order to work on Java 8.
+            // However, as of 2015-08-26, v3.2 hasn't been released, even though working code exists on master.
+            // So, using JitPack, we're going to grab an appropriate CGLIB artifact.
+            // See https://github.com/cglib/cglib/issues/32
+            url "https://jitpack.io"  // For libraries["cglib-nodep"]
+        }
+        maven {
             url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
         }
         maven {
@@ -108,9 +116,18 @@ libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfu
 
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 
-libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.1"
+// These four are all for Spock.
 
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
+
+libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.1"
+
+// In Spock, allows mocking of classes (in addition to interfaces).
+// 5503bcca74 is the most recent commit on the cglib master branch as of 2015-08-26.
+libraries["cglib-nodep"] = "com.github.cglib.cglib:cglib-nodep:5503bcca74"
+
+// In Spock, allows mocking of classes without default constructor (together with CGLIB).
+libraries["objenesis"] = "org.objenesis:objenesis:2.2"
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 

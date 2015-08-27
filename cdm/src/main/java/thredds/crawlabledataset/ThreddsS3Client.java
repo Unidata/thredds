@@ -7,6 +7,9 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
 /**
+ * Provides an interface for accessing the Amazon S3 web service. It is a simplified version of the
+ * {@link com.amazonaws.services.s3.AmazonS3} interface that is much simpler to use from within THREDDS.
+ *
  * @author cwardgar
  * @since 2015/08/26
  */

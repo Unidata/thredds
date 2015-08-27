@@ -4,6 +4,10 @@ import java.io.File;
 import com.google.common.base.Preconditions;
 
 /**
+ * An identifier for objects stored in Amazon S3. Ultimately, the identifier is composed solely of a bucket name and
+ * a key, and an object of this class can be constructed with those two items. However, this class also supports URIs
+ * rendered in a path-like form: {@code s3://<bucket>/<key>}.
+ *
  * @author cwardgar
  * @since 2015/08/24
  */

@@ -3,19 +3,19 @@ package thredds.crawlabledataset;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A basic implementation of {@link ThreddsS3Client}.
+ *
  * @author cwardgar
  * @since 2015/08/22
  */
@@ -26,8 +26,12 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
 
     public ThreddsS3ClientImpl() {
         // Use HTTP, it's much faster
-        s3Client = new AmazonS3Client();
-        s3Client.setEndpoint("http://s3.amazonaws.com");
+        this.s3Client = new AmazonS3Client();
+        this.s3Client.setEndpoint("http://s3.amazonaws.com");
+    }
+
+    public ThreddsS3ClientImpl(AmazonS3Client s3Client) {
+        this.s3Client = s3Client;
     }
 
     @Override
@@ -50,10 +54,9 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         }
     }
 
-    // Listing is limited to ~1000 results.
     @Override
     public ObjectListing listObjects(S3URI s3uri) {
-        final ListObjectsRequest listObjectsRequest =
+        ListObjectsRequest listObjectsRequest =
                 new ListObjectsRequest().withBucketName(s3uri.getBucket()).withDelimiter(S3URI.S3_DELIMITER);
 
         if (s3uri.getKey() != null) {
@@ -106,52 +109,5 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         File file = Files.createTempFile("S3Object", s3uri.getBaseName()).toFile();
         file.deleteOnExit();
         return file;
-    }
-
-
-    public static void main(String[] args) throws IOException {
-        String path1 = "s3://imos-data";                    // no key
-        String path2 = "s3://non-existent-bucket/blah";     // non-existent bucket
-        String path3 = "s3://imos-data/non-existent-key";   // non-existent key
-        String path4 = "s3://imos-data/IMOS/ACORN/radial";  // directory path, but not an actual existent key.
-        String path5 = "s3://imos-data/index.html";
-        String path6 = "s3://imos-data/IMOS/ANMN/AM/NRSYON/CO2/real-time/" +
-                "IMOS_ANMN-AM_KST_20140709T033000Z_NRSYON_FV00_NRSYON-CO2-1407-realtime-raw_END-20140901T060000Z_C" +
-                "-20150722T081042Z.nc";
-
-        S3URI s3uri = new S3URI(path4);
-        ThreddsS3ClientImpl client = new ThreddsS3ClientImpl();
-
-//        System.out.println("--------------Metadata--------------");
-//        ObjectMetadata metadata = client.getObjectMetadata(s3uri);
-//        if (metadata != null) {
-//            System.out.println("\t" + metadata.getLastModified());
-//        } else {
-//            System.out.println("\t" + "null");
-//        }
-
-        System.out.println("--------------Listing--------------");
-        ObjectListing listing = client.listObjects(s3uri);
-        if (listing != null) {
-            System.out.println("\t--------------Common Prefixes--------------");
-            for (String prefix : listing.getCommonPrefixes()) {
-                System.out.println("\t\t" + prefix);
-            }
-
-            System.out.println("\t--------------Object Summaries--------------");
-            for (S3ObjectSummary summary : listing.getObjectSummaries()) {
-                System.out.println("\t\t" + summary.getKey());
-            }
-        } else {
-            System.out.println("\t" + "null");
-        }
-
-//        System.out.println("--------------File--------------");
-//        File file = client.saveObjectToFile(s3uri, createTempFile(s3uri));
-//        if (file != null) {
-//            System.out.println(file.toString());
-//        } else {
-//            System.out.println("\t" + "null");
-//        }
     }
 }
