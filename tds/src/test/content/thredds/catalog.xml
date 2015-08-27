@@ -8,7 +8,8 @@
   <service name="opendapOnly" serviceType="OpenDAP" base="/thredds/dodsC/"/>
 
   <service name="all" base="" serviceType="compound">
-    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
+    <service name="odap" serviceType="OpenDAP" base="/thredds/dap4/"/>
+    <service name="dap4" serviceType="DAP4" base="/thredds/dodsC/"/>
     <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
     <service name="wms" serviceType="WMS" base="/thredds/wms/"/>

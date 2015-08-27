@@ -35,10 +35,13 @@ public class TestNc4IospWriting {
     Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
   }
 
-  // @Test
-  public void problem() throws IOException {
-    copyFile("Q:/cdmUnitTest/formats/netcdf4/files/xma022032.nc5", "C:/temp/xma022032.nc5", NetcdfFileWriter.Version.netcdf4);
-    //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);
+  @Test
+  public void unlimDim0() throws IOException {
+    File fin = new File(TestDir.cdmUnitTestDir + "formats/netcdf3/longOffset.nc");
+    String datasetOut = tempDir + fin.getName();
+
+    copyFile(fin.getAbsolutePath(), datasetOut, NetcdfFileWriter.Version.netcdf3);
+    copyFile(fin.getAbsolutePath(), datasetOut, NetcdfFileWriter.Version.netcdf4);
   }
 
   @Test
