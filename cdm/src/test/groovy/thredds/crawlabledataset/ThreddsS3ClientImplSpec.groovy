@@ -10,6 +10,12 @@ import org.apache.http.HttpStatus
 import spock.lang.Specification
 
 /**
+ * Tests that ThreddsS3ClientImpl implements the contract of ThreddsS3Client, particularly with respect to unhappy
+ * code paths. Makes heavy use of mocking to avoid actually connecting to Amazon S3.
+ * <p>
+ * TODO: These unit tests are nice and fast, but we need integration tests too. For that, we'll need an AWS instance
+ * under our control that we can host test data on.
+ *
  * @author cwardgar
  * @since 2015/08/26
  */
