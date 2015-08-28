@@ -153,16 +153,28 @@ public class Cinrad2Record {
 
   static public float getDatatypeScaleFactor(int datatype) {
     switch (datatype) {
-      case REFLECTIVITY: return 0.5f;
+      case REFLECTIVITY:
+        if(Cinrad2IOServiceProvider.isCC)
+          return 0.1f;
+        if(Cinrad2IOServiceProvider.isCC20)
+          return 0.5f;
+        else
+          return 0.5f;
       case VELOCITY_LOW :
         if(Cinrad2IOServiceProvider.isSC)
           return 0.3673f;
+        else if(Cinrad2IOServiceProvider.isCC)
+          return 0.1f;
         else
           return 1.0f;
       case VELOCITY_HI:
       case SPECTRUM_WIDTH :
         if(Cinrad2IOServiceProvider.isSC)
           return 0.1822f;
+        else if(Cinrad2IOServiceProvider.isCC)
+          return 0.1f;
+        else if(Cinrad2IOServiceProvider.isCC20)
+          return 1.0f;
         else
           return 0.5f;
       default : throw new IllegalArgumentException();
@@ -176,12 +188,16 @@ public class Cinrad2Record {
           return -32.0f;
         else if (Cinrad2IOServiceProvider.isCC)
           return 0.0f;
+        else if (Cinrad2IOServiceProvider.isCC20)
+          return -32.0f;
         else
           return -33.0f;
       case VELOCITY_LOW :
         if(Cinrad2IOServiceProvider.isSC)
           return 0.0f;
         else if(Cinrad2IOServiceProvider.isCC)
+          return 0.0f;
+        else if (Cinrad2IOServiceProvider.isCC20)
           return 0.0f;
         else
           return -129.0f;
@@ -190,6 +206,8 @@ public class Cinrad2Record {
           if(Cinrad2IOServiceProvider.isSC)
             return 0.0f;
           else if(Cinrad2IOServiceProvider.isCC)
+            return 0.0f;
+          else if (Cinrad2IOServiceProvider.isCC20)
             return 0.0f;
           else
             return -64.5f;
@@ -371,9 +389,11 @@ public class Cinrad2Record {
 
   }
 
-  static int sweepN = 1;
+  int sweepN = 1;
   int echoType;
-  static int [] elev;
+  int [] elev;
+  int [] recordNum;
+  byte cDataForm;
   public void readCCHeader(RandomAccessFile din) throws IOException {
 
     message_offset = 0;
@@ -458,15 +478,98 @@ public class Cinrad2Record {
       din.skipBytes(2);
       //System.out.println("bin num: " + binNum + " maxL " + maxL + " totalRNumber " + recordTotalNum);
     }
-    din.seek(1020);
-    int doffset = din.readInt();
-    System.out.println(" Offset: " + doffset);
+    //din.seek(1020);
+   // int doffset = din.readInt();
+    //System.out.println(" Offset: " + doffset);
+  }
+
+  public void readCC20Header(RandomAccessFile din) throws IOException {
+
+    message_offset = 0;
+    din.seek(message_offset);
+// site info 170
+    din.skipBytes(62);
+
+    // Message Header
+    String stationId = din.readString(40);
+    String stationNbr = din.readString(10);
+
+    din.skipBytes(20);
+
+    String clon = din.readString(16);
+    String clat = din.readString(16);
+    // latlon
+    int lon = (int)din.readInt();
+    int lat = (int)din.readInt();
+    int hhh = (int)din.readInt();
+
+    din.skipBytes(40);
+
+    //ObservationInfo
+    short scanMode = convertunsignedByte2Short(din.readByte());
+    if(scanMode == 10) {
+      sweepN = 1;
+    } else if(scanMode >= 100){
+      sweepN = scanMode - 100;
+    } else {
+      throw new IOException("Error reading CINRAD CC data: Unsupported product: RHI/FFT");
+    }
+
+    short syear = (short)din.readUnsignedShort();
+    short smm = convertunsignedByte2Short(din.readByte());
+    short sdd = convertunsignedByte2Short(din.readByte());
+    short shh = convertunsignedByte2Short(din.readByte());
+    short smi = convertunsignedByte2Short(din.readByte());
+    short sss = convertunsignedByte2Short(din.readByte());
+
+    dateTime0 = new DateTime(syear,smm,sdd,shh,smi,sss);
+
+    din.skipBytes(14); // 14+ (35 - 21)
+
+    //remain2[660]
+    elev = new int[sweepN];
+    recordNum = new int[sweepN];
+    for(int i = 0; i < sweepN; i++) {
+      din.skipBytes(14);
+      int zbinWidth =  din.readUnsignedShort();
+      int vbinWidth =  din.readUnsignedShort();
+      int sbinWidth =  din.readUnsignedShort();
+      int zbinNum =   din.readUnsignedShort();
+      int vbinNum =   din.readUnsignedShort();
+      int sbinNum =   din.readUnsignedShort();
+      recordNum[i] = din.readUnsignedShort();
+      //if(i > 0)
+      //  recordNum[i] = recordNum[i] + recordNum[i-1];
+      elev[i] = din.readShort();
+      cDataForm = din.readByte();
+      if(cDataForm != 22 && cDataForm != 23 && cDataForm != 24)
+        throw new IOException("Unsupported CC data format");
+      int dataP = din.readInt();
+      //din.skipBytes(2);
+      //System.out.println("zbin num: " + zbinNum + " vbin num: " + vbinNum + " sbin num: " + sbinNum + " dataForm " + cDataForm);
+    }
+
+    for(int i = sweepN; i < 32; i++) {
+      din.skipBytes(35);
+    }
+
+    din.skipBytes(6);
+
+    syear = (short)din.readUnsignedShort();
+    smm = convertunsignedByte2Short(din.readByte());
+    sdd = convertunsignedByte2Short(din.readByte());
+    shh = convertunsignedByte2Short(din.readByte());
+    smi = convertunsignedByte2Short(din.readByte());
+    sss = convertunsignedByte2Short(din.readByte());
+
+    dateTimeE = new DateTime(syear,smm,sdd,shh,smi,sss);
+
   }
 
 
-
   public Cinrad2Record(RandomAccessFile din, int record) throws IOException {
-    if(!Cinrad2IOServiceProvider.isSC && !Cinrad2IOServiceProvider.isCC) {
+    if(!Cinrad2IOServiceProvider.isSC && !Cinrad2IOServiceProvider.isCC
+            && !Cinrad2IOServiceProvider.isCC20) {
       //CINRAD SA/SB
       this.recno = record;
       message_offset = (long) record * RADAR_DATA_SIZE + FILE_HEADER_SIZE;
@@ -581,7 +684,7 @@ public class Cinrad2Record {
       //cinrad CC
       this.recno = record;
       // read header for every record
-      if(record == 0)
+      //if(record == 0)
         readCCHeader(din);
       RADAR_DATA_SIZE = 3000;
       //FILE_HEADER_SIZE = 1021;
@@ -615,10 +718,84 @@ public class Cinrad2Record {
 
       hasReflectData = (reflect_gate_count > 0);
       hasDopplerData = (doppler_gate_count > 0);
+    } else if(Cinrad2IOServiceProvider.isCC20){
+      //cinrad CC
+      this.recno = record;
+      // read header for every record
+      // if(record == 0)
+      readCC20Header(din);
+
+      //if(record > recordNum[recordNum.length-1]-1)
+      //  return;
+      if(cDataForm == 24)
+        RADAR_DATA_SIZE = 4011;
+      else
+        RADAR_DATA_SIZE = 3011;
+      //FILE_HEADER_SIZE = 1021;
+      message_type = 1;
+      message_offset = (long) record * RADAR_DATA_SIZE + 2060;
+      if (message_offset >= din.length())
+        return;
+      din.seek(message_offset);
+      //System.out.println("record = " + record);
+      elevation_ang =din.readShort(); // RDA elevation number
+      azimuth_ang = din.readUnsignedShort();
+
+      din.skipBytes(3);
+      data_msecs = din.readInt();
+     /* if (record < recordNum[0]) {
+        radial_num = (short) (record +1);
+        elevation_num = 0;
+      } else {
+        for (int i = 1; i < sweepN; i++) {
+          if (record >= recordNum[i - 1] && record < recordNum[i]) {
+            radial_num = (short) (record - recordNum[i - 1] + 1);
+            elevation_num = (short) i;
+            continue;
+          }
+        }
+      }
+      */
+      //System.out.println(elevation_ang + " and " +azimuth_ang + " and " +record + " and " + data_msecs );
+      reflect_first_gate = 0; // range to first gate of reflectivity (m) may be negetive
+      doppler_first_gate = 0; // range to first gate of dopplar (m) may be negetive
+      reflect_gate_size = 1500; // reflectivity data gate size (m)
+      doppler_gate_size = 1500; // dopplar data gate size (m)
+      reflect_gate_count = 1000; // number of reflectivity gates
+      doppler_gate_count = 1000; // number of velocity or spectrum width gates
+      //vcp = sweepInfo[0].svcp;
+      //cut           = din.readShort(); // sector number within cut
+      //calibration   = din.readFloat(); // system gain calibration constant (db biased)
+      if(cDataForm == 24) {
+        reflect_offset = 11; // reflectivity data pointer (byte number from start of message)
+        velocity_offset = 2011; // 9 velocity data pointer (byte number from start of message)
+        spectWidth_offset = 3011;
+      } else {
+        reflect_offset = 11; // reflectivity data pointer (byte number from start of message)
+        velocity_offset = 1011; // 9 velocity data pointer (byte number from start of message)
+        spectWidth_offset = 2011;
+      }
+      // 11 spectrum-width data pointer (byte number from start of message)
+      //resolution = din.readShort(); // dopplar velocity resolution
+
+      hasReflectData = (reflect_gate_count > 0);
+      hasDopplerData = (doppler_gate_count > 0);
     }
 
   }
 
+  public int findClosestIdx(int [] numbers, short myNumber){
+    int distance = Math.abs(numbers[0] - myNumber);
+    int idx = 0;
+    for(int c = 1; c < numbers.length; c++){
+      int cdistance = Math.abs(numbers[c] - myNumber);
+      if(cdistance < distance){
+        idx = c;
+        distance = cdistance;
+      }
+    }
+    return idx;
+  }
     public static int bytesToInt(byte [] bytes, boolean swapBytes) {
        byte a = bytes[0];
        byte b = bytes[1];
@@ -741,6 +918,8 @@ public class Cinrad2Record {
       return 360.0f * azimuth_ang / 65536.0f;
     else if(Cinrad2IOServiceProvider.isCC)
       return 360.0f * azimuth_ang / 512.0f;
+    else if(Cinrad2IOServiceProvider.isCC20)
+      return  azimuth_ang * 0.01f;
 
     return 180.0f * azimuth_ang / 32768.0f;
   }
@@ -755,6 +934,8 @@ public class Cinrad2Record {
       if(Cinrad2IOServiceProvider.isSC)
         return 120.0f * elevation_ang / 65536.0f;
       else if(Cinrad2IOServiceProvider.isCC)
+        return elevation_ang * 0.01f;
+      else if(Cinrad2IOServiceProvider.isCC20)
         return elevation_ang * 0.01f;
 
       return 180.0f * elevation_ang / 32768.0f;
@@ -820,7 +1001,9 @@ public class Cinrad2Record {
   }
 
   public java.util.Date getDate() {
-    if(Cinrad2IOServiceProvider.isSC)
+    if(Cinrad2IOServiceProvider.isSC || Cinrad2IOServiceProvider.isCC)
+      return dateTime0.toDate();
+    else if(Cinrad2IOServiceProvider.isCC20)
       return dateTime0.toDate();
     else
       return getDate( data_julian_date, data_msecs);

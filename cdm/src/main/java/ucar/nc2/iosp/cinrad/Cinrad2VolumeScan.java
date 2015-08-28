@@ -168,6 +168,9 @@ public class Cinrad2VolumeScan {
     ArrayList doppler = new ArrayList();
 
     int recno = 0;
+    int sweepN = 1;
+    int [] recordNum = null;
+    int sums = 0;
     while (true) {
 
       Cinrad2Record r = Cinrad2Record.factory(raf, recno++);
@@ -179,6 +182,11 @@ public class Cinrad2VolumeScan {
         continue;
       }
 
+      if(recno == 1 && Cinrad2IOServiceProvider.isCC20){
+        sweepN = r.sweepN;
+        recordNum = r.recordNum;
+        sums = Arrays.stream(recordNum).sum();
+      }
       if (showData) r.dump2(System.out);
 
       /* skip bad
@@ -195,13 +203,28 @@ public class Cinrad2VolumeScan {
       if (!r.checkOk()) {
         continue;
       }
-
+      if(Cinrad2IOServiceProvider.isCC20 && recno > sums)
+        continue;
       if (r.hasReflectData)
         reflectivity.add(r);
       if (r.hasDopplerData)
         doppler.add(r);
 
       if ((cancelTask != null) && cancelTask.isCancel()) return;
+    }
+
+    if(Cinrad2IOServiceProvider.isCC20){
+      Iterator itr = reflectivity.iterator();
+      for(int i = 0; i< sweepN; i++){
+        for(int j = 0; j < recordNum[i]; j++){
+          if(itr.hasNext()) {
+            Cinrad2Record r = (Cinrad2Record) itr.next();
+            r.radial_num = (short) (j + 1);
+            r.elevation_num = (short) (i);
+          }
+        }
+      }
+
     }
     if (debugRadials) System.out.println(" reflect ok= " + reflectivity.size() + " doppler ok= " + doppler.size());
 
