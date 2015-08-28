@@ -88,15 +88,23 @@
     <table class="simple">
       <tr valign="top">
         <td class="leftCol">
+          <div th:if="${gcd.runtimeCoordinateMax} != null">
+            <span class="bold">Runtimes: </span>
+            <span class="bold" th:text="${gcd.runtimeCoordinateMax.summary}">Runtime coords</span>
+          </div>
           <h3>Select Variable(s):</h3>
 
           <div th:each="covSet : ${gcd.coverageSets}">
-            <bold>With Coordinate System <span th:text="${covSet.coordSys.name}">coordSys name</span></bold>
+            <div th:if="${covSet.coordSys.timeAxis}">
+              <em>Time: <span th:text="*{covSet.coordSys.timeAxis.summary}">time coords</span></em>
+            </div>
+            <div th:if="${covSet.coordSys.zAxis} != null">
+              <em>Vert: <span th:text="*{covSet.coordSys.zAxis.summary}">Vert coords</span></em>
+            </div>
             <blockquote>
               <div th:each="cov : ${covSet.coverages}">
                 <input onchange="Ncss.buildAccessUrl()" type="checkbox" name="var" value="Coverage Name" th:value="${cov.name}"/>
-                <span th:text="${cov.name}">Coverage Name</span>=
-                <span th:text="${cov.description}">Coverage Description</span>
+                <span class="bold" th:text="${cov.description}">Coverage Description</span>
                 <br/>
               </div>
             </blockquote>
@@ -222,19 +230,19 @@
           <div id="inputSingleLevel" class="selected">
             <span class="bold">Single Level</span>
           </div>
-          <div id="inputVerticalStride" class="unselected">
+          <!-- div id="inputVerticalStride" class="unselected">
             <span class="bold">Vertical Stride</span>
-          </div>
+          </div -->
           <div id="verticalLevelInput" class="clear">
             <div id="verticalSubset">
               <div id="singleLevel" class="absoluteTopLeft borderLightGrey">
                 <label class="sized">Level:</label>
                 <input onchange="Ncss.buildAccessUrl()" type="text" name="vertCoord" size="10"/>
               </div>
-              <div id="strideLevels" class="absoluteTopLeft hidden borderLightGrey">
+              <!-- div id="strideLevels" class="absoluteTopLeft hidden borderLightGrey">
                 <label class="sized">Stride:</label>
                 <input onchange="Ncss.buildAccessUrl()" type="text" name="vertStride" disabled="disabled" value="1" size="10"/>
-              </div>
+              </div -->
             </div>
           </div>
 

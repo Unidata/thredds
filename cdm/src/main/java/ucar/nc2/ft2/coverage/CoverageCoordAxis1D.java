@@ -108,6 +108,31 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s%n", indent, minIndex, maxIndex, stride, isTime2D(), isSubset());
   }
 
+  @Override
+  public String getSummary() {
+    if (axisType != AxisType.RunTime)
+      return super.getSummary();
+
+    if (ncoords < 7) {
+      Formatter f = new Formatter();
+      for (int i = 0; i < ncoords; i++) {
+        CalendarDate cd = makeDate(getCoord(i));
+        if (i > 0) f.format(", ");
+        f.format("%s", cd);
+      }
+      return f.toString();
+    }
+
+    Formatter f = new Formatter();
+    CalendarDate start = makeDate(getStartValue());
+    f.format("start=%s", start);
+    CalendarDate end = makeDate(getEndValue());
+    f.format(", end=%s", end);
+    f.format(" (npts=%d spacing=%s)", getNcoords(), getSpacing());
+
+    return f.toString();
+  }
+
 
   ///////////////////////////////////////////////////////////////////
   // Spacing

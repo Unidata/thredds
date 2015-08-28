@@ -178,31 +178,21 @@ public class CoverageCoordSys {
   ////////////////////////////////////////////////////////////////////
 
   public CoverageCoordAxis getXAxis() {
-    for (String axisName : getAxisNames()) {
-      CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-       if (axis.getAxisType() == AxisType.GeoX)
-         return axis;
-     }
-    for (String axisName : getAxisNames()) {
-      CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-       if (axis.getAxisType() == AxisType.Lon)
-         return axis;
-     }
-    throw new IllegalArgumentException("Cant find X axis for coordsys "+getName());
+    CoverageCoordAxis result = getAxis(AxisType.GeoX);
+    if (result == null)
+      result = getAxis(AxisType.Lon);
+    if (result == null)
+      throw new IllegalArgumentException("Cant find X axis for coordsys "+getName());
+    return result;
   }
 
   public CoverageCoordAxis getYAxis() {
-    for (String axisName : getAxisNames()) {
-      CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-       if (axis.getAxisType() == AxisType.GeoY)
-         return axis;
-     }
-    for (String axisName : getAxisNames()) {
-      CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-       if (axis.getAxisType() == AxisType.Lat)
-         return axis;
-     }
-    throw new IllegalArgumentException("Cant find Y axis for coordsys "+getName());
+    CoverageCoordAxis result = getAxis(AxisType.GeoY);
+    if (result == null)
+      result = getAxis(AxisType.Lat);
+    if (result == null)
+      throw new IllegalArgumentException("Cant find Y axis for coordsys "+getName());
+    return result;
   }
 
   public CoverageCoordAxis getZAxis() {
@@ -215,17 +205,10 @@ public class CoverageCoordSys {
   }
 
   public CoverageCoordAxis getTimeAxis() {
-    for (String axisName : getAxisNames()) {
-      CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-       if (axis.getAxisType() == AxisType.Time) {
-         return axis;
-       }
-     }
-    return null;
-  }
-
-  public CoverageCoordAxis getAxis(String axisName) {
-    return dataset.findCoordAxis(axisName);
+    CoverageCoordAxis result = getAxis(AxisType.Time);
+    if (result == null)
+      result = getAxis(AxisType.TimeOffset);
+    return result;
   }
 
   public CoverageCoordAxis getAxis(AxisType type) {
@@ -238,6 +221,10 @@ public class CoverageCoordSys {
        }
      }
     return null;
+  }
+
+  public CoverageCoordAxis getAxis(String axisName) {
+    return dataset.findCoordAxis(axisName);
   }
 
   public List<CoverageCoordAxis> getAxes() {
