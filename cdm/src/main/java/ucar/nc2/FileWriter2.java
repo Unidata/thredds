@@ -147,8 +147,8 @@ public class FileWriter2 {
     varMap.put(oldVar, newVar);
     varList.add(oldVar);
 
-    for (Attribute att : oldVar.getAttributes())
-      writer.addVariableAttribute(newVar, att); // atts are immutable
+    for (Attribute orgAtt : oldVar.getAttributes())
+      writer.addVariableAttribute(newVar, convertAttribute(orgAtt));
 
     return newVar;
   }
@@ -218,9 +218,8 @@ public class FileWriter2 {
     }
 
     // attributes
-    for (Attribute att : fileIn.getGlobalAttributes()) {
-      writer.addGroupAttribute(null, att); // atts are immutable
-      if (debug) System.out.println("add gatt= " + att);
+    for (Attribute orgAtt : fileIn.getGlobalAttributes()) {
+      writer.addGroupAttribute(null, convertAttribute(orgAtt));
     }
 
     // dimensions
@@ -280,8 +279,8 @@ public class FileWriter2 {
       varList.add(oldVar);
 
       // attributes
-      for (Attribute att : oldVar.getAttributes()) {
-        writer.addVariableAttribute(v, att); // atts are immutable
+      for (Attribute orgAtt : oldVar.getAttributes()) {
+        writer.addVariableAttribute(v, convertAttribute(orgAtt));
       }
     }
   }
@@ -343,6 +342,15 @@ public class FileWriter2 {
     for (Group nested : oldGroup.getGroups())
       addGroupExtended(newGroup, nested);
 
+  }
+
+  // munge attribute if needed
+  private Attribute convertAttribute(Attribute org) {
+    if (version.isExtendedModel()) return org;
+    if (!org.getDataType().isUnsigned()) return org;
+    Array orgValues = org.getValues();
+    Array nc3Values = Array.makeFromJavaArray(orgValues.getStorage(), false);
+    return new Attribute(org.getShortName(), nc3Values);
   }
 
   /**
