@@ -1,6 +1,8 @@
 package thredds.crawlabledataset;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import com.google.common.base.Preconditions;
 
 /**
@@ -180,6 +182,22 @@ public class S3URI {
             return new S3URI(bucket, key + S3_DELIMITER + relativePath);
         }
     }
+
+    /**
+     * Creates an empty file in the default temporary-file directory that is scheduled for deletion upon virtual
+     * machine termination. Note that a <b>new</b> file is created <i>each</i> time this method is called.
+     * The file name will have a prefix of "S3Object", a suffix of {@code getBaseName()}, and a random string of
+     * characters between.
+     *
+     * @return the path to the newly created file that did not exist before this method was invoked
+     * @throws IOException  if an I/O error occurs or the temporary-file directory does not exist
+     */
+    public File createTempFile() throws IOException {
+        File file = Files.createTempFile("S3Object", getBaseName()).toFile();
+        file.deleteOnExit();
+        return file;
+    }
+
 
     /**
      * Returns a string representation of the URI in the form {@code s3://<bucket>/<key>}.

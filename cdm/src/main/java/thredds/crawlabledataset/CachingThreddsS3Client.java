@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.io.Files;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A ThreddsS3Client that wraps another ThreddsS3Client and caches its methods' return values for efficiency.
@@ -18,16 +21,23 @@ import com.google.common.io.Files;
  * @since 2015/08/22
  */
 public class CachingThreddsS3Client implements ThreddsS3Client {
+    private static final Logger logger = LoggerFactory.getLogger(CachingThreddsS3Client.class);
+
     private static final long ENTRY_EXPIRATION_TIME = 60 * 10;  // In seconds.
     private static final long MAX_ENTRIES = 100;
 
     private final ThreddsS3Client threddsS3Client;
 
-    private final Cache<S3URI, ObjectMetadata> objectMetadataCache;
-    private final Cache<S3URI, ObjectListing> objectListingCache;
-    private final Cache<S3URI, File> objectFileCache;
+    private final Cache<S3URI, Optional<ObjectMetadata>> objectMetadataCache;
+    private final Cache<S3URI, Optional<ObjectListing>> objectListingCache;
+    private final Cache<S3URI, Optional<File>> objectFileCache;
 
     public CachingThreddsS3Client(ThreddsS3Client threddsS3Client) {
+        this(threddsS3Client, new ObjectFileCacheRemovalListener());
+    }
+
+    // Package-private constructor so that test code can pass in a mock RemovalListener.
+    CachingThreddsS3Client(ThreddsS3Client threddsS3Client, RemovalListener<S3URI, Optional<File>> removalListener) {
         this.threddsS3Client = threddsS3Client;
 
         // We can't reuse the builder because each of the caches we're creating has different type parameters.
@@ -42,109 +52,84 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
         this.objectFileCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.SECONDS)
                 .maximumSize(MAX_ENTRIES)
-                .removalListener(new ObjectFileCacheRemovalListener())
+                .removalListener(removalListener)
                 .build();
     }
 
-    private static class ObjectFileCacheRemovalListener implements RemovalListener<S3URI, File> {
+    private static class ObjectFileCacheRemovalListener implements RemovalListener<S3URI, Optional<File>> {
         @Override
-        public void onRemoval(RemovalNotification<S3URI, File> notification) {
-            notification.getValue().delete();
+        public void onRemoval(RemovalNotification<S3URI, Optional<File>> notification) {
+            Optional<File> file = notification.getValue();
+            assert file != null : "Silence a silly IntelliJ warning. Of course the Optional isn't null.";
+
+            if (file.isPresent()) {
+                file.get().delete();
+            }
         }
     }
 
 
-    // Caches can't have null values, so we will store these values to indicate that there is no content at the
-    // associated URI.
-    private static final ObjectMetadata emptyObjectMetadata = new ObjectMetadata();
-    private static final ObjectListing emptyObjectListing = new ObjectListing();
-    private static final File emptyFile = new File("");
-
     @Override
     public ObjectMetadata getObjectMetadata(S3URI s3uri) {
-        ObjectMetadata metadata;
-        if ((metadata = objectMetadataCache.getIfPresent(s3uri)) == emptyObjectMetadata) {
-            return null;
-        } else if (metadata != null) {
-            return metadata;
-        }
-
-        metadata = threddsS3Client.getObjectMetadata(s3uri);
+        Optional<ObjectMetadata> metadata = objectMetadataCache.getIfPresent(s3uri);
         if (metadata == null) {
-            objectMetadataCache.put(s3uri, emptyObjectMetadata);  // Can't put null values.
-        } else {
+            metadata = Optional.fromNullable(threddsS3Client.getObjectMetadata(s3uri));
             objectMetadataCache.put(s3uri, metadata);
         }
 
-        return metadata;
+        return metadata.orNull();
     }
 
     @Override
     public ObjectListing listObjects(S3URI s3uri) {
-        ObjectListing objectListing;
-        if ((objectListing = objectListingCache.getIfPresent(s3uri)) == emptyObjectListing) {
-            return null;
-        } else if (objectListing != null) {
-            return objectListing;
-        }
-
-        if ((objectListing = threddsS3Client.listObjects(s3uri)) == null) {
-            objectListingCache.put(s3uri, emptyObjectListing);  // Can't put null values.
-        } else {
+        Optional<ObjectListing> objectListing = objectListingCache.getIfPresent(s3uri);
+        if (objectListing == null) {
+            objectListing = Optional.fromNullable(threddsS3Client.listObjects(s3uri));
             objectListingCache.put(s3uri, objectListing);
         }
 
-        return objectListing;
+        return objectListing.orNull();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * WARNING: If the content at {@code s3uri} was previously saved using this method, and the old file to which it was
+     * saved is <b>not</b> the same as {@code file}, the object content will be copied to the new file and the old file
+     * will be deleted.
+     */
     @Override
     public File saveObjectToFile(S3URI s3uri, File file) throws IOException {
-//        if (objectFileCache.asMap().containsKey(s3uri)) {  // Cache may contain null values.
-//            File cachedFile = objectFileCache.getIfPresent(s3uri);
-//            if (cachedFile == null) {
-//                return null;
-//            } else if (!cachedFile.exists()) {
-//                objectFileCache.invalidate(s3uri);  // Evict files that no longer exist from the cache.
-//            } else if (cachedFile.equals(file)) {
-//                return cachedFile;
-//            } else {
-//                // Copy content of cachedFile to file. Evict cachedFile from the cache.
-//                Files.copy(cachedFile, file);
-//                objectFileCache.put(s3uri, file);
-//                return file;
-//            }
-//        }
-//
-//        file = threddsS3Client.saveObjectToFile(s3uri, file);
-//        assert file == null || file.exists() : "Only put null ref (inalid URI) or existent file (valid URI) in cache.";
-//        objectFileCache.put(s3uri, file);
-//
-//        return file;
+        Optional<File> cachedFile = objectFileCache.getIfPresent(s3uri);
 
-        File cachedFile;
-        if ((cachedFile = objectFileCache.getIfPresent(s3uri)) == emptyFile) {
+        if (cachedFile == null) {
+            // Do download below.
+        } else if (!cachedFile.isPresent()) {
             return null;
-        } else if (cachedFile != null) {
-            if (!cachedFile.exists()) {
-                objectFileCache.invalidate(s3uri);  // Evict files that no longer exist from the cache.
-            } else if (cachedFile.equals(file)) {
-                return cachedFile;
-            } else {
-                // Copy content of cachedFile to file. Evict cachedFile from the cache.
-                Files.copy(cachedFile, file);
-                objectFileCache.put(s3uri, file);
-                return file;
-            }
-        }
-
-        assert cachedFile == null;  // We need to perform an actual request.
-
-        if ((file = threddsS3Client.saveObjectToFile(s3uri, file)) == null) {
-            objectFileCache.put(s3uri, emptyFile);  // Can't put null values.
+        } else if (!cachedFile.get().exists()) {
+            logger.info(String.format("Found cache entry {'%s'-->'%s'}, but local file doesn't exist. " +
+                            "Was it deleted? Re-downloading.", s3uri, cachedFile.get()));
+            objectFileCache.invalidate(s3uri);  // Evict old entry. Re-download below.
+        } else if (!cachedFile.get().equals(file)) {
+            // Copy content of cachedFile to file. Evict cachedFile from the cache.
+            Files.copy(cachedFile.get(), file);
+            objectFileCache.put(s3uri, Optional.of(file));
+            return file;
         } else {
-            objectFileCache.put(s3uri, file);
+            return file;  // File already contains the content of the object at s3uri.
         }
 
-        return file;
+        cachedFile = Optional.fromNullable(threddsS3Client.saveObjectToFile(s3uri, file));
+        objectFileCache.put(s3uri, cachedFile);
+        return cachedFile.orNull();
+    }
+
+    /**
+     * Discards all entries from all caches. Any files created by {@link #saveObjectToFile} will be deleted.
+     */
+    public void clear() {
+        objectMetadataCache.invalidateAll();
+        objectListingCache.invalidateAll();
+        objectFileCache.invalidateAll();
     }
 }

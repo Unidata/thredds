@@ -2,7 +2,6 @@ package thredds.crawlabledataset;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -103,11 +102,5 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
                 throw e;
             }
         }
-    }
-
-    public static File createTempFile(S3URI s3uri) throws IOException {
-        File file = Files.createTempFile("S3Object", s3uri.getBaseName()).toFile();
-        file.deleteOnExit();
-        return file;
     }
 }

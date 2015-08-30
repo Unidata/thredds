@@ -37,8 +37,7 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
     @Override
     public File getFile() {
         try {
-            File tempFile = ThreddsS3ClientImpl.createTempFile(s3uri);
-            return threddsS3Client.saveObjectToFile(s3uri, tempFile);
+            return threddsS3Client.saveObjectToFile(s3uri, s3uri.createTempFile());
         } catch (IOException e) {
             logger.error(String.format("Could not save S3 object '%s' to file.", s3uri), e);
             return null;

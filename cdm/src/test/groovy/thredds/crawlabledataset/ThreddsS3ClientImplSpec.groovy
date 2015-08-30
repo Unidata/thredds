@@ -126,6 +126,6 @@ class ThreddsS3ClientImplSpec extends Specification {
         expect: "existent bucket and key"
         threddsS3Client.getObjectMetadata(s3uri).contentType == 'fake'
         threddsS3Client.listObjects(s3uri) == null
-        threddsS3Client.saveObjectToFile(s3uri, ThreddsS3ClientImpl.createTempFile(s3uri)).name.endsWith('dataset.nc')
+        threddsS3Client.saveObjectToFile(s3uri, s3uri.createTempFile()).name.endsWith('dataset.nc')
     }
 }
