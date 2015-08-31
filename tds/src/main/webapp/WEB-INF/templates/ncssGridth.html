@@ -21,7 +21,7 @@
       }
     };
 
-    //Dynamic load of the javascript files
+    // Dynamic load of the javascript files
     (function () {
       //jQuery
       var headTag = document.getElementsByTagName("head")[0];
@@ -127,7 +127,7 @@
           <div id="areaInput" class="clear">
             <div id="spatialSubset">
               <div id="latlonSubset" class="absoluteTopLeft borderLightGrey">
-                <span class="bold">Bounding box, in decimal degrees (initial extents are approximate):</span>
+                <span class="bold">decimal degrees:</span>
 
                 <div class="top">
                   <span>north</span>
@@ -157,7 +157,7 @@
               </div>
 
               <div id="coordinateSubset" class="hidden absoluteTopLeft borderLightGrey" th:if="${gcd.horizCoordSys.hasProjection}">
-                <span class="bold">Bounding box, in projection coords:</span>
+                <span class="bold">projection coords:</span>
 
                 <div class="top">
                   <span>maxy</span>

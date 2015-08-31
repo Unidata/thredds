@@ -265,7 +265,7 @@ public class CoverageCoordSys {
         subsetAxes.add(axis.subset(params));
     }
 
-    Time2DCoordSys subsetTime2D = null;
+    Time2DCoordSys subsetTime2D;
     if (time2DCoordSys != null) {
       subsetTime2D = time2DCoordSys.subset(params);
       subsetAxes.addAll(subsetTime2D.getCoordAxes());

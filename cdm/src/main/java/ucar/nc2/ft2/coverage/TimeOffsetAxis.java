@@ -46,8 +46,6 @@ import java.util.List;
  * @since 8/13/2015
  */
 public class TimeOffsetAxis extends CoverageCoordAxis1D {
-  // private CoverageCoordAxis1D runAxis;
-  // private final String reftimeName;
 
   public TimeOffsetAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
                            CoverageCoordAxis.DependenceType dependenceType, String dependsOn, CoverageCoordAxis.Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
@@ -60,15 +58,7 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
      return true;
    }
 
-  /*
-  @Override
-  public void toString(Formatter f, Indent indent) {
-    super.toString(f, indent);
-    f.format("%s runtime= %s%n", indent, runCoord.getName());
-  } */
-
   // for now just (runtime, offset) or (runtime=1, time)
-  // note helper is returning a CoverageCoordAxis1D< not a TimeOffsetAxis
   public CoverageCoordAxis subset(SubsetParams params, CoverageCoordAxis1D runtimeSubset) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
     Double dval = params.getDouble(SubsetParams.timeOffset);
@@ -76,7 +66,13 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
       return helper.subsetClosest(dval);
     }
 
-    // LOOK could do offset min, max
+    if (params.isTrue(SubsetParams.firstTimeOffset)) {
+      return helper.subsetValues(0, 0);
+    }
+
+    return this;
+
+    /* LOOK could do offset min, max
 
     // for the moment, just deal with the case of (runtime=1, time)
     assert runtimeSubset.getNcoords() == 1;
@@ -108,7 +104,7 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
     }
 
     // if no time parameter, use the first offset in the latest run
-    return helper.subsetValues(0, 0);
+    return helper.subsetValues(0, 0); */
   }
 
   public CalendarDate makeDate(CalendarDate runDate, double val) {

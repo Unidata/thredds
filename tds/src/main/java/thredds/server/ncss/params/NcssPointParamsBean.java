@@ -32,6 +32,8 @@
  */
 package thredds.server.ncss.params;
 
+import ucar.nc2.units.TimeDuration;
+
 import java.util.List;
 
 /**
@@ -41,6 +43,8 @@ import java.util.List;
  * @since 4/29/2015
  */
 public class NcssPointParamsBean  extends NcssParamsBean {
+
+
 
   //// station only
 	private List<String> stns;

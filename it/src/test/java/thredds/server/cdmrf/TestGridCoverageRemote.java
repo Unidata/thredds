@@ -108,7 +108,7 @@ public class TestGridCoverageRemote {
     }
   }
 
-  // LOOK replicated from cdm_test/TestCOverageSubset
+  // LOOK replicated from cdm_test/TestCoverageSubset
   void readOne(Coverage cover, CalendarDate rt_val, CalendarDate time_val, Double time_offset, Double vert_level) throws IOException, InvalidRangeException {
     System.out.printf("%n===Request Subset %s runtime=%s time=%s timeOffset=%s vert=%s %n", cover.getName(), rt_val, time_val, time_offset, vert_level);
 

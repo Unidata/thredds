@@ -34,7 +34,6 @@ package ucar.nc2.ft2.scan;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -77,7 +76,7 @@ public class FeatureScan {
     }
 
     if (topFile.isDirectory())
-      scanDirectory(topFile, result, errlog);
+      scanDirectory(topFile, result);
     else {
       Bean fdb = new Bean(topFile);
       result.add(fdb);
@@ -86,7 +85,7 @@ public class FeatureScan {
     return result;
   }
 
-  private void scanDirectory(File dir, java.util.List<FeatureScan.Bean> result, Formatter errlog) {
+  private void scanDirectory(File dir, java.util.List<FeatureScan.Bean> result) {
     if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))return;
 
     // get list of files
@@ -104,7 +103,7 @@ public class FeatureScan {
     // ".Z", ".zip", ".gzip", ".gz", or ".bz2"
     if (files.size() > 0) {
       Collections.sort(files);
-      ArrayList<File> files2 = new ArrayList<File>(files);
+      List<File> files2 = new ArrayList<>(files);
 
       File prev = null;
       for (File f : files) {
@@ -144,7 +143,7 @@ public class FeatureScan {
     if (subdirs) {
       for (File f : fila) {
         if (f.isDirectory() && !f.getName().equals("exclude"))
-          scanDirectory(f, result, errlog);
+          scanDirectory(f, result);
       }
     }
 
@@ -167,8 +166,7 @@ public class FeatureScan {
     String coordSysBuilder;
     String ftImpl;
     Throwable problem;
-    DtCoverageCSBuilder builder;
-    int ngrids;
+    DtCoverageCSBuilder builder; // LOOK replace with CoverageDataset
 
     // no-arg constructor
     public Bean() {

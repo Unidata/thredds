@@ -69,4 +69,8 @@ public class Time2DCoordSys {
     return new Time2DCoordSys( runAxisSubset, timeOffsetSubset);
   }
 
+  public boolean isTime2D() {
+    return true;
+  }
+
 }

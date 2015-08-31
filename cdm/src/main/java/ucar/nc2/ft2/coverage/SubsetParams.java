@@ -48,18 +48,22 @@ public class SubsetParams {
   public static final String latlonBB = "latlonBB";     // value = LatLonRect
   public static final String projBB = "projBB";         // value = ProjRect
   public static final String horizStride = "horizStride";  // value = Integer
-  public static final String vertCoord = "vertCoord";   // value = Double
-  public static final String vertIndex = "vertIndex";   // value = Integer    LOOK BAD
+
   public static final String timeRange = "timeRange";   // value = CalendarDateRange
   public static final String time = "time";             // value = CalendarDate
-  public static final String timeWindow = "timeWindow"; // value = TimeDuration
-  public static final String timeOffset = "timeOffset"; // value = Double
+ // public static final String timeWindow = "timeWindow"; // value = TimeDuration
   public static final String timeStride = "timeStride"; // value = Integer
-  public static final String allTimes = "allTimes";     // value = Boolean
+  //public static final String allTimes = "allTimes";     // value = Boolean
   public static final String latestTime = "latestTime"; // value = Boolean
+
   public static final String runtime = "runtime";       // value = CalendarDate
-  public static final String runtimeRange = "runtimeRange"; // value = CalendarDateRange
+  public static final String runtimeRange = "runtimeRange";       // value = CalendarDateRange
   public static final String latestRuntime = "latestRuntime"; // value = Boolean
+  public static final String timeOffset = "timeOffset"; // value = Double
+  public static final String firstTimeOffset = "firstTimeOffset"; // value = Boolean
+
+  public static final String vertIndex = "vertIndex";   // value = Integer    LOOK BAD
+  public static final String vertCoord = "vertCoord";   // value = Double
   public static final String ensCoord = "ensCoord";     // value = double ??
 
   private final Map<String, Object> req = new HashMap<>();

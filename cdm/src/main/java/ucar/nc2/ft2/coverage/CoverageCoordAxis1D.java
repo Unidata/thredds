@@ -68,19 +68,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
     this.minIndex = 0;
     this.maxIndex = ncoords-1;
+
+    if (axisType == AxisType.RunTime && dependenceType != DependenceType.dependent)
+      isTime2D = true;
   }
-
-  //public CoverageCoordAxis1D copy() {
-  //  return new CoverageCoordAxis1D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
-  //}
-
 
   public boolean isTime2D() {
     return isTime2D;
-  }
-
-  public void setIsTime2D() {
-    this.isTime2D = true;
   }
 
   public int getStride() {
@@ -359,9 +353,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
       case Lon:
         return null;
 
-      case Time:
-        if (params.isTrue(SubsetParams.allTimes))
-          return this;
+      case Time:  // LOOK not handling stride
         if (params.isTrue(SubsetParams.latestTime))
           return helper.subsetLatest();
 

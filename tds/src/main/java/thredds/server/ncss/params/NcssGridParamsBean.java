@@ -49,18 +49,20 @@ import ucar.unidata.geoloc.ProjectionRect;
 @NcssGridRequestConstraint
 public class NcssGridParamsBean extends NcssParamsBean {
 
-    //// projection rectangle
+  //// projection rectangle
   private Double minx;
- 	private Double maxx;
- 	private Double miny;
- 	private Double maxy;
- 	private boolean addLatLon;
- 	private Integer horizStride = 1;
+  private Double maxx;
+  private Double miny;
+  private Double maxy;
+  private boolean addLatLon;
+  private Integer horizStride = 1;
 
- 	private Integer timeStride = 1;
+  private Integer timeStride = 1;
   private Double vertCoord;
   private Double ensCoord;
+
   private String runtime;
+  private String timeOffset;
 
   public Double getMinx() {
     return minx;
@@ -150,23 +152,49 @@ public class NcssGridParamsBean extends NcssParamsBean {
     this.runtime = runtime;
   }
 
+  public String getTimeOffset() {
+    return timeOffset;
+  }
+
+  public void setTimeOffset(String timeOffset) {
+    this.timeOffset = timeOffset;
+  }
+
+  ////////////////////////////
+  protected Double timeOffsetVal;
+  protected boolean firstTimeOffset;
+
+  public void setTimeOffsetVal(Double timeOffsetVal) {
+    this.timeOffsetVal = timeOffsetVal;
+  }
+
+  public void setFirstTimeOffset(boolean firstTimeOffset) {
+    this.firstTimeOffset = firstTimeOffset;
+  }
+
   ////////////////////////////////////////////
 
   protected CalendarDate runtimeDate;
   protected boolean latestRuntime;
+  protected boolean allRuntime;
 
-  public void setLatestRuntime(boolean latestRuntime) {
-    this.latestRuntime = latestRuntime;
+  public void setLatestRuntime(boolean b) {
+    this.latestRuntime = b;
+  }
+
+  public void setAllRuntime(boolean b) {
+    this.allRuntime = b;
   }
 
   public void setRuntimeDate(CalendarDate runtimeDate) {
     this.runtimeDate = runtimeDate;
   }
+
   public CalendarDate getRuntimeDate(Calendar cal) {
     if (runtimeDate == null) return null;
     if (cal.equals(Calendar.getDefault())) return runtimeDate;
 
-     // otherwise must reparse
+    // otherwise must reparse
     if (getTime().equalsIgnoreCase("present")) {
       return CalendarDate.present(cal);
     }
@@ -174,7 +202,9 @@ public class NcssGridParamsBean extends NcssParamsBean {
     return CalendarDateFormatter.isoStringToCalendarDate(cal, getRuntime());
   }
 
-  public SubsetParams makeSubset(Calendar cal) {
+  ///////////////////////////////
+
+  public SubsetParams makeSubset(Calendar cal, boolean isFmrc) {
     SubsetParams subset = new SubsetParams();
 
     if (vertCoord != null)
@@ -188,35 +218,67 @@ public class NcssGridParamsBean extends NcssParamsBean {
       subset.set(SubsetParams.projBB, getProjectionBB());
     else if (hasLatLonBB())
       subset.set(SubsetParams.latlonBB, getLatLonBoundingBox());
-    if (horizStride != null)
+    if (horizStride != null && horizStride != 1)
       subset.set(SubsetParams.horizStride, horizStride);
 
-    // time
-    CalendarDate date = getRequestedDate(cal);
-    CalendarDateRange dateRange = getCalendarDateRange(cal);
-    if (isAllTimes()) {
-      subset.set(SubsetParams.allTimes, true);
-      if (timeStride != null)
-        subset.set(SubsetParams.timeStride, timeStride);
+    if (isFmrc) {
 
-    } else if (date != null) {
-      subset.set(SubsetParams.time, date);
-      if (timeWindow != null)
-        subset.set(SubsetParams.timeWindow, timeWindow);
+      // runtime
+      CalendarDate rundate = getRuntimeDate(cal);
+      if (rundate != null)
+        subset.set(SubsetParams.runtime, rundate);
+      else if (allRuntime)
+        ; // dont need to set a subset
+      else
+        subset.set(SubsetParams.latestRuntime, true); // default
 
-    } else if (dateRange != null) {
-      subset.set(SubsetParams.timeRange, dateRange);
-      if (timeStride != null)
-        subset.set(SubsetParams.timeStride, timeStride);
+      // timeOffset
+      if (timeOffsetVal != null)
+        subset.set(SubsetParams.timeOffset, timeOffsetVal);
+      else if (firstTimeOffset)
+        subset.set(SubsetParams.firstTimeOffset, true);
 
-    } else {
-      subset.set(SubsetParams.latestTime, true);
+      else { // if no timeOffset, will allow some time values
+
+        CalendarDate date = getRequestedDate(cal);
+        CalendarDateRange dateRange = getCalendarDateRange(cal);
+        if (isAllTimes() && !allRuntime) {
+          // subset.set(SubsetParams.allTimes, true); // LOOK is this needed?
+          if (timeStride != null && timeStride != 1)
+            subset.set(SubsetParams.timeStride, timeStride);
+
+        } else if (date != null) {              // for allRuntimes, only a date is allowed
+          subset.set(SubsetParams.time, date);
+
+        } else if (dateRange != null  && !allRuntime) {
+          subset.set(SubsetParams.timeRange, dateRange);
+          if (timeStride != null && timeStride != 1)
+            subset.set(SubsetParams.timeStride, timeStride);
+        }
+      }
+
+    } else { // not an FMRC
+
+      // time
+      CalendarDate date = getRequestedDate(cal);
+      CalendarDateRange dateRange = getCalendarDateRange(cal);
+      if (isAllTimes()) {
+        // subset.set(SubsetParams.allTimes, true); // LOOK is this needed?
+        if (timeStride != null && timeStride != 1)
+          subset.set(SubsetParams.timeStride, timeStride);
+
+      } else if (date != null) {
+        subset.set(SubsetParams.time, date);
+
+      } else if (dateRange != null) {
+        subset.set(SubsetParams.timeRange, dateRange);
+        if (timeStride != null && timeStride != 1)
+          subset.set(SubsetParams.timeStride, timeStride);
+
+      } else {
+        subset.set(SubsetParams.latestTime, true);
+      }
     }
-
-     // runtime
-    CalendarDate rundate = getRuntimeDate(cal);
-    if (rundate != null)
-      subset.set(SubsetParams.runtime, rundate);
 
     return subset;
   }

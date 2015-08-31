@@ -51,6 +51,8 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.log.LoggerFactory;
@@ -562,13 +564,8 @@ public abstract class InvDatasetFeatureCollection {
     return null;
   }
 
-  // LOOK Overridden in GRIB, what about Fmrc?
   public CoverageDataset getGridCoverage(String matchPath) throws IOException {
-    CoverageDatasetCollection cc = CoverageDatasetFactory.open(matchPath);
-    if(cc == null) return null;
-
-    assert cc.getCoverageDatasets().size() == 1;  // LOOK probably want to use endpoint#datasetName ?
-    return cc.getCoverageDatasets().get(0);
+    return null;
   }
 
   ///////////////////////////////////////////////////////////////////////////////

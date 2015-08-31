@@ -77,7 +77,7 @@ class GridResponder {
     } */
 
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
-    SubsetParams subset = params.makeSubset(gcd.getCalendar());
+    SubsetParams subset = params.makeSubset(gcd.getCalendar(), gcd.getCoverageType() == CoverageCoordSys.Type.Fmrc);
     CFGridCoverageWriter.writeFile(gcd, params.getVar(), subset, params.isAddLatLon(), writer);
 
     return new File(responseFilename);
@@ -87,7 +87,7 @@ class GridResponder {
           throws NcssException, InvalidRangeException, ParseException, IOException {
 
     try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null)) { // default chunking - let user control at some point
-      SubsetParams subset = params.makeSubset(gcd.getCalendar());
+      SubsetParams subset = params.makeSubset(gcd.getCalendar(), gcd.getCoverageType() == CoverageCoordSys.Type.Fmrc); // LOOK wrong
 
       DSGGridCoverageWriter dsgWriter = new DSGGridCoverageWriter(gcd, params.getVar(), subset);
       dsgWriter.writePointFeatureCollection(writer);
@@ -99,7 +99,7 @@ class GridResponder {
   void streamResponse(OutputStream out, NcssGridParamsBean params, SupportedFormat sf)
           throws NcssException, InvalidRangeException, ParseException, IOException {
 
-    SubsetParams subset = params.makeSubset(gcd.getCalendar());
+    SubsetParams subset = params.makeSubset(gcd.getCalendar(), gcd.getCoverageType() == CoverageCoordSys.Type.Fmrc); // LOOK wrong
 
     DSGGridCoverageWriter dsgWriter = new DSGGridCoverageWriter(gcd, params.getVar(), subset);
     dsgWriter.streamResponse(out);
