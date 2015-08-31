@@ -1,8 +1,10 @@
-package thredds.crawlabledataset
+package thredds.crawlabledataset.s3
 
 import spock.lang.Specification
 
 /**
+ * Tests S3URI.
+ *
  * @author cwardgar
  * @since 2015/08/26
  */
@@ -87,6 +89,7 @@ class S3URISpec extends Specification {
 
     def "getChild"() {
         expect: "success"
+        new S3URI("s3://dogs/husky").getChild("") == new S3URI("s3://dogs/husky")
         new S3URI("s3://shire").getChild("frodo/baggins") == new S3URI("s3://shire/frodo/baggins")
         new S3URI("s3://hobbits/frodo/sam").getChild("merry/pippin") == new S3URI("s3://hobbits/frodo/sam/merry/pippin")
 
@@ -104,13 +107,6 @@ class S3URISpec extends Specification {
         then:
         IllegalArgumentException e2 = thrown()
         e2.message == "Path '/rohan/edoras' should be relative but begins with the delimiter string '/'."
-
-        when: "empty path"
-        new S3URI("s3://shire/hobbiton").getChild("")
-
-        then:
-        IllegalArgumentException e3 = thrown()
-        e3.message == "relativePath must be non-empty"
 
         when: "consecutive delimiters"
         new S3URI("s3://shire/hobbiton").getChild("nasty//taters")

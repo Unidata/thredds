@@ -16,14 +16,9 @@ dependencies {
     compile libraries["protobuf-java"]
     compile libraries["guava"]
     compile libraries["jcommander"]
-
-    // These 3 are for CrawlableDatasetAmazonS3.
-    compile libraries["commons-io"]
-    compile libraries["ehcache-core"]
-    compile libraries["aws-java-sdk-s3"]
+    compile libraries["aws-java-sdk-s3"]  // For CrawlableDatasetAmazonS3.
 
     compile libraries["slf4j-api"]
-    runtime libraries["slf4j-jdk14"]
 
     // These 4 are all for Spock.
     testCompile libraries["spock-core"]

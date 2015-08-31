@@ -1,4 +1,4 @@
-package thredds.crawlabledataset;
+package thredds.crawlabledataset.s3;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import com.google.common.base.Preconditions;
  * An identifier for objects stored in Amazon S3. Ultimately, the identifier is composed solely of a bucket name and
  * a key, and an object of this class can be constructed with those two items. However, this class also supports URIs
  * rendered in a path-like form: {@code s3://<bucket>/<key>}.
+ * <p>
+ * Instances of this class are immutable.
  *
  * @author cwardgar
  * @since 2015/08/24
@@ -161,16 +163,17 @@ public class S3URI {
      * Creates a new URI by resolving the specified path relative to {@code this}. If {@code key == null}, the key
      * of the returned URI will simply be {@code relativePath}.
      *
-     * @param relativePath  a path relative to {@code this}. Must be non-null and non-empty.
+     * @param relativePath  a path relative to {@code this}. Must be non-null.
      * @return  the child URI.
      * @throws IllegalArgumentException  if the path starts with a {@link #S3_DELIMITER delimiter}.
      *      The path must be relative.
      */
     public S3URI getChild(String relativePath) throws IllegalArgumentException {
         Preconditions.checkNotNull(relativePath, "relativePath must be non-null.");
-        Preconditions.checkArgument(!relativePath.isEmpty(), "relativePath must be non-empty");
 
-        if (relativePath.startsWith(S3_DELIMITER)) {
+        if (relativePath.isEmpty()) {
+            return this;
+        } else if (relativePath.startsWith(S3_DELIMITER)) {
             throw new IllegalArgumentException(String.format(
                     "Path '%s' should be relative but begins with the delimiter string '%s'.",
                     relativePath, S3_DELIMITER));

@@ -1,4 +1,5 @@
-package thredds.crawlabledataset
+package thredds.crawlabledataset.s3
+
 import com.amazonaws.services.s3.model.ObjectListing
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.google.common.base.Optional

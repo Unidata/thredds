@@ -1,4 +1,4 @@
-package thredds.crawlabledataset
+package thredds.crawlabledataset.s3
 
 import com.amazonaws.AmazonServiceException
 import com.amazonaws.services.s3.AmazonS3Client
@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.ObjectListing
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.S3ObjectSummary
 import org.apache.http.HttpStatus
-
 import spock.lang.Specification
 
 /**

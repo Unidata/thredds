@@ -1,4 +1,4 @@
-package thredds.crawlabledataset;
+package thredds.crawlabledataset.s3;
 
 import java.io.File;
 import java.io.IOException;

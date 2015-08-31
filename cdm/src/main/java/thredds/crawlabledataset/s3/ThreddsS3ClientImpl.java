@@ -1,4 +1,4 @@
-package thredds.crawlabledataset;
+package thredds.crawlabledataset.s3;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                 logger.info(String.format(
-                        "There is no S3 bucket '%s' that has key '%s'.", s3uri.getBucket(), s3uri.getKey()), e);
+                        "There is no S3 bucket '%s' that has key '%s'.", s3uri.getBucket(), s3uri.getKey()));
                 return null;
             } else {
                 throw e;
@@ -76,7 +76,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             }
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info(String.format("No S3 bucket named '%s' exists.", s3uri.getBucket()), e);
+                logger.info(String.format("No S3 bucket named '%s' exists.", s3uri.getBucket()));
                 return null;
             } else {
                 throw e;
@@ -96,7 +96,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                 logger.info(String.format(
-                        "There is no S3 bucket '%s' that has key '%s'.", s3uri.getBucket(), s3uri.getKey()), e);
+                        "There is no S3 bucket '%s' that has key '%s'.", s3uri.getBucket(), s3uri.getKey()));
                 return null;
             } else {
                 throw e;
