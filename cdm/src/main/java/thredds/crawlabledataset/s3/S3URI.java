@@ -22,8 +22,8 @@ public class S3URI {
     private final String bucket, key;
 
     /**
-     * Creates a S3URI by extracting the S3 bucket and key names from {@code uri}. The key will have all trailing
-     * {@link #S3_DELIMITER delimiter}s removed from it.
+     * Creates a S3URI by extracting the S3 bucket and key names from {@code uri}. If the key has a trailing
+     * {@link #S3_DELIMITER delimiter}, it will be removed.
      *
      * @param uri  an S3 URI in the form {@code s3://<bucket>/<key>}.
      * @throws IllegalArgumentException  if {@code uri} is not in the expected form or if the bucket or key are invalid.
@@ -48,8 +48,8 @@ public class S3URI {
     }
 
     /**
-     * Creates a S3URI from the specified bucket and key. The key will have all trailing
-     * {@link #S3_DELIMITER delimiter}s removed from it.
+     * Creates a S3URI from the specified bucket and key. If the key has a trailing
+     * {@link #S3_DELIMITER delimiter}, it will be removed.
      *
      * @param bucket  a bucket name. Must be non-{@code null} and at least 3 characters.
      * @param key  a key. May be {@code null} but cannot be the empty string. Also, it may not contain consecutive
@@ -100,7 +100,7 @@ public class S3URI {
 
     /**
      * Returns the key. May be {@code null} if the URI did not include a key, e.g. "s3://bucket". If not null,
-     * any trailing {@code #S3_DELIMITER delimiter}s the key had when passed to the constructor will have been stripped.
+     * any trailing {@code #S3_DELIMITER delimiter} the key had when passed to the constructor will have been stripped.
      *
      * @return  the key.
      */

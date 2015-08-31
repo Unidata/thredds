@@ -24,7 +24,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
     private final AmazonS3Client s3Client;
 
     public ThreddsS3ClientImpl() {
-        // Use HTTP, it's much faster
+        // Use HTTP; it's much faster.
         this.s3Client = new AmazonS3Client();
         this.s3Client.setEndpoint("http://s3.amazonaws.com");
     }
@@ -37,7 +37,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
     public ObjectMetadata getObjectMetadata(S3URI s3uri) {
         try {
             ObjectMetadata metadata = s3Client.getObjectMetadata(s3uri.getBucket(), s3uri.getKey());
-            logger.info(String.format("S3 Downloaded metadata '%s'", s3uri));
+            logger.info(String.format("Downloaded S3 metadata '%s'", s3uri));
             return metadata;
         } catch (IllegalArgumentException e) {  // Thrown by getObjectMetadata() when key == null.
             logger.info(e.getMessage());
@@ -64,7 +64,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
 
         try {
             ObjectListing objectListing = s3Client.listObjects(listObjectsRequest);
-            logger.info(String.format("S3 Downloaded listing '%s'", s3uri));
+            logger.info(String.format("Downloaded S3 listing '%s'", s3uri));
 
             if (objectListing.getObjectSummaries().isEmpty() && objectListing.getCommonPrefixes().isEmpty()) {
                 // There are no empty directories in a S3 hierarchy.
@@ -88,7 +88,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
     public File saveObjectToFile(S3URI s3uri, File file) throws IOException {
         try {
             s3Client.getObject(new GetObjectRequest(s3uri.getBucket(), s3uri.getKey()), file);
-            logger.info(String.format("S3 Downloaded object '%s' to '%s'", s3uri, file));
+            logger.info(String.format("Downloaded S3 object '%s' to '%s'", s3uri, file));
             return file;
         } catch (IllegalArgumentException e) {  // Thrown by getObject() when key == null.
             logger.info(e.getMessage());

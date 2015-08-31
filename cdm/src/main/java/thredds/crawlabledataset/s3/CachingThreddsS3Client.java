@@ -95,7 +95,6 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
             logger.debug(String.format("ObjectListing cache hit: '%s'", s3uri));
         }
 
-        assert objectListingCache.getIfPresent(s3uri) != null : "WHISKEY TANGO FOXTROT";
         return objectListing.orNull();
     }
 
