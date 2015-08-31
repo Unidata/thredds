@@ -180,7 +180,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
       case multidim:
         obsTable = makeMultidimInner(ds, stnTable, info.childDim, info, errlog);
-        if (info.time.getRank() == 1) { // time(time)
+        if (info.time.getRank() == 1) { // join time(time)
           obsTable.addJoin(new JoinArray(info.time, JoinArray.Type.raw, 0));
           obsTable.time = info.time.getFullName();
         }
@@ -280,7 +280,6 @@ public class CFpointObs extends TableConfigurerImpl {
     }
 
     // obs table
-    //Variable time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     //Dimension obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(traj, obs)
 
     TableConfig obsConfig = null;
@@ -290,6 +289,10 @@ public class CFpointObs extends TableConfigurerImpl {
         break;
       case multidim:
         obsConfig = makeMultidimInner(ds, trajTable, info.childDim, info, errlog);
+        if (info.time.getRank() == 1) { // join time(obs) or time(time)
+          obsConfig.addJoin(new JoinArray(info.time, JoinArray.Type.raw, 0));
+          obsConfig.time = info.time.getFullName();
+        }
         break;
       case raggedContiguous:
         trajTable.numRecords = info.ragged_rowSize.getFullName();
