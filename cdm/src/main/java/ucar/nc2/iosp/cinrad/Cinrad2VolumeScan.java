@@ -185,7 +185,10 @@ public class Cinrad2VolumeScan {
       if(recno == 1 && Cinrad2IOServiceProvider.isCC20){
         sweepN = r.sweepN;
         recordNum = r.recordNum;
-        sums = Arrays.stream(recordNum).sum();
+        //sums = Arrays.stream(recordNum).sum();
+        for (int i = 0; i < recordNum.length; i++) {
+          sums = sums + recordNum[i];
+        }
       }
       if (showData) r.dump2(System.out);
 
