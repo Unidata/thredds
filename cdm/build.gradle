@@ -2,6 +2,8 @@ description = "The NetCDF-Java Library is a Java interface to NetCDF files, as w
         "scientific data formats."
 ext.title = "CDM core library"
 
+apply plugin: 'groovy'  // For Spock tests.
+
 dependencies {
     compile project(':udunits')
     compile project(':httpservices')
@@ -14,8 +16,15 @@ dependencies {
     compile libraries["protobuf-java"]
     compile libraries["guava"]
     compile libraries["jcommander"]
+    compile libraries["aws-java-sdk-s3"]  // For CrawlableDatasetAmazonS3.
 
     compile libraries["slf4j-api"]
+
+    // These 4 are all for Spock.
+    testCompile libraries["spock-core"]
+    testCompile libraries["groovy-all"]
+    testRuntime libraries["cglib-nodep"]
+    testRuntime libraries["objenesis"]
 }
 
 test {

@@ -155,9 +155,9 @@ public class CrawlableDatasetFile implements CrawlableDataset
   }
 
   /**
-   * Provide access to the java.io.File that this CrawlableDataset represents.
+   * Provide access to the file that this CrawlableDataset represents.
    *
-   * @return the java.io.File that this CrawlableDataset represents.
+   * @return the file that this CrawlableDataset represents or {@code null} if it could not be obtained.
    */
   public File getFile()
   {
