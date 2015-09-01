@@ -43,6 +43,7 @@ import thredds.server.admin.DebugCommands;
 import thredds.server.config.TdsContext;
 import ucar.nc2.constants.FeatureType;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -193,7 +194,7 @@ public class AllowedServices {
     return s != null && s.allowed;
   }
 
-  // may return null
+  @Nullable
   public Service getStandardService(StandardService type) {
     AllowedService s = allowed.get(type);
     if (s == null) return null;

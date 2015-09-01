@@ -82,9 +82,11 @@ public class MetadataController {
         return null;
 
       NetcdfFile ncfile = gridDataset.getNetcdfFile();   // LOOK maybe gridDataset.getFileTypeId ??
-      String fileType = ncfile.getFileTypeId();
-      ucar.nc2.constants.DataFormatType fileFormat = ucar.nc2.constants.DataFormatType.getType(fileType);
-      ThreddsMetadata.VariableGroup vars = new ThreddsMetadataExtractor().extractVariables(fileFormat.toString(), gridDataset);
+      String fileTypeS = ncfile.getFileTypeId();
+      ucar.nc2.constants.DataFormatType fileFormat = ucar.nc2.constants.DataFormatType.getType(fileTypeS);
+      if (fileFormat != null) fileTypeS = fileFormat.toString(); // canonicalize
+
+      ThreddsMetadata.VariableGroup vars = new ThreddsMetadataExtractor().extractVariables(fileTypeS, gridDataset);
 
       boolean wantXML = (params.getAccept() != null) && params.getAccept().equalsIgnoreCase("XML");
 

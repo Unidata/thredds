@@ -240,7 +240,7 @@ class FmrcDataset {
     // switch to FmrcInvLite to reduce memory usage
     FmrcInvLite liteLocal = new FmrcInvLite(fmrcInv);
     synchronized (lock) {
-      if (protoLocal == null) protoLocal = state.proto;
+      if (protoLocal == null && state != null) protoLocal = state.proto;
       state = new State(protoLocal, liteLocal);
     }
   }

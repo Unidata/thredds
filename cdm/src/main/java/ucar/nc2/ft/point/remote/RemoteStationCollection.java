@@ -41,6 +41,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.*;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -203,6 +204,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
     // PointCollection
     @Override
+    @Nullable
     public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
       if (boundingBox != null) {
         if (!boundingBox.contains(s.getLatLon())) return null;

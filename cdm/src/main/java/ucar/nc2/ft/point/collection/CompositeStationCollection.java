@@ -46,6 +46,8 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -288,6 +290,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     }
 
     @Override
+    @Nullable
     public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
       if (boundingBox != null) {
         if (!boundingBox.contains(s.getLatLon())) return null;

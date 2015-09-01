@@ -47,6 +47,8 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.Nonnull;
+
 /**
  * Defines the ncstream format, along with ncStream.proto.
  * <pre>
@@ -657,6 +659,7 @@ public class NcStream {
     return ncvar;
   }
 
+  @Nonnull
   static public Section decodeSection(NcStreamProto.Section proto) {
     Section section = new Section();
 
@@ -664,9 +667,7 @@ public class NcStream {
       try {
         section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1));
       } catch (InvalidRangeException e) {
-        e.printStackTrace();
-        return null;
-        //throw new RuntimeException(e);
+        throw new RuntimeException("Bad Section in ncstream", e);
       }
     }
     return section;

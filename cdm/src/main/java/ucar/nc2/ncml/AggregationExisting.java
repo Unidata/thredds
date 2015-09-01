@@ -82,7 +82,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     CacheVar coordCacheVar = null;
     if (type != Aggregation.Type.joinExistingOne) {
       Variable tcv = typical.findVariable(dimName);
-      if (tcv != null)  {
+      if (tcv != null) {
         coordCacheVar = new CoordValueVar(dimName, tcv.getDataType(), tcv.getUnitsString());
       } else {
         // LOOK what to do; docs claim we can add the coord variable in the outer ncml, so make a fake one for now
@@ -92,7 +92,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
 
     } else {
-      coordCacheVar = new CoordValueVar(dimName, DataType.STRING, "");      
+      coordCacheVar = new CoordValueVar(dimName, DataType.STRING, "");
     }
     if (coordCacheVar != null)
       cacheList.add(coordCacheVar);  // coordinate variable is always cached
@@ -108,7 +108,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
     ncDataset.addDimension(null, aggDim);
 
-    promoteGlobalAttributes( (DatasetOuterDimension) typicalDataset);
+    promoteGlobalAttributes((DatasetOuterDimension) typicalDataset);
 
     // now create the agg variables
     // all variables with the named aggregation dimension
@@ -119,14 +119,14 @@ public class AggregationExisting extends AggregationOuterDimension {
       if (!dimName.equals(outerName))
         continue;
 
-      Group newGroup =  DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
+      Group newGroup = DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
       VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
               v.getDimensionsString(), null, null);
-      vagg.setProxyReader( this);
+      vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
-      newGroup.removeVariable( v.getShortName());
-      newGroup.addVariable( vagg);
+      newGroup.removeVariable(v.getShortName());
+      newGroup.addVariable(vagg);
       aggVars.add(vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;
@@ -135,8 +135,8 @@ public class AggregationExisting extends AggregationOuterDimension {
     // handle the agg coordinate variable
     VariableDS joinAggCoord = (VariableDS) ncDataset.findVariable(dimName); // long name of dimension, coord variable
     if ((joinAggCoord == null) && (type == Type.joinExisting)) {
-      typicalDataset.close( typical); // clean up
-      throw new IllegalArgumentException("No existing coordinate variable for joinExisting on "+getLocation());
+      typicalDataset.close(typical); // clean up
+      throw new IllegalArgumentException("No existing coordinate variable for joinExisting on " + getLocation());
     }
 
     if (type == Type.joinExistingOne) {
@@ -144,12 +144,12 @@ public class AggregationExisting extends AggregationOuterDimension {
         // replace aggregation coordinate variable
         ncDataset.getRootGroup().removeVariable(joinAggCoord.getShortName());
       }
-      
+
       joinAggCoord = new VariableDS(ncDataset, null, null, dimName, DataType.STRING, dimName, null, null);
-      joinAggCoord.setProxyReader( this);
+      joinAggCoord.setProxyReader(this);
       ncDataset.getRootGroup().addVariable(joinAggCoord);
       aggVars.add(joinAggCoord);
-      
+
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
       joinAggCoord.addAttribute(new Attribute(CDM.LONG_NAME, "time coordinate"));
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(CF.STANDARD_NAME, "time"));
@@ -160,15 +160,17 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
 
     // make it a cacheVar
-    joinAggCoord.setSPobject( coordCacheVar);
+    if (joinAggCoord != null)
+      joinAggCoord.setSPobject(coordCacheVar);
 
     // check persistence info - may have cached values other than coordinate  LOOK ????
     persistRead();
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);
-    typicalDataset.close( typical);
+    typicalDataset.close(typical);
 
-    if (debugInvocation) System.out.println(ncDataset.getLocation()+" invocation count = "+AggregationOuterDimension.invocation);
+    if (debugInvocation)
+      System.out.println(ncDataset.getLocation() + " invocation count = " + AggregationOuterDimension.invocation);
   }
 
   protected void rebuildDataset() throws IOException {
@@ -196,7 +198,7 @@ public class AggregationExisting extends AggregationOuterDimension {
           logger.warn("readTimeCoordinates: variable = " + timeAxis.getFullName() + " not found in file " + dataset.getLocation());
           return;
         }
-        VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS( null, v, true);
+        VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS(null, v, true);
         CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, vds, null);
         dateList.addAll(timeCoordVar.getCalendarDates());
 
@@ -204,7 +206,7 @@ public class AggregationExisting extends AggregationOuterDimension {
           timeUnits = v.getUnitsString();
 
       } finally {
-        dataset.close( ncfile);
+        dataset.close(ncfile);
       }
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
@@ -225,7 +227,7 @@ public class AggregationExisting extends AggregationOuterDimension {
         ii.setObjectNext(date.toString());
       }
 
-    } else {      
+    } else {
       timeAxis.setDataType(DataType.DOUBLE); // otherwise fractional values get lost
 
       DateUnit du;
@@ -270,7 +272,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       File dir = cacheFile.getParentFile();
       if (!dir.exists()) {
         if (!dir.mkdirs())
-          logger.error("Cant make cache directory= "+cacheFile);
+          logger.error("Cant make cache directory= " + cacheFile);
       }
 
       // Get a file channel for the file
@@ -288,7 +290,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
       if (lock == null) return;
 
-      PrintWriter out = new PrintWriter( new OutputStreamWriter(fos, CDM.utf8Charset));
+      PrintWriter out = new PrintWriter(new OutputStreamWriter(fos, CDM.utf8Charset));
       out.print("<?xml version='1.0' encoding='UTF-8'?>\n");
       out.print("<aggregation xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' version='3' ");
       out.print("type='" + type + "' ");
@@ -313,7 +315,7 @@ public class AggregationExisting extends AggregationOuterDimension {
             NCdumpW.printArray(data, out);
             out.print("</cache>\n");
             if (logger.isDebugEnabled())
-              logger.debug(" wrote array = " + pv.varName + " nelems= "+data.getSize()+" for "+dataset.getLocation());
+              logger.debug(" wrote array = " + pv.varName + " nelems= " + data.getSize() + " for " + dataset.getLocation());
           }
         }
         out.print("  </netcdf>\n");
@@ -325,12 +327,12 @@ public class AggregationExisting extends AggregationOuterDimension {
       long time = datasetManager.getLastScanned();
       if (time == 0) time = System.currentTimeMillis(); // no scans (eg all static) will have a 0
 
-      if (!cacheFile.setLastModified( time))
+      if (!cacheFile.setLastModified(time))
         logger.warn("FAIL to set lastModified on {}", cacheFile.getPath());
       cacheDirty = false;
 
       if (logger.isDebugEnabled())
-              logger.debug("Aggregation persisted = " + cacheFile.getPath() + " lastModified= " + new Date(datasetManager.getLastScanned()));
+        logger.debug("Aggregation persisted = " + cacheFile.getPath() + " lastModified= " + new Date(datasetManager.getLastScanned()));
 
     } finally {
       if (channel != null)
@@ -357,9 +359,9 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     Element aggElem;
     try {
-      aggElem = ucar.nc2.util.xml.Parse.readRootElement("file:"+cacheFile.getPath());
+      aggElem = ucar.nc2.util.xml.Parse.readRootElement("file:" + cacheFile.getPath());
     } catch (IOException e) {
-      if (debugCache) System.out.println(" No cache for " + cacheName+" - "+e.getMessage());
+      if (debugCache) System.out.println(" No cache for " + cacheName + " - " + e.getMessage());
       return;
     }
 
@@ -367,7 +369,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     if ((version == null) || !version.equals("3")) return; // dont read old cache files, recreate
 
     // use a map to find datasets to avoid O(n**2) searching
-    Map<String,Dataset> map = new HashMap<String,Dataset>();
+    Map<String, Dataset> map = new HashMap<String, Dataset>();
     for (Dataset ds : getDatasets()) {
       map.put(ds.getId(), ds);
     }
@@ -385,7 +387,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       if (logger.isDebugEnabled()) logger.debug(" use cache for dataset= {}", id);
 
       MFile mfile = dod.getMFile();
-      if (mfile != null && mfile.getLastModified() > lastWritten)  {  // skip datasets that have changed
+      if (mfile != null && mfile.getLastModified() > lastWritten) {  // skip datasets that have changed
         if (logger.isDebugEnabled()) logger.debug(" dataset was changed= {}", mfile);
         continue;
       }
@@ -409,7 +411,7 @@ public class AggregationExisting extends AggregationOuterDimension {
         if (pv != null) {
           String sdata = cacheElemNested.getText();
           if (sdata.length() == 0) continue;
-          if (logger.isDebugEnabled()) logger.debug(" read data for var = " + varName + " size= "+sdata.length());
+          if (logger.isDebugEnabled()) logger.debug(" read data for var = " + varName + " size= " + sdata.length());
 
           //long start = System.nanoTime();
           String[] vals = sdata.split(" ");
@@ -425,7 +427,7 @@ public class AggregationExisting extends AggregationOuterDimension {
             countCacheUse++;
 
           } catch (Exception e) {
-            logger.warn("Error reading cached data ",e);
+            logger.warn("Error reading cached data ", e);
           }
 
         } else {

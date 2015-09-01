@@ -231,30 +231,33 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   private CatalogBuilder makeCatalogRuns(URI catURI, State localState) throws IOException {
     CatalogBuilder runCatalog = makeCatalog(catURI, localState, RUN_TITLE);
-    DatasetBuilder top = runCatalog.getTop();
+    DatasetBuilder top = runCatalog.getTopDataset();
 
-    for (DatasetBuilder ds : makeRunDatasets(top))
-      top.addDataset(ds);
+    if (top != null)
+      for (DatasetBuilder ds : makeRunDatasets(top))
+        top.addDataset(ds);
 
     return runCatalog;
   }
 
   private CatalogBuilder makeCatalogOffsets(URI catURI, State localState) throws IOException {
     CatalogBuilder offCatalog = makeCatalog(catURI, localState, OFFSET_TITLE);
-    DatasetBuilder top = offCatalog.getTop();
+    DatasetBuilder top = offCatalog.getTopDataset();
 
-    for (DatasetBuilder ds : makeOffsetDatasets(top))
-      top.addDataset(ds);
+    if (top != null)
+      for (DatasetBuilder ds : makeOffsetDatasets(top))
+        top.addDataset(ds);
 
     return offCatalog;
   }
 
   private CatalogBuilder makeCatalogForecasts(URI catURI, State localState) throws IOException {
     CatalogBuilder offCatalog = makeCatalog(catURI, localState, OFFSET_TITLE);
-    DatasetBuilder top = offCatalog.getTop();
+    DatasetBuilder top = offCatalog.getTopDataset();
 
-    for (DatasetBuilder ds : makeOffsetDatasets(top))
-      top.addDataset(ds);
+    if (top != null)
+      for (DatasetBuilder ds : makeOffsetDatasets(top))
+        top.addDataset(ds);
 
     return offCatalog;
   }

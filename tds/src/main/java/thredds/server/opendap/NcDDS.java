@@ -146,12 +146,12 @@ public class NcDDS extends ServerDDS {
       Variable cv = (Variable) o1;
       BaseType bt;
 
-      if (false && cv.isCoordinateVariable()) {
+      /* if (false && cv.isCoordinateVariable()) {
         if ((cv.getDataType() == DataType.CHAR))
           bt = (cv.getRank() > 1) ? new NcSDCharArray(cv) : new NcSDString(cv);
         else
           bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
-      }
+      } */
       //if (bt == null)
       bt = createVariable(ncfile, cv);
       addVariable(bt);

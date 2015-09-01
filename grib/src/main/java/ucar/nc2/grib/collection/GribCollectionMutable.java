@@ -217,6 +217,10 @@ public class GribCollectionMutable implements AutoCloseable {
   }
 
   public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, Object gdsHashObject, int predefinedGridDefinition) {
+    if (hcs == null) {
+      logger.error("GribCollectionMutable: No hcs available");
+      return;
+    }
 
     String hcsName = makeHorizCoordSysName(hcs);
 

@@ -37,6 +37,7 @@ import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.util.Indent;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
@@ -132,6 +133,7 @@ public class Coverage implements IsMissingEvaluator {
     indent.decr();
   }
 
+  @Nonnull
   public CoverageCoordSys getCoordSys() {
     return coordSys;
   }

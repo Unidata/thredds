@@ -51,6 +51,7 @@ import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -2209,6 +2210,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * @return registered id of the file type
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
+  @Nonnull
   public String getFileTypeId() {
     if (spi != null) return spi.getFileTypeId();
     return "N/A";

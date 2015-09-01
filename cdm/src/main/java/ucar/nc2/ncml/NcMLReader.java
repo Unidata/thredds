@@ -1478,8 +1478,10 @@ public class NcMLReader {
     java.util.List<Element> dirList = aggElem.getChildren("scan", ncNS);
     for (Element scanElem : dirList) {
       String dirLocation = scanElem.getAttributeValue("location");
-      if (dirLocation != null)
-        dirLocation = AliasTranslator.translateAlias(dirLocation);
+      if (dirLocation == null)
+        throw new IllegalArgumentException("scan element must have location attribute");
+
+      dirLocation = AliasTranslator.translateAlias(dirLocation);
 
       String regexpPatternString = scanElem.getAttributeValue("regExp");
       String suffix = scanElem.getAttributeValue("suffix");
