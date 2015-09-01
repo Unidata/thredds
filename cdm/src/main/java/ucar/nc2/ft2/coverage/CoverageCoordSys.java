@@ -40,7 +40,6 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
@@ -265,10 +264,8 @@ public class CoverageCoordSys {
         subsetAxes.add(axis.subset(params));
     }
 
-    Time2DCoordSys subsetTime2D;
     if (time2DCoordSys != null) {
-      subsetTime2D = time2DCoordSys.subset(params);
-      subsetAxes.addAll(subsetTime2D.getCoordAxes());
+      subsetAxes.addAll( time2DCoordSys.subset(params));
     }
 
     HorizCoordSys orgHcs = getHorizCoordSys();

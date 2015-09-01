@@ -49,7 +49,7 @@ Temporal subsetting::
 2D Time subsetting::
 
 * A 2D time dataset will have CoverageType set to _FMRC_.
-* You may specify a runtime with a date, _latest_ or _all_; specific a timeOffset with a numeric value, _first_, or _all_.
+* You may specify a runtime with a date, _latest_ or _all_; specify a timeOffset with a numeric value, _first_, or _all_.
  If only one is set, use the default for the other. If neither is set, then return all times for latest runtime.
 * Time parameters are only used if explicitly set and timeOffset is not set. There are only 2 cases where time can be used:
 . Set runtime to a specific value or _latest_ (not _all_). Time parameters (point or range) can be used.

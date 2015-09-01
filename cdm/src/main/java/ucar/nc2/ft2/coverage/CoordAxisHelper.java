@@ -34,6 +34,9 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.util.Misc;
+
+import java.util.Arrays;
 
 /**
  * Helper class for CoverageCoordAxis1D.
@@ -480,5 +483,19 @@ class CoordAxisHelper {
     CoverageCoordAxis1D result = axis.subset(1, start, end, subsetValues);
     result.setIndexRange(last, last, 1);
     return result;
+  }
+
+  public int search(double want) {
+    if (axis.getNcoords() == 1) {
+      return Misc.closeEnough(want, axis.getStartValue()) ? 0 : -1;
+    }
+    if (axis.isRegular()) {
+      double fval = (want - axis.getStartValue()) / axis.getResolution();
+      double ival = Math.rint(fval);
+      return Misc.closeEnough(fval, ival) ? (int) ival : (int) -ival-1; // LOOK
+    }
+
+    // otherwise do a binary searcg
+    return Arrays.binarySearch( axis.getValues(), want);
   }
 }

@@ -183,9 +183,6 @@ public class TestGridCoverageReading {
                            double ens_val, int ens_idx, double vert_val, int vert_idx) {
     System.out.printf("%n===Slice %s runtime=%s (%d) ens=%f (%d) time=%s (%d) vert=%f (%d) %n", cover.getName(), rt_val, rt_idx, ens_val, ens_idx, time_val, time_idx, vert_val, vert_idx);
 
-    if (rt_val.isAfter(time_val))
-      System.out.println("HEY");
-
     Array dt_array;
     try {
       dt_array = dt.readDataSlice(rt_idx, ens_idx, time_idx, vert_idx, -1, -1);

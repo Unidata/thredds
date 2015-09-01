@@ -348,6 +348,11 @@ abstract public class CoverageCoordAxis {
     return timeHelper.getOffsetInTimeUnits(convertFrom, convertTo);
   }
 
+  public CalendarDate getRefDate() {
+    return timeHelper.getRefDate();
+  }
+
+
   ///////////////////////////////////////////////
 
   // will return null when isRegular

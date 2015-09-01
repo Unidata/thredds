@@ -126,7 +126,7 @@ public class TestGeoTiffWriter {
         Coverage coverage = gcd.findCoverage(field);
         assert coverage != null;
         array = coverage.readData(new SubsetParams()
-                .set(SubsetParams.latestTime, true)
+                .set(SubsetParams.timePresent, true)
                 .set(SubsetParams.vertIndex, 0));      // LOOK cheating
 
         try (GeotiffWriter writer = new GeotiffWriter(gridOut2)) {

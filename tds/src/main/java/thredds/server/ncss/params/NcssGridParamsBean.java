@@ -228,15 +228,15 @@ public class NcssGridParamsBean extends NcssParamsBean {
       if (rundate != null)
         subset.set(SubsetParams.runtime, rundate);
       else if (allRuntime)
-        ; // dont need to set a subset
+        subset.set(SubsetParams.runtimeAll, true);
       else
-        subset.set(SubsetParams.latestRuntime, true); // default
+        subset.set(SubsetParams.runtimeLatest, true); // default
 
       // timeOffset
       if (timeOffsetVal != null)
         subset.set(SubsetParams.timeOffset, timeOffsetVal);
       else if (firstTimeOffset)
-        subset.set(SubsetParams.firstTimeOffset, true);
+        subset.set(SubsetParams.timeOffsetFirst, true);
 
       else { // if no timeOffset, will allow some time values
 
@@ -276,7 +276,7 @@ public class NcssGridParamsBean extends NcssParamsBean {
           subset.set(SubsetParams.timeStride, timeStride);
 
       } else {
-        subset.set(SubsetParams.latestTime, true);
+        subset.set(SubsetParams.timePresent, true);
       }
     }
 
