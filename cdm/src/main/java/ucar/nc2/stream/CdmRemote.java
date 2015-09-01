@@ -32,6 +32,8 @@
  */
 package ucar.nc2.stream;
 
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
 import ucar.httpservices.*;
 import org.apache.http.Header;
 
@@ -41,7 +43,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
 
 import java.io.*;
-import java.net.URLEncoder;
 import java.util.Formatter;
 
 /**
@@ -252,6 +253,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   public void writeToFile(String filename) throws IOException {
     File file = new File(filename);
     String url = remoteURI + "?req=header";
+    Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
 
     try (FileOutputStream fos = new FileOutputStream(file)) {
 
@@ -276,7 +278,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       for (Variable v : getVariables()) {
         StringBuilder sbuff = new StringBuilder(remoteURI);
         sbuff.append("?var=");
-        sbuff.append(URLEncoder.encode(v.getShortName(), "UTF-8"));
+        sbuff.append(urlParamEscaper.escape(v.getShortName()));
 
         if (showRequest)
           System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " url=" + sbuff);

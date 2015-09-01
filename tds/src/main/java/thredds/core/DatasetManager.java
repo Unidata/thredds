@@ -33,6 +33,7 @@
 
 package thredds.core;
 
+import com.coverity.security.Escape;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -59,7 +60,6 @@ import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.cache.FileFactory;
-import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -439,7 +439,7 @@ public class DatasetManager implements InitializingBean {
       public void doAction(DebugCommands.Event e) {
         Formatter f = new Formatter();
         datasetTracker.showDB(f);
-        e.pw.println(StringUtil2.quoteHtmlContent(f.toString()));
+        e.pw.println(Escape.html(f.toString()));
       }
     };
     debugHandler.addAction(act);

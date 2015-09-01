@@ -33,6 +33,7 @@
 
 package thredds.core;
 
+import com.coverity.security.Escape;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
@@ -79,7 +80,6 @@ public class ConfigCatalogHtmlWriter {
             "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>";
   }
 
-
   @Autowired
   private ViewerService viewerService;
 
@@ -125,7 +125,7 @@ public class ConfigCatalogHtmlWriter {
     String uri = cat.getUriString();
     if (uri == null) uri = cat.getName();
     if (uri == null) uri = "unknown";
-    String catname = StringUtil2.quoteHtmlContent(uri);
+    String catname = Escape.html(uri);
 
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
@@ -211,7 +211,7 @@ public class ConfigCatalogHtmlWriter {
     for (Dataset ds : datasets) {
       String name = ds.getName();
       if (name == null) name = ""; // eg catrefs
-      else name = StringUtil2.quoteHtmlContent(ds.getName());
+      else name = Escape.html(ds.getName());
 
       sb.append("<tr");
       if (shade) sb.append(" bgcolor='#eeeeee'");
@@ -273,7 +273,7 @@ public class ConfigCatalogHtmlWriter {
         sb.append("<img src='").append(htmlConfig.prepareUrlStringForHtml(folderIcon))
                 .append("' alt='").append(htmlConfig.getFolderIconAlt()).append("'> &nbsp;");
         sb.append("<a href='");
-        sb.append(StringUtil2.quoteHtmlContent(href));
+        sb.append(Escape.html(href));
         sb.append("'><tt>");
         sb.append(name);
         sb.append("</tt></a></td>\r\n");
@@ -302,7 +302,7 @@ public class ConfigCatalogHtmlWriter {
           }
 
           sb.append("<a href='");
-          sb.append(StringUtil2.quoteHtmlContent(accessUrlName));
+          sb.append(Escape.html(accessUrlName));
           sb.append("'><tt>");
           String tmpName = name;
           if (tmpName.endsWith(".xml")) {
@@ -315,7 +315,7 @@ public class ConfigCatalogHtmlWriter {
         else if (ds.getID() != null) {
           // Write link to HTML dataset page.
           sb.append("<a href='");
-          sb.append(StringUtil2.quoteHtmlContent(catHtml));
+          sb.append(Escape.html(catHtml));
           sb.append("dataset=");
           sb.append(StringUtil2.replace(ds.getID(), '+', "%2B"));
           sb.append("'><tt>");

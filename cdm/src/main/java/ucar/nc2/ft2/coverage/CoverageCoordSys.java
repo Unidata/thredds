@@ -91,7 +91,7 @@ public class CoverageCoordSys {
       if (axis.getAxisType() == AxisType.TimeOffset) {
         if (timeOffsetAxis != null) throw new RuntimeException("Cant have multiple TimeOffset Axes in a CoverageCoordSys");
         if (!(axis instanceof TimeOffsetAxis))
-          System.out.println("HEY");
+          throw new IllegalStateException("AxisType.TimeOffset must be instanceof TimeOffsetAxis");
         timeOffsetAxis = (TimeOffsetAxis) axis;
       }
       if (axis.getAxisType() == AxisType.RunTime) {
@@ -254,6 +254,31 @@ public class CoverageCoordSys {
     return new LatLonProjection();
   }
 
+  private class MyCoordSysContainer implements CoordSysContainer {
+    public List<CoverageCoordAxis> axes;
+    public List<CoverageTransform> transforms;
+
+    private MyCoordSysContainer(List<CoverageCoordAxis> axes, List<CoverageTransform> transforms) {
+      this.axes = axes;
+      this.transforms = transforms;
+    }
+
+    @Override
+    public CoverageTransform findCoordTransform(String transformName) {
+     for (CoverageTransform ct : transforms)
+       if (ct.getName().equalsIgnoreCase(transformName)) return ct;
+     return null;
+   }
+
+    @Override
+   public CoverageCoordAxis findCoordAxis(String axisName) {
+     for (CoverageCoordAxis axis : axes) {
+       if (axis.getName().equalsIgnoreCase(axisName)) return axis;
+     }
+     return null;
+   }
+  }
+
   ////////////////////////////////////////////////
 
   public CoverageCoordSys subset(SubsetParams params) throws InvalidRangeException {
@@ -268,38 +293,15 @@ public class CoverageCoordSys {
       subsetAxes.addAll( time2DCoordSys.subset(params));
     }
 
-    HorizCoordSys orgHcs = getHorizCoordSys();
-    HorizCoordSys subsetHcs = orgHcs.subset(params);
+    HorizCoordSys subsetHcs = horizCoordSys.subset(params);
     subsetAxes.addAll(subsetHcs.getCoordAxes());
 
     CoverageCoordSys result = new CoverageCoordSys(this);
     MyCoordSysContainer fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
     result.setDataset(fakeDataset);
     result.setHorizCoordSys(subsetHcs);
+
     return result;
-  }
-
-  private class MyCoordSysContainer implements CoordSysContainer {
-    public List<CoverageCoordAxis> axes;
-    public List<CoverageTransform> transforms;
-
-    public MyCoordSysContainer(List<CoverageCoordAxis> axes, List<CoverageTransform> transforms) {
-      this.axes = axes;
-      this.transforms = transforms;
-    }
-
-    public CoverageTransform findCoordTransform(String transformName) {
-     for (CoverageTransform ct : transforms)
-       if (ct.getName().equalsIgnoreCase(transformName)) return ct;
-     return null;
-   }
-
-   public CoverageCoordAxis findCoordAxis(String axisName) {
-     for (CoverageCoordAxis axis : axes) {
-       if (axis.getName().equalsIgnoreCase(axisName)) return axis;
-     }
-     return null;
-   }
   }
 
 

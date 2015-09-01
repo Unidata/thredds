@@ -607,8 +607,7 @@ public class NcMLReader {
    */
   public static ucar.ma2.Array readAttributeValues(Element s) throws IllegalArgumentException {
     String valString = s.getAttributeValue("value");
-    if (valString != null)
-      valString = StringUtil2.unquoteXmlAttribute(valString);
+    // if (valString != null) valString = StringUtil2.unquoteXmlAttribute(valString); // dont need, JDOM does this LOOK
 
     // can also be element text
     if (valString == null) {

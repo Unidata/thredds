@@ -35,11 +35,7 @@ package ucar.nc2.util;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 /**
  * Networking utilities.
@@ -47,94 +43,6 @@ import java.net.URLEncoder;
  * @author caron
  */
 public class URLnaming {
-
-  @Deprecated
-  public static String escapeQuery(String urlString) {
-    urlString = urlString.trim();
-    String[] split = urlString.split("[?]");
-    return (split[0] == null ? "" : split[0])
-            + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
-  }
-
-  @Deprecated
-  private static String escapeQueryNew(String urlString) {
-    urlString = urlString.trim();
-    URI uri;
-    try {
-      uri = new URI(urlString);
-      return uri.toASCIIString();
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-      return "";
-    }
-  }
-
-  @Deprecated
-  private static String escapeQueryURIUtil(String urlString) {
-    urlString = urlString.trim();
-    int posQ = urlString.indexOf("?");
-    if ((posQ > 0) && (posQ < urlString.length() - 2)) {
-      String query = urlString.substring(posQ + 1);
-      if (!query.contains("%")) { // assume that its not already encoded...
-        String path = urlString.substring(0, posQ);
-        try {
-          urlString = path + "?" + URLEncoder.encode(query,"UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-      }
-    }
-    return urlString;
-  }
-
-  @Deprecated
-  private static String escapeQueryEncoder(String urlString) {
-    urlString = urlString.trim();
-    int posQ = urlString.indexOf("?");
-    if ((posQ > 0) && (posQ < urlString.length() - 2)) {
-      String query = urlString.substring(posQ + 1);
-      if (!query.contains("%")) { // skip if already encoded
-        String path = urlString.substring(0, posQ);
-        try {
-          urlString = path + "?" + URLEncoder.encode(query, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    return urlString;
-  }
-
-  @Deprecated
-  private static String unescapeQueryDODS(String urlString) {
-    urlString = urlString.trim();
-    int posQ = urlString.indexOf("?");
-    if ((posQ >= 0) && (posQ < urlString.length() - 2)) {
-      String path = urlString.substring(0, posQ);
-      String query = urlString.substring(posQ + 1);
-      return path + "?" + EscapeStrings.unescapeURLQuery(query);
-    }
-    return urlString;
-  }
-
-
-  @Deprecated
-  private static String unescapeQueryDecoder(String urlString) {
-
-    urlString = urlString.trim();
-    int posQ = urlString.indexOf("?");
-    if ((posQ >= 0) && (posQ < urlString.length() - 2)) {
-      String path = urlString.substring(0, posQ);
-      String query = urlString.substring(posQ + 1);
-      try {
-        return path + "?" + URLDecoder.decode(query, "UTF-8");
-      } catch (UnsupportedEncodingException e) {
-        e.printStackTrace();
-      }
-    }
-    return urlString;
-  }
-
 
   /// try to figure out if we need to add file: to the location when writing
   static public String canonicalizeWrite(String location) {
@@ -222,19 +130,6 @@ public class URLnaming {
     }
   }
 
-  /// try to figure out if we need to add file: to the location when reading
-  static public String canonicalizeRead(String location) {
-    try {
-      URI refURI = URI.create(location);
-      if (refURI.isAbsolute())
-        return location;
-    } catch (Exception e) {
-      return "file:" + location;
-    }
-    return location;
-  }
-
-
   public static String resolveFile(String baseDir, String filepath) {
     if (baseDir == null) return filepath;
     if (filepath == null) return null;
@@ -250,118 +145,5 @@ public class URLnaming {
     if (base == null) return filepath;
     return base.getAbsolutePath() + "/" + filepath;
   }
-
-  ///////////////////////////////////////////////////////////////////
-
-  /* private static void initProtocolHandler() {
-    // test setting the http protocol handler
-    try {
-      new java.net.URL(null, "http://motherlode.ucar.edu:8080/", new sun.net.www.protocol.http.Handler());
-    } catch (java.net.MalformedURLException e) {
-      e.printStackTrace();
-    }
-
-  } */
-
-  private static void test(String uriS) {
-    System.out.println(uriS);
-    //uriS = URLEncoder.encode(uriS, "UTF-8");
-    //System.out.println(uriS);
-
-    URI uri = URI.create(uriS);
-    System.out.println(" scheme=" + uri.getScheme());
-    System.out.println(" getSchemeSpecificPart=" + uri.getSchemeSpecificPart());
-    System.out.println(" getAuthority=" + uri.getAuthority());
-    System.out.println(" getPath=" + uri.getPath());
-    System.out.println(" getQuery=" + uri.getQuery());
-    System.out.println();
-  }
-
-  public static void main1() {
-    testResolve("file:/test/me/", "blank in dir", "file:/test/me/blank in dir");
-  }
-
-  public static void main2() {
-    test("file:test/dir");
-    test("file:/test/dir");
-    test("file://test/dir");
-    test("file:///test/dir");
-
-    test("file:C:/Program Files (x86)/Apache Software Foundation/Tomcat 5.0/content/thredds/cache");
-    test("file:C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 5.0\\content\\thredds\\cache");
-    test("http://localhost:8080/thredds/catalog.html?hi=lo");
-  }
-
-  private static void testResolve(String base, String rel, String result) {
-    System.out.println("\nbase= " + base);
-    System.out.println("rel= " + rel);
-    System.out.println("resolve= " + resolve(base, rel));
-    if (result != null)
-      assert resolve(base, rel).equals(result);
-  }
-
-  public static void main3() {
-    testResolve("http://test/me/", "wanna", "http://test/me/wanna");
-    testResolve("http://test/me/", "/wanna", "http://test/wanna");
-    testResolve("file:/test/me/", "wanna", "file:/test/me/wanna");
-    testResolve("file:/test/me/", "/wanna", "/wanna");  // LOOK doesnt work for URI.resolve() directly.
-
-    testResolve("file://test/me/", "http:/wanna", "http:/wanna");
-    testResolve("file://test/me/", "file:/wanna", "file:/wanna");
-    testResolve("file://test/me/", "C:/wanna", "C:/wanna");
-    testResolve("http://test/me/", "file:wanna", "file:wanna");
-  }
-
-
-  public static void main4() {
-    try {
-      URI uri = new URI("file:src/test/data/ncml/nc/");
-      new File(uri);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public static void main5() throws URISyntaxException {
-    String uriString = "http://motherlode.ucar.edu:8081/dts/test.53.dods?types[0:1:9]";
-    new URI(uriString);
-  }
-
-  private static void checkEsc(String s) {
-    System.out.printf("org =            %s%n", s);
-    System.out.printf("escapeQuery    = %s%n", escapeQuery(s));
-    System.out.printf("escapeQueryNew = %s%n", escapeQueryNew(s));
-    System.out.printf("escQueryURIUtil= %s%n", escapeQueryURIUtil(s));
-    System.out.printf("escQueryEncoder= %s%n", escapeQueryEncoder(s));
-    System.out.printf("unescQueryDODS = %s%n", unescapeQueryDODS(escapeQuery(s)));
-    System.out.printf("%n");
-  }
-
-  private static void checkUnEsc(String esc) {
-    System.out.printf("esc =             %s%n", esc);
-    System.out.printf("unescQueryDODS  = %s%n", unescapeQueryDODS(esc));
-    System.out.printf("unescapeDecoder = %s%n", unescapeQueryDecoder(esc));
-    System.out.printf("escapeQuery     = %s%n", escapeQuery(unescapeQueryDODS(esc)));
-    System.out.printf("%n");
-  }
-
-  private static void decode(String esc) {
-    System.out.printf("esc =               %s%n", esc);
-    System.out.printf("URLDecoder.decode = %s%n", URLDecoder.decode(esc));
-    System.out.printf("%n");
-  }
-
-
-
-  public static void main(String args[]) throws URISyntaxException {
-    if (args.length > 0) {
-      checkUnEsc(args[0]);
-    } else {
-      String s = "/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best.dods?Relative_humidity_pressure%5b0:1:0%5d%5b0:1:24%5d%5b0:10:420%5d%5b0:10:610%5d";
-      decode(s);
-    }
-
-  }
-
 
 }

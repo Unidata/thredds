@@ -33,7 +33,8 @@
 
 package thredds.util;
 
-import ucar.nc2.constants.CDM;
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -41,7 +42,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.net.URLEncoder;
 
 /**
  * Wrapper around RequestDispatcher
@@ -65,7 +65,9 @@ public class RequestForwardUtils {
       throw new IllegalArgumentException(msg + ".");
     }
 
-    String encodedPath = URLEncoder.encode(fwdPath, CDM.UTF8);
+    Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
+
+    String encodedPath = urlPathEscaper.escape(fwdPath); // LOOK path vs query
     RequestDispatcher dispatcher = request.getRequestDispatcher(encodedPath);
 
     if (dispatcherWasFound(encodedPath, dispatcher, response))
@@ -83,7 +85,8 @@ public class RequestForwardUtils {
       throw new IllegalArgumentException(msg + ".");
     }
 
-    String encodedPath = URLEncoder.encode(fwdPath, CDM.UTF8);
+    Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
+    String encodedPath = urlPathEscaper.escape(fwdPath); // LOOK path vs query
     RequestDispatcher dispatcher = targetContext.getRequestDispatcher(encodedPath);
 
     if (dispatcherWasFound(encodedPath, dispatcher, response))
