@@ -61,7 +61,7 @@ public class WcsDataset {
     // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
     // This is WCS 1.0 coverage for each parameter
     for (Coverage coverage : this.dataset.getCoverages()) {
-      CoverageCoordSys gcs = dataset.findCoordSys(coverage.getCoordSysName());
+      CoverageCoordSys gcs = coverage.getCoordSys();
       if (!gcs.isRegularSpatial()) continue;
       this.availableCoverages.put(coverage.getName(), new WcsCoverage(coverage, gcs, this));
     }

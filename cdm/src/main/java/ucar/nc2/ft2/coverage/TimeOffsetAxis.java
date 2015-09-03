@@ -37,7 +37,6 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import java.util.List;
 
 /**
  * A new way to handle 2D time, an orthogonal axis with offset values. The time can be calculated with both the runtime with the offset.
@@ -46,81 +45,59 @@ import java.util.List;
  * @since 8/13/2015
  */
 public class TimeOffsetAxis extends CoverageCoordAxis1D {
-  // private CoverageCoordAxis1D runAxis;
-  // private final String reftimeName;
 
   public TimeOffsetAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
-                           CoverageCoordAxis.DependenceType dependenceType, String dependsOn, CoverageCoordAxis.Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                           double[] values, CoordAxisReader reader, boolean isSubset ) {
+                        CoverageCoordAxis.DependenceType dependenceType, String dependsOn, CoverageCoordAxis.Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
+                        double[] values, CoordAxisReader reader, boolean isSubset) {
 
     super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
   }
 
   public boolean isTime2D() {
-     return true;
-   }
+    return true;
+  }
 
-  /*
-  @Override
-  public void toString(Formatter f, Indent indent) {
-    super.toString(f, indent);
-    f.format("%s runtime= %s%n", indent, runCoord.getName());
-  } */
-
-  // for now just (runtime, offset) or (runtime=1, time)
-  // note helper is returning a CoverageCoordAxis1D< not a TimeOffsetAxis
-  public CoverageCoordAxis subset(SubsetParams params, CoverageCoordAxis1D runtimeSubset) {
+  // normal case already handled, this is the case where a time has been specified, and only one runtime
+  public CoverageCoordAxis subsetFromTime(SubsetParams params, CalendarDate runDate) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    Double dval = params.getDouble(SubsetParams.timeOffset);
-    if (dval != null) {
-      return helper.subsetClosest(dval);
+
+    if (params.isTrue(SubsetParams.timePresent)) {
+      double offset = getOffsetInTimeUnits(runDate, CalendarDate.present());
+      return helper.subsetClosest(offset);
     }
 
-    // LOOK could do offset min, max
-
-    // for the moment, just deal with the case of (runtime=1, time)
-    assert runtimeSubset.getNcoords() == 1;
-    //int runIdx = runtimeSubset.getMinIndex();
-    //double val = runAxis.getCoord(runIdx);   // not sure runAxis is needed. maybe use runtimeSubset
-    //CalendarDate runDate = runAxis.makeDate(val);
-
-    double val2 = runtimeSubset.getCoord(0);   // not sure runAxis is needed. maybe use runtimeSubset
-    CalendarDate runDate2 = runtimeSubset.makeDate(val2);
-
-    // which time ?
-    if (params.isTrue(SubsetParams.allTimes))
-      return this;
-
-    if (params.isTrue(SubsetParams.latestTime))
-      return helper.subsetLatest();
-
     CalendarDate dateWanted = (CalendarDate) params.get(SubsetParams.time);
-    if (dateWanted != null) {       // convertFrom, convertTo
-      double offset = runtimeSubset.getOffsetInTimeUnits(runDate2, dateWanted);
+    if (dateWanted != null) {                           // convertFrom, convertTo
+      double offset = getOffsetInTimeUnits(runDate, dateWanted);
       return helper.subsetClosest(offset);
     }
 
     CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
     if (dateRange != null) {
-      double min = runtimeSubset.getOffsetInTimeUnits(runDate2, dateRange.getStart());
-      double max = runtimeSubset.getOffsetInTimeUnits(runDate2, dateRange.getEnd());
-      return helper.subset(min, max);
+      double min = getOffsetInTimeUnits(runDate, dateRange.getStart());
+      double max = getOffsetInTimeUnits(runDate, dateRange.getEnd());
+      return helper.subset(min, max); // LOOK no stride
     }
 
-    // if no time parameter, use the first offset in the latest run
-    return helper.subsetValues(0, 0);
+    throw new IllegalStateException();
   }
 
   public CalendarDate makeDate(CalendarDate runDate, double val) {
     double offset = timeHelper.getOffsetInTimeUnits(timeHelper.getRefDate(), runDate);
-    return timeHelper.makeDate(offset+val);
+    return timeHelper.makeDate(offset + val);
   }
-
 
   TimeOffsetAxis subset(int ncoords, double start, double end, double[] values) {
     return new TimeOffsetAxis(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
             this.getAttributeContainer(), this.getDependenceType(), this.getDependsOn(), this.getSpacing(),
             ncoords, start, end, this.getResolution(), values, this.reader, true);
+  }
+
+  TimeOffsetAxis subset(String dependsOn, Spacing spacing, int npoints, double[] values) {
+    assert values != null;
+    return new TimeOffsetAxis(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(), this.getAttributeContainer(),
+            dependsOn == null ? this.getDependenceType() : DependenceType.dependent, dependsOn,
+            spacing, npoints, 0, 0, this.getResolution(), values, null, true);
   }
 
 }

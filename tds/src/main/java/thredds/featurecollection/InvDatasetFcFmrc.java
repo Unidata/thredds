@@ -46,6 +46,10 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
@@ -227,30 +231,33 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   private CatalogBuilder makeCatalogRuns(URI catURI, State localState) throws IOException {
     CatalogBuilder runCatalog = makeCatalog(catURI, localState, RUN_TITLE);
-    DatasetBuilder top = runCatalog.getTop();
+    DatasetBuilder top = runCatalog.getTopDataset();
 
-    for (DatasetBuilder ds : makeRunDatasets(top))
-      top.addDataset(ds);
+    if (top != null)
+      for (DatasetBuilder ds : makeRunDatasets(top))
+        top.addDataset(ds);
 
     return runCatalog;
   }
 
   private CatalogBuilder makeCatalogOffsets(URI catURI, State localState) throws IOException {
     CatalogBuilder offCatalog = makeCatalog(catURI, localState, OFFSET_TITLE);
-    DatasetBuilder top = offCatalog.getTop();
+    DatasetBuilder top = offCatalog.getTopDataset();
 
-    for (DatasetBuilder ds : makeOffsetDatasets(top))
-      top.addDataset(ds);
+    if (top != null)
+      for (DatasetBuilder ds : makeOffsetDatasets(top))
+        top.addDataset(ds);
 
     return offCatalog;
   }
 
   private CatalogBuilder makeCatalogForecasts(URI catURI, State localState) throws IOException {
     CatalogBuilder offCatalog = makeCatalog(catURI, localState, OFFSET_TITLE);
-    DatasetBuilder top = offCatalog.getTop();
+    DatasetBuilder top = offCatalog.getTopDataset();
 
-    for (DatasetBuilder ds : makeOffsetDatasets(top))
-      top.addDataset(ds);
+    if (top != null)
+      for (DatasetBuilder ds : makeOffsetDatasets(top))
+        top.addDataset(ds);
 
     return offCatalog;
   }
@@ -401,6 +408,15 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     return top;
   }
 
+  public CoverageDataset getGridCoverage(String matchPath) throws IOException {
+    NetcdfDataset ncd = getNetcdfDataset(matchPath);
+    DtCoverageDataset gds = new DtCoverageDataset(ncd);
+    CoverageDatasetCollection cc = DtCoverageAdapter.factory(gds);
+    if (cc == null) return null;
+
+    assert cc.getCoverageDatasets().size() == 1;  // LOOK probably want to use endpoint#datasetName ?
+    return cc.getCoverageDatasets().get(0);
+  }
 
   @Override
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {

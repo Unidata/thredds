@@ -163,13 +163,13 @@ public class DataRootManager implements InitializingBean {
     return match;
   }
 
-  private DataRoot findDataRoot(String spath) {
+  private synchronized DataRoot findDataRoot(String spath) {
     if (spath == null)
       return null;
     if (spath.startsWith("/"))
       spath = spath.substring(1);
 
-    // LOOK seems safe to swap dataRootPathMatcher without synchronizing
+    // LOOK could it be safe to swap dataRootPathMatcher without synchronizing?
     return dataRootPathMatcher.findDataRoot(spath);
   }
 

@@ -33,6 +33,8 @@
 
 package ucar.nc2.iosp.bufr.writer;
 
+import com.google.common.escape.Escaper;
+import com.google.common.xml.XmlEscapers;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.iosp.bufr.Message;
@@ -66,6 +68,7 @@ public class Bufr2Xml {
   // private Formatter out = new Formatter(System.out);
   private XMLStreamWriter staxWriter;
   private Indent indent;
+  private Escaper escaper = XmlEscapers.xmlAttributeEscaper();
 
   public Bufr2Xml(Message message, NetcdfFile ncfile, OutputStream os, boolean skipMissing) throws IOException {
     indent = new Indent(2);
@@ -197,7 +200,7 @@ public class Bufr2Xml {
         staxWriter.writeCharacters("\n");
         staxWriter.writeCharacters(indent.toString());
         staxWriter.writeStartElement("struct");
-        staxWriter.writeAttribute("name", StringUtil2.quoteXmlAttribute(s.getShortName()));
+        staxWriter.writeAttribute("name", escaper.escape(s.getShortName()));
         staxWriter.writeAttribute("count", Integer.toString(count++));
 
         for (StructureMembers.Member m : sdata.getMembers()) {
@@ -236,15 +239,15 @@ public class Bufr2Xml {
     // complete option
     staxWriter.writeStartElement("data");
     String name = v.getShortName();
-    staxWriter.writeAttribute("name", StringUtil2.quoteXmlAttribute(name));
+    staxWriter.writeAttribute("name", escaper.escape(name));
 
     String units = v.getUnitsString();
     if ((units != null) && !units.equals(name) && !units.startsWith("Code"))
-      staxWriter.writeAttribute(CDM.UNITS, StringUtil2.quoteXmlAttribute(v.getUnitsString()));
+      staxWriter.writeAttribute(CDM.UNITS, escaper.escape(v.getUnitsString()));
 
     Attribute att = v.findAttribute(BufrIosp2.fxyAttName);
     String desc = (att == null) ? "N/A" : att.getStringValue();
-    staxWriter.writeAttribute("bufr", StringUtil2.quoteXmlAttribute(desc)); // */
+    staxWriter.writeAttribute("bufr", escaper.escape(desc));
 
     if (v.getDataType() == DataType.CHAR) {
       ArrayChar ac = (ArrayChar) mdata;
@@ -273,7 +276,7 @@ public class Bufr2Xml {
 
         } else {  // not numeric
           String s = StringUtil2.filter7bits(mdata.next().toString());
-          staxWriter.writeCharacters(StringUtil2.quoteXmlContent(s));
+          staxWriter.writeCharacters(escaper.escape(s));
         }
       }
     }

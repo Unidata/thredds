@@ -32,6 +32,7 @@
  */
 package thredds.servlet.filter;
 
+import com.coverity.security.Escape;
 import thredds.servlet.ServletUtil;
 import thredds.util.StringValidateEncodeUtils;
 import thredds.util.TdsPathUtils;
@@ -84,7 +85,8 @@ public class RequestPathFilter implements javax.servlet.Filter {
       if (StringValidateEncodeUtils.containsAngleBracketCharacters(path)
               || StringValidateEncodeUtils.containsBackslashCharacters(path)
               || !StringValidateEncodeUtils.validPath(path)) {
-        String msg = "Invalid request path [" + StringValidateEncodeUtils.encodeLogMessages(ServletUtil.getRequestPath(request)) + "].";
+
+        String msg = "Invalid request path [" + Escape.html(ServletUtil.getRequestPath(request)) + "].";
         log.error("doFilter(): " + msg);
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return;

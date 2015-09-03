@@ -896,6 +896,12 @@ public class Section {
       Range r = list.get(i);
       if (r == null) continue;
       if (r == Range.VLEN) continue;
+      if (r == Range.EMPTY) {
+        if (shape[i] != 0)
+          return "Illegal Range for dimension " + i + ": empty range only for unlimited dimension len = 0";
+        else
+          continue;
+      }
       if (r.last() >= shape[i])
         return "Illegal Range for dimension " + i + ": last requested " + r.last() + " > max " + (shape[i] - 1);
     }

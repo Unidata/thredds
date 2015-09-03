@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ft2.coverage.remote;
 
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
 import org.apache.http.Header;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -39,7 +41,6 @@ import ucar.httpservices.HTTPSession;
 import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.util.IO;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -56,6 +57,7 @@ import java.util.zip.InflaterInputStream;
  * @since 5/5/2015
  */
 public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
+  private Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
 
   String endpoint;
   HTTPSession httpClient;
@@ -78,7 +80,7 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
       httpClient = HTTPFactory.newSession(endpoint);
 
     Formatter f = new Formatter();
-    f.format("%s?req=data&var=%s", endpoint, coverage.getName());  // LOOK full vs short name LOOK URL encoding
+    f.format("%s?req=data&var=%s", endpoint, urlParamEscaper.escape(coverage.getName()));  // LOOK full vs short name
 
     for (Map.Entry<String,Object> entry : subset.getEntries()) {
       f.format("&%s=%s", entry.getKey(), entry.getValue());
@@ -127,10 +129,9 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
         geoArrays.add(readData(dataResponse, arrayResponse, is));
       }
 
-      assert geoArrays.size() == 1;
+      assert geoArrays.size() == 1; // LOOK maybe need readData(List<names>) returns List<GeoArray> ?
       return geoArrays.get(0);
     }
-
   }
 
   public GeoReferencedArray readData(DataResponse dataResponse, GeoArrayResponse arrayResponse, InputStream is) throws IOException {
@@ -150,7 +151,6 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
     if (csys == null) throw new IOException("Misformed response - no coordsys");
     return new GeoReferencedArray(arrayResponse.coverageName, arrayResponse.dataType, data, csys);
   }
-
 
   private static String getErrorMessage(HTTPMethod method) {
     String path = method.getURL();

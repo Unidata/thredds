@@ -84,7 +84,6 @@ public class GetAsciiHandler {
 
 
         String requestURL, ce;
-        DConnect2 url;
         DataDDS dds;
 
         if (rs.getConstraintExpression() == null) {
@@ -102,10 +101,9 @@ public class GetAsciiHandler {
             System.out.println("New Request Constraint Expression: '" + ce + "'");
         }
 
-        try {
+        if (_Debug) System.out.println("Making connection to .dods service...");
 
-            if (_Debug) System.out.println("Making connection to .dods service...");
-            url = new DConnect2(requestURL, true);
+        try (DConnect2 url = new DConnect2(requestURL, true)) {
 
             if (_Debug) System.out.println("Requesting data...");
             dds = url.getData(ce, null, new asciiFactory());

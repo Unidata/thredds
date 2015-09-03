@@ -32,6 +32,7 @@
  */
 package thredds.core;
 
+import com.coverity.security.Escape;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -46,7 +47,6 @@ import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Counters;
-import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 
 import java.io.File;
@@ -509,7 +509,8 @@ public class ConfigCatalogInitialization {
             //sbuff.append(" from= ").append(filename).append("\n");
           }
         }
-        e.pw.println(StringUtil2.quoteHtmlContent("\n" + sbuff.toString()));
+        e.pw.println();
+        e.pw.println(Escape.html(sbuff.toString()));
       }
     };
     debugHandler.addAction(act);
@@ -517,7 +518,7 @@ public class ConfigCatalogInitialization {
     act = new DebugCommands.Action("showStats", "Show catalog initialization stats") {
       public void doAction(DebugCommands.Event e) {
         if (callback != null)
-          e.pw.println(StringUtil2.quoteHtmlContent("\n" + callback.toString()));
+          e.pw.printf("%n%s%n", Escape.html(callback.toString()));
         else
           e.pw.printf("N/A%n");
       }

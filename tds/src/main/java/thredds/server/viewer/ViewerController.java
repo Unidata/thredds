@@ -52,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
+import thredds.util.StringValidateEncodeUtils;
 import ucar.unidata.util.StringUtil2;
 
 @Controller
@@ -73,14 +74,19 @@ public class ViewerController {
       return;
     }
 
-    params.setViewer(params.getViewer() + ".jnlp"); //??
+    if (!StringValidateEncodeUtils.validAlphanumericString(params.getViewer())) {
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
+
+    String viewerName = StringUtil2.filter7bits(params.getViewer()) + ".jnlp";
 
     //Check paths LOOK lame
-    File viewPath = new File(tdsContext.getServletRootDirectory(), "/WEB-INF/views/" + params.getViewer());
+    File viewPath = new File(tdsContext.getServletRootDirectory(), "/WEB-INF/views/" + viewerName);
     String template = viewerService.getViewerTemplate(viewPath.getPath());
 
     if (template == null) {
-      viewPath = new File(tdsContext.getContentRootDir(), "views/" + params.getViewer());
+      viewPath = new File(tdsContext.getContentRootDir(), "views/" + viewerName);
       template = viewerService.getViewerTemplate(viewPath.getPath());
     }
     if (template == null) {
@@ -102,7 +108,7 @@ public class ViewerController {
 
 
   @SuppressWarnings("unchecked")
-  public String fillTemplate(HttpServletRequest req, String template) {
+  private String fillTemplate(HttpServletRequest req, String template) {
 
     StringBuilder sbuff = new StringBuilder(template);
 
@@ -113,7 +119,8 @@ public class ViewerController {
       if (values != null) {
         String sname = "{" + name + "}";
         for (String value : values) {
-          StringUtil2.substitute(sbuff, sname, value); // multiple ok
+          String filteredValue = StringUtil2.filter7bits(value);
+          StringUtil2.substitute(sbuff, sname, filteredValue); // multiple occurences in the template will all get replaced
         }
       }
     }

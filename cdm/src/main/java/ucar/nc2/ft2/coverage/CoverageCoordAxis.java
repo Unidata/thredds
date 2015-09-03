@@ -310,6 +310,25 @@ abstract public class CoverageCoordAxis {
     }
   }
 
+  public String getSummary() {
+    Formatter f = new Formatter();
+    f.format("start=%f end=%f %s %s", startValue, endValue, units, spacing);
+    if (ncoords > 1) {
+      switch (spacing) {
+        case regular:
+          f.format(" spacing=%f", resolution);
+          break;
+        case contiguousInterval:
+        case irregularPoint:
+          if (axisType.isTime())
+            f.format(", typical spacing=%f", resolution);
+          break;
+      }
+    }
+    f.format(" (npts=%d)", ncoords);
+    return f.toString();
+  }
+
   ///////////////////////////////////////////////
   // time coords only
 
@@ -328,6 +347,11 @@ abstract public class CoverageCoordAxis {
   public double getOffsetInTimeUnits(CalendarDate convertFrom, CalendarDate convertTo) {
     return timeHelper.getOffsetInTimeUnits(convertFrom, convertTo);
   }
+
+  public CalendarDate getRefDate() {
+    return timeHelper.getRefDate();
+  }
+
 
   ///////////////////////////////////////////////
 

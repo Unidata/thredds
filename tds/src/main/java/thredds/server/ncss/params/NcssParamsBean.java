@@ -60,7 +60,7 @@ import java.util.List;
 @TimeParamsConstraint
 public class NcssParamsBean {
 
-  protected String accept;            // LOOK use enum ?
+  protected String accept;
 
   @VarParamConstraint
   protected List<String> var;
@@ -72,11 +72,6 @@ public class NcssParamsBean {
   protected String time_duration;
 
   protected String time;
-
-  protected String time_window;        // time duration LOOK not integrated yet
-  // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset
-  // but if the dataset does not have up to date data that could be really far from the current time and most likely useless (esp for observation data).
-  // time_window tells the server give me the data if it's within this period otherwise don't bother. time_window must be a valid W3C time duration.
 
   protected String temporal;  // ="all"  deprecated, use time="all"
 
@@ -135,14 +130,6 @@ public class NcssParamsBean {
     this.time_duration = time_duration;
   }
 
-  public String getTime_window() {
-    return time_window;
-  }
-
-  public void setTime_window(String time_window) {
-    this.time_window = time_window;
-  }
-
   public String getTime() {
     return time;
   }
@@ -150,13 +137,13 @@ public class NcssParamsBean {
     this.time = time;
   }
 
+  // deprecated
   public String getTemporal() {
     return temporal;
-  }        // old
+  }
   public void setTemporal(String temporal) {
     this.temporal = temporal;
   }
-
 
   // latlon
   public Double getNorth() {
@@ -231,18 +218,9 @@ public class NcssParamsBean {
   // problem is we dont know the Calendar until we open the dataset
   protected CalendarDate date;
   protected CalendarDateRange dateRange;
-  protected TimeDuration timeWindow;
 
   public void setDate(CalendarDate date) {
     this.date = date;
-  }
-
-  public TimeDuration getTimeWindow() {
-    return timeWindow;
-  }
-
-  public void setTimeWindow(TimeDuration timeWindow) {
-    this.timeWindow = timeWindow;
   }
 
   public void setDateRange(CalendarDateRange dateRange) {
@@ -315,4 +293,31 @@ public class NcssParamsBean {
       throw new NcssException("invalid time duration");
     }
   }
+
+  /////////////////////
+
+  // not used by grid, for point data i think
+  protected String time_window;        // time duration LOOK not integrated yet
+  // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset
+  // but if the dataset does not have up to date data that could be really far from the current time and most likely useless (esp for observation data).
+  // time_window tells the server give me the data if it's within this period otherwise don't bother. time_window must be a valid W3C time duration.
+
+  public String getTime_window() {
+    return time_window;
+  }
+
+  public void setTime_window(String time_window) {
+    this.time_window = time_window;
+  }
+
+
+  protected TimeDuration timeWindow;
+  public TimeDuration getTimeWindow() {
+    return timeWindow;
+  }
+
+  public void setTimeWindow(TimeDuration timeWindow) {
+    this.timeWindow = timeWindow;
+  }
+
 }

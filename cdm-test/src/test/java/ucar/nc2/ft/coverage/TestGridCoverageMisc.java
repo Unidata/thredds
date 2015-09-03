@@ -41,9 +41,7 @@ public class TestGridCoverageMisc {
 
     //    Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T03:00:00Z (1) vert=0.000000 (-1)
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
-            "2015-03-01T06:00:00Z", null, "2015-03-01T03:00:00Z", null, 46});
-
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", null, "Vertical_velocity_geometric_depth_below_sea", null, null, "2009-11-23T00:00:00Z", null, null});
+            "2015-03-01T06:00:00Z", null, "2015-03-01T12:00:00Z", null, null});
 
     // Test Dataset Q:/cdmUnitTest/gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3  Grid TwoD/Total_ozone_entire_atmosphere_single_layer
     //  Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T00:00:00Z (0) vert=0.000000 (-1)
@@ -77,7 +75,8 @@ public class TestGridCoverageMisc {
   Double vert_val;
   Integer time_idx;
 
-  public TestGridCoverageMisc(String endpoint, CoverageCoordSys.Type type, String covName, String rt_val, Double ens_val, String time_val, Double vert_val, Integer time_idx) {
+  public TestGridCoverageMisc(String endpoint, CoverageCoordSys.Type type, String covName, String rt_val, Double ens_val,
+                              String time_val, Double vert_val, Integer time_idx) {
     this.endpoint = endpoint;
     this.type = type;
     this.covName = covName;

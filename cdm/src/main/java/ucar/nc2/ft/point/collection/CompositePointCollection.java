@@ -43,6 +43,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Iterator;
@@ -92,6 +93,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   }
 
   @Override
+  @Nonnull
   public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     if ((dateRange == null) && (boundingBox == null))
       return this;
@@ -109,7 +111,6 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
       iter.setCalculateBounds(this);
     return iter;
   }
-
 
   @Override
   public CalendarDateRange update() throws IOException {

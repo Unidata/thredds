@@ -528,7 +528,7 @@ public class FileCache implements FileCacheIF {
           file.ncfile.setFileCache(null);
           file.ncfile.close();
         }
-        file.ncfile = null; // help the gc
+        if (file != null) file.ncfile = null; // help the gc
       } catch (IOException e) {
         log.error("FileCache " + name + " close failed on " + file);
       }

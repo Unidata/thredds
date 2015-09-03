@@ -32,6 +32,8 @@
  */
 package ucar.nc2;
 
+import com.google.common.escape.Escaper;
+import com.google.common.xml.XmlEscapers;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -52,6 +54,7 @@ import java.nio.ByteBuffer;
  * <p/>
  * A difference with ncdump is that the nesting of multidimensional array data is represented by nested brackets,
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h)
+ * LOOK XML routines should go away in 5.0
  *
  * @author caron
  * @since Nov 4, 2007
@@ -757,15 +760,16 @@ public class NCdumpW {
     out.format("<?xml version='1.0' encoding='UTF-8'?>%n");
     out.format("<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'%n");
 
+    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
     if (url != null)
-      out.format("    location='%s' >%n%n", StringUtil2.quoteXmlAttribute(url));
+      out.format("    location='%s' >%n%n", escaper.escape(url));
     else
-      out.format("    location='%s' >%n%n", StringUtil2.quoteXmlAttribute(URLnaming.canonicalizeWrite(ncfile.getLocation())));
+      out.format("    location='%s' >%n%n", escaper.escape(URLnaming.canonicalizeWrite(ncfile.getLocation())));
 
     if (ncfile.getId() != null)
-      out.format("    id='%s'%n", StringUtil2.quoteXmlAttribute(ncfile.getId()));
+      out.format("    id='%s'%n", escaper.escape(ncfile.getId()));
     if (ncfile.getTitle() != null)
-      out.format("    title='%s'%n", StringUtil2.quoteXmlAttribute(ncfile.getTitle()));
+      out.format("    title='%s'%n", escaper.escape(ncfile.getTitle()));
 
     writeNcMLGroup(ncfile, ncfile.getRootGroup(), out, new Indent(2), showValues);
 
@@ -783,13 +787,14 @@ public class NCdumpW {
 
 
   static private void writeNcMLGroup(NetcdfFile ncfile, Group g, Formatter out, Indent indent, WantValues showValues) throws IOException {
+    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
     if (g != ncfile.getRootGroup())
-      out.format("%s<group name='%s' >%n", indent, StringUtil2.quoteXmlAttribute(g.getShortName()));
+      out.format("%s<group name='%s' >%n", indent, escaper.escape(g.getShortName()));
     indent.incr();
 
     List<Dimension> dimList = g.getDimensions();
     for (Dimension dim : dimList) {
-      out.format("%s<dimension name='%s' length='%s'", indent, StringUtil2.quoteXmlAttribute(dim.getShortName()), dim.getLength());
+      out.format("%s<dimension name='%s' length='%s'", indent, escaper.escape(dim.getShortName()), dim.getLength());
       if (dim.isUnlimited())
         out.format(" isUnlimited='true'");
       out.format(" />%n");
@@ -828,7 +833,8 @@ public class NCdumpW {
   }
 
   static private void writeNcMLStructure(Structure s, Formatter out, Indent indent, WantValues showValues) throws IOException {
-    out.format("%s<structure name='%s", indent, StringUtil2.quoteXmlAttribute(s.getShortName()));
+    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
+    out.format("%s<structure name='%s", indent, escaper.escape(s.getShortName()));
 
     // any dimensions?
     if (s.getRank() > 0) {
@@ -856,7 +862,8 @@ public class NCdumpW {
   }
 
   static private void writeNcMLVariable(Variable v, Formatter out, Indent indent, WantValues showValues) throws IOException {
-    out.format("%s<variable name='%s' type='%s'", indent, StringUtil2.quoteXmlAttribute(v.getShortName()), v.getDataType());
+    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
+    out.format("%s<variable name='%s' type='%s'", indent, escaper.escape(v.getShortName()), v.getDataType());
 
     // any dimensions (scalers must skip this attribute) ?
     if (v.getRank() > 0) {
@@ -901,6 +908,7 @@ public class NCdumpW {
   // LOOK anon dimensions
 
   static private void writeNcMLDimension(Variable v, Formatter out) {
+    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
     out.format(" shape='");
     java.util.List<Dimension> dims = v.getDimensions();
     for (int j = 0; j < dims.size(); j++) {
@@ -908,7 +916,7 @@ public class NCdumpW {
       if (j != 0)
         out.format(" ");
       if (dim.isShared())
-        out.format("%s", StringUtil2.quoteXmlAttribute(dim.getShortName()));
+        out.format("%s", escaper.escape(dim.getShortName()));
       else
         out.format("%d", dim.getLength());
     }
@@ -917,11 +925,12 @@ public class NCdumpW {
 
   @SuppressWarnings({"ObjectToString"})
   static private void writeNcMLAtt(Attribute att, Formatter out, Indent indent) {
-    out.format("%s<attribute name='%s' value='", indent, StringUtil2.quoteXmlAttribute(att.getShortName()));
+    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
+    out.format("%s<attribute name='%s' value='", indent, escaper.escape(att.getShortName()));
     if (att.isString()) {
       for (int i = 0; i < att.getLength(); i++) {
         if (i > 0) out.format("\\, "); // ??
-        out.format("%s", StringUtil2.quoteXmlAttribute(att.getStringValue(i)));
+        out.format("%s", escaper.escape(att.getStringValue(i)));
       }
     } else {
       for (int i = 0; i < att.getLength(); i++) {

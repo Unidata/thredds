@@ -34,10 +34,7 @@
 package ucar.unidata.util;
 
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.EscapeStrings;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -165,26 +162,6 @@ public class StringUtil2 {
     return sb.toString();
   }
 
-  /*
-   * Remove all but printable 7bit ascii
-   *
-   * @param s filter this string
-   * @return filtered string.
-   *
-  static public String filter7bits(String s) {
-    if (s == null) return null;
-    char[] bo = new char[s.length()];
-    int count = 0;
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if ((c < 128) && (c > 31) || ((c == '\n') || (c == '\t'))) {
-        bo[count++] = c;
-      }
-    }
-
-    return new String(bo, 0, count);
-  } */
-
   /**
    * Remove all but printable ascii
    *
@@ -257,7 +234,7 @@ public class StringUtil2 {
    * @param value     The value.
    * @param numDigits number of digits
    * @return The String  represenation of the value, padded with
-   *         leading "0"-s if value &lt; 10E(numDigits-1)
+   * leading "0"-s if value &lt; 10E(numDigits-1)
    */
   public static String padZero(int value, int numDigits) {
     return padLeft(String.valueOf(value), numDigits, "0");
@@ -320,72 +297,6 @@ public class StringUtil2 {
       ret.append(padString);
     }
     return ret.toString();
-  }
-
-  private static final char[] htmlIn = {'&', '"', '\'', '<', '>', '\n'};
-  private static final String[] htmlOut = {"&amp;", "&quot;", "&#39;", "&lt;", "&gt;", "\n<p>"};
-  private static final char[] xmlInC = {'&', '<', '>'};
-  private static final String[] xmlOutC = {"&amp;", "&lt;", "&gt;"};
-  private static final char[] xmlIn = {'&', '"', '\'', '<', '>', '\r', '\n'};
-  private static final String[] xmlOut = {"&amp;", "&quot;", "&apos;", "&lt;", "&gt;", "&#13;", "&#10;"};
-
-  /**
-   * Replace special characters with entities for HTML content.
-   * special: '&', '"', '\'', '<', '>', '\n'
-   *
-   * @param x string to quote
-   * @return equivilent string using entities for any special chars
-   */
-  static public String quoteHtmlContent(String x) {
-    if (x == null) return null;
-    return replace(x, htmlIn, htmlOut);
-  }
-
-  static public String unquoteHtmlContent(String x) {
-    return unreplace(x, htmlOut, htmlIn);
-  }
-
-  /**
-   * Replace special characters with entities for XML attributes.
-   * special: '&', '<', '>', '\'', '"', '\r', '\n'
-   *
-   * @param x string to quote
-   * @return equivilent string using entities for any special chars
-   */
-  static public String quoteXmlContent(String x) {
-    if (x == null) return null;
-    return replace(x, xmlInC, xmlOutC);
-  }
-
-  /**
-   * Reverse XML quoting to recover the original string.
-   *
-   * @param x string to quote
-   * @return equivilent string
-   */
-  static public String unquoteXmlContent(String x) {
-    return unreplace(x, xmlOutC, xmlInC);
-  }
-
-  /**
-   * Replace special characters with entities for XML attributes.
-   * special: '&', '<', '>', '\'', '"', '\r', '\n'
-   *
-   * @param x string to quote
-   * @return equivilent string using entities for any special chars
-   */
-  static public String quoteXmlAttribute(String x) {
-    return replace(x, xmlIn, xmlOut);
-  }
-
-  /**
-   * Reverse XML quoting to recover the original string.
-   *
-   * @param x string to quote
-   * @return equivilent string
-   */
-  static public String unquoteXmlAttribute(String x) {
-    return unreplace(x, xmlOut, xmlIn);
   }
 
   /**
@@ -583,7 +494,7 @@ public class StringUtil2 {
 
 
   /**
-   * Replace all occurences of orgReplace with orgChar; inverse of replace().
+   * Replace all occurrences of orgReplace with orgChar; inverse of replace().
    *
    * @param x          operate on this string
    * @param orgReplace get rid of these
@@ -614,7 +525,7 @@ public class StringUtil2 {
   }
 
   /**
-   * Find all occurences of the "match" in original, and substitute the "subst" string.
+   * Find all occurrences of the "match" in original, and substitute the "subst" string.
    *
    * @param original starting string
    * @param match    string to match
@@ -712,8 +623,7 @@ public class StringUtil2 {
    * @param subst    array of strings to substitute
    * @return a new string with substitutions
    */
-  static public String substitute(String original, String[] match,
-                                  String[] subst) {
+  static public String substitute(String original, String[] match, String[] subst) {
 
     boolean ok = true;
     for (String aMatch : match) {
@@ -869,191 +779,34 @@ public class StringUtil2 {
 
   /**
    * Remove bad char from beginning or end of string
+   *
    * @param s operate on this
    * @return trimmed string
    */
 
   static public String trim(String s, int bad) {
-      int len = s.length();
-      int st = 0;
+    int len = s.length();
+    int st = 0;
 
-      while ((st < len) && (s.charAt(st) == bad)) {
-          st++;
-      }
-      while ((st < len) && (s.charAt(len - 1) == bad)) {
-          len--;
-      }
-      return ((st > 0) || (len < s.length())) ? s.substring(st, len) : s;
+    while ((st < len) && (s.charAt(st) == bad)) {
+      st++;
+    }
+    while ((st < len) && (s.charAt(len - 1) == bad)) {
+      len--;
+    }
+    return ((st > 0) || (len < s.length())) ? s.substring(st, len) : s;
   }
 
-  /*
-  static public StringBuilder trim(StringBuilder sb) {
-     return trim(sb, ' ');
-  }
+  //////////////////////////////////////////////////////////////////////
 
-   static public StringBuilder trim(StringBuilder sb, int bad) {
-     int count = 0;
-     for (int i = 0; i < sb.length(); i++) {
-       int c = sb.charAt(i);
-       if (c == bad) count++;
-       else break;
-     }
-     if (count > 0) sb = sb.delete(0, count);
-
-     count = 0;
-     for (int i = sb.length() - 1; i >= 0; i--) {
-       int c = sb.charAt(i);
-       if (c == bad) count++;
-       else break;
-     }
-     if (count > 0)
-       sb.setLength(sb.length() - count);
-
-     return sb;
-   } */
-
-   ////////
-
+  private static final char[] htmlIn = {'&', '"', '\'', '<', '>', '\n'};
+  private static final String[] htmlOut = {"&amp;", "&quot;", "&#39;", "&lt;", "&gt;", "\n<p>"};
 
   /**
-   * usage for test code
+   * @deprecated legacy only, use HtmlEscapers.htmlEscaper()
    */
-  private static void showUsage() {
-    System.out.println(" StringUtil escape <string> [okChars]");
-    System.out.println(" StringUtil unescape <string>");
+  static public String quoteHtmlContent(String x) {
+    if (x == null) return null;
+    return replace(x, htmlIn, htmlOut);
   }
-
-  public static void main2(String args[]) {
-    if (args.length < 2) {
-      showUsage();
-      return;
-    }
-
-    if (args[0].equalsIgnoreCase("escape")) {
-      String ok = (args.length > 2)
-              ? args[2]
-              : "";
-
-      System.out.println(" escape(" + args[1] + "," + ok + ")= "
-              + StringUtil2.escape(args[1], ok));
-
-    } else if (args[0].equalsIgnoreCase("unescape")) {
-      System.out.println(" unescape(" + args[1] + ")= "
-              + StringUtil2.unescape(args[1]));
-    } else {
-      showUsage();
-    }
-  }
-
-  public static void main3() {
-    String s = "\n";
-    System.out.printf("quoteXmlAttribute(%s) == %s%n", s, StringUtil2.quoteXmlAttribute(s));
-    String s2 = StringUtil2.quoteXmlAttribute(s);
-    System.out.printf("unquoteXmlAttribute(%s) == '%s'%n", s2, StringUtil2.unquoteXmlAttribute(s2));
-  }
-
-  public static void main(String[] args) throws UnsupportedEncodingException {
-    String org = "http://dataserver.nccs.nasa.gov/thredds/ncss/nex/netcdf/pr_amon_BCSD_rcp85_r1i1p1_CONUS_CESM1-CAM5_207101-207512.nc?var=pr&latitude=48.9983&longitude=247.212&time_start=2071-01-01T00%3A00%3A00Z&time_end=2072-01-01T00%3A00%3A00Z&timeStride=1&accept=csv";
-    System.out.printf("org = '%s'%n", org);
-    String unescapedQuery = EscapeStrings.unescapeURLQuery(org);
-    System.out.printf(" EscapeStrings.unescapeURLQuery(org) = '%s'%n%n", unescapedQuery);
-    String decodedQuery = URLDecoder.decode(org, "UTF-8");
-    System.out.printf("decodedQuery = '%s'%n", decodedQuery);
-    String decodedQuery2 = URLDecoder.decode(decodedQuery, "UTF-8");
-    System.out.printf("decodedQuery^2 = '%s'%n", decodedQuery2);
-  }
-
-
-  ////////////////////////////////////////
-  // not used apparently
-
-  /**
-   * Escape any char in reservedChars.
-   * Escape by replacing char with %xx (hex).
-   * LOOK: need to check for %, replace with %%
-   *
-   * @param x             escape this string
-   * @param reservedChars these must be replaced
-   * @return equivilent escaped string.
-   */
-  static public String escape2(String x, String reservedChars) {
-    StringBuilder newname = new StringBuilder();
-    for (char c : x.toCharArray()) {
-      if (c == '%') {
-        newname.append("%%");
-      } else if (reservedChars.indexOf(c) >= 0) {
-        newname.append('%' + Integer.toHexString((0xFF & (int) c)));
-      } else
-        newname.append(c);
-    }
-    return newname.toString();
-  }
-
-  static public String ignoreescape2(String x, String reservedChars) {
-    boolean ok = true;
-    for (int pos = 0; pos < x.length(); pos++) {
-      char c = x.charAt(pos);
-      if (reservedChars.indexOf(c) >= 0) {
-        ok = false;
-        break;
-      }
-    }
-    if (ok) {
-      return x;
-    }
-
-    // gotta do it
-    StringBuilder sb = new StringBuilder(x);
-    for (int pos = 0; pos < sb.length(); pos++) {
-      char c = sb.charAt(pos);
-      if (reservedChars.indexOf(c) < 0) {
-        continue;
-      }
-
-      sb.setCharAt(pos, '%');
-      int value = (int) c;
-      pos++;
-      sb.insert(pos, Integer.toHexString(value));
-      pos++;
-    }
-
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given text to html by adding &lt;br&gt;.
-   * If there are new lines then we replace them with a space.
-   * Then we break the lines into 50
-   * character (or so) chunks, adding br tags.
-   *
-   * @param text     The text to convert
-   * @param insert   string to insert
-   * @param lineSize line size to insert at
-   * @return The text with added br tags.
-   */
-  public static String breakText(String text, String insert, int lineSize) {
-    text = replace(text, "\n", " ");
-    StringBuilder buff = new StringBuilder();
-    while (text.length() > 0) {
-      int len = text.length();
-      if (len < lineSize) {
-        buff.append(text);
-        break;
-      }
-      int idx = lineSize;
-      while ((idx < len) && (text.charAt(idx) != ' ')) {
-        idx++;
-      }
-      if (idx == len) {
-        buff.append(text);
-        break;
-      }
-      buff.append(text.substring(0, idx));
-      buff.append(insert);
-      text = text.substring(idx);
-    }
-    return buff.toString();
-  }
-
-
 }

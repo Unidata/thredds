@@ -33,6 +33,9 @@
 
 package thredds.util;
 
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
@@ -62,10 +65,13 @@ public class RequestForwardUtils {
       throw new IllegalArgumentException(msg + ".");
     }
 
-    RequestDispatcher dispatcher = request.getRequestDispatcher(fwdPath);
+    Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
 
-    if (dispatcherWasFound(fwdPath, dispatcher, response))
-      forwardRequest(fwdPath, dispatcher, request, response);
+    String encodedPath = urlPathEscaper.escape(fwdPath); // LOOK path vs query
+    RequestDispatcher dispatcher = request.getRequestDispatcher(encodedPath);
+
+    if (dispatcherWasFound(encodedPath, dispatcher, response))
+      dispatcher.forward(request, response);
   }
 
   public static void forwardRequestRelativeToGivenContext(String fwdPath,
@@ -79,10 +85,12 @@ public class RequestForwardUtils {
       throw new IllegalArgumentException(msg + ".");
     }
 
-    RequestDispatcher dispatcher = targetContext.getRequestDispatcher(fwdPath);
+    Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
+    String encodedPath = urlPathEscaper.escape(fwdPath); // LOOK path vs query
+    RequestDispatcher dispatcher = targetContext.getRequestDispatcher(encodedPath);
 
-    if (dispatcherWasFound(fwdPath, dispatcher, response))
-      forwardRequest(fwdPath, dispatcher, request, response);
+    if (dispatcherWasFound(encodedPath, dispatcher, response))
+      dispatcher.forward(request, response);
   }
 
   public static void forwardRequest(String fwdPath, RequestDispatcher dispatcher, HttpServletRequest request, HttpServletResponse response)
@@ -99,12 +107,6 @@ public class RequestForwardUtils {
 
   private static boolean dispatcherWasFound(String fwdPath, RequestDispatcher dispatcher, HttpServletResponse response)
           throws IOException {
-
-    if (fwdPath == null || response == null) {
-      String msg = "Path and response may not be null";
-      log.error("forwardRequestRelativeToGivenContext() ERROR: " + msg + (fwdPath == null ? ": " : "[" + fwdPath + "]: "));
-      throw new IllegalArgumentException(msg + ".");
-    }
 
     if (dispatcher == null) {
       log.error("dispatcherWasFound() ERROR : Dispatcher for forwarding [" + fwdPath + "] not found:");

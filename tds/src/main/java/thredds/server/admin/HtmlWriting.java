@@ -39,6 +39,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.coverity.security.Escape;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +53,6 @@ import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.util.StringUtil2;
 
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
@@ -62,7 +62,7 @@ import ucar.unidata.util.StringUtil2;
 
 @Component
 public class HtmlWriting {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HtmlWriting.class);
+  // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HtmlWriting.class);
 
   @Autowired
   private TdsContext tdsContext;
@@ -548,7 +548,7 @@ public class HtmlWriting {
   private String getCDM(NetcdfDataset ds) throws IOException {
     StringBuilder sb = new StringBuilder(10000);
 
-    String name = StringUtil2.quoteHtmlContent(ds.getLocation());
+    String name = Escape.html(ds.getLocation());
 
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
@@ -626,7 +626,6 @@ public class HtmlWriting {
   }
 
   private void showAxis(CoordinateAxis axis, StringBuilder sb, boolean shade) {
-
     sb.append("<tr");
     if (shade) {
       sb.append(" bgcolor='#eeeeee'");
@@ -639,14 +638,14 @@ public class HtmlWriting {
 
     StringBuilder sbuff = new StringBuilder();
     axis.getNameAndDimensions(sbuff);
-    String name = StringUtil2.quoteHtmlContent(sbuff.toString());
+    String name = Escape.html(sbuff.toString());
     sb.append("&nbsp;");
     sb.append(name);
     sb.append("</tt></a></td>\r\n");
 
     sb.append("<td align='left'><tt>");
     AxisType type = axis.getAxisType();
-    String stype = (type == null) ? "" : StringUtil2.quoteHtmlContent(type.toString());
+    String stype = (type == null) ? "" : Escape.html(type.toString());
     sb.append(stype);
     sb.append("</tt></td>\r\n");
 
@@ -660,7 +659,6 @@ public class HtmlWriting {
   }
 
   private void showGrid(GridDatatype grid, StringBuilder sb, boolean shade) {
-
     sb.append("<tr");
     if (shade) {
       sb.append(" bgcolor='#eeeeee'");
@@ -674,14 +672,14 @@ public class HtmlWriting {
     VariableEnhanced ve = grid.getVariable();
     StringBuilder sbuff = new StringBuilder();
     ve.getNameAndDimensions(new Formatter(sbuff), false, true);
-    String name = StringUtil2.quoteHtmlContent(sbuff.toString());
+    String name = Escape.html(sbuff.toString());
     sb.append("&nbsp;");
     sb.append(name);
     sb.append("</tt></a></td>\r\n");
 
     sb.append("<td align='left'><tt>");
     String desc = ve.getDescription();
-    String sdesc = (desc == null) ? "" : StringUtil2.quoteHtmlContent(desc);
+    String sdesc = (desc == null) ? "" : Escape.html(desc);
     sb.append(sdesc);
     sb.append("</tt></td>\r\n");
 

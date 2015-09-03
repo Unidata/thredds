@@ -35,6 +35,7 @@ package thredds.server.ncss.format;
 
 import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -84,9 +85,12 @@ public enum SupportedOperation {
     return null;
   }
 
-  public SupportedFormat getSupportedFormat(String want) throws UnsupportedResponseFormatException {
+  public @Nonnull
+  SupportedFormat getSupportedFormat(String want) throws UnsupportedResponseFormatException {
     if (want == null || want.equals("")) {
-      return getDefaultFormat();
+      SupportedFormat sf = getDefaultFormat();
+      if (sf != null) return sf;
+      throw new UnsupportedResponseFormatException("No default Format available");
     }
 
     for (SupportedFormat f : getSupportedFormats()) {

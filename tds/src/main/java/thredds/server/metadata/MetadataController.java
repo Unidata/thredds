@@ -34,6 +34,7 @@
 
 package thredds.server.metadata;
 
+import com.coverity.security.Escape;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -53,7 +54,6 @@ import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dt.GridDataset;
-import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -82,9 +82,11 @@ public class MetadataController {
         return null;
 
       NetcdfFile ncfile = gridDataset.getNetcdfFile();   // LOOK maybe gridDataset.getFileTypeId ??
-      String fileType = ncfile.getFileTypeId();
-      ucar.nc2.constants.DataFormatType fileFormat = ucar.nc2.constants.DataFormatType.getType(fileType);
-      ThreddsMetadata.VariableGroup vars = new ThreddsMetadataExtractor().extractVariables(fileFormat.toString(), gridDataset);
+      String fileTypeS = ncfile.getFileTypeId();
+      ucar.nc2.constants.DataFormatType fileFormat = ucar.nc2.constants.DataFormatType.getType(fileTypeS);
+      if (fileFormat != null) fileTypeS = fileFormat.toString(); // canonicalize
+
+      ThreddsMetadata.VariableGroup vars = new ThreddsMetadataExtractor().extractVariables(fileTypeS, gridDataset);
 
       boolean wantXML = (params.getAccept() != null) && params.getAccept().equalsIgnoreCase("XML");
 
@@ -112,17 +114,17 @@ public class MetadataController {
       ThreddsMetadata.UriResolved uri = vars.getVocabUri();
       f.format(" %s", uri.resolved.toString());
     }
-    f.format(" %s ]%n<ul>%n", StringUtil2.quoteHtmlContent(vars.getVocabulary()));
+    f.format(" %s ]%n<ul>%n", Escape.html(vars.getVocabulary()));
 
     java.util.List<ThreddsMetadata.Variable> vlist = vars.getVariableList();
     if (vlist.size() > 0) {
       for (ThreddsMetadata.Variable v : vlist) {
         String units = (v.getUnits() == null || v.getUnits().length() == 0) ? "" : " (" + v.getUnits() + ") ";
-        f.format(" <li><strong>%s</strong>", StringUtil2.quoteHtmlContent(v.getName() + units));
+        f.format(" <li><strong>%s</strong>", Escape.html(v.getName() + units));
         if (v.getDescription() != null)
-          f.format(" = <i>%s</i>", StringUtil2.quoteHtmlContent(v.getDescription()));
+          f.format(" = <i>%s</i>", Escape.html(v.getDescription()));
         if (v.getVocabularyName() != null && v.getVocabularyName().length() > 0)
-          f.format(" = %s", StringUtil2.quoteHtmlContent(v.getVocabularyName()));
+          f.format(" = %s", Escape.html(v.getVocabularyName()));
         f.format("%n");
       }
     }

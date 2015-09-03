@@ -220,6 +220,41 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
     return reader;
   }
 
+  // this is used in ncss form
+  public CoverageCoordAxis1D getRuntimeCoordinateMax() {
+    // runtimes - LOOK should combine
+    CoverageCoordAxis max = null;
+    for (CoverageCoordAxis axis : coordAxes) {
+      if (axis.getAxisType() == AxisType.RunTime) {
+        if (max == null) max = axis;
+        else if (max.getNcoords() < axis.getNcoords()) max = axis;
+      }
+    }
+    if (max == null) return null;
+    return (max.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) ? null : (CoverageCoordAxis1D) max;
+
+    /* CoverageCoordAxis1D runtimeMax = (CoverageCoordAxis1D) max;
+    if (runtimeMax.getNcoords() < 10) {
+      Formatter f = new Formatter();
+      for (int i=0; i<runtimeMax.getNcoords(); i++) {
+        CalendarDate cd = runtimeMax.makeDate(runtimeMax.getCoord(i));
+        if (i>0) f.format(", ");
+        f.format("%s", cd);
+      }
+      return f.toString();
+    }
+
+    Formatter f = new Formatter();
+    CalendarDate start = runtimeMax.makeDate(runtimeMax.getStartValue());
+    f.format("start=%s", start);
+    CalendarDate end = runtimeMax.makeDate(runtimeMax.getEndValue());
+    f.format(" ,end=%s", end);
+    f.format(" (npts=%d spacing=%s)", runtimeMax.getNcoords(), runtimeMax.getSpacing());
+
+    return f.toString(); */
+  }
+
+
   @Override
   public String toString() {
     Formatter f = new Formatter();

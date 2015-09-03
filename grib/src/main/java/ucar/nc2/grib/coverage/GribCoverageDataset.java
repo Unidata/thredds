@@ -958,7 +958,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   // (runtime=1, time) = constant runtime
 
   // CANT DO YET (HOW - switch timeOffset to CoverageCoordAxis1D time)  (NO: dataReader.readData() only does rectangle. need new API)
-  // (runtime > 1, time=1)  = constant forecast   (must cut down the runtime based on the time request - only those that have it.
+  // (runtime > 1, time = 1)  = constant forecast   (must cut down the runtime based on the time request - only those that have it.
   // (runtime > 1, time > 1).
 
   RangeIterator subsetTimeOffset(CoordinateTime2D gribCoord, CoverageCoordAxis1D runAxis, CoverageCoordAxis1D toAxis) throws InvalidRangeException {

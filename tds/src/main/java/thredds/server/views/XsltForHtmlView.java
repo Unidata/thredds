@@ -47,6 +47,8 @@ public class XsltForHtmlView extends AbstractView {
       JDOMResult out = new JDOMResult();
       transformer.transform(in, out);
       Document html = out.getDocument();
+      if (html == null)
+        throw new IllegalStateException("Bad XSLT="+resourceName);
 
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       fmt.output(html, res.getOutputStream());

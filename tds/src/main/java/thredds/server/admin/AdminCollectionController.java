@@ -35,7 +35,6 @@ package thredds.server.admin;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import javax.annotation.PostConstruct;
@@ -43,7 +42,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.coverity.security.Escape;
+import com.google.common.escape.Escaper;
 import com.google.common.eventbus.EventBus;
+import com.google.common.net.UrlEscapers;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -105,7 +106,8 @@ public class AdminCollectionController {
 
   @PostConstruct
   public void afterPropertiesSet() {
-    //this.tdsContext = _tdsContext;
+    Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
+    Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
 
     DebugCommands.Category debugHandler = debugCommands.findCategory("Collections");
     DebugCommands.Action act;
@@ -158,8 +160,6 @@ public class AdminCollectionController {
               e.pw.println("    " + scheduler.getTrigger(triggerKey));
             }
           }
-
-
         } catch (Exception e1) {
           e.pw.println("Error on scheduler " + e1.getMessage());
           log.error("Error on scheduler " + e1.getMessage());
@@ -174,9 +174,9 @@ public class AdminCollectionController {
         String statUrl = tdsContext.getContextPath() + FMRC_PATH + "/" + STATISTICS;
         e.pw.println("<p/> <a href='" + statUrl + "'>Show Cache Statistics</a>");
         for (String name : monitor.getCachedCollections()) {
-          String ename = StringUtil2.quoteHtmlContent(name);
-          String url = tdsContext.getContextPath() + FMRC_PATH + "?" + COLLECTION + "=" + ename;
-          e.pw.println("<p/> <a href='" + url + "'>" + name + "</a>");
+          String ename =  urlParamEscaper.escape(name);
+          String url = urlPathEscaper.escape(tdsContext.getContextPath() + FMRC_PATH) + "?" + COLLECTION + "=" + ename;
+          e.pw.println("<p/> <a href='" + url + "'>" + Escape.html(name) + "</a>");
         }
       }
     };
@@ -408,12 +408,4 @@ public class AdminCollectionController {
 
     return null;
   }
-
-  public static void main(String[] args) throws UnsupportedEncodingException {
-    String s = "B:/lead/fmrc/ECMWF_Global_2p5_20150301_0000.nc#fmrInv.xml";
-    String enc = java.net.URLEncoder.encode(s, CDM.UTF8);
-    String unenc = java.net.URLDecoder.decode(s, CDM.UTF8);
-    System.out.printf("%s == %s == %s%n", s, enc, unenc);
-  }
-
 }

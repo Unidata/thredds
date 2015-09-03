@@ -346,7 +346,7 @@ public class OpendapServlet extends AbstractServlet {
         ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(out));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, CDM.utf8Charset));
         myDDS.printConstrained(pw);
         pw.flush();
       }
@@ -385,7 +385,7 @@ public class OpendapServlet extends AbstractServlet {
         ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(out));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, CDM.utf8Charset));
         myDDS.printConstrainedXML(pw);
         pw.flush();
       }
@@ -489,7 +489,7 @@ public class OpendapServlet extends AbstractServlet {
       checkSize(myDDS, false);
 
       // Send the constrained DDS back to the client
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut));
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut, CDM.utf8Charset));
       myDDS.printConstrained(pw);
 
       // Send the Data delimiter back to the client

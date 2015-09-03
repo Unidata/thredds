@@ -45,12 +45,12 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import com.coverity.security.Escape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
-// import thredds.server.wms.ViewerGodiva;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
@@ -250,7 +250,7 @@ public class ViewerServiceImpl implements ViewerService {
         viewerUrl = viewerValue;
         viewerTitle = viewerName;
       }
-      viewerUrl = StringUtil2.quoteHtmlContent(sub(viewerUrl, ds));
+      viewerUrl = Escape.html(sub(viewerUrl, ds));
 
       return new ViewerLink(viewerTitle, viewerUrl);
     }

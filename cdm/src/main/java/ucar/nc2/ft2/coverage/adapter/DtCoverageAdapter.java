@@ -276,7 +276,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     public static final String timeWindow = "timeWindow"; // value = TimeDuration
  ok   public static final String timeStride = "timeStride"; // value = Integer
   X  public static final String allTimes = "allTimes";     // value = Boolean
- ok   public static final String latestTime = "latestTime"; // value = Boolean
+ ok   public static final String timePresent = "timePresent"; // value = Boolean
  ok   public static final String runtime = "runtime";       // value = CalendarDate
  ok   public static final String runtime = "runtimeRange";  // value = CalendarDateRange
  ok   public static final String ensCoord = "ensCoord";     // value = double ??
@@ -408,7 +408,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
           break;
         }
 
-        case SubsetParams.latestTime: {
+        case SubsetParams.timePresent: {
           CoordinateAxis taxis = gcs.getTimeAxis();
           if (taxis != null && !taxis.isScalar()) {
             int wantIndex = (int) taxis.getSize() - 1;

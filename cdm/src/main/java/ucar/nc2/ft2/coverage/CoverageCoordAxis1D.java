@@ -68,19 +68,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
     this.minIndex = 0;
     this.maxIndex = ncoords-1;
+
+    if (axisType == AxisType.RunTime && dependenceType != DependenceType.dependent)
+      isTime2D = true;
   }
-
-  //public CoverageCoordAxis1D copy() {
-  //  return new CoverageCoordAxis1D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader);
-  //}
-
 
   public boolean isTime2D() {
     return isTime2D;
-  }
-
-  public void setIsTime2D() {
-    this.isTime2D = true;
   }
 
   public int getStride() {
@@ -106,6 +100,31 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
     f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s%n", indent, minIndex, maxIndex, stride, isTime2D(), isSubset());
+  }
+
+  @Override
+  public String getSummary() {
+    if (axisType != AxisType.RunTime)
+      return super.getSummary();
+
+    if (ncoords < 7) {
+      Formatter f = new Formatter();
+      for (int i = 0; i < ncoords; i++) {
+        CalendarDate cd = makeDate(getCoord(i));
+        if (i > 0) f.format(", ");
+        f.format("%s", cd);
+      }
+      return f.toString();
+    }
+
+    Formatter f = new Formatter();
+    CalendarDate start = makeDate(getStartValue());
+    f.format("start=%s", start);
+    CalendarDate end = makeDate(getEndValue());
+    f.format(", end=%s", end);
+    f.format(" (npts=%d spacing=%s)", getNcoords(), getSpacing());
+
+    return f.toString();
   }
 
 
@@ -318,6 +337,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         if (dval != null) {
           return helper.subsetClosest(dval);
         }
+        // default is all
         break;
 
       case Ensemble:
@@ -325,6 +345,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
          if (eval != null) {
            return helper.subsetClosest(eval);
          }
+        // default is all
          break;
 
        // x,y gets seperately subsetted
@@ -334,10 +355,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
       case Lon:
         return null;
 
-      case Time:
-        if (params.isTrue(SubsetParams.allTimes))
-          return this;
-        if (params.isTrue(SubsetParams.latestTime))
+      case Time:  // LOOK not handling stride
+        if (params.isTrue(SubsetParams.timePresent))
           return helper.subsetLatest();
 
         CalendarDate date = (CalendarDate) params.get(SubsetParams.time);
@@ -347,6 +366,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
         if (dateRange != null)
           return helper.subset(dateRange);
+        // default is all
         break;
 
       case RunTime:
@@ -358,8 +378,22 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         if (rundateRange != null)
           return helper.subset(rundateRange);
 
-        // default is latest
+        if (params.isTrue(SubsetParams.runtimeAll))
+          return this;
+
+          // default is latest
         return helper.subsetLatest();
+
+      case TimeOffset:
+        Double oval = params.getDouble(SubsetParams.timeOffset);
+        if (oval != null) {
+          return helper.subsetClosest(oval);
+        }
+        if (params.isTrue(SubsetParams.timeOffsetFirst)) {
+          return helper.subsetValues(0, 0);
+        }
+        // default is all
+        break;
     }
 
     // otherwise take the entire axis
@@ -376,6 +410,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return new CoverageCoordAxis1D(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
             this.getAttributeContainer(), this.getDependenceType(), this.getDependsOn(), this.getSpacing(),
             ncoords, start, end, this.getResolution(), values, this.reader, true);
+  }
+
+  CoverageCoordAxis1D subset(String dependsOn, Spacing spacing, int npoints, double[] values) {
+    assert values != null;
+    return new CoverageCoordAxis1D(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(), this.getAttributeContainer(),
+            dependsOn == null ? this.getDependenceType() : DependenceType.dependent, dependsOn,
+            spacing, npoints, 0, 0, this.getResolution(), values, null, true);
   }
 
 

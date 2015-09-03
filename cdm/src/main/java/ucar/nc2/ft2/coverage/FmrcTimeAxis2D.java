@@ -46,7 +46,7 @@ import java.util.Formatter;
 
 /**
  * FmrcTimeAxis2D: time(runtime, time)
- *
+ * LOOK not up to date
  * @author caron
  * @since 7/15/2015
  */
@@ -99,7 +99,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
     CoordAxisHelper helper = new CoordAxisHelper(runCoord);
     int run_index = -1;
 
-    if (params.isTrue(SubsetParams.latestRuntime))
+    if (params.isTrue(SubsetParams.runtimeLatest))
       run_index = runCoord.getNcoords()-1;
     else {
       CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);

@@ -38,6 +38,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollection;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -55,6 +56,8 @@ public class StationTimeSeriesCollectionFlattened extends PointCollectionImpl {
     this.from = from;
   }
 
+  @Override
+  @Nonnull
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     // LOOK need the isMultipleNested case
     return new PointIteratorFlatten(from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);

@@ -654,7 +654,8 @@ public class DtCoverageCS {
       } else {
         ProjectionImpl dataProjection = getProjection();
         ProjectionRect bb = getBoundingBox();
-        llbb = dataProjection.projToLatLonBB(bb);
+        if (bb != null)
+          llbb = dataProjection.projToLatLonBB(bb);
       }
     }
 

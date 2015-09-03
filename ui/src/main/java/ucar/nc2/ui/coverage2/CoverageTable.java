@@ -302,7 +302,7 @@ public class CoverageTable extends JPanel {
 
     List<CoordSysBean> csList = new ArrayList<>();
     for (CoverageCoordSys gcs : coverageDataset.getCoordSys())
-      csList.add(new CoordSysBean(gcs));
+      csList.add(new CoordSysBean(coverageDataset, gcs));
     csysTable.setBeans(csList);
 
     List<AxisBean> axisList = new ArrayList<>();
@@ -433,12 +433,13 @@ public class CoverageTable extends JPanel {
     private CoverageCoordSys gcs;
     private String coordTrans, runtimeName, timeName, ensName, vertName;
     private int nIndAxis = 0;
+    private int nCov = 0;
 
     // no-arg constructor
     public CoordSysBean() {
     }
 
-    public CoordSysBean(CoverageCoordSys gcs) {
+    public CoordSysBean(CoverageDataset coverageDataset, CoverageCoordSys gcs) {
       this.gcs = gcs;
 
       Formatter buff = new Formatter();
@@ -452,6 +453,10 @@ public class CoverageTable extends JPanel {
         else if (axis.getAxisType() == AxisType.Ensemble) ensName = axis.getName();
         else if (axis.getAxisType().isVert()) vertName = axis.getName();
         if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) nIndAxis++;
+      }
+
+      for (Coverage cov : coverageDataset.getCoverages()) {
+        if (cov.getCoordSys() == gcs) nCov++;
       }
     }
 
@@ -468,8 +473,8 @@ public class CoverageTable extends JPanel {
       return nIndAxis;
     }
 
-    public int getNAxes() {
-      return gcs.getAxisNames().size();
+    public int getNCov() {
+      return nCov;
     }
 
     public String getRuntime() {

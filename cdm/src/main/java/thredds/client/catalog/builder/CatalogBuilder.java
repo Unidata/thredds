@@ -49,6 +49,7 @@ import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.URLnaming;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.Nullable;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
@@ -230,7 +231,8 @@ public class CatalogBuilder {
   ///////////////////////////////////////////////////////////
   // get
 
-  public DatasetBuilder getTop() {
+  @Nullable
+  public DatasetBuilder getTopDataset() {
     if (datasetBuilders == null) return null;
     return datasetBuilders.get(0);
   }

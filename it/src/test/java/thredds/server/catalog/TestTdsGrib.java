@@ -183,7 +183,7 @@ public class TestTdsGrib {
   public void testGlobalServices() throws IOException {
     String catalog = "/catalog/gribCollection.v5/GFS_CONUS_80km/catalog.xml"; // serviceName ="all" from root catalog
     Catalog cat = TdsLocalCatalog.open(catalog);
-    testCat(cat, 8, true, null, 0);
+    testCat(cat, 10, true, null, 0);
 
     Dataset top = cat.getDatasets().get(0);
     Assert.assertTrue(!top.hasAccess());
@@ -194,7 +194,7 @@ public class TestTdsGrib {
       } else {
         CatalogRef catref = (CatalogRef) ds;
         Catalog cat2 = TdsLocalCatalog.openFromURI(catref.getURI());
-        testCat(cat2, 8, false, "all", 9);
+        testCat(cat2, 10, false, "all", 11);
         break;
       }
     }

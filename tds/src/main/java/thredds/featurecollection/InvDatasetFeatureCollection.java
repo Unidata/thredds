@@ -51,6 +51,8 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.log.LoggerFactory;
@@ -67,9 +69,9 @@ import java.util.*;
 /**
  * Abstract superclass for Feature Collection Datasets.
  * This is a InvCatalogRef subclass. So the reference is placed in the parent, but
- *  the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
- *   match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
- * <p/>
+ * the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
+ * match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
+ * <p>
  * The DatasetFeatureCollection object is held in the DataRootManager's FeatureCollectionCache; it may get closed and recreated.
  *
  * @author caron
@@ -86,6 +88,7 @@ public abstract class InvDatasetFeatureCollection {
   // can be changed
   static protected AllowedServices allowedServices;
   static protected String contextName = "/thredds";  // set by TdsInit
+
   static public void setLoggerFactory(LoggerFactory fac) {
     loggerFactory = fac;
   }
@@ -94,6 +97,7 @@ public abstract class InvDatasetFeatureCollection {
   static public void setContextName(String c) {
     contextName = c;
   }
+
   static public void setAllowedServices(AllowedServices _allowedServices) {
     allowedServices = _allowedServices;
   }
@@ -188,25 +192,26 @@ public abstract class InvDatasetFeatureCollection {
     orgService = parent.getServiceDefault();
     if (orgService == null) {
       String orgServiceName = parent.getServiceNameDefault();
-      if (orgServiceName != null)
-        orgService = allowedServices.findGlobalService(orgServiceName);
+      orgService = allowedServices.findGlobalService(orgServiceName);
     }
     if (orgService == null) {
-      orgService = allowedServices.getStandardServices( fcType.getFeatureType());
+      orgService = allowedServices.getStandardServices(fcType.getFeatureType());
     }
+    if (orgService == null)
+      return;
 
     if (orgService.getType() != ServiceType.Compound) {
       virtualService = orgService;
       return;
     }
 
+    // remove http service
     List<Service> nestedOk = new ArrayList<>();
     for (Service service : orgService.getNestedServices()) {
       if (service.getType() != ServiceType.HTTPServer) {
         nestedOk.add(service);
       }
     }
-
     virtualService = new Service("VirtualServices", "", ServiceType.Compound.toString(), null, null, nestedOk, orgService.getProperties());
   }
 
@@ -225,7 +230,7 @@ public abstract class InvDatasetFeatureCollection {
   //////////////////////////////////////////////////////
   // called by eventBus
   @Subscribe
-  public void processEvent(CollectionUpdateEvent event)  {
+  public void processEvent(CollectionUpdateEvent event) {
     if (!config.collectionName.equals(event.getCollectionName())) return; // not for me
 
     try {
@@ -355,7 +360,7 @@ public abstract class InvDatasetFeatureCollection {
     if (config.gribConfig.latestNamer != null) {
       return config.gribConfig.latestNamer;
     } else {
-      return "Latest "+name+" File";
+      return "Latest " + name + " File";
     }
   }
 
@@ -379,7 +384,7 @@ public abstract class InvDatasetFeatureCollection {
 
   protected String makeFullName(DatasetNode ds) {
     if (ds.getParent() == null) return ds.getName();
-    String parentName = makeFullName( ds.getParent());
+    String parentName = makeFullName(ds.getParent());
     if (parentName == null || parentName.length() == 0) return ds.getName();
     return parentName + "/" + ds.getName();
   }
@@ -427,7 +432,7 @@ public abstract class InvDatasetFeatureCollection {
     Catalog parentCatalog = parent.getParentCatalog();
 
     CatalogBuilder result = new CatalogBuilder();
-    result.setName( makeFullName(parent));
+    result.setName(makeFullName(parent));
     result.setVersion(parentCatalog.getVersion());
     result.setBaseURI(catURI);
     result.addService(orgService);
@@ -496,7 +501,7 @@ public abstract class InvDatasetFeatureCollection {
       String mapUri = URLnaming.resolve(baseURI.toString(), href);
       return new ThreddsMetadata.UriResolved(href, new URI(mapUri));
     } catch (Exception e) {
-      logger.error(" ** Invalid URI= '"+baseURI.toString()+"' href='"+href+"'%n", e);
+      logger.error(" ** Invalid URI= '" + baseURI.toString() + "' href='" + href + "'%n", e);
       return null;
     }
   }
@@ -508,7 +513,7 @@ public abstract class InvDatasetFeatureCollection {
     Catalog parentCatalog = parent.getParentCatalog();
 
     CatalogBuilder result = new CatalogBuilder();
-    result.setName( makeFullName(parent));
+    result.setName(makeFullName(parent));
     result.setVersion(parentCatalog.getVersion());
     result.setBaseURI(catURI);
     result.addService(orgService);
@@ -529,8 +534,8 @@ public abstract class InvDatasetFeatureCollection {
     String fname = mpath.substring(topDirectory.length() + 1);
 
     String path = FILES + "/" + fname;
-    top.put( Dataset.UrlPath, this.configPath + "/" + path);
-    top.put( Dataset.Id, this.configPath + "/" + path);
+    top.put(Dataset.UrlPath, this.configPath + "/" + path);
+    top.put(Dataset.Id, this.configPath + "/" + path);
     String lpath = this.configPath + "/" + path;
     top.put(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(lpath, VARIABLES), catURI));
     top.put(Dataset.DataSize, mfile.getLength());
@@ -562,13 +567,8 @@ public abstract class InvDatasetFeatureCollection {
     return null;
   }
 
-  // LOOK Overridden in GRIB, what about Fmrc?
   public CoverageDataset getGridCoverage(String matchPath) throws IOException {
-    CoverageDatasetCollection cc = CoverageDatasetFactory.open(matchPath);
-    if(cc == null) return null;
-
-    assert cc.getCoverageDatasets().size() == 1;  // LOOK probably want to use endpoint#datasetName ?
-    return cc.getCoverageDatasets().get(0);
+    return null;
   }
 
   ///////////////////////////////////////////////////////////////////////////////

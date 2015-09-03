@@ -28,70 +28,7 @@ http://thredds-dev.unidata.ucar.edu/thredds/cdmrfeature/grid/grib/NCEP/GFS/Globa
 
 See link:CdmrfGrammer.adoc[CdmrFeature Grammer] for a description of the on-the-wire protocol.
 
-=== Subsetting Parameters for Grid (Coverage)
-
-[width="100%",cols="20%,20%,20%,20%,20%",options="header",]
-|=====================================================================================================================================================
-|Parameter Name |Required  |Description / possible values                               |Constraints                                   |default
-|var            |yes       |Name of **variables**, separated by ',' (comma), or "all".  |Variables must be in the dataset description. |
-|north, south, east, west |no |Lat/lon bounding box, units of degrees_east, degrees_north a| south < north, west < east; if crossing 180 meridian, use east boundary > 180  |
-|minx, miny, maxx, maxy |no |Projection bounding box, in projection coordinate units (km) |min < max |
-|horizStride |no |Take only every nth point (both x and y) |  |1
-|time |no | Time as a link:{w3cDate}[W3C date] or "latest" (the time slice closest to the requested time is returned) or "all" (all times are returned) |Must be a time within the dataset time range |_latest_ or _first in the run_
-|time_start, time_end, time_duration |no |Used to specify a time range (two of these must be present). Times may be a link:#W3Cdate[W3C date] or "latest". Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
-|timeOffset|no | Restrict to an offset from the runtime coordinate. Must use same time units as the dataset.  |Used only if there is a 2D time coordinate (runtime and forecast time) |
-|timeStride|no |Take only every nth time in the available series | Used with time_range or "all" | 1
-|runtime   |no |Time as a link:{w3cDate}[W3C date] or "latest". Restrict to specified runtime coordinate. |Used only if there is an independent runtime coordinate. | _latest_
-|vertCoord |no |Restrict to specified vertical level coordinate value. |Used only if there is a vertical coordinate. |All the vertical levels will be returned
-|ensCoord  |no |Restrict to specified ensemble coordinate. |Used only if there is an ensemble coordinate. |All the ensembles will be returned
-|=====================================================================================================================================================
-
-Variable subsetting::
-
-* You *must* specify a list of valid variable names, or "all".
-* variable names are case-sensitive and must be UTF8-escape encoded (or URL encoded?)
-
-Horizontal spatial subsetting::
-
-* You may specify a lat/lon bounding box or a projection bounding box. If none, return the entire horizontal grid.
-* Lat/lon bounds start at the west value and includes the area going east, until the east value.
-
-Vertical spatial subsetting::
-
-* You may specify a vertical coordinate as a double. The closest level is returned. If not specified, all vertical levels are returned.
-
-Temporal subsetting::
-
-* You may specify a time range, or a time point. If both, only the time point is used. If neither, use the latest time.
-* A time range (__time_start, time_end, time_duration__) will request all times that intersect the range (__timeStride__ is used if present).
-* A time point will request the time that is closest to that value.
-* If you set __time="all"__, then all times are returned (__timeStride__ is used if present). All other time parameters are ignored.
-* time duration: 1) udunit time unit string or 2) link:{w3cDuration}[W3C time duration]
-* datetime: link:{w3cDate}[W3C date] or "latest"
-* The dataset determines what Calendar is used, so you must use that calendar. There can only be one calendar per dataset.
-
-2D Time subsetting::
-
-* *runtime*=rundate or "latest": *time*="all" : get all times for that run
-* *runtime*=rundate or "latest": *time*="latest" : get latest time slice for that run
-* *runtime*=rundate, *time*=date : get the specified time slice
-* *runtime*=rundate, *timeRange*=dates : get the specified time slices
-* *timeOffset*=value : constant offset for all runtimes
-* *runtimeRange*=rundates, *timeOffset*=value : constant offset for specified runtimes
-* *runtimeRange*=rundates, **timeRange**=dates : get the time slices (NOT DONE)
-* *time*=date : constant forecast (NOT DONE)
-* the default for *time* for 2D datasest is _first in the run_, so:
-**  no time params: use first time period of the latest run
-**  runtime only: use first time period of the closest run that matches
-**  time only: use closest time period of Best  (NOT DONE)
-**  time range: intersect time range of Best    (NOT DONE)
-
-Interval coordinate::
-
-* If the coordinate is an _interval coordinate_ (common for vertical or time coordinates), it has a lower and upper bound, eg (2.0-10.0 m) or (12-24 hours).
-* The request is still made with a single value. The interval that contains the requested value is used.
-* If the requested value is contained in more than one interval, the midpoint of the interval is calculated, and the closest midpoint to the requested
-value is used.
+include::CdmrCoverageParams.adoc[]
 
 '''''
 

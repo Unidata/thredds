@@ -37,6 +37,8 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 
@@ -124,6 +126,7 @@ public interface PointFeatureCollection extends FeatureCollection, Iterable<Poin
    * @return subsetted collection, may be null if empty
    * @throws IOException on read error
    */
+  @Nullable
   PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   //////////////////////////////////////////////////////

@@ -32,6 +32,8 @@
  */
 package ucar.nc2.util;
 
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -40,14 +42,14 @@ import java.util.*;
 /**
  * This is a general purpose utility for determining a place to write files and cache them, eg for
  * uncompressing files. This class does not scour itself.
- * <p/>
+ * <p>
  * Note that when a file in the cache is accessed, its lastModified date is set, which is used for the LRU scouring.
  * <p> The cdm library sometimes needs to write files, eg
  * to uncompress them, or for grib index files, etc. The first choice is to write these files
  * in the same directory that the original file lives in. However, that directory may not be
  * writeable, so we need to find a place to write them to.
  * We also want to use the file if it already exists.
- * <p/>
+ * <p>
  * <p> A writeable cache "root directory" is set: <ol>
  * <li>  explicitly by setRootDirectory()
  * <li>  through the system property "nj22.cache" if it exists
@@ -55,7 +57,7 @@ import java.util.*;
  * <li>  by appending "/nj22/cache" to the system property "user.dir" if it exists
  * <li>  use "./nj22/cache" if none of the above
  * </ol>
- * <p/>
+ * <p>
  * <p> Scenario 1: want to uncompress a file; check to see if already have done so,
  * otherwise get a File that can be written to.
  * <pre>
@@ -67,7 +69,7 @@ import java.util.*;
  * }
  * doSomething( uncompressedFile);
  * </pre>
- * <p/>
+ * <p>
  * <p> Scenario 2: want to write a derived file always in the cache.
  * <pre>
  * File derivedFile = FileCache.getCacheFile( derivedFilename);
@@ -76,7 +78,7 @@ import java.util.*;
  * }
  * doSomething( derivedFile);
  * </pre>
- * <p/>
+ * <p>
  * <p> Scenario 3: same as scenario 1, but use the default Cache policy:
  * <pre>
  * File wf = FileCache.getFileStandardPolicy( uncompressedFilename);
@@ -95,7 +97,9 @@ public class DiskCache {
   static private boolean standardPolicy = false;
   static private boolean checkExist = false;
 
-  /** debug only */
+  /**
+   * debug only
+   */
   static public boolean simulateUnwritableDir = false;
 
   static {
@@ -165,13 +169,13 @@ public class DiskCache {
   /**
    * Get a File if it exists. If not, get a File that can be written to.
    * Use the standard policy to decide where to place it.
-   * <p/>
+   * <p>
    * Things are a bit complicated, because in order to guarantee a file in
    * an arbitrary location can be written to, we have to try to open it as a
    * FileOutputStream. If we do, we don't want to open it twice,
    * so we return a WriteableFile that contains an opened FileOutputStream.
    * If it already exists, or we get it from cache, we don't need to open it.
-   * <p/>
+   * <p>
    * In any case, you must call WriteableFile.close() to make sure its closed.
    *
    * @param fileLocation normal file location
@@ -185,7 +189,7 @@ public class DiskCache {
    * Get a File if it exists. If not, get a File that can be written to.
    * If alwaysInCache, look only in the cache, otherwise, look in the "normal" location first,
    * then in the cache.
-   * <p/>
+   * <p>
    *
    * @param fileLocation  normal file location
    * @param alwaysInCache true if you want to look only in the cache
@@ -202,7 +206,7 @@ public class DiskCache {
 
       // now comes the tricky part to make sure we can open and write to it
       try {
-        if ( ! simulateUnwritableDir && f.createNewFile()) {
+        if (!simulateUnwritableDir && f.createNewFile()) {
           boolean ret = f.delete();
           assert ret;
           return f;
@@ -227,13 +231,13 @@ public class DiskCache {
     File f = new File(makeCachePath(fileLocation));
     if (f.exists()) {
       if (!f.setLastModified(System.currentTimeMillis()))
-        logger.warn("Failed to setLastModified on "+f.getPath());
+        logger.warn("Failed to setLastModified on " + f.getPath());
     }
 
     if (!checkExist) {
       File dir = f.getParentFile();
       if (!dir.exists() && !dir.mkdirs())
-          logger.warn("Failed to mkdirs on "+dir.getPath());
+        logger.warn("Failed to mkdirs on " + dir.getPath());
       checkExist = true;
     }
     return f;
@@ -246,17 +250,10 @@ public class DiskCache {
    * @return cache filename
    */
   static private String makeCachePath(String fileLocation) {
+    Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
 
-    String cachePath;
-    try {
-      fileLocation = fileLocation.replace('\\', '/');  // LOOK - use better normalization code  eg Spring StringUtils
-      cachePath = java.net.URLEncoder.encode(fileLocation, "UTF8");
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalStateException(); // cant happen
-    }
-
-    //String cachePath = StringUtil.replace(fileLocation, '\\', "/");
-    //cachePath = StringUtil.remove(cachePath, ':');
+    fileLocation = fileLocation.replace('\\', '/');  // LOOK - use better normalization code  eg Spring StringUtils
+    String cachePath = urlPathEscaper.escape(fileLocation);
 
     return root + cachePath;
   }
@@ -287,10 +284,10 @@ public class DiskCache {
     for (File file : children) {
       Date lastMod = new Date(file.lastModified());
       if (lastMod.before(cutoff)) {
-        boolean ret =file.delete();
+        boolean ret = file.delete();
         if (sbuff != null) {
-            sbuff.append(" delete ").append(file).append(" (").append(lastMod).append(")\n");
-            if (!ret) sbuff.append("Error deleting ").append(file).append("\n");
+          sbuff.append(" delete ").append(file).append(" (").append(lastMod).append(")\n");
+          if (!ret) sbuff.append("Error deleting ").append(file).append("\n");
         }
       }
     }
@@ -325,22 +322,21 @@ public class DiskCache {
 
     File[] files = dir.listFiles();
     if (files != null) {
-        List<File> fileList = Arrays.asList(files);
-        Collections.sort(fileList, fileComparator);
+      List<File> fileList = Arrays.asList(files);
+      Collections.sort(fileList, fileComparator);
 
-        for (File file : fileList) {
-            if (file.length() + total > maxBytes) {
-                total_delete += file.length();
-                if (sbuff != null)
-                    sbuff.append(" delete ").append(file).append(" (")
-                            .append(file.length()).append(")\n");
-                if(!file.delete() && sbuff != null)
-                    sbuff.append("Error deleting ").append(file).append("\n");
-            }
-            else {
-                total += file.length();
-            }
+      for (File file : fileList) {
+        if (file.length() + total > maxBytes) {
+          total_delete += file.length();
+          if (sbuff != null)
+            sbuff.append(" delete ").append(file).append(" (")
+                    .append(file.length()).append(")\n");
+          if (!file.delete() && sbuff != null)
+            sbuff.append("Error deleting ").append(file).append("\n");
+        } else {
+          total += file.length();
         }
+      }
     }
     if (sbuff != null) {
       sbuff.append("Total bytes deleted= ").append(total_delete).append("\n");

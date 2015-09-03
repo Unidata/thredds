@@ -5,6 +5,7 @@
 package ucar.nc2.util;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -407,6 +408,12 @@ public class UnitTestCommon extends TestCase
         }
         sw.close();
         return sw.toString();
+    }
+
+    // suppress "no tests found" failure
+    @Test
+    public void testFake2() {
+      assert true;
     }
 }
 

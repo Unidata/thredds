@@ -63,10 +63,10 @@ public class DSGGridCoverageWriter {
       this.cov = cov;
       try {
         this.array = cov.readData(subset);
+        if (debug) System.out.printf(" Coverage %s data shape = %s%n", cov.getName(), Misc.showInts(array.getData().getShape()));
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
-      System.out.printf(" Coverage %s data shape = %s%n", cov.getName(), Misc.showInts(array.getData().getShape()));
     }
   }
 

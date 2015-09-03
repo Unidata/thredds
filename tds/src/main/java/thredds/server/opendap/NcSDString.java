@@ -43,6 +43,7 @@ import java.io.DataOutputStream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 
 /**
  * Wraps a netcdf scalar or 1D char variable.
@@ -102,7 +103,7 @@ public class NcSDString extends SDString implements HasNetcdfVariable {
         ArrayChar a = (ArrayChar) data;
         byte[] b = new byte[1];
         b[0] = (byte) a.getChar(0);
-        localVal = new String(b);
+        localVal = new String(b, CDM.utf8Charset);
       } else {
         // 1D
         ArrayChar a = (ArrayChar) data;

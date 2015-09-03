@@ -53,7 +53,7 @@ public class TestCompareFileWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    // Grib files, one from each model
+    result.add(new Object[]{"formats/netcdf3/longOffset.nc", true});    // unlimited dimesnion = 0
     result.add(new Object[]{"formats/dmsp/F14200307192230.n.OIS", true});
     result.add(new Object[]{"formats/gempak/grid/dgex_le.gem", true});
     result.add(new Object[]{"formats/gempak/surface/19580807_sao.gem", false});

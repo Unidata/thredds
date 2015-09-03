@@ -10,6 +10,7 @@ import thredds.server.catalog.tracker.DataRootTracker;
 import ucar.nc2.util.AliasTranslator;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -126,7 +127,7 @@ public class DataRootPathMatcher {
   }
 
   // convert a dataRootExt to a dataRoot
-  public DataRoot convert2DataRoot(DataRootExt dataRootExt) {
+  public @Nonnull DataRoot convert2DataRoot(DataRootExt dataRootExt) {
     DataRoot dataRoot = dataRootExt.getDataRoot();
     if (dataRoot != null) return dataRoot;
 
@@ -136,20 +137,19 @@ public class DataRootPathMatcher {
     return dataRoot;
   }
 
-  private DataRoot readDataRootFromCatalog( DataRootExt dataRootExt) {
+  private @Nonnull DataRoot readDataRootFromCatalog( DataRootExt dataRootExt) {
     try {
       ConfigCatalog cat = ccc.get(dataRootExt.getCatLocation());
       extractDataRoots(dataRootExt.getCatLocation(), cat.getDatasets(), false, null);  // will create a new DataRootExt and replace this one in the map
       DataRootExt dataRootExtNew = map.get(dataRootExt.getPath());
       if (null == dataRootExtNew) {
         logger.error("Reading catalog " + dataRootExt.getCatLocation() + " failed to find dataRoot path=" + dataRootExt.getPath());
-        return null;
+        throw new IllegalStateException("Reading catalog " + dataRootExt.getCatLocation() + " failed to find dataRoot path=" + dataRootExt.getPath());
       }
       return dataRootExtNew.getDataRoot();
 
     } catch (IOException e) {
-      e.printStackTrace();
-      return null;
+      throw new IllegalStateException("Error Reading catalog " + dataRootExt.getCatLocation(), e);
     }
   }
 

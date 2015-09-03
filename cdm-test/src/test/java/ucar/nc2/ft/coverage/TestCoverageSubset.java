@@ -133,11 +133,11 @@ public class TestCoverageSubset {
 
         if (time_val != null) {
           if (timeOffsetAxis.isInterval()) {
-            CalendarDate edge1 = timeOffsetAxis.makeDate(runDate, timeOffsetAxis.getCoordEdge1(0));
-            CalendarDate edge2 = timeOffsetAxis.makeDate(runDate, timeOffsetAxis.getCoordEdge2(0));
+            CalendarDate edge1 = timeOffsetAxis.makeDate(timeOffsetAxis.getCoordEdge1(0));
+            CalendarDate edge2 = timeOffsetAxis.makeDate(timeOffsetAxis.getCoordEdge2(0));
 
-            Assert.assertTrue(edge1.toString(), !edge1.isAfter(time_val));
-            Assert.assertTrue(edge2.toString(), !edge2.isBefore(time_val));
+            Assert.assertTrue(edge1+">"+time_val, !edge1.isAfter(time_val));
+            Assert.assertTrue(edge2+"<"+time_val, !edge2.isBefore(time_val));
 
           } else {
             double val2 = timeOffsetAxis.getCoord(0);
