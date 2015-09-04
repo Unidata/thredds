@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.2">
-<title>NetCDF Streaming Format</title>
+<title>Subsetting Parameters for Grid (Coverage) Datasets:</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -413,130 +413,254 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_netcdf_streaming_format">NetCDF Streaming Format</h2>
-<div class="sectionbody">
-<hr>
 <div class="sect2">
-<h3 id="_overview">Overview</h3>
-<div class="paragraph">
-<p>NetCDF Streaming Format (<strong>ncstream</strong>) is a write-optimized encoding of CDM datasets. Ncstream consists of a series of header and data messages, in any
-order. Writes are always appended. Later messages override earlier ones whenever they overlap or conflict. To add or modify structural metadata,
-simply append a new header message. Each data message identifies the variable and the section (rectangular subset) of data it contains. A variable&#8217;s
-data thus consists of the collection of data messages for it, if any.</p>
-</div>
-<div class="sect3">
-<h4 id="_design_goals">Design Goals</h4>
+<h3 id="_subsetting_parameters_for_grid_coverage_datasets">Subsetting Parameters for Grid (Coverage) Datasets:</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 10%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter Name</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Description / possible values</th>
+<th class="tableblock halign-left valign-top">Constraints</th>
+<th class="tableblock halign-left valign-top">default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>var</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name(s) of variables (comma separated, no blanks), or <em>all</em>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Variables must be in the dataset description.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>north, south, east, west</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">lat/lon bounding box, units of degrees_east, degrees_north</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">south &lt; north, west &lt; east; if crossing 180 meridian, use east boundary &gt; 180</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>minx, miny, maxx, maxy</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Projection bounding box, in projection coordinate units (km)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">min &lt; max</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>horizStride</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Take only every nth point (both x and y)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>time</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time as a <a href="{w3cDate}">W3C date</a> or <em>present</em> (the time slice closest to the requested time is returned) or <em>all</em> (all times are returned)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Must be a time within the dataset time range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>present</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>time_start, time_end, time_duration</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used to specify a time range (two of these must be present). Times may be a <a href="#W3Cdate">W3C date</a> or <em>present</em>. Duration is a udunit time or <a href="{w3cDuration}">W3C time duration</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The requested time range must intersect the dataset time range</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>timeStride</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Take only every nth time in the available series</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used with time_range or <em>all</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>runtime</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time as a <a href="{w3cDate}">W3C date</a> or <em>latest</em> (restrict to that runtime) or <em>all</em>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used only if there is an independent runtime coordinate.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>latest</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>timeOffset</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restrict to an offset from the runtime coordinate (must use same timeOffset units as the dataset), or <em>first</em> or <em>all</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used only if there is a 2D time coordinate (runtime and forecast time)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">all</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>vertCoord</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restrict to specified vertical level coordinate value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used only if there is a vertical coordinate.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">all</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>ensCoord</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restrict to specified ensemble coordinate.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used only if there is an ensemble coordinate.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">all</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Variable subsetting</dt>
+<dd>
 <div class="ulist">
 <ul>
 <li>
-<p>Experiment with our own on-the-wire protocol to rapidly explore new ideas for remote data access.</p>
+<p>You <strong>must</strong> specify a list of valid variable names, or "<em>all</em>".</p>
 </li>
 <li>
-<p>Experiment with ways to optimize subset extraction of large datasets, especially for the case when the subset is specified in coordinate space
-rather than index space.</p>
-</li>
-<li>
-<p>Must be easy to read ncstream and write netCDF-3 or netCDF-4 files.</p>
-</li>
-<li>
-<p>The information content / data model of ncstream is identical to CDM. So ncstream is an alternate encoding of CDM datasets.</p>
+<p>variable names are case-sensitive and must be URL encoded. Be careful not to URL encode twice.</p>
 </li>
 </ul>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_possible_uses">Possible uses</h4>
+</dd>
+<dt class="hdlist1">Horizontal spatial subsetting</dt>
+<dd>
 <div class="ulist">
 <ul>
 <li>
-<p>Study OPeNDAP implementation. The java implementation of ncstream should be (close to) maximal I/O efficient. By comparing the same requests on the
-same server to OPeNDAP, we should be able to tell how much speedup a rewrite of the OPeNDAP software will yield.</p>
+<p>You may specify a lat/lon bounding box or, if the dataset is on a projection, a projection bounding box. If none, return the entire horizontal grid.</p>
 </li>
 <li>
-<p>Augment/explore OPeNDAP. Where the DAP protocol is deficient, ncstream is a way for us to explore possible solutions.</p>
+<p>Lat/lon bounds start at the west value and includes the area going east, until the east value.</p>
 </li>
 <li>
-<p>Augment/explore WCS. We are setting up experimental data services on thredds.ucar.edu that allow coordinate subsetting on Feature datasets. We can
-use ncstream to get these services working, offering much the same functionality as WCS. Implementing WCS services are then much easier to develop.
-Experience using ncstream can potentially be fed into WCS standards. This work has already been going on under the name of "NetCDF Subset Service",
-and ncstream will be offered as one of the output types.</p>
-</li>
-<li>
-<p>Explore asynchronous data services. Both OPeNDAP and WCS want asynchronous data services, for the case when requested data cannot be immediately
-returned, for example because of extensive computation or because the data resides in a tape silo. We can explore possible solutions by having our own
-remote access protocol.</p>
-</li>
-<li>
-<p>Explore alternate file format for CDM datasets. Certain applications may need some of the extended features of CDM / Netcdf-4, without needing all
-of the complexity of the HDF5 format. Ncstream may comprise a "sweet spot" of functionality for some use cases.</p>
-</li>
-<li>
-<p>Parallel I/O. Append-only file writing may be useful in some high performance applications, with a second pass (external to the generating program)
-that efficiently converts to netCDF-3 or netCDF-4 files. During that conversion, a smart program could decide on chunking parameters, data-dependent
-compression choices, and other read optimizations.</p>
+<p>Best practice is to make east &gt; west longitude, by adding 360 to it if needed.</p>
 </li>
 </ul>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_implementation">Implementation</h4>
-<div class="paragraph">
-<p>Messages are encoded using Google&#8217;s <a href="http://code.google.com/p/protobuf/">Protobuf</a> library.</p>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>"Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You
-define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to
-and from a variety of data streams and using a variety of languages. You can even update your data structure without breaking deployed programs that
-are compiled against the "old" format."</p>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>The main advantage of protobuf over XML is performance, since both message size and parsing speed is improved. A very important feature of protobuf is
-the ability to evolve the message structure in a way that doesn&#8217;t break previous code.</p>
-</div>
-<div class="paragraph">
-<p>We don&#8217;t use protobuf messages for the data, since protobuf messages are built in memory, and we need to be able to stream (write data directly from
-its source onto the output stream, eg socket). The multidimensional data is written to the stream in row-major order, with reader-makes-right byte
-ordering. A data message identifying the variable and the section that the data represents is part of every data message.</p>
-</div>
-<div class="paragraph">
-<p>Variable length datatypes like String and Opaque use the vdataMessage for data transfer. First the number of objects is written, then each object,
-preceded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes.</p>
-</div>
-<div class="paragraph">
-<p>Ncstream implements the full <a href="../../CDM/CDM-UML.png">CDM data model.</a></p>
-</div>
-<div class="paragraph">
-<p>See also:</p>
-</div>
+</dd>
+<dt class="hdlist1">Vertical spatial subsetting</dt>
+<dd>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="CdmRemote.html">CdmRemote</a> service</p>
-</li>
-<li>
-<p><a href="CdmrFeature.html">CdmrFeature</a> service</p>
-</li>
-<li>
-<p><a href="NcStreamGrammer.html">ncstream grammer</a></p>
+<p>You may specify a vertical coordinate. The closest level is returned. If not specified, all vertical levels are returned.</p>
 </li>
 </ul>
 </div>
-<hr>
-<div class="paragraph">
-<p><span class="image"><img src="../../nc.gif" alt="image"></span> This document was last updated August 2015</p>
+</dd>
+<dt class="hdlist1">Temporal subsetting</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>These rules apply to non-2D time datasets.</p>
+</li>
+<li>
+<p>You may specify a time range, or a time point. If both, only the time point is used. If neither, use the present time.</p>
+</li>
+<li>
+<p>A time range (<em>time_start, time_end, time_duration</em>) will request all times that intersect the range (<em>timeStride</em> is used if present).</p>
+</li>
+<li>
+<p>Two of <em>time_start, time_end, time_duration</em> must be present to define a valid time range. <em>time_start, time_end</em> may equal <em>present</em>.</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><em>time_start, time_end</em> : specified range</p>
+</li>
+<li>
+<p><em>time_start, time_duration</em> : starting from <em>time_start</em> until <em>time_start + time_duration</em></p>
+</li>
+<li>
+<p><em>time_end, time_duration</em> : starting from <em>time_end - time_duration</em> until <em>time_end</em></p>
+</li>
+</ol>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre> </pre>
+</li>
+<li>
+<p>A time point will request the time that is closest to that value.</p>
+</li>
+<li>
+<p>If you set <em>time="all"</em>, then all times are returned (<em>timeStride</em> is used if present). All other time parameters are ignored.</p>
+</li>
+<li>
+<p>time duration: 1) udunit time unit string or 2) <a href="{w3cDuration}">W3C time duration</a></p>
+</li>
+<li>
+<p>datetime: <a href="{w3cDate}">W3C date</a> or <em>present</em></p>
+</li>
+<li>
+<p>The dataset determines what Calendar is used, so you must use that calendar. There can only be one calendar per dataset.</p>
+</li>
+</ul>
 </div>
+</dd>
+<dt class="hdlist1">2D Time subsetting</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>A 2D time dataset will have CoverageType set to <em>FMRC</em>.</p>
+</li>
+<li>
+<p>You may specify a runtime with a date, <em>latest</em> or <em>all</em>; specify a timeOffset with a numeric value, <em>first</em>, or <em>all</em>.
+If only one is set, use the default for the other. If neither is set, then return all times for latest runtime.</p>
+</li>
+<li>
+<p>Time parameters are only used if explicitly set and timeOffset is not set. There are only 2 cases where time can be used:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Set runtime to a specific value or <em>latest</em> (not <em>all</em>). Time parameters (point or range) can be used.</p>
+</li>
+<li>
+<p>Set runtime to <em>all</em>. Time point (date, or <em>present</em>) can be used.</p>
+</li>
+</ol>
 </div>
+</li>
+<li>
+<p>Special cases:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>set specific runtime = constant runtime dataset</p>
+</li>
+<li>
+<p>set specific timeOffset, set runTime to <em>all</em> = constant offset dataset</p>
+</li>
+<li>
+<p>set specific time, set runTime to <em>all</em> = constant forecast dataset</p>
+</li>
+</ol>
 </div>
+</li>
+</ul>
 </div>
+</dd>
+<dt class="hdlist1">Interval coordinate</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>If the coordinate is an <em>interval coordinate</em> (common for vertical or time coordinates), it has a lower and upper bound, eg (2.0-10.0 m) or (12-24 hours).</p>
+</li>
+<li>
+<p>The request is still made with a single value. The interval that contains the requested value is used.</p>
+</li>
+<li>
+<p>If the requested value is contained in more than one interval (happens with mixed interval time coordinates), the midpoint of the interval is calculated, and the closest midpoint to the requested
+value is used.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
 </div>
 </div>
 </div>

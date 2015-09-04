@@ -26,7 +26,7 @@ properties are defined in the TDS properties file:
 <p>Modifying <code>tds.properties</code> is an alternative means of changing those configuration settings. However,
 <code>tds.properties</code> lives in the <code>${TOMCAT_HOME}/webapps/</code> directory, meaning that it&#8217;ll be overwritten whenever the TDS
 is upgraded. So, if you make any edits to that file, make sure to back them up before deploying a new version of
-<code>thredds.war</code>, and then restore them after depoloyment.</p>
+<code>thredds.war</code>, and then restore them after deployment.</p>
 </div>
 <div class="paragraph">
 <p>The Java system properties that TDS uses for configuration are:</p>
@@ -48,7 +48,7 @@ is upgraded. So, if you make any edits to that file, make sure to back them up b
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.content.root.path</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Root path for TDS content directory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>None</strong>. The user <em>must</em> <a href="../UpgradingTo4.6.html">provide this value</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>None</strong>. The user must <a href="../UpgradingTo4.6.html">provide this value</a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.version</code></p></td>
@@ -78,7 +78,7 @@ is upgraded. So, if you make any edits to that file, make sure to back them up b
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.logo.url</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">TDS logo URL</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"threddsIcon.gif"</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"threddsIcon.png"</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>tds.logo.alt</code></p></td>
@@ -113,7 +113,7 @@ is upgraded. So, if you make any edits to that file, make sure to back them up b
 <h3 id="_catalog_substitution">Catalog Substitution</h3>
 <div class="paragraph">
 <p>It&#8217;s possible to define property keys and use them in configuration catalogs. Values for those properties will be
-substituted at runtime. In <code>${TOMCAT_HOME}/webapps/thredds/WEB-INF/applicationContext-tdsConfig.xml</code>, you&#8217;ll find:</p>
+substituted at runtime. In <code>${TOMCAT_HOME}/webapps/thredds/WEB-INF/applicationContext.xml</code>, you&#8217;ll find:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -187,7 +187,7 @@ This is a problem with TDS.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-06-16 19:48:13 MDT
+Last updated 2015-07-17 15:43:20 MDT
 </div>
 </div>
 </body>

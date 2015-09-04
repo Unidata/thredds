@@ -1,31 +1,54 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>CDM Remote</title>
-  <link href="../../cdm.css" rel="stylesheet" type="text/css"/>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>CDM Remote Web Service</title>
+<link rel="stylesheet" href="./../../cdm.css">
 </head>
-
-<body>
-<h1>CDM Remote Web Service </h1>
-
+<body class="article">
+<div id="header">
+<h1>CDM Remote Web Service</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
 <p>CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using
-  <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
-  two levels of services: </p>
-<ol>
-  <li><em><strong>CdmRemote</strong> </em>provides index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong>
-    provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the
-    full CDM data model.
-  </li>
-  <li><em><strong><a href="CdmrFeature.html">CdmrFeature</a></strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and Unidata's<a href="../../../tds/reference/services/NetcdfSubsetServiceReference.html"> <em>NetCDF Subset Service</em></a><em> (NCSS)</em>. This API and protocol is being redone in version 5.0. </li>
+<a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
+two levels of services:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>CdmRemote</strong> provides index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for
+CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.</p>
+</li>
+<li>
+<p><strong><a href="CdmrFeature.html">CdmrFeature</a></strong> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and
+Unidata&#8217;s <a href="../../../tds/reference/services/NetcdfSubsetServiceReference.html"><em>NetCDF Subset Service</em></a> <em>(NCSS)</em>. This API and protocol is redone
+in version 5.0.</p>
+</li>
 </ol>
+</div>
+<div class="paragraph">
 <p>The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.</p>
-<hr />
-<h2><a name="cdmremote" id="cdmremote"></a>CdmRemote Protocol (Index space Data Access) </h2>
-
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cdmremote_protocol_index_space_data_access">CdmRemote Protocol (Index space Data Access)</h2>
+<div class="sectionbody">
+<div class="paragraph">
 <p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
-<pre>  <strong>req</strong>=( <strong>CDL</strong> | <strong>NcML</strong> | <strong>capabilities</strong> | <strong>header</strong> | <strong>data</strong>)
-  <strong>var</strong>=vars
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  req=( CDL | NcML | capabilities | header | data)
+  var=vars
 where:
   vars := varspec | varspec[';' varspec]
   varspec := varname[subsetSpec]
@@ -38,79 +61,167 @@ where:
   start := INTEGER
   stride := INTEGER
   end := INTEGER</pre>
+</div>
+</div>
+<div class="ulist">
 <ul>
-  <li>Request parameter values are case-insensitive</li>
-  <li>The var parameter is only used for data requests (req=data)</li>
-  <li>The variable names are case-sensitive and must be <a href="../../CDM/Identifiers.html#cdmremote">backslash-escaped</a></li>
-  <li>Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.</li>
-  <li>Optional components are enclosed between square braces '[' and ']'.</li>
-</ul>
-<p>Example service requests are:</p>
-<table width="1028" border="1">
-  <tr>
-    <th width="629" scope="col">Request</th>
-    <th width="383" scope="col">Response</th>
-  </tr>
-  <tr>
-    <td><p> http://server:8080/thredds/cdmremote/data.nc?<strong>req=CDL</strong></p></td>
-    <td> dataset CDL</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=NcML</strong></td>
-    <td>dataset NcML</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=capabilities</strong></td>
-    <td>capabilities XML</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=header</strong></td>
-    <td>header ncstream message, contains the structural metadata</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=data&amp;var=Temp(0:99:10,0:127,:);lat;lon</strong></td>
-    <td>data ncstream message</td>
-  </tr>
-</table>
-<ul>
-  <li>Data request uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</li>
-  <li> Variable names are case-sensitive and must be <a href="../../CDM/Identifiers.html#cdmremote">backslash-escaped</a></li>
-</ul>
-<h3>Capabilities</h3>
-<pre>
-&lt;cdmRemoteCapabilities location=&quot;http://localhost:8080/thredds/cdmremote/testAll/testdata/2004050300_eta_211.nc&quot;&gt;<br />  &lt;featureDataset url=&quot;http://localhost:8080/thredds/cdmremote/testAll/testdata/2004050300_eta_211.nc&quot; /&gt;<br />&lt;/cdmRemoteCapabilities&gt;
-</pre>
-<h3>Responses</h3>
-<ul>
-  <li>CDL and NcML responses show the structural metadata of the dataset in CDL and NcML</li>
-  <li>Capabilities response indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. The Capabilities response is a simple ad-hoc XML format. Not sure if we need this.</li>
-  <li>The header and data reponses are described by the <a href="NcStreamGrammer.html">ncstream Grammer.</a> You need a client library that can parse protobuf messages.</li>
-</ul>
-<hr />
-<h2>Client libraries</h2>
-<h3>Java</h3>
-<p><strong>ucar.nc2.stream.CdmRemote</strong> is a subclass of <strong>NetcdfFile</strong> which provides index subsetting on remote CDM datasets. <strong>NetcdfDataset.openOrAcquireFile()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and instantiates a  <strong>CdmRemote</strong> object. The url must be an endpoint
-  for a cdmremote service. </p>
-<ul>
-  <li>upon opening, <strong>req=header</strong> is called and the NetcdfFile objects are read from the response</li>
-  <li>when data is requested, and the data is not already stored (immediate mode). then <strong>req=data</strong> is called.</li>
-  <li>from the client POV, the dataset looks exactly the same as any other NetcdfFile.</li>
-</ul>
-<p>CDM datasets can also be serialized and stored in a disk file, and then read as a &quot;normal&quot; netCDF file by the CDM library. In this sense <strong>ncstream</strong> becomes another format for NetCDF files, alongside netCDF-3 and netCDF-4.</p>
-<ul>
-  <li><strong>CdmRemote.writeToFile()</strong> will serialize an entire remote dataset to a file.</li>
-  <li><strong>ucar.nc2.stream.NcStreamIosp </strong>is an IOSP that can   read  ncstream disk files.</li>
-</ul>
-<h3>Python</h3>
-<ul>
-  <li>coming soon<br>
+<li>
+<p>Request parameter values are case-insensitive</p>
+</li>
+<li>
+<p>The var parameter is only used for data requests (req=data)</p>
+</li>
+<li>
+<p>The variable names are case-sensitive and must be <a href="../../CDM/Identifiers.html#cdmremote">backslash-escaped</a></p>
+</li>
+<li>
+<p>Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.</p>
+</li>
+<li>
+<p>Optional components are enclosed between square braces '[' and ']'.</p>
 </li>
 </ul>
-<hr width="100%"/>
-<address>
-  <img src="../../nc.gif" alt="" width="64" height="64"/> This document  was last
-  updated May 2015
-</address>
-<p>&nbsp;</p>
+</div>
+<div class="paragraph">
+<p>Example service requests are:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Request</th>
+<th class="tableblock halign-left valign-top">Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmremote/data.nc?" class="bare">http://server:8080/thredds/cdmremote/data.nc?</a><strong>req=CDL</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dataset CDL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmremote/data.nc?" class="bare">http://server:8080/thredds/cdmremote/data.nc?</a><strong>req=NcML</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dataset NcML</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmremote/data.nc?" class="bare">http://server:8080/thredds/cdmremote/data.nc?</a><strong>req=capabilities</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">capabilities XML</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmremote/data.nc?" class="bare">http://server:8080/thredds/cdmremote/data.nc?</a><strong>req=header</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">header ncstream message, contains the structural metadata</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmremote/data.nc?" class="bare">http://server:8080/thredds/cdmremote/data.nc?</a><strong>req=data&amp;var=Temp(0:99:10,0:127,:);lat;lon</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ncstream data message</p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist">
+<ul>
+<li>
+<p>Data request uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</p>
+</li>
+<li>
+<p>Variable names are case-sensitive and must be <a href="../../CDM/Identifiers.html#cdmremote">backslash-escaped</a></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_capabilities">Capabilities</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;cdmRemoteCapabilities location="http://localhost:8080/thredds/cdmremote/testAll/testdata/2004050300_eta_211.nc"&gt;
+  &lt;featureDataset url="http://localhost:8080/thredds/cdmremote/testAll/testdata/2004050300_eta_211.nc" /&gt;
+&lt;/cdmRemoteCapabilities&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_responses">Responses</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>CDL and NcML responses show the structural metadata of the dataset in CDL and NcML</p>
+</li>
+<li>
+<p>Capabilities response indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. The Capabilities
+response is a simple ad-hoc XML format. Not sure if we need this.</p>
+</li>
+<li>
+<p>The header and data reponses are described by the <a href="NcStreamGrammer.html">ncstream Grammer.</a> You need a client library that can parse protobuf
+messages.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_client_libraries">Client libraries</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_java">Java</h3>
+<div class="paragraph">
+<p><strong>ucar.nc2.stream.CdmRemote</strong> is a subclass of <strong>NetcdfFile</strong> which provides index subsetting on remote CDM datasets. <strong>NetcdfDataset.openOrAcquireFile()</strong>
+looks for the <em>cdmremote:url</em> prefix, and instantiates a <strong>CdmRemote</strong> object. The url must be an endpoint for a cdmremote service.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>upon opening, <strong>req=header</strong> is called and the NetcdfFile objects are read from the response</p>
+</li>
+<li>
+<p>when data is requested, and the data are not already stored (immediate mode). then <strong>req=data</strong> is called.</p>
+</li>
+<li>
+<p>from the client POV, the dataset looks exactly the same as any other NetcdfFile.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>CDM datasets can also be serialized and stored in a disk file, and then read as a "normal" netCDF file by the CDM library. In this sense <strong>ncstream</strong>
+becomes another format for NetCDF files, alongside netCDF-3 and netCDF-4.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>CdmRemote.writeToFile()</strong> will serialize an entire remote dataset to a file.</p>
+</li>
+<li>
+<p><strong>ucar.nc2.stream.NcStreamIosp</strong> is an IOSP that can read ncstream disk files.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_python">Python</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>coming soon<br></p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p><span class="image"><img src="../../nc.gif" alt="image"></span> This document was last updated August 2015</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> </pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-09-04 09:42:33 MDT
+</div>
+</div>
 </body>
 </html>
