@@ -835,6 +835,14 @@ public class Section {
     return product;
   }
 
+  static public long computeSize(int[] shape) {
+    long product = 1;
+    for (int len : shape) {
+      product *= len;
+    }
+    return product;
+  }
+
   /**
    * Get the list of Ranges.
    *

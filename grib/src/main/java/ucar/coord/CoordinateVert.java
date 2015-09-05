@@ -75,31 +75,26 @@ public class CoordinateVert implements Coordinate {
     return levelSorted;
   }
 
-  @Override
+  /* @Override
   public int findIndexContaining(double need) {
     if (isLayer()) {
       int idx = findSingleHit(need);
       if (idx >= 0) return idx;
+      if (idx == -1) return -1;
+
       // multiple hits = choose closest to the midpoint
       return findClosest(need);
 
     } else {
-      double bestDiff = Double.MAX_VALUE;
-      int bestIdx = 0;
-       // choose closest to level1
       for (int i=0; i<levelSorted.size(); i++) {
         VertCoord.Level level = levelSorted.get(i);
-        double diff = Math.abs(need - level.getValue1());
-        if (diff < bestDiff) {
-          bestDiff = diff;
-          bestIdx = i;
-        }
+        if (Misc.closeEnough(need, level.getValue1())) return i;
       }
-      return bestIdx;
+      return -1;
     }
   }
 
-   // return index if only one match, else -1
+  // return index if only one match, if no matches return -1, if > 1 match return -nhits
   private int findSingleHit(double target) {
     int hits = 0;
     int idxFound = -1;
@@ -110,7 +105,9 @@ public class CoordinateVert implements Coordinate {
         idxFound = i;
       }
     }
-    return hits == 1 ? idxFound : -1;
+    if (hits == 1) return idxFound;
+    if (hits == 0) return -1;
+    return -hits;
   }
 
   // return index of closest value to target
@@ -132,7 +129,7 @@ public class CoordinateVert implements Coordinate {
   private boolean contains(double target, VertCoord.Level level) {
     if (level.getValue1() <= target && target <= level.getValue2()) return true;
     return level.getValue1() >= target && target >= level.getValue2();
-  }
+  } */
 
   @Override
   public List<? extends Object> getValues() {
@@ -282,10 +279,10 @@ public class CoordinateVert implements Coordinate {
     @Override
     public Object extract(Grib2Record gr) {
       Grib2Pds pds = gr.getPDS();
-      boolean hasLevel2 = pds.getLevelType2() != GribNumbers.MISSING;
-      double level2val =  hasLevel2 ?  pds.getLevelValue2() :  GribNumbers.UNDEFINEDD;
-      boolean isLayer = Grib2Utils.isLayer(pds);
-      return new VertCoord.Level(pds.getLevelValue1(), level2val, isLayer);
+      if (Grib2Utils.isLayer(pds))
+        return new VertCoord.Level(pds.getLevelValue1(), pds.getLevelValue2());
+      else
+        return new VertCoord.Level(pds.getLevelValue1());
     }
 
     @Override
@@ -311,8 +308,10 @@ public class CoordinateVert implements Coordinate {
       Grib1SectionProductDefinition pds = gr.getPDSsection();
       boolean isLayer = cust.isLayer(pds.getLevelType());
       Grib1ParamLevel plevel = cust.getParamLevel(pds);
-      double level2val =  isLayer ?  plevel.getValue2() :  GribNumbers.UNDEFINEDD;
-      return new VertCoord.Level(plevel.getValue1(), level2val, isLayer);
+      if (isLayer)
+        return new VertCoord.Level(plevel.getValue1(), plevel.getValue2());
+      else
+        return new VertCoord.Level(plevel.getValue1());
     }
 
     @Override

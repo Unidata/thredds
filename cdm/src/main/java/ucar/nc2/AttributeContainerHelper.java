@@ -1,6 +1,8 @@
 /* Copyright */
 package ucar.nc2;
 
+import ucar.nc2.util.Indent;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
@@ -138,9 +140,9 @@ public class AttributeContainerHelper implements AttributeContainer {
     return new AttributeContainerHelper(atts.getName(), result);
   }
 
-  static public void show(AttributeContainer atts, Formatter f) {
+  static public void show(AttributeContainer atts, Indent indent, Formatter f) {
     for (Attribute att : atts.getAttributes()) {
-      f.format("%s%n", att);
+      f.format("%s%s%n", indent, att);
     }
   }
 

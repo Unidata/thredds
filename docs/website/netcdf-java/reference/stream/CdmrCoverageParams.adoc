@@ -45,6 +45,7 @@ Temporal subsetting::
 * time duration: 1) udunit time unit string or 2) link:{w3cDuration}[W3C time duration]
 * datetime: link:{w3cDate}[W3C date] or _present_
 * The dataset determines what Calendar is used, so you must use that calendar. There can only be one calendar per dataset.
+* If no time range or time point, a timeOffset can be used to specify the time point.
 
 2D Time subsetting::
 

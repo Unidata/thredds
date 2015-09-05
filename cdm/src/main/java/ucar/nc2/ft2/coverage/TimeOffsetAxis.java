@@ -38,6 +38,8 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 
+import javax.annotation.Nonnull;
+
 /**
  * A new way to handle 2D time, an orthogonal axis with offset values. The time can be calculated with both the runtime with the offset.
  *
@@ -58,28 +60,34 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
   }
 
   // normal case already handled, this is the case where a time has been specified, and only one runtime
-  public CoverageCoordAxis subsetFromTime(SubsetParams params, CalendarDate runDate) {
+  @Nonnull
+  public CoverageCoordAxis1D subsetFromTime(SubsetParams params, CalendarDate runDate) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-
+    CoverageCoordAxis1D result = null;
     if (params.isTrue(SubsetParams.timePresent)) {
       double offset = getOffsetInTimeUnits(runDate, CalendarDate.present());
-      return helper.subsetClosest(offset);
+      result = helper.subsetClosest(offset);
     }
 
     CalendarDate dateWanted = (CalendarDate) params.get(SubsetParams.time);
     if (dateWanted != null) {                           // convertFrom, convertTo
       double offset = getOffsetInTimeUnits(runDate, dateWanted);
-      return helper.subsetClosest(offset);
+      result =  helper.subsetClosest(offset);
     }
 
     CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
     if (dateRange != null) {
       double min = getOffsetInTimeUnits(runDate, dateRange.getStart());
       double max = getOffsetInTimeUnits(runDate, dateRange.getEnd());
-      return helper.subset(min, max); // LOOK no stride
+      result =  helper.subset(min, max); // LOOK no stride
     }
 
-    throw new IllegalStateException();
+    if (result == null)
+      throw new IllegalStateException();
+
+    // all the offsets are reletive to rundate
+    result.setReferenceDate(runDate);
+    return result;
   }
 
   public CalendarDate makeDate(CalendarDate runDate, double val) {

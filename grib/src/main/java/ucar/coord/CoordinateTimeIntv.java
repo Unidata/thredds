@@ -76,15 +76,16 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return timeIntervals;
   }
 
-  @Override
-  public int findIndexContaining(double need) {
+  /* @Override
+  public int findIndexContaining(Object need) {
     int idx = findSingleHit(need);
     if (idx >= 0) return idx;
+    if (idx == -1) return -1;
     // multiple hits = choose closest to the midpoint
     return findClosest(need);
   }
 
-   // return index if only one match, else -1
+   // return index if only one match, if no matches return -1, if > 1 match return -nhits
   private int findSingleHit(double target) {
     int hits = 0;
     int idxFound = -1;
@@ -95,7 +96,9 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
         idxFound = i;
       }
     }
-    return hits == 1 ? idxFound : -1;
+    if (hits == 1) return idxFound;
+    if (hits == 0) return -1;
+    return -hits;
   }
 
   // return index of closest value to target
@@ -117,7 +120,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   private boolean contains(double target, TimeCoord.Tinv level) {
     if (level.getBounds1() <= target && target <= level.getBounds2()) return true;
     return level.getBounds1() >= target && target >= level.getBounds2();
-  }
+  } */
 
   @Override
   public List<? extends Object> getValues() {

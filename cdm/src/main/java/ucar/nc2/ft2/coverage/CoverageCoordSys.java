@@ -54,6 +54,13 @@ public class CoverageCoordSys {
 
   public enum Type {General, Curvilinear, Grid, Swath, Fmrc}
 
+  public static String makeCoordSysName(List<String> axisName) {
+    Formatter fname = new Formatter();
+    for (String axis : axisName)
+      fname.format(" %s", axis);
+    return fname.toString();
+  }
+
   //////////////////////////////////////////////////
   protected CoordSysContainer dataset;  // almost immutable, need to wire these in after the constructor
   private HorizCoordSys horizCoordSys;  // required
@@ -89,7 +96,8 @@ public class CoverageCoordSys {
 
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getAxisType() == AxisType.TimeOffset) {
-        if (timeOffsetAxis != null) throw new RuntimeException("Cant have multiple TimeOffset Axes in a CoverageCoordSys");
+        if (timeOffsetAxis != null)
+          throw new RuntimeException("Cant have multiple TimeOffset Axes in a CoverageCoordSys");
         if (!(axis instanceof TimeOffsetAxis))
           throw new IllegalStateException("AxisType.TimeOffset must be instanceof TimeOffsetAxis");
         timeOffsetAxis = (TimeOffsetAxis) axis;
@@ -97,12 +105,12 @@ public class CoverageCoordSys {
       if (axis.getAxisType() == AxisType.RunTime) {
         if (runtimeAxis != null) throw new RuntimeException("Cant have multiple RunTime axes in a CoverageCoordSys");
         runtimeAxis = (CoverageCoordAxis1D) axis;
-       }
-     }
+      }
+    }
 
     if (runtimeAxis != null && timeOffsetAxis != null) {
       if (this.time2DCoordSys != null)
-         throw new RuntimeException("Cant have multipe Time2DCoordSys in a CoverageCoordSys");
+        throw new RuntimeException("Cant have multipe Time2DCoordSys in a CoverageCoordSys");
       time2DCoordSys = new Time2DCoordSys(runtimeAxis, timeOffsetAxis);
     }
   }
@@ -237,6 +245,14 @@ public class CoverageCoordSys {
     return result;
   }
 
+  public int[] getShape() {
+    int[] result = new int[axisNames.size()];
+    int count = 0;
+    for (CoverageCoordAxis axis : getAxes())
+      result[count++] = axis.getNcoords();
+    return result;
+  }
+
   public boolean isRegularSpatial() {
     CoverageCoordAxis xaxis = getXAxis();
     CoverageCoordAxis yaxis = getYAxis();
@@ -261,6 +277,20 @@ public class CoverageCoordSys {
     private MyCoordSysContainer(List<CoverageCoordAxis> axes, List<CoverageTransform> transforms) {
       this.axes = axes;
       this.transforms = transforms;
+
+      // wire dependencies
+      for (CoverageCoordAxis axis : axes) {
+        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
+          for (String axisName : axis.dependsOn) {
+            CoverageCoordAxis indAxis = findCoordAxis(axisName);
+            if (indAxis == null)
+              throw new RuntimeException("axis "+axis.getName()+" has dependsOn cant find= " + axisName);
+            if (indAxis.getDependent() != null)
+              throw new RuntimeException("indAxis "+indAxis.getName()+" already has dependent= " + indAxis.getDependent().getName());
+            indAxis.setDependent((CoverageCoordAxis1D) axis);
+          }
+        }
+      }
     }
 
     @Override
@@ -281,7 +311,8 @@ public class CoverageCoordSys {
 
   ////////////////////////////////////////////////
 
-  public CoverageCoordSys subset(SubsetParams params) throws InvalidRangeException {
+  public CoverageCoordSysSubset subset(SubsetParams params) throws InvalidRangeException {
+    CoverageCoordSysSubset result = new CoverageCoordSysSubset();
 
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
@@ -290,17 +321,22 @@ public class CoverageCoordSys {
     }
 
     if (time2DCoordSys != null) {
-      subsetAxes.addAll( time2DCoordSys.subset(params));
+      subsetAxes.addAll( time2DCoordSys.subset(params, result));
     }
 
     HorizCoordSys subsetHcs = horizCoordSys.subset(params);
     subsetAxes.addAll(subsetHcs.getCoordAxes());
 
-    CoverageCoordSys result = new CoverageCoordSys(this);
+    List<String> names = new ArrayList<>();
+    for (CoverageCoordAxis axis : subsetAxes) {
+      names.add(axis.getName());
+    }
+    CoverageCoordSys resultCoordSys = new CoverageCoordSys(makeCoordSysName(names), names, this.getTransformNames(), this.getType());
     MyCoordSysContainer fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
-    result.setDataset(fakeDataset);
-    result.setHorizCoordSys(subsetHcs);
+    resultCoordSys.setDataset(fakeDataset);
+    resultCoordSys.setHorizCoordSys(subsetHcs);
 
+    result.coordSys = resultCoordSys;
     return result;
   }
 

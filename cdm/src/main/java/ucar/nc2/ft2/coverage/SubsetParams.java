@@ -111,7 +111,7 @@ public class SubsetParams {
   public String toString() {
     Formatter f = new Formatter();
     for (Map.Entry<String,Object> entry : req.entrySet())
-      f.format(" %s == %s%n", entry.getKey(), entry.getValue());
+      f.format(" %s == %s,", entry.getKey(), entry.getValue());
     return f.toString();
   }
 

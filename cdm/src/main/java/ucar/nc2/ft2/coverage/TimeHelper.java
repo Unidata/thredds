@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -51,6 +52,7 @@ import java.util.List;
  * @author caron
  * @since 7/11/2015
  */
+@Immutable
 public class TimeHelper {
 
   static public TimeHelper factory(String units, AttributeContainer atts) {
@@ -85,8 +87,17 @@ public class TimeHelper {
     this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
   }
 
+  public TimeHelper setReferenceDate(CalendarDate refDate) {
+    CalendarDateUnit cdUnit = CalendarDateUnit.of(cal, dateUnit.getTimeUnit().getField(), refDate);
+    return new TimeHelper(cal, cdUnit);
+  }
+
+  public String getUdUnit() {
+    return dateUnit.getUdUnit();
+  }
+
   // get offset from runDate, in units of dateUnit
-  public double convert(CalendarDate date) {
+  public double offsetFromRefDate(CalendarDate date) {
     long msecs = date.getDifferenceInMsecs(refDate);
     return msecs / duration;
   }
@@ -130,6 +141,10 @@ public class TimeHelper {
 
   public double getOffsetInTimeUnits(CalendarDate convertFrom, CalendarDate convertTo) {
     return dateUnit.getTimeUnit().getOffset(convertFrom, convertTo);
+  }
+
+  public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
+    return start.add(addTo, dateUnit.getTimeUnit().getField());
   }
 
   public static ucar.nc2.time.Calendar getCalendarFromAttribute(AttributeContainer atts) {

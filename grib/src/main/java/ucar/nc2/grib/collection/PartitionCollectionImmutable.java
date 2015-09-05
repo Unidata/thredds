@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.coord.*;
+import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
@@ -51,10 +52,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * An Immutable PartitionCollection
@@ -191,7 +189,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // wrapper around a GribCollection
+  // wrapper around a GribCollection
   @Immutable
   public class Partition implements Comparable<Partition> {
       private final String name; // partDirectory;
@@ -289,9 +287,9 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   @Immutable
   public class VariableIndexPartitioned extends GribCollectionImmutable.VariableIndex {
     final int nparts;
-    final SmartArrayInt partnoSA;
-    final SmartArrayInt groupnoSA;
-    final SmartArrayInt varnoSA;
+    final SmartArrayInt partnoSA;  // conceptually int[nparts] : index into PartitionCollectionImmutable.partitions[] -> Partition
+    final SmartArrayInt groupnoSA; // once you have the partition, which group in that partition's dataset? Partition.Dataset.Group[] -> Group
+    final SmartArrayInt varnoSA;   // once you have the group, which variable? Group[] -> Variable
 
         // partition only
     // final SmartArrayInt time2runtime; // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
@@ -452,6 +450,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         if (GribIosp.debugRead) System.out.printf("  (2D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
         if (indexWantedP == null) return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
+
       } else {
         int[] indexWantedP = translateIndex1D(indexWanted, compVindex2Dp);
         if (GribIosp.debugRead) System.out.printf("  (1D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
@@ -460,21 +459,10 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       }
     }
 
-
-    /* private int getPartition2D(int runtimeIdx) {
-      return group.run2part[runtimeIdx];
-    }
-
-    private int getPartition1D(int timeIdx) {
-      int runtimeIdx = time2runtime[timeIdx];
-      if (runtimeIdx == 0) return -1;  // 0 = missing
-      return group.run2part[runtimeIdx - 1];
-    } */
-
     /**
      * Get VariableIndex (2D) for this partition
      *
-     * @param partno partition number
+     * @param partno master partition number
      * @return VariableIndex or null if not exists
      * @throws IOException
      */
@@ -489,8 +477,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (vip == null)
         throw new IllegalStateException();
 
-      int idx = vip.partnoSA.findIdx(partno);
-      if (idx < 0 ||  idx >= vip.nparts) {
+      int partWant = vip.partnoSA.findIdx(partno); // which partition ? index into PartitionCollectionImmutable.partitions[]. variable doesnt have to exist in all partitions
+      if (partWant < 0 ||  partWant >= vip.nparts) {
         if (GribIosp.debugRead) System.out.printf("  cant find partition=%d in vip=%s%n", partno, vip);
         return null;
       }
@@ -503,20 +491,15 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       try (GribCollectionImmutable gc = p.getGribCollection()) { // ensure that its read in try-with
         GribCollectionImmutable.Dataset ds = gc.getDatasetCanonical(); // always references the twoD or GC dataset
         // the group and variable index may vary across partitions
-        GribCollectionImmutable.GroupGC g = ds.groups.get(vip.groupnoSA.get(idx));
-        GribCollectionImmutable.VariableIndex vindex = g.variList.get(vip.varnoSA.get(idx));
+        GribCollectionImmutable.GroupGC g = ds.groups.get(vip.groupnoSA.get(partWant));         // LOOK partWant vs partno ??
+        GribCollectionImmutable.VariableIndex vindex = g.variList.get(vip.varnoSA.get(partWant));
         vindex.readRecords();
         return vindex;
       }  // LOOK opening the file here, and then again to read the data. partition cache helps i guess but we could do better i think.
     }
 
-    /*
-
-     */
-
-
     /**
-     * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex )2D)
+     * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex (which will be 2D)
      * by matching coordinate values. The 1D (Best) case.
      *
      * @param wholeIndex index in VariableIndexPartitioned
@@ -618,6 +601,41 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       return part.getIndex(val);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // experimental coord based
+    DataRecord getDataRecord(Map<String, Object> coords) throws IOException {
+
+      // identify the master index for this runtime
+      CalendarDate runtime = (CalendarDate) coords.get(CoordsSet.runDate);
+      int masterIdx = masterRuntime.getIndex(runtime.getMillis());
+      // LOOK ok to use Best like this (see other getDataRecord) ?
+
+      // each runtime is mapped to a partition
+      int partno = run2part[masterIdx];
+      if (partno < 0)
+        return null; // LOOK is this possible?
+
+      // find the 2D vi in that partition
+      GribCollectionImmutable.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
+      if (compVindex2D == null) return null; // missing
+      if (GribIosp.debugRead) System.out.printf("  compVindex2D = %s%n", compVindex2D.toStringFrom());
+
+      if (isPartitionOfPartitions) {
+        VariableIndexPartitioned compVindex2Dp = (VariableIndexPartitioned) compVindex2D;
+        return compVindex2Dp.getDataRecord(coords);
+      }
+
+      // otherwise its a GribCollection
+      GribCollectionImmutable.Record record = compVindex2D.getRecordAt(coords);
+      if (record == null)
+        return null;
+
+      if (GribIosp.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
+      DataRecord dr = new DataRecord(PartitionCollectionImmutable.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record.fileno, record.pos, record.bmsPos, record.scanMode);
+      if (GribDataReader.validator != null) dr.validation = coords;
+      return dr;
+    }
+
   }
 
   @Immutable
@@ -650,8 +668,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       int r = Misc.compare(partno, o.partno);
       if (r != 0) return false;
       r = Misc.compare(fileno, o.fileno);
-      if (r != 0) return false;
-      return true;
+      return r == 0;
     }
 
         //debugging
@@ -659,7 +676,5 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       String dataFilename = usePartition.getFilename(partno, fileno);
       System.out.printf(" **DataReader partno=%d fileno=%d filename=%s datapos=%d%n", partno, fileno, dataFilename, dataPos);
     }
-
   }
-
 }

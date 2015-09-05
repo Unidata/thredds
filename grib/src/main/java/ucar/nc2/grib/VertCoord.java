@@ -194,11 +194,18 @@ public class VertCoord {
       this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
     } */
 
-    public Level(double value1, double value2, boolean isLayer) {
+    public Level(double value1) {
+      this.value1 = value1;
+      this.value2 = GribNumbers.UNDEFINEDD;
+      this.mid = value1;
+      this.isLayer = false;
+    }
+
+    public Level(double value1, double value2) {
       this.value1 = value1;
       this.value2 = value2;
       this.mid = (Double.compare(value2, 0.0) == 0 || GribNumbers.isUndefined(value2)) ? value1 : (value1 + value2) / 2;
-      this.isLayer = isLayer;
+      this.isLayer = true;
     }
 
     public double getValue1() {

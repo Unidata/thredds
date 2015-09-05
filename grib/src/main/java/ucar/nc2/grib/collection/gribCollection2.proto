@@ -9,10 +9,10 @@ message Record {
 }
 
 // SparseArray only at the GCs (MRC and SRC) not at the Partitions
-// dont need SparseArray unless someone wants to read from the variable
+// dont need SparseArray in memory until someone wants to read from the variable
 message SparseArray {
   required fixed32 cdmHash = 1; // which variable
-  repeated uint32 size = 2;     // multidim sizes
+  repeated uint32 size = 2;     // multidim sizes = shape[]
   repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
   repeated Record records = 4;  // List<Record>
   optional uint32 ndups = 5;    // duplicates found when creating

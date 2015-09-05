@@ -39,7 +39,7 @@ import ucar.nc2.util.Indent;
 import java.util.*;
 
 /**
- * N dimensional coordinates.
+ * N coordinates and a SparseArray that they track.
  *
  * @author caron
  * @since 11/27/13
@@ -51,6 +51,7 @@ public class CoordinateND<T> {
   private final SparseArray<T> sa;            // indexes refer to coordinates
 
   public CoordinateND( List<Coordinate> coordinates, SparseArray<T> sa) {
+    assert coordinates.size() == sa.getRank();
     this.coordinates = Collections.unmodifiableList(coordinates);
     this.sa = sa;
   }
@@ -81,7 +82,7 @@ public class CoordinateND<T> {
     for (Coordinate coord : coordinates)
        coord.showInfo(info, new Indent(2));
 
-    if (sa != null) sa.showInfo(info, all);
+    sa.showInfo(info, all);
   }
 
   ////////////////////

@@ -163,7 +163,16 @@ public class CoordinateRuntime implements Coordinate {
 
   @Override
   public int getIndex(Object val) {
-    return Arrays.binarySearch(runtimes, (Long) val);
+    long want;
+
+    if (val instanceof CalendarDate)
+      want = ((CalendarDate) val).getMillis();
+    else if (val instanceof Number)
+      want = ((Number)val).longValue();
+    else
+      throw new IllegalArgumentException(val.getClass().getName());
+
+    return Arrays.binarySearch(runtimes, want);
   }
 
   @Override
@@ -171,7 +180,7 @@ public class CoordinateRuntime implements Coordinate {
     return runtimes[idx];
   }
 
-  @Override
+  /* @Override
   public int findIndexContaining(double need) {
     double bestDiff = Double.MAX_VALUE;
     int bestIdx = 0;
@@ -185,6 +194,13 @@ public class CoordinateRuntime implements Coordinate {
     }
     return bestIdx;
   }
+
+  @Override
+  public int findIndexContaining(double need) {
+    int idx = Arrays.binarySearch(runtimes, (long) need);
+    if (idx >= 0) return idx;
+    return -1;
+  } */
 
   @Override
   public void showInfo(Formatter info, Indent indent) {

@@ -413,9 +413,10 @@ message Coord {
         boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
         List<VertCoord.Level> levels = new ArrayList<>(pc.getValuesCount());
         for (int i = 0; i < pc.getValuesCount(); i++) {
-          double val1 = pc.getValues(i);
-          double val2 = isLayer ? pc.getBound(i) : GribNumbers.UNDEFINEDD;
-          levels.add(new VertCoord.Level(val1, val2, isLayer));
+          if (isLayer)
+            levels.add(new VertCoord.Level(pc.getValues(i), pc.getBound(i)));
+          else
+            levels.add(new VertCoord.Level(pc.getValues(i)));
         }
         return new CoordinateVert(code, tables.getVertUnit(code), levels);
 

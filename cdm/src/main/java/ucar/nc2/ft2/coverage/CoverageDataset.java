@@ -95,6 +95,20 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
       axis.setDataset( this);
     }
 
+    // wire dependencies
+    for (CoverageCoordAxis axis : coordAxes) {
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
+        for (String axisName : axis.dependsOn) {
+          CoverageCoordAxis indAxis = findCoordAxis(axisName);
+          if (indAxis == null)
+            throw new RuntimeException("axis "+axis.getName()+" has dependsOn cant find= " + axisName);
+          if (indAxis.getDependent() != null)
+            throw new RuntimeException("indAxis "+indAxis.getName()+" already has dependent= " + indAxis.getDependent().getName());
+          indAxis.setDependent((CoverageCoordAxis1D) axis);
+        }
+      }
+    }
+
     Map<String, CoordSysSet> map = new HashMap<>();
     for (Coverage coverage : coverages) {
       coverageMap.put(coverage.getName(), coverage);

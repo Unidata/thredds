@@ -45,6 +45,7 @@ import ucar.unidata.util.Format;
 
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -53,7 +54,7 @@ import java.util.List;
  * @author caron
  * @since 7/15/2015
  */
-public class CoverageCoordAxis1D extends CoverageCoordAxis {
+public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<Object> {
 
   // subset ??
   protected int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
@@ -99,7 +100,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s%n", indent, minIndex, maxIndex, stride, isTime2D(), isSubset());
+    f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s", indent, minIndex, maxIndex, stride, isTime2D(), isSubset());
+    if (dependent != null)
+      f.format("dependent=%s", dependent.getName());
+    f.format("%n");
   }
 
   @Override
@@ -171,7 +175,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
   public double getCoord(int index) {
     getValues();
-    if (index <0 || index >= getNcoords())
+    if (index < 0 || index >= getNcoords())
       throw new IllegalArgumentException("Index out of range=" + index);
 
     switch (spacing) {
@@ -282,21 +286,20 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return helper.subset(minValue, maxValue);
   }
 
- /* public Array getCoordEdge1() {
-    getValues();
-    double[] vals = new double[ ncoords];
-    for (int i=0; i< ncoords; i++)
-      vals[i] = getCoordEdge1(i);
-    return Array.makeFromJavaArray(vals);
+  public Object getCoordObject(int index) {
+    if (axisType == AxisType.RunTime)
+      return makeDate( getCoord(index));
+    if (isInterval())
+      return new double[] {getCoordEdge1(index), getCoordEdge2(index)};
+    return getCoord(index);
   }
 
-  public Array getCoordEdge2() {
-    getValues();
-    double[] vals = new double[ ncoords];
-    for (int i=0; i< ncoords; i++)
-      vals[i] = getCoordEdge2(i);
-    return Array.makeFromJavaArray(vals);
-  } */
+  public CalendarDate getCoordAsDate(int index) {
+    if (axisType == AxisType.RunTime)
+      return makeDate( getCoord(index));
+    double val = isInterval() ? (getCoordEdge1(index) + getCoordEdge2(index)) / 2.0  : getCoord(index);
+    return makeDate(val);
+  }
 
   public List<NamedObject> getCoordValueNames() {
     getValues();  // read in if needed
@@ -366,7 +369,12 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
         if (dateRange != null)
           return helper.subset(dateRange);
-        // default is all
+
+        Double timeOffset = (Double) params.get(SubsetParams.timeOffset);
+        if (timeOffset != null)
+          return helper.subsetClosest(timeOffset);
+
+          // default is all
         break;
 
       case RunTime:
@@ -419,6 +427,24 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
             spacing, npoints, 0, 0, this.getResolution(), values, null, true);
   }
 
+
+  @Override
+  public Iterator<Object> iterator() {
+    return new MyIterator();
+  }
+
+  // Look what about intervals ??
+  private class MyIterator implements java.util.Iterator<Object> {
+    private int current = 0;
+    private int ncoords = getNcoords();
+
+    public boolean hasNext() {
+      return current < ncoords;
+    }
+    public Object next() {
+      return getCoord(current++);
+    }
+  }
 
 }
 

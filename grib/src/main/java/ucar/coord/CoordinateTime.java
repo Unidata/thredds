@@ -76,7 +76,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return offsetSorted;
   }
 
-  @Override
+  /* @Override
   public int findIndexContaining(double need) {
     double bestDiff = Double.MAX_VALUE;
     int bestIdx = 0;
@@ -90,6 +90,14 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     }
     return bestIdx;
   }
+  @Override
+  public int findIndexContaining(double need) {
+    for (int i = 0; i < offsetSorted.size(); i++) {
+      Integer coord = offsetSorted.get(i);
+      if (coord == (int) need) return i;
+    }
+    return -1;
+  } */
 
   @Override
   public List<? extends Object> getValues() {

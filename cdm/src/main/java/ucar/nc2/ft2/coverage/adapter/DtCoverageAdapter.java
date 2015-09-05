@@ -265,28 +265,12 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     proxy.close();
   }
 
-  /*
-    public static final String latlonBB = "latlonBB";     // value = LatLonRect
-    public static final String projBB = "projBB";         // value = ProjRect
-    public static final String horizStride = "horizStride";  // value = Integer
- ok   public static final String vertCoord = "vertCoord";   // value = double
- ok   public static final String vertIndex = "vertIndex";   // value = integer    LOOK BAD
- ok   public static final String timeRange = "timeRange";   // value = CalendarDateRange
- ok   public static final String time = "time";             // value = CalendarDate
-    public static final String timeWindow = "timeWindow"; // value = TimeDuration
- ok   public static final String timeStride = "timeStride"; // value = Integer
-  X  public static final String allTimes = "allTimes";     // value = Boolean
- ok   public static final String timePresent = "timePresent"; // value = Boolean
- ok   public static final String runtime = "runtime";       // value = CalendarDate
- ok   public static final String runtime = "runtimeRange";  // value = CalendarDateRange
- ok   public static final String ensCoord = "ensCoord";     // value = double ??
-   */
-
   @Override
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
     DtCoverage grid = (DtCoverage) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    CoverageCoordSys subsetCoordSys = orgCoordSys.subset(params);
+    CoverageCoordSysSubset coordSysSubset = orgCoordSys.subset(params);
+    CoverageCoordSys subsetCoordSys = coordSysSubset.coordSys;
 
     List<Range> section = new ArrayList<>();
     for (CoverageCoordAxis axis : subsetCoordSys.getAxes()) {

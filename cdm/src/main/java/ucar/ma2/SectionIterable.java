@@ -38,7 +38,8 @@ import java.util.List;
 
 /**
  * A Section composed of List<RangeIterator> instead of List<Range>.
- * Kind of a lightweight Section.
+ * SectionIterable knows the fullShape of which it is a section.
+ * The iteration is over the elements in the section, returning 1D index into the full shape.
  *
  * @author John
  * @since 8/23/2015
@@ -49,6 +50,13 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
   private int[] fullShape;
 
   public SectionIterable(List<RangeIterator> ranges, int[] fullShape) {
+    assert ranges.size() == fullShape.length : ranges.size() +" != "+ fullShape.length;
+    int count = 0;
+    for (RangeIterator ri : ranges) {
+      assert (ri.length() <= fullShape[count]);
+      count++;
+    }
+
     this.ranges = ranges;
     this.fullShape = fullShape;
   }
@@ -60,17 +68,16 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
     this.fullShape = fullShape;
   }
 
-  //@Override
-  //public Iterator<RangeIterator> iterator() {
-  //  return ranges.iterator();
-  //}
-
   public int getRank() {
     return ranges.size();
   }
 
-  public SectionIterable subSection(int from, int endExclusive) {
-    return new SectionIterable( ranges.subList(from, endExclusive), fullShape);
+  public SectionIterable subSection(int start, int endExclusive) {
+    int n = endExclusive - start;
+    int[] subFullRange = new int[n];
+    System.arraycopy(fullShape, start, subFullRange, 0, n);
+
+    return new SectionIterable( ranges.subList(start, endExclusive), subFullRange);
   }
 
   public RangeIterator getRange(int i) {
@@ -160,15 +167,6 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
       if (done < total) incr(); // increment for next call
       return next;
     }
-
-    /*
-     * Get the current index in the result array, ie in this section
-     *
-     * @return result index
-     *
-    public int getResultIndex() {
-      return (int) done - 1;
-    } */
 
     private void incr() {
       int digit = getRank() - 1;

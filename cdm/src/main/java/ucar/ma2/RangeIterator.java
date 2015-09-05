@@ -37,7 +37,8 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /**
- * Description
+ * Generalization of Range (which is restricted to (start:stop:stride).
+ * RangeIterator is over an arbitrary set of integers from the set {0..fullSize-1}.
  *
  * @author John
  * @since 8/19/2015
@@ -48,5 +49,7 @@ public interface RangeIterator extends Iterable<Integer> {
   Iterator<Integer> iterator();
 
   int length();
+
+  String getName();
 
 }

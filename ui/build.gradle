@@ -11,7 +11,7 @@ dependencies {
     compile project(":waterml")
     compile project(":httpservices")
 
-    compile libraries["ehcache-core"]
+    compile libraries["ehcache-core"]  // used in TdsMonitor to cache IP lookups
     compile libraries["jdom2"]
     compile libraries["spring-context"]
     compile libraries["jcommon"]

@@ -284,8 +284,9 @@ class CoordAxisHelper {
 
       int idx = findSingleHit(target, true);
       if (idx >= 0) return idx;
+      if (idx == -1) return -1; // no hits
 
-      // multiple hits = choose closest to the midpoint i guess
+      // multiple hits = choose closest to the midpoint
       return findClosest(target);
 
     } else {
@@ -298,13 +299,14 @@ class CoordAxisHelper {
 
       int idx = findSingleHit(target, false);
       if (idx >= 0) return idx;
+      if (idx == -1) return -1; // no hits
 
-      // multiple hits = choose closest to the midpoint i guess
+      // multiple hits = choose closest to the midpoint
       return findClosest(target);
     }
   }
 
-  // return index if only one match, else -1
+  // return index if only one match, if no matches return -1, if > 1 match return -nhits
   private int findSingleHit(double target, boolean ascending) {
     int hits = 0;
     int idxFound = -1;
@@ -315,18 +317,24 @@ class CoordAxisHelper {
         idxFound = i;
       }
     }
-    return hits == 1 ? idxFound : -1;
+    if (hits == 1) return idxFound;
+    if (hits == 0) return -1;
+    return -hits;
   }
 
   // return index of closest value to target
+  // if its a tie, use the larger one
   private int findClosest(double target) {
     double minDiff =  Double.MAX_VALUE;
+    double useValue = Double.MIN_VALUE;
     int idxFound = -1;
     for (int i = 0; i < axis.getNcoords(); i++) {
-      double diff =  Math.abs(axis.getCoord(i)-target);
-      if (diff < minDiff) {
+      double coord = axis.getCoord(i);
+      double diff =  Math.abs(coord-target);
+      if (diff < minDiff || (diff == minDiff && coord > useValue)) {
         minDiff = diff;
         idxFound = i;
+        useValue = coord;
       }
     }
     return idxFound;

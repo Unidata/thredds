@@ -77,7 +77,7 @@ abstract public class CoverageCoordAxis {
   }
 
   protected final String name;
-  protected final String units, description;
+  protected final String description;
   protected final DataType dataType;
   protected final AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
   protected final AttributeContainer attributes;
@@ -90,9 +90,12 @@ abstract public class CoverageCoordAxis {
   protected final double endValue;
   protected final double resolution;
   protected final CoordAxisReader reader;
-
-  protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
   private final boolean isSubset;
+
+  // Look not final see setReferenceDate()
+  protected TimeHelper timeHelper; // AxisType = Time, RunTime only
+  protected String units;
+  protected CoverageCoordAxis1D dependent;
 
   // may be lazy eval
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
@@ -275,18 +278,22 @@ abstract public class CoverageCoordAxis {
 
   public void toString(Formatter f, Indent indent) {
     f.format("%sCoordAxis '%s' (%s)%n", indent, name, getClass().getName());
-    f.format("%s  axisType=%s dataType=%s units='%s' desc='%s'", indent, axisType, dataType, units, description);
+    indent.incr();
+    f.format("%saxisType=%s dataType=%s units='%s' desc='%s'", indent, axisType, dataType, units, description);
     if (timeHelper != null) f.format(" refDate=%s", timeHelper.getRefDate());
     f.format("%n");
-    AttributeContainerHelper.show(attributes, f);
 
-    f.format("%s  npts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
-    if (getResolution() != 0.0)
-      f.format(" resolution=%f", resolution);
-    f.format(" %s", getDependenceType());
+    f.format("%s%s", indent, getDependenceType());
     if (dependsOn.size() > 0) f.format(" :");
     for (String s : dependsOn)
       f.format(" %s", s);
+    f.format("%n");
+
+    AttributeContainerHelper.show(attributes, indent, f);
+
+    f.format("%snpts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
+    if (getResolution() != 0.0)
+      f.format(" resolution=%f", resolution);
     f.format("%n");
 
     if (values != null) {
@@ -294,20 +301,21 @@ abstract public class CoverageCoordAxis {
       switch (spacing) {
         case irregularPoint:
         case contiguousInterval:
-          f.format("%s  contiguous values (%d)=", indent, n);
+          f.format("%scontiguous values (%d)=", indent, n);
           for (double v : values)
             f.format("%f,", v);
           f.format("%n");
           break;
 
         case discontiguousInterval:
-          f.format("%s  discontiguous values (%d)=", indent, n);
+          f.format("%sdiscontiguous values (%d)=", indent, n);
           for (int i = 0; i < n; i += 2)
             f.format("(%f,%f) ", values[i], values[i + 1]);
           f.format("%n");
           break;
       }
     }
+    indent.decr();
   }
 
   public String getSummary() {
@@ -333,7 +341,7 @@ abstract public class CoverageCoordAxis {
   // time coords only
 
   public double convert(CalendarDate date) {
-    return timeHelper.convert(date);
+    return timeHelper.offsetFromRefDate(date);
   }
 
   public CalendarDate makeDate(double value) {
@@ -348,10 +356,27 @@ abstract public class CoverageCoordAxis {
     return timeHelper.getOffsetInTimeUnits(convertFrom, convertTo);
   }
 
+  public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
+    return timeHelper.makeDateInTimeUnits(start, addTo);
+  }
+
   public CalendarDate getRefDate() {
     return timeHelper.getRefDate();
   }
 
+  void setReferenceDate(CalendarDate refDate) {
+    // munge the unit
+    this.timeHelper = timeHelper.setReferenceDate(refDate);
+    this.units = timeHelper.getUdUnit();
+  }
+
+  public CoverageCoordAxis1D getDependent() {
+    return dependent;
+  }
+
+  public void setDependent(CoverageCoordAxis1D dependent) {
+    this.dependent = dependent;
+  }
 
   ///////////////////////////////////////////////
 

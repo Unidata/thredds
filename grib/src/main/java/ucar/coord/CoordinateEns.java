@@ -87,8 +87,8 @@ public class CoordinateEns implements Coordinate {
     return ensSorted.get(idx);
   }
 
-  @Override
-  public int findIndexContaining(double need) {
+  /*
+  public int getIndexByMember(double need) {
     double bestDiff = Double.MAX_VALUE;
     int bestIdx = 0;
     for (int i = 0; i < ensSorted.size(); i++) {
@@ -100,6 +100,14 @@ public class CoordinateEns implements Coordinate {
       }
     }
     return bestIdx;
+  } */
+
+  public int getIndexByMember(double need) {
+    for (int i = 0; i < ensSorted.size(); i++) {
+      EnsCoord.Coord coord = ensSorted.get(i);
+      if (Misc.closeEnough(need, coord.getEnsMember())) return i;
+    }
+    return -1;
   }
 
   @Override
