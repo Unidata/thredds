@@ -104,12 +104,10 @@ public class GeoTiff implements AutoCloseable {
 
   void setTransform(double xStart, double yStart, double xInc, double yInc) {
     // tie the raster 0, 0 to xStart, yStart
-    addTag(new IFDEntry(Tag.ModelTiepointTag, FieldType.DOUBLE).setValue(
-            new double[]{0.0, 0.0, 0.0, xStart, yStart, 0.0}));
+    addTag(new IFDEntry(Tag.ModelTiepointTag, FieldType.DOUBLE).setValue(new double[]{0.0, 0.0, 0.0, xStart, yStart, 0.0}));
 
     // define the "affine transformation" : requires grid to be regular (!)
-    addTag(new IFDEntry(Tag.ModelPixelScaleTag, FieldType.DOUBLE).setValue(
-            new double[]{xInc, yInc, 0.0}));
+    addTag(new IFDEntry(Tag.ModelPixelScaleTag, FieldType.DOUBLE).setValue(new double[]{xInc, yInc, 0.0}));
   }
 
   private List<GeoKey> geokeys = new ArrayList<>();

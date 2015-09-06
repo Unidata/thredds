@@ -316,8 +316,14 @@ public class CoverageCoordSys {
 
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
-      if (!axis.getAxisType().isHoriz() && !axis.isTime2D())
-        subsetAxes.add(axis.subset(params));
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
+      if (axis.getAxisType().isHoriz() || axis.isTime2D()) continue;
+
+      CoverageCoordAxis subsetInd = axis.subset(params);
+      subsetAxes.add(subsetInd);
+      CoverageCoordAxis1D dependent = axis.getDependent();
+      if (dependent != null)
+        subsetAxes.add(dependent.subsetDependent( (CoverageCoordAxis1D) subsetInd));
     }
 
     if (time2DCoordSys != null) {

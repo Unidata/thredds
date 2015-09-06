@@ -352,8 +352,8 @@ abstract public class CoverageCoordAxis {
     return timeHelper.getDateRange(startValue, endValue);
   }
 
-  public double getOffsetInTimeUnits(CalendarDate convertFrom, CalendarDate convertTo) {
-    return timeHelper.getOffsetInTimeUnits(convertFrom, convertTo);
+  public double getOffsetInTimeUnits(CalendarDate start, CalendarDate end) {
+    return timeHelper.getOffsetInTimeUnits(start, end);
   }
 
   public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {

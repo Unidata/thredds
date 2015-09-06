@@ -52,7 +52,7 @@ public class TestGridCoverageMisc {
 
 
     // Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-01T06:00:00Z (2) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Grid,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T00:00:00Z", null, "2015-03-01T06:00:00Z ", null, null});
 
     /*
@@ -102,7 +102,7 @@ public class TestGridCoverageMisc {
     this.endpoint = endpoint;
     this.type = type;
     this.covName = covName;
-    this.gridName = (type == CoverageCoordSys.Type.Fmrc) ? "TwoD/"+ covName : covName;
+    this.gridName = (type == CoverageCoordSys.Type.Fmrc) ? "TwoD/"+ covName : "Best/"+covName;
     this.rt_val = rt_val == null ? null : CalendarDate.parseISOformat(null, rt_val);
     this.ens_val = ens_val;
     this.time_val = time_val == null ? null : CalendarDate.parseISOformat(null, time_val);

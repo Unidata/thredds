@@ -82,14 +82,15 @@ public class TestGridCoverageReading {
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      // Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gcs = cc.getCoverageDatasets().get(0);
-      //Assert.assertEquals("NGrids", ncoverages, gcs.getCoverageCount());
-      Assert.assertEquals(expectType, gcs.getCoverageType());
+      CoverageDataset gcs = cc.findCoverageDataset(expectType);
+      Assert.assertNotNull(expectType.toString(), gcs);
 
       // check DtCoverageCS
       try (GridDataset ds = GridDataset.open(endpoint)) {
         for (GridDatatype dt : ds.getGrids()) {
+          if (expectType == CoverageCoordSys.Type.Fmrc && !dt.getFullName().startsWith("TwoD")) continue;
+          if (expectType == CoverageCoordSys.Type.Grid && dt.getFullName().startsWith("TwoD")) continue;
+
           GridCoordSystem csys = dt.getCoordinateSystem();
           CoordinateAxis1DTime rtAxis = csys.getRunTimeAxis();
           CoordinateAxis1D ensAxis = csys.getEnsembleAxis();
@@ -222,7 +223,15 @@ public class TestGridCoverageReading {
       return;
     }
 
-    CompareNetcdf.compareData(dt_array, gc_array.getData());
+    try {
+      CompareNetcdf.compareData(dt_array, gc_array.getData());
+    } catch (Throwable t) {
+      try {
+        dt.readDataSlice(rt_idx, ens_idx, time_idx, vert_idx, -1, -1);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
     //NCdumpW.printArray(dt_array);
   }
 

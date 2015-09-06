@@ -33,6 +33,7 @@
  */
 package ucar.unidata.test.util;
 
+import org.junit.Assert;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.*;
@@ -325,13 +326,13 @@ public class CompareNetcdf {
   }
 
   static public void compareData(Array data1, double[] data2) {
-    Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
+    Array data2a = Array.factory(DataType.DOUBLE, new int[]{data2.length}, data2);
     compareData( data1, data2a, TOL, false);
   }
 
   static private void compareData(Array data1, Array data2, double tol, boolean checkType) {
-    assert data1.getSize() == data2.getSize();
-    assert data1.isUnsigned() == data2.isUnsigned();
+    Assert.assertEquals("data size", data1.getSize(), data2.getSize());
+    Assert.assertEquals("data unsigned", data1.isUnsigned(), data2.isUnsigned());
     if (checkType)
       assert data1.getElementType() == data2.getElementType() : data1.getElementType() + "!=" + data2.getElementType();
     DataType dt = DataType.getType(data1);
@@ -350,8 +351,11 @@ public class CompareNetcdf {
       while (iter1.hasNext() && iter2.hasNext()) {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
-        if (!Float.isNaN(v1) || !Float.isNaN(v2))
+        if (!Float.isNaN(v1) || !Float.isNaN(v2)) {
+          if (!closeEnough(v1, v2, (float) tol))
+            System.out.printf("HEY%n");
           assert closeEnough(v1, v2, (float) tol) : v1 + " != " + v2 + " count=" + iter1;
+        }
       }
     } else if (dt.getPrimitiveClassType() == int.class) {
       while (iter1.hasNext() && iter2.hasNext()) {

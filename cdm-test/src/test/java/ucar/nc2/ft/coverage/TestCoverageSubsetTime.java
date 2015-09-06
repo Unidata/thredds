@@ -265,7 +265,7 @@ public class TestCoverageSubsetTime {
         Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge2(0) >= offsetVal);          // upper >= time
 
       }else {
-        Assert.assertEquals("offset coord", offsetVal, timeAxis1D.getCoord(0), Misc.maxReletiveError);
+        Assert.assertEquals("offset coord", offsetVal, timeAxis1D.getCoord(0), offsetVal*Misc.maxReletiveError);
       }
 
       // LOOK need to test data
@@ -361,4 +361,46 @@ public class TestCoverageSubsetTime {
 
     Assert.assertArrayEquals("geo shape", shapeCs, dataShape);
   }
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // Best
+
+  @Test
+  public void testBestPresent() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String covName = "Temperature_altitude_above_msl";
+
+    System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      params.set(SubsetParams.timePresent, true);
+      params.set(SubsetParams.vertCoord, 3658.0);
+      System.out.printf("  subset %s%n", params);
+
+      GeoReferencedArray geo = cover.readData(params);
+
+      // should not be missing !
+      assert !Float.isNaN(geo.getData().getFloat(0));
+
+      Array data = geo.getData();
+      Index ai = data.getIndex();
+      float testValue = data.getFloat(ai.set(0, 0, 3, 0));
+      Assert.assertEquals(244.8, testValue, testValue * Misc.maxReletiveError);
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  // ENsemble
+
+  //     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", CoverageCoordSys.Type.Fmrc, "geopotential"});
+
+
 }

@@ -159,7 +159,13 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
 
   private void addAdjustedTimeCoords(Map<String, Object> result, CoverageCoordAxis1D axis, int coordIdx, CalendarDate runtime) {
     // this must be adjusted to be offset from the runtime.
-    double adjust = axis.getOffsetInTimeUnits(axis.getRefDate(), runtime);
+    // adjust = end - start
+    // axisCoordOffset + axis.reftime = offset + runtime
+    // offset = axisCoordOffset + axis.reftime - runtime
+    // offset = axisCoordOffset + adjust
+    // offset = axisCoordOffset + end - start = axisCoordOffset + axis.reftime - runtime
+    // therefore: end = reftime, start = runtime
+    double adjust = axis.getOffsetInTimeUnits(runtime, axis.getRefDate());
     if (axis.isInterval()) {
       double[] adjustVal = new double[] {axis.getCoordEdge1(coordIdx)+adjust, axis.getCoordEdge2(coordIdx)+adjust};
       result.put(timeOffsetCoord, adjustVal);

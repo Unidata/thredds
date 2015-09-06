@@ -62,7 +62,7 @@ public class SubsetParams {
   public static final String timeOffset = "timeOffset"; // value = Double
   public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
 
-  public static final String vertIndex = "vertIndex";   // value = Integer    LOOK BAD
+  // public static final String vertIndex = "vertIndex";   // value = Integer    LOOK BAD
   public static final String vertCoord = "vertCoord";   // value = Double
   public static final String ensCoord = "ensCoord";     // value = double ??
 

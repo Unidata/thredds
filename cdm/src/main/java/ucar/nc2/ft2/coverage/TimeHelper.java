@@ -139,8 +139,8 @@ public class TimeHelper {
     return CalendarDateRange.of(start, end);
   }
 
-  public double getOffsetInTimeUnits(CalendarDate convertFrom, CalendarDate convertTo) {
-    return dateUnit.getTimeUnit().getOffset(convertFrom, convertTo);
+  public double getOffsetInTimeUnits(CalendarDate start, CalendarDate end) {
+    return dateUnit.getTimeUnit().getOffset(start, end);
   }
 
   public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
