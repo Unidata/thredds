@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Write CF Compliant Grid file from a GridCoverage
+ * Write CF Compliant Grid file from a Coverage
  *
  * @author caron
  * @since 5/8/2015
@@ -106,7 +106,7 @@ public class CFGridCoverageWriter {
 
 
   /**
-   * @param gdsOrg       the GridCoverageDataset
+   * @param gdsOrg       the CoverageDataset
    * @param gridNames    the list of variables to be written, or null for all
    * @param subsetParams       the desired subset
    * @param addLatLon    add 2D lat/lon coordinates if needed
@@ -204,10 +204,10 @@ public class CFGridCoverageWriter {
     for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
       Variable v = writer.findVariable(axis.getName());
       if (v != null) {
-        if (show) System.out.printf("write axis %s%n", v.getNameAndDimensions());
+        if (show) System.out.printf("CFGridCoverageWriter write axis %s%n", v.getNameAndDimensions());
         writer.write(v, axis.getCoordsAsArray());
       } else {
-        System.out.printf("No variable for %s%n", axis.getName());
+        System.out.printf("CFGridCoverageWriter No variable for %s%n", axis.getName());
       }
 
       if (axis.getSpacing() == CoverageCoordAxis.Spacing.contiguousInterval || axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval) {
@@ -223,7 +223,7 @@ public class CFGridCoverageWriter {
       GeoReferencedArray array = gridOrg.readData(subsetParams);
 
       Variable v = writer.findVariable(grid.getName());
-      if (show) System.out.printf("write grid %s%n", v.getNameAndDimensions());
+      if (show) System.out.printf("CFGridCoverageWriter write grid %s%n", v.getNameAndDimensions());
       writer.write(v, array.getData());
     }
 

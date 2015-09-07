@@ -96,19 +96,6 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
     }
 
     // wire dependencies
-    for (CoverageCoordAxis axis : coordAxes) {
-      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
-        for (String axisName : axis.dependsOn) {
-          CoverageCoordAxis indAxis = findCoordAxis(axisName);
-          if (indAxis == null)
-            throw new RuntimeException("axis "+axis.getName()+" has dependsOn cant find= " + axisName);
-          if (indAxis.getDependent() != null)
-            throw new RuntimeException("indAxis "+indAxis.getName()+" already has dependent= " + indAxis.getDependent().getName());
-          indAxis.setDependent((CoverageCoordAxis1D) axis);
-        }
-      }
-    }
-
     Map<String, CoordSysSet> map = new HashMap<>();
     for (Coverage coverage : coverages) {
       coverageMap.put(coverage.getName(), coverage);
@@ -137,7 +124,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
       CoverageCoordAxis lonaxis = coordsys.getAxis(AxisType.Lon);
 
       CoverageTransform hct = coordsys.getHorizTransform();
-      HorizCoordSys hcs = new HorizCoordSys(xaxis, yaxis, lataxis, lonaxis, hct);
+      HorizCoordSys hcs = new HorizCoordSys((CoverageCoordAxis1D)xaxis, (CoverageCoordAxis1D)yaxis, lataxis, lonaxis, hct);
       HorizCoordSys old = hcsMap.get(hcs.getName());
       if (old == null)
         hcsMap.put(hcs.getName(), hcs);

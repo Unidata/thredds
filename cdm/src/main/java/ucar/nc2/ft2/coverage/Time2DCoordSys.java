@@ -71,12 +71,8 @@ public class Time2DCoordSys {
     return result;
   }
 
-  public boolean isTime2D() {
-    return true;
-  }
-
 /*
-2D Time subsetting
+  2D Time subsetting
   A 2D time dataset will have CoverageType set to FMRC.
   You may specify a runtime with a date, latest or all; specify a timeOffset with a numeric value, first, or all.
     If only one is set, use the default for the other. If neither is set, then return all times for latest runtime.
@@ -160,12 +156,17 @@ public class Time2DCoordSys {
       runValues[count++] = runAxisSubset.getCoord( runtimeIdx.get(k));
     }
 
-    CoverageCoordAxis1D runAxisSubset2 = runAxisSubset.subset(null, CoverageCoordAxis.Spacing.irregularPoint, ncoords, runValues); // LOOK check for regular (in CovCoordAxis ?)
-    CoverageCoordAxis1D timeOffsetSubset = timeOffset.subset(runAxisSubset2.getName(), CoverageCoordAxis.Spacing.irregularPoint, ncoords, offsetValues); // aux coord (LOOK interval) ??
+    CoverageCoordAxisBuilder runbuilder = new CoverageCoordAxisBuilder(runAxisSubset)
+            .subset(null, CoverageCoordAxis.Spacing.irregularPoint, ncoords, runValues); // LOOK check for regular (in CovCoordAxis ?)
+    CoverageCoordAxis1D runAxisSubset2 = new CoverageCoordAxis1D(runbuilder);
+
+    CoverageCoordAxisBuilder timebuilder = new CoverageCoordAxisBuilder(timeOffset)
+            .subset(runAxisSubset2.getName(), CoverageCoordAxis.Spacing.irregularPoint, ncoords, offsetValues); // aux coord (LOOK interval) ??
+    CoverageCoordAxis1D timeOffsetSubset = new TimeOffsetAxis(timebuilder);
+
     CoverageCoordAxis scalarTimeCoord = makeScalarTimeCoord(wantOffset, runAxisSubset);
 
-    result.isConstantForecast = true;
-    // result.cfRange = cfRange;
+    result.isConstantForecast = true; // LOOK not very elegant
 
     return Lists.newArrayList(runAxisSubset2, timeOffsetSubset, scalarTimeCoord);
   }
@@ -179,9 +180,22 @@ public class Time2DCoordSys {
     atts.addAttribute(new Attribute(CDM.LONG_NAME, CF.TIME)); // ??
     atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
-    return new CoverageCoordAxis1D(name, runAxisSubset.getUnits(), CF.TIME, DataType.DOUBLE, AxisType.Time, atts,
-            CoverageCoordAxis.DependenceType.scalar, null, CoverageCoordAxis.Spacing.regular, 1, val, val,
-            0.0, null, null, true);
+    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
+    builder.name = name;
+    builder.units = runAxisSubset.getUnits();
+    builder.description = CF.TIME;
+    builder.dataType = DataType.DOUBLE;
+    builder.axisType = AxisType.Time;
+    builder.attributes = atts;
+    builder.dependenceType = CoverageCoordAxis.DependenceType.scalar;
+    builder.spacing = CoverageCoordAxis.Spacing.regular;
+    builder.ncoords = 1;
+    builder.startValue = val;
+    builder.endValue = val;
+    builder.resolution = 0;
+    builder.isSubset = true;
+
+    return new CoverageCoordAxis1D(builder);
   }
 
 

@@ -241,26 +241,26 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     if (isLatLon) {
       AttributeContainerHelper atts = new AttributeContainerHelper(CF.LATITUDE);
       atts.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
-      result.add(new CoverageCoordAxis1D(CF.LATITUDE, CDM.LAT_UNITS, null, DataType.FLOAT, AxisType.Lat, atts, CoverageCoordAxis.DependenceType.independent,
-              null, CoverageCoordAxis.Spacing.regular, hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this, false));
+      result.add(new CoverageCoordAxis1D( new CoverageCoordAxisBuilder(CF.LATITUDE, CDM.LAT_UNITS, null, DataType.FLOAT, AxisType.Lat, atts,
+              CoverageCoordAxis.DependenceType.independent, null, CoverageCoordAxis.Spacing.regular,
+              hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this, false)));
 
       atts = new AttributeContainerHelper(CF.LONGITUDE);
       atts.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
-      result.add(new CoverageCoordAxis1D(CF.LONGITUDE, CDM.LON_UNITS, null, DataType.FLOAT, AxisType.Lon, atts, CoverageCoordAxis.DependenceType.independent,
-              null, CoverageCoordAxis.Spacing.regular, hcs.nx, hcs.getStartX(), hcs.getEndX(), hcs.dx, null, this, false));
+      result.add(new CoverageCoordAxis1D( new CoverageCoordAxisBuilder(CF.LONGITUDE, CDM.LON_UNITS, null, DataType.FLOAT, AxisType.Lon, atts, CoverageCoordAxis.DependenceType.independent,
+              null, CoverageCoordAxis.Spacing.regular, hcs.nx, hcs.getStartX(), hcs.getEndX(), hcs.dx, null, this, false)));
 
     } else {
       AttributeContainerHelper atts = new AttributeContainerHelper("y");
       atts.addAttribute(new Attribute(CDM.UNITS, "km"));
-      result.add(new CoverageCoordAxis1D("y", "km", CF.PROJECTION_Y_COORDINATE, DataType.FLOAT, AxisType.GeoY, atts, CoverageCoordAxis.DependenceType.independent,
-              null, CoverageCoordAxis.Spacing.regular, hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this, false));
+      result.add(new CoverageCoordAxis1D( new CoverageCoordAxisBuilder("y", "km", CF.PROJECTION_Y_COORDINATE, DataType.FLOAT, AxisType.GeoY, atts, CoverageCoordAxis.DependenceType.independent,
+              null, CoverageCoordAxis.Spacing.regular, hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this, false)));
 
       atts = new AttributeContainerHelper("x");
       atts.addAttribute(new Attribute(CDM.UNITS, "km"));
-      result.add(new CoverageCoordAxis1D("x", "km", CF.PROJECTION_X_COORDINATE, DataType.FLOAT, AxisType.GeoX, atts, CoverageCoordAxis.DependenceType.independent,
-              null, CoverageCoordAxis.Spacing.regular, hcs.nx, hcs.getStartX(), hcs.getEndX(), hcs.dx, null, this, false));
+      result.add(new CoverageCoordAxis1D(new CoverageCoordAxisBuilder("x", "km", CF.PROJECTION_X_COORDINATE, DataType.FLOAT, AxisType.GeoX, atts, CoverageCoordAxis.DependenceType.independent,
+              null, CoverageCoordAxis.Spacing.regular, hcs.nx, hcs.getStartX(), hcs.getEndX(), hcs.dx, null, this, false)));
     }
-
     return result;
   }
 
@@ -288,17 +288,20 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       int[] shape = new int[]{hcs.ny, hcs.nx};
       int npts = hcs.ny * hcs.nx;
 
+      CoverageCoordAxisBuilder builder;
       if (axisType == AxisType.Lat) {
         atts.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
-        result.add(new LatLonAxis2D(name, CDM.LAT_UNITS, vindex.makeVariableDescription(), DataType.FLOAT, AxisType.Lat, atts, CoverageCoordAxis.DependenceType.twoD,
-                null, shape, CoverageCoordAxis.Spacing.irregularPoint, npts, 0, 0, 0, null, this, false));
+        builder = new CoverageCoordAxisBuilder(name, CDM.LAT_UNITS, vindex.makeVariableDescription(), DataType.FLOAT, AxisType.Lat, atts,
+                CoverageCoordAxis.DependenceType.twoD, null, CoverageCoordAxis.Spacing.irregularPoint, npts, 0, 0, 0, null, this, false);
       } else {
 
         atts.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
-        result.add(new LatLonAxis2D(name, CDM.LON_UNITS, vindex.makeVariableDescription(), DataType.FLOAT, AxisType.Lon, atts, CoverageCoordAxis.DependenceType.twoD,
-                null, shape, CoverageCoordAxis.Spacing.irregularPoint, npts, 0, 0, 0, null, this, false));
+        builder = new CoverageCoordAxisBuilder(name, CDM.LON_UNITS, vindex.makeVariableDescription(), DataType.FLOAT, AxisType.Lon, atts,
+                CoverageCoordAxis.DependenceType.twoD, null, CoverageCoordAxis.Spacing.irregularPoint, npts, 0, 0, 0, null, this, false);
       }
 
+      builder.shape = shape;
+      result.add(new LatLonAxis2D( builder));
       remove.add(vindex);
     }
 
@@ -337,8 +340,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
     atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
-    CoverageCoordAxis1D result = new CoverageCoordAxis1D(runtime.getName(), units, "GRIB reference time", DataType.DOUBLE, AxisType.RunTime, atts,
-            dependence, null, spacing, n, start, end, resol, null, this, false);
+    CoverageCoordAxis1D result = new CoverageCoordAxis1D(
+            new CoverageCoordAxisBuilder(runtime.getName(), units, "GRIB reference time", DataType.DOUBLE, AxisType.RunTime, atts,
+            dependence, null, spacing, n, start, end, resol, null, this, false));
 
     // smoosh runtimes with similar start, end, resol
     RuntimeSmoosher tester = new RuntimeSmoosher(result);
@@ -418,9 +422,12 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       if (!smoosh.combined) axes.add(smoosh.runtime);
       else {
         int n = (int) ((smoosh.end - smoosh.start) / smoosh.resol);
-        CoverageCoordAxis1D combined = new CoverageCoordAxis1D(smoosh.runtime.getName(), smoosh.runtime.getUnits(), GribIosp.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime,
+
+        CoverageCoordAxis1D combined = new CoverageCoordAxis1D(
+                new CoverageCoordAxisBuilder( smoosh.runtime.getName(), smoosh.runtime.getUnits(), GribIosp.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime,
                 new AttributeContainerHelper(smoosh.runtime.getName(), smoosh.runtime.getAttributes()),
-                smoosh.runtime.getDependenceType(), null, CoverageCoordAxis.Spacing.regular, n, smoosh.start, smoosh.end, smoosh.resol, null, this, false);
+                smoosh.runtime.getDependenceType(), null, CoverageCoordAxis.Spacing.regular, n, smoosh.start, smoosh.end, smoosh.resol, null, this, false));
+
         axes.add(combined);
       }
     }
@@ -538,8 +545,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       //String subst = substCoords.get(reftimeName);
       //if (subst != null) reftimeName = subst;
 
-      axes.add(new TimeOffsetAxis(time2D.getName(), time2D.getUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.TimeOffset, atts,
-              CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, values, this, false));
+      axes.add(new TimeOffsetAxis(
+              new CoverageCoordAxisBuilder( time2D.getName(), time2D.getUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.TimeOffset, atts,
+              CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, values, this, false)));
     }
   }
 
@@ -578,8 +586,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
     // LOOK lazy eval ?
-    return new CoverageCoordAxis1D(refName, time.getTimeUdUnit(), GribIosp.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime, atts,
-            CoverageCoordAxis.DependenceType.dependent, time.getName(), spacing, length, 0, 0, 0, data, this, false);
+    return new CoverageCoordAxis1D(
+            new CoverageCoordAxisBuilder( refName, time.getTimeUdUnit(), GribIosp.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime, atts,
+            CoverageCoordAxis.DependenceType.dependent, time.getName(), spacing, length, 0, 0, 0, data, this, false));
   }
 
   private CoverageCoordAxis makeCoordAxis(CoordinateTime time) {
@@ -601,8 +610,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CDM.LONG_NAME, GribIosp.GRIB_VALID_TIME));
     atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
-    return new CoverageCoordAxis1D(time.getName(), time.getTimeUdUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.Time, atts,
-            CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, null, this, false);
+    return new CoverageCoordAxis1D(
+            new CoverageCoordAxisBuilder( time.getName(), time.getTimeUdUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.Time, atts,
+            CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, null, this, false));
   }
 
   private CoverageCoordAxis makeCoordAxis(CoordinateTimeIntv time) {
@@ -628,8 +638,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CDM.LONG_NAME, GribIosp.GRIB_VALID_TIME));
     atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
-    return new CoverageCoordAxis1D(time.getName(), time.getTimeUdUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.Time, atts,
-            CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, null, this, false);
+    return new CoverageCoordAxis1D(
+            new CoverageCoordAxisBuilder( time.getName(), time.getTimeUdUnit(), GribIosp.GRIB_VALID_TIME, DataType.DOUBLE, AxisType.Time, atts,
+            CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, null, this, false));
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -688,8 +699,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     if (desc != null) atts.addAttribute(new Attribute(CDM.LONG_NAME, desc));
     atts.addAttribute(new Attribute(CF.POSITIVE, vertCoord.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
 
-    return new CoverageCoordAxis1D(vertCoord.getName(), vertCoord.getUnit(), null, DataType.DOUBLE, axisType, atts,
-            CoverageCoordAxis.DependenceType.independent, null, spacing, n, values[0], values[values.length - 1], 0.0, values, this, false);
+    return new CoverageCoordAxis1D(
+            new CoverageCoordAxisBuilder( vertCoord.getName(), vertCoord.getUnit(), null, DataType.DOUBLE, axisType, atts,
+            CoverageCoordAxis.DependenceType.independent, null, spacing, n, values[0], values[values.length - 1], 0.0, values, this, false));
   }
 
   private CoverageCoordAxis makeCoordAxis(CoordinateEns ensCoord) {
@@ -703,9 +715,10 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     String units = ensCoord.getUnit();
     atts.addAttribute(new Attribute(CDM.UNITS, units));
 
-    return new CoverageCoordAxis1D(ensCoord.getName(), units, null, DataType.DOUBLE, AxisType.Ensemble, atts,
+    return new CoverageCoordAxis1D(
+            new CoverageCoordAxisBuilder( ensCoord.getName(), units, null, DataType.DOUBLE, AxisType.Ensemble, atts,
             CoverageCoordAxis.DependenceType.independent, null, CoverageCoordAxis.Spacing.irregularPoint, ensCoord.getSize(),
-            values[0], values[n - 1], 0.0, values, this, false);
+            values[0], values[n - 1], 0.0, values, this, false));
   }
 
   private CoverageCoordSys makeCoordSys(GribCollectionImmutable.VariableIndex gribVar, List<CoverageTransform> transforms) {
@@ -889,35 +902,32 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     CoverageCoordSysSubset coordSysSubset = orgCoordSys.subset(params);
     CoverageCoordSys subsetCoordSys = coordSysSubset.coordSys;
 
-    List<CoverageCoordAxis1D> coordsSetAxes = new ArrayList<>(); // for CoordsSet.factory()
-    boolean hasRuntime = false;
+    List<CoverageCoordAxis> coordsSetAxes = new ArrayList<>(); // for CoordsSet.factory()
 
     // this orders the coords based on the grib coords, which also orders the iterator in CoordsSet. could be different i think
     for (Coordinate gribCoord : vindex.getCoordinates()) {
 
       switch (gribCoord.getType()) {
         case runtime:
-          CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) subsetCoordSys.getAxis(AxisType.RunTime);
-          coordsSetAxes.add(runAxis);
-          hasRuntime = true;
+          CoverageCoordAxis runAxis = subsetCoordSys.getAxis(AxisType.RunTime);
+          coordsSetAxes.addAll( axisAndDependents(runAxis, subsetCoordSys));
           break;
 
         case time2D:
           if (coordSysSubset.isConstantForecast) {
-            CoverageCoordAxis1D toAxis = (CoverageCoordAxis1D) subsetCoordSys.getAxis(AxisType.TimeOffset); // aux
-            coordsSetAxes.add(toAxis);
+            CoverageCoordAxis toAxis = subsetCoordSys.getAxis(AxisType.TimeOffset); // aux
+            coordsSetAxes.addAll(axisAndDependents(toAxis, subsetCoordSys));
 
             //CoverageCoordAxis1D timeAxis = (CoverageCoordAxis1D) subsetCoordSys.getAxis(AxisType.Time); // scalar
             //coordsSetAxes.add(timeAxis);
 
           } else { // everything else is a subset on the timeOffset
-            CoverageCoordAxis1D toAxis = (CoverageCoordAxis1D) subsetCoordSys.getAxis(AxisType.TimeOffset);
-            coordsSetAxes.add(toAxis);
+            CoverageCoordAxis toAxis = subsetCoordSys.getAxis(AxisType.TimeOffset);
+            coordsSetAxes.addAll( axisAndDependents(toAxis, subsetCoordSys));
 
-            runAxis = (CoverageCoordAxis1D) subsetCoordSys.getAxis(AxisType.RunTime); // in case its an aux, for Best
-            if (!hasRuntime  && runAxis != null) // can it be null ?                  // LOOK could also try getDependent()
-              coordsSetAxes.add(runAxis);
-            hasRuntime = true;
+            //runAxis = subsetCoordSys.getAxis(AxisType.RunTime); // in case its an aux, for Best
+            //if (!hasRuntime  && runAxis != null) // can it be null ?                  // LOOK could also try getDependent()
+            //  coordsSetAxes.add(runAxis);
           }
           break;
 
@@ -929,8 +939,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
         case time:
         case timeIntv:
         case ens:
-          CoverageCoordAxis1D covAxis = (CoverageCoordAxis1D) subsetCoordSys.getAxis(gribCoord.getType().axisType);
-          coordsSetAxes.add(covAxis);
+          CoverageCoordAxis axis = subsetCoordSys.getAxis(gribCoord.getType().axisType);
+          coordsSetAxes.addAll( axisAndDependents(axis, subsetCoordSys));
           break;
       }
     }
@@ -942,12 +952,28 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     geoArrayAxes.add(subsetCoordSys.getXAxis());
     RangeIterator xRange = subsetCoordSys.getXAxis().getRange();
 
+    boolean hasruntime = false;
+    for (CoverageCoordAxis axis : coordsSetAxes )
+      if (axis.getAxisType() == AxisType.RunTime) hasruntime = true;
+    if (!hasruntime)
+      System.out.printf("HEY%n");
+
     CoordsSet coordIter = CoordsSet.factory(coordSysSubset.isConstantForecast, coordsSetAxes);
 
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
     Array data = dataReader.readData2(coordIter, yRange, xRange);
 
     return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, geoArrayAxes, subsetCoordSys.getType());
+  }
+
+  // LOOK dependent axis could get added multiple times
+  private List<CoverageCoordAxis> axisAndDependents( CoverageCoordAxis axis, CoverageCoordSys csys) {
+    List<CoverageCoordAxis> result = new ArrayList<>();
+    if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent)
+      result.add(axis);
+    for (CoverageCoordAxis dependent : csys.getDependentAxes(axis))
+      result.add(dependent);
+    return result;
   }
 
   /*

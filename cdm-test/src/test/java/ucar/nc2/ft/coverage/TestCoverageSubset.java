@@ -101,7 +101,8 @@ public class TestCoverageSubset {
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
 
-      readOne(cover, rt_val, time_val, time_offset, vert_level);
+      // Cant subset on runtime for Best, so we set to null
+      readOne(cover, null, time_val, time_offset, vert_level);
     }
   }
 

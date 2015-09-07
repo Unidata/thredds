@@ -43,11 +43,8 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 
@@ -90,74 +87,75 @@ abstract public class CoverageCoordAxis {
   protected final double endValue;
   protected final double resolution;
   protected final CoordAxisReader reader;
-  private final boolean isSubset;
+  protected final boolean isSubset;
 
-  // Look not final see setReferenceDate()
-  protected TimeHelper timeHelper; // AxisType = Time, RunTime only
-  protected String units;
-  protected CoverageCoordAxis1D dependent;
+  protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
+  protected final String units;
 
   // may be lazy eval
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
 
-  protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                              DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                              double[] values, CoordAxisReader reader, boolean isSubset) {
-    this.name = name;
-    this.units = units;
-    this.description = description;
-    this.dataType = dataType;
-    this.axisType = axisType;
-    this.attributes = atts;
-    this.dependenceType = dependenceType;
-    this.spacing = spacing;
-    this.values = values;
-    this.reader = reader; // used only if values == null
-    if (dependsOn != null && dependsOn.trim().length() > 0) {
-      List<String> temp = new ArrayList<>();
-      Collections.addAll(temp, StringUtil2.splitString(dependsOn));
-      this.dependsOn = Collections.unmodifiableList(temp);
-    } else {
-      this.dependsOn = Collections.emptyList();
-    }
+  protected CoverageCoordAxis( CoverageCoordAxisBuilder builder) {
+    this.name = builder.name;
+    this.units = builder.units;
+    this.description = builder.description;
+    this.dataType = builder.dataType;
+    this.axisType = builder.axisType;
+    this.attributes = builder.attributes;
+    this.dependenceType = builder.dependenceType;
+    this.spacing = builder.spacing;
+    this.values = builder.values;
+    this.reader = builder.reader; // used only if values == null
+    this.dependsOn = builder.dependsOn;
 
-    if (values == null) {
-      this.startValue = startValue;
-      this.endValue = endValue;
+    if (builder.values == null) {
+      this.startValue = builder.startValue;
+      this.endValue = builder.endValue;
     }  else {
-      this.startValue = values[0];
-      this.endValue = values[values.length-1];
+      this.startValue = builder.values[0];
+      this.endValue = builder.values[values.length-1];
       // could also check if regular, and change spacing
     }
 
-    if (resolution == 0.0 && ncoords > 1)
-      this.resolution = (endValue - startValue) / (ncoords - 1);
+    if (builder.resolution == 0.0 && builder.ncoords > 1)
+      this.resolution = (builder.endValue - builder.startValue) / (builder.ncoords - 1);
     else
-      this.resolution = resolution;
+      this.resolution = builder.resolution;
 
-    this.ncoords = ncoords;
-    this.isSubset = isSubset;
+    this.ncoords = builder.ncoords;
+    this.isSubset = builder.isSubset;
 
-    if (axisType == AxisType.Time || axisType == AxisType.RunTime)
-      timeHelper = TimeHelper.factory(units, atts);
-    else if (axisType == AxisType.TimeOffset)
-      timeHelper = TimeHelper.factory(null, atts);
-    else
-      timeHelper = null;
+    if (builder.timeHelper != null) {
+      this.timeHelper = builder.timeHelper;
+    } else {
+      if (axisType == AxisType.Time || axisType == AxisType.RunTime)
+        timeHelper = TimeHelper.factory(units, attributes);
+      else if (axisType == AxisType.TimeOffset)
+        timeHelper = TimeHelper.factory(null, attributes);
+      else
+        timeHelper = null;
+    }
   }
+
+  /*
+    protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
+                              DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
+                              double[] values, CoordAxisReader reader, boolean isSubset) {
+
+   */
 
   // called after everything is wired in the dataset
   protected void setDataset(CoordSysContainer dataset) {
     // NOOP
   }
 
-  // create a subset of this axis based on the SubsetParams. return this if no subset requested
+  // create a subset of this axis based on the SubsetParams. return copy if no subset requested
   abstract public CoverageCoordAxis subset(SubsetParams params);
 
   // called only on dependent axes. pass in what if depends on
   abstract public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn);
 
-  // called only on CoverageCoordAxis1D
+  // called from HorizCoordSys
   abstract public CoverageCoordAxis subset(double minValue, double maxValue);
 
   abstract public Array getCoordsAsArray() throws IOException;
@@ -362,20 +360,6 @@ abstract public class CoverageCoordAxis {
 
   public CalendarDate getRefDate() {
     return timeHelper.getRefDate();
-  }
-
-  void setReferenceDate(CalendarDate refDate) {
-    // munge the unit
-    this.timeHelper = timeHelper.setReferenceDate(refDate);
-    this.units = timeHelper.getUdUnit();
-  }
-
-  public CoverageCoordAxis1D getDependent() {
-    return dependent;
-  }
-
-  public void setDependent(CoverageCoordAxis1D dependent) {
-    this.dependent = dependent;
   }
 
   ///////////////////////////////////////////////

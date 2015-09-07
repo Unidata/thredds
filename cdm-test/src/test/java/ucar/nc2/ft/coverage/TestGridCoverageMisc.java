@@ -55,7 +55,6 @@ public class TestGridCoverageMisc {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Grid,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T00:00:00Z", null, "2015-03-01T06:00:00Z ", null, null});
 
-    /*
     // Slice Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T12:00:00Z (2) ens=0.000000 (-1) time=2015-03-04T19:30:00Z (26) vert=0.000000 (-1)
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
             "2015-03-01T12:00:00Z", null, "2015-03-04T19:30:00Z", null, null});
@@ -124,6 +123,7 @@ public class TestGridCoverageMisc {
       // check DtCoverageCS
       try (GridDataset ds = GridDataset.open(endpoint)) {
         GridDatatype dt = ds.findGridByName(gridName);
+        if (dt == null) dt = ds.findGridByName(covName);
         Assert.assertNotNull(gridName, dt);
 
         GridCoordSystem csys = dt.getCoordinateSystem();

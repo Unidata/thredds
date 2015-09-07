@@ -45,17 +45,19 @@ import java.util.List;
  * Horizontal CoordSys.
  * Must have x,y,proj (or) lat,lon.
  * May have both.
+ * Must be exactly one in a CoverageDataset
  *
  * @author caron
  * @since 7/11/2015
  */
 @Immutable
 public class HorizCoordSys {
-  public final CoverageCoordAxis xaxis, yaxis, lataxis, lonaxis;
+  public final CoverageCoordAxis1D xaxis, yaxis;
+  public final CoverageCoordAxis lataxis, lonaxis;
   public final CoverageTransform transform;
   public final boolean hasProjection, hasLatLon;
 
-  public HorizCoordSys(CoverageCoordAxis xaxis, CoverageCoordAxis yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageTransform transform) {
+  public HorizCoordSys(CoverageCoordAxis1D xaxis, CoverageCoordAxis1D yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageTransform transform) {
     this.xaxis = xaxis;
     this.yaxis = yaxis;
     this.lataxis = lataxis;
@@ -112,7 +114,8 @@ public class HorizCoordSys {
     ProjectionRect projbb = (ProjectionRect) params.get(SubsetParams.projBB);
     // if (projbb == null && llbb == null) return this;
 
-    CoverageCoordAxis xaxisSubset = null, yaxisSubset = null, lataxisSubset= null, lonaxisSubset = null;
+    CoverageCoordAxis1D xaxisSubset = null, yaxisSubset = null;
+    CoverageCoordAxis lataxisSubset= null, lonaxisSubset = null;
 
     if (projbb != null) {
       if (hasProjection) {

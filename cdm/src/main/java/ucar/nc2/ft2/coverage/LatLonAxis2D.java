@@ -34,8 +34,6 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.AttributeContainer;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
@@ -49,27 +47,37 @@ import java.util.Formatter;
  * @since 7/15/2015
  */
 public class LatLonAxis2D extends CoverageCoordAxis {
+
+  // can only be set once, needed for subsetting
   private int[] shape;
   private CoverageCoordAxis[] dependentAxes;
 
-  public LatLonAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts, DependenceType dependenceType,
+  public LatLonAxis2D( CoverageCoordAxisBuilder builder) {
+    super( builder);
+  }
+
+  /*
+    public LatLonAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts, DependenceType dependenceType,
                       String dependsOn, int[] shape, Spacing spacing, int ncoords, double startValue, double endValue, double resolution, double[] values,
                       CoordAxisReader reader, boolean isSubset) {
     super(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
     this.shape = shape;
-  }
+  } */
 
   @Override
   protected void setDataset(CoordSysContainer dataset) {
-    if (dependentAxes != null)
-      throw new RuntimeException("Cant change axis once set");
     dependentAxes = new CoverageCoordAxis[2];
+    int[] shape = new int[2];
     int count = 0;
     for (String axisName : dependsOn) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-      if (axis != null)
-        dependentAxes[count++] = axis;
+      shape[count] = axis.getNcoords();
+      dependentAxes[count++] = axis;
     }
+
+    if (this.shape != null)
+      System.out.printf("HEY%n");
+
   }
 
   @Override
@@ -91,8 +99,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   @Override
   public LatLonAxis2D subset(SubsetParams params) {  // LOOK wrong
-    return new LatLonAxis2D(name, units, description, dataType, axisType, attributes, dependenceType, getDependsOn(), shape,
-            spacing, ncoords, startValue, endValue, resolution, values, reader, true);
+    return null;
   }
 
   @Override

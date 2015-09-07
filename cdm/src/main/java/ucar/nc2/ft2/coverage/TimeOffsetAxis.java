@@ -48,12 +48,16 @@ import javax.annotation.Nonnull;
  */
 public class TimeOffsetAxis extends CoverageCoordAxis1D {
 
-  public TimeOffsetAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
+  public TimeOffsetAxis( CoverageCoordAxisBuilder builder) {
+    super(builder);
+  }
+
+  /* public TimeOffsetAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
                         CoverageCoordAxis.DependenceType dependenceType, String dependsOn, CoverageCoordAxis.Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
                         double[] values, CoordAxisReader reader, boolean isSubset) {
 
     super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
-  }
+  } */
 
   public boolean isTime2D() {
     return true;
@@ -61,9 +65,9 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
 
   // normal case already handled, this is the case where a time has been specified, and only one runtime
   @Nonnull
-  public CoverageCoordAxis1D subsetFromTime(SubsetParams params, CalendarDate runDate) {
+  public TimeOffsetAxis subsetFromTime(SubsetParams params, CalendarDate runDate) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    CoverageCoordAxis1D result = null;
+    CoverageCoordAxisBuilder result = null;
     if (params.isTrue(SubsetParams.timePresent)) {
       double offset = getOffsetInTimeUnits(runDate, CalendarDate.present());
       result = helper.subsetClosest(offset);
@@ -87,7 +91,7 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
 
     // all the offsets are reletive to rundate
     result.setReferenceDate(runDate);
-    return result;
+    return new TimeOffsetAxis(result);
   }
 
   public CalendarDate makeDate(CalendarDate runDate, double val) {
@@ -95,6 +99,18 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
     return timeHelper.makeDate(offset + val);
   }
 
+  @Override
+  public CoverageCoordAxis subset(SubsetParams params) {
+    return new TimeOffsetAxis( subsetBuilder(params));
+  }
+
+  @Override
+  public TimeOffsetAxis subset(double minValue, double maxValue) {
+    CoordAxisHelper helper = new CoordAxisHelper(this);
+    return new TimeOffsetAxis(helper.subset(minValue, maxValue));
+  }
+
+  /*
   TimeOffsetAxis subset(int ncoords, double start, double end, double[] values) {
     return new TimeOffsetAxis(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
             this.getAttributeContainer(), this.getDependenceType(), this.getDependsOn(), this.getSpacing(),
@@ -107,5 +123,6 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
             dependsOn == null ? this.getDependenceType() : DependenceType.dependent, dependsOn,
             spacing, npoints, 0, 0, this.getResolution(), values, null, true);
   }
+   */
 
 }

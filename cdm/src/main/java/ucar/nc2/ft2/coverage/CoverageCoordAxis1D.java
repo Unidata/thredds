@@ -32,9 +32,8 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import net.jcip.annotations.Immutable;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -54,24 +53,20 @@ import java.util.List;
  * @author caron
  * @since 7/15/2015
  */
+@Immutable
 public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<Object> {
 
-  // subset ??
-  protected int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
-  protected int stride = 1;
-  protected boolean isTime2D;
+  // does this really describe all subset possibilities? what about RangeScatter, composite ??
+  protected final int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
+  protected final int stride = 1;
+  protected final boolean isTime2D;
 
-  public CoverageCoordAxis1D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                                DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue,
-                                double resolution, double[] values, CoordAxisReader reader, boolean isSubset) {
+  public CoverageCoordAxis1D( CoverageCoordAxisBuilder builder) {
+    super(builder);
 
-    super(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
-
-    this.minIndex = 0;
-    this.maxIndex = ncoords-1;
-
-    if (axisType == AxisType.RunTime && dependenceType != DependenceType.dependent)
-      isTime2D = true;
+    this.minIndex = builder.minIndex;
+    this.maxIndex = builder.maxIndex;
+    this.isTime2D = builder.isTime2D;
   }
 
   public boolean isTime2D() {
@@ -80,13 +75,6 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
 
   public int getStride() {
     return stride;
-  }
-
-  // for subsetting - these are the indexes reletive to original - note cant compose !!
-  void setIndexRange(int minIndex, int maxIndex, int stride) {
-    this.minIndex = minIndex;
-    this.maxIndex = maxIndex;
-    this.stride = stride;
   }
 
   public int getMinIndex() {
@@ -101,8 +89,6 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
     f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s", indent, minIndex, maxIndex, stride, isTime2D(), isSubset());
-    if (dependent != null)
-      f.format("dependent=%s", dependent.getName());
     f.format("%n");
   }
 
@@ -280,10 +266,9 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     return result;
   }
 
-  @Override
-  public CoverageCoordAxis subset(double minValue, double maxValue) {
+  public CoverageCoordAxis1D subset(double minValue, double maxValue) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    return helper.subset(minValue, maxValue);
+    return new CoverageCoordAxis1D(helper.subset(minValue, maxValue));
   }
 
   public Object getCoordObject(int index) {
@@ -326,10 +311,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     return result;
   }
 
-    // LOOK  incomplete handling of subsetting params
-  // create a copy of the axis, with the values subsetted by the params as needed
   @Override
   public CoverageCoordAxis subset(SubsetParams params) {
+    return new CoverageCoordAxis1D( subsetBuilder(params));
+  }
+
+  // LOOK  incomplete handling of subsetting params
+  protected CoverageCoordAxisBuilder subsetBuilder(SubsetParams params) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
 
     switch (getAxisType()) {
@@ -344,14 +332,14 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
         break;
 
       case Ensemble:
-         Double eval = params.getDouble(SubsetParams.ensCoord);
-         if (eval != null) {
-           return helper.subsetClosest(eval);
-         }
+        Double eval = params.getDouble(SubsetParams.ensCoord);
+        if (eval != null) {
+          return helper.subsetClosest(eval);
+        }
         // default is all
-         break;
+        break;
 
-       // x,y gets seperately subsetted
+      // x,y gets seperately subsetted
       case GeoX:
       case GeoY:
       case Lat:
@@ -374,7 +362,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
         if (timeOffset != null)
           return helper.subsetClosest(timeOffset);
 
-          // default is all
+        // default is all
         break;
 
       case RunTime:
@@ -387,9 +375,9 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
           return helper.subset(rundateRange);
 
         if (params.isTrue(SubsetParams.runtimeAll))
-          return this;
+          break;
 
-          // default is latest
+        // default is latest
         return helper.subsetLatest();
 
       case TimeOffset:
@@ -404,29 +392,15 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
         break;
     }
 
-    // otherwise take the entire axis
-    return this;
+    // otherwise return copy the original axis
+    return new CoverageCoordAxisBuilder(this);
   }
 
   @Override
   public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn) {
-    CoordAxisHelper helper = new CoordAxisHelper(this);
-    return helper.subsetValues(dependsOn.getMinIndex(), dependsOn.getMaxIndex()); // LOOK not dealing with stride
+    CoverageCoordAxisBuilder builder = new CoordAxisHelper(this).subsetValues(dependsOn.getMinIndex(), dependsOn.getMaxIndex());
+    return new CoverageCoordAxis1D(builder); // LOOK not dealing with stride, other subsets ??
   }
-
-  CoverageCoordAxis1D subset(int ncoords, double start, double end, double[] values) {
-    return new CoverageCoordAxis1D(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
-            this.getAttributeContainer(), this.getDependenceType(), this.getDependsOn(), this.getSpacing(),
-            ncoords, start, end, this.getResolution(), values, this.reader, true);
-  }
-
-  CoverageCoordAxis1D subset(String dependsOn, Spacing spacing, int npoints, double[] values) {
-    assert values != null;
-    return new CoverageCoordAxis1D(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(), this.getAttributeContainer(),
-            dependsOn == null ? this.getDependenceType() : DependenceType.dependent, dependsOn,
-            spacing, npoints, 0, 0, this.getResolution(), values, null, true);
-  }
-
 
   @Override
   public Iterator<Object> iterator() {

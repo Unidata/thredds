@@ -81,7 +81,7 @@ import ucar.nc2.ParsedSectionSpec;
 @RequestMapping("/cdmremote")
 public class CdmRemoteController implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmRemoteController.class);
-  private static final boolean debug = false, showReq = true;
+  private static final boolean debug = false, showReq = false;
 
   @Autowired
   TdsContext tdsContext;
@@ -194,7 +194,7 @@ public class CdmRemoteController implements LastModified {
       long size = ncWriter.sendHeader(out);
       out.flush();
 
-      if (showReq)
+      if (debug)
         System.out.printf("CdmRemoteController header ok, size=%s%n", size);
     }
   }
@@ -246,7 +246,7 @@ public class CdmRemoteController implements LastModified {
       }
       out.flush();
 
-      if (showReq)
+      if (debug)
         System.out.printf("CdmRemoteController data ok, size=%s took=%d%n", size, System.currentTimeMillis() - start);
 
     } catch (IllegalArgumentException | InvalidRangeException e) { // ParsedSectionSpec failed

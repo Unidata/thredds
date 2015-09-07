@@ -25,30 +25,33 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
   public static final String vertCoord = "vertCoord";   // Double or double[] (intv)
   public static final String ensCoord = "ensCoord";   // Double
 
-  public static CoordsSet factory(boolean constantForecast, List<CoverageCoordAxis1D> axes) {
+  public static CoordsSet factory(boolean constantForecast, List<CoverageCoordAxis> axes) {
     return new CoordsSet(constantForecast, axes);
   }
 
   ///////////////////////////////////////////////////////
   private final boolean constantForecast;
-  private final List<CoverageCoordAxis1D> axes;    // all axes
-  private final int[] shape;                       // only independent
+  private final List<CoverageCoordAxis> axes;     // all axes
+  private final int[] shape;                      // only independent
 
-  private CoordsSet(boolean constantForecast, List<CoverageCoordAxis1D> axes) {
+  private CoordsSet(boolean constantForecast, List<CoverageCoordAxis> axes) {
     this.constantForecast = constantForecast;
     List<CoverageCoordAxis1D> indAxes = new ArrayList<>();
+    int rank = 0;
 
-    for (CoverageCoordAxis1D axis : axes) {
-      if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent) { // independent or scalar
-        indAxes.add( axis);
-      }
+    for (CoverageCoordAxis axis : axes) {
+      if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent)  // independent or scalar
+        indAxes.add( (CoverageCoordAxis1D) axis);
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
+        rank++;
     }
-    this.axes = indAxes;
+    this.axes = axes;
 
-    this.shape = new int[indAxes.size()];
+    this.shape = new int[rank];
     int count = 0;
     for (CoverageCoordAxis1D axis : indAxes) {
-      shape[count++] = axis.getNcoords();
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
+        shape[count++] = axis.getNcoords();
     }
   }
 
@@ -111,30 +114,32 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
       Map<String, Object> result = new HashMap<>();
       int odoIndex = 0;
       CalendarDate runtime = null;
-      for (CoverageCoordAxis1D axis : axes) {
+      for (CoverageCoordAxis axis : axes) {
+        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
+        CoverageCoordAxis1D axis1D = (CoverageCoordAxis1D) axis;
+
         int coordIdx = (axis.getDependenceType() == CoverageCoordAxis.DependenceType.scalar) ? 0 : odo[odoIndex];
-        Object coord = axis.getCoordObject(coordIdx); // CalendarDate (runtime), Double or double{} (interval)
+        Object coord = axis1D.getCoordObject(coordIdx); // CalendarDate (runtime), Double or double{} (interval)
 
         if (axis.getAxisType() == AxisType.RunTime) {
           runtime = (CalendarDate) coord;
           result.put(runDate, runtime);
 
           if (constantForecast) {
-            CoverageCoordAxis1D timeOffsetCF = axis.getDependent();
-            if (timeOffsetCF != null && timeOffsetCF.getAxisType() == AxisType.TimeOffset) {
+            CoverageCoordAxis1D timeOffsetCF = findDependent(axis, AxisType.TimeOffset);
+            if (timeOffsetCF != null) {
               addAdjustedTimeCoords(result, timeOffsetCF, coordIdx, runtime);
             }
           }
 
         } else if (axis.getAxisType() == AxisType.Time) {
-
-          CoverageCoordAxis1D runtimeForBest = axis.getDependent();
-          if (runtimeForBest != null && runtimeForBest.getAxisType() == AxisType.RunTime) {
+          CoverageCoordAxis1D runtimeForBest = findDependent(axis, AxisType.RunTime);
+          if (runtimeForBest != null) {
             runtime = (CalendarDate) runtimeForBest.getCoordObject(coordIdx); // CalendarDate
             result.put(runDate, runtime);
           }
-
-          addAdjustedTimeCoords(result, axis, coordIdx, runtime);
+          assert runtime != null;
+          addAdjustedTimeCoords(result, axis1D, coordIdx, runtime);
         }
 
         else if (axis.getAxisType().isVert())
@@ -145,7 +150,7 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
 
         else if (!constantForecast && axis.getAxisType() == AxisType.TimeOffset) {
           result.put(timeOffsetCoord, coord);
-          double val = axis.isInterval() ? (axis.getCoordEdge1(coordIdx) + axis.getCoordEdge2(coordIdx)) / 2.0  : axis.getCoord(coordIdx);
+          double val = axis.isInterval() ? (axis1D.getCoordEdge1(coordIdx) + axis1D.getCoordEdge2(coordIdx)) / 2.0  : axis1D.getCoord(coordIdx);
           result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, val)); // validation
         }
 
@@ -176,5 +181,18 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
       result.put(timeOffsetCoord, adjustVal);
       result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, adjustVal)); // validation
     }
+  }
+
+  // find the dependent axis that depend on independentAxis
+  private CoverageCoordAxis1D  findDependent( CoverageCoordAxis independentAxis, AxisType axisType) {
+    for (CoverageCoordAxis axis : axes) {
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
+        for (String axisName : axis.dependsOn) {
+          if (axisName.equalsIgnoreCase(independentAxis.getName()) && axis.getAxisType() == axisType)
+            return (CoverageCoordAxis1D) axis;
+        }
+      }
+    }
+    return null;
   }
 }

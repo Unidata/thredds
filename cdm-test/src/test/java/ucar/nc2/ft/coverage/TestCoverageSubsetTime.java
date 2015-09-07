@@ -397,6 +397,68 @@ public class TestCoverageSubsetTime {
     }
   }
 
+  @Test
+  public void testBestTimeCoord() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String covName = "Temperature_altitude_above_msl";
+
+    System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      params.set(SubsetParams.time, CalendarDate.parseISOformat(null, "2015-03-03T00:00:00Z"));
+      params.set(SubsetParams.vertCoord, 3658.0);
+      System.out.printf("  subset %s%n", params);
+
+      GeoReferencedArray geo = cover.readData(params);
+
+      // should not be missing !
+      assert !Float.isNaN(geo.getData().getFloat(0));
+
+      Array data = geo.getData();
+      Index ai = data.getIndex();
+      float testValue = data.getFloat(ai.set(0, 0, 0, 0));
+      Assert.assertEquals(244.3, testValue, testValue * Misc.maxReletiveError);
+    }
+  }
+
+  @Test
+  public void testBestTimeOffsetCoord() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String covName = "Temperature_altitude_above_msl";
+
+    System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      params.set(SubsetParams.timeOffset, 48.0);
+      params.set(SubsetParams.vertCoord, 3658.0);
+      System.out.printf("  subset %s%n", params);
+
+      GeoReferencedArray geo = cover.readData(params);
+
+      // should not be missing !
+      assert !Float.isNaN(geo.getData().getFloat(0));
+
+      Array data = geo.getData();
+      Index ai = data.getIndex();
+      float testValue = data.getFloat(ai.set(0, 0, 3, 0));
+      Assert.assertEquals(250.5, testValue, testValue * Misc.maxReletiveError);
+    }
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////
   // ENsemble
 

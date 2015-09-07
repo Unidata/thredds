@@ -88,8 +88,8 @@ public class GeotiffWriter implements AutoCloseable {
     CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
     CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
 
-    // latlon coord does not need to be scaled
-    double scaler = (gcs.isLatLon()) ? 1.0 : 1000.0;
+    // units may need to be scaled to meters
+    double scaler = (xaxis.getUnitsString().equalsIgnoreCase("km")) ? 1000.0 : 1.0;
 
     // data must go from top to bottom
     double xStart = xaxis.getCoordEdge(0) * scaler;
@@ -560,7 +560,7 @@ public class GeotiffWriter implements AutoCloseable {
     CoverageCoordAxis1D yaxis = (CoverageCoordAxis1D) gcs.getYAxis();
 
     // latlon coord does not need to be scaled
-    double scaler = (proj instanceof LatLonProjection) ? 1.0 : 1000.0;
+    double scaler = (xaxis.getUnits().equalsIgnoreCase("km")) ? 1000.0 : 1.0;
 
     // data must go from top to bottom
     double xStart = xaxis.getCoordEdge1(0) * scaler;

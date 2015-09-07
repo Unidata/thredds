@@ -87,6 +87,7 @@ public class TimeHelper {
     this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
   }
 
+  // copy on modify
   public TimeHelper setReferenceDate(CalendarDate refDate) {
     CalendarDateUnit cdUnit = CalendarDateUnit.of(cal, dateUnit.getTimeUnit().getField(), refDate);
     return new TimeHelper(cal, cdUnit);
@@ -126,6 +127,8 @@ public class TimeHelper {
   }
 
   public CalendarDate getRefDate() {
+    if (refDate == null)
+      System.out.printf("HEY%n");
     return refDate;
   }
 
@@ -144,6 +147,8 @@ public class TimeHelper {
   }
 
   public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
+    if (start == null)
+      System.out.printf("HEY%n");
     return start.add(addTo, dateUnit.getTimeUnit().getField());
   }
 

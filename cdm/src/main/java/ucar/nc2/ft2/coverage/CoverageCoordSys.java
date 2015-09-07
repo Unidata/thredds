@@ -39,9 +39,7 @@ import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * A Coverage Coordinate System
@@ -65,6 +63,7 @@ public class CoverageCoordSys {
   protected CoordSysContainer dataset;  // almost immutable, need to wire these in after the constructor
   private HorizCoordSys horizCoordSys;  // required
   private Time2DCoordSys time2DCoordSys;// optional
+  private Map<String, List<CoverageCoordAxis>> dependentMap;
 
   private final String name;
   private final List<String> axisNames;        // note not in order (?)
@@ -90,6 +89,27 @@ public class CoverageCoordSys {
     if (this.dataset != null) throw new RuntimeException("Cant change dataset once set");
     this.dataset = dataset;
 
+    // find dependent axes
+    dependentMap = new HashMap<>();
+    for (CoverageCoordAxis axis : getAxes()) {
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
+        for (String indAxisName : axis.dependsOn) {
+          CoverageCoordAxis independentAxis = dataset.findCoordAxis(indAxisName);
+          if (independentAxis == null)
+            throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " NOT FOUND");
+          if (!axisNames.contains(indAxisName))
+            throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in CoordSys");
+
+          List<CoverageCoordAxis> dependents = dependentMap.get(indAxisName);
+          if (dependents == null) {
+            dependents = new ArrayList<>();
+            dependentMap.put(indAxisName, dependents);
+          }
+          dependents.add(axis);
+        }
+      }
+    }
+
     // see if theres a Time2DCoordSys
     TimeOffsetAxis timeOffsetAxis = null;
     CoverageCoordAxis1D runtimeAxis = null;
@@ -103,14 +123,19 @@ public class CoverageCoordSys {
         timeOffsetAxis = (TimeOffsetAxis) axis;
       }
       if (axis.getAxisType() == AxisType.RunTime) {
-        if (runtimeAxis != null) throw new RuntimeException("Cant have multiple RunTime axes in a CoverageCoordSys");
+        if (runtimeAxis != null)
+          throw new RuntimeException("Cant have multiple RunTime axes in a CoverageCoordSys");
         runtimeAxis = (CoverageCoordAxis1D) axis;
       }
     }
 
+    if (runtimeAxis == null && timeOffsetAxis != null) {
+      throw new RuntimeException("TimeOffset Axis must have a RunTime axis in a CoverageCoordSys");
+    }
+
     if (runtimeAxis != null && timeOffsetAxis != null) {
       if (this.time2DCoordSys != null)
-        throw new RuntimeException("Cant have multipe Time2DCoordSys in a CoverageCoordSys");
+        throw new RuntimeException("Cant have multiple Time2DCoordSys in a CoverageCoordSys");
       time2DCoordSys = new Time2DCoordSys(runtimeAxis, timeOffsetAxis);
     }
   }
@@ -189,7 +214,7 @@ public class CoverageCoordSys {
     if (result == null)
       result = getAxis(AxisType.Lon);
     if (result == null)
-      throw new IllegalArgumentException("Cant find X axis for coordsys "+getName());
+      throw new IllegalArgumentException("Cant find X axis for coordsys " + getName());
     return result;
   }
 
@@ -198,16 +223,16 @@ public class CoverageCoordSys {
     if (result == null)
       result = getAxis(AxisType.Lat);
     if (result == null)
-      throw new IllegalArgumentException("Cant find Y axis for coordsys "+getName());
+      throw new IllegalArgumentException("Cant find Y axis for coordsys " + getName());
     return result;
   }
 
   public CoverageCoordAxis getZAxis() {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-       if (axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.Height || axis.getAxisType() == AxisType.Pressure)
-         return axis;
-     }
+      if (axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.Height || axis.getAxisType() == AxisType.Pressure)
+        return axis;
+    }
     return null;
   }
 
@@ -222,11 +247,11 @@ public class CoverageCoordSys {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
       if (axis == null)
-        throw new IllegalStateException("Cant find "+axisName);
+        throw new IllegalStateException("Cant find " + axisName);
       else if (axis.getAxisType() == type) {
-         return axis;
-       }
-     }
+        return axis;
+      }
+    }
     return null;
   }
 
@@ -239,9 +264,9 @@ public class CoverageCoordSys {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
       if (axis == null)
-        throw new IllegalStateException("Cant find "+axisName);
+        throw new IllegalStateException("Cant find " + axisName);
       result.add(axis);
-     }
+    }
     return result;
   }
 
@@ -277,36 +302,22 @@ public class CoverageCoordSys {
     private MyCoordSysContainer(List<CoverageCoordAxis> axes, List<CoverageTransform> transforms) {
       this.axes = axes;
       this.transforms = transforms;
-
-      // wire dependencies
-      for (CoverageCoordAxis axis : axes) {
-        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
-          for (String axisName : axis.dependsOn) {
-            CoverageCoordAxis indAxis = findCoordAxis(axisName);
-            if (indAxis == null)
-              throw new RuntimeException("axis "+axis.getName()+" has dependsOn cant find= " + axisName);
-            if (indAxis.getDependent() != null)
-              throw new RuntimeException("indAxis "+indAxis.getName()+" already has dependent= " + indAxis.getDependent().getName());
-            indAxis.setDependent((CoverageCoordAxis1D) axis);
-          }
-        }
-      }
     }
 
     @Override
     public CoverageTransform findCoordTransform(String transformName) {
-     for (CoverageTransform ct : transforms)
-       if (ct.getName().equalsIgnoreCase(transformName)) return ct;
-     return null;
-   }
+      for (CoverageTransform ct : transforms)
+        if (ct.getName().equalsIgnoreCase(transformName)) return ct;
+      return null;
+    }
 
     @Override
-   public CoverageCoordAxis findCoordAxis(String axisName) {
-     for (CoverageCoordAxis axis : axes) {
-       if (axis.getName().equalsIgnoreCase(axisName)) return axis;
-     }
-     return null;
-   }
+    public CoverageCoordAxis findCoordAxis(String axisName) {
+      for (CoverageCoordAxis axis : axes) {
+        if (axis.getName().equalsIgnoreCase(axisName)) return axis;
+      }
+      return null;
+    }
   }
 
   ////////////////////////////////////////////////
@@ -319,15 +330,16 @@ public class CoverageCoordSys {
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
       if (axis.getAxisType().isHoriz() || axis.isTime2D()) continue;
 
-      CoverageCoordAxis subsetInd = axis.subset(params);
+      CoverageCoordAxis1D subsetInd = (CoverageCoordAxis1D) axis.subset(params); // independent always 1D
       subsetAxes.add(subsetInd);
-      CoverageCoordAxis1D dependent = axis.getDependent();
-      if (dependent != null)
-        subsetAxes.add(dependent.subsetDependent( (CoverageCoordAxis1D) subsetInd));
+
+      // subset any dependent axes
+      for (CoverageCoordAxis dependent : getDependentAxes(subsetInd))
+        subsetAxes.add(dependent.subsetDependent(subsetInd));
     }
 
     if (time2DCoordSys != null) {
-      subsetAxes.addAll( time2DCoordSys.subset(params, result));
+      subsetAxes.addAll(time2DCoordSys.subset(params, result));
     }
 
     HorizCoordSys subsetHcs = horizCoordSys.subset(params);
@@ -346,5 +358,9 @@ public class CoverageCoordSys {
     return result;
   }
 
+  public List<CoverageCoordAxis> getDependentAxes(CoverageCoordAxis indAxis) {
+    List<CoverageCoordAxis> result = dependentMap.get(indAxis.getName());
+    return (result == null) ? new ArrayList<>() : result;
+  }
 
 }
