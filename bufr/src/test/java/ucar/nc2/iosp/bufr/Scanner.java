@@ -751,8 +751,6 @@ public class Scanner {
   static private class CompareDDS implements Comparator<Counter> {
 
     public int compare(Counter o1, Counter o2) {
-      if ((o1.dkey == null) || (o2.dkey == null))
-        System.out.println("HEY");
       return o1.dkey.fxy - o2.dkey.fxy;
     }
   }

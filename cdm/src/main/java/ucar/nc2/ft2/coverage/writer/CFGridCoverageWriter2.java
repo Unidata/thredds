@@ -34,13 +34,16 @@ package ucar.nc2.ft2.coverage.writer;
 
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -197,9 +200,12 @@ public class CFGridCoverageWriter2 {
 
     // write the grid data
     for (Coverage grid : subsetDataset.getCoverages()) {
-      // LOOK - we need to call readData on the original
+      // we need to call readData on the original
       Coverage gridOrg = gdsOrg.findCoverage(grid.getName());
-      GeoReferencedArray array = gridOrg.readData(subsetParams);  // LOOK must conform to whatever axis.getCoordsAsArray() returns
+      GeoReferencedArray array = gridOrg.readData(subsetParams);
+
+      // test conform to whatever axis.getCoordsAsArray() returns
+      checkConformance(gridOrg, grid, array);
 
       Variable v = writer.findVariable(grid.getName());
       if (show) System.out.printf("CFGridCoverageWriter write grid %s%n", v.getNameAndDimensions());
@@ -270,9 +276,10 @@ public class CFGridCoverageWriter2 {
       }
 
       // annotate Variable for CF
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append(grid.getCoordSys().getAxisNames());
-      if (addLatLon) sbuff.append("lat lon");
+      Formatter sbuff = new Formatter();
+      for (String s : grid.getCoordSys().getAxisNames())
+        sbuff.format("%s ", s);
+      // if (addLatLon) sbuff.format("lat lon"); LOOK
       newV.addAttribute(new Attribute(CF.COORDINATES, sbuff.toString()));
 
       // add reference to coordinate transform variables
@@ -312,5 +319,29 @@ public class CFGridCoverageWriter2 {
       }
     }
   }
+
+  private void checkConformance(Coverage gridOrg, Coverage gridSubset, GeoReferencedArray geo) {
+    CoverageCoordSys csys = gridSubset.getCoordSys();
+
+    CoverageCoordSys csysData = geo.getCoordSysForData();
+
+    System.out.printf("    csys=%s%n", csys);
+    System.out.printf("csysData=%s%n", csysData);
+
+    Section s = new Section(csys.getShape());
+    Section so = new Section(csysData.getShape());
+
+    boolean ok = s.conformal(so);
+
+    int[] dataShape = geo.getData().getShape();
+    System.out.printf("dataShape=%s%n", Misc.showInts(dataShape));
+    Section sdata = new Section(dataShape);
+    boolean ok2 = s.conformal(sdata);
+
+    if (!ok || !ok2)
+      System.out.printf("CFGridCoverageWriter2 checkConformance fails%n");
+
+  }
+
 }
 

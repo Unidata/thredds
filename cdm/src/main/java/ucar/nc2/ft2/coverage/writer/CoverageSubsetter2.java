@@ -56,9 +56,7 @@ public class CoverageSubsetter2 {
     // Get subset of original objects that are needed by the requested grids
     List<Coverage> orgCoverages = new ArrayList<>();
     Map<String, CoverageCoordSys> orgCoordSys = new HashMap<>();  // eliminate duplicates
-    // Map<String, CoverageCoordAxis> orgCoordAxis = new HashMap<>();
     Set<String> coordTransformSet = new HashSet<>();              // eliminate duplicates
-    // Set<HorizCoordSys> horizSet = new HashSet<>();
 
     for (String gridName : gridsWanted) {
       Coverage orgGrid =  org.findCoverage(gridName);
@@ -66,20 +64,16 @@ public class CoverageSubsetter2 {
       orgCoverages.add(orgGrid);
       CoverageCoordSys cs = orgGrid.getCoordSys();
       orgCoordSys.put(cs.getName(), cs);
-      //for (CoverageCoordAxis axis : cs.getAxes())
-      //  orgCoordAxis.put(axis.getName(), axis);
       for (String tname : cs.getTransformNames())
         coordTransformSet.add(tname);
-      //if (cs.getHorizCoordSys() != null)
-      //  horizSet.add(cs.getHorizCoordSys());
     }
-
-
 
     // subset all coordSys, and eliminate duplicate axes.
     Map<String, CoverageCoordAxis> subsetCoordAxes = new HashMap<>();
+    Map<String, CoverageCoordSys> subsetCFCoordSys = new HashMap<>();
     for (CoverageCoordSys orgCs : orgCoordSys.values()) {
-      CoverageCoordSysSubset coordSysSubset = orgCs.subset(params);
+      CoverageCoordSysSubset coordSysSubset = orgCs.subset(params, true); // subsetCF make do some CF tweaks, not needed in regular subset
+      subsetCFCoordSys.put(orgCs.getName(), coordSysSubset.coordSys);
       for (CoverageCoordAxis axis : coordSysSubset.coordSys.getAxes()) {
         subsetCoordAxes.put(axis.getName(), axis);  // eliminate duplicates
       }
@@ -91,14 +85,18 @@ public class CoverageSubsetter2 {
     List<Coverage> coverages = new ArrayList<>();
     List<CoverageTransform> coordTransforms = new ArrayList<>();
 
-    for (CoverageCoordSys orgCs : orgCoordSys.values())
-      coordSys.add( new CoverageCoordSys(orgCs)); // must use a copy, because of setDataset()
+    for (CoverageCoordSys subsetCs : subsetCFCoordSys.values()) {
+      coordSys.add( subsetCs);
+    }
 
     for (CoverageCoordAxis subsetAxis : subsetCoordAxes.values())
-      coordAxes.add( subsetAxis); // may be a copy or original, because immutable
+      coordAxes.add( subsetAxis);               // must use a copy, because of setDataset()
 
-    for (Coverage orgCov : orgCoverages)
-      coverages.add( new Coverage(orgCov, null)); // must use a copy, because of setCoordSys()
+    for (Coverage orgCov : orgCoverages) {
+      // must substitute subsetCS
+      CoverageCoordSys subsetCs = subsetCFCoordSys.get(orgCov.getCoordSysName());
+      coverages.add( new Coverage(orgCov, subsetCs)); // must use a copy, because of setCoordSys()
+    }
 
     for (String tname : coordTransformSet) {
       CoverageTransform t = org.findCoordTransform(tname); // these are truly immutable, so can use originals

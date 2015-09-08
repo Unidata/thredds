@@ -36,6 +36,7 @@ import net.jcip.annotations.Immutable;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
@@ -64,14 +65,15 @@ public class CoverageCoordSys {
   private HorizCoordSys horizCoordSys;  // required
   private Time2DCoordSys time2DCoordSys;// optional
   private Map<String, List<CoverageCoordAxis>> dependentMap;
+  private boolean immutable;
 
   private final String name;
-  private final List<String> axisNames;        // note not in order (?)
+  private final List<String> axisNames;        // must be in order
   private final List<String> transformNames;
   private final Type type;
 
   public CoverageCoordSys(String name, List<String> axisNames, List<String> transformNames, Type type) {
-    this.name = name;
+    this.name = name != null ? name : makeCoordSysName(axisNames);
     this.axisNames = axisNames;
     this.transformNames = transformNames;
     this.type = type;
@@ -85,8 +87,13 @@ public class CoverageCoordSys {
     this.type = from.getType();
   }
 
+  public void setImmutable() {
+    this.immutable = true;
+  }
+
   public void setDataset(CoordSysContainer dataset) {
-    if (this.dataset != null) throw new RuntimeException("Cant change dataset once set");
+    if (immutable && this.dataset != null)
+      throw new RuntimeException("Cant change CoverageCoordSys dataset once set immutable");
     this.dataset = dataset;
 
     // find dependent axes
@@ -134,14 +141,14 @@ public class CoverageCoordSys {
     }
 
     if (runtimeAxis != null && timeOffsetAxis != null) {
-      if (this.time2DCoordSys != null)
+      if (immutable && this.time2DCoordSys != null)
         throw new RuntimeException("Cant have multiple Time2DCoordSys in a CoverageCoordSys");
       time2DCoordSys = new Time2DCoordSys(runtimeAxis, timeOffsetAxis);
     }
   }
 
   void setHorizCoordSys(HorizCoordSys horizCoordSys) {
-    if (this.horizCoordSys != null) throw new RuntimeException("Cant change horizCoordSys once set");
+    if (immutable && this.horizCoordSys != null) throw new RuntimeException("Cant change CoverageCoordSys horizCoordSys once set immutable");
     this.horizCoordSys = horizCoordSys;
   }
 
@@ -197,13 +204,12 @@ public class CoverageCoordSys {
     f.format(" has coordVars:");
     for (String v : axisNames)
       f.format("%s, ", v);
-    if (transformNames != null) {
+    f.format(" (shape=[%s])", Misc.showInts(getShape()));
+    if (transformNames != null && !transformNames.isEmpty()) {
       f.format("; has transforms:");
       for (String t : transformNames)
         f.format("%s, ", t);
     }
-    f.format("%n");
-
     indent.decr();
   }
 
@@ -270,11 +276,20 @@ public class CoverageCoordSys {
     return result;
   }
 
+  /**
+   * Using independent axes only
+   */
   public int[] getShape() {
-    int[] result = new int[axisNames.size()];
+    int rank = 0;
+    for (CoverageCoordAxis axis : getAxes())
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) rank++;
+
+    int[] result = new int[rank];
     int count = 0;
     for (CoverageCoordAxis axis : getAxes())
-      result[count++] = axis.getNcoords();
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
+        result[count++] = axis.getNcoords();
+
     return result;
   }
 
@@ -322,7 +337,7 @@ public class CoverageCoordSys {
 
   ////////////////////////////////////////////////
 
-  public CoverageCoordSysSubset subset(SubsetParams params) throws InvalidRangeException {
+  public CoverageCoordSysSubset subset(SubsetParams params, boolean makeCFcompliant) throws InvalidRangeException {
     CoverageCoordSysSubset result = new CoverageCoordSysSubset();
 
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
@@ -339,17 +354,19 @@ public class CoverageCoordSys {
     }
 
     if (time2DCoordSys != null) {
-      subsetAxes.addAll(time2DCoordSys.subset(params, result));
+      subsetAxes.addAll( time2DCoordSys.subset(params, result, makeCFcompliant));
     }
 
     HorizCoordSys subsetHcs = horizCoordSys.subset(params);
     subsetAxes.addAll(subsetHcs.getCoordAxes());
 
+    Collections.sort(subsetAxes);
+
     List<String> names = new ArrayList<>();
-    for (CoverageCoordAxis axis : subsetAxes) {
+    for (CoverageCoordAxis axis : subsetAxes)
       names.add(axis.getName());
-    }
-    CoverageCoordSys resultCoordSys = new CoverageCoordSys(makeCoordSysName(names), names, this.getTransformNames(), this.getType());
+
+    CoverageCoordSys resultCoordSys = new CoverageCoordSys(null, names, this.getTransformNames(), this.getType());
     MyCoordSysContainer fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
     resultCoordSys.setDataset(fakeDataset);
     resultCoordSys.setHorizCoordSys(subsetHcs);

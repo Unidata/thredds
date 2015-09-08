@@ -157,4 +157,9 @@ public class TimeHelper {
     if (cal == null) return null;
     return ucar.nc2.time.Calendar.get(cal);
   }
+
+  public Calendar getCalendar() {
+    return cal;
+  }
+
 }

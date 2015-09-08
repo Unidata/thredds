@@ -318,6 +318,9 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
 
   // LOOK  incomplete handling of subsetting params
   protected CoverageCoordAxisBuilder subsetBuilder(SubsetParams params) {
+    if (params == null)
+      return new CoverageCoordAxisBuilder(this);
+
     CoordAxisHelper helper = new CoordAxisHelper(this);
 
     switch (getAxisType()) {

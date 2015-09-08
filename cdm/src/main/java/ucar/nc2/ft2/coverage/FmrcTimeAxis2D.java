@@ -88,6 +88,9 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
   @Override
   public CoverageCoordAxis subset(SubsetParams params) {
+    if (params == null)
+      return new FmrcTimeAxis2D( new CoverageCoordAxisBuilder(this));
+
     CoordAxisHelper helper = new CoordAxisHelper(runCoord);
     int run_index = -1;
 

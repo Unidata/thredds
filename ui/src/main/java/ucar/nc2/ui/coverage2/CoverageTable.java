@@ -448,11 +448,14 @@ public class CoverageTable extends JPanel {
       coordTrans = buff.toString();
 
       for (CoverageCoordAxis axis : gcs.getAxes()) {
-        if (axis.getAxisType() == AxisType.RunTime) runtimeName = axis.getName();
-        else if (axis.getAxisType().isTime()) timeName = axis.getName();
-        else if (axis.getAxisType() == AxisType.Ensemble) ensName = axis.getName();
-        else if (axis.getAxisType().isVert()) vertName = axis.getName();
         if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) nIndAxis++;
+
+        AxisType axisType = axis.getAxisType();
+        if (axisType == null) continue;
+        if (axisType == AxisType.RunTime) runtimeName = axis.getName();
+        else if (axisType.isTime()) timeName = axis.getName();
+        else if (axisType == AxisType.Ensemble) ensName = axis.getName();
+        else if (axisType.isVert()) vertName = axis.getName();
       }
 
       for (Coverage cov : coverageDataset.getCoverages()) {

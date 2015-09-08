@@ -67,31 +67,31 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
   @Nonnull
   public TimeOffsetAxis subsetFromTime(SubsetParams params, CalendarDate runDate) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    CoverageCoordAxisBuilder result = null;
+    CoverageCoordAxisBuilder builder = null;
     if (params.isTrue(SubsetParams.timePresent)) {
       double offset = getOffsetInTimeUnits(runDate, CalendarDate.present());
-      result = helper.subsetClosest(offset);
+      builder = helper.subsetClosest(offset);
     }
 
     CalendarDate dateWanted = (CalendarDate) params.get(SubsetParams.time);
     if (dateWanted != null) {                           // convertFrom, convertTo
       double offset = getOffsetInTimeUnits(runDate, dateWanted);
-      result =  helper.subsetClosest(offset);
+      builder =  helper.subsetClosest(offset);
     }
 
     CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
     if (dateRange != null) {
       double min = getOffsetInTimeUnits(runDate, dateRange.getStart());
       double max = getOffsetInTimeUnits(runDate, dateRange.getEnd());
-      result =  helper.subset(min, max); // LOOK no stride
+      builder =  helper.subset(min, max); // LOOK no stride
     }
 
-    if (result == null)
+    if (builder == null)
       throw new IllegalStateException();
 
     // all the offsets are reletive to rundate
-    result.setReferenceDate(runDate);
-    return new TimeOffsetAxis(result);
+    builder.setReferenceDate(runDate);
+    return new TimeOffsetAxis(builder);
   }
 
   public CalendarDate makeDate(CalendarDate runDate, double val) {

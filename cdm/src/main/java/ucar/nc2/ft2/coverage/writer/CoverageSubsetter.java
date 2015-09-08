@@ -103,8 +103,9 @@ public class CoverageSubsetter {
     for (CoverageCoordSys orgCs : orgCoordSys.values())
       coordSys.add( new CoverageCoordSys(orgCs));
 
-    for (Coverage orgCov : orgCoverages)
-      coverages.add( new Coverage(orgCov, null));
+    for (Coverage orgCov : orgCoverages) {
+      coverages.add(new Coverage(orgCov, null));
+    }
 
     for (String tname : coordTransformSet) {
       CoverageTransform t = org.findCoordTransform(tname);

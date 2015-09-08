@@ -154,10 +154,10 @@ public class HorizCoordSys {
       }
     }
 
-    if (xaxisSubset == null) xaxisSubset = xaxis;
-    if (yaxisSubset == null) yaxisSubset = yaxis;
-    if (lataxisSubset == null) lataxisSubset = lataxis;
-    if (lonaxisSubset == null) lonaxisSubset = lonaxis;
+    if (xaxisSubset == null && xaxis != null) xaxisSubset = (CoverageCoordAxis1D) xaxis.subset( null);
+    if (yaxisSubset == null && yaxis != null) yaxisSubset = (CoverageCoordAxis1D) yaxis.subset( null);
+    if (lataxisSubset == null && lataxis != null) lataxisSubset = lataxis.subset( null);
+    if (lonaxisSubset == null && lonaxis != null) lonaxisSubset = lonaxis.subset( null);
 
     return new HorizCoordSys(xaxisSubset, yaxisSubset, lataxisSubset, lonaxisSubset, transform);
   }

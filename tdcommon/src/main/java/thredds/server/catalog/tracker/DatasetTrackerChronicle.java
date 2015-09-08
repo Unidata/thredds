@@ -133,7 +133,7 @@ public class DatasetTrackerChronicle implements DatasetTracker {
 
       String accessPath = access.getUrlPath();
       if (accessPath == null)
-        System.out.println("HEY");
+        System.out.println("HEY trackDataset has null accessPath");
       if (path == null) path = accessPath;
       else if (!path.equals(access.getUrlPath())) {
         System.out.printf(" paths differ: %s%n %s%n%n", path, accessPath);

@@ -40,11 +40,14 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 
@@ -55,7 +58,7 @@ import java.util.List;
  * @since 7/11/2015
  */
 @Immutable
-abstract public class CoverageCoordAxis {
+abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis> {
   static private final Logger logger = LoggerFactory.getLogger(CoverageCoordAxis.class);
 
   public enum Spacing {
@@ -106,7 +109,7 @@ abstract public class CoverageCoordAxis {
     this.spacing = builder.spacing;
     this.values = builder.values;
     this.reader = builder.reader; // used only if values == null
-    this.dependsOn = builder.dependsOn;
+    this.dependsOn = builder.dependsOn == null ? Collections.emptyList() : builder.dependsOn;
 
     if (builder.values == null) {
       this.startValue = builder.startValue;
@@ -137,19 +140,17 @@ abstract public class CoverageCoordAxis {
     }
   }
 
-  /*
-    protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                              DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                              double[] values, CoordAxisReader reader, boolean isSubset) {
-
-   */
-
   // called after everything is wired in the dataset
   protected void setDataset(CoordSysContainer dataset) {
     // NOOP
   }
 
-  // create a subset of this axis based on the SubsetParams. return copy if no subset requested
+  @Override
+  public int compareTo(CoverageCoordAxis o) {
+    return axisType.axisOrder() - o.axisType.axisOrder();
+  }
+
+  // create a subset of this axis based on the SubsetParams. return copy if no subset requested, or params = null
   abstract public CoverageCoordAxis subset(SubsetParams params);
 
   // called only on dependent axes. pass in what if depends on
@@ -275,16 +276,18 @@ abstract public class CoverageCoordAxis {
   }
 
   public void toString(Formatter f, Indent indent) {
-    f.format("%sCoordAxis '%s' (%s)%n", indent, name, getClass().getName());
+    f.format("%sCoordAxis '%s' (%s) ", indent, name, getClass().getName());
     indent.incr();
-    f.format("%saxisType=%s dataType=%s units='%s' desc='%s'", indent, axisType, dataType, units, description);
-    if (timeHelper != null) f.format(" refDate=%s", timeHelper.getRefDate());
+
+    f.format("%s", getDependenceType());
+    if (dependsOn != null && dependsOn.size() > 0) {
+      f.format(" :");
+      for (String s : dependsOn) f.format(" %s", s);
+    }
     f.format("%n");
 
-    f.format("%s%s", indent, getDependenceType());
-    if (dependsOn.size() > 0) f.format(" :");
-    for (String s : dependsOn)
-      f.format(" %s", s);
+    f.format("%saxisType=%s dataType=%s units='%s' desc='%s'", indent, axisType, dataType, units, description);
+    if (timeHelper != null) f.format(" refDate=%s", timeHelper.getRefDate());
     f.format("%n");
 
     AttributeContainerHelper.show(attributes, indent, f);
@@ -362,6 +365,10 @@ abstract public class CoverageCoordAxis {
     return timeHelper.getRefDate();
   }
 
+  public Calendar getCalendar() {
+    return timeHelper.getCalendar();
+  }
+
   ///////////////////////////////////////////////
 
   // will return null when isRegular
@@ -374,6 +381,6 @@ abstract public class CoverageCoordAxis {
           logger.error("Failed to read " + name, e);
         }
     }
-    return values;
+    return values == null ? null : Arrays.copyOf(values, values.length); // cant allow values array to escape, must be immutable
   }
 }

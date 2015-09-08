@@ -95,7 +95,7 @@ public class GribCoverageValidator implements GribDataValidator {
     if (gr.getPDS().isTimeInterval()) {
       TimeCoord.TinvDate tinv = cust.getForecastTimeInterval(gr);
       if (tinv.getStart().isAfter(wantTimeOffset))
-        System.out.printf("HEY%n");
+        System.out.printf("HEY validateGrib2%n");
       Assert.assertTrue("time coord lower", !tinv.getStart().isAfter(wantTimeOffset));          // lower <= time
       Assert.assertTrue("time coord upper", !tinv.getEnd().isBefore(wantTimeOffset));         // upper >= time
 

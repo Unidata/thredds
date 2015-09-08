@@ -923,7 +923,7 @@ public class Section {
    *
    * @param shape the given shape.
    * @return true if equivilent
-   * @throws InvalidRangeException if setion rank doesnt match shape length
+   * @throws InvalidRangeException if section rank doesnt match shape length
    */
   public boolean equivalent(int[] shape) throws InvalidRangeException {
     if (getRank() != shape.length)
@@ -934,6 +934,24 @@ public class Section {
       if (r == null) continue;
       if (r.first() != 0) return false;
       if (r.length() != shape[i]) return false;
+    }
+    return true;
+  }
+
+  public boolean conformal(Section other) {
+    if (computeSize() != other.computeSize()) return false;
+    Section reduceThis = this.reduce();
+    Section reduceOther = other.reduce();
+    return reduceThis.equalShape(reduceOther);
+  }
+
+  public boolean equalShape(Section other) {
+    if (computeSize() != other.computeSize()) return false;
+    if (getRank() != other.getRank()) return false;
+    for (int i = 0; i < getRank(); i++) {
+      Range r = getRange(i);
+      Range or = other.getRange(i);
+      if (r.length() != or.length()) return false;
     }
     return true;
   }

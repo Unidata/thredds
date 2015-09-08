@@ -50,7 +50,7 @@ public class CoverageCoordAxisBuilder {
   public CoverageCoordAxisBuilder() {}
 
   public CoverageCoordAxisBuilder(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                              CoverageCoordAxis.DependenceType dependenceType, String dependsOn, CoverageCoordAxis.Spacing spacing,
+                              CoverageCoordAxis.DependenceType dependenceType, String dependsOnS, CoverageCoordAxis.Spacing spacing,
                               int ncoords, double startValue, double endValue, double resolution, double[] values,
                               CoordAxisReader reader, boolean isSubset) {
     this.name = name;
@@ -60,7 +60,7 @@ public class CoverageCoordAxisBuilder {
     this.axisType = axisType;
     this.attributes = atts;
     this.dependenceType = dependenceType;
-    this.setDependsOn(dependsOn);
+    this.setDependsOn(dependsOnS);
     this.spacing = spacing;
     this.ncoords = ncoords;
     this.startValue = startValue;

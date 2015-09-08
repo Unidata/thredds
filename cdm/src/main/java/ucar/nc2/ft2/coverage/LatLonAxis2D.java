@@ -56,14 +56,6 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     super( builder);
   }
 
-  /*
-    public LatLonAxis2D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts, DependenceType dependenceType,
-                      String dependsOn, int[] shape, Spacing spacing, int ncoords, double startValue, double endValue, double resolution, double[] values,
-                      CoordAxisReader reader, boolean isSubset) {
-    super(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
-    this.shape = shape;
-  } */
-
   @Override
   protected void setDataset(CoordSysContainer dataset) {
     dependentAxes = new CoverageCoordAxis[2];
@@ -76,8 +68,9 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     }
 
     if (this.shape != null)
-      System.out.printf("HEY%n");
+      throw new RuntimeException("Cant change axis shape once set");
 
+    this.shape = shape;
   }
 
   @Override
@@ -91,15 +84,9 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     f.format("%s  shape=[%s]%n", indent, Misc.showInts(shape));
   }
 
-  //@Override
-  //public LatLonAxis2D copy() {
-  //  return new LatLonAxis2D(name, units, description, dataType, axisType, attributes.getAttributes(), dependenceType, dependsOn, shape,
-  //          spacing, ncoords, startValue, endValue, resolution, values, reader);
-  //}
-
   @Override
-  public LatLonAxis2D subset(SubsetParams params) {  // LOOK wrong
-    return null;
+  public LatLonAxis2D subset(SubsetParams params) {  // LOOK not implemented
+    return new LatLonAxis2D( new CoverageCoordAxisBuilder(this));
   }
 
   @Override

@@ -353,7 +353,7 @@ public class CompareNetcdf {
         float v2 = iter2.getFloatNext();
         if (!Float.isNaN(v1) || !Float.isNaN(v2)) {
           if (!closeEnough(v1, v2, (float) tol))
-            System.out.printf("HEY%n");
+            System.out.printf("HEY CompareNetcdf%n");
           assert closeEnough(v1, v2, (float) tol) : v1 + " != " + v2 + " count=" + iter1;
         }
       }
