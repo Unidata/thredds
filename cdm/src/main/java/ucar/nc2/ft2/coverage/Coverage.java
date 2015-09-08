@@ -78,7 +78,7 @@ public class Coverage implements IsMissingEvaluator {
     this.atts = from.getAttributes();
     this.units = from.getUnits();
     this.description = from.getDescription();
-    this.coordSysName = coordSysSubset.getName();
+    this.coordSysName = (coordSysSubset != null) ? coordSysSubset.getName() : from.coordSysName;
     this.reader = from.reader;
     this.user = from.user;
   }

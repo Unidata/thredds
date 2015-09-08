@@ -92,10 +92,10 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
   }
 
   private List<CoordSysSet> wireObjectsTogether(List<Coverage> coverages) {
-    for (CoverageCoordAxis axis : coordAxes) {
-      axis.setDataset( this);
+    for (CoverageCoordAxis axis : coordAxes)
       axisMap.put( axis.getName(), axis);
-    }
+    for (CoverageCoordAxis axis : coordAxes)
+      axis.setDataset( this);
 
     // wire dependencies
     Map<String, CoordSysSet> map = new HashMap<>();

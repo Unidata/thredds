@@ -103,7 +103,7 @@ public class Time2DCoordSys {
       CoverageCoordAxis timeOffsetSubset = timeOffset.subset(params);
       result.add(timeOffsetSubset);
       if (makeCFcompliant)
-        result.add(makeCFTimeCoord(runAxisSubset)); // possible the twoD time case, if nruns > 1
+        result.add(makeCFTimeCoord(runAxisSubset, (CoverageCoordAxis1D) timeOffsetSubset)); // possible the twoD time case, if nruns > 1
       return result;
     }
 
@@ -111,10 +111,10 @@ public class Time2DCoordSys {
     if (runAxisSubset.getNcoords() == 1) {
       double val = runAxisSubset.getCoord(0);   // not sure runAxis is needed. maybe use runtimeSubset
       CalendarDate runDate = runAxisSubset.makeDate(val);
-      CoverageCoordAxis timeSubset =  timeOffset.subsetFromTime(params, runDate);
-      result.add(timeSubset);
+      CoverageCoordAxis timeOffsetSubset =  timeOffset.subsetFromTime(params, runDate);
+      result.add(timeOffsetSubset);
       if (makeCFcompliant)
-        result.add(makeCFTimeCoord(runAxisSubset));
+        result.add(makeCFTimeCoord(runAxisSubset, (CoverageCoordAxis1D) timeOffsetSubset));
       return result;
     }
 
@@ -194,8 +194,8 @@ public class Time2DCoordSys {
     return new CoverageCoordAxis1D(builder);
   }
 
-  private CoverageCoordAxis makeCFTimeCoord(CoverageCoordAxis1D runAxisSubset) {
-    String name = timeOffset.getName()+"Forecast";
+  private CoverageCoordAxis makeCFTimeCoord(CoverageCoordAxis1D runAxisSubset, CoverageCoordAxis1D timeAxisSubset) {
+    String name = timeAxisSubset.getName()+"Forecast";
     String desc = "forecast time";
     AttributeContainerHelper atts = new AttributeContainerHelper(name);
     atts.addAttribute(new Attribute(CDM.UNITS, runAxisSubset.getUnits()));
@@ -212,25 +212,25 @@ public class Time2DCoordSys {
       builder.axisType = AxisType.Time;
       builder.attributes = atts;
       builder.dependenceType = CoverageCoordAxis.DependenceType.dependent;
-      builder.setDependsOn(timeOffset.getName());
+      builder.setDependsOn(timeAxisSubset.getName());
 
-      builder.spacing = timeOffset.getSpacing();
-      builder.ncoords = timeOffset.ncoords;
+      builder.spacing = timeAxisSubset.getSpacing();
+      builder.ncoords = timeAxisSubset.ncoords;
       builder.isSubset = true;
 
       // conversion from timeOffset to runtime units
-      double offset = timeOffset.getOffsetInTimeUnits(runAxis.getRefDate(), timeOffset.getRefDate());
+      double offset = timeAxisSubset.getOffsetInTimeUnits(runAxis.getRefDate(), timeAxisSubset.getRefDate());
 
-      switch (timeOffset.getSpacing()) {
+      switch (timeAxisSubset.getSpacing()) {
         case regular:
-          builder.startValue = timeOffset.getStartValue() + offset;
-          builder.endValue = timeOffset.getEndValue() + offset;
+          builder.startValue = timeAxisSubset.getStartValue() + offset;
+          builder.endValue = timeAxisSubset.getEndValue() + offset;
           break;
 
         case contiguousInterval:
         case irregularPoint:
         case discontiguousInterval:
-          builder.values = timeOffset.getValues(); // this is a copy
+          builder.values = timeAxisSubset.getValues(); // this is a copy
           for (int i=0; i<builder.values.length; i++)
             builder.values[i] += offset;
           break;

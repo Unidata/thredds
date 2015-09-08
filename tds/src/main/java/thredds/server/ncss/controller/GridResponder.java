@@ -32,13 +32,15 @@
  */
 package thredds.server.ncss.controller;
 
+import thredds.server.config.ThreddsConfig;
+import thredds.server.exception.RequestTooLargeException;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.params.NcssGridParamsBean;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
+import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
 import ucar.nc2.ft2.coverage.writer.DSGGridCoverageWriter;
 
 import java.io.File;
@@ -64,21 +66,22 @@ class GridResponder {
   File getGridResponseFile(NcssGridParamsBean params, NetcdfFileWriter.Version version)
           throws NcssException, InvalidRangeException, ParseException, IOException {
 
-    // LOOK maxFileDownloadSize
-    /* long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
-    if (maxFileDownloadSize > 0) {
-      long estimatedSize = 0; // CFGridWriter2.makeSizeEstimate(gcd, vars, bbox, projRect, horizStride, zRange, dateRange, timeStride, addLatLon);
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
+    SubsetParams subset = params.makeSubset(gcd.getCalendar(), gcd.getCoverageType() == CoverageCoordSys.Type.Fmrc);
 
+    // Test maxFileDownloadSize
+    long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
+    if (maxFileDownloadSize > 0) {
+      long estimatedSize = CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), true, writer);
       if (version == NetcdfFileWriter.Version.netcdf4)
         estimatedSize /= ESTIMATED_C0MPRESION_RATE;
 
       if (estimatedSize > maxFileDownloadSize)
         throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
-    } */
+    }
 
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
-    SubsetParams subset = params.makeSubset(gcd.getCalendar(), gcd.getCoverageType() == CoverageCoordSys.Type.Fmrc);
-    CFGridCoverageWriter.writeFile(gcd, params.getVar(), subset, params.isAddLatLon(), writer);
+    // write the file
+    CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), false, writer);
 
     return new File(responseFilename);
   }

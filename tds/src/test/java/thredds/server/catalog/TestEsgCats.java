@@ -1,17 +1,10 @@
 /* Copyright */
 package thredds.server.catalog;
 
-import thredds.client.catalog.Access;
-import thredds.client.catalog.Dataset;
 import thredds.core.*;
 import thredds.server.catalog.tracker.*;
-import ucar.nc2.util.Counters;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringBufferInputStream;
-import java.util.Formatter;
-import java.util.List;
+import java.io.*;
 
 /**
  * Describe
@@ -116,7 +109,8 @@ public class TestEsgCats {
 
 
   public static void main(String[] args) throws IOException, SecurityException  {
-    StringBufferInputStream inputStream = new StringBufferInputStream(".level= SEVERE");
+    String str = ".level= SEVERE"; // in memory config for jdk4 logger
+    InputStream inputStream = new ByteArrayInputStream(str.getBytes("UTF-8"));
     java.util.logging.LogManager.getLogManager().readConfiguration(inputStream);
 
     long start = System.nanoTime();

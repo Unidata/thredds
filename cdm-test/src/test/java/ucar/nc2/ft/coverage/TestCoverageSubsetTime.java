@@ -460,6 +460,68 @@ public class TestCoverageSubsetTime {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////
+  // SRC
+
+  @Test
+  public void testSrcNoParams() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
+    String covName = "Temperature_isobaric";
+
+    System.out.printf("testSrcNoParams Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      System.out.printf("  subset %s%n", params);
+      GeoReferencedArray geo = cover.readData(params);
+
+      int[] resultShape = geo.getData().getShape();
+      int[] expectShape = new int[] {36, 29, 65, 93};
+      Assert.assertArrayEquals("shape", expectShape, resultShape);
+    }
+  }
+
+  @Test
+  public void testSrcTimePresent() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
+    String covName = "Temperature_isobaric";
+
+    System.out.printf("testSrcTimePresent Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      CoverageCoordSys cs = cover.getCoordSys();
+      CoverageCoordAxis toAxis = cs.getAxis(AxisType.TimeOffset);
+      Assert.assertNotNull("timeoffset axis", toAxis);
+      Assert.assertEquals(36, toAxis.getNcoords());
+
+      SubsetParams params = new SubsetParams();
+      params.set(SubsetParams.timePresent, true);
+      System.out.printf("  subset %s%n", params);
+      GeoReferencedArray geo = cover.readData(params);
+
+      int[] resultShape = geo.getData().getShape();
+      int[] expectShape = new int[] {1, 29, 65, 93};
+      Assert.assertArrayEquals("shape", expectShape, resultShape);
+
+      CoverageCoordSys geocs = geo.getCoordSysForData();
+      CoverageCoordAxis toAxis2 = geocs.getAxis(AxisType.TimeOffset);
+      Assert.assertNotNull("timeoffset axis", toAxis2);
+      Assert.assertEquals(1, toAxis2.getNcoords());
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
   // ENsemble
 
   //     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", CoverageCoordSys.Type.Fmrc, "geopotential"});

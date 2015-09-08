@@ -246,38 +246,18 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       if (debugOpenResult)
         System.out.println("dodsVersion = " + dodsConnection.getServerVersion());
 
-    } catch (opendap.dap.parsers.ParseException e) {
-      logger.info("DODSNetcdfFile " + datasetURL, e);
-      if (debugOpenResult)
-        System.out.println("open failure = " + e.getMessage());
-      throw new IOException(e.getMessage());
-
-    } catch (opendap.dap.DASException e) {
-      logger.info("DODSNetcdfFile " + datasetURL, e);
-      if (debugOpenResult)
-        System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
-      throw new IOException(e.getClass().getName() + ": " + e.getMessage());
-
-    } catch (opendap.dap.DDSException e) {
-      logger.info("DODSNetcdfFile " + datasetURL, e);
-      if (debugOpenResult)
-        System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
-      throw new IOException(e.getClass().getName() + ": " + e.getMessage());
-
     } catch (DAP2Exception dodsE) {
       //dodsE.printStackTrace();
       if (dodsE.getErrorCode() == DAP2Exception.NO_SUCH_FILE)
         throw new FileNotFoundException(dodsE.getMessage());
       else {
         dodsE.printStackTrace(System.err);
-        throw new IOException(dodsE);
+        throw new IOException("DODSNetcdfFile url=" + datasetURL, dodsE);
       }
 
-    } catch (Exception e) {
-      logger.info("DODSNetcdfFile " + datasetURL, e);
-      if (debugOpenResult)
-        System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
-      throw new IOException(e.getClass().getName() + ": " + e.getMessage());
+    } catch (Throwable t) {
+      logger.info("DODSNetcdfFile " + datasetURL, t);
+      throw new IOException("DODSNetcdfFile url=" + datasetURL, t);
     }
 
     // now initialize the DODSNetcdf metadata

@@ -63,6 +63,8 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     int count = 0;
     for (String axisName : dependsOn) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
+      if (axis == null)
+        throw new IllegalStateException("LatLonAxis2D cant find axis "+axisName);
       shape[count] = axis.getNcoords();
       dependentAxes[count++] = axis;
     }

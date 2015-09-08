@@ -72,33 +72,23 @@ public class CFGridCoverageWriter2 {
    * @param gridNames    the list of coverage names to be written, or null for all
    * @param subset       defines the requested subset
    * @param addLatLon    add 2D lat/lon coordinates if needed
+   * @param testSizeOnly dont write, just return expected size
    * @param writer       this does the actual writing
    * @return total bytes written
    * @throws IOException
    * @throws InvalidRangeException
    */
-  public static long writeFile(CoverageDataset gdsOrg, List<String> gridNames,
+  public static long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames,
                                SubsetParams subset,
                                boolean addLatLon,
+                               boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     CFGridCoverageWriter2 writer2 = new CFGridCoverageWriter2();
-    return writer2.writeOrTestSize(gdsOrg, gridNames, subset, addLatLon, false, writer);
+    return writer2.writeFile(gdsOrg, gridNames, subset, addLatLon, testSizeOnly, writer);
   }
 
-
-  /**
-   * @param gdsOrg       the CoverageDataset
-   * @param gridNames    the list of coverage names to be written, or null for all
-   * @param subsetParams       the desired subset
-   * @param addLatLon    add 2D lat/lon coordinates if needed
-   * @param testSizeOnly dont write, just return size
-   * @param writer       this does the actual writing
-   * @return total bytes written
-   * @throws IOException
-   * @throws InvalidRangeException
-   */
-  private long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subsetParams, boolean addLatLon, boolean testSizeOnly,
+  private long writeFile(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subsetParams, boolean addLatLon, boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     // we need global atts, subsetted axes, the transforms, and the coverages with attributes and referencing subsetted axes
@@ -186,10 +176,10 @@ public class CFGridCoverageWriter2 {
     for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
       Variable v = writer.findVariable(axis.getName());
       if (v != null) {
-        if (show) System.out.printf("CFGridCoverageWriter write axis %s%n", v.getNameAndDimensions());
+        if (show) System.out.printf("CFGridCoverageWriter2 write axis %s%n", v.getNameAndDimensions());
         writer.write(v, axis.getCoordsAsArray());
       } else {
-        logger.error("CFGridCoverageWriter No variable for %s%n", axis.getName());
+        logger.error("CFGridCoverageWriter2 No variable for %s%n", axis.getName());
       }
 
       if (axis.isInterval()) {
@@ -208,7 +198,7 @@ public class CFGridCoverageWriter2 {
       checkConformance(gridOrg, grid, array);
 
       Variable v = writer.findVariable(grid.getName());
-      if (show) System.out.printf("CFGridCoverageWriter write grid %s%n", v.getNameAndDimensions());
+      if (show) System.out.printf("CFGridCoverageWriter2 write grid %s%n", v.getNameAndDimensions());
       writer.write(v, array.getData());
     }
 
