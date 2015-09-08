@@ -291,29 +291,37 @@ message CoordAxis {
       for (int i = 0; i < n; i++) values[i] = db.get(i);
     }
 
-    int[] shape = new int[proto.getShapeCount()];
+    int[] shape = new int[proto.getShapeCount()]; // LOOK not used ??
     for (int i=0; i<proto.getShapeCount(); i++)
       shape[i] = proto.getShape(i);
 
+    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
+    builder.name = name;
+    builder.units = proto.getUnits();
+    builder.description = proto.getDescription();
+    builder.dataType = dataType;
+    builder.axisType = axisType;
+    builder.attributes = atts;
+    builder.dependenceType = dependenceType;
+    builder.setDependsOn(dependsOn);
+    builder.spacing = spacing;
+    builder.ncoords = ncoords;
+    builder.startValue = proto.getStartValue();
+    builder.endValue = proto.getEndValue();
+    builder.resolution = proto.getResolution();
+    builder.values = values;
+    builder.reader = reader;
+    builder.isSubset = false;
+
+
     if (dependenceType == CoverageCoordAxis.DependenceType.twoD && axisType == AxisType.Time) {
-
-      return new FmrcTimeAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn,
-                 spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
-
+      return new FmrcTimeAxis2D(builder);
     } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
-
-      return new LatLonAxis2D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn, shape,
-                 spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
-
+      return new LatLonAxis2D(builder);
     } else if (axisType == AxisType.TimeOffset) {
-
-      return new TimeOffsetAxis(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn,
-                    spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
-
+      return new TimeOffsetAxis(builder);
     } else {
-
-      return new CoverageCoordAxis1D(name, proto.getUnits(), proto.getDescription(), dataType, axisType, atts, dependenceType, dependsOn,
-              spacing, ncoords, proto.getStartValue(), proto.getEndValue(), proto.getResolution(), values, reader, false);
+      return new CoverageCoordAxis1D(builder);
     }
   }
 

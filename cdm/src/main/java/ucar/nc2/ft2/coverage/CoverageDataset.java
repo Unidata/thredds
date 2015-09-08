@@ -67,6 +67,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
   private final List<CoverageTransform> coordTransforms;
   private final List<CoverageCoordAxis> coordAxes;
   private final Map<String, Coverage> coverageMap = new HashMap<>();
+  private final Map<String, CoverageCoordAxis> axisMap = new HashMap<>();
 
   private final CoverageCoordSys.Type coverageType;
   protected final CoverageReader reader;
@@ -93,8 +94,10 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
   private List<CoordSysSet> wireObjectsTogether(List<Coverage> coverages) {
     for (CoverageCoordAxis axis : coordAxes) {
       axis.setDataset( this);
+      axisMap.put( axis.getName(), axis);
     }
 
+    // wire dependencies
     Map<String, CoordSysSet> map = new HashMap<>();
     for (Coverage coverage : coverages) {
       coverageMap.put(coverage.getName(), coverage);
@@ -123,7 +126,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
       CoverageCoordAxis lonaxis = coordsys.getAxis(AxisType.Lon);
 
       CoverageTransform hct = coordsys.getHorizTransform();
-      HorizCoordSys hcs = new HorizCoordSys(xaxis, yaxis, lataxis, lonaxis, hct);
+      HorizCoordSys hcs = new HorizCoordSys((CoverageCoordAxis1D)xaxis, (CoverageCoordAxis1D)yaxis, lataxis, lonaxis, hct);
       HorizCoordSys old = hcsMap.get(hcs.getName());
       if (old == null)
         hcsMap.put(hcs.getName(), hcs);
@@ -301,10 +304,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
   }
 
   public CoverageCoordAxis findCoordAxis(String name) {
-    for (CoverageCoordAxis axis : coordAxes) {
-      if (axis.getName().equalsIgnoreCase(name)) return axis;
-    }
-    return null;
+    return axisMap.get(name);
   }
 
   public CoverageTransform findCoordTransform(String name) {
@@ -312,24 +312,5 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
       if (ct.getName().equalsIgnoreCase(name)) return ct;
     return null;
   }
-
-  ////////////////////////////////////////////////
-
-  /* CoverageDataset(CoverageDataset from, List<CoverageCoordSys> coordSys, List<CoverageCoordAxis> coordAxes) {
-    this.name = from.name;
-    this.atts = from.atts;
-    this.coverageType = from.coverageType;
-
-    this.coordSys = coordSys;
-    this.coordTransforms = from.coordTransforms;
-    this.coordAxes = coordAxes;
-    this.reader = from.reader;
-
-    // ??
-    this.latLonBoundingBox = null;
-    this.projBoundingBox = null;
-    this.calendarDateRange = null;
-    this.coverageSets = null;
-  } */
 
 }

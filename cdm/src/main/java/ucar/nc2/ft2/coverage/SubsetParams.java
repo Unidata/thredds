@@ -62,7 +62,7 @@ public class SubsetParams {
   public static final String timeOffset = "timeOffset"; // value = Double
   public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
 
-  public static final String vertIndex = "vertIndex";   // value = Integer    LOOK BAD
+  // public static final String vertIndex = "vertIndex";   // value = Integer    LOOK BAD
   public static final String vertCoord = "vertCoord";   // value = Double
   public static final String ensCoord = "ensCoord";     // value = double ??
 
@@ -111,7 +111,7 @@ public class SubsetParams {
   public String toString() {
     Formatter f = new Formatter();
     for (Map.Entry<String,Object> entry : req.entrySet())
-      f.format(" %s == %s%n", entry.getKey(), entry.getValue());
+      f.format(" %s == %s,", entry.getKey(), entry.getValue());
     return f.toString();
   }
 

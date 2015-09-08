@@ -32,9 +32,8 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import net.jcip.annotations.Immutable;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -45,6 +44,7 @@ import ucar.unidata.util.Format;
 
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -53,24 +53,20 @@ import java.util.List;
  * @author caron
  * @since 7/15/2015
  */
-public class CoverageCoordAxis1D extends CoverageCoordAxis {
+@Immutable
+public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<Object> {
 
-  // subset ??
-  protected int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
-  protected int stride = 1;
-  protected boolean isTime2D;
+  // does this really describe all subset possibilities? what about RangeScatter, composite ??
+  protected final int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
+  protected final int stride = 1;
+  protected final boolean isTime2D;
 
-  public CoverageCoordAxis1D(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                                DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue,
-                                double resolution, double[] values, CoordAxisReader reader, boolean isSubset) {
+  public CoverageCoordAxis1D( CoverageCoordAxisBuilder builder) {
+    super(builder);
 
-    super(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
-
-    this.minIndex = 0;
-    this.maxIndex = ncoords-1;
-
-    if (axisType == AxisType.RunTime && dependenceType != DependenceType.dependent)
-      isTime2D = true;
+    this.minIndex = builder.minIndex;
+    this.maxIndex = builder.maxIndex;
+    this.isTime2D = builder.isTime2D;
   }
 
   public boolean isTime2D() {
@@ -79,13 +75,6 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
   public int getStride() {
     return stride;
-  }
-
-  // for subsetting - these are the indexes reletive to original - note cant compose !!
-  void setIndexRange(int minIndex, int maxIndex, int stride) {
-    this.minIndex = minIndex;
-    this.maxIndex = maxIndex;
-    this.stride = stride;
   }
 
   public int getMinIndex() {
@@ -99,7 +88,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s%n", indent, minIndex, maxIndex, stride, isTime2D(), isSubset());
+    f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s", indent, minIndex, maxIndex, stride, isTime2D(), isSubset());
+    f.format("%n");
   }
 
   @Override
@@ -171,7 +161,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
 
   public double getCoord(int index) {
     getValues();
-    if (index <0 || index >= getNcoords())
+    if (index < 0 || index >= getNcoords())
       throw new IllegalArgumentException("Index out of range=" + index);
 
     switch (spacing) {
@@ -276,27 +266,25 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return result;
   }
 
-  @Override
-  public CoverageCoordAxis subset(double minValue, double maxValue) {
+  public CoverageCoordAxis1D subset(double minValue, double maxValue) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    return helper.subset(minValue, maxValue);
+    return new CoverageCoordAxis1D(helper.subset(minValue, maxValue));
   }
 
- /* public Array getCoordEdge1() {
-    getValues();
-    double[] vals = new double[ ncoords];
-    for (int i=0; i< ncoords; i++)
-      vals[i] = getCoordEdge1(i);
-    return Array.makeFromJavaArray(vals);
+  public Object getCoordObject(int index) {
+    if (axisType == AxisType.RunTime)
+      return makeDate( getCoord(index));
+    if (isInterval())
+      return new double[] {getCoordEdge1(index), getCoordEdge2(index)};
+    return getCoord(index);
   }
 
-  public Array getCoordEdge2() {
-    getValues();
-    double[] vals = new double[ ncoords];
-    for (int i=0; i< ncoords; i++)
-      vals[i] = getCoordEdge2(i);
-    return Array.makeFromJavaArray(vals);
-  } */
+  public CalendarDate getCoordAsDate(int index) {
+    if (axisType == AxisType.RunTime)
+      return makeDate( getCoord(index));
+    double val = isInterval() ? (getCoordEdge1(index) + getCoordEdge2(index)) / 2.0  : getCoord(index);
+    return makeDate(val);
+  }
 
   public List<NamedObject> getCoordValueNames() {
     getValues();  // read in if needed
@@ -323,10 +311,16 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
     return result;
   }
 
-    // LOOK  incomplete handling of subsetting params
-  // create a copy of the axis, with the values subsetted by the params as needed
   @Override
   public CoverageCoordAxis subset(SubsetParams params) {
+    return new CoverageCoordAxis1D( subsetBuilder(params));
+  }
+
+  // LOOK  incomplete handling of subsetting params
+  protected CoverageCoordAxisBuilder subsetBuilder(SubsetParams params) {
+    if (params == null)
+      return new CoverageCoordAxisBuilder(this);
+
     CoordAxisHelper helper = new CoordAxisHelper(this);
 
     switch (getAxisType()) {
@@ -341,14 +335,14 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         break;
 
       case Ensemble:
-         Double eval = params.getDouble(SubsetParams.ensCoord);
-         if (eval != null) {
-           return helper.subsetClosest(eval);
-         }
+        Double eval = params.getDouble(SubsetParams.ensCoord);
+        if (eval != null) {
+          return helper.subsetClosest(eval);
+        }
         // default is all
-         break;
+        break;
 
-       // x,y gets seperately subsetted
+      // x,y gets seperately subsetted
       case GeoX:
       case GeoY:
       case Lat:
@@ -366,6 +360,11 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
         if (dateRange != null)
           return helper.subset(dateRange);
+
+        Double timeOffset = (Double) params.get(SubsetParams.timeOffset);
+        if (timeOffset != null)
+          return helper.subsetClosest(timeOffset);
+
         // default is all
         break;
 
@@ -379,9 +378,9 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
           return helper.subset(rundateRange);
 
         if (params.isTrue(SubsetParams.runtimeAll))
-          return this;
+          break;
 
-          // default is latest
+        // default is latest
         return helper.subsetLatest();
 
       case TimeOffset:
@@ -396,29 +395,33 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis {
         break;
     }
 
-    // otherwise take the entire axis
-    return this;
+    // otherwise return copy the original axis
+    return new CoverageCoordAxisBuilder(this);
   }
 
   @Override
   public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn) {
-    CoordAxisHelper helper = new CoordAxisHelper(this);
-    return helper.subsetValues(dependsOn.getMinIndex(), dependsOn.getMaxIndex()); // LOOK not dealing with stride
+    CoverageCoordAxisBuilder builder = new CoordAxisHelper(this).subsetValues(dependsOn.getMinIndex(), dependsOn.getMaxIndex());
+    return new CoverageCoordAxis1D(builder); // LOOK not dealing with stride, other subsets ??
   }
 
-  CoverageCoordAxis1D subset(int ncoords, double start, double end, double[] values) {
-    return new CoverageCoordAxis1D(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
-            this.getAttributeContainer(), this.getDependenceType(), this.getDependsOn(), this.getSpacing(),
-            ncoords, start, end, this.getResolution(), values, this.reader, true);
+  @Override
+  public Iterator<Object> iterator() {
+    return new MyIterator();
   }
 
-  CoverageCoordAxis1D subset(String dependsOn, Spacing spacing, int npoints, double[] values) {
-    assert values != null;
-    return new CoverageCoordAxis1D(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(), this.getAttributeContainer(),
-            dependsOn == null ? this.getDependenceType() : DependenceType.dependent, dependsOn,
-            spacing, npoints, 0, 0, this.getResolution(), values, null, true);
-  }
+  // Look what about intervals ??
+  private class MyIterator implements java.util.Iterator<Object> {
+    private int current = 0;
+    private int ncoords = getNcoords();
 
+    public boolean hasNext() {
+      return current < ncoords;
+    }
+    public Object next() {
+      return getCoord(current++);
+    }
+  }
 
 }
 

@@ -33,11 +33,7 @@
 
 package ucar.nc2.ft2.coverage.adapter;
 
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.*;
-import ucar.nc2.time.CalendarDate;
-
-import java.io.IOException;
 
 /**
  * Fmrc Coordinate System Implementation
@@ -49,12 +45,13 @@ public class FmrcCS extends DtCoverageCS {
   private CoordinateAxis1DTime[] timeAxisForRun;
 
   protected FmrcCS(DtCoverageCSBuilder builder) {
-      super(builder);
-    }
+    super(builder);
+  }
 
   @Override
-  public CoordinateAxis2D getTimeAxis() {
-    return (CoordinateAxis2D) super.getTimeAxis();
+  public CoordinateAxis getTimeAxis() {
+    if (builder.timeOffsetAxis != null) return builder.timeOffsetAxis;
+    return builder.timeAxis;
   }
 
   /* public CoordinateAxis1DTime getTimeAxisForRun(CalendarDate runTime) {

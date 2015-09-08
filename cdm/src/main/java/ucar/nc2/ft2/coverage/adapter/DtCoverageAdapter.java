@@ -186,12 +186,28 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         }
       }
 
+      CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
+      builder.name = name;
+      builder.units = units;
+      builder.description = description;
+      builder.dataType = dataType;
+      builder.axisType = axisType;
+      builder.attributes = atts;
+      builder.dependenceType = dependenceType;
+      builder.setDependsOn(dependsOn);
+      builder.spacing = spacing;
+      builder.ncoords = ncoords;
+      builder.startValue = startValue;
+      builder.endValue = endValue;
+      builder.resolution = resolution;
+      builder.values = values;
+      builder.reader = reader;
+      builder.isSubset = false;
+
       if (axisType == AxisType.TimeOffset)
-        return new TimeOffsetAxis(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing,
-                ncoords, startValue, endValue, resolution, values, reader, false);
+        return new TimeOffsetAxis(builder);
       else
-       return new CoverageCoordAxis1D(name, units, description, dataType, axisType, atts, dependenceType, dependsOn, spacing,
-              ncoords, startValue, endValue, resolution, values, reader, false);
+       return new CoverageCoordAxis1D(builder);
     }
 
     // TwoD case
@@ -233,17 +249,34 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       }
     }
 
+    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
+    builder.name = name;
+    builder.units = units;
+    builder.description = description;
+    builder.dataType = dataType;
+    builder.axisType = axisType;
+    builder.attributes = dtCoordAxis.getAttributeContainer();
+    builder.dependenceType = dependenceType;
+    builder.setDependsOn(dependsOn);
+    builder.spacing = spacing;
+    builder.ncoords = ncoords;
+    builder.startValue = startValue;
+    builder.endValue = endValue;
+    builder.resolution = resolution;
+    builder.values = values;
+    builder.reader = reader;
+    builder.isSubset = false;
+    builder.shape = dtCoordAxis.getShape();
+
     // Fmrc Time
     if (axisType == AxisType.Time) {
-      dependsOn = dtCoordAxis.getDimension(0).getFullName();  // only the first dimension
-      return new FmrcTimeAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributeContainer(), dependenceType, dependsOn, spacing,
-              ncoords, startValue, endValue, resolution, values, reader, false);
+      builder.setDependsOn(dtCoordAxis.getDimension(0).getFullName());  // only the first dimension
+      return new FmrcTimeAxis2D(builder);
     }
 
     // 2D Lat Lon
     if (axisType == AxisType.Lat || axisType == AxisType.Lon) {
-      return new LatLonAxis2D(name, units, description, dataType, axisType, dtCoordAxis.getAttributeContainer(), dependenceType, dependsOn, dtCoordAxis.getShape(),
-              spacing, ncoords, startValue, endValue, resolution, values, reader, false);
+      return new LatLonAxis2D(builder);
     }
 
     throw new IllegalStateException("Dont know what to do with axis " + dtCoordAxis.getFullName());
@@ -265,28 +298,12 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     proxy.close();
   }
 
-  /*
-    public static final String latlonBB = "latlonBB";     // value = LatLonRect
-    public static final String projBB = "projBB";         // value = ProjRect
-    public static final String horizStride = "horizStride";  // value = Integer
- ok   public static final String vertCoord = "vertCoord";   // value = double
- ok   public static final String vertIndex = "vertIndex";   // value = integer    LOOK BAD
- ok   public static final String timeRange = "timeRange";   // value = CalendarDateRange
- ok   public static final String time = "time";             // value = CalendarDate
-    public static final String timeWindow = "timeWindow"; // value = TimeDuration
- ok   public static final String timeStride = "timeStride"; // value = Integer
-  X  public static final String allTimes = "allTimes";     // value = Boolean
- ok   public static final String timePresent = "timePresent"; // value = Boolean
- ok   public static final String runtime = "runtime";       // value = CalendarDate
- ok   public static final String runtime = "runtimeRange";  // value = CalendarDateRange
- ok   public static final String ensCoord = "ensCoord";     // value = double ??
-   */
-
   @Override
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
     DtCoverage grid = (DtCoverage) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    CoverageCoordSys subsetCoordSys = orgCoordSys.subset(params);
+    CoverageCoordSysSubset coordSysSubset = orgCoordSys.subset(params, false);
+    CoverageCoordSys subsetCoordSys = coordSysSubset.coordSys;
 
     List<Range> section = new ArrayList<>();
     for (CoverageCoordAxis axis : subsetCoordSys.getAxes()) {

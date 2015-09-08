@@ -33,18 +33,28 @@
 package ucar.ma2;
 
 
+import net.jcip.annotations.Immutable;
+
 /**
  * Description
  *
  * @author John
  * @since 8/19/2015
  */
+@Immutable
 public class RangeComposite implements RangeIterator {
-  Range[] ranges;
+  private final Range[] ranges;
+  private final String name;
 
   public RangeComposite(String name, Range... r) throws InvalidRangeException {
     //super(name, 0, 1, r.length);  // what does first, last mean here ??
+    this.name = name;
     this.ranges = r;
+  }
+
+  @Override
+  public String getName() {
+    return name;
   }
 
   /* @Override

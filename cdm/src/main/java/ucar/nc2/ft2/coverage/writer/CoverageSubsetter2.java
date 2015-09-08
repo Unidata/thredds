@@ -39,25 +39,24 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
  * Helper class to create logical subsets.
- * Used by CFwriter
+ * Used by CFGridCoverageWriter2
  *
  * @author caron
  * @since 7/12/2015
  */
-public class CoverageSubsetter {
+public class CoverageSubsetter2 {
 
   public CoverageDataset makeCoverageDatasetSubset(CoverageDataset org, List<String> gridsWanted, SubsetParams params) throws InvalidRangeException {
 
     // Get subset of original objects that are needed by the requested grids
     List<Coverage> orgCoverages = new ArrayList<>();
-    Map<String, CoverageCoordSys> orgCoordSys = new HashMap<>();
-    Map<String, CoverageCoordAxis> orgCoordAxis = new HashMap<>();
-    Set<String> coordTransformSet = new HashSet<>();
-    Set<HorizCoordSys> horizSet = new HashSet<>();
+    Map<String, CoverageCoordSys> orgCoordSys = new HashMap<>();  // eliminate duplicates
+    Set<String> coordTransformSet = new HashSet<>();              // eliminate duplicates
 
     for (String gridName : gridsWanted) {
       Coverage orgGrid =  org.findCoverage(gridName);
@@ -65,50 +64,42 @@ public class CoverageSubsetter {
       orgCoverages.add(orgGrid);
       CoverageCoordSys cs = orgGrid.getCoordSys();
       orgCoordSys.put(cs.getName(), cs);
-      for (CoverageCoordAxis axis : cs.getAxes())
-        orgCoordAxis.put(axis.getName(), axis);
       for (String tname : cs.getTransformNames())
         coordTransformSet.add(tname);
-      if (cs.getHorizCoordSys() != null)
-        horizSet.add(cs.getHorizCoordSys());
     }
 
-    List<CoverageCoordSys> coordSys = new ArrayList<>();
-    List<Coverage> coverages = new ArrayList<>();
-    List<CoverageCoordAxis> coordAxes = new ArrayList<>();
-    List<CoverageTransform> coordTransforms = new ArrayList<>();
-
-    // subset non-dependent non-horiz axes
-    for (CoverageCoordAxis orgAxis : orgCoordAxis.values()) {
-      if (!orgAxis.getAxisType().isHoriz() && orgAxis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent)
-        coordAxes.add( orgAxis.subset(params));
-    }
-    // subset horiz axes
-    for (HorizCoordSys hcs : horizSet) {
-      HorizCoordSys hcsSubset = hcs.subset(params);
-      coordAxes.addAll( hcsSubset.getCoordAxes());
-    }
-    // subset dependent axes
-    for (CoverageCoordAxis orgAxis : orgCoordAxis.values()) {
-      if (!orgAxis.getAxisType().isHoriz() && orgAxis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) {
-        for (String want : orgAxis.getDependsOnList()) {
-          CoverageCoordAxis1D from = findIndependentAxis(want, coordAxes);
-          if (from == null) throw new IllegalStateException("Cants find "+want+" independent axis");
-          coordAxes.add(orgAxis.subsetDependent(from));
-        }
+    // subset all coordSys, and eliminate duplicate axes.
+    Map<String, CoverageCoordAxis> subsetCoordAxes = new HashMap<>();
+    Map<String, CoverageCoordSys> subsetCFCoordSys = new HashMap<>();
+    for (CoverageCoordSys orgCs : orgCoordSys.values()) {
+      CoverageCoordSysSubset coordSysSubset = orgCs.subset(params, true); // subsetCF make do some CF tweaks, not needed in regular subset
+      subsetCFCoordSys.put(orgCs.getName(), coordSysSubset.coordSys);
+      for (CoverageCoordAxis axis : coordSysSubset.coordSys.getAxes()) {
+        subsetCoordAxes.put(axis.getName(), axis);  // eliminate duplicates
       }
     }
 
-    // subset coordSys, coverages, transforms
-    for (CoverageCoordSys orgCs : orgCoordSys.values())
-      coordSys.add( new CoverageCoordSys(orgCs));
+    // here are the objects we need to make the subsetted dataset
+    List<CoverageCoordSys> coordSys = new ArrayList<>();
+    List<CoverageCoordAxis> coordAxes = new ArrayList<>();
+    List<Coverage> coverages = new ArrayList<>();
+    List<CoverageTransform> coordTransforms = new ArrayList<>();
+
+    for (CoverageCoordSys subsetCs : subsetCFCoordSys.values()) {
+      coordSys.add( subsetCs);
+    }
+
+    for (CoverageCoordAxis subsetAxis : subsetCoordAxes.values())
+      coordAxes.add( subsetAxis);               // must use a copy, because of setDataset()
 
     for (Coverage orgCov : orgCoverages) {
-      coverages.add(new Coverage(orgCov, null));
+      // must substitute subsetCS
+      CoverageCoordSys subsetCs = subsetCFCoordSys.get(orgCov.getCoordSysName());
+      coverages.add( new Coverage(orgCov, subsetCs)); // must use a copy, because of setCoordSys()
     }
 
     for (String tname : coordTransformSet) {
-      CoverageTransform t = org.findCoordTransform(tname);
+      CoverageTransform t = org.findCoordTransform(tname); // these are truly immutable, so can use originals
       if (t != null)
         coordTransforms.add(t);
     }
@@ -118,6 +109,7 @@ public class CoverageSubsetter {
     ProjectionRect projBoundingBox = null;
     CalendarDateRange dateRange = null;
 
+    // put it all together
     return new CoverageDataset(org.getName(), org.getCoverageType(), new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()),
             latLonBoundingBox, projBoundingBox, dateRange,
             coordSys, coordTransforms, coordAxes, coverages, org.getReader());  // use org.reader -> subset always in coord space !

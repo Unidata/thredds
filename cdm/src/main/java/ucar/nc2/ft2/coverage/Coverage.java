@@ -72,15 +72,15 @@ public class Coverage implements IsMissingEvaluator {
   }
 
   // copy constructor
-  public Coverage(Coverage from, Object user) {
+  public Coverage(Coverage from, CoverageCoordSys coordSysSubset) {
     this.name = from.getName();
     this.dataType = from.getDataType();
     this.atts = from.getAttributes();
     this.units = from.getUnits();
     this.description = from.getDescription();
-    this.coordSysName = from.getCoordSysName();
+    this.coordSysName = coordSysSubset.getName();
     this.reader = from.reader;
-    this.user = (user == null) ? from.user : user;
+    this.user = from.user;
   }
 
   void setCoordSys (CoverageCoordSys coordSys) {

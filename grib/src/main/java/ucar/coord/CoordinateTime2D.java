@@ -222,14 +222,15 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public void showInfo(Formatter info, Indent indent) {
-    info.format("%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, nruns, ntimes, isOrthogonal, isRegular);
+    info.format("%s%s:", indent, getType());
+    info.format(" %s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, nruns, ntimes, isOrthogonal, isRegular);
     runtime.showInfo(info, indent);
     indent.incr();
 
-    info.format("%nAll time values=");
+    info.format("%sAll time values=", indent);
     List timeValues = getOffsetsSorted();
     for (Object val : timeValues) info.format(" %s,", val);
-    info.format(" (n=%d)%n%n", timeValues.size());
+    info.format(" (n=%d)%n", timeValues.size());
 
     if (isOrthogonal)
       otime.showInfo(info, indent);
@@ -316,7 +317,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   public int getSize() {
     return (vals == null) ? 0 : vals.size();
   }
-
 
   @Override
   public int getNCoords() {
@@ -622,21 +622,20 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
   }
 
-  @Override
-  public int findIndexContaining(double need) {
+  public int findTimeIndexInOtime(Object need) {
     if (!isOrthogonal)
       throw new IllegalStateException();
 
-    return otime.findIndexContaining(need);
+    return otime.getIndex(need);
   }
 
-  public int findIndexContaining(int runIdx, double value, CalendarDate refDateOfValue) {
+  /* public int findIndexContaining(int runIdx, double value, CalendarDate refDateOfValue) {
     if (!isOrthogonal)
       throw new IllegalStateException();
 
     int offset = timeUnit.getOffset(getRefDate(runIdx), refDateOfValue);
     return otime.findIndexContaining(offset + value);
-  }
+  } */
 
   /**
    * Get a sorted list of the unique time coordinates

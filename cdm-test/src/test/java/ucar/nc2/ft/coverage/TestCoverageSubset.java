@@ -1,6 +1,8 @@
 package ucar.nc2.ft.coverage;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -8,6 +10,7 @@ import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -26,6 +29,17 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestCoverageSubset {
+
+  @BeforeClass
+  public static void before() {
+    GribDataReader.validator = new GribCoverageValidator();
+  }
+
+  @AfterClass
+  public static void after() {
+    GribDataReader.validator = null;
+  }
+
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -87,7 +101,8 @@ public class TestCoverageSubset {
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
 
-      readOne(cover, rt_val, time_val, time_offset, vert_level);
+      // Cant subset on runtime for Best, so we set to null
+      readOne(cover, null, time_val, time_offset, vert_level);
     }
   }
 

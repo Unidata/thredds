@@ -118,7 +118,7 @@ public class CalendarDateUnit {
 
   ////////////////////////////////////////////////////////////////////////////////////////
   private final Calendar cal;
-  private final String unitString;
+  // private final String unitString;
   private final CalendarPeriod.Field periodField;
   private final CalendarDate baseDate;
   private final boolean isCalendarField;
@@ -140,7 +140,7 @@ public class CalendarDateUnit {
       throw new IllegalArgumentException(dateUnitString + " does not match " + udunitPatternString);
     }
 
-    unitString = m.group(1);
+    String unitString = m.group(1);
     periodField = CalendarPeriod.fromUnitString(unitString);
 
     int pos = dateUnitString.indexOf("since");
@@ -165,78 +165,8 @@ public class CalendarDateUnit {
       periodName = periodField.toString();
       isCalendarField = false;
     }
-    unitString = periodName + " since " + baseDate.toString();
+    // unitString = periodName;
   }
-
-  /* private DateTime parseUdunitsTimeString(String dateUnitString, String dateString, String timeString, String zoneString) {
-    // Set the defaults for any values that are not specified
-    int year = 0;
-    int month = 1;
-    int day = 1;
-    int hour = 0;
-    int minute = 0;
-    double second = 0.0;
-
-    try {
-      boolean isMinus = false;
-      if (dateString.startsWith("-")) {
-         isMinus = true;
-         dateString = dateString.substring(1);
-       } else if (dateString.startsWith("+")) {
-         dateString = dateString.substring(1);
-       }
-
-      StringTokenizer dateTokenizer = new StringTokenizer(dateString, "-");
-      if (dateTokenizer.hasMoreTokens()) year = Integer.parseInt(dateTokenizer.nextToken());
-      if (dateTokenizer.hasMoreTokens()) month = Integer.parseInt(dateTokenizer.nextToken());
-      if (dateTokenizer.hasMoreTokens()) day = Integer.parseInt(dateTokenizer.nextToken());
-
-      // Parse the time if present
-      if (timeString != null && timeString.length() > 0) {
-        StringTokenizer timeTokenizer = new StringTokenizer(timeString, ":");
-        if (timeTokenizer.hasMoreTokens()) hour = Integer.parseInt(timeTokenizer.nextToken());
-        if (timeTokenizer.hasMoreTokens()) minute = Integer.parseInt(timeTokenizer.nextToken());
-        if (timeTokenizer.hasMoreTokens()) second = Double.parseDouble(timeTokenizer.nextToken());
-      }
-
-      if (isMinus) year = -year;
-
-      // Get a DateTime object in this Chronology
-      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0, Calendar.getChronology(cal));
-      // Add the seconds
-      dt = dt.plus((long) (1000 * second));
-
-      // Parse the time zone if present
-      if (zoneString != null) {
-        zoneString = zoneString.trim();
-        if (zoneString.length() > 0 && !zoneString.equals("z") && !zoneString.equals("utc") && !zoneString.equals("gmt")) {
-          isMinus = false;
-          if (zoneString.startsWith("-")) {
-             isMinus = true;
-             zoneString = zoneString.substring(1);
-           } else if (zoneString.startsWith("+")) {
-             zoneString = zoneString.substring(1);
-           }
-
-          StringTokenizer zoneTokenizer = new StringTokenizer(zoneString, ":");
-          int hourOffset = zoneTokenizer.hasMoreTokens() ? Integer.parseInt(zoneTokenizer.nextToken()) : 0;
-          int minuteOffset = zoneTokenizer.hasMoreTokens() ? Integer.parseInt(zoneTokenizer.nextToken()) : 0;
-          if (isMinus) hourOffset = -hourOffset;
-          DateTimeZone dtz = DateTimeZone.forOffsetHoursMinutes(hourOffset, minuteOffset);
-
-          // Apply the time zone offset, retaining the field values.  This
-          // manipulates the millisecond instance.
-          dt = dt.withZoneRetainFields(dtz);
-          // Now convert to the UTC time zone, retaining the millisecond instant
-          dt = dt.withZone(DateTimeZone.UTC);
-        }
-      }
-
-      return dt;
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Illegal base time specification: '" + dateUnitString+"'", e);
-    }
-  } */
 
   public CalendarDate makeCalendarDate(double value) {
     if (isCalendarField)
@@ -252,11 +182,15 @@ public class CalendarDateUnit {
       return baseDate.add( value, periodField);
   }
 
+  public String getUdUnit() {
+      return toString();
+  }
+
   @Override
   public String toString() {
     Formatter f = new Formatter();
     if (isCalendarField) f.format("%s", byCalendarString);
-    f.format("%s since %s", unitString, CalendarDateFormatter.toDateTimeString(baseDate));
+    f.format("%s since %s", periodField, CalendarDateFormatter.toDateTimeString(baseDate));
     return f.toString();
   }
 
@@ -265,7 +199,7 @@ public class CalendarDateUnit {
   }
 
   public CalendarPeriod getTimeUnit() {
-    return CalendarPeriod.of(1, CalendarPeriod.fromUnitString(unitString));
+    return CalendarPeriod.of(1, periodField);
   }
 
   public Calendar getCalendar() {

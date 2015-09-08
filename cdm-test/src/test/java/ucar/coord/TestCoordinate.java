@@ -39,7 +39,7 @@ public class TestCoordinate implements Coordinate {
         return new CoordinateTime(0, period, null, vals, null);
       case vert:
         List<VertCoord.Level> vert = new ArrayList<>(nvals);
-         for (int i=0; i<nvals; i++) vert.add(new VertCoord.Level((double) (i+1), (double) (i+2), true));
+        for (int i=0; i<nvals; i++) vert.add(new VertCoord.Level((double) (i+1), (double) (i+2)));
         return new CoordinateVert(1, new GribLevelType(11, "m", null, true), vert);  // random vert unit
      }
     return null;
@@ -78,11 +78,6 @@ public class TestCoordinate implements Coordinate {
   @Override
   public int getSize() {
     return vals.size();
-  }
-
-  @Override
-  public int findIndexContaining(double need) {
-    return -1;
   }
 
   @Override

@@ -47,10 +47,20 @@ import ucar.nc2.time.CalendarDateUnit;
 public class CoordinateAxisTimeHelper {
   private final ucar.nc2.time.Calendar calendar;
   private final CalendarDateUnit dateUnit;
+  private final CalendarDate refDate;
+  private final double duration;
 
   public CoordinateAxisTimeHelper(Calendar calendar, String unitString) {
     this.calendar = calendar;
-    this.dateUnit = (unitString == null) ? null : CalendarDateUnit.withCalendar(calendar, unitString); // this will throw exception on failure
+    if (unitString == null) {
+      this.dateUnit = null;
+      this.refDate = null;
+      this.duration = 0.0;
+      return;
+    }
+    this.dateUnit = CalendarDateUnit.withCalendar(calendar, unitString); // this will throw exception on failure
+    this.refDate = dateUnit.getBaseCalendarDate();
+    this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
   }
 
   public CalendarDate makeCalendarDateFromOffset(double offset) {
@@ -59,6 +69,11 @@ public class CoordinateAxisTimeHelper {
 
   public CalendarDate makeCalendarDateFromOffset(String offset) {
     return CalendarDateFormatter.isoStringToCalendarDate(calendar, offset);
+  }
+
+  public double offsetFromRefDate(CalendarDate date) {
+    long msecs = date.getDifferenceInMsecs(refDate);
+    return msecs / duration;
   }
 
 }

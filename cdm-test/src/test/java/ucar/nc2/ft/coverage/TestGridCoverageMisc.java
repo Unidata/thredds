@@ -1,17 +1,20 @@
 /* Copyright */
 package ucar.nc2.ft.coverage;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -31,17 +34,38 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class TestGridCoverageMisc {
 
+  @BeforeClass
+  public static void before() {
+    GribDataReader.validator = new GribCoverageValidator();
+  }
+
+  @AfterClass
+  public static void after() {
+    GribDataReader.validator = null;
+  }
+
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    //result.add(new Object[]{"C:/data/gfsanl_3_20040302_1800_000.grb", null, "Geopotential_height_zeroDegC_isotherm", null, null, "2004-03-02T18:00:00Z", null, null});
-    //result.add(new Object[]{"C:/data/gfsanl_3_20040302_1800_000.grb", null, "Vertical_velocity_pressure_isobaric", null, null, "2004-03-02T18:00:00Z", null, null});
-    //result.add(new Object[]{"C:/data/gfsanl_3_20040302_1800_000.grb", null, "Vertical_velocity_pressure_isobaric", null, null, "2004-03-02T18:00:00Z", 400.0, null});
+    // Slice Mixed_layer_depth_surface runtime=2009-11-22T00:00:00Z (0) ens=0.000000 (-1) time=2009-11-23T00:00:00Z (0) vert=0.000000 (-1)
 
-    //    Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T03:00:00Z (1) vert=0.000000 (-1)
+
+    // Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-01T06:00:00Z (2) vert=0.000000 (-1)
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Grid,  "Total_ozone_entire_atmosphere_single_layer",
+            "2015-03-01T00:00:00Z", null, "2015-03-01T06:00:00Z ", null, null});
+
+    // Slice Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T12:00:00Z (2) ens=0.000000 (-1) time=2015-03-04T19:30:00Z (26) vert=0.000000 (-1)
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
-            "2015-03-01T06:00:00Z", null, "2015-03-01T12:00:00Z", null, null});
+            "2015-03-01T12:00:00Z", null, "2015-03-04T19:30:00Z", null, null});
+
+    // Slice Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T12:00:00Z (2) ens=0.000000 (-1) time=2015-03-03T15:00:00Z (17) vert=0.000000 (-1)
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Total_ozone_entire_atmosphere_single_layer",
+            "2015-03-01T12:00:00Z", null, "2015-03-03T15:00:00Z", null, null});
+    //
+    //    Slice runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
+            "2015-03-01T00:00:00Z", null, "2015-03-06T19:30:00Z", null, 46});
 
     // Test Dataset Q:/cdmUnitTest/gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3  Grid TwoD/Total_ozone_entire_atmosphere_single_layer
     //  Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T00:00:00Z (0) vert=0.000000 (-1)
@@ -53,9 +77,6 @@ public class TestGridCoverageMisc {
     //    Slice runtime=2015-03-01T18:00:00Z (3) ens=0.000000 (-1) time=2015-03-17T18:00:00Z (92) vert=30000.000000 (9)
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T18:00:00Z", null, "2015-03-17T18:00:00Z", null, null});
-    //    Slice runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
-            "2015-03-01T00:00:00Z", null, "2015-03-06T19:30:00Z", null, 46});
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc",  null, "RH_lpdg", null, null, "2003-06-12T19:00:00Z", 150.0, null});  // NUWG - has CoordinateAlias
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3",  null, "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.580000, null}); // SRC                               // TP
@@ -80,7 +101,7 @@ public class TestGridCoverageMisc {
     this.endpoint = endpoint;
     this.type = type;
     this.covName = covName;
-    this.gridName = (type == CoverageCoordSys.Type.Fmrc) ? "TwoD/"+ covName : covName;
+    this.gridName = (type == CoverageCoordSys.Type.Fmrc) ? "TwoD/"+ covName : "Best/"+covName;
     this.rt_val = rt_val == null ? null : CalendarDate.parseISOformat(null, rt_val);
     this.ens_val = ens_val;
     this.time_val = time_val == null ? null : CalendarDate.parseISOformat(null, time_val);
@@ -89,7 +110,7 @@ public class TestGridCoverageMisc {
   }
 
   @Test
-  public void testReadGridCoverageSlice() throws IOException {    // read single slice
+  public void testReadGridCoverageSlice() throws IOException, InvalidRangeException {    // read single slice
     System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
@@ -102,6 +123,7 @@ public class TestGridCoverageMisc {
       // check DtCoverageCS
       try (GridDataset ds = GridDataset.open(endpoint)) {
         GridDatatype dt = ds.findGridByName(gridName);
+        if (dt == null) dt = ds.findGridByName(covName);
         Assert.assertNotNull(gridName, dt);
 
         GridCoordSystem csys = dt.getCoordinateSystem();
@@ -117,9 +139,11 @@ public class TestGridCoverageMisc {
             if (timeAxis != null)
               calcTimeIdx = timeAxis.findTimeIndexFromCalendarDate(time_val);
             else if (rt_idx >= 0) {
-              timeAxis = csys.getTimeAxisForRun(rt_idx);
-              if (timeAxis != null)
-                calcTimeIdx = timeAxis.findTimeIndexFromCalendarDate(time_val);  // LOOK theres a bug here, set time_idx as workaround
+              CoordinateAxis2D timeAxis2D = (CoordinateAxis2D) csys.getTimeAxis();
+              calcTimeIdx = timeAxis2D.findTimeIndexFromCalendarDate(rt_idx, time_val);
+      //        timeAxis = csys.getTimeAxisForRun(rt_idx);                         // LOOK doesnt work for interval coords
+      //        if (timeAxis != null)
+      //          calcTimeIdx = timeAxis.findTimeIndexFromCalendarDate(time_val);  // LOOK theres a bug here, set time_idx as workaround
             }
           }
         } else {

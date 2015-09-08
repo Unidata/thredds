@@ -41,6 +41,9 @@ import java.util.*;
 
 /**
  * Store objects of type T in a sparse array.
+ * Conceptually a multidim array with shape[n] and totalsize.
+ * Stored as track[totalsize] = {0 = missing, else = index+1 into List<T> content}
+ * So we dont have to store missing Ts.
  *
  * @author caron
  * @since 11/24/13
@@ -53,7 +56,7 @@ public class SparseArray<T> {
   private final int[] stride;  // for index calculation
   private final int totalSize; // product of sizes
 
-  private final int[] track; // index into content, size totalSize. LOOK use byte, short to save memory ??
+  private final int[] track;    // index into content, size totalSize. LOOK could use byte, short to save memory ??
   private final List<T> content; // keep the things in a List.
   private final int ndups;
 

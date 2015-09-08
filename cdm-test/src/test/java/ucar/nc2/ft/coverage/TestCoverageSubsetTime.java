@@ -1,10 +1,12 @@
 package ucar.nc2.ft.coverage;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
+import ucar.ma2.Array;
+import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
@@ -16,12 +18,51 @@ import java.io.IOException;
  */
 public class TestCoverageSubsetTime {
 
+  @BeforeClass
+  public static void before() {
+    GribDataReader.validator = new GribCoverageValidator();
+  }
+
+  @AfterClass
+  public static void after() {
+    GribDataReader.validator = null;
+  }
+
+  @Test  // there is no interval with offset value = 51
+  public void testNoIntervalFound() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
+
+    System.out.printf("test1Runtime1TimeOffset Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T12:00:00Z");
+      params.set(SubsetParams.runtime, runtime);
+      double offsetVal = 51.0;  // should fail
+      params.set(SubsetParams.timeOffset, offsetVal);
+      System.out.printf("  subset %s%n", params);
+
+      GeoReferencedArray geo = cover.readData(params);
+      testGeoArray(geo, runtime, null, offsetVal);
+
+      // should be empty, but instead its a bunch of NaNs
+      assert Float.isNaN(geo.getData().getFloat(0));
+    }
+  }
+
   @Test  // 1 runtime, 1 timeOffset (Time2DCoordSys case 1a)
   public void test1Runtime1TimeOffset() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
+    System.out.printf("test1Runtime1TimeOffset Dataset %s coverage %s%n", endpoint, covName);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -35,42 +76,56 @@ public class TestCoverageSubsetTime {
       params.set(SubsetParams.runtime, runtime);
       double offsetVal = 205.0;
       params.set(SubsetParams.timeOffset, offsetVal);
+      System.out.printf("  subset %s%n", params);
+
       GeoReferencedArray geo = cover.readData(params);
-      CoverageCoordSys geoCs = geo.getCoordSysForData();
-
-      CoverageCoordAxis runtimeAxis = geoCs.getAxis(AxisType.RunTime);
-      Assert.assertNotNull(runtimeAxis);
-      Assert.assertTrue(runtimeAxis instanceof CoverageCoordAxis1D);
-      Assert.assertEquals(1, runtimeAxis.getNcoords());
-      CoverageCoordAxis1D runtimeAxis1D = (CoverageCoordAxis1D) runtimeAxis;
-      Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
-
-      CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
-      Assert.assertNotNull(timeAxis);
-      Assert.assertTrue(timeAxis instanceof CoverageCoordAxis1D);
-      Assert.assertEquals(1, timeAxis.getNcoords());
-      CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
-      CalendarDate time = timeAxis1D.makeDate(offsetVal);
-      if (timeAxis.isInterval()) {
-        CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
-        Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
-        CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
-        Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
-
-      }else {
-        Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
-      }
+      testGeoArray(geo, runtime, null, offsetVal);
 
       // LOOK need to test data
     }
   }
 
+
+  // Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)
   @Test  // 1 runtime, 1 time (Time2DCoordSys case 1b)
-  public void test1Runtime1Time() throws IOException, InvalidRangeException {
+  public void test1Runtime1TimeIntervalEdge() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
+    System.out.printf("test1Runtime1TimeInterval Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      params.set(SubsetParams.runtime, runtime);
+      CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-06T19:30:00Z"); // (6,12), (12,18)
+      params.set(SubsetParams.time, time);
+      System.out.printf("  subset %s%n", params);
+
+      GeoReferencedArray geo = cover.readData(params);
+      testGeoArray(geo, runtime, time, null);
+
+      Array data = geo.getData();
+      Index ai = data.getIndex();
+      float testValue = data.getFloat(ai.set(0, 0, 3, 0));
+      Assert.assertEquals(0.244, testValue, Misc.maxReletiveError);
+    }
+  }
+
+
+  // Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T12:00:00Z (1) vert=0.000000 (-1)
+  @Test  // 1 runtime, 1 time (Time2DCoordSys case 1b)
+  public void test1Runtime1TimeInterval() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
+
+    System.out.printf("test1Runtime1TimeInterval Dataset %s coverage %s%n", endpoint, covName);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -82,34 +137,49 @@ public class TestCoverageSubsetTime {
       SubsetParams params = new SubsetParams();
       CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T06:00:00Z");
       params.set(SubsetParams.runtime, runtime);
-      CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-06T06:00:00Z");
+      CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-01T11:00:00Z"); // (6,12), (12,18)
       params.set(SubsetParams.time, time);
+      System.out.printf("  subset %s%n", params);
+
       GeoReferencedArray geo = cover.readData(params);
-      CoverageCoordSys geoCs = geo.getCoordSysForData();
+      testGeoArray(geo, runtime, time, null);
 
-      CoverageCoordAxis runtimeAxis = geoCs.getAxis(AxisType.RunTime);
-      Assert.assertNotNull(runtimeAxis);
-      Assert.assertTrue(runtimeAxis instanceof CoverageCoordAxis1D);
-      Assert.assertEquals(1, runtimeAxis.getNcoords());
-      CoverageCoordAxis1D runtimeAxis1D = (CoverageCoordAxis1D) runtimeAxis;
-      Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
+      Array data = geo.getData();
+      Index ai = data.getIndex();
+      float testValue = data.getFloat(ai.set(0,0,2,2));
+      Assert.assertEquals(0.073, testValue, Misc.maxReletiveError);
+    }
+  }
 
-      CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
-      Assert.assertNotNull(timeAxis);
-      Assert.assertTrue(timeAxis instanceof CoverageCoordAxis1D);
-      Assert.assertEquals(1, timeAxis.getNcoords());
-      CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
-      if (timeAxis.isInterval()) {
-        CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
-        Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
-        CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
-        Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
+  // Slice Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T12:00:00Z (2) vert=0.000000 (-1)
+  @Test  // 1 runtime, 1 time (Time2DCoordSys case 1b)
+  public void test1Runtime1Time() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String covName = "Total_ozone_entire_atmosphere_single_layer";
 
-      }else {
-        Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
-      }
+    System.out.printf("test1Runtime1Time Dataset %s coverage %s%n", endpoint, covName);
 
-      // LOOK need to test data
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T06:00:00Z");
+      params.set(SubsetParams.runtime, runtime);
+      CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-01T12:00:00Z");
+      params.set(SubsetParams.time, time);
+      System.out.printf("  subset %s%n", params);
+
+      GeoReferencedArray geo = cover.readData(params);
+      testGeoArray(geo, runtime, time, null);
+
+      Array data = geo.getData();
+      Index ai = data.getIndex();
+      float testValue = data.getFloat(ai.set(0,0,1,0));
+      Assert.assertEquals(371.5, testValue, Misc.maxReletiveError);
     }
   }
 
@@ -118,7 +188,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
+    System.out.printf("testConstantRuntime Dataset %s coverage %s%n", endpoint, covName);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -130,6 +200,8 @@ public class TestCoverageSubsetTime {
       SubsetParams params = new SubsetParams();
       CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T12:00:00Z");
       params.set(SubsetParams.runtime, runtime);
+      System.out.printf("  subset %s%n", params);
+
       GeoReferencedArray geo = cover.readData(params);
       CoverageCoordSys geoCs = geo.getCoordSysForData();
 
@@ -157,7 +229,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
+    System.out.printf("testConstantOffset Dataset %s coverage %s%n", endpoint, covName);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -170,6 +242,8 @@ public class TestCoverageSubsetTime {
       double offsetVal = 205.0;
       params.set(SubsetParams.timeOffset, offsetVal);
       params.set(SubsetParams.runtimeAll, true);
+      System.out.printf("  subset %s%n", params);
+
       GeoReferencedArray geo = cover.readData(params);
       CoverageCoordSys geoCs = geo.getCoordSysForData();
 
@@ -191,7 +265,7 @@ public class TestCoverageSubsetTime {
         Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge2(0) >= offsetVal);          // upper >= time
 
       }else {
-        Assert.assertEquals("offset coord", offsetVal, timeAxis1D.getCoord(0), Misc.maxReletiveError);
+        Assert.assertEquals("offset coord", offsetVal, timeAxis1D.getCoord(0), offsetVal*Misc.maxReletiveError);
       }
 
       // LOOK need to test data
@@ -203,7 +277,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
     String covName = "Pressure_convective_cloud_bottom";
 
-    System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
+    System.out.printf("testConstantForecast Dataset %s coverage %s%n", endpoint, covName);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -216,6 +290,8 @@ public class TestCoverageSubsetTime {
       CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-01T15:00:00Z");
       params.set(SubsetParams.time, time);
       params.set(SubsetParams.runtimeAll, true);
+      System.out.printf("  subset %s%n", params);
+
       GeoReferencedArray geo = cover.readData(params);
       CoverageCoordSys geoCs = geo.getCoordSysForData();
 
@@ -228,30 +304,165 @@ public class TestCoverageSubsetTime {
       Assert.assertEquals(6.0, runtimeAxis.getResolution(), Misc.maxReletiveError);
 
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.Time);
-      Assert.assertNotNull(timeAxis);
-      Assert.assertTrue(timeAxis instanceof CoverageCoordAxis1D);
-      Assert.assertEquals(1, timeAxis.getNcoords());
-      CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
-      if (timeAxis.isInterval()) {
-        CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
-        Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
-        CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
-        Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
+      if (timeAxis != null) {
+        Assert.assertTrue(timeAxis instanceof CoverageCoordAxis1D);
+        Assert.assertEquals(1, timeAxis.getNcoords());
+        CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
+        if (timeAxis.isInterval()) {
+          CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
+          Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
+          CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
+          Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
 
-      }else {
-        Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
+        } else {
+          Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
+        }
       }
 
       CoverageCoordAxis timeOffsetAxis = geoCs.getAxis(AxisType.TimeOffset);
-      Assert.assertNotNull(timeOffsetAxis);
-      Assert.assertTrue(timeOffsetAxis instanceof TimeOffsetAxis);
-      Assert.assertEquals(3, timeAxis.getNcoords());
-      Assert.assertEquals(CoverageCoordAxis.DependenceType.dependent, timeAxis.getDependenceType());
-      Assert.assertEquals(CoverageCoordAxis.Spacing.discontiguousInterval, timeAxis.getSpacing());
-     // Assert.assertEquals(0.0, timeAxis.getStartValue(), Misc.maxReletiveError);
-     // Assert.assertEquals(384.0, timeAxis.getEndValue(), Misc.maxReletiveError);
-
-      // LOOK need to test data
+      if (timeOffsetAxis != null) {
+        Assert.assertTrue(timeOffsetAxis instanceof TimeOffsetAxis);
+        Assert.assertEquals(3, timeOffsetAxis.getNcoords());
+        Assert.assertEquals(CoverageCoordAxis.DependenceType.dependent, timeOffsetAxis.getDependenceType());
+        Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, timeOffsetAxis.getSpacing());  // LOOK wrong
+      }
     }
   }
+
+  private void testGeoArray(GeoReferencedArray geo, CalendarDate runtime, CalendarDate time, Double offsetVal) {
+    CoverageCoordSys geoCs = geo.getCoordSysForData();
+
+    CoverageCoordAxis runtimeAxis = geoCs.getAxis(AxisType.RunTime);
+    Assert.assertNotNull(runtimeAxis);
+    Assert.assertTrue(runtimeAxis instanceof CoverageCoordAxis1D);
+    Assert.assertEquals(1, runtimeAxis.getNcoords());
+    CoverageCoordAxis1D runtimeAxis1D = (CoverageCoordAxis1D) runtimeAxis;
+    Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
+
+    CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
+    Assert.assertNotNull(timeAxis);
+    Assert.assertTrue(timeAxis instanceof CoverageCoordAxis1D);
+    Assert.assertEquals(1, timeAxis.getNcoords());
+    CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
+    if (offsetVal != null)
+       time = timeAxis1D.makeDate(offsetVal);
+    if (timeAxis.isInterval()) {
+      CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
+      Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
+      CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
+      Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
+
+    }else {
+      Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
+    }
+
+    int[] shapeCs = geoCs.getShape();
+    int [] dataShape = geo.getData().getShape();
+
+    Assert.assertArrayEquals("geo shape", shapeCs, dataShape);
+  }
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // Best
+
+  @Test
+  public void testBestPresent() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String covName = "Temperature_altitude_above_msl";
+
+    System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      params.set(SubsetParams.timePresent, true);
+      params.set(SubsetParams.vertCoord, 3658.0);
+      System.out.printf("  subset %s%n", params);
+
+      GeoReferencedArray geo = cover.readData(params);
+
+      // should not be missing !
+      assert !Float.isNaN(geo.getData().getFloat(0));
+
+      Array data = geo.getData();
+      Index ai = data.getIndex();
+      float testValue = data.getFloat(ai.set(0, 0, 3, 0));
+      Assert.assertEquals(244.8, testValue, testValue * Misc.maxReletiveError);
+    }
+  }
+
+  @Test
+  public void testBestTimeCoord() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String covName = "Temperature_altitude_above_msl";
+
+    System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      params.set(SubsetParams.time, CalendarDate.parseISOformat(null, "2015-03-03T00:00:00Z"));
+      params.set(SubsetParams.vertCoord, 3658.0);
+      System.out.printf("  subset %s%n", params);
+
+      GeoReferencedArray geo = cover.readData(params);
+
+      // should not be missing !
+      assert !Float.isNaN(geo.getData().getFloat(0));
+
+      Array data = geo.getData();
+      Index ai = data.getIndex();
+      float testValue = data.getFloat(ai.set(0, 0, 0, 0));
+      Assert.assertEquals(244.3, testValue, testValue * Misc.maxReletiveError);
+    }
+  }
+
+  @Test
+  public void testBestTimeOffsetCoord() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String covName = "Temperature_altitude_above_msl";
+
+    System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      params.set(SubsetParams.timeOffset, 48.0);
+      params.set(SubsetParams.vertCoord, 3658.0);
+      System.out.printf("  subset %s%n", params);
+
+      GeoReferencedArray geo = cover.readData(params);
+
+      // should not be missing !
+      assert !Float.isNaN(geo.getData().getFloat(0));
+
+      Array data = geo.getData();
+      Index ai = data.getIndex();
+      float testValue = data.getFloat(ai.set(0, 0, 3, 0));
+      Assert.assertEquals(250.5, testValue, testValue * Misc.maxReletiveError);
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  // ENsemble
+
+  //     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", CoverageCoordSys.Type.Fmrc, "geopotential"});
+
+
 }

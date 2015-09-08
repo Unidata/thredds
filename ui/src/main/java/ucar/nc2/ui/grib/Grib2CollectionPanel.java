@@ -36,7 +36,9 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -482,6 +484,8 @@ public class Grib2CollectionPanel extends JPanel {
 
 
   public void setCollection(String spec) throws IOException {
+    closeOpenFiles();
+
     this.spec = spec;
     this.cust = null;
 
@@ -946,9 +950,11 @@ public class Grib2CollectionPanel extends JPanel {
       f.format("Exception %s", sw.toString());
       return;
     }
+    Grib2Gds gds = bean1.gr.getGDS();
 
-    for (float fd : data)
-      f.format("%f%n", fd);
+    int[] shape = new int[] {gds.getNy(), gds.getNx()};
+    Array arr = Array.factory(DataType.FLOAT, shape, data);
+    f.format("%s", NCdumpW.toString(arr));
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////

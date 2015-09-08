@@ -40,10 +40,10 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.Attribute;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Variable;
@@ -536,6 +536,79 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return sa.getContent(sourceIndex);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // experimental coord based record finding
+    public synchronized Record getRecordAt(Map<String, Object> coords) {
+      int[] want = new int[getRank()];
+      int count = 0;
+      for (Coordinate coord : getCoordinates()) {
+        int idx = -1;
+        Object coordVal = null;
+        switch (coord.getType()) {
+          case runtime:
+            coordVal = coords.get(CoordsSet.runDate);  // CalendarDate or Long
+            idx = coord.getIndex( (CalendarDate) coordVal);
+            break;
+
+          case timeIntv:
+            coordVal = coords.get(CoordsSet.timeOffsetCoord); // double[]
+            double[] val = (double []) coordVal;
+            idx = coord.getIndex(new TimeCoord.Tinv( (int) val[0], (int) val[1])); // TimeCoord.Tinv
+            break;
+
+          case time:
+            coordVal = coords.get(CoordsSet.timeOffsetCoord); // Double
+            int coordInt = ((Double) coordVal).intValue();
+            idx = coord.getIndex(coordInt);
+            break;
+
+          case time2D:
+            coordVal = coords.get(CoordsSet.timeOffsetCoord); // double[] or Double
+            if (coordVal != null) {
+              if (coordVal instanceof Double) {
+                coordInt = ((Double) coordVal).intValue();
+                idx = ((CoordinateTime2D) coord).findTimeIndexInOtime(coordInt);
+              } else if (coordVal instanceof double[]) {
+                double[] coordBounds = (double[]) coordVal;
+                TimeCoord.Tinv coordTinv = new TimeCoord.Tinv((int) coordBounds[0], (int) coordBounds[1]);
+                idx = ((CoordinateTime2D) coord).findTimeIndexInOtime(coordTinv);
+              }
+              break;
+            }
+            throw new IllegalStateException("time2D must have timeOffsetCoord");
+
+          case vert:
+            coordVal = coords.get(CoordsSet.vertCoord);  // VertCoord.Level
+            VertCoord.Level coordVert = null;
+            if (coordVal instanceof Double)
+              coordVert = new VertCoord.Level((Double) coordVal);
+            else if (coordVal instanceof double[]) {
+              double[] coordBounds = (double[]) coordVal;
+              coordVert = new VertCoord.Level(coordBounds[0], coordBounds[1]);
+            }
+            assert coordVert != null;
+            idx = coord.getIndex(coordVert);
+            break;
+
+          case ens:
+            coordVal = coords.get(CoordsSet.ensCoord);  // EnsCoord.Coord
+            idx = ((CoordinateEns)coord).getIndexByMember((Double) coordVal);
+            break;
+        }
+
+        if (coordVal == null)
+          System.out.printf("GribCollectionImmutable: missing CoordVal for %s%n", coord.getName());
+
+        if (idx < 0) {
+          logger.debug("Cant find index for value {} in axis {} in variable {}", coordVal, coord.getName(), name );
+          return null;
+        }
+
+        want[count++] = idx;
+      }
+      return sa.getContent(want);
+    }
+
     public List<Coordinate> getCoordinates() {
       List<Coordinate> result = new ArrayList<>(coordIndex.size());
       for (int idx : coordIndex)
@@ -568,11 +641,11 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return coordIndex;
     }
 
-    public Coordinate findCoordinate(String want) {
+    /* public Coordinate findCoordinate(String want) {
       for (Coordinate coord : group.getCoordinates())
         if (coord.getName().equals(want)) return coord;
       return null;
-    }
+    } */
 
     public SparseArray<Record> getSparseArray() {
       return sa;
@@ -638,6 +711,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return ndups;
     }
 
+    public GroupGC getGroup() {
+      return group;
+    }
 
     public int getNmissing() {
       return nmissing;
@@ -655,6 +731,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         size *= csize;
       }
       return size;
+    }
+
+    public int getRank() {
+      return coordIndex.size();
     }
 
     public String toStringFrom() {

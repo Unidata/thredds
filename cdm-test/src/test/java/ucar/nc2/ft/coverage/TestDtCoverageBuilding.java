@@ -4,6 +4,7 @@ package ucar.nc2.ft.coverage;
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.ft2.coverage.*;
@@ -76,7 +77,7 @@ public class TestDtCoverageBuilding {
       assert !runAxis.isScalar();
       Assert.assertEquals(10, runAxis.getSize());
 
-      CoordinateAxis2D timeAxis = fmrcCS.getTimeAxis();
+      CoordinateAxis timeAxis = fmrcCS.getTimeAxis();
       Assert.assertNotNull("time axis", timeAxis);
       assert !timeAxis.isScalar();
       Assert.assertEquals(360, timeAxis.getSize());

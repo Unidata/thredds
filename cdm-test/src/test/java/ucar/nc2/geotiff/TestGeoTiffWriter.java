@@ -44,6 +44,7 @@ import org.junit.runners.Parameterized;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
@@ -72,41 +73,54 @@ public class TestGeoTiffWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", "Temperature_sigma"});         // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3", "Pressure_surface"});                                         // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", CoverageCoordSys.Type.Grid, "Temperature_sigma"});         // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3", CoverageCoordSys.Type.Fmrc, "Pressure_surface"});                                         // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Grid, "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc, "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", "Temperature"});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", "geopotential"});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", CoverageCoordSys.Type.Grid, "Temperature"});
 
     return result;
   }
 
   String filename, field;
+  CoverageCoordSys.Type type;
 
-  public TestGeoTiffWriter(String filename, String field) {
+  public TestGeoTiffWriter(String filename, CoverageCoordSys.Type type, String field) {
     this.filename = filename;
+    this.type = type;
     this.field = field;
   }
-
 
   @Test
   public void testWriteCoverage() throws IOException, InvalidRangeException {
     File f = new File(filename);
     String gridOut = TestDir.temporaryLocalDataDir + f.getName() + ".grid.tif";
-    System.out.printf("geotiff read grid %s write %s%n", filename, gridOut);
+    System.out.printf("geotiff read grid %s (%s) from %s write %s%n", field, type, filename, gridOut);
 
-    Array data1;
+    Array dtArray;
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype grid = gds.findGridByName(field);
       assert grid != null;
-      CoordinateAxis timeAxis = grid.getCoordinateSystem().getTimeAxis1D();
-      int tindex = (timeAxis == null) ? -1 : (int) timeAxis.getSize() - 1;
-      data1 = grid.readDataSlice(tindex, 0, -1, -1);
+      int rtindex = -1;
+      int tindex = -1;
+      CoordinateAxis timeAxis = grid.getCoordinateSystem().getTimeAxis();
+      if (timeAxis instanceof CoordinateAxis2D) {
+        int[] shape = timeAxis.getShape();
+        rtindex = shape[0]-1;
+        tindex = shape[1]-1;
+      } else {
+        CoordinateAxis rtimeAxis = grid.getCoordinateSystem().getRunTimeAxis();
+        if (rtimeAxis != null)
+          rtindex = (int) rtimeAxis.getSize() - 1; // last one
+        timeAxis = grid.getCoordinateSystem().getTimeAxis1D();
+        if (timeAxis != null)
+          tindex =(int) timeAxis.getSize() - 1; // last one
+      }
+      dtArray = grid.readDataSlice(rtindex, -1, tindex, 0, -1, -1);
 
       try (GeotiffWriter writer = new GeotiffWriter(gridOut)) {
-        writer.writeGrid(gds, grid, data1, true);
+        writer.writeGrid(gds, grid, dtArray, true);
       }
     }
 
@@ -118,23 +132,28 @@ public class TestGeoTiffWriter {
       String gridOut2 = TestDir.temporaryLocalDataDir + f.getName() + ".coverage.tif";
       System.out.printf("geotiff2 read coverage %s write %s%n", filename, gridOut2);
 
-      GeoReferencedArray array;
+      GeoReferencedArray covArray;
       try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
         assert cc != null;
-        Assert.assertEquals(1, cc.getCoverageDatasets().size());
-        CoverageDataset gcd = cc.getCoverageDatasets().get(0);
-        Coverage coverage = gcd.findCoverage(field);
-        assert coverage != null;
-        array = coverage.readData(new SubsetParams()
-                .set(SubsetParams.timePresent, true)
-                .set(SubsetParams.vertIndex, 0));      // LOOK cheating
+        CoverageDataset gcd = cc.findCoverageDataset(type);
+        Assert.assertNotNull(type.toString(), gcd);
+
+        int pos = field.indexOf("/");
+        String covName = (pos > 0) ? field.substring(pos+1) : field;
+
+        Coverage coverage = gcd.findCoverage(covName);
+        CoverageCoordAxis1D z = (CoverageCoordAxis1D) coverage.getCoordSys().getZAxis();
+        SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true);
+        if (z != null) params.set(SubsetParams.vertCoord, z.getCoord(0));
+        Assert.assertNotNull(covName, coverage);
+        covArray = coverage.readData(params);
 
         try (GeotiffWriter writer = new GeotiffWriter(gridOut2)) {
-          writer.writeGrid(array, true);
+          writer.writeGrid(covArray, true);
         }
       }
 
-      CompareNetcdf.compareData(data1, array.getData());
+      CompareNetcdf.compareData(dtArray, covArray.getData());
 
       // read it back in
       try (GeoTiff geotiff2 = new GeoTiff(gridOut2)) {

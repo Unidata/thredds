@@ -336,7 +336,6 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     CdmrFeatureController.setDiskCache(cdmrCache);
     startupLog.info("TdsInit:  CdmRemote= " + dir + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs); */
 
-
     // turn back on for 4.6 needed for FMRC
     // turned off for 4.5 not used ??
     // new for 4.2 - feature collection caching

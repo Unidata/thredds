@@ -42,10 +42,9 @@ import ucar.unidata.util.StringUtil2;
  * @since Mar 23, 2009
  */
 public class LogCategorizer {
-  static String prefix = "/thredds/catalog/";
   static boolean showRoots = false;
 
-  // default roots
+  /* default roots
   static private String roots =
           "terminal/level3/IDD,/data/ldm/pub/native/radar/level3/\n" +
                   "terminal/level3,/data/ldm/pub/native/radar/level3/\n" +
@@ -183,7 +182,9 @@ public class LogCategorizer {
       result[i/2] = root2[i];
     }
     return result;
-  }
+  } */
+
+  private static String roots;
 
   public static void setRoots(String raw) {
     if (null != raw)
@@ -298,125 +299,4 @@ public class LogCategorizer {
     return null;
   }
 
-  //////////////////////////////////////////////////////////////////
-
-//  int datasetReq = 0;
-//  int unknownReq = 0;
-//  int latestReq = 0;
-//
-//  class MyClosure implements LogReader.Closure {
-//
-//    public void process(LogReader.Log log) {
-//      String path = log.path.substring(prefix.length());
-//
-//      int len = 0;
-//      if (path.endsWith("/catalog.xml")) {
-//        len = "/catalog.xml".length();
-//
-//      } else if (path.endsWith("/catalog.html")) {
-//        len = "/catalog.html".length();
-//
-//      } else if (path.endsWith("/latest.xml")) {
-//        latestReq++;
-//        len = "/latest.xml".length();
-//
-//      } else if (path.endsWith("/latest.html")) {
-//        latestReq++;
-//        len = "/latest.html".length();
-//
-//      } else if (path.contains("catalog.html?dataset=")) {
-//        //System.out.printf("Dataset request=%s %n", log.path);
-//        datasetReq++;
-//        return;
-//
-//      } else if (path.contains("latest.html?dataset=")) {
-//        //System.out.printf("Latest request=%s %n", log.path);
-//        datasetReq++;
-//        return;
-//
-//      } else {
-//        // System.out.printf("Unknown request=%s %n", log.path);
-//        unknownReq++;
-//        return;
-//      }
-//
-//      PathMatcher.Match match = pathMatcher.match(path);
-//      if (match == null) {
-//        System.out.printf("No root for path %s %n", path);
-//        return;
-//      }
-//
-//      String remaining = path.substring(match.root.length(), path.length() - len);
-//      if (remaining.startsWith("/"))
-//        remaining = remaining.substring(1);
-//
-//      /* String dirName = match.dir + remaining;
-//      CacheDirectory mdir = manager.get(dirName, true);
-//      if (mdir == null)
-//        if (show) System.out.printf("Dir %s from path %s doesnt exist%n", dirName, log.path);
-//        else if (show)
-//          System.out.printf("Dir %s from path %s ok%n", dirName, log.path); */
-//    }
-//
-//  }
-
-  //////////////////////////////////////////////////////
-
-  /*
-  String ehLocation = "C:/data/ehcache/";
-  CacheManager manager;
-
-  LogCategorizer() {
-    CacheManager.makeTestCacheManager(ehLocation);
-    manager = new CacheManager("directories");
-    System.out.printf(" Ehcache at %s%n", ehLocation);
-
-    if (pathMatcher == null)
-      pathMatcher = readRoots();
-  }
-
-  void process(String logDir) throws IOException {
-    LogReader reader = new LogReader(new AccessLogParser());
-
-    long startElapsed = System.nanoTime();
-    LogReader.Stats stats = new LogReader.Stats();
-
-    reader.readAll(new File(logDir), new MyFF(), new MyClosure(), new MyLogFilter(), stats);
-
-    long elapsedTime = System.nanoTime() - startElapsed;
-    System.out.printf(" total= %d passed=%d%n", stats.total, stats.passed);
-    System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));
-  }
-
-  void close() {
-    manager.stats();
-    manager.close();
-  }
-
-  static boolean show = false;
-  static boolean nocache = false;
-
-  public static void main(String args[]) throws IOException {
-    System.out.printf("TestFileSystem%n");
-
-    if (args.length < 1) {
-      System.out.printf("usage: thredds.filesystem.server.TestFileSystem logDir [show] [showRoots] [nocache]%n");
-    }
-    String path = args[0];
-
-    for (String arg : args) {
-      if (arg.equals("show")) show = true;
-      if (arg.equals("showRoots")) showRoots = true;
-      if (arg.equals("nocache")) nocache = true;
-    }
-
-    LogCategorizer reader = new LogCategorizer();
-
-    System.out.printf(" Reading logs from %s%n", path);
-    reader.process(path);
-    System.out.printf("   latestReq= %d%n", reader.latestReq);
-    System.out.printf("   datasetReq= %d%n", reader.datasetReq);
-    System.out.printf("   unknownReq= %d%n", reader.unknownReq);
-    reader.close();
-  }  */
 }

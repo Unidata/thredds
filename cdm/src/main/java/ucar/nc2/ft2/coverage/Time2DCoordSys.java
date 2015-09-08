@@ -71,12 +71,8 @@ public class Time2DCoordSys {
     return result;
   }
 
-  public boolean isTime2D() {
-    return true;
-  }
-
 /*
-2D Time subsetting
+  2D Time subsetting
   A 2D time dataset will have CoverageType set to FMRC.
   You may specify a runtime with a date, latest or all; specify a timeOffset with a numeric value, first, or all.
     If only one is set, use the default for the other. If neither is set, then return all times for latest runtime.
@@ -97,22 +93,29 @@ public class Time2DCoordSys {
      2a timeOffset       = constant offset dataset
      2b time (not range) = constant forecast dataset
    */
-  public List<CoverageCoordAxis> subset(SubsetParams params) {
+  public List<CoverageCoordAxis> subset(SubsetParams params, CoverageCoordSysSubset state, boolean makeCFcompliant) {
+    List<CoverageCoordAxis> result = new ArrayList<>();
     CoverageCoordAxis1D runAxisSubset = (CoverageCoordAxis1D) runAxis.subset(params);
+    result.add(runAxisSubset);
 
     // subset on timeOffset (1a, 1c, 2a)
     if (params.hasTimeOffsetParam() || !params.hasTimeParam()) {
       CoverageCoordAxis timeOffsetSubset = timeOffset.subset(params);
-      return Lists.newArrayList(runAxisSubset, timeOffsetSubset);
+      result.add(timeOffsetSubset);
+      if (makeCFcompliant)
+        result.add(makeCFTimeCoord(runAxisSubset)); // possible the twoD time case, if nruns > 1
+      return result;
     }
 
     // subset on time, # runtimes = 1 (1b)
     if (runAxisSubset.getNcoords() == 1) {
-//      double val = runAxisSubset.getCoord(0);   // not sure runAxis is needed. maybe use runtimeSubset
-//      CalendarDate runDate = runAxisSubset.makeDate(val);
-      // leave the offsets reletive to the runAxis reference date
-      CoverageCoordAxis timeSubset =  timeOffset.subsetFromTime(params, runAxisSubset.getRefDate());
-      return Lists.newArrayList(runAxisSubset, timeSubset);
+      double val = runAxisSubset.getCoord(0);   // not sure runAxis is needed. maybe use runtimeSubset
+      CalendarDate runDate = runAxisSubset.makeDate(val);
+      CoverageCoordAxis timeSubset =  timeOffset.subsetFromTime(params, runDate);
+      result.add(timeSubset);
+      if (makeCFcompliant)
+        result.add(makeCFTimeCoord(runAxisSubset));
+      return result;
     }
 
     // tricky case 2b time (not range) = constant forecast dataset
@@ -120,6 +123,7 @@ public class Time2DCoordSys {
     // 1) the runtimes may be subset by whats available
     // 2) timeOffset could become an aux coordinate
     // 3) time coordinate becomes a scalar,
+    state.isConstantForecast = true; // LOOK not very elegant
 
     CalendarDate dateWanted;
     if (params.isTrue(SubsetParams.timePresent))
@@ -161,25 +165,81 @@ public class Time2DCoordSys {
       runValues[count++] = runAxisSubset.getCoord( runtimeIdx.get(k));
     }
 
-    CoverageCoordAxis1D runAxisSubset2 = runAxisSubset.subset(null, CoverageCoordAxis.Spacing.irregularPoint, ncoords, runValues); // LOOK check for regular (in CovCOordAxis ?)
-    CoverageCoordAxis1D timeOffsetSubset = timeOffset.subset(runAxisSubset2.getName(), CoverageCoordAxis.Spacing.irregularPoint, ncoords, offsetValues); // LOOK interval ??
+    CoverageCoordAxisBuilder runbuilder = new CoverageCoordAxisBuilder(runAxisSubset)
+            .subset(null, CoverageCoordAxis.Spacing.irregularPoint, ncoords, runValues); // LOOK check for regular (in CovCoordAxis ?)
+    CoverageCoordAxis1D runAxisSubset2 = new CoverageCoordAxis1D(runbuilder);
+
+    CoverageCoordAxisBuilder timebuilder = new CoverageCoordAxisBuilder(timeOffset)
+            .subset(runAxisSubset2.getName(), CoverageCoordAxis.Spacing.irregularPoint, ncoords, offsetValues); // aux coord (LOOK interval) ??
+    CoverageCoordAxis1D timeOffsetSubset = new TimeOffsetAxis(timebuilder);
+
     CoverageCoordAxis scalarTimeCoord = makeScalarTimeCoord(wantOffset, runAxisSubset);
 
+    // nothing needed for CF, the run coordinate acts as the CF time independent coord. timeOffset is aux, forecastTime is scalar
     return Lists.newArrayList(runAxisSubset2, timeOffsetSubset, scalarTimeCoord);
   }
 
   private CoverageCoordAxis makeScalarTimeCoord(double val, CoverageCoordAxis1D runAxisSubset) {
-    AttributeContainerHelper atts = new AttributeContainerHelper(CF.TIME);
+    String name = "constantForecastTime";
+    String desc = "forecast time";
+    AttributeContainerHelper atts = new AttributeContainerHelper(name);
     atts.addAttribute(new Attribute(CDM.UNITS, runAxisSubset.getUnits()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
+    atts.addAttribute(new Attribute(CDM.LONG_NAME, desc));
+    atts.addAttribute(new Attribute(CF.CALENDAR, runAxisSubset.getCalendar().toString()));
+
+    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(name, runAxisSubset.getUnits(), desc, DataType.DOUBLE, AxisType.Time, atts,
+            CoverageCoordAxis.DependenceType.scalar, null, CoverageCoordAxis.Spacing.regular, 1, val, val, 0.0, null, null, true);
+
+    return new CoverageCoordAxis1D(builder);
+  }
+
+  private CoverageCoordAxis makeCFTimeCoord(CoverageCoordAxis1D runAxisSubset) {
+    String name = timeOffset.getName()+"Forecast";
+    String desc = "forecast time";
+    AttributeContainerHelper atts = new AttributeContainerHelper(name);
+    atts.addAttribute(new Attribute(CDM.UNITS, runAxisSubset.getUnits()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-    atts.addAttribute(new Attribute(CDM.LONG_NAME, CF.TIME)); // ??
-    atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
+    atts.addAttribute(new Attribute(CDM.LONG_NAME, desc));
+    atts.addAttribute(new Attribute(CF.CALENDAR, runAxisSubset.getCalendar().toString()));
 
+    if (runAxisSubset.getNcoords() == 1) {
+      CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
+      builder.name = name;
+      builder.units = runAxisSubset.getUnits();
+      builder.description = desc;
+      builder.dataType = DataType.DOUBLE;
+      builder.axisType = AxisType.Time;
+      builder.attributes = atts;
+      builder.dependenceType = CoverageCoordAxis.DependenceType.dependent;
+      builder.setDependsOn(timeOffset.getName());
 
-    return new CoverageCoordAxis1D(CF.TIME, runAxisSubset.getUnits(), CF.TIME, DataType.DOUBLE, AxisType.Time, atts,
-            CoverageCoordAxis.DependenceType.scalar, null, CoverageCoordAxis.Spacing.regular, 1, val, val,
-            0.0, null, null, true);
+      builder.spacing = timeOffset.getSpacing();
+      builder.ncoords = timeOffset.ncoords;
+      builder.isSubset = true;
+
+      // conversion from timeOffset to runtime units
+      double offset = timeOffset.getOffsetInTimeUnits(runAxis.getRefDate(), timeOffset.getRefDate());
+
+      switch (timeOffset.getSpacing()) {
+        case regular:
+          builder.startValue = timeOffset.getStartValue() + offset;
+          builder.endValue = timeOffset.getEndValue() + offset;
+          break;
+
+        case contiguousInterval:
+        case irregularPoint:
+        case discontiguousInterval:
+          builder.values = timeOffset.getValues(); // this is a copy
+          for (int i=0; i<builder.values.length; i++)
+            builder.values[i] += offset;
+          break;
+      }
+
+      return new CoverageCoordAxis1D(builder);
+    }
+
+    return null;
   }
 
 

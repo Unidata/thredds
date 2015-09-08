@@ -58,7 +58,6 @@ public class GeoTiffWriter2 extends GeotiffWriter {
   // variant on writing a subsetted grid as a geotiff file
   // seems to handle swath as well ??
   public void writeGrid(String gridDataset_filename, String gridName, int time, int level, boolean greyScale, LatLonRect pt) throws IOException {
-    double scaler;
     try (GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(gridDataset_filename)) {
       GridDatatype grid = dataset.findGridDatatype(gridName);
       if (grid == null) {
@@ -90,12 +89,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       Array lon = xaxis.read();
       Array lat = yaxis.read();
 
-      //latlon coord does not need to time 1000.0
-      if (gcs.isLatLon()) {
-        scaler = 1.0;
-      } else {
-        scaler = 1000.0;
-      }
+      // units may need to be scaled to meters
+      double scaler = (xaxis.getUnitsString().equalsIgnoreCase("km")) ? 1000.0 : 1.0;
 
       if (yaxis.getCoordValue(0) < yaxis.getCoordValue(1)) {
         data = data.flip(0);
@@ -172,7 +167,6 @@ public class GeoTiffWriter2 extends GeotiffWriter {
    */
   private void writeSwathGrid(String fileName, String gridName, int time, int level, boolean greyScale, LatLonRect llr) throws IOException {
 
-    double scaler;
     GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(fileName);
     GridDatatype grid = dataset.findGridDatatype(gridName);
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -188,12 +182,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
 
     double[] swathInfo = getSwathLatLonInformation(lat, lon);
 
-    //latlon coord does not need to time 1000.0
-    if (gcs.isLatLon()) {
-      scaler = 1.0;
-    } else {
-      scaler = 1000.0;
-    }
+    // units may need to be scaled to meters
+    double scaler = (xaxis.getUnitsString().equalsIgnoreCase("km")) ? 1000.0 : 1.0;
 
     //if (yaxis.getCoordValue(0, 0) < yaxis.getCoordValue(0, 1)) {//???
     data = data.flip(0);
@@ -270,8 +260,8 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       ProjectionPoint pjp0 = proj.latLonToProj(maxLat, minLon);
       x1 = getXIndex(lon, pjp0.getX(), 0);
       y1 = getYIndex(lat, pjp0.getY(), 0);
-      yStart = pjp0.getY() * 1000.0;  //latArray[y1];
-      xStart = pjp0.getX() * 1000.0;  //lonArray[x1];
+      yStart = pjp0.getY() * scaler;  //latArray[y1];
+      xStart = pjp0.getX() * scaler;  //lonArray[x1];
       ProjectionPoint pjpn = proj.latLonToProj(minLat, maxLon);
       x2 = getXIndex(lon, pjpn.getX(), 1);
       y2 = getYIndex(lat, pjpn.getY(), 1);

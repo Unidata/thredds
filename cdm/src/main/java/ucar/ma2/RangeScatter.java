@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class RangeScatter implements RangeIterator {
-  private int[] vals;
-
+  private final int[] vals;
+  private final String name;
   /**
    * Ctor
    * @param name optional name
@@ -26,7 +26,12 @@ public class RangeScatter implements RangeIterator {
    */
   public RangeScatter(String name, int... val) throws InvalidRangeException {
     // super(name, val[0], val[val.length-1], 1, val.length);
+    this.name = name;
     this.vals = val;
+  }
+
+  public String getName() {
+    return name;
   }
 
   public int length() {

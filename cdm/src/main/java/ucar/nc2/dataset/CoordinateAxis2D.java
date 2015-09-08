@@ -37,6 +37,8 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -412,6 +414,68 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
   public CoordinateAxisTimeHelper getCoordinateAxisTimeHelper() {
     return new CoordinateAxisTimeHelper(getCalendarFromAttribute(), getUnitsString());
+  }
+
+  public int findTimeIndexFromCalendarDate(int run_idx, CalendarDate want) throws IOException, InvalidRangeException {
+    CoordinateAxisTimeHelper helper = getCoordinateAxisTimeHelper();
+    double wantOffset = helper.offsetFromRefDate(want);
+
+    if (isInterval()) {
+      ArrayDouble.D3 bounds = getCoordBoundsArray();
+      ArrayDouble.D2 boundsForRun = (ArrayDouble.D2) bounds.slice(0,run_idx );
+
+      int idx = findSingleHit(boundsForRun, wantOffset);
+      if (idx >= 0) return idx;
+      if (idx == -1) return -1;
+      // multiple hits = choose closest to the midpoint
+      return findClosest(boundsForRun, wantOffset);
+
+    } else {
+      ArrayDouble.D2 values = getCoordValuesArray();
+      ArrayDouble.D1 valuesForRun = (ArrayDouble.D1) values.slice(0,run_idx );
+      for (int i=0; i<valuesForRun.getSize(); i++) {
+        if (Misc.closeEnough(valuesForRun.get(i), wantOffset))
+          return i;
+      }
+      return -1;
+    }
+  }
+
+  // return index if only one match, if no matches return -1, if > 1 match return -nhits
+  private int findSingleHit(ArrayDouble.D2 boundsForRun, double target) {
+    int hits = 0;
+    int idxFound = -1;
+    int n = boundsForRun.getShape()[0];
+    for (int i = 0; i < n; i++) {
+      if (contains(target, boundsForRun.get(i,0), boundsForRun.get(i,1))) {
+        hits++;
+        idxFound = i;
+      }
+    }
+    if (hits == 1) return idxFound;
+    if (hits == 0) return -1;
+    return -hits;
+  }
+
+  // return index of closest value to target
+  private int findClosest(ArrayDouble.D2 boundsForRun , double target) {
+    double minDiff =  Double.MAX_VALUE;
+    int idxFound = -1;
+    int n = boundsForRun.getShape()[0];
+    for (int i = 0; i < n; i++) {
+      double midpoint = (boundsForRun.get(i,0) + boundsForRun.get(i,1))/2.0;
+      double diff =  Math.abs(midpoint - target);
+      if (diff < minDiff) {
+        minDiff = diff;
+        idxFound = i;
+      }
+    }
+    return idxFound;
+  }
+
+  private boolean contains(double target, double b1, double b2) {
+    if (b1 <= target && target <= b2) return true;
+    return b1 >= target && target >= b2;
   }
 
 

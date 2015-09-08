@@ -1,7 +1,9 @@
 /* Copyright */
 package ucar.nc2.ft.coverage;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -15,6 +17,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.test.util.CompareNetcdf;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -35,6 +38,16 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class TestGridCoverageReading {
 
+  @BeforeClass
+  public static void before() {
+    GribDataReader.validator = new GribCoverageValidator();
+  }
+
+  @AfterClass
+  public static void after() {
+    GribDataReader.validator = null;
+  }
+
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
@@ -49,7 +62,7 @@ public class TestGridCoverageReading {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", CoverageCoordSys.Type.Fmrc}); // ensemble, time-offset
     // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", CoverageCoordSys.Type.Fmrc});              // scalar vert LOOK change to TimeOffset ??
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", CoverageCoordSys.Type.Curvilinear});  // x,y axis but no projection
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", CoverageCoordSys.Type.Curvilinear});  // GRIB Curvilinear
+    // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", CoverageCoordSys.Type.Curvilinear});  // GRIB Curvilinear
 
     return result;
   }
@@ -69,14 +82,15 @@ public class TestGridCoverageReading {
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      // Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gcs = cc.getCoverageDatasets().get(0);
-      //Assert.assertEquals("NGrids", ncoverages, gcs.getCoverageCount());
-      Assert.assertEquals(expectType, gcs.getCoverageType());
+      CoverageDataset gcs = cc.findCoverageDataset(expectType);
+      Assert.assertNotNull(expectType.toString(), gcs);
 
       // check DtCoverageCS
       try (GridDataset ds = GridDataset.open(endpoint)) {
         for (GridDatatype dt : ds.getGrids()) {
+          if (expectType == CoverageCoordSys.Type.Fmrc && !dt.getFullName().startsWith("TwoD")) continue;
+          if (expectType == CoverageCoordSys.Type.Grid && dt.getFullName().startsWith("TwoD")) continue;
+
           GridCoordSystem csys = dt.getCoordinateSystem();
           CoordinateAxis1DTime rtAxis = csys.getRunTimeAxis();
           CoordinateAxis1D ensAxis = csys.getEnsembleAxis();
@@ -209,7 +223,15 @@ public class TestGridCoverageReading {
       return;
     }
 
-    CompareNetcdf.compareData(dt_array, gc_array.getData());
+    try {
+      CompareNetcdf.compareData(dt_array, gc_array.getData());
+    } catch (Throwable t) {
+      try {
+        dt.readDataSlice(rt_idx, ens_idx, time_idx, vert_idx, -1, -1);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
     //NCdumpW.printArray(dt_array);
   }
 

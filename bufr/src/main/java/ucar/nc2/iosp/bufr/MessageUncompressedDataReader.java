@@ -234,7 +234,7 @@ public class MessageUncompressedDataReader {
         if (req.wantRow()) {
           int index = req.abb.addObjectToHeap(seq);
           if (req.bb.position() >= req.bb.limit())
-            System.out.println("HEY");
+            System.out.println("Bufr HEY");
           req.bb.putInt(index); // an index into the Heap
         }
         continue;
@@ -357,9 +357,6 @@ public class MessageUncompressedDataReader {
 
     if (req.wantRow()) {
       Sequence seq = (Sequence) seqdd.refersTo;
-
-      if (seq == null)
-        System.out.println("HEY");
       assert seq != null;
 
       // for the obs structure

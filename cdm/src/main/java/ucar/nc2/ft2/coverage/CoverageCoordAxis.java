@@ -40,13 +40,13 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
@@ -58,7 +58,7 @@ import java.util.List;
  * @since 7/11/2015
  */
 @Immutable
-abstract public class CoverageCoordAxis {
+abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis> {
   static private final Logger logger = LoggerFactory.getLogger(CoverageCoordAxis.class);
 
   public enum Spacing {
@@ -77,7 +77,7 @@ abstract public class CoverageCoordAxis {
   }
 
   protected final String name;
-  protected final String units, description;
+  protected final String description;
   protected final DataType dataType;
   protected final AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
   protected final AttributeContainer attributes;
@@ -90,57 +90,54 @@ abstract public class CoverageCoordAxis {
   protected final double endValue;
   protected final double resolution;
   protected final CoordAxisReader reader;
+  protected final boolean isSubset;
 
   protected final TimeHelper timeHelper; // AxisType = Time, RunTime only
-  private final boolean isSubset;
+  protected final String units;
 
   // may be lazy eval
   protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
 
-  protected CoverageCoordAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                              DependenceType dependenceType, String dependsOn, Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                              double[] values, CoordAxisReader reader, boolean isSubset) {
-    this.name = name;
-    this.units = units;
-    this.description = description;
-    this.dataType = dataType;
-    this.axisType = axisType;
-    this.attributes = atts;
-    this.dependenceType = dependenceType;
-    this.spacing = spacing;
-    this.values = values;
-    this.reader = reader; // used only if values == null
-    if (dependsOn != null && dependsOn.trim().length() > 0) {
-      List<String> temp = new ArrayList<>();
-      Collections.addAll(temp, StringUtil2.splitString(dependsOn));
-      this.dependsOn = Collections.unmodifiableList(temp);
-    } else {
-      this.dependsOn = Collections.emptyList();
-    }
+  protected CoverageCoordAxis( CoverageCoordAxisBuilder builder) {
+    this.name = builder.name;
+    this.units = builder.units;
+    this.description = builder.description;
+    this.dataType = builder.dataType;
+    this.axisType = builder.axisType;
+    this.attributes = builder.attributes;
+    this.dependenceType = builder.dependenceType;
+    this.spacing = builder.spacing;
+    this.values = builder.values;
+    this.reader = builder.reader; // used only if values == null
+    this.dependsOn = builder.dependsOn == null ? Collections.emptyList() : builder.dependsOn;
 
-    if (values == null) {
-      this.startValue = startValue;
-      this.endValue = endValue;
+    if (builder.values == null) {
+      this.startValue = builder.startValue;
+      this.endValue = builder.endValue;
     }  else {
-      this.startValue = values[0];
-      this.endValue = values[values.length-1];
+      this.startValue = builder.values[0];
+      this.endValue = builder.values[values.length-1];
       // could also check if regular, and change spacing
     }
 
-    if (resolution == 0.0 && ncoords > 1)
-      this.resolution = (endValue - startValue) / (ncoords - 1);
+    if (builder.resolution == 0.0 && builder.ncoords > 1)
+      this.resolution = (builder.endValue - builder.startValue) / (builder.ncoords - 1);
     else
-      this.resolution = resolution;
+      this.resolution = builder.resolution;
 
-    this.ncoords = ncoords;
-    this.isSubset = isSubset;
+    this.ncoords = builder.ncoords;
+    this.isSubset = builder.isSubset;
 
-    if (axisType == AxisType.Time || axisType == AxisType.RunTime)
-      timeHelper = TimeHelper.factory(units, atts);
-    else if (axisType == AxisType.TimeOffset)
-      timeHelper = TimeHelper.factory(null, atts);
-    else
-      timeHelper = null;
+    if (builder.timeHelper != null) {
+      this.timeHelper = builder.timeHelper;
+    } else {
+      if (axisType == AxisType.Time || axisType == AxisType.RunTime)
+        timeHelper = TimeHelper.factory(units, attributes);
+      else if (axisType == AxisType.TimeOffset)
+        timeHelper = TimeHelper.factory(null, attributes);
+      else
+        timeHelper = null;
+    }
   }
 
   // called after everything is wired in the dataset
@@ -148,13 +145,18 @@ abstract public class CoverageCoordAxis {
     // NOOP
   }
 
-  // create a subset of this axis based on the SubsetParams. return this if no subset requested
+  @Override
+  public int compareTo(CoverageCoordAxis o) {
+    return axisType.axisOrder() - o.axisType.axisOrder();
+  }
+
+  // create a subset of this axis based on the SubsetParams. return copy if no subset requested, or params = null
   abstract public CoverageCoordAxis subset(SubsetParams params);
 
   // called only on dependent axes. pass in what if depends on
   abstract public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn);
 
-  // called only on CoverageCoordAxis1D
+  // called from HorizCoordSys
   abstract public CoverageCoordAxis subset(double minValue, double maxValue);
 
   abstract public Array getCoordsAsArray() throws IOException;
@@ -274,19 +276,25 @@ abstract public class CoverageCoordAxis {
   }
 
   public void toString(Formatter f, Indent indent) {
-    f.format("%sCoordAxis '%s' (%s)%n", indent, name, getClass().getName());
-    f.format("%s  axisType=%s dataType=%s units='%s' desc='%s'", indent, axisType, dataType, units, description);
+    f.format("%sCoordAxis '%s' (%s) ", indent, name, getClass().getName());
+    indent.incr();
+
+    f.format("%s", getDependenceType());
+    if (dependsOn != null && dependsOn.size() > 0) {
+      f.format(" :");
+      for (String s : dependsOn) f.format(" %s", s);
+    }
+    f.format("%n");
+
+    f.format("%saxisType=%s dataType=%s units='%s' desc='%s'", indent, axisType, dataType, units, description);
     if (timeHelper != null) f.format(" refDate=%s", timeHelper.getRefDate());
     f.format("%n");
-    AttributeContainerHelper.show(attributes, f);
 
-    f.format("%s  npts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
+    AttributeContainerHelper.show(attributes, indent, f);
+
+    f.format("%snpts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (getResolution() != 0.0)
       f.format(" resolution=%f", resolution);
-    f.format(" %s", getDependenceType());
-    if (dependsOn.size() > 0) f.format(" :");
-    for (String s : dependsOn)
-      f.format(" %s", s);
     f.format("%n");
 
     if (values != null) {
@@ -294,20 +302,21 @@ abstract public class CoverageCoordAxis {
       switch (spacing) {
         case irregularPoint:
         case contiguousInterval:
-          f.format("%s  contiguous values (%d)=", indent, n);
+          f.format("%scontiguous values (%d)=", indent, n);
           for (double v : values)
             f.format("%f,", v);
           f.format("%n");
           break;
 
         case discontiguousInterval:
-          f.format("%s  discontiguous values (%d)=", indent, n);
+          f.format("%sdiscontiguous values (%d)=", indent, n);
           for (int i = 0; i < n; i += 2)
             f.format("(%f,%f) ", values[i], values[i + 1]);
           f.format("%n");
           break;
       }
     }
+    indent.decr();
   }
 
   public String getSummary() {
@@ -333,7 +342,7 @@ abstract public class CoverageCoordAxis {
   // time coords only
 
   public double convert(CalendarDate date) {
-    return timeHelper.convert(date);
+    return timeHelper.offsetFromRefDate(date);
   }
 
   public CalendarDate makeDate(double value) {
@@ -344,14 +353,21 @@ abstract public class CoverageCoordAxis {
     return timeHelper.getDateRange(startValue, endValue);
   }
 
-  public double getOffsetInTimeUnits(CalendarDate convertFrom, CalendarDate convertTo) {
-    return timeHelper.getOffsetInTimeUnits(convertFrom, convertTo);
+  public double getOffsetInTimeUnits(CalendarDate start, CalendarDate end) {
+    return timeHelper.getOffsetInTimeUnits(start, end);
+  }
+
+  public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
+    return timeHelper.makeDateInTimeUnits(start, addTo);
   }
 
   public CalendarDate getRefDate() {
     return timeHelper.getRefDate();
   }
 
+  public Calendar getCalendar() {
+    return timeHelper.getCalendar();
+  }
 
   ///////////////////////////////////////////////
 
@@ -365,6 +381,6 @@ abstract public class CoverageCoordAxis {
           logger.error("Failed to read " + name, e);
         }
     }
-    return values;
+    return values == null ? null : Arrays.copyOf(values, values.length); // cant allow values array to escape, must be immutable
   }
 }
