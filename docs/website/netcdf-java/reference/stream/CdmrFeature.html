@@ -1,490 +1,322 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Cdm Remote Feature</title>
-  <link href="../../cdm.css" rel="stylesheet" type="text/css"/>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>CDM Remote Feature For Grid (Coverage)</title>
+<link rel="stylesheet" href="./../../cdm.css">
 </head>
-
-<body>
-<h1>CDM Remote Feature Web Service </h1>
-<p>CDM Remote  is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM feature datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
-two levels of services: </p>
-<ol>
-  <li><em><strong><a href="CdmRemote.html">CdmRemote</a></strong></em> provides index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the
-    full CDM data model. </li>
-  <li><em><strong>CdmrFeature</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and Unidata's<a href="../../../tds/reference/services/NetcdfSubsetServiceReference.html"> <em>NetCDF Subset Service</em></a><em> (NCSS)</em>. This API and protocol is  redone in version 5.0. </li>
+<body class="article">
+<div id="header">
+<h1>CDM Remote Feature For Grid (Coverage)</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM feature datasets, using
+<a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
+two levels of services:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong><a href="CdmRemote.html">CdmRemote</a></strong> provides index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for
+CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.</p>
+</li>
+<li>
+<p><strong>CdmrFeature</strong> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and
+Unidata&#8217;s <a href="../../../tds/reference/services/NetcdfSubsetServiceReference.html"><em>NetCDF Subset Service</em></a> <em>(NCSS)</em>. This API and protocol is redone
+in version 5.0.</p>
+</li>
 </ol>
+</div>
+<div class="paragraph">
 <p>The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.</p>
-<hr />
-<p></p>
-<h2><strong><a name="cdmrfeature" id="cdmrfeature"></a>CdmrFeature</strong> Protocol (Coordinate Space access)</h2>
-<p>As of version 5.0, the allowed queries match the NetCDF Subset Service queries. </p>
-<p>The client forms requests of the form <strong>endpoint?query</strong>.</p>
-<h2>Grid (Coverage)</h2>
-<p>Possible requests are:</p>
-<pre><strong>req=(header|data)</strong>
-<strong>var</strong>=vars
-coordname=value
-coordname=minvalue:maxvalue</pre>
-<h3><strong>Subsetting Parameters for Grid</strong> </h3>
-<table border="1">
-  <tr>
-    <th width="144">Parameter Name</th>
-    <th width="62">Required</th>
-    <th width="512">Description / possible values</th>
-    <th width="460">Constraints</th>
-    <th width="219">default</th>
-  </tr>
-  <tr>
-    <td>var</td>
-    <td>yes</td>
-    <td><span>Name of <strong>variables</strong>, separated by ',' (comma), or &quot;all&quot;.</span></td>
-    <td>Variables must be in the dataset description. </td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>north, south, east, west</td>
-    <td>no</td>
-    <td>Lat/lon bounding box, units of degrees_east, degrees_north</td>
-    <td><p>south &lt; north,  west &lt; east</p>
-    <p>if crossing 180 meridian, use east boundary &gt; 180</p></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>minx, miny, maxx, maxy</td>
-    <td>no</td>
-    <td>Projection bounding box, in projection coordinate units.</td>
-    <td> min &lt; max</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>horizStride</td>
-    <td>no</td>
-    <td>Take only every nth point (both x and y)</td>
-    <td>&nbsp;</td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>time</td>
-    <td>no</td>
-    <td><p>Time as a <a rel="nofollow"
-                         href="#W3Cdate">W3C
-      date</a> or &quot;present&quot;. The time slice closest to the requested time is
-      returned.</p>
-      <p> Or &quot;all&quot;: all times are returned.</p></td>
-    <td>Must be a time within the dataset time range</td>
-    <td><em>present</em></td>
-  </tr>
-  <tr>
-    <td>time_start, time_end, time_duration</td>
-    <td>no</td>
-    <td>Used to specify a time range. Time as
-      a <a rel="nofollow"
-                 href="#W3Cdate">W3C
-        date</a> or &quot;present&quot;.  Duration as a <a rel="nofollow" href="#W3Cduration">W3C time duration</a>. Two of these must be present.</td>
-    <td>The provided time range must intersect the
-      dataset time
-      range </td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>timeStride</td>
-    <td>no</td>
-    <td>Take only every nth time in the available series</td>
-    <td>&nbsp;</td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>runtime</td>
-    <td>no</td>
-    <td>Time as a <a rel="nofollow"
-                         href="#W3Cdate">W3C
-    date</a> or &quot;latest&quot;. Restrict to specified runtime coordinate.</td>
-    <td>Used only if Grid has a runtime coordinate.</td>
-    <td>All runtimes will be returned </td>
-  </tr>
-    <tr>
-    <td>vertCoord</td>
-    <td>no</td>
-    <td>Restrict to specified vertical level coordinate value.</td>
-    <td>Used only if Grid has a vertical coordinate.</td>
-    <td>All the
-      vertical levels will be returned </td>
-  </tr>
-    <tr>
-    <td>ensCoord</td>
-    <td>no</td>
-    <td>Restrict to specified ensemble coordinate.</td>
-    <td>Used only if Grid has an ensemble coordinate.</td>
-    <td>All the
-      ensembles will be returned </td>
-  </tr>
+</div>
+<hr>
+<div class="paragraph">
+<p>The client creates requests of the form <strong>endpoint?query</strong>, where <em>endpoint</em> is the URL of a CdmrFeature service, and <em>query</em> is one or more <strong><em>key=value</em></strong> parameters, as described below.</p>
+</div>
+<div class="paragraph">
+<p>Example request:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>http://thredds-dev.unidata.ucar.edu/thredds/cdmrfeature/grid/grib/NCEP/GFS/Global_0p5deg/Best?req=data&amp;var=Albedo_surface_Mixed_intervals_Average</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See <a href="CdmrfGrammer.adoc">CdmrFeature Grammer</a> for a description of the on-the-wire protocol.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_subsetting_parameters_for_grid_coverage_datasets">Subsetting Parameters for Grid (Coverage) Datasets:</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 10%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter Name</th>
+<th class="tableblock halign-left valign-top">Required</th>
+<th class="tableblock halign-left valign-top">Description / possible values</th>
+<th class="tableblock halign-left valign-top">Constraints</th>
+<th class="tableblock halign-left valign-top">default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>var</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name(s) of variables (comma separated, no blanks), or <em>all</em>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Variables must be in the dataset description.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>north, south, east, west</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">lat/lon bounding box, units of degrees_east, degrees_north</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">south &lt; north, west &lt; east; if crossing 180 meridian, use east boundary &gt; 180</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>minx, miny, maxx, maxy</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Projection bounding box, in projection coordinate units (km)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">min &lt; max</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>horizStride</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Take only every nth point (both x and y)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>time</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time as a <a href="http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate">W3C date</a> or <em>present</em> (the time slice closest to the requested time is returned) or <em>all</em> (all times are returned)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Must be a time within the dataset time range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>present</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>time_start, time_end, time_duration</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used to specify a time range (two of these must be present). Times may be a <a href="#W3Cdate">W3C date</a> or <em>present</em>. Duration is a udunit time or <a href="http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cduration">W3C time duration</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The requested time range must intersect the dataset time range</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>timeStride</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Take only every nth time in the available series</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used with time_range or <em>all</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>runtime</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time as a <a href="http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate">W3C date</a> or <em>latest</em> (restrict to that runtime) or <em>all</em>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used only if there is an independent runtime coordinate.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>latest</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>timeOffset</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restrict to an offset from the runtime coordinate (must use same timeOffset units as the dataset), or <em>first</em> or <em>all</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used only if there is a 2D time coordinate (runtime and forecast time)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">all</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>vertCoord</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restrict to specified vertical level coordinate value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used only if there is a vertical coordinate.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">all</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>ensCoord</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">no</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restrict to specified ensemble coordinate.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used only if there is an ensemble coordinate.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">all</p></td>
+</tr>
+</tbody>
 </table>
-<h4><strong>Variable subsetting:</strong></h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Variable subsetting</dt>
+<dd>
+<div class="ulist">
 <ul>
-  <li>You <strong>must</strong> specify a list of valid variable names, or &quot;all&quot;.</li>
-  <li>variable names are case-sensitive and must be UTF8-escape encoded</li>
+<li>
+<p>You <strong>must</strong> specify a list of valid variable names, or "<em>all</em>".</p>
+</li>
+<li>
+<p>variable names are case-sensitive and must be URL encoded. Be careful not to URL encode twice.</p>
+</li>
 </ul>
-<h4><strong> Horizontal spatial subsetting:</strong></h4>
+</div>
+</dd>
+<dt class="hdlist1">Horizontal spatial subsetting</dt>
+<dd>
+<div class="ulist">
 <ul>
-  <li>grids: you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire
-    horizontal grid. </li>
-  <li>grids as point: you <strong>must</strong> specify a point location with the<em> latitude, longitude</em> parameters. </li>
+<li>
+<p>You may specify a lat/lon bounding box or, if the dataset is on a projection, a projection bounding box. If none, return the entire horizontal grid.</p>
+</li>
+<li>
+<p>Lat/lon bounds start at the west value and includes the area going east, until the east value.</p>
+</li>
+<li>
+<p>Best practice is to make east &gt; west longitude, by adding 360 to it if needed.</p>
+</li>
 </ul>
-<h4><strong>Vertical spatial subsetting:</strong></h4>
+</div>
+</dd>
+<dt class="hdlist1">Vertical spatial subsetting</dt>
+<dd>
+<div class="ulist">
 <ul>
-  <li>You may specify a vertical coordinate as a double. The closest value is returned. If not specified,  all vertical levels are returned.</li>
+<li>
+<p>You may specify a vertical coordinate. The closest level is returned. If not specified, all vertical levels are returned.</p>
+</li>
 </ul>
-<h4><strong>Temporal subsetting:</strong></h4>
-<ol>
-  <li>none: use first time period of the  latest run</li>
-  <li>runtime: use first time period of the  closest run</li>
-  <li>time: use closest time period of Best</li>
-  <li>time range: intersect time range of Best</li>
-  <li>runtime, time: use closest time of the  closest run</li>
-  <li>runtime, time range: intersect  time range of the  closest run</li>
+</div>
+</dd>
+<dt class="hdlist1">Temporal subsetting</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>These rules apply to non-2D time datasets.</p>
+</li>
+<li>
+<p>You may specify a time range, or a time point. If both, only the time point is used. If neither, use the present time.</p>
+</li>
+<li>
+<p>A time range (<em>time_start, time_end, time_duration</em>) will request all times that intersect the range (<em>timeStride</em> is used if present).</p>
+</li>
+<li>
+<p>Two of <em>time_start, time_end, time_duration</em> must be present to define a valid time range. <em>time_start, time_end</em> may equal <em>present</em>.</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><em>time_start, time_end</em> : specified range</p>
+</li>
+<li>
+<p><em>time_start, time_duration</em> : starting from <em>time_start</em> until <em>time_start + time_duration</em></p>
+</li>
+<li>
+<p><em>time_end, time_duration</em> : starting from <em>time_end - time_duration</em> until <em>time_end</em></p>
+</li>
 </ol>
-<ul>
-  <li>You may specify a time range, or a  time point (<em>time</em>). If both, only the time point is used. If neither, return the latest time.</li>
-  <li>A time range <em>(time_start, time_end, time_duration</em>) will request all times that intersect the range (<em>timeStride</em> is used if present).</li>
-  <li>A time point will request the time that is closest to that time.</li>
-  <li>If you set <em>time</em>=&quot;all&quot;, then  all times are returned (<em>timeStride</em> is used if present). All other time parameters are ignored.</li>
-  <li>time duration: 1)   udunit&#32;time&#32;unit&#32;string or&#32;2) <a rel="nofollow" href="#W3Cduration">W3C time duration</a></li>
-  <li>datetime: isoString or &quot;latest&quot; (&quot;present&quot; == &quot;latest&quot; for backwardds compatibility.</li>
-  <li>The dataset determines what Calendar is used, so you must use that calendar.</li>
+</div>
+</li>
+<li>
+<p>A time point will request the time that is closest to that value.</p>
+</li>
+<li>
+<p>If you set <em>time="all"</em>, then all times are returned (<em>timeStride</em> is used if present). All other time parameters are ignored.</p>
+</li>
+<li>
+<p>time duration: 1) udunit time unit string or 2) <a href="http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cduration">W3C time duration</a></p>
+</li>
+<li>
+<p>datetime: <a href="http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate">W3C date</a> or <em>present</em></p>
+</li>
+<li>
+<p>The dataset determines what Calendar is used, so you must use that calendar. There can only be one calendar per dataset.</p>
+</li>
 </ul>
-<ol>
-  <li>does dataset have runtime?</li>
-  <li>does datasset have 2D and Best ?</li>
-  <li>single horizCoordSys, make seperate datasets (or group?) if needed??</li>
+</div>
+</dd>
+<dt class="hdlist1">2D Time subsetting</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>A 2D time dataset will have CoverageType set to <em>FMRC</em>.</p>
+</li>
+<li>
+<p>You may specify a runtime with a date, <em>latest</em> or <em>all</em>; specify a timeOffset with a numeric value, <em>first</em>, or <em>all</em>.
+If only one is set, use the default for the other. If neither is set, then return all times for latest runtime.</p>
+</li>
+<li>
+<p>Time parameters are only used if explicitly set and timeOffset is not set. There are only 2 cases where time can be used:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Set runtime to a specific value or <em>latest</em> (not <em>all</em>). Time parameters (point or range) can be used.</p>
+</li>
+<li>
+<p>Set runtime to <em>all</em>. Time point (date, or <em>present</em>) can be used.</p>
+</li>
 </ol>
-<h4>Interval coordinate:</h4>
-<ul>
-  <li>If the  coordinate is an <em>interval coordinate</em> (common for vertical or time coordinates), it has a lower and upper bound, eg (2.0-10.0).</li>
-  <li>The request is still made with a single value. The interval that contains the requested value is used.</li>
-  <li>If the requested value is contained in more than one interval, the midpoint of the interval is calculated, and the closest midpoint to the requested value is used.</li>
+</div>
+</li>
+<li>
+<p>Special cases:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>set specific runtime = constant runtime dataset</p>
+</li>
+<li>
+<p>set specific timeOffset, set runTime to <em>all</em> = constant offset dataset</p>
+</li>
+<li>
+<p>set specific time, set runTime to <em>all</em> = constant forecast dataset</p>
+</li>
+</ol>
+</div>
+</li>
 </ul>
-<h3>Data Return</h3>
-<p>The Data is returned as a <em><strong>GeoReferencedArray</strong></em>:</p>
-<p>TBD</p>
-<p>&nbsp;</p>
-<h3>FMRC</h3>
-<p>This has  coordinates <strong>runtime</strong>(runtime) and <strong>time</strong>(runtime, time);</p>
+</div>
+</dd>
+<dt class="hdlist1">Interval coordinate</dt>
+<dd>
+<div class="ulist">
 <ul>
-  <li><strong>runtime</strong>=rundate or &quot;latest&quot;: <strong>time</strong>=&quot;all&quot; : get all times for that run </li>
-  <li><strong>runtime</strong>=rundate or &quot;latest&quot;: <strong>time</strong>=&quot;latest&quot; : get latest time slice for that run </li>
-  <li><strong>runtime</strong>=rundate, <strong>time</strong>=date : get the specific time slice</li>
-  <li><strong>runtime</strong>=rundate, <strong>timeRange</strong>=dates : get the  time slices</li>
-  <li><strong>runtimeRange</strong>=rundates, <strong>timeRange</strong>=dates : get the  time slices (NOT DONE)</li>
-  <li><strong>time</strong>=date : constant forecast (NOT DONE) </li>
-  <li><strong>timeOffset</strong>=value : constant offset (NOT DONE)</li>
+<li>
+<p>If the coordinate is an <em>interval coordinate</em> (common for vertical or time coordinates), it has a lower and upper bound, eg (2.0-10.0 m) or (12-24 hours).</p>
+</li>
+<li>
+<p>The request is still made with a single value. The interval that contains the requested value is used.</p>
+</li>
+<li>
+<p>If the requested value is contained in more than one interval (happens with mixed interval time coordinates), the midpoint of the interval is calculated, and the closest midpoint to the requested
+value is used.</p>
+</li>
 </ul>
-<p>&nbsp;</p>
-<hr />
-<h2>PointDataset</h2>
-<p>Possible requests are:</p>
-<pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form</strong>)</pre>
-<p>Example service requests are:</p>
-<table width="1160" border="1">
-  <tr>
-    <th width="741" scope="col">Request</th>
-    <th width="216" scope="col">Response</th>
-    <th width="181" scope="col">Meaning</th>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=form</strong></td>
-    <td>HTML form</td>
-    <td>form interface</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=capabilities</strong></td>
-    <td>capabilities XML</td>
-    <td>describe dataset</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=data</strong></td>
-    <td>pointFeatureList message</td>
-    <td>get all the data</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=data&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
-    <td>pointFeatureList message</td>
-    <td>get data in bounding box</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=data&amp;</strong><strong>time_start=&amp;time_end=</strong></td>
-    <td>pointFeatureList message</td>
-    <td>get data in time range</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmfeature/data.nc/point?<strong>req=data&amp;var=Temp,lat,lon</strong></td>
-    <td>pointFeatureList message</td>
-    <td>get data for listed variables</td>
-  </tr>
-</table>
-<ul>
-  <li>data requests return an unordered list of observation as StructureData</li>
-  <li>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
-</ul>
-<h3>StationTimeSeries</h3>
-<p>Possible query parameters are:</p>
-<pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form | stations</strong>)</pre>
-<p>Example service requests are:</p>
-<table width="1167" border="1">
-  <tr>
-    <th width="748" scope="col">Request</th>
-    <th width="202" scope="col">Response</th>
-    <th width="195" scope="col">Meaning</th>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=form</strong></td>
-    <td>HTML form</td>
-    <td>form interface</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=capabilities</strong></td>
-    <td>capabilities XML</td>
-    <td>describe dataset</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=stations</strong></td>
-    <td>stationListMessage</td>
-    <td>get all stations</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
-    <td>stationListMessage</td>
-    <td>get stations in bounding box</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=stations&amp;stn=KDEN,KLOG,MOAS</strong></td>
-    <td>stationListMessage</td>
-    <td>get stations in list</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;time_start=&amp;time_end=&amp;</strong><strong>stn=KDEN</strong></td>
-    <td>pointFeatureList message</td>
-    <td>get data in time range</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>stn=KDEN,KLOG,MOAS</strong></td>
-    <td>pointFeatureList message</td>
-    <td>get data for station list</td>
-  </tr>
-  <tr>
-    <td> http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
-    <td>pointFeatureList message</td>
-    <td>get data in bounding box</td>
-  </tr>
-  <tr>
-    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>var=Temp,lat,lon&amp;</strong><strong>stn=KDEN</strong></td>
-    <td>pointFeatureList message</td>
-    <td>get data for listed variables</td>
-  </tr>
-</table>
-<ul>
-  <li>a list of stations or a bounding box must always be provided (?)</li>
-  <li>data requests return an unordered list of observation as StructureData</li>
-  <li>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
-</ul>
-<p><strong>Questions:</strong></p>
-<ul>
-  <li><strong>stationList ncstream vs XML message</strong></li>
-</ul>
-<h3>Client implementation</h3>
-<p><strong>ucar.nc2.stream.CdmRemoteFeatureDataset.factory()</strong> makes an HTTP request to <em><strong>endpoint+&quot;?req=capabilities&quot;</strong></em> to obtain the GetCapabilities XML document. This document describes what feature type(s) the dataset supports, which determines what are the valid requests,
-  along with the endpoints for those feature types, which may be different than the original endpoint.</p>
-<p><strong>FeatureDatasetFactoryManager.open()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>CdmRemoteFeatureDataset.factory(url)</strong> if found. <strong>ThreddsDataFactory.openFeatureDataset()</strong> looks for catalog InvDatasets with <em><strong>featureType.isPointFeatureType() </strong></em>and <em><strong>ServiceType.CdmRemote</strong></em>, and if found, calls <strong>CdmRemoteFeatureDataset.factory()</strong>. </p>
-<h2> GetCapabilities XML document</h2>
-<p>This is an ad-hoc format (for now), example:</p>
-<pre id="line1">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;capabilities location=&quot;http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome&quot;&gt;
-  &lt;featureDataset type=&quot;station&quot; url=&quot;http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome/station&quot; /&gt;<br/>  &lt;variable name=&quot;record.air_pressure_at_sea_level&quot; type=&quot;float&quot;&gt;<br/>    &lt;attribute name=&quot;long_name&quot; value=&quot;Air pressure at sea level&quot; /&gt;<br/>    &lt;attribute name=&quot;standard_name&quot; value=&quot;air_pressure_at_sea_level&quot; /&gt;<br/>    &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot; /&gt;<br/>    &lt;attribute name=&quot;units&quot; value=&quot;hectoPascal&quot; /&gt;<br/>  &lt;/variable&gt;<br/>  &lt;variable name=&quot;record.air_temperature&quot; type=&quot;float&quot;&gt;<br/>    &lt;attribute name=&quot;long_name&quot; value=&quot;Air temperature at 2 meters&quot; /&gt;<br/>    &lt;attribute name=&quot;standard_name&quot; value=&quot;air_temperature&quot; /&gt;<br/>    &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot; /&gt;<br/>    &lt;attribute name=&quot;units&quot; value=&quot;Celsius&quot; /&gt;<br/>  &lt;/variable&gt;<br/>  ...
-<br/>  &lt;LatLonBox&gt;<br/>    &lt;west&gt;-180.0000&lt;/west&gt;<br/>    &lt;east&gt;180.0000&lt;/east&gt;<br/>    &lt;south&gt;-90.0000&lt;/south&gt;<br/>    &lt;north&gt;82.5199&lt;/north&gt;<br/>  &lt;/LatLonBox&gt;<br/>  &lt;AcceptList&gt;<br/>    &lt;accept&gt;raw&lt;/accept&gt;<br/>    &lt;accept&gt;xml&lt;/accept&gt;<br/>    &lt;accept&gt;csv&lt;/accept&gt;<br/>    &lt;accept&gt;netcdf&lt;/accept&gt;<br/>    &lt;accept&gt;ncstream&lt;/accept&gt;<br/>  &lt;/AcceptList&gt;<br/>&lt;/capabilities&gt;</pre>
-<p>&nbsp;</p>
-<hr width="100%"/>
-<h2>PointStream Grammer</h2>
-<p>An <em><strong>pointstream</strong></em> is a sequence of one or more messages:</p>
-<pre>   pointstream = {message}
-   message = stationListMessage | pointFeatureListMessage | errorMessage | endMessage
-   stationListMessage = MAGIC_StationList, vlen, PointStreamProto.StationList 
-   pointFeatureListMessage = pointFeatureCollectionMessage, {pointFeatureMessage}, (endMessage | errorMessage)
-
-
-   pointFeatureCollectionMessage = MAGIC_PointFeatureCollection, vlen, PointStreamProto.PointFeatureCollection
-   pointFeatureMessage = MAGIC_PointFeature, vlen, PointStreamProto.PointFeature
-   endMessage = MAGIC_END
-   errorMessage = MAGIC_ERR, vlen, NcStreamProto.Error
-   
-   vlen = variable length encoded positive integer == length of the following object in bytes
-
-
-   // 8 byte constants
-
-   MAGIC_StationList            =  0fe, 0xec, 0xce, 0xda 
-   MAGIC_PointFeatureCollection =  0xfi, 0xec, 0xce, 0xba <br/>
-   MAGIC_PointFeature           =  0xab, 0xec, 0xce, 0xba <br/>   MAGIC_END                    =  0xed, 0xed, 0xde, 0xde<br/>
-   MAGIC_ERR                    =  0xab, 0xad, 0xba, 0xda <br/>
-</pre>
-<p>The protobuf messages are defined by </p>
-<ul>
-  <li><strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
-</ul>
-<p></p>
-<hr width="100%"/>
-<h2>Current notes on motherlode dev</h2>
-<ul>
-  <li>List of cdm datasets: <a href="http://thredds.ucar.edu/thredds/idd/newPointObs.html">http://thredds.ucar.edu/thredds/idd/newPointObs.html</a></li>
-</ul>
-<h3>Nov-11-2010</h3>
-<p>1) web.xml has a <strong>org.springframework.web.servlet.DispatcherServlet</strong> cdmRemote with a mapping:<br/>
-</p>
-<pre>
- &lt;servlet-mapping&gt;
-   &lt;servlet-name&gt;<strong>cdmRemote</strong>&lt;/servlet-name&gt;
-   &lt;url-pattern&gt;/cdmremote/*&lt;/url-pattern&gt;
- &lt;/servlet-mapping&gt;</pre>
-<p>2) Temporarily, we have the configuration of the datasets in <strong>thredds\tds\src\main\webapp\WEB-INF\cdmRemote-servlet.xml</strong>: which configures the
-  collectionController. We will replacce this with pure catalog configuration in 4.2+. This is now being shown in serverStartup.log<br/>
-</p>
-<pre> &lt;bean id=&quot;collectionManager&quot; class=&quot;thredds.server.cdmremote.CollectionManager&quot;&gt;
- &lt;property name=&quot;collections&quot;&gt;
-  &lt;list&gt;
-   &lt;ref bean=&quot;ncMetars&quot; /&gt;
-   &lt;ref bean=&quot;gempakMetars&quot; /&gt;
-   &lt;ref bean=&quot;quickScatWinds&quot; /&gt;
-   &lt;ref bean=&quot;ncMetarsLocal&quot; /&gt;
-   &lt;ref bean=&quot;ncMetarsLocalHome&quot; /&gt;
-   &lt;ref bean=&quot;gempakMetarsLocal&quot; /&gt;
-   &lt;ref bean=&quot;gempakMetarsLocalHome&quot; /&gt;
-  &lt;/list&gt;
- &lt;/property&gt;
-&lt;/bean&gt;</pre>
-<pre> &lt;bean id=&quot;ncMetars&quot; class=&quot;thredds.server.cdmremote.CollectionBean&quot;&gt;
-   &lt;property name=&quot;path&quot; value=&quot;/idd/metar/ncdecoded&quot;/&gt;
-   &lt;property name=&quot;spec&quot; value=&quot;/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc&quot;/&gt;
-   &lt;property name=&quot;recheck&quot; value=&quot;15 min&quot;/&gt;
-   &lt;property name=&quot;featureType&quot; value=&quot;STATION&quot;/&gt;
-   &lt;property name=&quot;raw&quot; value=&quot;report&quot;/&gt;
-   &lt;property name=&quot;resolution&quot; value=&quot;20 min&quot;/&gt;
- &lt;/bean&gt;
-
-etc</pre>
-<p>This is now being shown in serverStartup.log: </p>
-<pre>serverStartup: CdmRemoteController collections
-   /idd/metar/gempak == /data/ldm/gempak/surface/#yyyyMMdd#_sao.gem
-   /idd/bufr/quickScat == /data/ldm/gempak/surface/**/#yyyyMMdd#.gem
-   /idd/metar/ncdecodedLocalHome == C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc
-   /idd/metar/ncdecoded == /data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc
-   /idd/metar/gempakLocalHome == C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem
-   /idd/metar/gempakLocal == D:/formats/gempak/surface2/#yyyyMMdd#_sao.gem
-   /idd/metar/ncdecodedLocal == Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc</pre>
-<p>So the URLs are</p>
-<pre> http://server:port/thredds/cdmremote/<strong><em>path</em></strong>?req
-eg:
- http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak
- http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/ncdecoded
- http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/bufr/quickScat
- http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal
- http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome?req=form</pre>
-<p><strong>3) The default output is the dataset description: should be getCapabilities ????</strong><br/>
-</p>
-<pre>
-FeatureDataset on location= http://localhost:8080/thredds/cdmremote/local/metars/collection
-  featureType= STATION
-  title= null
-  desc= null
-  range= start= 2006-03-25 00:00:00Z end= 2006-09-25 00:00:00Z duration= 6.0453 months resolution= null
-  start= 2006-03-25 00:00:00Z
-  end  = 2006-09-25 00:00:00Z
-  bb   =  ll: 90.0S 180.0W+ ur: 82.51N 180.0E
-  bb   =  lat= [-90.00,82.51] lon= [-180.00,180.00]
-  has netcdf = true
-  Data Variables (0)
-
-parseInfo=
-
-
-FeatureCollection 0 
- STATION Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc
-   npts = -1 
-     bb =  lat= [-90.00,82.51] lon= [-180.00,180.00] 
-
-
-</pre>
-<p> 4) In ToolsUI, FeatureType/PointFeature Tab:</p>
-<p><strong>cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection </strong></p>
-<pre>&nbsp;
-FeatureDataset on location= cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
-  featureType= STATION
-  title= METAR Data from NWS
-  desc= Metar Data from NWS distributed through the Unidata IDD
-    realtime datastream. 1 day's worth of data
-  range= null
-  start= Unknown
-  end  = Unknown
-  bb   = null
-  has netcdf = true
-  Attributes
-    title = &quot;METAR Data from NWS&quot;
-    version = 2.3
-    processor = &quot;metar2nc  version v1.2&quot;
-    Conventions = &quot;Unidata Observation Dataset v1.0&quot;
-    standard_name_vocabulary = &quot;CF-1.0&quot;
-    description = &quot;Metar Data from NWS distributed through the Unidata IDD\n    realtime datastream. 1 day\'s worth of data&quot;
-    time_coordinate = &quot;time_observation&quot;
-    cdm_datatype = &quot;Station&quot;
-    stationDimension = &quot;station&quot;
-    station_id = &quot;station_id&quot;
-    station_description = &quot;station_description&quot;
-    latitude_coordinate = &quot;latitude&quot;
-    longitude_coordinate = &quot;longitude&quot;
-    altitude_coordinate = &quot;altitude&quot;
-    geospatial_lat_max = &quot;90.0&quot;
-    geospatial_lat_min = &quot;-90.0&quot;
-    geospatial_lon_max = &quot;360.0&quot;
-    geospatial_lon_min = &quot;0.0&quot;
-    time_coverage_start = &quot;1143243900&quot;
-    time_coverage_end = &quot;1143330240&quot;
-    observationDimension = &quot;recNum&quot;
- <strong> Data Variables (0)</strong>
-
-parseInfo=
-
-
-FeatureCollection 0 
- STATION cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
-   npts = -1 
-     bb =  lat= [-90.00,82.51] lon= [-180.00,180.00] 
-<strong>
-</strong></pre>
-<p>Ask for station data, on the server, its rather slow:</p>
-<pre>
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060325_0000.nc
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060326_0000.nc
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060327_0000.nc
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060328_0000.nc
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060329_0000.nc
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060330_0000.nc
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060331_0000.nc
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060401_0000.nc
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060402_0000.nc
-CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060629_0000.nc
- sent 481 features to 20V 
- 
-<strong>
-  (check to see what the strategy is for stations: coomplete scan or ??)</strong>
-
-</pre>
-<p>5) <strong>cdmremoteCatalog.xml </strong>defines datasets for the collections we have working so far.</p>
-<p><br />
-</p>
-<hr width="100%"/>
-<address>
-<img src="../../nc.gif" alt="" width="64" height="64"/> This document was last
-  updated April 2015
-</address>
-<p>&nbsp;</p>
+</div>
+</dd>
+</dl>
+</div>
+<hr>
+<div class="paragraph">
+<p><span class="image"><img src="../../nc.gif" alt="image"></span> This document was last updated August 2015</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> </pre>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-09-04 09:42:33 MDT
+</div>
+</div>
 </body>
 </html>

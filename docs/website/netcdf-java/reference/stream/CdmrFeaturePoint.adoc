@@ -1,4 +1,4 @@
-= CDM Remote Feature for Point Data
+DM Remote Feature for Point Data
 :linkcss:
 :stylesheet: ../../cdm.css
 :w3cDate: http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate
@@ -10,7 +10,7 @@ two levels of services:
 
 1.  *link:CdmRemote.html[CdmRemote]* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
 CDM local datasets and *DODSNetcdfFile* provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.
-2.  *CdmrFeature* provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and
+2.  *CdmrFeature* provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and 
 Unidata's link:../../../tds/reference/services/NetcdfSubsetServiceReference.html[_NetCDF Subset Service_] __(NCSS)__. This API and protocol is redone
 in version 5.0.
 
@@ -28,16 +28,18 @@ Possible requests are:
 
 Example service requests are:
 
+Example service requests are:
+
 [cols=",,",options="header",]
 |=====================================================================================================================================================
 |Request |Response |Meaning
 |http://server:8080/thredds/cdmrfeature/data.nc/point?**req=form** |HTML form |form interface
 
-|http://server:8080/thredds/cdmrfeature/data.nc/point?**req=capabilities** |capabilities XML |describe dataset
+|http://server:8080/thredds/cdmrfeature/data.nc/point?**req=capabilities** |capabilities XML |describe dataset 
 
 |http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data** |pointFeatureList message |get all the data
 
-|http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data&north=40.3&south=22.8&east=-80&west=-105** |pointFeatureList message |get data in
+|http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data&north=40.3&south=22.8&east=-80&west=-105** |pointFeatureList message |get data in 
 bounding box
 
 |http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data&time_start=&time_end=** |pointFeatureList message |get data in time range
@@ -143,7 +145,7 @@ This is an ad-hoc format (for now), example:
 </capabilities>
 ----------------------------------------------------------------------------------------------------------------------
 
- 
+Â 
 
 '''''
 
@@ -222,6 +224,7 @@ collectionController. We will replacce this with pure catalog configuration in 4
 </bean>
 ---------------------------------------------------------------------------------
 
+
 [source,xml]
 --------------------------------------------------------------------------------------------------------------
  <bean id="ncMetars" class="thredds.server.cdmremote.CollectionBean">
@@ -291,7 +294,7 @@ FeatureCollection 0
 *cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection*
 
 ----------------------------------------------------------------------------------------------------------------------------
- 
+Â 
 FeatureDataset on location= cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
   featureType= STATION
   title= METAR Data from NWS
@@ -361,5 +364,3 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
 '''''
 
 image:../../nc.gif[image] This document was last updated April 2015
-
- 

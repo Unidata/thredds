@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.2">
-<title>NetCDF Streaming Format</title>
+<title>PointDataset</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -413,127 +413,510 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 </div>
 <div id="content">
+<div class="paragraph">
+<p>DM Remote Feature for Point Data
+:linkcss:
+:stylesheet: ../../cdm.css
+:w3cDate: <a href="http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate" class="bare">http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate</a>
+:w3cDuration: <a href="http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cduration" class="bare">http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cduration</a></p>
+</div>
+<div class="paragraph">
+<p>CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM feature datasets, using
+<a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
+two levels of services:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong><a href="CdmRemote.html">CdmRemote</a></strong> provides index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for
+CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.</p>
+</li>
+<li>
+<p><strong>CdmrFeature</strong> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and
+Unidata&#8217;s <a href="../../../tds/reference/services/NetcdfSubsetServiceReference.html"><em>NetCDF Subset Service</em></a> <em>(NCSS)</em>. This API and protocol is redone
+in version 5.0.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.</p>
+</div>
+<hr>
 <div class="sect1">
-<h2 id="_netcdf_streaming_format">NetCDF Streaming Format</h2>
+<h2 id="_pointdataset">PointDataset</h2>
 <div class="sectionbody">
-<hr>
+<div class="paragraph">
+<p>Possible requests are:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  req=( capabilities | data | form)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example service requests are:</p>
+</div>
+<div class="paragraph">
+<p>Example service requests are:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: %;">
+<col style="width: %;">
+<col style="width: %;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Request</th>
+<th class="tableblock halign-left valign-top">Response</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/point?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/point?</a><strong>req=form</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTML form</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">form interface</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/point?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/point?</a><strong>req=capabilities</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">capabilities XML</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">describe dataset</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/point?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/point?</a><strong>req=data</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pointFeatureList message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get all the data</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/point?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/point?</a><strong>req=data&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pointFeatureList message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get data in
+bounding box</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/point?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/point?</a><strong>req=data&amp;time_start=&amp;time_end=</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pointFeatureList message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get data in time range</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmfeature/data.nc/point?" class="bare">http://server:8080/thredds/cdmfeature/data.nc/point?</a><strong>req=data&amp;var=Temp,lat,lon</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pointFeatureList message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get data for listed variables</p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist">
+<ul>
+<li>
+<p>data requests return an unordered list of observation as StructureData</p>
+</li>
+<li>
+<p>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_stationtimeseries">StationTimeSeries</h4>
+<div class="paragraph">
+<p>Possible query parameters are:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  req=( capabilities | data | form | stations)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example service requests are:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: %;">
+<col style="width: %;">
+<col style="width: %;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Request</th>
+<th class="tableblock halign-left valign-top">Response</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/station?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/station?</a><strong>req=form</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTML form</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">form interface</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/station?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/station?</a><strong>req=capabilities</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">capabilities XML</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">describe dataset</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/station?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/station?</a><strong>req=stations</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">stationListMessage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get all stations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/station?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/station?</a><strong>req=stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">stationListMessage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get stations in
+bounding box</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/station?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/station?</a><strong>req=stations&amp;stn=KDEN,KLOG,MOAS</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">stationListMessage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get stations in list</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/station?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/station?</a><strong>req=data&amp;time_start=&amp;time_end=&amp;stn=KDEN</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pointFeatureList message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get data in time range</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/station?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/station?</a><strong>req=data&amp;stn=KDEN,KLOG,MOAS</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pointFeatureList message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get data for station list</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/station?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/station?</a><strong>req=data&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pointFeatureList message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get data in
+bounding box</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://server:8080/thredds/cdmrfeature/data.nc/station?" class="bare">http://server:8080/thredds/cdmrfeature/data.nc/station?</a><strong>req=data&amp;var=Temp,lat,lon&amp;stn=KDEN</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pointFeatureList message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get data for listed
+variables</p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist">
+<ul>
+<li>
+<p>a list of stations or a bounding box must always be provided (?)</p>
+</li>
+<li>
+<p>data requests return an unordered list of observation as StructureData</p>
+</li>
+<li>
+<p>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Questions:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>stationList ncstream vs XML message</strong></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_client_implementation">Client implementation</h4>
+<div class="paragraph">
+<p><strong>ucar.nc2.stream.CdmRemoteFeatureDataset.factory()</strong> makes an HTTP request to <em>*endpoint+"?req=capabilities"*</em> to obtain the GetCapabilities XML
+document. This document describes what feature type(s) the dataset supports, which determines what are the valid requests, along with the endpoints
+for those feature types, which may be different than the original endpoint.</p>
+</div>
+<div class="paragraph">
+<p><strong>FeatureDatasetFactoryManager.open()</strong> looks for <em>*cdmremote:url*</em> prefix, and calls <strong>CdmRemoteFeatureDataset.factory(url)</strong> if found.
+<strong>ThreddsDataFactory.openFeatureDataset()</strong> looks for catalog InvDatasets with <em>*featureType.isPointFeatureType()*</em> and <em>*ServiceType.CdmRemote*</em>, and
+if found, calls <strong>CdmRemoteFeatureDataset.factory()</strong>.</p>
+</div>
+</div>
 <div class="sect2">
-<h3 id="_overview">Overview</h3>
+<h3 id="_getcapabilities_xml_document">GetCapabilities XML document</h3>
 <div class="paragraph">
-<p>NetCDF Streaming Format (<strong>ncstream</strong>) is a write-optimized encoding of CDM datasets. Ncstream consists of a series of header and data messages, in any
-order. Writes are always appended. Later messages override earlier ones whenever they overlap or conflict. To add or modify structural metadata,
-simply append a new header message. Each data message identifies the variable and the section (rectangular subset) of data it contains. A variable&#8217;s
-data thus consists of the collection of data messages for it, if any.</p>
+<p>This is an ad-hoc format (for now), example:</p>
 </div>
-<div class="sect3">
-<h4 id="_design_goals">Design Goals</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Experiment with our own on-the-wire protocol to rapidly explore new ideas for remote data access.</p>
-</li>
-<li>
-<p>Experiment with ways to optimize subset extraction of large datasets, especially for the case when the subset is specified in coordinate space
-rather than index space.</p>
-</li>
-<li>
-<p>Must be easy to read ncstream and write netCDF-3 or netCDF-4 files.</p>
-</li>
-<li>
-<p>The information content / data model of ncstream is identical to CDM. So ncstream is an alternate encoding of CDM datasets.</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;capabilities location="http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome"&gt;
+  &lt;featureDataset type="station" url="http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome/station" /&gt;
+  &lt;variable name="record.air_pressure_at_sea_level" type="float"&gt;
+    &lt;attribute name="long_name" value="Air pressure at sea level" /&gt;
+    &lt;attribute name="standard_name" value="air_pressure_at_sea_level" /&gt;
+    &lt;attribute name="_FillValue" type="float" value="-99999.0" /&gt;
+    &lt;attribute name="units" value="hectoPascal" /&gt;
+  &lt;/variable&gt;
+  &lt;variable name="record.air_temperature" type="float"&gt;
+    &lt;attribute name="long_name" value="Air temperature at 2 meters" /&gt;
+    &lt;attribute name="standard_name" value="air_temperature" /&gt;
+    &lt;attribute name="_FillValue" type="float" value="-99999.0" /&gt;
+    &lt;attribute name="units" value="Celsius" /&gt;
+  &lt;/variable&gt;
+  ...
+
+  &lt;LatLonBox&gt;
+    &lt;west&gt;-180.0000&lt;/west&gt;
+    &lt;east&gt;180.0000&lt;/east&gt;
+    &lt;south&gt;-90.0000&lt;/south&gt;
+    &lt;north&gt;82.5199&lt;/north&gt;
+  &lt;/LatLonBox&gt;
+  &lt;AcceptList&gt;
+    &lt;accept&gt;raw&lt;/accept&gt;
+    &lt;accept&gt;xml&lt;/accept&gt;
+    &lt;accept&gt;csv&lt;/accept&gt;
+    &lt;accept&gt;netcdf&lt;/accept&gt;
+    &lt;accept&gt;ncstream&lt;/accept&gt;
+  &lt;/AcceptList&gt;
+&lt;/capabilities&gt;</code></pre>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_possible_uses">Possible uses</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Study OPeNDAP implementation. The java implementation of ncstream should be (close to) maximal I/O efficient. By comparing the same requests on the
-same server to OPeNDAP, we should be able to tell how much speedup a rewrite of the OPeNDAP software will yield.</p>
-</li>
-<li>
-<p>Augment/explore OPeNDAP. Where the DAP protocol is deficient, ncstream is a way for us to explore possible solutions.</p>
-</li>
-<li>
-<p>Augment/explore WCS. We are setting up experimental data services on thredds.ucar.edu that allow coordinate subsetting on Feature datasets. We can
-use ncstream to get these services working, offering much the same functionality as WCS. Implementing WCS services are then much easier to develop.
-Experience using ncstream can potentially be fed into WCS standards. This work has already been going on under the name of "NetCDF Subset Service",
-and ncstream will be offered as one of the output types.</p>
-</li>
-<li>
-<p>Explore asynchronous data services. Both OPeNDAP and WCS want asynchronous data services, for the case when requested data cannot be immediately
-returned, for example because of extensive computation or because the data resides in a tape silo. We can explore possible solutions by having our own
-remote access protocol.</p>
-</li>
-<li>
-<p>Explore alternate file format for CDM datasets. Certain applications may need some of the extended features of CDM / Netcdf-4, without needing all
-of the complexity of the HDF5 format. Ncstream may comprise a "sweet spot" of functionality for some use cases.</p>
-</li>
-<li>
-<p>Parallel I/O. Append-only file writing may be useful in some high performance applications, with a second pass (external to the generating program)
-that efficiently converts to netCDF-3 or netCDF-4 files. During that conversion, a smart program could decide on chunking parameters, data-dependent
-compression choices, and other read optimizations.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_implementation">Implementation</h4>
-<div class="paragraph">
-<p>Messages are encoded using Google&#8217;s <a href="http://code.google.com/p/protobuf/">Protobuf</a> library.</p>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>"Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You
-define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to
-and from a variety of data streams and using a variety of languages. You can even update your data structure without breaking deployed programs that
-are compiled against the "old" format."</p>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>The main advantage of protobuf over XML is performance, since both message size and parsing speed is improved. A very important feature of protobuf is
-the ability to evolve the message structure in a way that doesn&#8217;t break previous code.</p>
-</div>
-<div class="paragraph">
-<p>We don&#8217;t use protobuf messages for the data, since protobuf messages are built in memory, and we need to be able to stream (write data directly from
-its source onto the output stream, eg socket). The multidimensional data is written to the stream in row-major order, with reader-makes-right byte
-ordering. A data message identifying the variable and the section that the data represents is part of every data message.</p>
-</div>
-<div class="paragraph">
-<p>Variable length datatypes like String and Opaque use the vdataMessage for data transfer. First the number of objects is written, then each object,
-preceded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes.</p>
-</div>
-<div class="paragraph">
-<p>Ncstream implements the full <a href="../../CDM/CDM-UML.png">CDM data model.</a></p>
-</div>
-<div class="paragraph">
-<p>See also:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="CdmRemote.html">CdmRemote</a> service</p>
-</li>
-<li>
-<p><a href="CdmrFeature.html">CdmrFeature</a> service</p>
-</li>
-<li>
-<p><a href="NcStreamGrammer.html">ncstream grammer</a></p>
-</li>
-</ul>
-</div>
-<hr>
-<div class="paragraph">
-<p><span class="image"><img src="../../nc.gif" alt="image"></span> This document was last updated August 2015</p>
 </div>
 <div class="literalblock">
 <div class="content">
 <pre> </pre>
 </div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_pointstream_grammer">PointStream Grammer</h3>
+<div class="paragraph">
+<p>An <em>*pointstream*</em> is a sequence of one or more messages:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>   pointstream = {message}
+   message = stationListMessage | pointFeatureListMessage | errorMessage | endMessage
+   stationListMessage = MAGIC_StationList, vlen, PointStreamProto.StationList
+   pointFeatureListMessage = pointFeatureCollectionMessage, {pointFeatureMessage}, (endMessage | errorMessage)
+
+
+   pointFeatureCollectionMessage = MAGIC_PointFeatureCollection, vlen, PointStreamProto.PointFeatureCollection
+   pointFeatureMessage = MAGIC_PointFeature, vlen, PointStreamProto.PointFeature
+   endMessage = MAGIC_END
+   errorMessage = MAGIC_ERR, vlen, NcStreamProto.Error
+
+   vlen = variable length encoded positive integer == length of the following object in bytes
+
+
+   // 8 byte constants
+
+   MAGIC_StationList            =  0fe, 0xec, 0xce, 0xda
+   MAGIC_PointFeatureCollection =  0xfi, 0xec, 0xce, 0xba
+
+   MAGIC_PointFeature           =  0xab, 0xec, 0xce, 0xba
+   MAGIC_END                    =  0xed, 0xed, 0xde, 0xde
+
+   MAGIC_ERR                    =  0xab, 0xad, 0xba, 0xda</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The protobuf messages are defined by</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_current_notes_on_motherlode_dev">Current notes on motherlode dev</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>List of cdm datasets: <a href="http://thredds.ucar.edu/thredds/idd/newPointObs.html" class="bare">http://thredds.ucar.edu/thredds/idd/newPointObs.html</a></p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_nov_11_2010">Nov-11-2010</h4>
+<div class="paragraph">
+<p>\1) web.xml has a <strong>org.springframework.web.servlet.DispatcherServlet</strong> cdmRemote with a mapping:<br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml"> &lt;servlet-mapping&gt;
+   &lt;servlet-name&gt;cdmRemote&lt;/servlet-name&gt;
+   &lt;url-pattern&gt;/cdmremote/*&lt;/url-pattern&gt;
+ &lt;/servlet-mapping&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>\2) Temporarily, we have the configuration of the datasets in <strong>thredds\tds\src\main\webapp\WEB-INF\cdmRemote-servlet.xml</strong>: which configures the
+collectionController. We will replacce this with pure catalog configuration in 4.2+. This is now being shown in serverStartup.log<br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml"> &lt;bean id="collectionManager" class="thredds.server.cdmremote.CollectionManager"&gt;
+ &lt;property name="collections"&gt;
+  &lt;list&gt;
+   &lt;ref bean="ncMetars" /&gt;
+   &lt;ref bean="gempakMetars" /&gt;
+   &lt;ref bean="quickScatWinds" /&gt;
+   &lt;ref bean="ncMetarsLocal" /&gt;
+   &lt;ref bean="ncMetarsLocalHome" /&gt;
+   &lt;ref bean="gempakMetarsLocal" /&gt;
+   &lt;ref bean="gempakMetarsLocalHome" /&gt;
+  &lt;/list&gt;
+ &lt;/property&gt;
+&lt;/bean&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml"> &lt;bean id="ncMetars" class="thredds.server.cdmremote.CollectionBean"&gt;
+   &lt;property name="path" value="/idd/metar/ncdecoded"/&gt;
+   &lt;property name="spec" value="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc"/&gt;
+   &lt;property name="recheck" value="15 min"/&gt;
+   &lt;property name="featureType" value="STATION"/&gt;
+   &lt;property name="raw" value="report"/&gt;
+   &lt;property name="resolution" value="20 min"/&gt;
+ &lt;/bean&gt;
+
+etc</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is now being shown in serverStartup.log:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>serverStartup: CdmRemoteController collections
+   /idd/metar/gempak == /data/ldm/gempak/surface/#yyyyMMdd#_sao.gem
+   /idd/bufr/quickScat == /data/ldm/gempak/surface/**/#yyyyMMdd#.gem
+   /idd/metar/ncdecodedLocalHome == C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc
+   /idd/metar/ncdecoded == /data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc
+   /idd/metar/gempakLocalHome == C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem
+   /idd/metar/gempakLocal == D:/formats/gempak/surface2/#yyyyMMdd#_sao.gem
+   /idd/metar/ncdecodedLocal == Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So the URLs are</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre> http://server:port/thredds/cdmremote/path?req
+eg:
+ http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak
+ http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/ncdecoded
+ http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/bufr/quickScat
+ http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal
+ http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome?req=form</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>3) The default output is the dataset description: should be getCapabilities ????</strong><br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>FeatureDataset on location= http://localhost:8080/thredds/cdmremote/local/metars/collection
+  featureType= STATION
+  title= null
+  desc= null
+  range= start= 2006-03-25 00:00:00Z end= 2006-09-25 00:00:00Z duration= 6.0453 months resolution= null
+  start= 2006-03-25 00:00:00Z
+  end  = 2006-09-25 00:00:00Z
+  bb   =  ll: 90.0S 180.0W+ ur: 82.51N 180.0E
+  bb   =  lat= [-90.00,82.51] lon= [-180.00,180.00]
+  has netcdf = true
+  Data Variables (0)
+
+parseInfo=
+
+
+FeatureCollection 0
+ STATION Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc
+   npts = -1
+     bb =  lat= [-90.00,82.51] lon= [-180.00,180.00]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>\4) In ToolsUI, FeatureType/PointFeature Tab:</p>
+</div>
+<div class="paragraph">
+<p><strong>cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre> 
+FeatureDataset on location= cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
+  featureType= STATION
+  title= METAR Data from NWS
+  desc= Metar Data from NWS distributed through the Unidata IDD
+    realtime datastream. 1 day's worth of data
+  range= null
+  start= Unknown
+  end  = Unknown
+  bb   = null
+  has netcdf = true
+  Attributes
+    title = "METAR Data from NWS"
+    version = 2.3
+    processor = "metar2nc  version v1.2"
+    Conventions = "Unidata Observation Dataset v1.0"
+    standard_name_vocabulary = "CF-1.0"
+    description = "Metar Data from NWS distributed through the Unidata IDD\n    realtime datastream. 1 day\'s worth of data"
+    time_coordinate = "time_observation"
+    cdm_datatype = "Station"
+    stationDimension = "station"
+    station_id = "station_id"
+    station_description = "station_description"
+    latitude_coordinate = "latitude"
+    longitude_coordinate = "longitude"
+    altitude_coordinate = "altitude"
+    geospatial_lat_max = "90.0"
+    geospatial_lat_min = "-90.0"
+    geospatial_lon_max = "360.0"
+    geospatial_lon_min = "0.0"
+    time_coverage_start = "1143243900"
+    time_coverage_end = "1143330240"
+    observationDimension = "recNum"
+  Data Variables (0)
+
+parseInfo=
+
+
+FeatureCollection 0
+ STATION cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
+   npts = -1
+     bb =  lat= [-90.00,82.51] lon= [-180.00,180.00]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ask for station data, on the server, its rather slow:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060325_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060326_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060327_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060328_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060329_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060330_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060331_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060401_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060402_0000.nc
+CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060629_0000.nc
+ sent 481 features to 20V
+
+
+  (check to see what the strategy is for stations: coomplete scan or ??)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>\5) <strong>cdmremoteCatalog.xml</strong> defines datasets for the collections we have working so far.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>+</pre>
+</div>
+</div>
+<hr>
+<div class="paragraph">
+<p><span class="image"><img src="../../nc.gif" alt="image"></span> This document was last updated April 2015</p>
 </div>
 </div>
 </div>
@@ -542,7 +925,7 @@ preceded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. O
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-09-04 09:42:33 MDT
+Last updated 2015-09-04 10:15:55 MDT
 </div>
 </div>
 </body>

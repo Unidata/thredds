@@ -1,96 +1,226 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>CdmrFeature Grammar</title>
-  <link href="../../cdm.css" rel="stylesheet" type="text/css"/>
-
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>CdmrFeature Grammer (DRAFT)</title>
+<link rel="stylesheet" href="./../../cdm.css">
 </head>
-
-<body>
+<body class="article">
+<div id="header">
 <h1>CdmrFeature Grammer (DRAFT)</h1>
-<p>Generally follows or reuses the <a href="NcstreamGrammer.html">NcStream grammer</a> whenever possible.</p>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_grammer">Grammer</a></li>
+<li><a href="#_messages">Messages</a>
+<ul class="sectlevel2">
+<li><a href="#_data_response_message">Data Response Message</a></li>
+<li><a href="#_georeferencedarray">GeoReferencedArray</a></li>
+<li><a href="#_data_array">Data Array</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This describes the on-the-wire protocol for CdmrFeature.
+Follows or reuses the <a href="NcstreamGrammer.html">NcStream grammer</a> whenever possible.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_grammer">Grammer</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A <em>cdmrfstream</em> is an ordered sequence of one or more messages:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>   cdmrfstream := MAGIC_START, {message}*, MAGIC_END
+   message := headerMessage | dataMessage | errorMessage
+   headerMessage := MAGIC_HEADER, vlenb, CdmrFeatureProto.GridCoverageDataset
+   dataMessage := MAGIC_DATA, vlenb, CdmrFeatureProto.DataResponse, arrayDataList
+   errorMessage := MAGIC_ERR, vlenb, NcStreamProto.Error
 
-<h2>Grammer </h2>
+   arrayDataList := vlenn, {arrayData}*vlenn
+   arrayData := vlenb, (byte)*vlenb
 
-<p>An <em><strong>cdmrfstream</strong></em> is an ordered sequence of one or more messages:</p>
-<pre><em><strong>   </strong></em><strong>cdmrfstream</strong>= <strong>MAGIC_START</strong>, <strong></strong>{message}*, <strong>MAGIC_END</strong>
-   <strong>message</strong> = headerMessage | dataMessage | errorMessage
-   <strong>headerMessage</strong> = MAGIC_HEADER, vlenb, CdmrFeatureProto.GridCoverageDataset
-   <strong>dataMessage</strong> = MAGIC_DATA, vlenb, CdmrFeatureProto.DataResponse, <strong>arrayDataList</strong> <strong></strong>
-   <strong>errorMessage</strong> = MAGIC_ERR, vlenb, NcStreamProto.Error<strong>
-
-   arrayDataList</strong>= vlenn, {<strong>arrayData</strong>}*vlenn
-   <strong>arrayData</strong> = vlenb, (byte)*vlenb
-
-   <strong>vlenb</strong> = variable length encoded positive integer == length of the following object in bytes
-   <strong>vlenn</strong> = variable length encoded positive integer == number of objects that follow
-   <strong>byte</strong> = actual bytes of data, encoding described by the NcStreamProto.Data message
+   vlenb := variable length encoded positive integer = length of the following object in bytes
+   vlenn := variable length encoded positive integer = number of objects that follow
+   byte  := actual bytes of data, encoding described by the NcStreamProto.Data message
 
 primitives (same as ncstream):
 
-   <strong>MAGIC_START</strong> = 0x43, 0x44, 0x46, 0x53
-   <strong>MAGIC_HEADER</strong>= 0xad, 0xec, 0xce, 0xda
-   <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba
-   <strong>MAGIC_VDATA</strong> = 0xab, 0xef, 0xfe, 0xba
-   <strong>MAGIC_VEND </strong> = 0xed, 0xef, 0xfe, 0xda
-   <strong>MAGIC_ERR</strong>   = 0xab, 0xad, 0xba, 0xda
-   <strong>MAGIC_END</strong> =   0xed, 0xed, 0xde, 0xde</pre>
-<p>The protobuf messages are defined by </p>
+   MAGIC_START := 0x43, 0x44, 0x46, 0x53
+   MAGIC_HEADER:= 0xad, 0xec, 0xce, 0xda
+   MAGIC_DATA  := 0xab, 0xec, 0xce, 0xba
+   MAGIC_VDATA := 0xab, 0xef, 0xfe, 0xba
+   MAGIC_VEND  := 0xed, 0xef, 0xfe, 0xda
+   MAGIC_ERR   := 0xab, 0xad, 0xba, 0xda
+   MAGIC_END   := 0xed, 0xed, 0xde, 0xde</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The protobuf messages are defined by</p>
+</div>
+<div class="ulist">
 <ul>
-  <li><strong>{repo}/cdm/src/main/java/ucar/nc2/stream/ncStream.proto</strong></li>
-  <li><strong>{repo}/cdm/src/main/java/    ucar/nc2/ft2/coverage/remote/cdmrfeature.proto<br/>
-  </strong></li>
+<li>
+<p><strong>{repo}/cdm/src/main/java/ucar/nc2/stream/ncStream.proto</strong></p>
+</li>
+<li>
+<p><strong>{repo}/cdm/src/main/java/ ucar/nc2/ft2/coverage/remote/cdmrfeature.proto</strong></p>
+</li>
 </ul>
-<p>These are compiled by the protobuf compiler into Java. Python, and C code that does the actual encoding/decoding
-  from the on-the-wire stream. </p>
-<h2><strong>Header Message</strong></h2>
-<p>&nbsp;</p>
+</div>
+<div class="paragraph">
+<p>These are compiled by the protobuf compiler into Java, Python, and C code that does the actual encoding/decoding from the on-the-wire stream.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_messages">Messages</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_data_response_message">Data Response Message</h3>
+<div class="paragraph">
+<p>The DataResponse has a list of GeoReferencedArray objects, which may share the same coordinate system. Following the Data Response Message are the
+actual data arrays, in the same order as the GeoReferencedArrays (see <strong>arrayDataList</strong> above in grammer)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>message DataResponse {
+  repeated CoordAxis coordAxes = 1;              <b class="conum">(1)</b>
+  repeated CoordSys coordSys = 2;                <b class="conum">(2)</b>
+  repeated CoordTransform coordTransforms = 3;   <b class="conum">(3)</b>
+  repeated GeoReferencedArray geoArray = 4;      <b class="conum">(4)</b>
+}</pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><em>List&lt;CoordAxis&gt; coordAxes</em> used in one or more of the returned GeoReferencedArray.</p>
+</li>
+<li>
+<p><em>List&lt;CoordSys&gt; coordSys</em> used in one or more of the returned GeoReferencedArray.</p>
+</li>
+<li>
+<p><em>List&lt;CoordTransform&gt; coordTransforms</em> used in one or more of the returned GeoReferencedArray.</p>
+</li>
+<li>
+<p><em>List&lt;GeoReferencedArray&gt;geoArray</em> are the results of the query.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_georeferencedarray">GeoReferencedArray</h3>
+<div class="listingblock">
+<div class="content">
+<pre>enum Compress {
+  NONE = 0;
+  DEFLATE = 1;
+}
+message GeoReferencedArray {
+  required string coverageName = 1;          <b class="conum">(1)</b>
+  required DataType dataType = 2;            <b class="conum">(2)</b>
+  optional bool bigend = 3 [default = true]; <b class="conum">(3)</b>
+  optional uint32 version = 4 [default = 0];      <b class="conum">(4)</b>
+  optional Compress compress = 5 [default = NONE];     <b class="conum">(5)</b>
+  optional uint64 uncompressedSize = 6;            <b class="conum">(6)</b>
 
-<h2><strong>Data Response Message</strong></h2>
-<p>The DataResponse has a list of GeoReferencedArray objects, which may share the same coordinate system. Following the Data Response Message are the actual data arrays, in the same order as the GeoReferencedArrays (see <strong>arrayDataList</strong> above in grammer)</p>
-<pre>message&#32;DataResponse&#32;{<br />&#32;&#32;repeated&#32;CoordAxis&#32;coordAxes&#32;=&#32;1;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;//&#32;may&#32;be&#32;shared&#32;if&#32;asking&#32;for&#32;multiple&#32;grids<br />&#32;&#32;repeated&#32;CoordSys&#32;coordSys&#32;=&#32;2;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;//&#32;&#32;&#32;&#32;&quot;<br />&#32;&#32;repeated&#32;CoordTransform&#32;coordTransforms&#32;=&#32;3;&#32;&#32;&#32;//&#32;&#32;&#32;&#32;&quot;<br /><br />&#32;&#32;repeated&#32;GeoReferencedArray&#32;geoArray&#32;=&#32;4;<br />}
-</pre>
+  repeated uint32 shape = 7;            <b class="conum">(7)</b>
+  repeated string axisName = 8;         <b class="conum">(8)</b>
+  required string coordSysName = 9;     <b class="conum">(9)</b>
+}</pre>
+</div>
+</div>
+<div class="colist arabic">
 <ol>
-  <li><em>List&lt;CoordAxis&gt; coordAxes</em> used in one or more of the returned GeoReferencedArray.</li>
-  <li><em>List&lt;CoordSys&gt; coordSys</em> used in one or more of the returned GeoReferencedArray.</li>
-  <li><em>List&lt;CoordTransform&gt; coordTransforms </em> used in one or more of the returned GeoReferencedArray.</li>
-  <li><em>List&lt;GeoReferencedArray&gt;geoArray</em> are the results of the query.</li>
+<li>
+<p>full name of Coverage</p>
+</li>
+<li>
+<p><em>ucar.nc2.DataType</em> for the returned array: <strong>byte, short, int, long</strong> (signed) or <strong>ubyte, ushort, uint, ulong</strong> (unsigned), or <strong>float</strong>, <strong>double</strong>.</p>
+</li>
+<li>
+<p>stored in big or small endian (reader makes right).</p>
+</li>
+<li>
+<p>version of the data storage format (not currently needed).</p>
+</li>
+<li>
+<p>compression algorithm.</p>
+</li>
+<li>
+<p>uncompressed size of the returned data, in bytes.</p>
+</li>
+<li>
+<p>int[] shape of returned array</p>
+</li>
+<li>
+<p>String[] axisName, corresponding to shape.</p>
+</li>
+<li>
+<p>Reference to coordSys in the <em>DataResponse</em> message.</p>
+</li>
 </ol>
-<h3>GeoReferencedArray</h3>
-Follows <a href="NcstreamGrammer.html#DataMessage">NcStream
-Data Message</a> as much as possible.
-<pre>
-enum&#32;Compress&#32;{<br />&#32;&#32;NONE&#32;=&#32;0;<br />&#32;&#32;DEFLATE&#32;=&#32;1;<br />}
-message&#32;GeoReferencedArray&#32;{<br />&#32;&#32;required&#32;string&#32;coverageName&#32;=&#32;1;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;//&#32;full&#32;escaped&#32;name.<br />&#32;&#32;required&#32;DataType&#32;dataType&#32;=&#32;2;<br />&#32;&#32;optional&#32;bool&#32;bigend&#32;=&#32;3&#32;[default&#32;=&#32;true];<br />&#32;&#32;optional&#32;uint32&#32;version&#32;=&#32;4&#32;[default&#32;=&#32;0];<br />&#32;&#32;optional&#32;Compress&#32;compress&#32;=&#32;5&#32;[default&#32;=&#32;NONE];<br />&#32;&#32;optional&#32;uint64&#32;uncompressedSize&#32;=&#32;6;<br /><br />&#32;&#32;repeated&#32;uint32&#32;shape&#32;=&#32;7;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;//&#32;the&#32;shape&#32;of&#32;the&#32;returned&#32;array<br />&#32;&#32;repeated&#32;string&#32;axisName&#32;=&#32;8;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;//&#32;each&#32;dimension&#32;corresponds&#32;to&#32;this&#32;axis<br />&#32;&#32;required&#32;string&#32;coordSysName&#32;=&#32;9;&#32;&#32;&#32;&#32;&#32;//&#32;must&#32;have&#32;coordAxes&#32;corresponding&#32;to&#32;shape<br />}</pre>
-<ol>
-  
-  <li>full name of Coverage</li>
-  <li><em>ucar.nc2.DataType</em> for the returned array: <strong>byte, short, int, long</strong> (signed) or <strong>ubyte, ushort, uint, ulong</strong> (unsigned), or <strong>float</strong>, <strong>double</strong>.</li>
-  <li>stored in big or small endian (reader makes right).</li>
-  <li>version of the data storage format (not currently needed).</li>
-  <li>compression algorithm.</li>
-  <li>uncompressed size of the returned data, in bytes.</li>
-  <li>int[] shape of returned array</li>
-  <li>String[] axisName, corresponding to shape.</li>
-  <li>Reference to coordSys in the <em>DataResponse</em> message.</li>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_array">Data Array</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>After decompression (if needed) the number of bytes of the data array is <em>uncompressedSize</em>.</p>
+</li>
+<li>
+<p>The number of elements of the array is <em>uncompressedSize</em> / sizeof (<em>dataType</em>).</p>
+</li>
+<li>
+<p>The number of elements must match the <em>int[] shape</em> array.</p>
+</li>
+<li>
+<p>The data elements are laid out sequentially in row-major order (first dimension varies slowest).</p>
+</li>
+<li>
+<p>The <em>int[] shape</em> array describes how to interpret the data as a multidimensional array.</p>
+</li>
+<li>
+<p>For each dimension in the <em>shape</em> array, there is a corresponding <em>axisName</em>, which refers to a <em>coordAxis</em> in the Data Response message.</p>
+</li>
+<li>
+<p>The size of the <em>coordAxis</em> must match the corrresponding <em>shape</em> length.</p>
+</li>
+<li>
+<p>The values of the <em>coordAxis</em> are coordinate values for the returned data array.</p>
+</li>
 </ol>
-<h3><strong>Data Array</strong></h3>
-<ol>
-  <li>After decompression (if needed) the number of bytes of the data array is <em>uncompressedSize</em>.</li>
-  <li>The number of elements of the array is <em>uncompressedSize</em> / sizeof (<em>dataType</em>).</li>
-  <li>The number of elements must match the <em>int[] shape</em> array.</li>
-  <li>The data elements are laid out sequentially in row-major order (first dimension varies slowest).</li>
-  <li>The <em>int[] shape</em> array describes how to interpret the data as a multidimensional array.</li>
-  <li>For each dimension in the <em>shape</em> array, there is a corresponding <em>axisName</em>, which refers to a <em>coordAxis</em> in the Data Response message.</li>
-  <li>The size of the <em>coordAxis</em> must match the corrresponding <em>shape</em> length. </li>
-  <li>The values of the <em>coordAxis</em> are coordinate values for the returned data array.</li>
-</ol>
-<hr width="100%"/>
-<address>
-  <img src="../../nc.gif" alt="" width="64" height="64"/> This document  was last
-  updated July 2015
-</address>
-<p>&nbsp;</p>
+</div>
+<hr>
+<div class="paragraph">
+<p><span class="image"><img src="../../nc.gif" alt="image"></span> This document was last updated August 2015</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre> </pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-09-04 09:42:33 MDT
+</div>
+</div>
 </body>
 </html>
