@@ -40,6 +40,7 @@ import ucar.nc2.constants.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.*;
 
 import java.io.IOException;
@@ -78,7 +79,7 @@ public class CFGridCoverageWriter2 {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  public static long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames,
+  public static ucar.nc2.util.Optional<Long> writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames,
                                SubsetParams subset,
                                boolean addLatLon,
                                boolean testSizeOnly,
@@ -88,11 +89,15 @@ public class CFGridCoverageWriter2 {
     return writer2.writeFile(gdsOrg, gridNames, subset, addLatLon, testSizeOnly, writer);
   }
 
-  private long writeFile(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subsetParams, boolean addLatLon, boolean testSizeOnly,
+  private ucar.nc2.util.Optional<Long> writeFile(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subsetParams, boolean addLatLon, boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     // we need global atts, subsetted axes, the transforms, and the coverages with attributes and referencing subsetted axes
-    CoverageDataset subsetDataset = new CoverageSubsetter2().makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
+    Optional<CoverageDataset> subsetDataseto = CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
+    if (!subsetDataseto.isPresent())
+      return ucar.nc2.util.Optional.empty(subsetDataseto.getErrorMessage());
+
+    CoverageDataset subsetDataset = subsetDataseto.get();
 
     long total_size = 0;
     for (Coverage grid : subsetDataset.getCoverages()) {
@@ -100,7 +105,7 @@ public class CFGridCoverageWriter2 {
     }
 
     if (testSizeOnly)
-      return total_size;
+      return Optional.of(total_size);
 
     ////////////////////////////////////////////////////////////////////
 
@@ -202,11 +207,9 @@ public class CFGridCoverageWriter2 {
       writer.write(v, array.getData());
     }
 
-    //updateGeospatialRanges(writer, llrect );
     writer.close();
 
-    // this writes the data to the new file.
-    return total_size; // ok
+    return Optional.of(total_size);
   }
 
   private boolean isLargeFile(long total_size) {

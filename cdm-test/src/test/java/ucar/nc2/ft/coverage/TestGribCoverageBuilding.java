@@ -145,13 +145,13 @@ public class TestGribCoverageBuilding {
   }
 
   @Test
-  public void testTimeOffsetSubsetWhenTImePresent() throws IOException {
+  public void testTimeOffsetSubsetWhenTimePresent() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
     String gridName = "Temperature_isobaric";
+    System.out.printf("file %s coverage %s%n", filename, gridName);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      Assert.assertEquals(2, cc.getCoverageDatasets().size());
       CoverageDataset cd = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
       Assert.assertNotNull(CoverageCoordSys.Type.Grid.toString(), cd);
 
@@ -161,20 +161,19 @@ public class TestGribCoverageBuilding {
       CoverageCoordSys csys = cov.getCoordSys();
       Assert.assertNotNull("CoverageCoordSys", csys);
 
-      CoverageCoordAxis time = csys.getAxis(AxisType.Time);
-      Assert.assertNotNull(AxisType.Time.toString(), time);
+      CoverageCoordAxis time = csys.getAxis(AxisType.TimeOffset);
+      Assert.assertNotNull(AxisType.TimeOffset.toString(), time);
       Assert.assertTrue(time.getClass().getName(), time instanceof CoverageCoordAxis1D);
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, time.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());
       Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), time.makeDate(0));
       Assert.assertEquals(6.0, time.getResolution(), Misc.maxReletiveError);
-      Assert.assertEquals(false, time.isTime2D());
 
       CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
       Assert.assertNotNull(AxisType.RunTime.toString(), runtime);
       Assert.assertTrue(runtime.getClass().getName(), runtime instanceof CoverageCoordAxis1D);
-      Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, runtime.getSpacing());
-      Assert.assertEquals(CoverageCoordAxis.DependenceType.dependent, runtime.getDependenceType());
+      Assert.assertEquals(CoverageCoordAxis.Spacing.regular, runtime.getSpacing());
+      Assert.assertEquals(CoverageCoordAxis.DependenceType.scalar, runtime.getDependenceType());
       Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(0));
     }
   }

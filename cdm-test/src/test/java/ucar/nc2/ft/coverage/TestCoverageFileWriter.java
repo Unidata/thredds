@@ -14,12 +14,14 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
+import ucar.nc2.util.Optional;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -85,7 +87,9 @@ public class TestCoverageFileWriter {
 
       NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, tempFile.getPath(), null);
 
-      CFGridCoverageWriter2.writeOrTestSize(gcs, covList, params, false, false, writer);
+      Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(gcs, covList, params, false, false, writer);
+      if (!estimatedSizeo.isPresent())
+        throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
     }
 
     // open the new file as a Coverage

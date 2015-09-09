@@ -40,7 +40,9 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
 
+import javax.annotation.Nonnull;
 import java.util.Formatter;
 
 /**
@@ -74,6 +76,11 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   }
 
   @Override
+  public CoverageCoordAxis copy() {
+    return new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this));
+  }
+
+  @Override
   public int[] getShape() {
     return shape;
   }
@@ -87,9 +94,9 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   }
 
   @Override
-  public CoverageCoordAxis subset(SubsetParams params) {
+  public Optional<CoverageCoordAxis> subset(SubsetParams params) {
     if (params == null)
-      return new FmrcTimeAxis2D( new CoverageCoordAxisBuilder(this));
+      return Optional.of(new FmrcTimeAxis2D( new CoverageCoordAxisBuilder(this)));
 
     CoordAxisHelper helper = new CoordAxisHelper(runCoord);
     int run_index = -1;
@@ -100,7 +107,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
       if (rundate != null) {
         double rundateTarget = runCoord.convert(rundate);
-        run_index = helper.findCoordElementBounded(rundateTarget, CoordAxisHelper.Mode.closest);  // LOOK Bounded
+        run_index = helper.findCoordElement(rundateTarget, true);  // LOOK Bounded
       }
     }
 
@@ -109,16 +116,17 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       return time1D.subset(params);
     }
 
-    return this;
+    return Optional.of(new FmrcTimeAxis2D( new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
-  public FmrcTimeAxis2D subset(double minValue, double maxValue) {
-    return this; // LOOK
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) { // LOOK not implemented, maybe illegal ??
+    return Optional.of(new FmrcTimeAxis2D( new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
-  public FmrcTimeAxis2D subsetDependent(CoverageCoordAxis1D from) {
+  @Nonnull
+  public FmrcTimeAxis2D subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented, maybe illegal ??
     return null; // LOOK
   }
 
@@ -139,8 +147,8 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
   public CoverageCoordAxis1D getTimeAxisForRun(CalendarDate rundate) {
     double rundateTarget = runCoord.convert(rundate);
-    int run_index = new CoordAxisHelper(runCoord).findCoordElementBounded(rundateTarget, CoordAxisHelper.Mode.closest);  // LOOK Bounded
-    return (run_index < 0) ? null : getTimeAxisForRun(run_index);
+    int run_index = new CoordAxisHelper(runCoord).findCoordElement(rundateTarget, false);  // LOOK not Bounded
+    return (run_index < 0 || run_index >= runCoord.getNcoords()) ? null : getTimeAxisForRun(run_index);
   }
 
   public CoverageCoordAxis1D getTimeAxisForRun(int run_index) {

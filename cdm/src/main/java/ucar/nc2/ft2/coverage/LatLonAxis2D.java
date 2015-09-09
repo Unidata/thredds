@@ -36,12 +36,16 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * LatLon axes : lat(y,x), lon(y,x)
+ * LatLon axes : used by lat(y,x) and lon(y,x)
+ * An instance represents just one of lat or lon.
+ * HorizCoordSys manages the two, usually you want to use that.
  *
  * @author caron
  * @since 7/15/2015
@@ -76,6 +80,11 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   }
 
   @Override
+  public CoverageCoordAxis copy() {
+    return new LatLonAxis2D(new CoverageCoordAxisBuilder(this));
+  }
+
+  @Override
   public int[] getShape() {
     return shape;
   }
@@ -86,19 +95,28 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     f.format("%s  shape=[%s]%n", indent, Misc.showInts(shape));
   }
 
+  public double getCoord(int yindex, int xindex) {
+    // assume values hold 2D coord
+    getValues();
+    int idx = yindex*shape[0] + xindex;
+    return values[idx];
+  }
+
+
   @Override
-  public LatLonAxis2D subset(SubsetParams params) {  // LOOK not implemented
-    return new LatLonAxis2D( new CoverageCoordAxisBuilder(this));
+  public Optional<CoverageCoordAxis> subset(SubsetParams params) {  // LOOK not implemented
+    return Optional.of(new LatLonAxis2D( new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
-  public LatLonAxis2D subset(double minValue, double maxValue) {
-    return this; // LOOK
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) { // LOOK not implemented
+    return Optional.of(new LatLonAxis2D( new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
-  public LatLonAxis2D subsetDependent(CoverageCoordAxis1D from) {
-    return null; // LOOK
+  @Nonnull
+  public LatLonAxis2D subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented
+    return null;
   }
 
   @Override

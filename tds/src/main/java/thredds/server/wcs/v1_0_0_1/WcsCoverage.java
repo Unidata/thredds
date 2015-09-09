@@ -41,6 +41,7 @@ import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.NamedObject;
+import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
@@ -246,8 +247,11 @@ public class WcsCoverage {
         SubsetParams subset = new SubsetParams();
         NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath());
         // LOOK could test file size
-        CFGridCoverageWriter2.writeOrTestSize(this.wcsDataset.getDataset(), Collections.singletonList(this.coverage.getName()),
+        Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(this.wcsDataset.getDataset(), Collections.singletonList(this.coverage.getName()),
                 subset, true, false, writer);
+        if (!estimatedSizeo.isPresent())
+          throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
+
         return outFile;
 
       } else {

@@ -36,18 +36,18 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Misc;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
+import ucar.nc2.util.Optional;
 
 /**
- * Helper class for CoverageCoordAxis1D.
- * Mostly subsetting.
+ * Helper class for CoverageCoordAxis1D for subsetting and searching.
  *
  * @author caron
  * @since 7/13/2015
  */
 class CoordAxisHelper {
-  enum Mode {min, max, closest} // values is a min, max or closest
-
   private final CoverageCoordAxis1D axis;
 
   CoordAxisHelper(CoverageCoordAxis1D axis) {
@@ -58,101 +58,60 @@ class CoordAxisHelper {
    * Given a coordinate position, find what grid element contains it.
    * This means that
    * <pre>
-   * edge[i] <= pos < edge[i+1] (if values are ascending)
-   * edge[i] > pos >= edge[i+1] (if values are descending)
+   * edge[i] <= target < edge[i+1] (if values are ascending)
+   * edge[i] > target >= edge[i+1] (if values are descending)
    * </pre>
    *
    * @param target position in this coordinate system
-   * @return index of grid point containing it, or -1 if outside grid area
+   * @param bounded if true, always return a valid index. otherwise can return < 0 or > n-1
+   * @return index of grid point containing it, or < 0 or > n-1 if outside grid area
    */
-  public int findCoordElement(double target, Mode mode) {
+  int findCoordElement(double target, boolean bounded) {
     switch (axis.getSpacing()) {
       case regular:
-        return findCoordElementRegular(target, mode, false);
+        return findCoordElementRegular(target, bounded);
       case irregularPoint:
       case contiguousInterval:
-        return findCoordElementContiguous(target, false);
+        return findCoordElementContiguous(target, bounded);
       case discontiguousInterval:
-        return findCoordElementDiscontiguousInterval(target, false);
+        return findCoordElementDiscontiguousInterval(target, bounded);
     }
     throw new IllegalStateException("unknown spacing" + axis.getSpacing());
   }
 
-  /**
-   * Given a coordinate position, find what grid element contains it, or is closest to it.
-   *
-   * @param target position in this coordinate system
-   * @return index of grid point containing it, or best estimate of closest grid interval.
-   */
-  public int findCoordElementBounded(double target, Mode mode) {
-    switch (axis.getSpacing()) {
-      case regular:
-        return findCoordElementRegular(target, mode, true);
-      case irregularPoint:
-      case contiguousInterval:
-        return findCoordElementContiguous(target, true);
-      case discontiguousInterval:
-        return findCoordElementDiscontiguousInterval(target, true);
-    }
-    throw new IllegalStateException("unknown spacing" + axis.getSpacing());
-  }
-
-  //////////////////////////////////////////////////////////////////
-  // following is from Jon Blower's ncWMS
-  // faster routines for coordValue -> index search
-  // significantly modified
-
-  /**
-   * Optimize the regular case
-   * Gets the index of the given point. Uses index = (value - start) / stride,
-   * hence this is faster than an exhaustive search.
-   * from jon blower's ncWMS.
-   *
-   * @param coordValue The value along this coordinate axis
-   * @param bounded    if false and not in range, return -1, else nearest index
-   * @return the index that is nearest to this point, or -1 if the point is
-   * out of range for the axis
-   */
-  private int findCoordElementRegular(double coordValue, Mode mode, boolean bounded) {
+// same contract as findCoordElement()
+  private int findCoordElementRegular(double coordValue, boolean bounded) {
     int n = axis.getNcoords();
 
     double distance = coordValue - axis.getStartValue();
     double exactNumSteps = distance / axis.getResolution();
-    int index = -1;
+    int index = (int) Math.round(exactNumSteps); // ties round to +Inf
 
-    switch (mode) {
-      case min:
-        index = (int) exactNumSteps;
-        if ((index > 0) && (index < n) && axis.getCoord(index) < coordValue) index++; // result >= coordVal
-        break;
-      case max:
-        index = (int) exactNumSteps;  // result <= coordVal
-        break;
-      case closest:
-        index = (int) Math.round(exactNumSteps);
-        break;
+    if (bounded && index < 0) return 0;
+    if (bounded && index >= n) return n-1;
+
+    // check that found point is within interval
+    if (index >= 0 && index < n) {
+      double lower = axis.getCoordEdge1(index);
+      double upper = axis.getCoordEdge2(index);
+      if (axis.isAscending()) {
+        assert lower <= coordValue : lower + " should be le " + coordValue;
+        assert upper >= coordValue : upper + " should be ge " + coordValue;
+      } else {
+        assert lower >= coordValue : lower + " should be ge " + coordValue;
+        assert upper <= coordValue : upper + " should be le " + coordValue;
+      }
     }
-
-    if (index < 0)
-      return bounded ? 0 : -1;
-    else if (index >= n)
-      return bounded ? n - 1 : -1;
-
 
     return index;
   }
 
   /**
-   * Performs a binary search to find the index of the element of the array
-   * whose value is contained in the interval, so must be contiguous.
+   * Performs a binary search to find the index of the element of the array whose value is contained in the contiguous intervals.
    * irregularPoint,    // irregular spaced points (values, npts), edges halfway between coords
    * contiguousInterval, // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
    *
-   * @param target  The value to search for
-   * @param bounded if false, and not in range, return -1, else nearest index
-   * @return the index of the element in values whose value is closest to target, or -1 if the target is out of range
-   * * values[i] <= target < values[i+1] (if values are ascending)
-   * values[i] > target >= values[i+1] (if values are descending)
+   * same contract as findCoordElement()
    */
   private int findCoordElementContiguous(double target, boolean bounded) {
     int n = axis.getNcoords();
@@ -166,7 +125,7 @@ class CoordAxisHelper {
       if (target < axis.getCoordEdge1(0))
         return bounded ? 0 : -1;
       else if (target > axis.getCoordEdgeLast())
-        return bounded ? n - 1 : -1;
+        return bounded ? n - 1 : n;
 
       // do a binary search to find the nearest index
       int mid;
@@ -184,7 +143,7 @@ class CoordAxisHelper {
       if (target > axis.getCoordEdge1(0))
         return bounded ? 0 : -1;
       else if (target < axis.getCoordEdgeLast())
-        return bounded ? n - 1 : -1;
+        return bounded ? n - 1 : n;
 
       // do a binary search to find the nearest index
       int mid;
@@ -207,71 +166,7 @@ class CoordAxisHelper {
       return (midVal1 >= target && target >= midVal2);
   }
 
-  /**
-   * Given a coordinate position, find what grid element contains it.
-   * Only use if isContiguous() == false
-   * This algorithm does a linear search in the bound1[] amd bound2[] array.
-   * <p>
-   * This means that
-   * <pre>
-   * edge[i] <= pos < edge[i+1] (if values are ascending)
-   * edge[i] > pos >= edge[i+1] (if values are descending)
-   * </pre>
-   *
-   * @param target  The value to search for
-   * @param bounded if false, and not in range, return -1, else nearest index
-   * @return the index of the element in values whose value is closest to target,
-   * or -1 if the target is out of range
-   *
-
-  private int findCoordElementDiscontiguousIntervalOld(double target, boolean bounded) {
-    int n = axis.getNcoords();
-    //double resolution = (values[n-1] - values[0]) / (n - 1);
-    //int startGuess = (int) Math.round((target - values[0]) / resolution);
-
-    int low = 0;
-    int high = n - 1;
-    if (axis.isAscending()) {
-      // Check that the point is within range
-      if (target < axis.getCoordEdge1(0))
-        return bounded ? 0 : -1;
-      else if (target > axis.getCoordEdgeLast())
-        return bounded ? n - 1 : -1;
-
-      // do a binary search to find the nearest index
-      int mid;
-      while (high > low + 1) {
-        mid = (low + high) / 2;                           // binary search
-        if ((axis.getCoordEdge1(mid) <= target) && (target <= axis.getCoordEdge2(mid)))
-          return mid;
-        else if (axis.getCoordEdge2(mid) < target) low = mid;
-        else high = mid;
-      }
-
-      return low;
-
-    } else {  // descending
-
-      // Check that the point is within range
-      if (target > axis.getCoordEdge1(0))
-        return bounded ? 0 : -1;
-      else if (target < axis.getCoordEdgeLast())
-        return bounded ? n - 1 : -1;
-
-      // do a binary search to find the nearest index
-      int mid;
-      while (high > low + 1) {
-        mid = (low + high) / 2;         // binary search
-        if ((axis.getCoordEdge1(mid) >= target) && (target >= axis.getCoordEdge2(mid)))
-          return mid;
-        else if (axis.getCoordEdge1(mid) > target) high = mid;
-        else low = mid;
-      }
-
-      return high - 1;
-    }
-  } */
-
+  // same contract as findCoordElement(); in addition, -1 is returned when the target is not contained in any interval
   private int findCoordElementDiscontiguousInterval(double target, boolean bounded) {
     int n = axis.getNcoords();
 
@@ -280,7 +175,7 @@ class CoordAxisHelper {
       if (target < axis.getCoordEdge1(0))
         return bounded ? 0 : -1;
       else if (target > axis.getCoordEdge2(n - 1))
-        return bounded ? n - 1 : -1;
+        return bounded ? n - 1 : n;
 
       int idx = findSingleHit(target, true);
       if (idx >= 0) return idx;
@@ -295,7 +190,7 @@ class CoordAxisHelper {
       if (target > axis.getCoordEdge1(0))
         return bounded ? 0 : -1;
       else if (target < axis.getCoordEdge2(n-1))
-        return bounded ? n - 1 : -1;
+        return bounded ? n - 1 : n;
 
       int idx = findSingleHit(target, false);
       if (idx >= 0) return idx;
@@ -342,48 +237,69 @@ class CoordAxisHelper {
 
   //////////////////////////////////////////////////////////////
 
-  public CoverageCoordAxisBuilder subset(double minValue, double maxValue) {
+  public Optional<CoverageCoordAxisBuilder> subset(double minValue, double maxValue) {
     return subsetValues(minValue, maxValue);
   }
 
+  @Nonnull
   public CoverageCoordAxisBuilder subsetClosest(double want) {
     return subsetValuesClosest(want);
   }
 
+  @Nonnull
   public CoverageCoordAxisBuilder subsetLatest() {
     return subsetValuesLatest();
   }
 
-  public CoverageCoordAxisBuilder subset(CalendarDate date) {
+  @Nonnull
+  public CoverageCoordAxisBuilder subsetClosest(CalendarDate date) {
     double want = axis.convert(date);
     return subsetValuesClosest(want);
   }
 
-  public CoverageCoordAxisBuilder subset(CalendarDateRange dateRange) {
+  public  Optional<CoverageCoordAxisBuilder> subset(CalendarDateRange dateRange) {
     double min = axis.convert(dateRange.getStart());
     double max = axis.convert(dateRange.getEnd());
     return subsetValues(min, max);
   }
 
-  // look does min < max when !isAscending ?
   // look could specialize when only one point
-  private CoverageCoordAxisBuilder subsetValues(double minValue, double maxValue) {
+  // look must handle discon interval different
+  @Nullable
+  private Optional<CoverageCoordAxisBuilder> subsetValues(double minValue, double maxValue) {
+    if (axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval)
+      return subsetValuesDiscontinuous(minValue, maxValue);
 
-    int minIndex = findCoordElementBounded(minValue, Mode.min);
-    int maxIndex = findCoordElementBounded(maxValue, Mode.max);
-    int count = maxIndex - minIndex + 1;
+    double lower = axis.isAscending() ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
+    double upper = axis.isAscending() ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
+
+    int minIndex = findCoordElement(lower, false);
+    int maxIndex = findCoordElement(upper, false);
+
+    if (minIndex >= axis.getNcoords())
+      return Optional.empty(String.format("no points in subset: lower %f > end %f", lower, axis.getEndValue()));
+    if (maxIndex < 0)
+      return Optional.empty(String.format("no points in subset: upper %f < start %f", upper, axis.getStartValue()));
 
     if (minIndex < 0)
-      throw new IllegalArgumentException("no points in subset: min > end");
-    if (maxIndex < 0)
-      throw new IllegalArgumentException("no points in subset: max < start");
+      minIndex = 0;
+    if (maxIndex >= axis.getNcoords())
+      maxIndex = axis.getNcoords() - 1;
+
+    int count = maxIndex - minIndex + 1;
     if (count <= 0)
       throw new IllegalArgumentException("no points in subset");
 
-    return subsetValues(minIndex, maxIndex);
+    return Optional.of(subsetByIndex(minIndex, maxIndex));
   }
 
-  public CoverageCoordAxisBuilder subsetValues(int minIndex, int maxIndex) {
+  private Optional<CoverageCoordAxisBuilder> subsetValuesDiscontinuous(double minValue, double maxValue) {
+    return Optional.empty("subsetValuesDiscontinuous not done yet");
+  }
+
+    // min, max must be valid, min <= max
+  @Nonnull
+  CoverageCoordAxisBuilder subsetByIndex(int minIndex, int maxIndex) {
     double[] subsetValues = null;
     int ncoords = maxIndex - minIndex + 1;
 
@@ -419,77 +335,48 @@ class CoordAxisHelper {
     return builder;
   }
 
-
-  /*
-   * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
-   * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
-   * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
-   * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
-   */
+  @Nonnull
   private CoverageCoordAxisBuilder subsetValuesClosest(double want) {
-    double[] subsetValues = null;
+    int closest_index = findCoordElement(want, true); // bounded, always valid index
+    double val = axis.getCoord(closest_index);
 
-    int want_index = findCoordElementBounded(want, Mode.closest);  // LOOK bounded
-    /* if (want_index < 0) {
-      System.out.println("HEY");
-      findCoordElementBounded(want, Mode.closest);
-    } */
-
-    switch (axis.getSpacing()) {
-      case contiguousInterval:
-      case irregularPoint:
-        if (axis.getSpacing() == CoverageCoordAxis.Spacing.irregularPoint) {
-          subsetValues = new double[1];
-          subsetValues[0] = axis.getCoord(want_index);
-        } else {
-          subsetValues = new double[2];
-          subsetValues[0] = axis.getCoordEdge1(want_index);
-          subsetValues[1] = axis.getCoordEdge2(want_index);
-        }
-        break;
-
-      case discontiguousInterval:
-        subsetValues = new double[2];
-        subsetValues[0] = axis.getCoordEdge1(want_index);
-        subsetValues[1] = axis.getCoordEdge2(want_index);
-        break;
-    }
-
-   // subset(int ncoords, double start, double end, double[] values)
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder( axis);
-    builder.subset(1, axis.getCoord(want_index), axis.getCoord(want_index), subsetValues);
-    builder.setIndexRange(want_index, want_index, 1);
+    builder.subset(1, val, val, makeValues(closest_index));
+    builder.setIndexRange(closest_index, closest_index, 1);
     return builder;
   }
 
+  @Nonnull
   private CoverageCoordAxisBuilder subsetValuesLatest() {
-    double[] subsetValues = null;
-
     int last = axis.getNcoords()-1;
-    double start = axis.getCoord(last);
-    double end = axis.getCoord(last);
-
-    switch (axis.getSpacing()) {
-      case irregularPoint:
-        subsetValues = new double[1];
-        subsetValues[0] = axis.getCoord(last);
-        break;
-
-      case discontiguousInterval:
-      case contiguousInterval:
-        subsetValues = new double[2];
-        start = subsetValues[0] = axis.getCoordEdge1(last);
-        end = subsetValues[1] = axis.getCoordEdge2(last);
-        break;
-    }
+    double val = axis.getCoord(last);
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder( axis);
-    builder.subset(1, start, end, subsetValues);
+    builder.subset(1, val, val, makeValues(last));
     builder.setIndexRange(last, last, 1);
     return builder;
   }
 
-  public int search(double want) {
+  private double[] makeValues(int index) {
+    double[] subsetValues = null; // null for regular
+
+    switch (axis.getSpacing()) {
+      case irregularPoint:
+        subsetValues = new double[1];
+        subsetValues[0] = axis.getCoord(index);
+        break;
+
+      case discontiguousInterval:
+      case contiguousInterval:
+        subsetValues = new double[2];
+        subsetValues[0] = axis.getCoordEdge1(index);
+        subsetValues[1] = axis.getCoordEdge2(index);
+        break;
+    }
+    return subsetValues;
+  }
+
+  int search(double want) {
     if (axis.getNcoords() == 1) {
       return Misc.closeEnough(want, axis.getStartValue()) ? 0 : -1;
     }

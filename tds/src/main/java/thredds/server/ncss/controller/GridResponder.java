@@ -42,6 +42,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
 import ucar.nc2.ft2.coverage.writer.DSGGridCoverageWriter;
+import ucar.nc2.util.Optional;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +73,11 @@ class GridResponder {
     // Test maxFileDownloadSize
     long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
     if (maxFileDownloadSize > 0) {
-      long estimatedSize = CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), true, writer);
+      Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), true, writer);
+      if (!estimatedSizeo.isPresent())
+        throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
+
+      long estimatedSize = estimatedSizeo.get();
       if (version == NetcdfFileWriter.Version.netcdf4)
         estimatedSize /= ESTIMATED_C0MPRESION_RATE;
 
@@ -81,7 +86,9 @@ class GridResponder {
     }
 
     // write the file
-    CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), false, writer);
+    Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), false, writer);
+    if (!estimatedSizeo.isPresent())
+      throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
 
     return new File(responseFilename);
   }

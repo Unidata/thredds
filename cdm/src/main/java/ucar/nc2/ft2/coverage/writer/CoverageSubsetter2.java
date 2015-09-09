@@ -39,7 +39,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -51,7 +50,7 @@ import java.util.*;
  */
 public class CoverageSubsetter2 {
 
-  public CoverageDataset makeCoverageDatasetSubset(CoverageDataset org, List<String> gridsWanted, SubsetParams params) throws InvalidRangeException {
+  public static ucar.nc2.util.Optional<CoverageDataset> makeCoverageDatasetSubset(CoverageDataset org, List<String> gridsWanted, SubsetParams params) throws InvalidRangeException {
 
     // Get subset of original objects that are needed by the requested grids
     List<Coverage> orgCoverages = new ArrayList<>();
@@ -68,11 +67,16 @@ public class CoverageSubsetter2 {
         coordTransformSet.add(tname);
     }
 
+    // LOOK bail out if any fail, make more robust
     // subset all coordSys, and eliminate duplicate axes.
     Map<String, CoverageCoordAxis> subsetCoordAxes = new HashMap<>();
     Map<String, CoverageCoordSys> subsetCFCoordSys = new HashMap<>();
     for (CoverageCoordSys orgCs : orgCoordSys.values()) {
-      CoverageCoordSysSubset coordSysSubset = orgCs.subset(params, true); // subsetCF make do some CF tweaks, not needed in regular subset
+      ucar.nc2.util.Optional<CoverageCoordSysSubset> coordSysSubseto = orgCs.subset(params, true); // subsetCF make do some CF tweaks, not needed in regular subset
+      if (!coordSysSubseto.isPresent())
+        return ucar.nc2.util.Optional.empty(coordSysSubseto.getErrorMessage());
+
+      CoverageCoordSysSubset coordSysSubset = coordSysSubseto.get();
       subsetCFCoordSys.put(orgCs.getName(), coordSysSubset.coordSys);
       for (CoverageCoordAxis axis : coordSysSubset.coordSys.getAxes()) {
         subsetCoordAxes.put(axis.getName(), axis);  // eliminate duplicates
@@ -110,9 +114,9 @@ public class CoverageSubsetter2 {
     CalendarDateRange dateRange = null;
 
     // put it all together
-    return new CoverageDataset(org.getName(), org.getCoverageType(), new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()),
+    return ucar.nc2.util.Optional.of(new CoverageDataset(org.getName(), org.getCoverageType(), new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()),
             latLonBoundingBox, projBoundingBox, dateRange,
-            coordSys, coordTransforms, coordAxes, coverages, org.getReader());  // use org.reader -> subset always in coord space !
+            coordSys, coordTransforms, coordAxes, coverages, org.getReader()));  // use org.reader -> subset always in coord space !
   }
 
   CoverageCoordAxis1D findIndependentAxis(String want, List<CoverageCoordAxis> axes) {

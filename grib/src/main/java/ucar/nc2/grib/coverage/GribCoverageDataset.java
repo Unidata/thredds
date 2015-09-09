@@ -789,12 +789,13 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   private Coverage makeCoverage(GribCollectionImmutable.VariableIndex gribVar) {
-    String coordSysName = makeCoordSysName(makeAxisNameList(gribVar));
 
     AttributeContainerHelper atts = new AttributeContainerHelper(gribVar.makeVariableName());
     atts.addAttribute(new Attribute(CDM.LONG_NAME, gribVar.makeVariableDescription()));
     atts.addAttribute(new Attribute(CDM.UNITS, gribVar.makeVariableUnits()));
+    gribCollection.addVariableAttributes(atts, gribVar);
 
+    /*
     GribTables.Parameter gp = gribVar.getGribParameter();
     if (gp != null) {
       if (gp.getDescription() != null)
@@ -820,7 +821,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       } else {
         atts.addAttribute(new Attribute("Grib_Statistical_Interval_Type", gribVar.getIntvType()));
       }
-    }
+    } */
+
+    String coordSysName = makeCoordSysName(makeAxisNameList(gribVar));
 
     return new Coverage(gribVar.makeVariableName(), DataType.FLOAT, atts.getAttributes(), coordSysName, gribVar.makeVariableUnits(),
             gribVar.makeVariableDescription(), this, gribVar);
@@ -881,7 +884,11 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
     GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    CoverageCoordSysSubset coordSysSubset = orgCoordSys.subset(params, false);
+    ucar.nc2.util.Optional<CoverageCoordSysSubset> coordSysSubseto = orgCoordSys.subset(params, false);
+    if (!coordSysSubseto.isPresent())
+      throw new InvalidRangeException(coordSysSubseto.getErrorMessage());
+
+    CoverageCoordSysSubset coordSysSubset = coordSysSubseto.get();
     CoverageCoordSys subsetCoordSys = coordSysSubset.coordSys;
 
     List<CoverageCoordAxis> coordsSetAxes = new ArrayList<>(); // for CoordsSet.factory()

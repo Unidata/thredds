@@ -55,14 +55,13 @@ import java.util.*;
 @Immutable
 public class CoverageDataset implements AutoCloseable, CoordSysContainer {
 
-  private final List<CoordSysSet> coverageSets;
-
   private final String name;
   private final AttributeContainerHelper atts;
   private final LatLonRect latLonBoundingBox;
   private final ProjectionRect projBoundingBox;
   private final CalendarDateRange calendarDateRange;
 
+  private final List<CoordSysSet> coverageSets;
   private final List<CoverageCoordSys> coordSys;
   private final List<CoverageTransform> coordTransforms;
   private final List<CoverageCoordAxis> coordAxes;
@@ -71,6 +70,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
 
   private final CoverageCoordSys.Type coverageType;
   protected final CoverageReader reader;
+  protected final HorizCoordSys hcs;
 
   public CoverageDataset(String name, CoverageCoordSys.Type coverageType, AttributeContainerHelper atts,
                          LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox, CalendarDateRange calendarDateRange,
@@ -78,7 +78,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
                          CoverageReader reader) {
     this.name = name;
     this.atts = atts;
-    this.latLonBoundingBox = latLonBoundingBox;
+    this.latLonBoundingBox = latLonBoundingBox; // LOOK better to calculate from hcs ??
     this.projBoundingBox = projBoundingBox;
     this.calendarDateRange = calendarDateRange;
     this.coverageType = coverageType;
@@ -88,7 +88,26 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
     this.coordAxes = coordAxes;
 
     this.coverageSets = wireObjectsTogether(coverages);
+    this.hcs = constructHcs();
     this.reader = reader;
+  }
+
+  // construct the HorizCoordSys
+  private HorizCoordSys constructHcs() {
+    assert !coordSys.isEmpty();
+    CoverageCoordSys coordsys = coordSys.get(0);
+    CoverageCoordAxis xaxis = coordsys.getAxis(AxisType.GeoX);
+    CoverageCoordAxis yaxis = coordsys.getAxis(AxisType.GeoY);
+    CoverageCoordAxis lataxis = coordsys.getAxis(AxisType.Lat);
+    CoverageCoordAxis lonaxis = coordsys.getAxis(AxisType.Lon);
+
+    CoverageTransform hct = coordsys.getHorizTransform();
+    HorizCoordSys hcs = new HorizCoordSys((CoverageCoordAxis1D) xaxis, (CoverageCoordAxis1D) yaxis, lataxis, lonaxis, hct);
+
+    for (CoverageCoordSys csys : coordSys) {
+      csys.setHorizCoordSys(hcs);
+    }
+    return hcs;
   }
 
   private List<CoordSysSet> wireObjectsTogether(List<Coverage> coverages) {
@@ -111,30 +130,9 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
       coverage.setCoordSys(gset.getCoordSys()); // wire coordSys into coverage
     }
 
-        // sort the coordsys
+    // sort the coordsys sets
     List<CoordSysSet> csets = new ArrayList<>(map.values());
     Collections.sort(csets, (o1, o2) -> o1.getCoordSys().getName().compareTo(o2.getCoordSys().getName()));
-
-    // construct the HorizCoordSys
-    Map<String, HorizCoordSys> hcsMap = new HashMap<>();
-    for (CoordSysSet cset : csets) {
-      CoverageCoordSys coordsys = cset.getCoordSys();
-
-      CoverageCoordAxis xaxis = coordsys.getAxis(AxisType.GeoX);
-      CoverageCoordAxis yaxis = coordsys.getAxis(AxisType.GeoY);
-      CoverageCoordAxis lataxis = coordsys.getAxis(AxisType.Lat);
-      CoverageCoordAxis lonaxis = coordsys.getAxis(AxisType.Lon);
-
-      CoverageTransform hct = coordsys.getHorizTransform();
-      HorizCoordSys hcs = new HorizCoordSys((CoverageCoordAxis1D)xaxis, (CoverageCoordAxis1D)yaxis, lataxis, lonaxis, hct);
-      HorizCoordSys old = hcsMap.get(hcs.getName());
-      if (old == null)
-        hcsMap.put(hcs.getName(), hcs);
-      else
-        hcs = old;
-      coordsys.setHorizCoordSys(hcs);
-    }
-
     return csets;
   }
 
@@ -216,7 +214,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
   }
 
   public HorizCoordSys getHorizCoordSys() {
-    return coordSys.get(0).getHorizCoordSys(); // LOOK kludge
+    return hcs;
   }
 
   public CoverageReader getReader() {
@@ -295,6 +293,15 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
 
   public Coverage findCoverage(String name) {
     return coverageMap.get(name);
+  }
+
+  public Coverage findCoverageByAttribute(String attName, String attValue) {
+    for (Coverage cov : coverageMap.values()) {
+      for (Attribute att : cov.getAttributes())
+        if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
+          return cov;
+    }
+    return null;
   }
 
   public CoverageCoordSys findCoordSys(String name) {

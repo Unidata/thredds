@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.collection;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.Attribute;
@@ -59,7 +60,6 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Auto
     super(pc);
   }
 
-  // LOOK - needs time partition collection iosp or something
   @Override
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
@@ -76,25 +76,19 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Auto
     ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
-    return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
+    return new ucar.nc2.dt.grid.GridDataset(ncd);
   }
 
   @Override
   public CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename,
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-    // ucar.nc2.grib.collection.Grib2Iosp iosp = new ucar.nc2.grib.collection.Grib2Iosp(group, ds.getType());
     GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
     return gribCov.makeCoverageDataset();
-
-    /* NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
-    DtCoverageDataset gds = new DtCoverageDataset(ncd);
-    return DtCoverageAdapter.factory(gds); */
   }
 
   @Override
-  protected void addGlobalAttributes(List<Attribute> result) {
+  public void addGlobalAttributes(List<Attribute> result) {
     String val = cust.getGeneratingProcessTypeName(getGenProcessType());
     if (val != null)
       result.add(new Attribute("Type_of_generating_process", val));
@@ -105,6 +99,17 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Auto
     if (val != null)
       result.add( new Attribute("Background_generating_process_identifier_defined_by_originating_centre", val));
     result.add(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB2.getDescription()));
+  }
+
+  @Override
+  public void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex) {
+    Grib2Collection.addVariableAttributes(v, vindex, this);
+  }
+
+  @Override
+  protected String makeVariableId(VariableIndex v) {
+    return Grib1Collection.makeVariableId(getCenter(), getSubcenter(), v.getTableVersion(), v.getParameter(),
+            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
 }

@@ -40,6 +40,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
@@ -246,7 +247,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return result;
   }
 
-  protected abstract void addGlobalAttributes(List<Attribute> result);
+  public abstract void addGlobalAttributes(List<Attribute> result);
+  public abstract void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex);
+  protected abstract String makeVariableId(VariableIndex v);
 
   public static class Info {
     final int version; // the ncx version

@@ -32,13 +32,9 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import ucar.ma2.DataType;
-import ucar.nc2.AttributeContainer;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-
-import javax.annotation.Nonnull;
+import ucar.nc2.util.Optional;
 
 /**
  * A new way to handle 2D time, an orthogonal axis with offset values. The time can be calculated with both the runtime with the offset.
@@ -52,20 +48,17 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
     super(builder);
   }
 
-  /* public TimeOffsetAxis(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer attributes,
-                        CoverageCoordAxis.DependenceType dependenceType, String dependsOn, CoverageCoordAxis.Spacing spacing, int ncoords, double startValue, double endValue, double resolution,
-                        double[] values, CoordAxisReader reader, boolean isSubset) {
-
-    super(name, units, description, dataType, axisType, attributes, dependenceType, dependsOn, spacing, ncoords, startValue, endValue, resolution, values, reader, isSubset);
-  } */
-
   public boolean isTime2D() {
     return true;
   }
 
+  @Override
+  public CoverageCoordAxis copy() {
+    return new TimeOffsetAxis(new CoverageCoordAxisBuilder(this));
+  }
+
   // normal case already handled, this is the case where a time has been specified, and only one runtime
-  @Nonnull
-  public TimeOffsetAxis subsetFromTime(SubsetParams params, CalendarDate runDate) {
+  public Optional<TimeOffsetAxis> subsetFromTime(SubsetParams params, CalendarDate runDate) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
     CoverageCoordAxisBuilder builder = null;
     if (params.isTrue(SubsetParams.timePresent)) {
@@ -83,15 +76,16 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
     if (dateRange != null) {
       double min = getOffsetInTimeUnits(runDate, dateRange.getStart());
       double max = getOffsetInTimeUnits(runDate, dateRange.getEnd());
-      builder =  helper.subset(min, max); // LOOK no stride
+      Optional<CoverageCoordAxisBuilder> buildero =  helper.subset(min, max); // LOOK no stride
+      if (buildero.isPresent()) builder = buildero.get();
+      else return Optional.empty(buildero.getErrorMessage());
     }
 
-    if (builder == null)
-      throw new IllegalStateException();
+    assert (builder != null);
 
     // all the offsets are reletive to rundate
     builder.setReferenceDate(runDate);
-    return new TimeOffsetAxis(builder);
+    return Optional.of(new TimeOffsetAxis(builder));
   }
 
   public CalendarDate makeDate(CalendarDate runDate, double val) {
@@ -100,29 +94,16 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
   }
 
   @Override
-  public CoverageCoordAxis subset(SubsetParams params) {
-    return new TimeOffsetAxis( subsetBuilder(params));
+  public Optional<CoverageCoordAxis> subset(SubsetParams params) {
+    Optional<CoverageCoordAxisBuilder> buildero = subsetBuilder(params);
+    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new TimeOffsetAxis(buildero.get()));
   }
 
   @Override
-  public TimeOffsetAxis subset(double minValue, double maxValue) {
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    return new TimeOffsetAxis(helper.subset(minValue, maxValue));
+    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue);
+    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new TimeOffsetAxis(buildero.get()));
   }
-
-  /*
-  TimeOffsetAxis subset(int ncoords, double start, double end, double[] values) {
-    return new TimeOffsetAxis(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(),
-            this.getAttributeContainer(), this.getDependenceType(), this.getDependsOn(), this.getSpacing(),
-            ncoords, start, end, this.getResolution(), values, this.reader, true);
-  }
-
-  TimeOffsetAxis subset(String dependsOn, Spacing spacing, int npoints, double[] values) {
-    assert values != null;
-    return new TimeOffsetAxis(this.getName(), this.getUnits(), this.getDescription(), this.getDataType(), this.getAxisType(), this.getAttributeContainer(),
-            dependsOn == null ? this.getDependenceType() : DependenceType.dependent, dependsOn,
-            spacing, npoints, 0, 0, this.getResolution(), values, null, true);
-  }
-   */
 
 }

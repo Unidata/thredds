@@ -50,6 +50,7 @@ public class TestCoverageCurvilinear {
   @Test
   public void TestGribCurvilinear() throws IOException {
     String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";  // GRIB Curvilinear
+    System.out.printf("open %s%n", endpoint);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
@@ -71,6 +72,7 @@ public class TestCoverageCurvilinear {
   @Test
   public void TestNetcdfCurvilinear() throws IOException {
     String endpoint = TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc";  // NetCDF Curvilinear
+    System.out.printf("open %s%n", endpoint);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
