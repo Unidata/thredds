@@ -40,11 +40,11 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             logger.info(String.format("Downloaded S3 metadata '%s'", s3uri));
             return metadata;
         } catch (IllegalArgumentException e) {  // Thrown by getObjectMetadata() when key == null.
-            logger.info(e.getMessage());
+            logger.debug(e.getMessage());
             return null;
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info(String.format(
+                logger.debug(String.format(
                         "There is no S3 bucket '%s' that has key '%s'.", s3uri.getBucket(), s3uri.getKey()));
                 return null;
             } else {
@@ -68,7 +68,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
 
             if (objectListing.getObjectSummaries().isEmpty() && objectListing.getCommonPrefixes().isEmpty()) {
                 // There are no empty directories in a S3 hierarchy.
-                logger.info(String.format("In bucket '%s', the key '%s' does not denote an existing virtual directory.",
+                logger.debug(String.format("In bucket '%s', the key '%s' does not denote an existing virtual directory.",
                         s3uri.getBucket(), s3uri.getKey()));
                 return null;
             } else {
@@ -76,7 +76,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             }
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info(String.format("No S3 bucket named '%s' exists.", s3uri.getBucket()));
+                logger.debug(String.format("No S3 bucket named '%s' exists.", s3uri.getBucket()));
                 return null;
             } else {
                 throw e;
@@ -91,11 +91,11 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             logger.info(String.format("Downloaded S3 object '%s' to '%s'", s3uri, file));
             return file;
         } catch (IllegalArgumentException e) {  // Thrown by getObject() when key == null.
-            logger.info(e.getMessage());
+            logger.debug(e.getMessage());
             return null;
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info(String.format(
+                logger.debug(String.format(
                         "There is no S3 bucket '%s' that has key '%s'.", s3uri.getBucket(), s3uri.getKey()));
                 return null;
             } else {

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public class CachingThreddsS3Client implements ThreddsS3Client {
     private static final Logger logger = LoggerFactory.getLogger(CachingThreddsS3Client.class);
 
-    private static final long ENTRY_EXPIRATION_TIME = 60 * 10;  // In seconds.
+    private static final long ENTRY_EXPIRATION_TIME = 1;  // In hours.
     private static final long MAX_METADATA_ENTRIES = 10000;
     private static final long MAX_FILE_ENTRIES = 100;
 
@@ -43,15 +43,15 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
 
         // We can't reuse the builder because each of the caches we're creating has different type parameters.
         this.objectMetadataCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.SECONDS)
+                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_METADATA_ENTRIES)
                 .build();
         this.objectListingCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.SECONDS)
+                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_METADATA_ENTRIES)
                 .build();
         this.objectFileCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.SECONDS)
+                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_FILE_ENTRIES)
                 .removalListener(removalListener)
                 .build();
