@@ -43,8 +43,8 @@ import org.junit.Before;
 import org.junit.Test;
 import ucar.httpservices.*;
 import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.ExternalServer;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.File;
 import java.io.IOException;
@@ -216,7 +216,7 @@ public class TestAuth extends UnitTestCommon
     @Before
     public void setUp()
     {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
+        ExternalServer.REMOTETEST.assumeIsAvailable();
     }
 
     @Test

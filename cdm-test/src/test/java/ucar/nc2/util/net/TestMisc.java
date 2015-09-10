@@ -41,7 +41,7 @@ import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.util.List;
 
@@ -103,7 +103,7 @@ public class TestMisc extends UnitTestCommon
     testUTF8Stream()
         throws Exception
     {
-        ThreddsServer.LIVE.assumeIsAvailable();
+        ExternalServer.LIVE.assumeIsAvailable();
         pass = true;
 
         String catalogName = "http://thredds-test.unidata.ucar.edu/thredds/catalog.xml";

@@ -35,7 +35,7 @@ package thredds.tds.idd;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.util.Collection;
 
@@ -67,7 +67,7 @@ public class PingTdsOnMotherlode8080
     @Test
     public void ping()
     {
-        ThreddsServer.LIVE.assumeIsAvailable();
+        ExternalServer.LIVE.assumeIsAvailable();
         String tdsUrl = "http://thredds.ucar.edu/thredds/";
 
         CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );

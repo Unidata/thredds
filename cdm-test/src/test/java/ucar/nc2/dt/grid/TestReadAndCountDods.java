@@ -35,7 +35,7 @@ package ucar.nc2.dt.grid;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,13 +107,13 @@ public class TestReadAndCountDods {
 
   @Test
   public void readAndCount() throws Exception {
-    ThreddsServer.TEST.assumeIsAvailable();
+    ExternalServer.TEST.assumeIsAvailable();
     TestReadandCount.doOne(base, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
   //@Test
   public void testProblem() throws Exception {
-    ThreddsServer.TEST.assumeIsAvailable();
+    ExternalServer.TEST.assumeIsAvailable();
     TestReadandCount.doOne("thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/",
             "catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
   }

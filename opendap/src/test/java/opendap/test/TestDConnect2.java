@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ucar.unidata.test.Diff;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.*;
 
@@ -58,7 +58,7 @@ public class TestDConnect2 extends TestSources {
 
   @Before
   public void setUp() {
-    ThreddsServer.REMOTETEST.assumeIsAvailable();
+    ExternalServer.REMOTETEST.assumeIsAvailable();
     passcount = 0;
     xfailcount = 0;
     failcount = 0;

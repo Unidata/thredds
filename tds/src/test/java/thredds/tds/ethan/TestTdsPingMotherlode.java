@@ -34,7 +34,7 @@ package thredds.tds.ethan;
 
 import junit.framework.TestCase;
 import thredds.client.catalog.Catalog;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -60,7 +60,7 @@ public class TestTdsPingMotherlode extends TestCase
   @Override
   protected void setUp()
   {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     Properties env = System.getProperties();
     host = env.getProperty( "thredds.tds.test.server", host );
 

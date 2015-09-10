@@ -35,7 +35,7 @@ package thredds.client.catalog;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,7 +77,7 @@ public class TestClientCatalogBasic {
   @Test
   public void testCatalog() throws IOException {
     if (catFrag.contains("thredds-test")) {
-      ThreddsServer.TEST.assumeIsAvailable();
+      ExternalServer.TEST.assumeIsAvailable();
     }
 
     for (Dataset ds : TestClientCatalog.open(catFrag).getDatasets())
