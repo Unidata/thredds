@@ -32,15 +32,16 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.ma2.*;
+import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * LatLon axes : used by lat(y,x) and lon(y,x)
@@ -52,30 +53,33 @@ import java.util.Formatter;
  */
 public class LatLonAxis2D extends CoverageCoordAxis {
 
-  // can only be set once, needed for subsetting
+  // can only be set once
   private int[] shape;
-  private CoverageCoordAxis[] dependentAxes;
+  private Object userObject;
 
   public LatLonAxis2D( CoverageCoordAxisBuilder builder) {
     super( builder);
+    this.shape = builder.shape;
+    this.userObject = builder.userObject;
   }
 
   @Override
   protected void setDataset(CoordSysContainer dataset) {
-    dependentAxes = new CoverageCoordAxis[2];
+    if (this.shape != null) return; // set in constructor
+
+    List<CoverageCoordAxis> dependentAxes = new ArrayList<>();
     int[] shape = new int[2];
     int count = 0;
     for (String axisName : dependsOn) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-      if (axis == null)
-        throw new IllegalStateException("LatLonAxis2D cant find axis "+axisName);
-      shape[count] = axis.getNcoords();
-      dependentAxes[count++] = axis;
+      if (axis == null) {
+        if (this.shape == null) // ok is hape has already been set
+          throw new IllegalStateException("LatLonAxis2D cant find axis " + axisName);
+      } else {
+        shape[count] = axis.getNcoords();
+        dependentAxes.add( axis);
+      }
     }
-
-    if (this.shape != null)
-      throw new RuntimeException("Cant change axis shape once set");
-
     this.shape = shape;
   }
 
@@ -89,6 +93,17 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     return shape;
   }
 
+  public Object getUserObject() {
+    return userObject;
+  }
+
+  public List<RangeIterator> getRanges() {
+    List<RangeIterator> result = new ArrayList<>();
+    result.add(new Range(shape[0])); // not subsetting yet
+    result.add(new Range(shape[1]));
+    return result;
+  }
+
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
@@ -98,10 +113,9 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   public double getCoord(int yindex, int xindex) {
     // assume values hold 2D coord
     getValues();
-    int idx = yindex*shape[0] + xindex;
+    int idx = yindex*shape[1] + xindex;
     return values[idx];
   }
-
 
   @Override
   public Optional<CoverageCoordAxis> subset(SubsetParams params) {  // LOOK not implemented
@@ -110,7 +124,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   @Override
   public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) { // LOOK not implemented
-    return Optional.of(new LatLonAxis2D( new CoverageCoordAxisBuilder(this)));
+    return Optional.of( new LatLonAxis2D( new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
@@ -120,13 +134,14 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   }
 
   @Override
-  public Array getCoordsAsArray() throws IOException {
+  public Array getCoordsAsArray() {
     double[] values = getValues();
     return Array.factory(DataType.DOUBLE, shape, values);
   }
 
   @Override
-  public Array getCoordBoundsAsArray() {
-    return null;   // LOOK
+  public Array getCoordBoundsAsArray() { // LOOK do we want to cache this ?
+    return CoordinateAxis2D.makeXEdges((ArrayDouble.D2) getCoordsAsArray()); // makeXEdges same as makeYEdges
   }
+
 }

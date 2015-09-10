@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import net.jcip.annotations.Immutable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,10 +46,11 @@ import java.util.List;
  * @author John
  * @since 8/23/2015
  */
+@Immutable
 public class SectionIterable implements Iterable<java.lang.Integer> {
 
-  private List<RangeIterator> ranges;
-  private int[] fullShape;
+  private final List<RangeIterator> ranges;
+  private final int[] fullShape;
 
   public SectionIterable(List<RangeIterator> ranges, int[] fullShape) {
     assert ranges.size() == fullShape.length : ranges.size() +" != "+ fullShape.length;
@@ -59,6 +62,19 @@ public class SectionIterable implements Iterable<java.lang.Integer> {
 
     this.ranges = ranges;
     this.fullShape = fullShape;
+  }
+
+  public SectionIterable(List<RangeIterator> ranges, List<Integer> fullShapeList) {
+    assert ranges.size() == fullShapeList.size() : ranges.size() +" != "+ fullShapeList.size();
+    int count = 0;
+    this.fullShape = new int[fullShapeList.size()];
+    for (RangeIterator ri : ranges) {
+      assert (ri.length() <= fullShapeList.get(count));
+      this.fullShape[count] = fullShapeList.get(count);
+      count++;
+    }
+
+    this.ranges = ranges;
   }
 
   public SectionIterable(Section section, int[] fullShape) {

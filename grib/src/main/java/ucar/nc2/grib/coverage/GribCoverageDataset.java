@@ -301,6 +301,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
 
       builder.shape = shape;
+      builder.userObject = vindex;
       result.add(new LatLonAxis2D( builder));
       remove.add(vindex);
     }
@@ -834,6 +835,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   @Override
   public double[] readCoordValues(CoverageCoordAxis coordAxis) throws IOException {
+    if (coordAxis instanceof LatLonAxis2D)
+      return readLatLonAxis2DCoordValues( (LatLonAxis2D) coordAxis);
+
     Optional<Coordinate> opt = group.findCoordinate(coordAxis.getName());
     if (!opt.isPresent()) throw new IllegalStateException();
     Coordinate coord = opt.get();
@@ -878,7 +882,34 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     throw new IllegalStateException();
   }
 
-  //////////////////////////////////////////////////////
+  public double[] readLatLonAxis2DCoordValues(LatLonAxis2D coordAxis) throws IOException {
+    GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) coordAxis.getUserObject();
+    int[] shape = coordAxis.getShape();
+    List<RangeIterator> ranges = new ArrayList<>();
+    List<Integer> fullShape = new ArrayList<>();
+    for (Coordinate coord : vindex.getCoordinates()) {
+      ranges.add(new Range(1));
+      fullShape.add(coord.getNCoords());
+    }
+    ranges.add( new Range(shape[0]));
+    fullShape.add( shape[0]);
+    ranges.add( new Range(shape[1]));
+    fullShape.add( shape[1]);
+    SectionIterable siter = new SectionIterable(ranges, fullShape);
+
+    GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
+    Array data;
+    try {
+      data = dataReader.readData(siter); // optimize pass in null ??
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e);
+    }
+
+    return (double []) data.get1DJavaArray(DataType.DOUBLE);  // LOOK lame conversion
+  }
+
+
+    //////////////////////////////////////////////////////
 
   @Override
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
@@ -934,23 +965,22 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
     }
 
-    List<CoverageCoordAxis> geoArrayAxes = new ArrayList<>(coordsSetAxes);  // for GeoReferencedArray
-    geoArrayAxes.add(subsetCoordSys.getYAxis());
-    RangeIterator yRange = subsetCoordSys.getYAxis().getRange();
-
-    geoArrayAxes.add(subsetCoordSys.getXAxis());
-    RangeIterator xRange = subsetCoordSys.getXAxis().getRange();
-
     boolean hasruntime = false;
     for (CoverageCoordAxis axis : coordsSetAxes )
       if (axis.getAxisType() == AxisType.RunTime) hasruntime = true;
     if (!hasruntime)
       System.out.printf("HEY no runtime%n");
 
+    List<CoverageCoordAxis> geoArrayAxes = new ArrayList<>(coordsSetAxes);  // for GeoReferencedArray
+    geoArrayAxes.add(subsetCoordSys.getYAxis());
+    geoArrayAxes.add(subsetCoordSys.getXAxis());
+    List<RangeIterator> yxRange = subsetCoordSys.getHorizCoordSys().getRanges(); // may be 2D
+
+    // iterator over all except x, y
     CoordsSet coordIter = CoordsSet.factory(coordSysSubset.isConstantForecast, coordsSetAxes);
 
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
-    Array data = dataReader.readData2(coordIter, yRange, xRange);
+    Array data = dataReader.readData2(coordIter, yxRange.get(0), yxRange.get(1));
 
     return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, geoArrayAxes, subsetCoordSys.getType());
   }

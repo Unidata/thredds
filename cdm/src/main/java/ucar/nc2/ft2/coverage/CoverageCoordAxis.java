@@ -165,7 +165,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   @Nonnull
   abstract public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn);
 
-  abstract public Array getCoordsAsArray() throws IOException;
+  abstract public Array getCoordsAsArray();
 
   abstract public Array getCoordBoundsAsArray();
 

@@ -329,7 +329,7 @@ public class TestCoverageSubsetTime {
     }
   }
 
-  private void testGeoArray(GeoReferencedArray geo, CalendarDate runtime, CalendarDate time, Double offsetVal) {
+  public static void testGeoArray(GeoReferencedArray geo, CalendarDate runtime, CalendarDate time, Double offsetVal) {
     CoverageCoordSys geoCs = geo.getCoordSysForData();
 
     CoverageCoordAxis runtimeAxis = geoCs.getAxis(AxisType.RunTime);
@@ -337,7 +337,8 @@ public class TestCoverageSubsetTime {
     Assert.assertTrue(runtimeAxis instanceof CoverageCoordAxis1D);
     Assert.assertEquals(1, runtimeAxis.getNcoords());
     CoverageCoordAxis1D runtimeAxis1D = (CoverageCoordAxis1D) runtimeAxis;
-    Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
+    if (runtime != null)
+      Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
 
     CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
     Assert.assertNotNull(timeAxis);
@@ -346,14 +347,16 @@ public class TestCoverageSubsetTime {
     CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
     if (offsetVal != null)
        time = timeAxis1D.makeDate(offsetVal);
-    if (timeAxis.isInterval()) {
-      CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
-      Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
-      CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
-      Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
 
-    }else {
-      Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
+    if (time != null) {
+      if (timeAxis.isInterval()) {
+        CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
+        Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
+        CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
+        Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
+      } else {
+        Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
+      }
     }
 
     int[] shapeCs = geoCs.getShape();

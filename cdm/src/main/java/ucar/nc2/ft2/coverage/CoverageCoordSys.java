@@ -34,6 +34,7 @@ package ucar.nc2.ft2.coverage;
 
 import net.jcip.annotations.Immutable;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.*;
 import ucar.nc2.util.Optional;
@@ -145,6 +146,21 @@ public class CoverageCoordSys {
         throw new RuntimeException("Cant have multiple Time2DCoordSys in a CoverageCoordSys");
       time2DCoordSys = new Time2DCoordSys(runtimeAxis, timeOffsetAxis);
     }
+
+    this.horizCoordSys = constructHcs();
+  }
+
+
+  // construct the HorizCoordSys
+  private HorizCoordSys constructHcs() {
+    CoverageCoordAxis xaxis = getAxis(AxisType.GeoX);
+    CoverageCoordAxis yaxis = getAxis(AxisType.GeoY);
+    CoverageCoordAxis lataxis = getAxis(AxisType.Lat);
+    CoverageCoordAxis lonaxis = getAxis(AxisType.Lon);
+
+    CoverageTransform hct = getHorizTransform();
+    HorizCoordSys hcs = new HorizCoordSys((CoverageCoordAxis1D) xaxis, (CoverageCoordAxis1D) yaxis, lataxis, lonaxis, hct);
+    return hcs;
   }
 
   void setHorizCoordSys(HorizCoordSys horizCoordSys) {
@@ -280,15 +296,23 @@ public class CoverageCoordSys {
    * Using independent axes only
    */
   public int[] getShape() {
-    int rank = 0;
-    for (CoverageCoordAxis axis : getAxes())
+    int rank = 2; // always 2 horiz
+    for (CoverageCoordAxis axis : getAxes()) {
+      if (axis.getAxisType().isHoriz()) continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) rank++;
+    }
 
     int[] result = new int[rank];
     int count = 0;
-    for (CoverageCoordAxis axis : getAxes())
+    for (CoverageCoordAxis axis : getAxes()) {
+      if (axis.getAxisType().isHoriz()) continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
         result[count++] = axis.getNcoords();
+    }
+
+    // the x,y shapes must be gotten from horizCoordSys
+    for (RangeIterator ri : horizCoordSys.getRanges())
+      result[count++] = ri.length();
 
     return result;
   }
@@ -389,7 +413,6 @@ public class CoverageCoordSys {
     CoverageCoordSys resultCoordSys = new CoverageCoordSys(null, names, this.getTransformNames(), this.getType());
     MyCoordSysContainer fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
     resultCoordSys.setDataset(fakeDataset);
-    resultCoordSys.setHorizCoordSys(subsetHcs);
 
     result.coordSys = resultCoordSys;
     return Optional.of(result);

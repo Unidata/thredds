@@ -44,8 +44,7 @@ public class CoverageCoordAxisBuilder {
 
   // 2d only
   public int[] shape;
-  public CoverageCoordAxis[] dependentAxes;
-  public CoverageCoordAxis1D runCoord;
+  public Object userObject;
 
   public CoverageCoordAxisBuilder() {}
 
@@ -98,6 +97,12 @@ public class CoverageCoordAxisBuilder {
     this.minIndex = 0;
     this.maxIndex = ncoords-1;
     this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
+
+    if (from instanceof LatLonAxis2D) {
+      LatLonAxis2D latlon = (LatLonAxis2D) from;
+      this.shape = latlon.getShape();
+      this.userObject = latlon.getUserObject();
+    }
   }
 
   public CoverageCoordAxisBuilder setDependsOn(String dependsOn) {

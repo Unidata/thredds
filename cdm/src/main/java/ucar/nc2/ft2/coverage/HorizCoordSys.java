@@ -34,6 +34,7 @@ package ucar.nc2.ft2.coverage;
 
 import net.jcip.annotations.Immutable;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.*;
 
@@ -107,6 +108,10 @@ public class HorizCoordSys {
     return transform;
   }
 
+  public boolean is2DlatLon() {
+    return is2DlatLon;
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////
 
   public Optional<HorizCoordSys> subset(SubsetParams params) throws InvalidRangeException {
@@ -177,7 +182,7 @@ public class HorizCoordSys {
     return Optional.of(new HorizCoordSys(xaxisSubset, yaxisSubset, lataxisSubset, lonaxisSubset, transform));
   }
 
-  public LatLonPoint getLatLon(int xindex, int yindex) {
+  public LatLonPoint getLatLon(int yindex, int xindex) {
     if (hasLatLon) {
       if (is2DlatLon) {
         double lat = ((LatLonAxis2D)lataxis).getCoord(yindex, xindex);
@@ -241,6 +246,18 @@ public class HorizCoordSys {
       return true;
 
     return false;
+  }
+
+  public List<RangeIterator> getRanges() {
+    List<RangeIterator> result = new ArrayList<>();
+    if (is2DlatLon) {
+      return ((LatLonAxis2D) lataxis).getRanges();
+    } else {
+      result.add(getYAxis().getRange());
+      result.add(getXAxis().getRange());
+    }
+
+    return result;
   }
 
   public CoverageCoordAxis getXAxis() {

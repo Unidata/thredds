@@ -11,6 +11,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -25,7 +26,7 @@ import static org.junit.Assert.assertEquals;
  * Modified to test Coverage
  */
 @Category(NeedsCdmUnitTest.class)
-public class CurvilinearGridPointMappingTest {
+public class TestCurvilinearGridPointMapping {
   private String datasetLocation = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
   private String covName = "hs";
 
@@ -35,7 +36,7 @@ public class CurvilinearGridPointMappingTest {
   private double lon = -8.184059143066406;
 
   /**
-   * Test GridCoordSystem.getLatLon()
+   * Test CoverageCoordSys.HorizCoordSys.getLatLon()
    *
    * @throws IOException           if ...
    * @throws InvalidRangeException if ...
@@ -57,7 +58,7 @@ public class CurvilinearGridPointMappingTest {
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(datasetLocation)) {
       Assert.assertNotNull(datasetLocation, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Curvilinear);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -67,9 +68,9 @@ public class CurvilinearGridPointMappingTest {
       HorizCoordSys hcs = gridCoordSys.getHorizCoordSys();
       Assert.assertNotNull("HorizCoordSys", hcs);
 
-      LatLonPoint llPnt = hcs.getLatLon(i, j);
-      Assert.assertEquals(lat, llPnt.getLatitude(), 0.001);
-      Assert.assertEquals(lon, llPnt.getLongitude(), 0.001);
+      LatLonPoint llPnt = hcs.getLatLon(j, i);
+      Assert.assertEquals(lat, llPnt.getLatitude(), lat*Misc.maxReletiveError);
+      Assert.assertEquals(lon, llPnt.getLongitude(), lon*Misc.maxReletiveError);
     }
   }
 
