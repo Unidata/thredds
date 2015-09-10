@@ -36,7 +36,7 @@ import org.junit.Test;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.IOException;
 import java.util.*;
@@ -126,7 +126,7 @@ public class TestResolve1 {
 
   @Test
   public void testResolver() throws IOException {
-    ThreddsServer.TEST.assumeIsAvailable();
+    ExternalServer.TEST.assumeIsAvailable();
     String remoteDataset = "thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml";
     try {
       NetcdfFile ncd = NetcdfDataset.openFile(remoteDataset, null);

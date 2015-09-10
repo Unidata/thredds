@@ -38,7 +38,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.nio.charset.Charset;
 
@@ -78,7 +78,7 @@ public class TestState extends UnitTestCommon
     testState()
         throws Exception
     {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
+        ExternalServer.REMOTETEST.assumeIsAvailable();
         int status = 0;
         HTTPSession session = HTTPFactory.newSession(SESSIONURL); // do NOT use try(){}
         Assert.assertFalse(session.isClosed());

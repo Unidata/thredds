@@ -1,7 +1,6 @@
 package dap4.test;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.IOException;
 import java.io.StringWriter;

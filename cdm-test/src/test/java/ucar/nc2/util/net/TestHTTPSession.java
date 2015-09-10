@@ -43,7 +43,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.message.AbstractHttpMessage;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.util.List;
 
@@ -79,7 +79,7 @@ public class TestHTTPSession extends UnitTestCommon
 
     @Before
     public void setUp() {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
+        ExternalServer.REMOTETEST.assumeIsAvailable();
     }
 
     @Test
