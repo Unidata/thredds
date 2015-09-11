@@ -229,7 +229,7 @@ public String NC_check_name(String name) {
     return sb.toString();
   }
 
-  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][^\\x00-\\x1F\\x2F\\x7F]*");
+  static private final Pattern objectNamePattern = Pattern.compile("[\\p{L}0-9_][^\\x00-\\x1F\\x2F\\x7F]*");
 
    /**
     * Determine if the given name can be used for a Dimension, Attribute, or Variable name.

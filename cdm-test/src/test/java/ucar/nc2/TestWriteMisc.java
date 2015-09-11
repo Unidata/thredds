@@ -29,6 +29,33 @@ public class TestWriteMisc {
  >     Band2:valid_range = 0s, 254s; // short
  */
 
+
+
+  // test object naming
+  @Test
+  public void testObjectNaming() throws IOException, InvalidRangeException {
+    System.out.println("Using ñáéíóú in netcdf <=");
+    NetcdfFileWriter fileWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, TestLocal.temporaryDataDir + "objnames.nc");
+    Dimension[] dim = new Dimension[1];
+    int aSize = 8;
+    dim[0] = setDimension(fileWriter, "ñ", "blah", aSize);
+    Variable v = fileWriter.addVariable(null, "áéíóú", DataType.FLOAT, Arrays.asList(dim));
+    fileWriter.addVariableAttribute(v, new Attribute("_FillValue", -9999));
+    fileWriter.addVariableAttribute(v, new Attribute(CDM.MISSING_VALUE, -9999));
+    System.out.println("Did not throw exception");
+    fileWriter.create();  // throws error missing native C
+    System.out.println("Writing netcdf <=");
+    int[] shape = new int[]{aSize};
+    float[] floatStorage = new float[aSize];
+    Array floatArray = Array.factory(float.class, shape, floatStorage);
+    int[] origin = new int[]{0};
+    fileWriter.write(v, origin, floatArray);
+    fileWriter.close();
+    System.out.println("Done <=");
+  }
+
+
+
   @Test
   public void testUnsignedAttribute() throws IOException, InvalidRangeException {
      String filename = TestLocal.temporaryDataDir + "testUnsignedAttribute2.nc";
