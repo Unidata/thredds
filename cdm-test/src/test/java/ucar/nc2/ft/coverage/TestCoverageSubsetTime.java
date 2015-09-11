@@ -329,7 +329,7 @@ public class TestCoverageSubsetTime {
     }
   }
 
-  private void testGeoArray(GeoReferencedArray geo, CalendarDate runtime, CalendarDate time, Double offsetVal) {
+  public static void testGeoArray(GeoReferencedArray geo, CalendarDate runtime, CalendarDate time, Double offsetVal) {
     CoverageCoordSys geoCs = geo.getCoordSysForData();
 
     CoverageCoordAxis runtimeAxis = geoCs.getAxis(AxisType.RunTime);
@@ -337,7 +337,8 @@ public class TestCoverageSubsetTime {
     Assert.assertTrue(runtimeAxis instanceof CoverageCoordAxis1D);
     Assert.assertEquals(1, runtimeAxis.getNcoords());
     CoverageCoordAxis1D runtimeAxis1D = (CoverageCoordAxis1D) runtimeAxis;
-    Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
+    if (runtime != null)
+      Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
 
     CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
     Assert.assertNotNull(timeAxis);
@@ -346,14 +347,16 @@ public class TestCoverageSubsetTime {
     CoverageCoordAxis1D timeAxis1D = (CoverageCoordAxis1D) timeAxis;
     if (offsetVal != null)
        time = timeAxis1D.makeDate(offsetVal);
-    if (timeAxis.isInterval()) {
-      CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
-      Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
-      CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
-      Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
 
-    }else {
-      Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
+    if (time != null) {
+      if (timeAxis.isInterval()) {
+        CalendarDate lower = timeAxis1D.makeDate(timeAxis1D.getCoordEdge1(0));
+        Assert.assertTrue("time coord lower", !lower.isAfter(time));          // lower <= time
+        CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
+        Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
+      } else {
+        Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
+      }
     }
 
     int[] shapeCs = geoCs.getShape();
@@ -456,6 +459,68 @@ public class TestCoverageSubsetTime {
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 3, 0));
       Assert.assertEquals(250.5, testValue, testValue * Misc.maxReletiveError);
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  // SRC
+
+  @Test
+  public void testSrcNoParams() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
+    String covName = "Temperature_isobaric";
+
+    System.out.printf("testSrcNoParams Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams();
+      System.out.printf("  subset %s%n", params);
+      GeoReferencedArray geo = cover.readData(params);
+
+      int[] resultShape = geo.getData().getShape();
+      int[] expectShape = new int[] {36, 29, 65, 93};
+      Assert.assertArrayEquals("shape", expectShape, resultShape);
+    }
+  }
+
+  @Test
+  public void testSrcTimePresent() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
+    String covName = "Temperature_isobaric";
+
+    System.out.printf("testSrcTimePresent Dataset %s coverage %s%n", endpoint, covName);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      CoverageCoordSys cs = cover.getCoordSys();
+      CoverageCoordAxis toAxis = cs.getAxis(AxisType.TimeOffset);
+      Assert.assertNotNull("timeoffset axis", toAxis);
+      Assert.assertEquals(36, toAxis.getNcoords());
+
+      SubsetParams params = new SubsetParams();
+      params.set(SubsetParams.timePresent, true);
+      System.out.printf("  subset %s%n", params);
+      GeoReferencedArray geo = cover.readData(params);
+
+      int[] resultShape = geo.getData().getShape();
+      int[] expectShape = new int[] {1, 29, 65, 93};
+      Assert.assertArrayEquals("shape", expectShape, resultShape);
+
+      CoverageCoordSys geocs = geo.getCoordSysForData();
+      CoverageCoordAxis toAxis2 = geocs.getAxis(AxisType.TimeOffset);
+      Assert.assertNotNull("timeoffset axis", toAxis2);
+      Assert.assertEquals(1, toAxis2.getNcoords());
     }
   }
 

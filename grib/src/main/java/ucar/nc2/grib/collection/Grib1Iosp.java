@@ -35,11 +35,9 @@ package ucar.nc2.grib.collection;
 
 import ucar.nc2.constants.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
-import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 import ucar.nc2.*;
 import ucar.nc2.grib.*;
 import ucar.unidata.io.RandomAccessFile;
@@ -185,36 +183,6 @@ public class Grib1Iosp extends GribIosp {
     return makeVariableNameFromTables(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
              pds.getLevelType(), isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(), null);
   }*/
-
-
-  @Override
-  public String makeVariableNameFromRecord(GribCollectionImmutable.VariableIndex v) {
-    return makeVariableNameFromRecord(gribCollection.getCenter(), gribCollection.getSubcenter(), v.getTableVersion(), v.getParameter(),
-            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
-  }
-
-  private String makeVariableNameFromRecord(int center, int subcenter, int tableVersion, int paramNo, int levelType, boolean isLayer, int intvType, String intvName) {
-    Formatter f = new Formatter();
-
-    f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);  // "VAR_7-15--1-20_L1";
-
-    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_L%d", levelType); // code table 4.5
-      if (isLayer) f.format("_layer");
-    }
-
-    if (intvType >= 0) {
-      if (intvName != null) {
-        if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS))
-          f.format("_Imixed");
-        else
-          f.format("_I%s", intvName);
-      }
-      f.format("_S%s", intvType);
-    }
-
-    return f.toString();
-  }
 
   @Override
   public String makeVariableName(GribCollectionImmutable.VariableIndex v) {
@@ -394,66 +362,6 @@ public class Grib1Iosp extends GribIosp {
   protected GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex) {
     return cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getVersion(), vindex.getParameter());
   }
-
-  @Override
-  protected void addVariableAttributes(Variable v, GribCollectionImmutable.VariableIndex vindex) {
-
-    // Grib attributes
-    v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));
-    v.addAttribute(new Attribute("Grib1_Center", gribCollection.getCenter()));
-    v.addAttribute(new Attribute("Grib1_Subcenter", gribCollection.getSubcenter()));
-    v.addAttribute(new Attribute("Grib1_TableVersion", vindex.getTableVersion()));
-    v.addAttribute(new Attribute("Grib1_Parameter", vindex.getParameter()));
-    Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
-    if (param != null && param.getName() != null)
-      v.addAttribute(new Attribute("Grib1_Parameter_Name", param.getName()));
-
-    if (vindex.getLevelType() != GribNumbers.MISSING)
-      v.addAttribute(new Attribute("Grib1_Level_Type", vindex.getLevelType()));
-    String ldesc = cust.getLevelDescription(vindex.getLevelType());
-    if (ldesc != null)
-      v.addAttribute(new Attribute("Grib1_Level_Desc", ldesc));
-
-
-    String timeTypeName = cust.getTimeTypeName(vindex.getIntvType());
-    if ( timeTypeName != null && timeTypeName.length() != 0) {
-      v.addAttribute(new Attribute("Grib1_Interval_Type", vindex.getIntvType()));
-      v.addAttribute(new Attribute("Grib1_Interval_Name", timeTypeName));
-    }
-
-    if (vindex.getEnsDerivedType() >= 0)
-      v.addAttribute(new Attribute("Grib1_Ensemble_Derived_Type", vindex.getEnsDerivedType()));
-    else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0)
-      v.addAttribute(new Attribute("Grib1_Probability_Type", vindex.getProbabilityName()));
-  }
-
-  /*
-  @Override
-  protected void show(RandomAccessFile rafData, long dataPos) throws IOException {
-    rafData.seek(dataPos);
-    Grib1Record gr = new Grib1Record(rafData);
-    Formatter f = new Formatter();
-    f.format("File=%s%n", rafData.getLocation());
-    Grib1SectionProductDefinition pds = gr.getPDSsection();
-    Grib1Parameter param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
-    f.format("  Parameter=%s%n", param);
-    f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
-    Grib1ParamTime ptime = gr.getParamTime(cust);
-    f.format("  ForecastTime=%d%n", ptime.getForecastTime());
-    if (ptime.isInterval()) {
-      int tinv[] = ptime.getInterval();
-      f.format("  TimeInterval=(%d,%d)%n", tinv[0], tinv[1]);
-    }
-    f.format("%n");
-    gr.getPDSsection().showPds(cust, f);
-    System.out.printf("%nGrib1Record.readData at drsPos %d = %s%n", dataPos, f.toString());
-  }
-
-
-  @Override
-  protected float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException {
-    return Grib1Record.readData(rafData, dr.dataPos);
-  }  */
 
   public Object getLastRecordRead() {
     return Grib1Record.lastRecordRead;

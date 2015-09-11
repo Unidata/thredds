@@ -66,25 +66,6 @@ public class CoverageTransform implements AttributeContainer {
     return isHoriz;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public boolean remove(Attribute a) {
-    return false;
-  }
-
-  @Override
-  public boolean removeAttribute(String attName) {
-    return false;
-  }
-
-  @Override
-  public boolean removeAttributeIgnoreCase(String attName) {
-    return false;
-  }
-
   public ProjectionImpl getProjection() {
     if (projection == null && isHoriz) {
       projection = CoordTransBuilder.makeProjection(this, new Formatter());
@@ -113,24 +94,50 @@ public class CoverageTransform implements AttributeContainer {
     indent.decr();
   }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // AttributeHelper
 
+  @Override
   public java.util.List<Attribute> getAttributes() {
     return attributes.getAttributes();
   }
 
+  @Override
   public Attribute findAttribute(String name) {
     return attributes.findAttribute(name);
   }
 
+  @Override
   public Attribute findAttributeIgnoreCase(String name) {
     return attributes.findAttributeIgnoreCase(name);
   }
 
+  @Override
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
     return attributes.findAttValueIgnoreCase(attName, defaultValue);
   }
+
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public boolean remove(Attribute a) {
+    return false;
+  }
+
+  @Override
+  public boolean removeAttribute(String attName) {
+    return false;
+  }
+
+  @Override
+  public boolean removeAttributeIgnoreCase(String attName) {
+    return false;
+  }
+
 
   @Override
   public void addAll(Iterable<Attribute> atts) {

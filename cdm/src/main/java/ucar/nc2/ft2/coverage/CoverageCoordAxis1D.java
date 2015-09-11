@@ -40,8 +40,10 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
+import ucar.nc2.util.Optional;
 import ucar.unidata.util.Format;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -266,9 +268,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     return result;
   }
 
-  public CoverageCoordAxis1D subset(double minValue, double maxValue) {
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    return new CoverageCoordAxis1D(helper.subset(minValue, maxValue));
+    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue);
+    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new CoverageCoordAxis1D(buildero.get()));
   }
 
   public Object getCoordObject(int index) {
@@ -281,7 +284,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
 
   public CalendarDate getCoordAsDate(int index) {
     if (axisType == AxisType.RunTime)
-      return makeDate( getCoord(index));
+      return makeDate(getCoord(index));
     double val = isInterval() ? (getCoordEdge1(index) + getCoordEdge2(index)) / 2.0  : getCoord(index);
     return makeDate(val);
   }
@@ -312,14 +315,20 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   }
 
   @Override
-  public CoverageCoordAxis subset(SubsetParams params) {
-    return new CoverageCoordAxis1D( subsetBuilder(params));
+  public CoverageCoordAxis copy() {
+    return new CoverageCoordAxis1D(new CoverageCoordAxisBuilder(this));
+  }
+
+  @Override
+  public Optional<CoverageCoordAxis> subset(SubsetParams params) {
+    Optional<CoverageCoordAxisBuilder> buildero = subsetBuilder(params);
+    return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new CoverageCoordAxis1D(buildero.get()));
   }
 
   // LOOK  incomplete handling of subsetting params
-  protected CoverageCoordAxisBuilder subsetBuilder(SubsetParams params) {
+  protected Optional<CoverageCoordAxisBuilder> subsetBuilder(SubsetParams params) {
     if (params == null)
-      return new CoverageCoordAxisBuilder(this);
+      return Optional.of(new CoverageCoordAxisBuilder(this));
 
     CoordAxisHelper helper = new CoordAxisHelper(this);
 
@@ -329,7 +338,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
       case Height:
         Double dval = params.getDouble(SubsetParams.vertCoord);
         if (dval != null) {
-          return helper.subsetClosest(dval);
+          return Optional.of(helper.subsetClosest(dval));
         }
         // default is all
         break;
@@ -337,7 +346,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
       case Ensemble:
         Double eval = params.getDouble(SubsetParams.ensCoord);
         if (eval != null) {
-          return helper.subsetClosest(eval);
+          return Optional.of(helper.subsetClosest(eval));
         }
         // default is all
         break;
@@ -347,15 +356,16 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
       case GeoY:
       case Lat:
       case Lon:
-        return null;
+        throw new IllegalArgumentException();
+        // return null; // LOOK heres a case where null is "correct"
 
       case Time:  // LOOK not handling stride
         if (params.isTrue(SubsetParams.timePresent))
-          return helper.subsetLatest();
+          return Optional.of(helper.subsetLatest());
 
         CalendarDate date = (CalendarDate) params.get(SubsetParams.time);
         if (date != null)
-          return helper.subset(date);
+          return Optional.of(helper.subsetClosest(date));
 
         CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
         if (dateRange != null)
@@ -363,7 +373,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
 
         Double timeOffset = (Double) params.get(SubsetParams.timeOffset);
         if (timeOffset != null)
-          return helper.subsetClosest(timeOffset);
+          return Optional.of(helper.subsetClosest(timeOffset));
 
         // default is all
         break;
@@ -371,7 +381,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
       case RunTime:
         CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
         if (rundate != null)
-          return helper.subset(rundate);
+          return Optional.of(helper.subsetClosest(rundate));
 
         CalendarDateRange rundateRange = (CalendarDateRange) params.get(SubsetParams.runtimeRange);
         if (rundateRange != null)
@@ -381,27 +391,28 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
           break;
 
         // default is latest
-        return helper.subsetLatest();
+        return Optional.of(helper.subsetLatest());
 
       case TimeOffset:
         Double oval = params.getDouble(SubsetParams.timeOffset);
         if (oval != null) {
-          return helper.subsetClosest(oval);
+          return Optional.of(helper.subsetClosest(oval));
         }
         if (params.isTrue(SubsetParams.timeOffsetFirst)) {
-          return helper.subsetValues(0, 0);
+          return Optional.of(helper.subsetByIndex(0, 0));
         }
         // default is all
         break;
     }
 
     // otherwise return copy the original axis
-    return new CoverageCoordAxisBuilder(this);
+    return Optional.of(new CoverageCoordAxisBuilder(this));
   }
 
   @Override
+  @Nonnull
   public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn) {
-    CoverageCoordAxisBuilder builder = new CoordAxisHelper(this).subsetValues(dependsOn.getMinIndex(), dependsOn.getMaxIndex());
+    CoverageCoordAxisBuilder builder = new CoordAxisHelper(this).subsetByIndex(dependsOn.getMinIndex(), dependsOn.getMaxIndex());
     return new CoverageCoordAxis1D(builder); // LOOK not dealing with stride, other subsets ??
   }
 

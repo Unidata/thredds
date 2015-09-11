@@ -32,50 +32,76 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.ma2.*;
+import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
 
-import java.io.IOException;
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 
 /**
- * LatLon axes : lat(y,x), lon(y,x)
+ * LatLon axes : used by lat(y,x) and lon(y,x)
+ * An instance represents just one of lat or lon.
+ * HorizCoordSys manages the two, usually you want to use that.
  *
  * @author caron
  * @since 7/15/2015
  */
 public class LatLonAxis2D extends CoverageCoordAxis {
 
-  // can only be set once, needed for subsetting
+  // can only be set once
   private int[] shape;
-  private CoverageCoordAxis[] dependentAxes;
+  private Object userObject;
 
   public LatLonAxis2D( CoverageCoordAxisBuilder builder) {
     super( builder);
+    this.shape = builder.shape;
+    this.userObject = builder.userObject;
   }
 
   @Override
   protected void setDataset(CoordSysContainer dataset) {
-    dependentAxes = new CoverageCoordAxis[2];
+    if (this.shape != null) return; // set in constructor
+
+    List<CoverageCoordAxis> dependentAxes = new ArrayList<>();
     int[] shape = new int[2];
     int count = 0;
     for (String axisName : dependsOn) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-      shape[count] = axis.getNcoords();
-      dependentAxes[count++] = axis;
+      if (axis == null) {
+        if (this.shape == null) // ok is hape has already been set
+          throw new IllegalStateException("LatLonAxis2D cant find axis " + axisName);
+      } else {
+        shape[count] = axis.getNcoords();
+        dependentAxes.add( axis);
+      }
     }
-
-    if (this.shape != null)
-      throw new RuntimeException("Cant change axis shape once set");
-
     this.shape = shape;
+  }
+
+  @Override
+  public CoverageCoordAxis copy() {
+    return new LatLonAxis2D(new CoverageCoordAxisBuilder(this));
   }
 
   @Override
   public int[] getShape() {
     return shape;
+  }
+
+  public Object getUserObject() {
+    return userObject;
+  }
+
+  public List<RangeIterator> getRanges() {
+    List<RangeIterator> result = new ArrayList<>();
+    result.add(new Range(shape[0])); // not subsetting yet
+    result.add(new Range(shape[1]));
+    return result;
   }
 
   @Override
@@ -84,29 +110,38 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     f.format("%s  shape=[%s]%n", indent, Misc.showInts(shape));
   }
 
-  @Override
-  public LatLonAxis2D subset(SubsetParams params) {  // LOOK not implemented
-    return new LatLonAxis2D( new CoverageCoordAxisBuilder(this));
+  public double getCoord(int yindex, int xindex) {
+    // assume values hold 2D coord
+    getValues();
+    int idx = yindex*shape[1] + xindex;
+    return values[idx];
   }
 
   @Override
-  public LatLonAxis2D subset(double minValue, double maxValue) {
-    return this; // LOOK
+  public Optional<CoverageCoordAxis> subset(SubsetParams params) {  // LOOK not implemented
+    return Optional.of(new LatLonAxis2D( new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
-  public LatLonAxis2D subsetDependent(CoverageCoordAxis1D from) {
-    return null; // LOOK
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) { // LOOK not implemented
+    return Optional.of( new LatLonAxis2D( new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
-  public Array getCoordsAsArray() throws IOException {
+  @Nonnull
+  public LatLonAxis2D subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented
+    return null;
+  }
+
+  @Override
+  public Array getCoordsAsArray() {
     double[] values = getValues();
     return Array.factory(DataType.DOUBLE, shape, values);
   }
 
   @Override
-  public Array getCoordBoundsAsArray() {
-    return null;   // LOOK
+  public Array getCoordBoundsAsArray() { // LOOK do we want to cache this ?
+    return CoordinateAxis2D.makeXEdges((ArrayDouble.D2) getCoordsAsArray()); // makeXEdges same as makeYEdges
   }
+
 }

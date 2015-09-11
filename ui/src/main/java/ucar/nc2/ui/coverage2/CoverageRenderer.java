@@ -19,6 +19,7 @@ import ucar.util.prefs.ui.Debug;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
@@ -685,30 +686,33 @@ public class CoverageRenderer {
       drawGridLines(g);
   }
 
-  private void drawGridHoriz(java.awt.Graphics2D g, GeoReferencedArray data) {
-    drawGridHorizRegular(g, data);
-
-    /* data = data.reduce();
-    if (data.getRank() != 2)
-      throw new IllegalArgumentException("must be 2D");
-
-    if (!(xaxis instanceof CoordinateAxis2D) || !(yaxis instanceof CoordinateAxis2D))
-      throw new IllegalArgumentException("must be CoordinateAxis2D");
+  private void drawGridHoriz(java.awt.Graphics2D g, GeoReferencedArray geo) {
+    CoverageCoordSys csData = geo.getCoordSysForData();
+    HorizCoordSys hcs = csData.getHorizCoordSys();
+    if (!hcs.is2DlatLon) {
+      drawGridHorizRegular(g, geo);
+      return;
+    }
 
     // 2D case
-    CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
-    CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
+    Array data = geo.getData();
+    data = data.reduce();
+    if (data.getRank() != 2)
+      throw new IllegalArgumentException("must be 2D");
+    Index ima = data.getIndex();
+
+    LatLonAxis2D xaxis2D = (LatLonAxis2D) hcs.getXAxis();
+    LatLonAxis2D yaxis2D = (LatLonAxis2D) hcs.getYAxis();
 
     /* String stag = geocs.getHorizStaggerType();
     if (stag != null && stag.equals(CDM.ARAKAWA_E)) {
       drawGridHorizRotated(g, data, xaxis2D, yaxis2D);
       return;
-    }
+    } */
 
-    ArrayDouble.D2 edgex = xaxis2D.getXEdges();
-    ArrayDouble.D2 edgey = yaxis2D.getYEdges();
+    ArrayDouble.D2 edgex = (ArrayDouble.D2) xaxis2D.getCoordBoundsAsArray();
+    ArrayDouble.D2 edgey = (ArrayDouble.D2) yaxis2D.getCoordBoundsAsArray();
 
-    Index ima = data.getIndex();
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
 
     int[] shape = xaxis2D.getShape(); // should both be the same
@@ -724,11 +728,11 @@ public class CoverageRenderer {
         gp.lineTo((float) edgex.get(y + 1, x), (float) edgey.get(y + 1, x));
 
         double val = data.getDouble(ima.set(y, x));   // ordering LOOK
-        int colorIndex = cs.getIndexFromValue(val);
-        g.setColor(cs.getColor(colorIndex));
+        int colorIndex = colorScale.getIndexFromValue(val);
+        g.setColor(colorScale.getColor(colorIndex));
         g.fill(gp);
       }
-    } */
+    }
 
   }
 

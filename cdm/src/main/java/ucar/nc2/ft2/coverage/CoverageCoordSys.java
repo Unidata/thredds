@@ -34,9 +34,10 @@ package ucar.nc2.ft2.coverage;
 
 import net.jcip.annotations.Immutable;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.util.Indent;
-import ucar.nc2.util.Misc;
+import ucar.nc2.util.*;
+import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
@@ -145,6 +146,21 @@ public class CoverageCoordSys {
         throw new RuntimeException("Cant have multiple Time2DCoordSys in a CoverageCoordSys");
       time2DCoordSys = new Time2DCoordSys(runtimeAxis, timeOffsetAxis);
     }
+
+    this.horizCoordSys = constructHcs();
+  }
+
+
+  // construct the HorizCoordSys
+  private HorizCoordSys constructHcs() {
+    CoverageCoordAxis xaxis = getAxis(AxisType.GeoX);
+    CoverageCoordAxis yaxis = getAxis(AxisType.GeoY);
+    CoverageCoordAxis lataxis = getAxis(AxisType.Lat);
+    CoverageCoordAxis lonaxis = getAxis(AxisType.Lon);
+
+    CoverageTransform hct = getHorizTransform();
+    HorizCoordSys hcs = new HorizCoordSys((CoverageCoordAxis1D) xaxis, (CoverageCoordAxis1D) yaxis, lataxis, lonaxis, hct);
+    return hcs;
   }
 
   void setHorizCoordSys(HorizCoordSys horizCoordSys) {
@@ -280,15 +296,23 @@ public class CoverageCoordSys {
    * Using independent axes only
    */
   public int[] getShape() {
-    int rank = 0;
-    for (CoverageCoordAxis axis : getAxes())
+    int rank = 2; // always 2 horiz
+    for (CoverageCoordAxis axis : getAxes()) {
+      if (axis.getAxisType().isHoriz()) continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) rank++;
+    }
 
     int[] result = new int[rank];
     int count = 0;
-    for (CoverageCoordAxis axis : getAxes())
+    for (CoverageCoordAxis axis : getAxes()) {
+      if (axis.getAxisType().isHoriz()) continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
         result[count++] = axis.getNcoords();
+    }
+
+    // the x,y shapes must be gotten from horizCoordSys
+    for (RangeIterator ri : horizCoordSys.getRanges())
+      result[count++] = ri.length();
 
     return result;
   }
@@ -337,28 +361,48 @@ public class CoverageCoordSys {
 
   ////////////////////////////////////////////////
 
-  public CoverageCoordSysSubset subset(SubsetParams params, boolean makeCFcompliant) throws InvalidRangeException {
+  public Optional<CoverageCoordSysSubset> subset(SubsetParams params, boolean makeCFcompliant) throws InvalidRangeException {
     CoverageCoordSysSubset result = new CoverageCoordSysSubset();
 
+    Formatter errMessages = new Formatter();
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
       if (axis.getAxisType().isHoriz() || axis.isTime2D()) continue;
 
-      CoverageCoordAxis1D subsetInd = (CoverageCoordAxis1D) axis.subset(params); // independent always 1D
-      subsetAxes.add(subsetInd);
+      ucar.nc2.util.Optional<CoverageCoordAxis> axiso = axis.subset(params);
+      if (!axiso.isPresent())
+        errMessages.format("%s: %s;%n", axis.getName(), axiso.getErrorMessage());
+      else {
+        CoverageCoordAxis1D subsetInd = (CoverageCoordAxis1D) axiso.get(); // independent always 1D
+        subsetAxes.add(subsetInd);
 
-      // subset any dependent axes
-      for (CoverageCoordAxis dependent : getDependentAxes(subsetInd))
-        subsetAxes.add(dependent.subsetDependent(subsetInd));
+        // subset any dependent axes
+        for (CoverageCoordAxis dependent : getDependentAxes(subsetInd))
+          subsetAxes.add(dependent.subsetDependent(subsetInd));
+      }
     }
 
     if (time2DCoordSys != null) {
-      subsetAxes.addAll( time2DCoordSys.subset(params, result, makeCFcompliant));
+      ucar.nc2.util.Optional<List<CoverageCoordAxis>> time2Do = time2DCoordSys.subset(params, result, makeCFcompliant);
+      if (!time2Do.isPresent())
+        errMessages.format("%s;%n", time2Do.getErrorMessage());
+      else
+        subsetAxes.addAll( time2Do.get());
     }
 
-    HorizCoordSys subsetHcs = horizCoordSys.subset(params);
-    subsetAxes.addAll(subsetHcs.getCoordAxes());
+    HorizCoordSys subsetHcs = null;
+    Optional<HorizCoordSys> horizo = horizCoordSys.subset(params);
+    if (!horizo.isPresent())
+      errMessages.format("%s;%n", horizo.getErrorMessage());
+    else {
+      subsetHcs = horizo.get();
+      subsetAxes.addAll(subsetHcs.getCoordAxes());
+    }
+
+    String errs = errMessages.toString();
+    if (errs.length() > 0)
+      return Optional.empty(errs);
 
     Collections.sort(subsetAxes);
 
@@ -369,10 +413,9 @@ public class CoverageCoordSys {
     CoverageCoordSys resultCoordSys = new CoverageCoordSys(null, names, this.getTransformNames(), this.getType());
     MyCoordSysContainer fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
     resultCoordSys.setDataset(fakeDataset);
-    resultCoordSys.setHorizCoordSys(subsetHcs);
 
     result.coordSys = resultCoordSys;
-    return result;
+    return Optional.of(result);
   }
 
   public List<CoverageCoordAxis> getDependentAxes(CoverageCoordAxis indAxis) {

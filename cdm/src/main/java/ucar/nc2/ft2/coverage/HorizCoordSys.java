@@ -34,11 +34,12 @@ package ucar.nc2.ft2.coverage;
 
 import net.jcip.annotations.Immutable;
 import ucar.ma2.InvalidRangeException;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.ProjectionRect;
+import ucar.ma2.RangeIterator;
+import ucar.nc2.util.Optional;
+import ucar.unidata.geoloc.*;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -55,7 +56,7 @@ public class HorizCoordSys {
   public final CoverageCoordAxis1D xaxis, yaxis;
   public final CoverageCoordAxis lataxis, lonaxis;
   public final CoverageTransform transform;
-  public final boolean hasProjection, hasLatLon;
+  public final boolean hasProjection, hasLatLon, is2DlatLon;
 
   public HorizCoordSys(CoverageCoordAxis1D xaxis, CoverageCoordAxis1D yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageTransform transform) {
     this.xaxis = xaxis;
@@ -81,6 +82,7 @@ public class HorizCoordSys {
     }
 
     this.hasLatLon = checkLatLon;
+    this.is2DlatLon = lataxis instanceof LatLonAxis2D;
   }
 
   public String getName() {
@@ -106,35 +108,46 @@ public class HorizCoordSys {
     return transform;
   }
 
+  public boolean is2DlatLon() {
+    return is2DlatLon;
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////
 
-  public HorizCoordSys subset(SubsetParams params) throws InvalidRangeException {
+  public Optional<HorizCoordSys> subset(SubsetParams params) throws InvalidRangeException {
 
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
     ProjectionRect projbb = (ProjectionRect) params.get(SubsetParams.projBB);
-    // if (projbb == null && llbb == null) return this;
 
     CoverageCoordAxis1D xaxisSubset = null, yaxisSubset = null;
     CoverageCoordAxis lataxisSubset= null, lonaxisSubset = null;
+    Optional<CoverageCoordAxis> buildero;
 
+    Formatter errMessages = new Formatter();
     if (projbb != null) {
       if (hasProjection) {
-        xaxisSubset = xaxis.subset(projbb.getMinX(), projbb.getMaxX());
-        yaxisSubset = yaxis.subset(projbb.getMinY(), projbb.getMaxY());
+        buildero = xaxis.subset(projbb.getMinX(), projbb.getMaxX());
+        if (buildero.isPresent()) xaxisSubset = (CoverageCoordAxis1D) buildero.get(); else errMessages.format("xaxis: %s;%n", buildero.getErrorMessage());
+        buildero = yaxis.subset(projbb.getMinY(), projbb.getMaxY());
+        if (buildero.isPresent()) yaxisSubset = (CoverageCoordAxis1D) buildero.get(); else errMessages.format("yaxis: %s;%n", buildero.getErrorMessage());
       }
 
       if (hasLatLon) {
         ProjectionImpl proj = transform.getProjection();
         LatLonRect llrect = proj.projToLatLonBB(projbb);
-        lonaxisSubset = lonaxis.subset(llrect.getLonMin(), llrect.getLonMax());
-        lataxisSubset = lataxis.subset(llrect.getLatMin(), llrect.getLatMax());
+        buildero = lonaxis.subset(llrect.getLonMin(), llrect.getLonMax());
+        if (buildero.isPresent()) lonaxisSubset = buildero.get(); else errMessages.format("lonaxis: %s;%n", buildero.getErrorMessage());
+        buildero = lataxis.subset(llrect.getLatMin(), llrect.getLatMax());
+        if (buildero.isPresent()) lataxisSubset = buildero.get(); else errMessages.format("lataxis: %s;%n", buildero.getErrorMessage());
       }
     }
 
     else if (llbb != null) {
       if (hasLatLon) {
-        lonaxisSubset = lonaxis.subset(llbb.getLonMin(), llbb.getLonMax());  // heres where to deal with crossing seam
-        lataxisSubset = lataxis.subset(llbb.getLatMin(), llbb.getLatMax());
+        buildero = subsetLon(llbb);
+        if (buildero.isPresent()) lonaxisSubset = buildero.get(); else errMessages.format("lonaxis: %s;%n", buildero.getErrorMessage());
+        buildero = lataxis.subset(llbb.getLatMin(), llbb.getLatMax());
+        if (buildero.isPresent()) lataxisSubset = buildero.get(); else errMessages.format("lataxis: %s;%n", buildero.getErrorMessage());
       }
 
       if (hasProjection) {
@@ -149,17 +162,102 @@ public class HorizCoordSys {
       } */
 
         ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
-        xaxisSubset = xaxis.subset(prect.getMinX(), prect.getMaxX());
-        yaxisSubset = yaxis.subset(prect.getMinY(), prect.getMaxY());
+        buildero = xaxis.subset(prect.getMinX(), prect.getMaxX());
+        if (buildero.isPresent()) xaxisSubset = (CoverageCoordAxis1D) buildero.get(); else errMessages.format("xaxis: %s;%n", buildero.getErrorMessage());
+        buildero = yaxis.subset(prect.getMinY(), prect.getMaxY());
+        if (buildero.isPresent()) yaxisSubset = (CoverageCoordAxis1D) buildero.get(); else errMessages.format("yaxis: %s;%n", buildero.getErrorMessage());
       }
     }
 
-    if (xaxisSubset == null && xaxis != null) xaxisSubset = (CoverageCoordAxis1D) xaxis.subset( null);
-    if (yaxisSubset == null && yaxis != null) yaxisSubset = (CoverageCoordAxis1D) yaxis.subset( null);
-    if (lataxisSubset == null && lataxis != null) lataxisSubset = lataxis.subset( null);
-    if (lonaxisSubset == null && lonaxis != null) lonaxisSubset = lonaxis.subset( null);
+    String errs = errMessages.toString();
+    if (errs.length() > 0)
+      return Optional.empty(errs);
 
-    return new HorizCoordSys(xaxisSubset, yaxisSubset, lataxisSubset, lonaxisSubset, transform);
+    // makes a copy of the axis
+    if (xaxisSubset == null && xaxis != null) xaxisSubset = (CoverageCoordAxis1D) xaxis.copy();
+    if (yaxisSubset == null && yaxis != null) yaxisSubset = (CoverageCoordAxis1D) yaxis.copy();
+    if (lataxisSubset == null && lataxis != null) lataxisSubset = lataxis.copy();
+    if (lonaxisSubset == null && lonaxis != null) lonaxisSubset = lonaxis.copy();
+
+    return Optional.of(new HorizCoordSys(xaxisSubset, yaxisSubset, lataxisSubset, lonaxisSubset, transform));
+  }
+
+  public LatLonPoint getLatLon(int yindex, int xindex) {
+    if (hasLatLon) {
+      if (is2DlatLon) {
+        double lat = ((LatLonAxis2D)lataxis).getCoord(yindex, xindex);
+        double lon = ((LatLonAxis2D)lonaxis).getCoord(yindex, xindex);
+        return new LatLonPointImpl(lat, lon);
+
+      } else {
+        double lat = ((CoverageCoordAxis1D)lataxis).getCoord(yindex);
+        double lon = ((CoverageCoordAxis1D)lonaxis).getCoord(xindex);
+        return new LatLonPointImpl(lat, lon);
+      }
+    }
+
+    // xy, proj case
+    double x = xaxis.getCoord(xindex);
+    double y = yaxis.getCoord(xindex);
+    ProjectionImpl proj = transform.getProjection();
+    return proj.projToLatLon(x, y);
+
+  }
+
+  // heres where to deal with crossing seam ??
+  private Optional<CoverageCoordAxis> subsetLon( LatLonRect llbb) {
+    double wantMin = llbb.getLonMin();
+    double wantMax = llbb.getLonMax();
+    double wantMin360 = LatLonPointImpl.lonNormal360(wantMin);
+    double wantMax360 = wantMin360 + llbb.getWidth();
+
+    double axisMin = lonaxis.getStartValue();
+    double axisMax = lonaxis.getEndValue();
+    double axisMin360 = LatLonPointImpl.lonNormal360(lonaxis.getStartValue());
+    double diff = axisMin360 - lonaxis.getStartValue();
+    double axisMax360 = lonaxis.getEndValue() + diff;
+
+    if (wantMin360 > axisMax360)
+      return Optional.empty(String.format("longitude wantMin %f > haveMax %f", wantMin360, axisMax360));
+    if (wantMax360 < axisMin360)
+      return Optional.empty(String.format("longitude wantMax %f < haveMin %f", wantMin360, axisMin360));
+
+    // if org intersects, use it
+    if (intersect(wantMin, wantMax, axisMin, axisMax))
+      return lonaxis.subset(wantMin, wantMax);
+
+    // if shifted intersects, use it
+    if (intersect(wantMin360, wantMax360, axisMin, axisMax))
+      return lonaxis.subset(wantMin360, wantMax360);
+
+    // otherwise not sure what cases are left
+    return Optional.empty(String.format("longitude want [%f,%f] does not intesect have [%f,%f]", wantMin, axisMax, axisMin, axisMax));
+  }
+
+  private boolean intersect(double wantMin, double wantMax, double axisMin, double axisMax) {
+    if (wantMin >= axisMin && wantMin <= axisMax)
+      return true;
+    if (wantMax >= axisMin && wantMax <= axisMax)
+      return true;
+
+    if (axisMin >= wantMin && axisMin <= wantMax)
+      return true;
+    if (axisMax >= wantMin && axisMax <= wantMax)
+      return true;
+
+    return false;
+  }
+
+  public List<RangeIterator> getRanges() {
+    List<RangeIterator> result = new ArrayList<>();
+    if (is2DlatLon) {
+      return ((LatLonAxis2D) lataxis).getRanges();
+    } else {
+      result.add(getYAxis().getRange());
+      result.add(getXAxis().getRange());
+    }
+
+    return result;
   }
 
   public CoverageCoordAxis getXAxis() {

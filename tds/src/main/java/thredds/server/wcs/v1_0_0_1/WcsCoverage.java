@@ -36,11 +36,12 @@ import thredds.server.wcs.Request;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter;
+import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
 import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.NamedObject;
+import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
@@ -245,16 +246,12 @@ public class WcsCoverage {
 
         SubsetParams subset = new SubsetParams();
         NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath());
-        /*
-         public static long writeFile(GridCoverageDataset gdsOrg, List<String> gridNames,
-                               GridSubset subset,
-                               boolean addLatLon,
-                               NetcdfFileWriter writer) throws IOException, InvalidRangeException {
+        // LOOK could test file size
+        Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(this.wcsDataset.getDataset(), Collections.singletonList(this.coverage.getName()),
+                subset, true, false, writer);
+        if (!estimatedSizeo.isPresent())
+          throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
 
-         */
-        CFGridCoverageWriter.writeFile(this.wcsDataset.getDataset(), Collections.singletonList(this.coverage.getName()),
-                // bboxLatLonRect, null, 1, zRange, timeRange, 1,
-                subset, true, writer);
         return outFile;
 
       } else {

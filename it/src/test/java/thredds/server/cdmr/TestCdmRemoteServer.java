@@ -32,6 +32,7 @@
  */
 package thredds.server.cdmr;
 
+import org.junit.Assert;
 import org.junit.Test;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.CatalogCrawler;
@@ -54,37 +55,36 @@ public class TestCdmRemoteServer {
   public void testSingleDataset() throws IOException {
     Catalog cat = TdsLocalCatalog.open(null);
 
-    Dataset ds = cat.findDatasetByID("testDataset2");
-    assert (ds != null) : "cant find dataset 'testDataset2'";
+    Dataset ds = cat.findDatasetByID("testSingleGridDataset");
+    assert (ds != null) : "cant find dataset 'testSingleGridDataset'";
     assert ds.getFeatureType() == FeatureType.GRID;
 
     DataFactory fac = new DataFactory();
-    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+    try (DataFactory.Result dataResult = fac.openFeatureDataset( ds, null)) {
+      assert dataResult != null;
+      if (dataResult.fatalError) {
+        System.out.printf("fatalError= %s%n", dataResult.errLog);
+        assert false;
+      }
+      assert dataResult.featureDataset != null;
 
-    assert dataResult != null;
-    if (dataResult.fatalError) {
-      System.out.printf("fatalError= %s%n", dataResult.errLog);
-      assert false;
+      GridDataset gds = (GridDataset) dataResult.featureDataset;
+      NetcdfFile nc = gds.getNetcdfFile();
+      if (nc != null)
+        System.out.printf(" NetcdfFile location = %s%n", nc.getLocation());
+
+      GridDatatype grid = gds.findGridDatatype("Pressure_reduced_to_MSL");
+      assert grid != null;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert gcs != null;
+      assert null == gcs.getVerticalAxis();
+
+      CoordinateAxis1D time = gcs.getTimeAxis1D();
+      Assert.assertNotNull("time axis", time);
+      double[] expect = new double[]{0., 6.0, 12.0, 18.0};
+      double[] have = time.getCoordValues();
+      Assert.assertArrayEquals(expect, have, Misc.maxReletiveError);
     }
-    assert dataResult.featureDataset != null;
-
-    GridDataset gds = (GridDataset) dataResult.featureDataset;
-    NetcdfFile nc = gds.getNetcdfFile();
-    if (nc != null)  
-      System.out.printf(" NetcdfFile location = %s%n", nc.getLocation());
-
-    GridDatatype grid = gds.findGridDatatype("Z_sfc");
-    assert grid != null;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert gcs != null;
-    assert null == gcs.getVerticalAxis();
-
-    CoordinateAxis1D time = gcs.getTimeAxis1D();
-    assert time != null;
-    assert time.getSize() == 1;
-    assert Misc.closeEnough(time.readScalarDouble(), 102840.0) : time.readScalarDouble();
-
-    dataResult.featureDataset.close();
   }
 
   private void doOne(Dataset ds) throws IOException {

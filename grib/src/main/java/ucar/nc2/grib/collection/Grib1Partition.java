@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.collection;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.Attribute;
@@ -60,7 +61,6 @@ public class Grib1Partition extends PartitionCollectionImmutable {
     super(pc);
   }
 
-  // LOOK - needs time partition collection iosp or something
   @Override
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
@@ -77,35 +77,33 @@ public class Grib1Partition extends PartitionCollectionImmutable {
     ucar.nc2.grib.collection.Grib1Iosp iosp = new ucar.nc2.grib.collection.Grib1Iosp(group, ds.getType());
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
-    return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
+    return new ucar.nc2.dt.grid.GridDataset(ncd);
   }
 
   @Override
   public CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename,
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-    //ucar.nc2.grib.collection.Grib1Iosp iosp = new ucar.nc2.grib.collection.Grib1Iosp(group, ds.getType());
     GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
     return gribCov.makeCoverageDataset();
-
-    /* NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
-    DtCoverageDataset gds = new DtCoverageDataset(ncd);
-    return DtCoverageAdapter.factory(gds); */
   }
 
-  /* @Override
-  public String makeVariableName(VariableIndex vindex) {
-    Grib1Customizer cust1 = ((Grib1Customizer) cust);
-    Grib1SectionProductDefinition pdss = new Grib1SectionProductDefinition(vindex.getRawPds());
-    return Grib1Iosp.makeVariableName(cust1, config.gribConfig, pdss);
-  } */
-
-  protected void addGlobalAttributes(List<Attribute> result) {
+  @Override
+  public void addGlobalAttributes(List<Attribute> result) {
     String val = cust.getGeneratingProcessName(getGenProcessId());
-    if (val != null)
-      result.add(new Attribute(GribUtils.GEN_PROCESS, val));
+    if (val != null) result.add(new Attribute(GribUtils.GEN_PROCESS, val));
     result.add(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB1.getDescription()));
+  }
+
+  @Override
+  public void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex) {
+    Grib1Collection.addVariableAttributes(v, vindex, this);
+  }
+
+  @Override
+  public String makeVariableId(GribCollectionImmutable.VariableIndex v) {
+    return Grib1Collection.makeVariableId(getCenter(), getSubcenter(), v.getTableVersion(), v.getParameter(),
+            v.getLevelType(), v.isLayer(), v.getIntvType(), v.getIntvName());
   }
 
 }

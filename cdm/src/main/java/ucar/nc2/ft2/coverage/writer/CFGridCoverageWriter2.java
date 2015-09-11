@@ -40,6 +40,7 @@ import ucar.nc2.constants.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.*;
 
 import java.io.IOException;
@@ -72,37 +73,31 @@ public class CFGridCoverageWriter2 {
    * @param gridNames    the list of coverage names to be written, or null for all
    * @param subset       defines the requested subset
    * @param addLatLon    add 2D lat/lon coordinates if needed
+   * @param testSizeOnly dont write, just return expected size
    * @param writer       this does the actual writing
    * @return total bytes written
    * @throws IOException
    * @throws InvalidRangeException
    */
-  public static long writeFile(CoverageDataset gdsOrg, List<String> gridNames,
+  public static ucar.nc2.util.Optional<Long> writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames,
                                SubsetParams subset,
                                boolean addLatLon,
+                               boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     CFGridCoverageWriter2 writer2 = new CFGridCoverageWriter2();
-    return writer2.writeOrTestSize(gdsOrg, gridNames, subset, addLatLon, false, writer);
+    return writer2.writeFile(gdsOrg, gridNames, subset, addLatLon, testSizeOnly, writer);
   }
 
-
-  /**
-   * @param gdsOrg       the CoverageDataset
-   * @param gridNames    the list of coverage names to be written, or null for all
-   * @param subsetParams       the desired subset
-   * @param addLatLon    add 2D lat/lon coordinates if needed
-   * @param testSizeOnly dont write, just return size
-   * @param writer       this does the actual writing
-   * @return total bytes written
-   * @throws IOException
-   * @throws InvalidRangeException
-   */
-  private long writeOrTestSize(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subsetParams, boolean addLatLon, boolean testSizeOnly,
+  private ucar.nc2.util.Optional<Long> writeFile(CoverageDataset gdsOrg, List<String> gridNames, SubsetParams subsetParams, boolean addLatLon, boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     // we need global atts, subsetted axes, the transforms, and the coverages with attributes and referencing subsetted axes
-    CoverageDataset subsetDataset = new CoverageSubsetter2().makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
+    Optional<CoverageDataset> subsetDataseto = CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
+    if (!subsetDataseto.isPresent())
+      return ucar.nc2.util.Optional.empty(subsetDataseto.getErrorMessage());
+
+    CoverageDataset subsetDataset = subsetDataseto.get();
 
     long total_size = 0;
     for (Coverage grid : subsetDataset.getCoverages()) {
@@ -110,7 +105,7 @@ public class CFGridCoverageWriter2 {
     }
 
     if (testSizeOnly)
-      return total_size;
+      return Optional.of(total_size);
 
     ////////////////////////////////////////////////////////////////////
 
@@ -186,10 +181,10 @@ public class CFGridCoverageWriter2 {
     for (CoverageCoordAxis axis : subsetDataset.getCoordAxes()) {
       Variable v = writer.findVariable(axis.getName());
       if (v != null) {
-        if (show) System.out.printf("CFGridCoverageWriter write axis %s%n", v.getNameAndDimensions());
+        if (show) System.out.printf("CFGridCoverageWriter2 write axis %s%n", v.getNameAndDimensions());
         writer.write(v, axis.getCoordsAsArray());
       } else {
-        logger.error("CFGridCoverageWriter No variable for %s%n", axis.getName());
+        logger.error("CFGridCoverageWriter2 No variable for %s%n", axis.getName());
       }
 
       if (axis.isInterval()) {
@@ -208,15 +203,13 @@ public class CFGridCoverageWriter2 {
       checkConformance(gridOrg, grid, array);
 
       Variable v = writer.findVariable(grid.getName());
-      if (show) System.out.printf("CFGridCoverageWriter write grid %s%n", v.getNameAndDimensions());
+      if (show) System.out.printf("CFGridCoverageWriter2 write grid %s%n", v.getNameAndDimensions());
       writer.write(v, array.getData());
     }
 
-    //updateGeospatialRanges(writer, llrect );
     writer.close();
 
-    // this writes the data to the new file.
-    return total_size; // ok
+    return Optional.of(total_size);
   }
 
   private boolean isLargeFile(long total_size) {

@@ -150,19 +150,11 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   protected abstract String makeVariableLongName(GribCollectionImmutable.VariableIndex vindex);
 
-  protected abstract String makeVariableNameFromRecord(GribCollectionImmutable.VariableIndex vindex);
-
   protected abstract String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex);
 
   protected abstract String getVerticalCoordDesc(int vc_code);
 
   protected abstract GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex);
-
-  protected abstract void addVariableAttributes(Variable v, GribCollectionImmutable.VariableIndex vindex);
-
-  // protected abstract void show(RandomAccessFile rafData, long pos) throws IOException;
-
-  // protected abstract float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException;
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -439,7 +431,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         }
       }
 
-      addVariableAttributes(v, vindex);
+      gribCollection.addVariableAttributes(v, vindex);
 
       v.setSPobject(vindex);
     }
