@@ -118,11 +118,14 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
    ...
 ----
 
+==== ucar.nc2.dataset
+** CoordinateAxis2D.getMidpoints() was deprecated and now removed, use getCoordValuesArray()
+
 Catalogs
 ^^^^^^^^
 
-* All uses of classes in *thredds.catalog.** are deprecated. If you still need these, you must add *legacy.jar* to your path.
-* TDS and CDM now use *thredds.server.catalog.** and *thredds.client.catalog.**
+* All uses of classes in *thredds.catalog* are deprecated. If you still need these, you must add *legacy.jar* to your path.
+* TDS and CDM now use *thredds.server.catalog* and *thredds.client.catalog*
 
 Viewers
 ^^^^^^^

@@ -64,6 +64,8 @@ public class Range implements RangeIterator  {
   public static final Range ONE = new Range(1);
   public static final Range VLEN = new Range(-1);
 
+  ////////////////////////////////////////////////////////
+
   protected final int length; // number of elements
   private final int first; // first value in range
   private final int last; // last value in range, inclusive
@@ -174,6 +176,19 @@ public class Range implements RangeIterator  {
     this.length = length;
   }
 
+  // copy on change
+  public Range setStride(int stride) throws InvalidRangeException {
+    return new Range(this.first(), this.last(), stride);
+  }
+
+  public Range setName(String name) {
+    try {
+      return new Range(name, first, last, stride);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
+  }
+
   /**
    * @return name, or null if none
    */
@@ -204,7 +219,7 @@ public class Range implements RangeIterator  {
 
   /**
    * @return stride, must be >= 1
-   * @deprecated use iterator(), dont assume evenly strided
+   // * @deprecated use iterator(), dont assume evenly strided
    */
   public int stride() {
     return stride;

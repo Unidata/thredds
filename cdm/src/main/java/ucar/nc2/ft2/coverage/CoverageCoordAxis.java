@@ -119,6 +119,8 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     }  else {
       this.startValue = builder.values[0];
       this.endValue = builder.values[values.length-1];
+      //if (builder.resolution == 0.0 && values.length > 1)
+      //  builder.resolution = (this.endValue - this.startValue) / (values.length-1);
       // could also check if regular, and change spacing
     }
 
@@ -159,11 +161,10 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   abstract public Optional<CoverageCoordAxis> subset(SubsetParams params);
 
   // called from HorizCoordSys
-  abstract public Optional<CoverageCoordAxis> subset(double minValue, double maxValue);
+  abstract public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) throws InvalidRangeException;
 
-  // called only on dependent axes. pass in what if depends on
-  @Nonnull
-  abstract public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn);
+  // called only on dependent axes. pass in independent axis
+  abstract public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D dependsOn);
 
   abstract public Array getCoordsAsArray();
 
@@ -275,7 +276,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
       return Range.EMPTY;
 
     try {
-      return new Range(name, 0, ncoords-1);
+      return new Range(axisType.toString(), 0, ncoords-1);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e);
     }

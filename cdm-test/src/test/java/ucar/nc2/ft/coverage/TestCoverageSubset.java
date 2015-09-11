@@ -13,6 +13,7 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
@@ -103,6 +104,39 @@ public class TestCoverageSubset {
 
       // Cant subset on runtime for Best, so we set to null
       readOne(cover, null, time_val, time_offset, vert_level);
+    }
+  }
+
+  @Test
+  public void testBestStride() throws IOException, InvalidRangeException {
+    System.out.printf("Test Dataset %s%n", endpoint);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+      CoverageCoordSys csys = cover.getCoordSys();
+      int[] csysShape =  csys.getShape();
+      System.out.printf("csys shape = %s%n", Misc.showInts(csysShape));
+
+      SubsetParams params = new SubsetParams().set(SubsetParams.horizStride, 2);
+      Optional<CoverageCoordSysSubset> csysSubseto = csys.subset(params, false);
+      if (!csysSubseto.isPresent()) {
+        System.out.printf("err=%s%n", csysSubseto.getErrorMessage());
+        assert false;
+      }
+
+      CoverageCoordSys csysSubset = csysSubseto.get().coordSys;
+      int[] subsetShape =  csysSubset.getShape();
+      System.out.printf("csysSubset shape = %s%n", Misc.showInts(subsetShape));
+
+      int n = csysShape.length;
+      csysShape[n-1] = (csysShape[n-1]+1)/2;
+      csysShape[n-2] = (csysShape[n-2]+1)/2;
+
+      Assert.assertArrayEquals(csysShape, subsetShape);
     }
   }
 

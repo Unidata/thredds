@@ -12,6 +12,7 @@ import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
@@ -790,6 +791,30 @@ public class CoverageViewer extends JPanel {
         if (Debug.isSet("event/NewMapArea"))
           System.out.println("Controller got NewMapAreaEvent " + navPanel.getMapArea());
         drawH(false);
+      }
+    });
+
+    /* get Pick events from the navigated panel
+    navPanel.addPickEventListener(new PickEventListener() {
+      public void actionPerformed(PickEvent e) {
+        projPoint.setLocation(e.getLocation());
+        int slice = renderGrid.findSliceFromPoint(projPoint);
+        if (Debug.isSet("pick/event"))
+          System.out.println("pick.event: " + projPoint + " " + slice);
+        if ((slice >= 0) && (slice != currentSlice)) {
+          currentSlice = slice;
+          vertPanel.setSlice(currentSlice);
+          redrawLater();
+        }
+      }
+    }); */
+
+    // get Move events from the navigated panel
+    navPanel.addCursorMoveEventListener(new CursorMoveEventListener() {
+      public void actionPerformed(CursorMoveEvent e) {
+        ProjectionPointImpl projPoint = new ProjectionPointImpl(e.getLocation());
+        String valueS = coverageRenderer.getXYvalueStr(projPoint);
+        dataValueLabel.setText(valueS);
       }
     });
 

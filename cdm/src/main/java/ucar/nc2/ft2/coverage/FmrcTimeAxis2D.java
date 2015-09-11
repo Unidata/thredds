@@ -120,13 +120,13 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) { // LOOK not implemented, maybe illegal ??
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented, maybe illegal ??
     return Optional.of(new FmrcTimeAxis2D( new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
   @Nonnull
-  public FmrcTimeAxis2D subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented, maybe illegal ??
+  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented, maybe illegal ??
     return null; // LOOK
   }
 

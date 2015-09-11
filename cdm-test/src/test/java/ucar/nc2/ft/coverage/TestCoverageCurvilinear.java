@@ -34,9 +34,17 @@ package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ucar.ma2.Array;
+import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.Misc;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -75,11 +83,49 @@ public class TestCoverageCurvilinear {
       GeoReferencedArray geo = cover.readData(new SubsetParams());
       TestCoverageSubsetTime.testGeoArray(geo, null, null, null);
     }
-
   }
 
   @Test
-  public void TestNetcdfCurvilinear() throws IOException {
+  public void TestGribCurvilinearSubset() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";  // GRIB Curvilinear
+    System.out.printf("open %s%n", endpoint);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      assert cc != null;
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertNotNull(endpoint, gds);
+      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(7, gds.getCoverageCount());
+
+      HorizCoordSys hcs = gds.getHorizCoordSys();
+      Assert.assertNotNull(endpoint, hcs);
+      Assert.assertTrue(endpoint, hcs.hasLatLon);
+      Assert.assertTrue(endpoint, !hcs.hasProjection);
+      Assert.assertNull(endpoint, hcs.getTransform());
+
+      String covName = "Mixed_layer_depth_surface";
+      Coverage coverage = gds.findCoverage(covName);
+      Assert.assertNotNull(covName, coverage);
+
+      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(64.0, -61.), new LatLonPointImpl(59.0, -52.));
+
+      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.latlonBB, bbox);
+      GeoReferencedArray geo = coverage.readData(params);
+      System.out.printf("csys shape=%s%n", Misc.showInts(geo.getCoordSysForData().getShape()));
+
+      Array data = geo.getData();
+      System.out.printf("data shape=%s%n", Misc.showInts(data.getShape()));
+      Assert.assertArrayEquals(geo.getCoordSysForData().getShape(), data.getShape());
+
+      int[] expectedShape = new int[] {1,106,100};
+      Assert.assertArrayEquals(expectedShape, data.getShape());
+      NCdumpW.printArray(data);
+    }
+  }
+
+  @Test
+  public void TestNetcdfCurvilinear() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc";  // NetCDF has 2D and 1D
     System.out.printf("open %s%n", endpoint);
 
@@ -90,11 +136,27 @@ public class TestCoverageCurvilinear {
       Assert.assertNotNull(endpoint, gds);
       Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
       Assert.assertEquals(22, gds.getCoverageCount());
+
+      String covName = "u";
+      Coverage cover = gds.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams().set(SubsetParams.vertCoord, -.05).set(SubsetParams.timePresent, true);
+      GeoReferencedArray geo = cover.readData(params);
+
+      Array data = geo.getData();
+      Index ima = data.getIndex();
+      int[] expectedShape = new int[] {1,1,22,12};
+      Assert.assertArrayEquals(expectedShape, data.getShape());
+      // NCdumpW.printArray(data);
+      Assert.assertEquals(0.0036624447, data.getDouble(ima.set(0, 0, 0, 0)), Misc.maxReletiveError);
+      Assert.assertEquals(0.20564626, data.getDouble(ima.set(0, 0, 21, 11)), Misc.maxReletiveError);
+
     }
   }
 
   @Test
-  public void TestNetcdfCurvilinear2() throws IOException {
+  public void TestNetcdfCurvilinear2D() throws IOException {
     String endpoint = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";  // NetCDF Curvilinear 2D only
     System.out.printf("open %s%n", endpoint);
 
@@ -105,7 +167,69 @@ public class TestCoverageCurvilinear {
       Assert.assertNotNull(endpoint, gds);
       Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
       Assert.assertEquals(10, gds.getCoverageCount());
+
+      String covName = "hs";
+      Coverage cover = gds.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+
+      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true);
+      GeoReferencedArray geo = cover.readData(params);
+
+      Array data = geo.getData();
+      Index ima = data.getIndex();
+      int[] expectedShape = new int[] {1,151,171};
+      Assert.assertArrayEquals(expectedShape, data.getShape());
+      NCdumpW.printArray(data);
+      Assert.assertEquals(1.782, data.getDouble(ima.set(0, 0, 0)), Misc.maxReletiveError);
+      Assert.assertEquals(1.769, data.getDouble(ima.set(0, 11, 0)), Misc.maxReletiveError);
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
     }
   }
+
+  @Test
+  public void TestNetcdfCurvilinear2Dsubset() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";  // NetCDF Curvilinear 2D only
+    System.out.printf("open %s%n", endpoint);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      assert cc != null;
+      Assert.assertEquals(1, cc.getCoverageDatasets().size());
+      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertNotNull(endpoint, gds);
+      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(10, gds.getCoverageCount());
+
+      String covName = "hs";
+      Coverage coverage = gds.findCoverage(covName);
+      Assert.assertNotNull(covName, coverage);
+
+      CoverageCoordSys cs = coverage.getCoordSys();
+      Assert.assertNotNull("coordSys", cs);
+      HorizCoordSys hcs = cs.getHorizCoordSys();
+      Assert.assertNotNull("HorizCoordSys", hcs);
+      Assert.assertEquals("coordSys", 3, cs.getShape().length);
+
+      // bbox =  ll: 16.79S 20.5W+ ur: 14.1N 20.09E
+      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(43.489, -8.5353), new LatLonPointImpl(43.371, -8.2420));
+
+      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.latlonBB, bbox);
+      GeoReferencedArray geo = coverage.readData(params);
+      System.out.printf("csys shape=%s%n", Misc.showInts(geo.getCoordSysForData().getShape()));
+
+      Array data = geo.getData();
+      System.out.printf("data shape=%s%n", Misc.showInts(data.getShape()));
+      Assert.assertArrayEquals(geo.getCoordSysForData().getShape(), data.getShape());
+
+      int[] expectedShape = new int[] {1,106,100};
+      Assert.assertArrayEquals(expectedShape, data.getShape());
+      NCdumpW.printArray(data);
+      /*Index ima = data.getIndex();
+      Assert.assertEquals(1.782, data.getDouble(ima.set(0,0,0)), Misc.maxReletiveError);
+      Assert.assertEquals(1.769, data.getDouble(ima.set(0,11,0)), Misc.maxReletiveError); */
+    }
+  }
+
+
 
 }
