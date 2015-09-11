@@ -201,6 +201,7 @@ public class S3URI {
         return file;
     }
 
+    //////////////////////////////////////// Object ////////////////////////////////////////
 
     /**
      * Returns a string representation of the URI in the form {@code s3://<bucket>/<key>}.
