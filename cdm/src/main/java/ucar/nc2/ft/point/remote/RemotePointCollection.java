@@ -33,7 +33,6 @@
 
 package ucar.nc2.ft.point.remote;
 
-import com.sun.istack.internal.NotNull;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorEmpty;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -48,6 +47,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.validation.constraints.NotNull;
 
 /**
  * PointCollection over cdmRemote protocol

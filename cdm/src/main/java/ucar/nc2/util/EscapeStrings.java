@@ -18,11 +18,11 @@ import java.util.regex.Pattern;
   4. Eliminate URLencode/decode in favor of guava.
 
   https://texnoblog.wordpress.com/2014/06/11/urlencode-just-one-is-not-enough/
-  "Starting from version 15.0, Google’s excellent Guava libraries have UrlEscapers class to do just that!
+  "Starting from version 15.0, Google's excellent Guava libraries have UrlEscapers class to do just that!
   The documentation is pretty clear, use
     1) urlPathSegmentEscaper to encode URL path segments (things that go between slashes),
     2) urlFragmentEscaper if you already have a path/with/slashes
-    3) urlPathSegmentEscaper for the names and values of request parameters (things after the ‘?’).
+    3) urlPathSegmentEscaper for the names and values of request parameters (things after the '?').
 
   from Guava:
 
