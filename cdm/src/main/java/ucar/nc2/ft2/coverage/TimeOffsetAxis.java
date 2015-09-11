@@ -72,11 +72,14 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
       builder =  helper.subsetClosest(offset);
     }
 
+    Integer stride = (Integer) params.get(SubsetParams.timeStride);
+    if (stride == null || stride < 0) stride = 1;
+
     CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
     if (dateRange != null) {
       double min = getOffsetInTimeUnits(runDate, dateRange.getStart());
       double max = getOffsetInTimeUnits(runDate, dateRange.getEnd());
-      Optional<CoverageCoordAxisBuilder> buildero =  helper.subset(min, max); // LOOK no stride
+      Optional<CoverageCoordAxisBuilder> buildero =  helper.subset(min, max, stride);
       if (buildero.isPresent()) builder = buildero.get();
       else return Optional.empty(buildero.getErrorMessage());
     }
@@ -100,9 +103,9 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) {
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue);
+    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue, stride);
     return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new TimeOffsetAxis(buildero.get()));
   }
 

@@ -34,6 +34,8 @@ package ucar.nc2.ft2.coverage;
 
 import net.jcip.annotations.Immutable;
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -43,7 +45,6 @@ import ucar.nc2.util.NamedObject;
 import ucar.nc2.util.Optional;
 import ucar.unidata.util.Format;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -59,15 +60,15 @@ import java.util.List;
 public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<Object> {
 
   // does this really describe all subset possibilities? what about RangeScatter, composite ??
-  protected final int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
-  protected final int stride = 1;
+  // protected final int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
+  // protected final int stride = 1;
   protected final boolean isTime2D;
+  protected final Range range;
 
   public CoverageCoordAxis1D( CoverageCoordAxisBuilder builder) {
     super(builder);
 
-    this.minIndex = builder.minIndex;
-    this.maxIndex = builder.maxIndex;
+    this.range = (builder.range == null) ? new Range(getNcoords()) : builder.range;
     this.isTime2D = builder.isTime2D;
   }
 
@@ -75,22 +76,14 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     return isTime2D;
   }
 
-  public int getStride() {
-    return stride;
-  }
-
-  public int getMinIndex() {
-    return minIndex;
-  }
-
-  public int getMaxIndex() {
-    return maxIndex;
+  public Range getRange() {
+    return range;
   }
 
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s  minIndex=%d maxIndex=%d stride=%d isTime2D=%s isSubset=%s", indent, minIndex, maxIndex, stride, isTime2D(), isSubset());
+    f.format("%s range=%s isTime2D=%s isSubset=%s", indent, range, isTime2D(), isSubset());
     f.format("%n");
   }
 
@@ -268,9 +261,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     return result;
   }
 
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) {
+  @Override
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) throws InvalidRangeException {
     CoordAxisHelper helper = new CoordAxisHelper(this);
-    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue);
+    Optional<CoverageCoordAxisBuilder> buildero = helper.subset(minValue, maxValue, stride);
     return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new CoverageCoordAxis1D(buildero.get()));
   }
 
@@ -325,6 +319,16 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     return !buildero.isPresent() ? Optional.empty(buildero.getErrorMessage()) : Optional.of(new CoverageCoordAxis1D(buildero.get()));
   }
 
+  public Optional<CoverageCoordAxis> subsetByIndex(Range range) {
+    try {
+      CoordAxisHelper helper = new CoordAxisHelper(this);
+      CoverageCoordAxisBuilder builder = helper.subsetByIndex(range);
+      return  Optional.of(new CoverageCoordAxis1D(builder));
+    } catch (InvalidRangeException e) {
+      return Optional.empty(e.getMessage());
+    }
+  }
+
   // LOOK  incomplete handling of subsetting params
   protected Optional<CoverageCoordAxisBuilder> subsetBuilder(SubsetParams params) {
     if (params == null)
@@ -363,13 +367,16 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
         if (params.isTrue(SubsetParams.timePresent))
           return Optional.of(helper.subsetLatest());
 
+        Integer stride = (Integer) params.get(SubsetParams.timeStride);
+        if (stride == null || stride < 0) stride = 1;
+
         CalendarDate date = (CalendarDate) params.get(SubsetParams.time);
         if (date != null)
           return Optional.of(helper.subsetClosest(date));
 
         CalendarDateRange dateRange = (CalendarDateRange) params.get(SubsetParams.timeRange);
         if (dateRange != null)
-          return helper.subset(dateRange);
+          return helper.subset(dateRange, stride);
 
         Double timeOffset = (Double) params.get(SubsetParams.timeOffset);
         if (timeOffset != null)
@@ -385,7 +392,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
 
         CalendarDateRange rundateRange = (CalendarDateRange) params.get(SubsetParams.runtimeRange);
         if (rundateRange != null)
-          return helper.subset(rundateRange);
+          return helper.subset(rundateRange, 1);
 
         if (params.isTrue(SubsetParams.runtimeAll))
           break;
@@ -398,8 +405,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
         if (oval != null) {
           return Optional.of(helper.subsetClosest(oval));
         }
+
         if (params.isTrue(SubsetParams.timeOffsetFirst)) {
-          return Optional.of(helper.subsetByIndex(0, 0));
+          try {
+            return Optional.of( helper.subsetByIndex( new Range(1)));
+          } catch (InvalidRangeException e) {
+            return Optional.empty( e.getMessage());
+          }
         }
         // default is all
         break;
@@ -410,10 +422,14 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   }
 
   @Override
-  @Nonnull
-  public CoverageCoordAxis subsetDependent(CoverageCoordAxis1D dependsOn) {
-    CoverageCoordAxisBuilder builder = new CoordAxisHelper(this).subsetByIndex(dependsOn.getMinIndex(), dependsOn.getMaxIndex());
-    return new CoverageCoordAxis1D(builder); // LOOK not dealing with stride, other subsets ??
+  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D dependsOn) {
+    CoverageCoordAxisBuilder builder;
+    try {
+      builder = new CoordAxisHelper(this).subsetByIndex( dependsOn.getRange()); // LOOK Other possible subsets?
+    } catch (InvalidRangeException e) {
+      return Optional.empty(e.getMessage());
+    }
+    return Optional.of(new CoverageCoordAxis1D(builder));
   }
 
   @Override

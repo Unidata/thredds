@@ -437,13 +437,6 @@ public class NCdumpW {
     printArray(array, name, null, pw, new Indent(2), ct, true);
   }
 
-  /**
-   * @deprecated use toString()
-   */
-  static public String printArray(Array array, String name, CancelTask ct) {
-    return toString(array, name, ct);
-  }
-
   static public String toString(Array array, String name, CancelTask ct) {
     CharArrayWriter carray = new CharArrayWriter(100000);
     PrintWriter pw = new PrintWriter(carray);
@@ -716,7 +709,7 @@ public class NCdumpW {
    * @param ma  any Array except ArrayStructure
    * @param out print to here
    */
-  static public void printArray(Array ma, PrintWriter out) {
+  static public void printArrayPlain(Array ma, PrintWriter out) {
     ma.resetLocalIterator();
     while (ma.hasNext()) {
       out.print(ma.next());
@@ -724,10 +717,20 @@ public class NCdumpW {
     }
   }
 
+  /**
+   * Print array to stdout
+   */
   static public void printArray(Array ma) {
     PrintWriter out = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
     printArray(ma, out);
     out.flush();
+  }
+
+  /**
+   * Print array to PrintWriter
+   */
+  static public void printArray(Array array, PrintWriter pw) {
+    printArray(array, null, null, pw, new Indent(2), null, true);
   }
 
   static public String toString(Array ma) {

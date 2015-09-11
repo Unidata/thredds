@@ -33,7 +33,6 @@
 package ucar.nc2.ft2.coverage;
 
 import net.jcip.annotations.Immutable;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.*;
@@ -150,7 +149,6 @@ public class CoverageCoordSys {
     this.horizCoordSys = constructHcs();
   }
 
-
   // construct the HorizCoordSys
   private HorizCoordSys constructHcs() {
     CoverageCoordAxis xaxis = getAxis(AxisType.GeoX);
@@ -159,8 +157,7 @@ public class CoverageCoordSys {
     CoverageCoordAxis lonaxis = getAxis(AxisType.Lon);
 
     CoverageTransform hct = getHorizTransform();
-    HorizCoordSys hcs = new HorizCoordSys((CoverageCoordAxis1D) xaxis, (CoverageCoordAxis1D) yaxis, lataxis, lonaxis, hct);
-    return hcs;
+    return new HorizCoordSys((CoverageCoordAxis1D) xaxis, (CoverageCoordAxis1D) yaxis, lataxis, lonaxis, hct);
   }
 
   void setHorizCoordSys(HorizCoordSys horizCoordSys) {
@@ -361,7 +358,7 @@ public class CoverageCoordSys {
 
   ////////////////////////////////////////////////
 
-  public Optional<CoverageCoordSysSubset> subset(SubsetParams params, boolean makeCFcompliant) throws InvalidRangeException {
+  public Optional<CoverageCoordSysSubset> subset(SubsetParams params, boolean makeCFcompliant) {
     CoverageCoordSysSubset result = new CoverageCoordSysSubset();
 
     Formatter errMessages = new Formatter();
@@ -378,8 +375,10 @@ public class CoverageCoordSys {
         subsetAxes.add(subsetInd);
 
         // subset any dependent axes
-        for (CoverageCoordAxis dependent : getDependentAxes(subsetInd))
-          subsetAxes.add(dependent.subsetDependent(subsetInd));
+        for (CoverageCoordAxis dependent : getDependentAxes(subsetInd)) {
+          Optional<CoverageCoordAxis> depo = dependent.subsetDependent(subsetInd);
+          if (depo.isPresent()) subsetAxes.add(depo.get()); else errMessages.format("%s;%n", depo.getErrorMessage());
+        }
       }
     }
 
@@ -391,12 +390,11 @@ public class CoverageCoordSys {
         subsetAxes.addAll( time2Do.get());
     }
 
-    HorizCoordSys subsetHcs = null;
     Optional<HorizCoordSys> horizo = horizCoordSys.subset(params);
     if (!horizo.isPresent())
       errMessages.format("%s;%n", horizo.getErrorMessage());
     else {
-      subsetHcs = horizo.get();
+      HorizCoordSys subsetHcs = horizo.get();
       subsetAxes.addAll(subsetHcs.getCoordAxes());
     }
 

@@ -6,6 +6,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.Misc;
 import ucar.nc2.util.NamedObject;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -426,6 +427,10 @@ public class CoverageTable extends JPanel {
 
     public DataType getDataType() {
       return dataType;
+    }
+
+    public String getShape() {
+      return Misc.showInts(geogrid.getCoordSys().getShape());
     }
   }
 

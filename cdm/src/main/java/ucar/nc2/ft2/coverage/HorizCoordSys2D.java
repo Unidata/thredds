@@ -1,128 +1,66 @@
-/*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
- *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
- *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
- *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-package ucar.nc2.ft2.coverage.adapter;
+/* Copyright Unidata */
+package ucar.nc2.ft2.coverage;
 
-import ucar.nc2.dataset.CoordinateAxis2D;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.MAMath;
+import ucar.ma2.*;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * fork ucar.nc2.dt.grid.GridCoordinate2D for adaption of GridCoverage
- *
- * 2D Coordinate System has lat(x,y) and lon(x,y).
- * This class implements finding the index (i,j) from (lat, lon) coord.
- * This is for "one-off" computation, not a systematic lookup table for all points in a pixel array.
- * Hueristic search of the 2D space for the cell that contains the point.
- *
- * @author caron
- * @since Jul 10, 2009
+ * forked from ucar.nc2.dataset.GridCoordinate2D
  */
-public class GeoGridCoordinate2D {
+public class HorizCoordSys2D {
   static private boolean debug = false;
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGridCoordinate2D.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HorizCoordSys2D.class);
 
-  private final CoordinateAxis2D latCoord, lonCoord;
+  private final LatLonAxis2D latAxis, lonAxis;
   private final int nrows, ncols;
   private ArrayDouble.D2 latEdge, lonEdge;
   private MAMath.MinMax latMinMax, lonMinMax;
 
-  GeoGridCoordinate2D(CoordinateAxis2D latCoord, CoordinateAxis2D lonCoord) {
-    this.latCoord = latCoord;
-    this.lonCoord = lonCoord;
-
-    assert latCoord.getRank() == 2;
-    assert lonCoord.getRank() == 2;
+  HorizCoordSys2D(LatLonAxis2D latCoord, LatLonAxis2D lonCoord) {
+    this.latAxis = latCoord;
+    this.lonAxis = lonCoord;
     int[] shape = latCoord.getShape();
 
     nrows = shape[0];
     ncols = shape[1];
-  }
 
-  private void findBounds() {
-    if (lonMinMax != null) return;
-
-    lonEdge = lonCoord.getEdges();
-    latEdge = latCoord.getEdges();
+    // assume this class is instantiated when these edges are needed
+    latEdge = (ArrayDouble.D2) latAxis.getCoordBoundsAsArray();
+    lonEdge = (ArrayDouble.D2) lonAxis.getCoordBoundsAsArray();
 
     // assume missing values have been converted to NaNs
     latMinMax = MAMath.getMinMax(latEdge);
     lonMinMax = MAMath.getMinMax(lonEdge);
 
+    // normalize to [minLon,minLon+360]
+    int nlons = (int) lonEdge.getSize();
+    for (int i=0; i<nlons; i++) {
+      double nonVal = lonEdge.getDouble(i);
+      lonEdge.setDouble(i, LatLonPointImpl.lonNormalFrom(nonVal, lonMinMax.min));
+    }
+
     if (debug)
       System.out.printf("Bounds (%d %d): lat= (%f,%f) lon = (%f,%f) %n", nrows, ncols, latMinMax.min, latMinMax.max, lonMinMax.min, lonMinMax.max);
   }
 
-  // brute force
-  public boolean findCoordElementForce(double wantLat, double wantLon, int[] rectIndex) {
-    findBounds();
-    if (wantLat < latMinMax.min) return false;
-    if (wantLat > latMinMax.max) return false;
-    if (wantLon < lonMinMax.min) return false;
-    if (wantLon > lonMinMax.max) return false;
-
-    boolean saveDebug = debug;
-    debug = false;
-    for (int row=0; row<nrows; row++) {
-      for (int col=0; col<ncols; col++) {
-
-        rectIndex[0] = row;
-        rectIndex[1] = col;
-
-        if (contains(wantLat, wantLon, rectIndex)) {
-          debug = saveDebug;
-          return true;
-        }
-      }
-    }
-    //debug = saveDebug;
-    return false;
-  }
-
   public boolean findCoordElement(double wantLat, double wantLon, int[] rectIndex) {
-    return findCoordElementNoForce(wantLat, wantLon,rectIndex);
+    double wantLonNormal = LatLonPointImpl.lonNormalFrom(wantLon, lonMinMax.min);
+    return findCoordElementNoForce(wantLat, wantLonNormal, rectIndex);
   }
-
 
   /**
    * Find the best index for the given lat,lon point.
+   *
    * @param wantLat   lat of point
    * @param wantLon   lon of point
    * @param rectIndex return (row,col) index, or best guess here. may not be null
-   *
    * @return false if not in the grid.
    */
-  public boolean findCoordElementNoForce(double wantLat, double wantLon, int[] rectIndex) {
-    findBounds();
+  private boolean findCoordElementNoForce(double wantLat, double wantLon, int[] rectIndex) {
     if (wantLat < latMinMax.min) return false;
     if (wantLat > latMinMax.max) return false;
     if (wantLon < lonMinMax.min) return false;
@@ -136,7 +74,7 @@ public class GeoGridCoordinate2D {
 
     // initial guess
     rectIndex[0] = (int) Math.round(diffLat / gradientLat);  // row
-    rectIndex[1] =(int) Math.round(diffLon / gradientLon);  // col
+    rectIndex[1] = (int) Math.round(diffLon / gradientLon);  // col
 
     int count = 0;
     while (true) {
@@ -145,7 +83,8 @@ public class GeoGridCoordinate2D {
       if (contains(wantLat, wantLon, rectIndex))
         return true;
 
-      if (!jump2(wantLat, wantLon, rectIndex)) return false;
+      if (!jump2(wantLat, wantLon, rectIndex))
+        return false;
 
       // bouncing around
       if (count > 10) {
@@ -167,8 +106,8 @@ public class GeoGridCoordinate2D {
    * @return true if contained
    */
   private boolean containsOld(double wantLat, double wantLon, int[] rectIndex) {
-    rectIndex[0] = Math.max( Math.min(rectIndex[0], nrows-1), 0);
-    rectIndex[1] = Math.max( Math.min(rectIndex[1], ncols-1), 0);
+    rectIndex[0] = Math.max(Math.min(rectIndex[0], nrows - 1), 0);
+    rectIndex[1] = Math.max(Math.min(rectIndex[1], ncols - 1), 0);
 
     int row = rectIndex[0];
     int col = rectIndex[1];
@@ -222,8 +161,8 @@ public class GeoGridCoordinate2D {
   this method works for arbitrary convex regions oo the plane.
 */
   private boolean contains(double wantLat, double wantLon, int[] rectIndex) {
-    rectIndex[0] = Math.max( Math.min(rectIndex[0], nrows-1), 0);
-    rectIndex[1] = Math.max( Math.min(rectIndex[1], ncols-1), 0);
+    rectIndex[0] = Math.max(Math.min(rectIndex[0], nrows - 1), 0);
+    rectIndex[1] = Math.max(Math.min(rectIndex[1], ncols - 1), 0);
 
     int row = rectIndex[0];
     int col = rectIndex[1];
@@ -231,14 +170,14 @@ public class GeoGridCoordinate2D {
     double x1 = lonEdge.get(row, col);
     double y1 = latEdge.get(row, col);
 
-    double x2 = lonEdge.get(row, col+1);
-    double y2 = latEdge.get(row, col+1);
+    double x2 = lonEdge.get(row, col + 1);
+    double y2 = latEdge.get(row, col + 1);
 
-    double x3 = lonEdge.get(row+1, col+1);
-    double y3 = latEdge.get(row + 1, col+1);
+    double x3 = lonEdge.get(row + 1, col + 1);
+    double y3 = latEdge.get(row + 1, col + 1);
 
     double x4 = lonEdge.get(row + 1, col);
-    double y4 = latEdge.get(row+1, col);
+    double y4 = latEdge.get(row + 1, col);
 
     // must all have same determinate sign
     boolean sign = detIsPositive(x1, y1, x2, y2, wantLon, wantLat);
@@ -250,14 +189,14 @@ public class GeoGridCoordinate2D {
   }
 
   private boolean detIsPositive(double x0, double y0, double x1, double y1, double x2, double y2) {
-    double det = (x1*y2 - y1*x2 -x0*y2 + y0*x2 + x0*y1 - y0*x1);
+    double det = (x1 * y2 - y1 * x2 - x0 * y2 + y0 * x2 + x0 * y1 - y0 * x1);
     if (det == 0)
-      log.warn("determinate = 0 on lat/lon=" + latCoord.getFullName() + ", " + latCoord.getFullName()); // LOOK needed?
+      log.warn("determinate = 0 on lat/lon=" + latAxis.getName() + ", " + latAxis.getName()); // LOOK needed?
     return det > 0;
   }
 
   private boolean jumpOld(double wantLat, double wantLon, int[] rectIndex) {
-    int row = Math.max( Math.min(rectIndex[0], nrows-1), 0);
+    int row = Math.max(Math.min(rectIndex[0], nrows - 1), 0);
     int col = Math.max(Math.min(rectIndex[1], ncols - 1), 0);
     double gradientLat = latEdge.get(row + 1, col) - latEdge.get(row, col);
     double gradientLon = lonEdge.get(row, col + 1) - lonEdge.get(row, col);
@@ -276,8 +215,8 @@ public class GeoGridCoordinate2D {
       if (debug) System.out.printf("%n   incr:");
       return incr(wantLat, wantLon, rectIndex);
     } else {
-      rectIndex[0] = Math.max( Math.min(row + drow, nrows-1), 0);
-      rectIndex[1] = Math.max( Math.min(col + dcol, ncols-1), 0);
+      rectIndex[0] = Math.max(Math.min(row + drow, nrows - 1), 0);
+      rectIndex[1] = Math.max(Math.min(col + dcol, ncols - 1), 0);
       if (debug) System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
       if ((row == rectIndex[0]) && (col == rectIndex[1])) return false; // nothing has changed
     }
@@ -287,8 +226,9 @@ public class GeoGridCoordinate2D {
 
   /**
    * jump to a new row,col
-   * @param wantLat want this lat
-   * @param wantLon want this lon
+   *
+   * @param wantLat   want this lat
+   * @param wantLon   want this lon
    * @param rectIndex starting row, col and replaced by new guess
    * @return true if new guess, false if failure
    */
@@ -306,27 +246,28 @@ public class GeoGridCoordinate2D {
     2 linear equations in 2 unknowns, solve in usual way
    */
   private boolean jump2(double wantLat, double wantLon, int[] rectIndex) {
-    int row = Math.max( Math.min(rectIndex[0], nrows-1), 0);
+    int row = Math.max(Math.min(rectIndex[0], nrows - 1), 0);
     int col = Math.max(Math.min(rectIndex[1], ncols - 1), 0);
     double lat = latEdge.get(row, col);
-    double lon =  lonEdge.get(row, col);
+    double lon = lonEdge.get(row, col);
     double diffLat = wantLat - lat;
     double diffLon = wantLon - lon;
 
     double dlatdy = latEdge.get(row + 1, col) - lat;
-    double dlatdx = latEdge.get(row, col+1) - lat;
+    double dlatdx = latEdge.get(row, col + 1) - lat;
     double dlondx = lonEdge.get(row, col + 1) - lon;
     double dlondy = lonEdge.get(row + 1, col) - lon;
 
     // solve for dlon
 
-    double dx =  (diffLon - dlondy * diffLat / dlatdy) / (dlondx - dlatdx * dlondy / dlatdy);
+    double dx = (diffLon - dlondy * diffLat / dlatdy) / (dlondx - dlatdx * dlondy / dlatdy);
     // double dy =  (diffLat - dlatdx * diffLon / dlondx) / (dlatdy - dlatdx * dlondy / dlondx);
-    double dy =  (diffLat - dlatdx * dx) / dlatdy;
+    double dy = (diffLat - dlatdx * dx) / dlatdy;
 
-    if (debug) System.out.printf("   jump from %d %d (dlondx=%f dlondy=%f dlatdx=%f dlatdy=%f) (diffLat,Lon=%f %f) (deltalat,Lon=%f %f)",
-            row, col, dlondx, dlondy, dlatdx, dlatdy,
-            diffLat, diffLon, dy, dx);
+    if (debug)
+      System.out.printf("   jump from %d %d (dlondx=%f dlondy=%f dlatdx=%f dlatdy=%f) (diffLat,Lon=%f %f) (deltalat,Lon=%f %f)",
+              row, col, dlondx, dlondy, dlatdx, dlatdy,
+              diffLat, diffLon, dy, dx);
 
     int drow = (int) Math.round(dy);
     int dcol = (int) Math.round(dx);
@@ -335,8 +276,8 @@ public class GeoGridCoordinate2D {
       if (debug) System.out.printf("%n   incr:");
       return incr(wantLat, wantLon, rectIndex);
     } else {
-      rectIndex[0] = Math.max( Math.min(row + drow, nrows-1), 0);
-      rectIndex[1] = Math.max( Math.min(col + dcol, ncols-1), 0);
+      rectIndex[0] = Math.max(Math.min(row + drow, nrows - 1), 0);
+      rectIndex[1] = Math.max(Math.min(col + dcol, ncols - 1), 0);
       if (debug) System.out.printf(" to (%d %d)%n", rectIndex[0], rectIndex[1]);
       if ((row == rectIndex[0]) && (col == rectIndex[1])) return false; // nothing has changed
     }
@@ -352,14 +293,14 @@ public class GeoGridCoordinate2D {
 
     if (Math.abs(diffLat) > Math.abs(diffLon)) { // try lat first
       rectIndex[0] = row + ((diffLat > 0) ? 1 : -1);
-      if (contains(wantLat, wantLon,  rectIndex)) return true;
+      if (contains(wantLat, wantLon, rectIndex)) return true;
       rectIndex[1] = col + ((diffLon > 0) ? 1 : -1);
-      if (contains(wantLat, wantLon,  rectIndex)) return true;
+      if (contains(wantLat, wantLon, rectIndex)) return true;
     } else {
       rectIndex[1] = col + ((diffLon > 0) ? 1 : -1);
-      if (contains(wantLat, wantLon,  rectIndex)) return true;
+      if (contains(wantLat, wantLon, rectIndex)) return true;
       rectIndex[0] = row + ((diffLat > 0) ? 1 : -1);
-      if (contains(wantLat, wantLon,  rectIndex)) return true;
+      if (contains(wantLat, wantLon, rectIndex)) return true;
     }
 
     // back to original, do box search
@@ -371,22 +312,118 @@ public class GeoGridCoordinate2D {
   // we think its got to be in one of the 9 boxes around rectIndex
   private boolean box9(double wantLat, double wantLon, int[] rectIndex) {
     int row = rectIndex[0];
-    int minrow = Math.max(row-1, 0);
-    int maxrow = Math.min(row+1, nrows);
+    int minrow = Math.max(row - 1, 0);
+    int maxrow = Math.min(row + 1, nrows);
 
     int col = rectIndex[1];
-    int mincol= Math.max(col-1, 0);
-    int maxcol = Math.min(col+1, ncols);
+    int mincol = Math.max(col - 1, 0);
+    int maxcol = Math.min(col + 1, ncols);
 
     if (debug) System.out.printf("%n   box9:");
-    for (int i=minrow; i<=maxrow; i++)
-      for (int j=mincol; j<=maxcol; j++) {
+    for (int i = minrow; i <= maxrow; i++)
+      for (int j = mincol; j <= maxcol; j++) {
         rectIndex[0] = i;
         rectIndex[1] = j;
-        if (contains(wantLat, wantLon,  rectIndex)) return true;
+        if (contains(wantLat, wantLon, rectIndex)) return true;
       }
 
     return false;
   }
 
+  List<RangeIterator> computeBoundsExhaustive(LatLonRect rect) {
+    double minx, maxx, miny, maxy;
+
+    LatLonPointImpl llpt = rect.getLowerLeftPoint();
+    LatLonPointImpl urpt = rect.getUpperRightPoint();
+    LatLonPointImpl lrpt = rect.getLowerRightPoint();
+    LatLonPointImpl ulpt = rect.getUpperLeftPoint();
+
+    minx = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
+    miny = Math.min(llpt.getLatitude(), lrpt.getLatitude());
+    maxx = getMinOrMaxLon(urpt.getLongitude(), lrpt.getLongitude(), false);
+    maxy = Math.min(ulpt.getLatitude(), urpt.getLatitude());
+
+    // normalize to [minLon,minLon+360]
+    double minLon = lonAxis.getStartValue();
+    minx = LatLonPointImpl.lonNormalFrom(minx, minLon);
+    maxx = LatLonPointImpl.lonNormalFrom(maxx, minLon);
+
+    int shape[] = lonAxis.getShape();
+    int nj = shape[0];
+    int ni = shape[1];
+
+    int mini = Integer.MAX_VALUE, minj = Integer.MAX_VALUE;
+    int maxi = -1, maxj = -1;
+
+    // margolis 2/18/2010
+    //minx = LatLonPointImpl.lonNormal( minx ); // <-- THIS IS NEW
+    //maxx = LatLonPointImpl.lonNormal( maxx ); // <-- THIS IS NEW
+
+    // brute force, examine every point LOOK BAD
+    for (int j = 0; j < nj; j++) {
+      for (int i = 0; i < ni; i++) {
+        double lat = latAxis.getCoord(j, i);
+        double lon = lonAxis.getCoord(j, i);
+        //lon = LatLonPointImpl.lonNormal( lon ); // <-- THIS IS NEW
+
+        if ((lat >= miny) && (lat <= maxy) && (lon >= minx) && (lon <= maxx)) {
+          if (i > maxi) maxi = i;
+          if (i < mini) mini = i;
+          if (j > maxj) maxj = j;
+          if (j < minj) minj = j;
+          //System.out.println(j+" "+i+" lat="+lat+" lon="+lon);
+        }
+      }
+    }
+
+    // this is the case where no points are included
+    if ((mini > maxi) || (minj > maxj)) {
+      mini = 0;
+      minj = 0;
+      maxi = -1;
+      maxj = -1;
+    }
+
+    try {
+      List<RangeIterator> list = new ArrayList<>();
+      list.add(new Range(minj, maxj));
+      list.add(new Range(mini, maxi));
+      return list;
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
+
+  static private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
+    double midpoint = (lon1 + lon2) / 2;
+    lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
+    lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
+
+    return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
+  }
+
+  // brute force
+  public boolean findCoordElementExhaustive(double wantLat, double wantLon, int[] rectIndex) {
+    if (wantLat < latMinMax.min) return false;
+    if (wantLat > latMinMax.max) return false;
+    if (wantLon < lonMinMax.min) return false;
+    if (wantLon > lonMinMax.max) return false;
+
+    for (int row = 0; row < nrows; row++) {
+      for (int col = 0; col < ncols; col++) {
+
+        rectIndex[0] = row;
+        rectIndex[1] = col;
+
+        if (contains(wantLat, wantLon, rectIndex)) {
+          return true;
+        }
+      }
+    }
+    //debug = saveDebug;
+    return false;
+  }
+
 }
+

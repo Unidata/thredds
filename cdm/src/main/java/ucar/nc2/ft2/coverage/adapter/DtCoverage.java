@@ -562,7 +562,7 @@ public class DtCoverage implements IsMissingEvaluator {
    * This reads an arbitrary data section, returning the data in
    * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
    *
-   * @param subset - each Range must be named by the axisType that its used for
+   * @param subset - each Range must be named by the axisType that its used for. order not important
    *
    * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
    */

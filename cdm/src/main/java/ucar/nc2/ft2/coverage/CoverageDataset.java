@@ -70,6 +70,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
 
   private final CoverageCoordSys.Type coverageType;
   protected final CoverageReader reader;
+  protected final HorizCoordSys hcs;
 
   public CoverageDataset(String name, CoverageCoordSys.Type coverageType, AttributeContainerHelper atts,
                          LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox, CalendarDateRange calendarDateRange,
@@ -87,6 +88,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
     this.coordAxes = coordAxes;
 
     this.coverageSets = wireObjectsTogether(coverages);
+    this.hcs = wireHorizCoordSys();
     this.reader = reader;
   }
 
@@ -114,6 +116,14 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
     List<CoordSysSet> csets = new ArrayList<>(map.values());
     Collections.sort(csets, (o1, o2) -> o1.getCoordSys().getName().compareTo(o2.getCoordSys().getName()));
     return csets;
+  }
+
+  private HorizCoordSys wireHorizCoordSys() {
+    HorizCoordSys hcs = coordSys.get(0).getHorizCoordSys();
+    for (CoverageCoordSys csys : coordSys) {
+      csys.setHorizCoordSys(hcs);  // make sure they all share same one
+    }
+    return hcs;
   }
 
   @Override
@@ -194,7 +204,7 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
   }
 
   public HorizCoordSys getHorizCoordSys() {
-    return coordSys.get(0).getHorizCoordSys();
+    return hcs;
   }
 
   public CoverageReader getReader() {

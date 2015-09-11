@@ -758,8 +758,8 @@ public class GridRenderer {
       return;
     }
 
-    ArrayDouble.D2 edgex = xaxis2D.getXEdges();
-    ArrayDouble.D2 edgey = yaxis2D.getYEdges();
+    ArrayDouble.D2 edgex = xaxis2D.getEdges();
+    ArrayDouble.D2 edgey = yaxis2D.getEdges();
 
     Index ima = data.getIndex();
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
@@ -814,8 +814,8 @@ public class GridRenderer {
     CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
     CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
 
-    ArrayDouble.D2 edgex = xaxis2D.getXEdges();
-    ArrayDouble.D2 edgey = yaxis2D.getYEdges();
+    ArrayDouble.D2 edgex = xaxis2D.getEdges();
+    ArrayDouble.D2 edgey = yaxis2D.getEdges();
 
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
     g.setColor(Color.BLACK);
@@ -848,10 +848,9 @@ public class GridRenderer {
 
   }
 
-
   private void drawGridHorizRotated(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D, CoordinateAxis2D yaxis2D) {
-    ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdgesRotated(xaxis2D.getMidpoints());
-    ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdgesRotated(yaxis2D.getMidpoints());
+    ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdgesRotated(xaxis2D.getCoordValuesArray());
+    ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdgesRotated(yaxis2D.getCoordValuesArray());
 
     Index ima = data.getIndex();
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);

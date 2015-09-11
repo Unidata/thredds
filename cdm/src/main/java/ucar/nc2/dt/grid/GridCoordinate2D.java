@@ -77,8 +77,8 @@ public class GridCoordinate2D {
   private void findBounds() {
     if (lonMinMax != null) return;
 
-    lonEdge = lonCoord.getXEdges();
-    latEdge = latCoord.getYEdges();
+    lonEdge = lonCoord.getEdges();
+    latEdge = latCoord.getEdges();
 
     // assume missing values have been converted to NaNs
     latMinMax = MAMath.getMinMax(latEdge);

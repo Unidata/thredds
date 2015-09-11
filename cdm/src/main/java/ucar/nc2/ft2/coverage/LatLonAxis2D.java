@@ -99,7 +99,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   public List<RangeIterator> getRanges() {
     List<RangeIterator> result = new ArrayList<>();
-    result.add(new Range(shape[0])); // not subsetting yet
+    result.add(new Range(shape[0]));  // LOOK wrong
     result.add(new Range(shape[1]));
     return result;
   }
@@ -123,13 +123,13 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue) { // LOOK not implemented
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented
     return Optional.of( new LatLonAxis2D( new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
   @Nonnull
-  public LatLonAxis2D subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented
+  public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented
     return null;
   }
 
@@ -141,7 +141,26 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   @Override
   public Array getCoordBoundsAsArray() { // LOOK do we want to cache this ?
-    return CoordinateAxis2D.makeXEdges((ArrayDouble.D2) getCoordsAsArray()); // makeXEdges same as makeYEdges
+    return CoordinateAxis2D.makeEdges((ArrayDouble.D2) getCoordsAsArray()); // makeXEdges same as makeYEdges
+  }
+
+  public LatLonAxis2D subset(RangeIterator rangex, RangeIterator rangey) {
+    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(this);
+    // subset the values
+    int nx = rangex.length();
+    int ny = rangey.length();
+    double[] svalues = new double[nx*ny];
+    int count = 0;
+    for (int y : rangey)
+      for (int x : rangex)
+        svalues[count++] = values[y*nx + x];
+
+    builder.values = svalues;
+    builder.isSubset = true;
+    builder.ncoords = nx*ny;
+    builder.shape = new int[] {ny, nx};
+
+    return new LatLonAxis2D(builder);
   }
 
 }

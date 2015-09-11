@@ -2,6 +2,7 @@
 package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.DataType;
+import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
@@ -38,8 +39,9 @@ public class CoverageCoordAxisBuilder {
   public double[] values;
 
   // 1D only
-  public int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
-  public int stride = 1;
+  public Range range; // set when its a subset
+  //int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
+  //public int stride = 1;
   public boolean isTime2D;
 
   // 2d only
@@ -69,8 +71,8 @@ public class CoverageCoordAxisBuilder {
     this.reader = reader;
     this.isSubset = isSubset;
 
-    this.minIndex = 0;
-    this.maxIndex = ncoords-1;
+    //this.minIndex = 0;
+    //this.maxIndex = ncoords-1;
     this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
   }
 
@@ -94,8 +96,8 @@ public class CoverageCoordAxisBuilder {
     this.isSubset = from.isSubset;
     this.timeHelper = from.timeHelper;
 
-    this.minIndex = 0;
-    this.maxIndex = ncoords-1;
+    //this.minIndex = 0;
+    //this.maxIndex = ncoords-1;
     this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
 
     if (from instanceof LatLonAxis2D) {
@@ -131,23 +133,31 @@ public class CoverageCoordAxisBuilder {
     return this;
   }
 
-  CoverageCoordAxisBuilder subset(int ncoords, double startValue, double endValue, double[] values) {
+  CoverageCoordAxisBuilder subset(int ncoords, double startValue, double endValue, double resolution, double[] values) {
     this.ncoords = ncoords;
     this.startValue = startValue;
     this.endValue = endValue;
+    this.resolution = resolution;
     this.values = values;
     this.isSubset = true;
 
     return this;
   }
 
-  CoverageCoordAxisBuilder setIndexRange(int minIndex, int maxIndex, int stride) {
+  /* CoverageCoordAxisBuilder setIndexRange(int minIndex, int maxIndex, int stride) {
     this.minIndex = minIndex;
     this.maxIndex = maxIndex;
     this.stride = stride;
     this.isSubset = true;
     return this;
+  } */
+
+  CoverageCoordAxisBuilder setRange(Range r) {
+    this.range = r;
+    this.isSubset = true;
+    return this;
   }
+
 
   void setReferenceDate(CalendarDate refDate) {
     this.timeHelper = timeHelper.setReferenceDate(refDate);

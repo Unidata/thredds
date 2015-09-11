@@ -201,85 +201,57 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return makeBoundsFromAux();
   }
 
-  /**
-   * @deprecated use getCoordValuesArray
-   */
-  public ArrayDouble.D2 getMidpoints() {
-    return getCoordValuesArray();
+  public ArrayDouble.D2 getEdges() {
+    ArrayDouble.D2 mids = getCoordValuesArray();
+    return makeEdges(mids);
   }
 
+  /**
+   * @deprecated use getEdges()
+   */
   public ArrayDouble.D2 getXEdges() {
     ArrayDouble.D2 mids = getCoordValuesArray();
-    return makeXEdges(mids);
+    return makeEdges(mids);
   }
 
+  /**
+   * @deprecated use getEdges()
+   */
   public ArrayDouble.D2 getYEdges() {
     ArrayDouble.D2 mids = getCoordValuesArray();
-    return makeYEdges(mids);
+    return makeEdges(mids);
   }
 
   /**
    * Normal case: do something reasonable in deciding on the edges when we have the midpoints of a 2D coordinate.
    *
-   * @param midx x coordinates of midpoints
-   * @return x coordinates of edges with shape (ny+1, nx+1)
+   * @param midpoints values of midpoints with shape (ny, nx)
+   * @return values of edges with shape (ny+1, nx+1)
    */
-  static public ArrayDouble.D2 makeXEdges(ArrayDouble.D2 midx) {
-    int[] shape = midx.getShape();
+  static public ArrayDouble.D2 makeEdges(ArrayDouble.D2 midpoints) {
+    int[] shape = midpoints.getShape();
     int ny = shape[0];
     int nx = shape[1];
-    ArrayDouble.D2 edgex = new ArrayDouble.D2(ny + 1, nx + 1);
+    ArrayDouble.D2 edge = new ArrayDouble.D2(ny + 1, nx + 1);
 
     for (int y = 0; y < ny - 1; y++) {
       for (int x = 0; x < nx - 1; x++) {
         // the interior edges are the average of the 4 surrounding midpoints
-        double xval = (midx.get(y, x) + midx.get(y, x + 1) + midx.get(y + 1, x) + midx.get(y + 1, x + 1)) / 4;
-        edgex.set(y + 1, x + 1, xval);
+        double xval = (midpoints.get(y, x) + midpoints.get(y, x + 1) + midpoints.get(y + 1, x) + midpoints.get(y + 1, x + 1)) / 4;
+        edge.set(y + 1, x + 1, xval);
       }
       // extrapolate to exterior points
-      edgex.set(y + 1, 0, edgex.get(y + 1, 1) - (edgex.get(y + 1, 2) - edgex.get(y + 1, 1)));
-      edgex.set(y + 1, nx, edgex.get(y + 1, nx - 1) + (edgex.get(y + 1, nx - 1) - edgex.get(y + 1, nx - 2)));
+      edge.set(y + 1, 0, edge.get(y + 1, 1) - (edge.get(y + 1, 2) - edge.get(y + 1, 1)));
+      edge.set(y + 1, nx, edge.get(y + 1, nx - 1) + (edge.get(y + 1, nx - 1) - edge.get(y + 1, nx - 2)));
     }
 
     // extrapolate to the first and last row
     for (int x = 0; x < nx + 1; x++) {
-      edgex.set(0, x, edgex.get(1, x) - (edgex.get(2, x) - edgex.get(1, x)));
-      edgex.set(ny, x, edgex.get(ny - 1, x) + (edgex.get(ny - 1, x) - edgex.get(ny - 2, x)));
+      edge.set(0, x, edge.get(1, x) - (edge.get(2, x) - edge.get(1, x)));
+      edge.set(ny, x, edge.get(ny - 1, x) + (edge.get(ny - 1, x) - edge.get(ny - 2, x)));
     }
 
-    return edgex;
-  }
-
-  /**
-   * Normal case: do something reasonable in deciding on the edges when we have the midpoints of a 2D coordinate.
-   *
-   * @param midy y coordinates of midpoints
-   * @return y coordinates of edges with shape (ny+1, nx+1)
-   */
-  static public ArrayDouble.D2 makeYEdges(ArrayDouble.D2 midy) {
-    int[] shape = midy.getShape();
-    int ny = shape[0];
-    int nx = shape[1];
-    ArrayDouble.D2 edgey = new ArrayDouble.D2(ny + 1, nx + 1);
-
-    for (int y = 0; y < ny - 1; y++) {
-      for (int x = 0; x < nx - 1; x++) {
-        // the interior edges are the average of the 4 surrounding midpoints
-        double xval = (midy.get(y, x) + midy.get(y, x + 1) + midy.get(y + 1, x) + midy.get(y + 1, x + 1)) / 4;
-        edgey.set(y + 1, x + 1, xval);
-      }
-      // extrapolate to exterior points
-      edgey.set(y + 1, 0, edgey.get(y + 1, 1) - (edgey.get(y + 1, 2) - edgey.get(y + 1, 1)));
-      edgey.set(y + 1, nx, edgey.get(y + 1, nx - 1) + (edgey.get(y + 1, nx - 1) - edgey.get(y + 1, nx - 2)));
-    }
-
-    // extrapolate to the first and last row
-    for (int x = 0; x < nx + 1; x++) {
-      edgey.set(0, x, edgey.get(1, x) - (edgey.get(2, x) - edgey.get(1, x)));
-      edgey.set(ny, x, edgey.get(ny - 1, x) + (edgey.get(ny - 1, x) - edgey.get(ny - 2, x)));
-    }
-
-    return edgey;
+    return edge;
   }
 
 

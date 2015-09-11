@@ -1,12 +1,6 @@
 package ucar.nc2.ui.coverage2;
 
 import ucar.ma2.*;
-//import ucar.nc2.dataset.CoordinateAxis;
-//import ucar.nc2.dataset.CoordinateAxis1D;
-//import ucar.nc2.dataset.CoordinateAxis2D;
-//import ucar.nc2.ft.cover.Coverage;
-//import ucar.nc2.ft.cover.CoverageCS;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.*;
@@ -14,6 +8,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.util.Format;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
@@ -22,6 +17,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * ft2.coverage widget for displaying using Java2D API.
@@ -46,6 +42,7 @@ public class CoverageRenderer {
   // data stuff
   private DataState dataState;
   private GeoReferencedArray dataH;
+  private Array geodata; // reduced to 2D
   private double useLevel;
   private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
   private int wantRunTime = -1, wantEnsemble = -1;
@@ -251,9 +248,9 @@ public class CoverageRenderer {
    *
    * @param loc : point in display projection coordinates (plan view)
    * @return String representation of value
-   *
+   */
   public String getXYvalueStr(ProjectionPoint loc) {
-    if ((stridedGrid == null) || (dataH == null))
+    if ((lastGrid == null) || (geodata == null))
       return "";
 
     // convert to dataProjection, where x and y are orthogonal
@@ -263,25 +260,27 @@ public class CoverageRenderer {
     }
 
     // find the grid indexes
-    CoverageCS geocs = stridedGrid.getCoordinateSystem();
-    valueIndex = geocs.findXYindexFromCoord(loc.getX(), loc.getY(), valueIndex);
-    int wantx = valueIndex[0];
-    int wanty = valueIndex[1];
+    HorizCoordSys hcs = lastGrid.getCoordSys().getHorizCoordSys();
+    boolean ok = hcs.findXYindexFromCoord(loc.getX(), loc.getY(), valueIndex);
 
     // get value, construct the string
-    if ((wantx == -1) || (wanty == -1))
+    if (!ok)
       return "outside grid area";
     else {
+      int wantx = valueIndex[0];
+      int wanty = valueIndex[1];
       try {
-        Index imaH = dataH.getIndex();
-        double value = dataH.getDouble(imaH.set(wanty, wantx));
-        int wantz = (geocs.getVerticalAxis() == null) ? -1 : lastLevel;
-        return makeXYZvalueStr(value, wantx, wanty, wantz);
+        Index imaH = geodata.getIndex();
+        double dataValue = geodata.getDouble(imaH.set(wanty, wantx));
+        // int wantz = (geocs.getZAxis() == null) ? -1 : lastLevel;
+        return makeXYZvalueStr(loc, dataValue, wantx, wanty);
       } catch (Exception e) {
         return "error " + wantx + " " + wanty;
       }
     }
-  } */
+  }
+
+  private int[] valueIndex = new int[2]; // save this so that search can start from previous index
 
   /*
    * Get the (y,z) position from the vertical view coordinates.
@@ -344,10 +343,10 @@ public class CoverageRenderer {
       int wantx = (geocs.getXHorizAxis() == null) ? -1 : lastSlice;
       return makeXYZvalueStr(value, wantx, wanty, wantz);
     }
-  }
+  } */
 
-  private String makeXYZvalueStr(double value, int wantx, int wanty, int wantz) {
-    if (stridedGrid.isMissingData(value)) {
+  private String makeXYZvalueStr(ProjectionPoint loc, double value, int wantx, int wanty) {
+    if (lastGrid.isMissing(value)) {
       //if (debugMiss) System.out.println("debug miss = "+value+" "+cs.getIndexFromValue(value));
       if (Debug.isSet("pick/showGridIndexes"))
         return ("missing data @ (" + wantx + "," + wanty + ")");
@@ -355,18 +354,12 @@ public class CoverageRenderer {
         return "missing data";
     }
 
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append(Format.d(value, 6));
-    sbuff.append(" " + stridedGrid.getUnitsString());
+    Formatter sbuff = new Formatter();
+    sbuff.format("%s %s", Format.d(value, 6), lastGrid.getUnits());
+    sbuff.format(" @ (%f,%f)", loc.getX(), loc.getY());
+    sbuff.format("  [%d,%d]", wantx, wanty);
 
-    CoverageCS geocs = stridedGrid.getCoordinateSystem();
-    if (!(geocs.getXHorizAxis() instanceof CoordinateAxis1D) || !(geocs.getXHorizAxis() instanceof CoordinateAxis1D)) {
-      if (Debug.isSet("pick/showGridIndexes"))
-        sbuff.append("@ (" + wantx + "," + wanty + ")");
-      return sbuff.toString();
-    }
-
-    CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
+    /* CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
     CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
 
@@ -409,13 +402,13 @@ public class CoverageRenderer {
       }
     }
 
-    if (wantz >= 0) {
+    /* if (wantz >= 0) {
       sbuff.append(" " + Format.d(zaxis.getCoordValue(wantz), 3));
       sbuff.append(" " + zaxis.getUnitsString());
-    }
+    } */
 
     return sbuff.toString();
-  }   */
+  }
 
   //////// data routines
 
@@ -434,7 +427,7 @@ public class CoverageRenderer {
    dataVolumeChanged = true;
  } */
 
-  private GeoReferencedArray makeHSlice(int level, int time, int ensemble, int runtime) {
+  private GeoReferencedArray readHSlice(int level, int time, int ensemble, int runtime) {
 
     /* make sure x, y exists
     CoverageCS gcs = useG.getCoordinateSystem();
@@ -471,9 +464,12 @@ public class CoverageRenderer {
       double ensVal = dataState.ensaxis.getCoord(ensemble);
       subset.set(SubsetParams.ensCoord, ensVal);
     }
+    if (horizStride != 1)
+      subset.set(SubsetParams.horizStride, horizStride);
+
     try {
       dataH = dataState.grid.readData(subset);
-      //dataH = dataH.reduce(); // get rid of n=1 dimensions
+      geodata = dataH.getData().reduce(); // get rid of n=1 dimensions
 
     } catch (IOException | InvalidRangeException e) {
       e.printStackTrace();
@@ -522,7 +518,7 @@ public class CoverageRenderer {
     try {
       dataV = g.readDataSlice(runtime, ensemble, time, -1, -1, vSlice);
     } catch (java.io.IOException e) {
-      System.out.println("GridRender.makeHSlice Error reading netcdf file= " + e);
+      System.out.println("GridRender.readHSlice Error reading netcdf file= " + e);
       return null;
     }
 
@@ -551,7 +547,7 @@ public class CoverageRenderer {
    * else
    * return null;
    * }
-   * <p/>
+   * <p>
    * /* private java.awt.Color color, backColor;
    * public void setBackgroundColor(java.awt.Color backColor) { this.backColor = backColor;}
    * public void setColor(java.awt.Color color) { this.color = color;}
@@ -564,7 +560,7 @@ public class CoverageRenderer {
       return;
     isNewField = false;
 
-    GeoReferencedArray dataArr = makeHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
+    GeoReferencedArray dataArr = readHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
 
     //else
     //  dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
@@ -672,7 +668,7 @@ public class CoverageRenderer {
     // no anitaliasing
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-    dataH = makeHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
+    dataH = readHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
     if (dataH == null)
       return;
 
@@ -683,7 +679,7 @@ public class CoverageRenderer {
     //if (drawContours)
     //  drawContours(g, dataH.transpose(0, 1), dFromN);
     if (drawGridLines)
-      drawGridLines(g);
+      drawGridLines(g, dataH);
   }
 
   private void drawGridHoriz(java.awt.Graphics2D g, GeoReferencedArray geo) {
@@ -701,8 +697,8 @@ public class CoverageRenderer {
       throw new IllegalArgumentException("must be 2D");
     Index ima = data.getIndex();
 
-    LatLonAxis2D xaxis2D = (LatLonAxis2D) hcs.getXAxis();
-    LatLonAxis2D yaxis2D = (LatLonAxis2D) hcs.getYAxis();
+    LatLonAxis2D xaxis2D = hcs.getLonAxis2D();
+    LatLonAxis2D yaxis2D = hcs.getLatAxis2D();
 
     /* String stag = geocs.getHorizStaggerType();
     if (stag != null && stag.equals(CDM.ARAKAWA_E)) {
@@ -736,25 +732,21 @@ public class CoverageRenderer {
 
   }
 
-  private void drawGridLines(java.awt.Graphics2D g) {
-    /* CoverageCS geocs = stridedGrid.getCoordinateSystem();
-    CoordinateAxis xaxis = geocs.getXHorizAxis();
-    CoordinateAxis yaxis = geocs.getYHorizAxis();
+  private void drawGridLines(java.awt.Graphics2D g, GeoReferencedArray geo) {
+    CoverageCoordSys geocs = geo.getCoordSysForData();
+    LatLonAxis2D lataxis = geocs.getHorizCoordSys().getLatAxis2D();
+    LatLonAxis2D lonaxis = geocs.getHorizCoordSys().getLonAxis2D();
 
-    if (!(xaxis instanceof CoordinateAxis2D) || !(yaxis instanceof CoordinateAxis2D))
+    if (lataxis == null || lonaxis == null)
       return;
 
-    // 2D case
-    CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
-    CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
-
-    ArrayDouble.D2 edgex = xaxis2D.getXEdges();
-    ArrayDouble.D2 edgey = yaxis2D.getYEdges();
+    ArrayDouble.D2 edgex = (ArrayDouble.D2) lonaxis.getCoordBoundsAsArray();
+    ArrayDouble.D2 edgey = (ArrayDouble.D2) lataxis.getCoordBoundsAsArray();
 
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
     g.setColor(Color.BLACK);
 
-    int[] shape = xaxis2D.getShape(); // should both be the same
+    int[] shape = lataxis.getShape(); // should both be the same
     int ny = shape[0];
     int nx = shape[1];
 
@@ -778,7 +770,7 @@ public class CoverageRenderer {
           gp.lineTo((float) edgex.get(y, x), (float) edgey.get(y, x));
       }
       g.draw(gp);
-    }   */
+    }
 
   }
 
@@ -853,7 +845,7 @@ public class CoverageRenderer {
       count += drawRect(g, modeColor, xmin, ymin, xmax, ymax, drawProjection.isLatLon());
 
     } //else if (useModeForProjections)
-      //drawPathShape(g, modeColor, xaxis1D, yaxis1D);
+    //drawPathShape(g, modeColor, xaxis1D, yaxis1D);
 
     debugPts = Debug.isSet("GridRenderer/showPts");
 
@@ -884,8 +876,8 @@ public class CoverageRenderer {
             if (lastColor != modeColor) // dont have to draw these
               count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdge2(x), yend, drawProjection.isLatLon());
           } //else {
-            //if (!useModeForProjections || (lastColor != modeColor)) // dont have to draw mode
-            //count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, x);
+          //if (!useModeForProjections || (lastColor != modeColor)) // dont have to draw mode
+          //count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, x);
           //}
           xbeg = x;
         }
@@ -897,8 +889,8 @@ public class CoverageRenderer {
         if (lastColor != modeColor)
           count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdgeLast(), yend, drawProjection.isLatLon());
       } //else {
-        //if (!useModeForProjections || (lastColor != modeColor))
-        //count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, nx - 1);
+      //if (!useModeForProjections || (lastColor != modeColor))
+      //count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, nx - 1);
       //}
 
       // if (debugPts) break;
