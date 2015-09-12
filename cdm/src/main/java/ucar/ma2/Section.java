@@ -74,6 +74,17 @@ public class Section {
     return new Section(s.getRanges(), shape);
   }
 
+  static public Section make(List<RangeIterator> rangeIter) {
+    List<Range> ranges = new ArrayList<>();
+    for (RangeIterator iter : rangeIter) {
+      if (iter instanceof Range)
+        ranges.add((Range) iter);
+      else
+        throw new IllegalArgumentException("Can deal with non Range yet");
+    }
+    return new Section(ranges);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   private List<Range> list;
   private boolean immutable = false;

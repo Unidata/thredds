@@ -43,32 +43,52 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Horizontal CoordSys.
- * Must have x,y,proj (or) lat,lon.
- * May have both.
- * Must be exactly one in a CoverageDataset
+ * Horizontal CoordSys
+ * <p>
+ * 1) has x,y,proj (1D) isProjection
+ * 2) lat,lon      (1D) isLatLon1D
+ * 3) lat,lon (2D)      class HorizCoordSys2D
+ * 4) has x,y,proj and lat,lon (2D) LOOK not used ?
+ * <p>
+ * Must be exactly one in a CoverageDataset.
  *
  * @author caron
  * @since 7/11/2015
  */
 @Immutable
 public class HorizCoordSys {
-  public final CoverageCoordAxis1D xaxis, yaxis;
-  public final CoverageCoordAxis lataxis, lonaxis;
-  public final CoverageTransform transform;
-  public final boolean hasProjection, hasLatLon, is2DlatLon;
 
-  public HorizCoordSys(CoverageCoordAxis1D xaxis, CoverageCoordAxis1D yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageTransform transform) {
+  public static HorizCoordSys factory(CoverageCoordAxis1D xaxis, CoverageCoordAxis1D yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageTransform transform) {
+    boolean isProjection = (xaxis != null) && (yaxis != null) && (transform != null);
+    boolean hasLatLon = (lataxis != null) && (lonaxis != null);
+    boolean has2DlatLon = lataxis instanceof LatLonAxis2D && lonaxis instanceof LatLonAxis2D;
+    if (!isProjection && !hasLatLon) {
+      throw new IllegalArgumentException("must have horiz coordinates (x,y,projection or lat,lon)");
+    }
+
+    if (!isProjection && has2DlatLon)
+      return new HorizCoordSys2D((LatLonAxis2D) lataxis, (LatLonAxis2D) lonaxis);
+    else
+      return new HorizCoordSys(xaxis, yaxis, lataxis, lonaxis, transform);
+  }
+
+  private final CoverageCoordAxis1D xaxis, yaxis;
+  private final CoverageCoordAxis1D lataxis, lonaxis;
+  protected final LatLonAxis2D lataxis2D, lonaxis2D;// do we really need to keep these in HorizCoordSys ?
+  private final CoverageTransform transform;
+  private final boolean isProjection, isLatLon1D; // exactly one must be true
+  private final boolean hasLatLon2D;              // may be true if isProjection
+
+  protected HorizCoordSys(CoverageCoordAxis1D xaxis, CoverageCoordAxis1D yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageTransform transform) {
     this.xaxis = xaxis;
     this.yaxis = yaxis;
-    this.lataxis = lataxis;
-    this.lonaxis = lonaxis;
     this.transform = transform;
-    this.hasProjection = (xaxis != null) && (yaxis != null) && (transform != null);
-    boolean checkLatLon = (lataxis != null) && (lonaxis != null);
-    assert hasProjection || checkLatLon : "missing horiz coordinates (x,y,projection or lat,lon)";
+    this.isProjection = (xaxis != null) && (yaxis != null) && (transform != null);
+    this.isLatLon1D = lataxis instanceof CoverageCoordAxis1D && lonaxis instanceof CoverageCoordAxis1D;
+    boolean hasLatLon2D = lataxis instanceof LatLonAxis2D && lonaxis instanceof LatLonAxis2D;
+    assert isProjection || isLatLon1D || hasLatLon2D : "missing horiz coordinates (x,y,projection or lat,lon)";
 
-    if (hasProjection && checkLatLon) {
+    if (isProjection && hasLatLon2D) {
       boolean ok = true;
       if (!lataxis.getDependsOn().equalsIgnoreCase(lonaxis.getDependsOn())) ok = false;
       if (lataxis.getDependenceType() != CoverageCoordAxis.DependenceType.twoD) ok = false;
@@ -77,22 +97,44 @@ public class HorizCoordSys {
       if (!dependsOn.contains(xaxis.getName())) ok = false;
       if (!dependsOn.contains(yaxis.getName())) ok = false;
       if (!ok) {
-        checkLatLon = false;
+        hasLatLon2D = false;
       }
     }
+    this.hasLatLon2D = hasLatLon2D;
+    if (!isProjection && hasLatLon2D && !(this instanceof HorizCoordSys2D))
+      System.out.printf("HEY%n");
 
-    this.hasLatLon = checkLatLon;
-    this.is2DlatLon = lataxis instanceof LatLonAxis2D;
+
+      if (isLatLon1D) {
+      this.lataxis = (CoverageCoordAxis1D) lataxis;
+      this.lonaxis = (CoverageCoordAxis1D) lonaxis;
+    } else {
+      this.lataxis = null;
+      this.lonaxis = null;
+    }
+
+    if (hasLatLon2D) {
+      this.lataxis2D = (LatLonAxis2D) lataxis;
+      this.lonaxis2D = (LatLonAxis2D) lonaxis;
+    } else {
+      this.lataxis2D = null;
+      this.lonaxis2D = null;
+    }
   }
 
   public String getName() {
-    if (hasProjection) {
+    if (isProjection)
       return xaxis.getName() + " " + yaxis.getName() + " " + transform.getName();
-    }
-    if (hasLatLon) {
+    else
       return lataxis.getName() + " " + lonaxis.getName();
-    }
-    return null;
+  }
+
+  public boolean isProjection() {
+    return isProjection;
+  }
+
+  public boolean isLatLon2D() {
+    return false;
   }
 
   public List<CoverageCoordAxis> getCoordAxes() {
@@ -106,10 +148,6 @@ public class HorizCoordSys {
 
   public CoverageTransform getTransform() {
     return transform;
-  }
-
-  public boolean is2DlatLon() {
-    return is2DlatLon;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +166,7 @@ public class HorizCoordSys {
     Formatter errMessages = new Formatter();
     try {
       if (projbb != null) {
-        if (hasProjection) {
+        if (isProjection) {
           buildero = xaxis.subset(projbb.getMinX(), projbb.getMaxX(), horizStride);
           if (buildero.isPresent()) xaxisSubset = (CoverageCoordAxis1D) buildero.get();
           else errMessages.format("xaxis: %s;%n", buildero.getErrorMessage());
@@ -136,9 +174,8 @@ public class HorizCoordSys {
           buildero = yaxis.subset(projbb.getMinY(), projbb.getMaxY(), horizStride);
           if (buildero.isPresent()) yaxisSubset = (CoverageCoordAxis1D) buildero.get();
           else errMessages.format("yaxis: %s;%n", buildero.getErrorMessage());
-        }
 
-        if (hasLatLon) {
+        } else {
           ProjectionImpl proj = transform.getProjection();
           LatLonRect llrect = proj.projToLatLonBB(projbb);
           buildero = lonaxis.subset(llrect.getLonMin(), llrect.getLonMax(), horizStride);
@@ -149,41 +186,33 @@ public class HorizCoordSys {
           if (buildero.isPresent()) lataxisSubset = buildero.get();
           else errMessages.format("lataxis: %s;%n", buildero.getErrorMessage());
         }
+
       } else if (llbb != null) {
-        if (is2DlatLon) {
-          LatLonAxis2D lataxis2D = (LatLonAxis2D) lataxis;
-          LatLonAxis2D lonaxis2D = (LatLonAxis2D) lonaxis;
-          List<RangeIterator> ranges = computeBounds(llbb);
-          lataxisSubset = lataxis2D.subset(ranges.get(0), ranges.get(1));
-          lonaxisSubset = lonaxis2D.subset(ranges.get(0), ranges.get(1));
+
+        if (isProjection) {
+          // we have to transform latlon to projection coordinates
+          ProjectionImpl proj = transform.getProjection();
+          ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
+          buildero = xaxis.subset(prect.getMinX(), prect.getMaxX(), horizStride);
+          if (buildero.isPresent()) xaxisSubset = (CoverageCoordAxis1D) buildero.get();
+          else errMessages.format("xaxis: %s;%n", buildero.getErrorMessage());
+
+          buildero = yaxis.subset(prect.getMinY(), prect.getMaxY(), horizStride);
+          if (buildero.isPresent()) yaxisSubset = (CoverageCoordAxis1D) buildero.get();
+          else errMessages.format("yaxis: %s;%n", buildero.getErrorMessage());
 
         } else {
+          buildero = subsetLon(llbb, horizStride);
+          if (buildero.isPresent()) lonaxisSubset = buildero.get();
+          else errMessages.format("lonaxis: %s;%n", buildero.getErrorMessage());
 
-          if (hasLatLon) {
-            buildero = subsetLon(llbb, horizStride);
-            if (buildero.isPresent()) lonaxisSubset = buildero.get();
-            else errMessages.format("lonaxis: %s;%n", buildero.getErrorMessage());
-
-            buildero = lataxis.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride);
-            if (buildero.isPresent()) lataxisSubset = buildero.get();
-            else errMessages.format("lataxis: %s;%n", buildero.getErrorMessage());
-          }
-
-          if (hasProjection) {
-            // we have to transform latlon to projection coordinates
-            ProjectionImpl proj = transform.getProjection();
-            ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
-            buildero = xaxis.subset(prect.getMinX(), prect.getMaxX(), horizStride);
-            if (buildero.isPresent()) xaxisSubset = (CoverageCoordAxis1D) buildero.get();
-            else errMessages.format("xaxis: %s;%n", buildero.getErrorMessage());
-
-            buildero = yaxis.subset(prect.getMinY(), prect.getMaxY(), horizStride);
-            if (buildero.isPresent()) yaxisSubset = (CoverageCoordAxis1D) buildero.get();
-            else errMessages.format("yaxis: %s;%n", buildero.getErrorMessage());
-          }
+          buildero = lataxis.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride);
+          if (buildero.isPresent()) lataxisSubset = buildero.get();
+          else errMessages.format("lataxis: %s;%n", buildero.getErrorMessage());
         }
-      } else if (horizStride > 1) {
-        if (hasProjection) {
+
+      } else if (horizStride > 1) { // no bounding box, just horiz stride
+        if (isProjection) {
           buildero = xaxis.subsetByIndex(xaxis.getRange().setStride(horizStride));
           if (buildero.isPresent()) xaxisSubset = (CoverageCoordAxis1D) buildero.get();
           else errMessages.format("xaxis: %s;%n", buildero.getErrorMessage());
@@ -192,20 +221,15 @@ public class HorizCoordSys {
           if (buildero.isPresent()) yaxisSubset = (CoverageCoordAxis1D) buildero.get();
           else errMessages.format("yaxis: %s;%n", buildero.getErrorMessage());
 
-        } else if (is2DlatLon) {
-          System.out.printf("HEY%n");
         } else {
-          CoverageCoordAxis1D lonaxis1D = (CoverageCoordAxis1D) lonaxis;
-          buildero = lonaxis1D.subsetByIndex(lonaxis1D.getRange().setStride(horizStride));
+          buildero = lonaxis.subsetByIndex(lonaxis.getRange().setStride(horizStride));
           if (buildero.isPresent()) lonaxisSubset = buildero.get();
           else errMessages.format("lonaxis: %s;%n", buildero.getErrorMessage());
 
-          CoverageCoordAxis1D lataxis1D = (CoverageCoordAxis1D) lataxis;
-          buildero = lataxis1D.subsetByIndex(lataxis1D.getRange().setStride(horizStride));
+          buildero = lataxis.subsetByIndex(lataxis.getRange().setStride(horizStride));
           if (buildero.isPresent()) lataxisSubset = buildero.get();
           else errMessages.format("lataxis: %s;%n", buildero.getErrorMessage());
         }
-
       }
     } catch (InvalidRangeException e) {
       errMessages.format("%s;%n", e.getMessage());
@@ -225,25 +249,16 @@ public class HorizCoordSys {
   }
 
   public LatLonPoint getLatLon(int yindex, int xindex) {
-    if (hasLatLon) {
-      if (is2DlatLon) {
-        double lat = ((LatLonAxis2D) lataxis).getCoord(yindex, xindex);
-        double lon = ((LatLonAxis2D) lonaxis).getCoord(yindex, xindex);
-        return new LatLonPointImpl(lat, lon);
-
-      } else {
-        double lat = ((CoverageCoordAxis1D) lataxis).getCoord(yindex);
-        double lon = ((CoverageCoordAxis1D) lonaxis).getCoord(xindex);
-        return new LatLonPointImpl(lat, lon);
-      }
+    if (isProjection) {
+      double x = xaxis.getCoord(xindex);
+      double y = yaxis.getCoord(xindex);
+      ProjectionImpl proj = transform.getProjection();
+      return proj.projToLatLon(x, y);
+    } else {
+      double lat = lataxis.getCoord(yindex);
+      double lon = lonaxis.getCoord(xindex);
+      return new LatLonPointImpl(lat, lon);
     }
-
-    // xy, proj case
-    double x = xaxis.getCoord(xindex);
-    double y = yaxis.getCoord(xindex);
-    ProjectionImpl proj = transform.getProjection();
-    return proj.projToLatLon(x, y);
-
   }
 
   // heres where to deal with crossing seam ??
@@ -290,49 +305,44 @@ public class HorizCoordSys {
     return false;
   }
 
+  // return y, x range
   public List<RangeIterator> getRanges() {
     List<RangeIterator> result = new ArrayList<>();
-    if (is2DlatLon) {
-      return ((LatLonAxis2D) lataxis).getRanges();
-    } else {
-      result.add(getYAxis().getRange());
-      result.add(getXAxis().getRange());
-    }
+    result.add(getYAxis().getRange());
+    result.add(getXAxis().getRange());
 
     return result;
   }
 
   public CoverageCoordAxis getXAxis() {
-    return (xaxis != null) ? xaxis : lonaxis;
+    CoverageCoordAxis result =  (xaxis != null) ? xaxis : lonaxis;
+    if (result == null)
+      System.out.printf("HEY%n");
+    return result;
   }
 
   public CoverageCoordAxis getYAxis() {
-    return (yaxis != null) ? yaxis : lataxis;
+    CoverageCoordAxis result =  (yaxis != null) ? yaxis : lataxis;
+    if (result == null)
+      System.out.printf("HEY%n");
+    return result;
   }
 
   public LatLonAxis2D getLonAxis2D() {
-    if (lonaxis instanceof LatLonAxis2D)
-      return (LatLonAxis2D) lonaxis;
-    return null;
+    return lonaxis2D;
   }
 
   public LatLonAxis2D getLatAxis2D() {
-    if (lataxis instanceof LatLonAxis2D)
-      return (LatLonAxis2D) lataxis;
-    return null;
+    return lataxis2D;
   }
+
+  // try to optimize by keeping the helper classes
+  private CoordAxisHelper yhelper;
+  private CoordAxisHelper xhelper;
 
   public boolean findXYindexFromCoord(double x, double y, int[] startIndex) {
 
-    if (is2DlatLon) {
-      if (hcs2D == null) hcs2D = new HorizCoordSys2D((LatLonAxis2D) lataxis, (LatLonAxis2D) lonaxis);
-      boolean ok = hcs2D.findCoordElement(y, x, startIndex);
-      int save = startIndex[0];
-      startIndex[0] = startIndex[1];
-      startIndex[1] = save;
-      return ok;
-
-    } else if (hasProjection) {
+    if (isProjection) {
       if (xhelper == null) xhelper = new CoordAxisHelper((CoverageCoordAxis1D) getXAxis());
       if (yhelper == null) yhelper = new CoordAxisHelper((CoverageCoordAxis1D) getYAxis());
       startIndex[0] = xhelper.findCoordElement(x, false);
@@ -348,36 +358,5 @@ public class HorizCoordSys {
 
     return startIndex[0] >= 0 && startIndex[0] < getXAxis().getNcoords() && startIndex[1] >= 0 && startIndex[1] < getYAxis().getNcoords();
   }
-
-
-///////////////////////////////////////////////
-
-  private HorizCoordSys2D hcs2D; // LOOK immutable
-  private CoordAxisHelper yhelper;
-  private CoordAxisHelper xhelper;
-
-  private List<RangeIterator> computeBounds(LatLonRect llbb) {
-    synchronized (this) {
-      if (hcs2D == null) hcs2D = new HorizCoordSys2D((LatLonAxis2D) lataxis, (LatLonAxis2D) lonaxis);
-    }
-    return hcs2D.computeBoundsExhaustive(llbb);
-  }
-
-  /*
-  public int[] findXYindexFromCoord(double x_coord, double y_coord) {
-      int[] result = new int[2];
-
-      int[] result2 = new int[2];
-      boolean found = g2d.findCoordElement(y_coord, x_coord, result2);
-      if (found) {
-        result[0] = result2[1];
-        result[1] = result2[0];
-      } else {
-        result[0] = -1;
-        result[1] = -1;
-      }
-      return result;
-  } */
-
 
 }

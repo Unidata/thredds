@@ -64,6 +64,14 @@ public class Range implements RangeIterator  {
   public static final Range ONE = new Range(1);
   public static final Range VLEN = new Range(-1);
 
+  public static Range make(String name, int len) {
+    try {
+      return new Range(name, 0, len-1, 1);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen if len > 0
+    }
+  }
+
   ////////////////////////////////////////////////////////
 
   protected final int length; // number of elements
@@ -182,6 +190,7 @@ public class Range implements RangeIterator  {
   }
 
   public Range setName(String name) {
+    if (name.equals(this.getName())) return this;
     try {
       return new Range(name, first, last, stride);
     } catch (InvalidRangeException e) {
@@ -218,7 +227,7 @@ public class Range implements RangeIterator  {
   }
 
   /**
-   * @return stride, must be >= 1
+   * @return stride, must be >= 1 when evenly strided, -1 if not
    // * @deprecated use iterator(), dont assume evenly strided
    */
   public int stride() {

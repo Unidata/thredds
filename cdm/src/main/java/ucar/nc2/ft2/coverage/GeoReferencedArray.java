@@ -56,16 +56,19 @@ public class GeoReferencedArray implements IsMissingEvaluator, CoordSysContainer
   private Array data;
   private CoverageCoordSys csSubset;
   private List<CoverageCoordAxis> axes;
+  private List<CoverageTransform> transforms;
 
-  public GeoReferencedArray(String coverageName, DataType dataType, Array data, List<CoverageCoordAxis> axes, CoverageCoordSys.Type type) {
+  public GeoReferencedArray(String coverageName, DataType dataType, Array data, List<CoverageCoordAxis> axes, List<CoverageTransform> transforms, CoverageCoordSys.Type type) {
     this.coverageName = coverageName;
     this.dataType = dataType;
     this.data = data;
     this.axes = axes;
+    this.transforms = transforms;
     List<String> names = axes.stream().map(CoverageCoordAxis::getName).collect(Collectors.toList());
 
     this.csSubset = new CoverageCoordSys(null, names, null, type);
     this.csSubset.setDataset(this);
+    this.csSubset.setHorizCoordSys(this.csSubset.makeHorizCoordSys());
 
     // check consistency
     Section cs = new Section(csSubset.getShape());
@@ -83,6 +86,7 @@ public class GeoReferencedArray implements IsMissingEvaluator, CoordSysContainer
     this.data = data;
     this.csSubset = csSubset;
     this.axes = csSubset.getAxes();
+    this.transforms = csSubset.getTransforms();
   }
 
   public String getCoverageName() {
@@ -125,7 +129,9 @@ public class GeoReferencedArray implements IsMissingEvaluator, CoordSysContainer
   }
 
   @Override
-  public CoverageTransform findCoordTransform(String transformName) {
+  public CoverageTransform findCoordTransform(String want) {
+    for (CoverageTransform t : transforms)
+      if (t.getName().equals(want)) return t;
     return null;
   }
 

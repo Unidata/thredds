@@ -302,20 +302,21 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
     DtCoverage grid = (DtCoverage) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    ucar.nc2.util.Optional<CoverageCoordSysSubset> coordSysSubseto = orgCoordSys.subset(params, false);
-    if (!coordSysSubseto.isPresent())
-      throw new InvalidRangeException(coordSysSubseto.getErrorMessage());
+    ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCoordSys.subset(params, false);
+    if (!opt.isPresent())
+      throw new InvalidRangeException(opt.getErrorMessage());
 
-    CoverageCoordSysSubset coordSysSubset = coordSysSubseto.get();
-    CoverageCoordSys subsetCoordSys = coordSysSubset.coordSys;
+    CoverageCoordSys subsetCoordSys = opt.get();
 
-    List<Range> section = new ArrayList<>();
+    /* List<Range> section = new ArrayList<>();
     for (CoverageCoordAxis axis : subsetCoordSys.getAxes()) {
       if (axis instanceof CoverageCoordAxis1D && !axis.isScalar()) {
         CoverageCoordAxis1D axis1D = (CoverageCoordAxis1D) axis;
         section.add( axis1D.getRange().setName(axis.getAxisType().toString()));
       }
-    }
+    } */
+    List<RangeIterator> ranges = subsetCoordSys.getRanges();
+    Section section = Section.make(ranges);
 
     Array data = grid.readDataSection(section, canonicalOrder);
     return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, subsetCoordSys);

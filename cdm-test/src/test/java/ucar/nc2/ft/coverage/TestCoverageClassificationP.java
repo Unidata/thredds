@@ -30,7 +30,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestCoverageClassification {
+public class TestCoverageClassificationP {
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -55,7 +55,7 @@ public class TestCoverageClassification {
   int domain, range, ncoverages;
 
 
-  public TestCoverageClassification(String endpoint, CoverageCoordSys.Type expectType, int domain, int range, int ncoverages) {
+  public TestCoverageClassificationP(String endpoint, CoverageCoordSys.Type expectType, int domain, int range, int ncoverages) {
     this.endpoint = endpoint;
     this.expectType = expectType;
     this.domain = domain;

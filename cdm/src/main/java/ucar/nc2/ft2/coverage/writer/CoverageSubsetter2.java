@@ -72,13 +72,13 @@ public class CoverageSubsetter2 {
     Map<String, CoverageCoordAxis> subsetCoordAxes = new HashMap<>();
     Map<String, CoverageCoordSys> subsetCFCoordSys = new HashMap<>();
     for (CoverageCoordSys orgCs : orgCoordSys.values()) {
-      ucar.nc2.util.Optional<CoverageCoordSysSubset> coordSysSubseto = orgCs.subset(params, true); // subsetCF make do some CF tweaks, not needed in regular subset
-      if (!coordSysSubseto.isPresent())
-        return ucar.nc2.util.Optional.empty(coordSysSubseto.getErrorMessage());
+      ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCs.subset(params, true); // subsetCF make do some CF tweaks, not needed in regular subset
+      if (!opt.isPresent())
+        return ucar.nc2.util.Optional.empty(opt.getErrorMessage());
 
-      CoverageCoordSysSubset coordSysSubset = coordSysSubseto.get();
-      subsetCFCoordSys.put(orgCs.getName(), coordSysSubset.coordSys);
-      for (CoverageCoordAxis axis : coordSysSubset.coordSys.getAxes()) {
+      CoverageCoordSys subsetCoordSys = opt.get();
+      subsetCFCoordSys.put(orgCs.getName(), subsetCoordSys);
+      for (CoverageCoordAxis axis : subsetCoordSys.getAxes()) {
         subsetCoordAxes.put(axis.getName(), axis);  // eliminate duplicates
       }
     }

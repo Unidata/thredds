@@ -46,6 +46,7 @@ import ucar.nc2.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A TimeOffsetAxis and its associated runtime axis.
@@ -94,7 +95,7 @@ public class Time2DCoordSys {
      2a timeOffset       = constant offset dataset
      2b time (not range) = constant forecast dataset
    */
-  public Optional<List<CoverageCoordAxis>> subset(SubsetParams params, CoverageCoordSysSubset state, boolean makeCFcompliant) {
+  public Optional<List<CoverageCoordAxis>> subset(SubsetParams params, AtomicBoolean isConstantForcast, boolean makeCFcompliant) {
     List<CoverageCoordAxis> result = new ArrayList<>();
 
     Optional<CoverageCoordAxis> axiso = runAxis.subset(params);
@@ -136,7 +137,7 @@ public class Time2DCoordSys {
     // 1) the runtimes may be subset by whats available
     // 2) timeOffset could become an aux coordinate
     // 3) time coordinate becomes a scalar,
-    state.isConstantForecast = true; // LOOK not very elegant
+    isConstantForcast.set(true);
 
     CalendarDate dateWanted;
     if (params.isTrue(SubsetParams.timePresent))

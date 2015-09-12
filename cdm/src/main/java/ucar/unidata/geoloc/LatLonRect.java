@@ -38,31 +38,17 @@ import ucar.unidata.util.Format;
 import java.util.StringTokenizer;
 
 /**
- * Bounding box for latitude/longitude points. This is a rectangle
- * in lat/lon coordinates.
+ * Bounding box for latitude/longitude points.
+ * This is a rectangle in lat/lon coordinates.
  * This class handles the longitude wrapping problem.
- * Note that LatLonPoint always has lon in the range +/-180.
+ * The Rectangle always starts from lowerLeft, goes east width degrees until upperRight
+ * For latitude, lower < upper.
+ * Since the longitude must be in the range +/-180., right may be less or greater than left.
  *
  * @author Russ Rew
  * @author John Caron
  */
 public class LatLonRect {
-  /**
-   * Inverse of LatLon.toString().
-   * @param s "ll: 63.45S 180.0W+ ur: 74.65N 180.0E"
-   * @see #LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon)
-   *
-  static public LatLonRect parse(String s) {
-    StringTokenizer stoker = new StringTokenizer( spec, " ,");
-    int n = stoker.countTokens();
-    if (n != 4) throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
-    double lat = Double.parseDouble(stoker.nextToken());
-    double lon = Double.parseDouble(stoker.nextToken());
-    double deltaLat = Double.parseDouble(stoker.nextToken());
-    double deltaLon = Double.parseDouble(stoker.nextToken());
-
-    init(new LatLonPointImpl(lat, lon), deltaLat, deltaLon);
-  } */
 
   public static LatLonRect INVALID = new LatLonRect(LatLonPointImmutable.INVALID, LatLonPointImmutable.INVALID);
 
@@ -332,8 +318,8 @@ public class LatLonRect {
    */
   public boolean contains(double lat, double lon) {
     // check lat first
-    if ((lat + eps < lowerLeft.getLatitude())
-        || (lat - eps > upperRight.getLatitude())) {
+    double eps = 1.0e-9;
+    if ((lat + eps < lowerLeft.getLatitude()) || (lat - eps > upperRight.getLatitude())) {
       return false;
     }
 
@@ -348,7 +334,6 @@ public class LatLonRect {
       return ((lon >= lowerLeft.getLongitude()) && (lon <= upperRight.getLongitude()));
     }
   }
-  private double eps = 1.0e-9;
 
 
   /**

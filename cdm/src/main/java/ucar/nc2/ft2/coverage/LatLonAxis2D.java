@@ -33,6 +33,7 @@
 package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
@@ -54,7 +55,7 @@ import java.util.List;
 public class LatLonAxis2D extends CoverageCoordAxis {
 
   // can only be set once
-  private int[] shape;
+  private int[] shape;        // y, x
   private Object userObject;
 
   public LatLonAxis2D( CoverageCoordAxisBuilder builder) {
@@ -99,8 +100,8 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   public List<RangeIterator> getRanges() {
     List<RangeIterator> result = new ArrayList<>();
-    result.add(new Range(shape[0]));  // LOOK wrong
-    result.add(new Range(shape[1]));
+    result.add(Range.make(AxisType.Lat.toString(), shape[0]));  // LOOK wrong, need subset Range
+    result.add(Range.make(AxisType.Lon.toString(), shape[1]));
     return result;
   }
 
@@ -146,7 +147,9 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   public LatLonAxis2D subset(RangeIterator rangex, RangeIterator rangey) {
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(this);
+
     // subset the values
+    double[] values = getValues(); // make sure values are read in
     int nx = rangex.length();
     int ny = rangey.length();
     double[] svalues = new double[nx*ny];

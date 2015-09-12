@@ -68,7 +68,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   public CoverageCoordAxis1D( CoverageCoordAxisBuilder builder) {
     super(builder);
 
-    this.range = (builder.range == null) ? new Range(getNcoords()) : builder.range;
+    // make sure range has axisType as the name
+    this.range = (builder.range == null) ? Range.make(axisType.toString(), getNcoords()) : builder.range.setName(axisType.toString());
     this.isTime2D = builder.isTime2D;
   }
 

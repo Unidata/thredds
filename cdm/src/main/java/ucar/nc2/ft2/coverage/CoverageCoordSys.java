@@ -32,7 +32,6 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import net.jcip.annotations.Immutable;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.*;
@@ -41,14 +40,15 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A Coverage Coordinate System
+ * Immutable after setImmutable is called
  *
  * @author caron
  * @since 7/11/2015
  */
-@Immutable
 public class CoverageCoordSys {
 
   public enum Type {General, Curvilinear, Grid, Swath, Fmrc}
@@ -65,7 +65,7 @@ public class CoverageCoordSys {
   private HorizCoordSys horizCoordSys;  // required
   private Time2DCoordSys time2DCoordSys;// optional
   private Map<String, List<CoverageCoordAxis>> dependentMap;
-  private boolean immutable;
+  private boolean isConstantForecast, immutable;
 
   private final String name;
   private final List<String> axisNames;        // must be in order
@@ -87,12 +87,22 @@ public class CoverageCoordSys {
     this.type = from.getType();
   }
 
-  public void setImmutable() {
+  public boolean isConstantForecast() {
+    return isConstantForecast;
+  }
+
+  void setIsConstantForecast(boolean isConstantForecast) {
+    if (immutable)
+      throw new RuntimeException("Cant change CoverageCoordSys dataset once set immutable");
+    this.isConstantForecast = isConstantForecast;
+  }
+
+  void setImmutable() {
     this.immutable = true;
   }
 
   public void setDataset(CoordSysContainer dataset) {
-    if (immutable && this.dataset != null)
+    if (immutable)
       throw new RuntimeException("Cant change CoverageCoordSys dataset once set immutable");
     this.dataset = dataset;
 
@@ -145,24 +155,21 @@ public class CoverageCoordSys {
         throw new RuntimeException("Cant have multiple Time2DCoordSys in a CoverageCoordSys");
       time2DCoordSys = new Time2DCoordSys(runtimeAxis, timeOffsetAxis);
     }
-
-    this.horizCoordSys = constructHcs();
   }
 
-  // construct the HorizCoordSys
-  private HorizCoordSys constructHcs() {
+  void setHorizCoordSys(HorizCoordSys horizCoordSys) {
+    if (immutable) throw new RuntimeException("Cant change CoverageCoordSys horizCoordSys once set immutable");
+    this.horizCoordSys = horizCoordSys;
+  }
+
+  HorizCoordSys makeHorizCoordSys() {
     CoverageCoordAxis xaxis = getAxis(AxisType.GeoX);
     CoverageCoordAxis yaxis = getAxis(AxisType.GeoY);
     CoverageCoordAxis lataxis = getAxis(AxisType.Lat);
     CoverageCoordAxis lonaxis = getAxis(AxisType.Lon);
 
     CoverageTransform hct = getHorizTransform();
-    return new HorizCoordSys((CoverageCoordAxis1D) xaxis, (CoverageCoordAxis1D) yaxis, lataxis, lonaxis, hct);
-  }
-
-  void setHorizCoordSys(HorizCoordSys horizCoordSys) {
-    if (immutable && this.horizCoordSys != null) throw new RuntimeException("Cant change CoverageCoordSys horizCoordSys once set immutable");
-    this.horizCoordSys = horizCoordSys;
+    return HorizCoordSys.factory((CoverageCoordAxis1D) xaxis, (CoverageCoordAxis1D) yaxis, lataxis, lonaxis, hct);
   }
 
   ///////////////////////////////////////////////
@@ -314,6 +321,19 @@ public class CoverageCoordSys {
     return result;
   }
 
+  public List<RangeIterator> getRanges() {
+    List<RangeIterator> result = new ArrayList<>();
+    for (CoverageCoordAxis axis : getAxes()) {
+      if (axis.getAxisType().isHoriz()) continue;
+      if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
+        result.add(axis.getRange());
+    }
+
+    result.addAll(horizCoordSys.getRanges()); // may be 2D
+    return result;
+  }
+
+
   public boolean isRegularSpatial() {
     CoverageCoordAxis xaxis = getXAxis();
     CoverageCoordAxis yaxis = getYAxis();
@@ -358,9 +378,7 @@ public class CoverageCoordSys {
 
   ////////////////////////////////////////////////
 
-  public Optional<CoverageCoordSysSubset> subset(SubsetParams params, boolean makeCFcompliant) {
-    CoverageCoordSysSubset result = new CoverageCoordSysSubset();
-
+  public Optional<CoverageCoordSys> subset(SubsetParams params, boolean makeCFcompliant) {
     Formatter errMessages = new Formatter();
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
@@ -382,8 +400,9 @@ public class CoverageCoordSys {
       }
     }
 
+    AtomicBoolean isConstantForecast = new AtomicBoolean(false); // need a mutable boolean
     if (time2DCoordSys != null) {
-      ucar.nc2.util.Optional<List<CoverageCoordAxis>> time2Do = time2DCoordSys.subset(params, result, makeCFcompliant);
+      ucar.nc2.util.Optional<List<CoverageCoordAxis>> time2Do = time2DCoordSys.subset(params, isConstantForecast, makeCFcompliant);
       if (!time2Do.isPresent())
         errMessages.format("%s;%n", time2Do.getErrorMessage());
       else
@@ -411,9 +430,11 @@ public class CoverageCoordSys {
     CoverageCoordSys resultCoordSys = new CoverageCoordSys(null, names, this.getTransformNames(), this.getType());
     MyCoordSysContainer fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
     resultCoordSys.setDataset(fakeDataset);
+    resultCoordSys.setHorizCoordSys(resultCoordSys.makeHorizCoordSys());
+    resultCoordSys.setIsConstantForecast(isConstantForecast.get());
+    resultCoordSys.setImmutable();
 
-    result.coordSys = resultCoordSys;
-    return Optional.of(result);
+    return Optional.of(resultCoordSys);
   }
 
   public List<CoverageCoordAxis> getDependentAxes(CoverageCoordAxis indAxis) {

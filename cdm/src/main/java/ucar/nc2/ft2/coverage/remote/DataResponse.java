@@ -56,8 +56,9 @@ class DataResponse implements CoordSysContainer {
     this.transforms = transforms;
     this.arrayResponse = arrayResponse;
 
-    for (CoverageCoordSys csys : coordSys)
-      csys.setDataset(this);
+    for (CoverageCoordSys csys : coordSys) {
+      csys.setDataset(this); // LOOK More that should be done ??
+    }
   }
 
   public CoverageCoordSys findCoordSys(String csysName) {
