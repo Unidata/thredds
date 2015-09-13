@@ -11,7 +11,7 @@
 |*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present). Times may be a link:#W3Cdate[W3C date] or _present_. Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
 |*timeStride*|no |Take only every nth time in the available series |Used with time_range or _all_ | 1
 |*runtime*   |no |Time as a link:{w3cDate}[W3C date] or _latest_ (restrict to that runtime) or _all_. |Used only if there is an independent runtime coordinate. | _latest_
-|*timeOffset*|no |Restrict to an offset from the runtime coordinate (must use same timeOffset units as the dataset), or _first_ or _all_ |Used only if there is a 2D time coordinate (runtime and forecast time) | all
+|*timeOffset*|no |Restrict to an offset from the runtime coordinate (timeOffset units same as the dataset), or _first_ or _all_ |Used for 2D time coordinate, or 1D timeOffset independent coord | all
 |*vertCoord* |no |Restrict to specified vertical level coordinate value. |Used only if there is a vertical coordinate. |all
 |*ensCoord*  |no |Restrict to specified ensemble coordinate. |Used only if there is an ensemble coordinate. |all
 |=====================================================================================================================================================

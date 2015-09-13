@@ -58,6 +58,10 @@ public class RangeComposite implements RangeIterator {
     return name;
   }
 
+  public List<RangeIterator> getRanges() {
+    return ranges;
+  }
+
   @Override
   public RangeIterator setName(String name) {
     if (name.equals(this.getName())) return this;
@@ -85,6 +89,7 @@ public class RangeComposite implements RangeIterator {
     return result;
   }
 
+  // generic could be moved to utils
   static private class CompositeIterator<T> implements Iterator<T> {
     Iterator<Iterable<T>> iters;
     Iterator<T> current;

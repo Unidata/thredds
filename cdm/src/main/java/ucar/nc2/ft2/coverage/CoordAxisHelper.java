@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
@@ -334,7 +335,7 @@ class CoordAxisHelper {
     return Optional.empty("subsetValuesDiscontinuous not done yet");
   }
 
-  // min, max must be valid, min <= max, [min,max] inclusive
+  // Range must be contained in this range
   @Nonnull
   CoverageCoordAxisBuilder subsetByIndex(Range range) throws InvalidRangeException {
     int ncoords = range.length();
@@ -440,7 +441,7 @@ class CoordAxisHelper {
       return Misc.closeEnough(fval, ival) ? (int) ival : (int) -ival - 1; // LOOK
     }
 
-    // otherwise do a binary searcg
+    // otherwise do a binary search
     return Arrays.binarySearch(axis.getValues(), want);
   }
 }

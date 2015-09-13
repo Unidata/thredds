@@ -357,9 +357,15 @@ public class Section {
     return new Section(results);
   }
 
+  /**
+   * Compute the element offset of an intersecting subrange of this.
+   * @param intersect the subrange
+   * @return element offset
+   * @throws InvalidRangeException
+   */
   public int offset(Section intersect) throws InvalidRangeException {
     if (!compatibleRank(intersect))
-      throw new InvalidRangeException("Invalid Section rank");
+      throw new InvalidRangeException("Incompatible Section rank");
 
     int result = 0;
     int stride = 1;
@@ -413,6 +419,19 @@ public class Section {
       Range base = list.get(j);
       Range r = newOrigin.getRange(j);
       results.add(base.shiftOrigin(r.first()));
+    }
+
+    return new Section(results);
+  }
+
+  public Section shiftOrigin(int[] newOrigin) throws InvalidRangeException {
+    if (newOrigin.length != getRank())
+      throw new InvalidRangeException("Invalid Section rank");
+
+    List<Range> results = new ArrayList<>(getRank());
+    for (int j = 0; j < list.size(); j++) {
+      Range base = list.get(j);
+      results.add(base.shiftOrigin(-newOrigin[j]));
     }
 
     return new Section(results);
@@ -893,7 +912,7 @@ public class Section {
     int count = 0;
     Section result = new Section();
     for (Range r : getRanges()) {
-      Range nr = r.copy(rangeNames.get(count++));
+      Range nr = r.setName(rangeNames.get(count++));
       result.appendRange(nr);
     }
     return result;

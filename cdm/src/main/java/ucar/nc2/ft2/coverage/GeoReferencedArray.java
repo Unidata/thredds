@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
@@ -36,7 +37,6 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IsMissingEvaluator;
 import ucar.ma2.Section;
-import ucar.nc2.util.Misc;
 
 import java.util.Formatter;
 import java.util.List;
@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 
 /**
  * A data array with GeoReferencing.
- * Breaks the tyranny of index based subsetting.
  * See CoverageReader.readData()
  *
  * @author caron

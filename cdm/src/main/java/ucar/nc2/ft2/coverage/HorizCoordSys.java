@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
@@ -78,7 +79,7 @@ public class HorizCoordSys {
 
   private final CoverageCoordAxis1D xaxis, yaxis;
   private final CoverageCoordAxis1D lataxis, lonaxis;
-  protected final LatLonAxis2D lataxis2D, lonaxis2D;// do we really need to keep these in HorizCoordSys ?
+  protected final LatLonAxis2D lataxis2D, lonaxis2D;// used in HorizCoordSys2D, do we really need to keep these in HorizCoordSys ?
   private final CoverageTransform transform;
   private final boolean isProjection;
   private final boolean hasLatLon2D;              // may be true if isProjection

@@ -29,9 +29,11 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage.adapter;
 
+import com.google.common.collect.Lists;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -40,6 +42,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
@@ -307,19 +310,51 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       throw new InvalidRangeException(opt.getErrorMessage());
 
     CoverageCoordSys subsetCoordSys = opt.get();
+    List<RangeIterator> rangeIters = subsetCoordSys.getRanges();
+    List<Range> ranges = new ArrayList<>();
 
-    /* List<Range> section = new ArrayList<>();
-    for (CoverageCoordAxis axis : subsetCoordSys.getAxes()) {
-      if (axis instanceof CoverageCoordAxis1D && !axis.isScalar()) {
-        CoverageCoordAxis1D axis1D = (CoverageCoordAxis1D) axis;
-        section.add( axis1D.getRange().setName(axis.getAxisType().toString()));
-      }
-    } */
-    List<RangeIterator> ranges = subsetCoordSys.getRanges();
-    Section section = Section.make(ranges);
+    boolean hasComposite = false;
+    for (RangeIterator ri : rangeIters) {
+      if (ri instanceof RangeComposite) hasComposite = true;
+      else ranges.add( (Range) ri);
+    }
 
-    Array data = grid.readDataSection(section, canonicalOrder);
-    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, subsetCoordSys);
+    if (!hasComposite) {
+      Array data = grid.readDataSection(new Section(ranges), canonicalOrder);
+      return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, subsetCoordSys);
+    }
+
+    // Could use an Array composite here, if we had one
+    Array result = Array.factory(coverage.getDataType(), subsetCoordSys.getShape());
+    System.out.printf(" read %s result shape=%s%n", coverage.getName(), Misc.showInts(result.getShape()));
+    int[] origin = new int[result.getRank()]; // all zeroes
+
+    ranges.add(null); // make room for last
+    int n = rangeIters.size();
+    RangeComposite comp = (RangeComposite) rangeIters.get(n-1);
+    for (RangeIterator ri : comp.getRanges()) {
+      // read the data
+      ranges.set(n - 1, (Range) ri.setName(comp.getName())); // add last
+      Section want = new Section(ranges);
+      System.out.printf("  composite read section=%s%n", want);
+      Array data = grid.readDataSection(want, canonicalOrder);
+
+      //where does it go?
+      Section dataSection = new Section(data.getShape());
+      Section sectionInResult = dataSection.shiftOrigin(origin);
+      System.out.printf("  sectionInResult=%s%n", sectionInResult);
+
+      // copy it there
+      IndexIterator resultIter = result.getRangeIterator(sectionInResult.getRanges());
+      IndexIterator dataIter = data.getIndexIterator();
+      while (dataIter.hasNext())
+        resultIter.setDoubleNext( dataIter.getDoubleNext()); // look converting to double
+
+      // get ready for next
+      origin[n-1] += data.getShape()[n-1]; // look assumes compose only in last dimension; could be generalized
+    }
+
+    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), result, subsetCoordSys);
   }
 
 

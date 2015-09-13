@@ -24,7 +24,6 @@ import java.io.IOException;
 
 /**
  * Test Coverage Cross-Seam subsetting by writing a file.
- * Currently only works for GribCoverageDataset
  *
  * @author caron
  * @since 9/12/2015.
@@ -33,7 +32,60 @@ public class TestCoverageCrossSeamWriteFile {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testCrossLongitudeSeam() throws Exception {
+  public void testSubsetDt() throws Exception { // try a subset without crossing the seam
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/GFS_Global_onedeg_20081229_1800.grib2.nc";
+    System.out.printf("open %s%n", filename);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+      Assert.assertNotNull(filename, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      String covName = "Pressure_surface";
+      Coverage coverage = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, coverage);
+
+      CoverageCoordSys cs = coverage.getCoordSys();
+      Assert.assertNotNull("coordSys", cs);
+      System.out.printf(" org coverage shape=%s%n", Misc.showInts(cs.getShape()));
+
+      HorizCoordSys hcs = cs.getHorizCoordSys();
+      Assert.assertNotNull("HorizCoordSys", hcs);
+
+      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(10.0, 40.0), 50.0, 120.0);
+      writeTestFile(gcs, coverage, bbox, new int[]{1, 51, 121});
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testCrossLongitudeSeamDt() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/GFS_Global_onedeg_20081229_1800.grib2.nc";
+    System.out.printf("open %s%n", filename);
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+      Assert.assertNotNull(filename, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      Assert.assertNotNull("gcs", gcs);
+      String covName = "Pressure_surface";
+      Coverage coverage = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, coverage);
+
+      CoverageCoordSys cs = coverage.getCoordSys();
+      Assert.assertNotNull("coordSys", cs);
+      System.out.printf(" org coverage shape=%s%n", Misc.showInts(cs.getShape()));
+
+      HorizCoordSys hcs = cs.getHorizCoordSys();
+      Assert.assertNotNull("HorizCoordSys", hcs);
+
+      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 120.0);
+      writeTestFile(gcs, coverage, bbox, new int[]{1, 11, 121});
+    }
+  }
+
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testCrossLongitudeSeamGrib() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_0p5deg_20100913_0000.grib2";
     System.out.printf("open %s%n", filename);
 

@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
@@ -38,7 +39,7 @@ import ucar.nc2.util.Optional;
 
 /**
  * A new way to handle 2D time, an orthogonal axis with offset values. The time can be calculated with both the runtime with the offset.
- *
+ * Much of the work is done in Time2DCoordSys
  * @author John
  * @since 8/13/2015
  */

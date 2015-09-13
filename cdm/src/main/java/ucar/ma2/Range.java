@@ -193,7 +193,7 @@ public class Range implements RangeIterator  {
   public Range setName(String name) {
     if (name.equals(this.getName())) return this;
     try {
-      return new Range(name, first, last, stride);
+      return new Range(name, first, last, stride, length);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen
     }
@@ -250,19 +250,6 @@ public class Range implements RangeIterator  {
       return false;
     if (stride == 1) return true;
     return (want - first) % stride == 0;
-  }
-
-  /**
-   * Copy Constructor with name
-   *
-   * @param name copy this, with given name
-   */
-  public Range copy(String name) {
-    try {
-      return new Range(name, first, last, stride, length);
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
-    }
   }
 
   /**
