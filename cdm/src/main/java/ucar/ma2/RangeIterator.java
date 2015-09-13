@@ -52,4 +52,7 @@ public interface RangeIterator extends Iterable<Integer> {
 
   String getName();
 
+  // copy on mutate
+  RangeIterator setName(String name);
+
 }

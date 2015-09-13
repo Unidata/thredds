@@ -915,7 +915,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
     GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCoordSys.subset(params, false);
+    ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCoordSys.subset(params, false, true);
     if (!opt.isPresent())
       throw new InvalidRangeException(opt.getErrorMessage());
 

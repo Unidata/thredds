@@ -24,14 +24,14 @@ import java.util.List;
 
 /**
  * Read specific Grid Coverage fields and compare results with dt.GridDataset.
- * Generally the ones that are failing in TestDtWithCoverageReading
+ * Generally the ones that are failing in TestDtWithCoverageReadingP
  *
  * @author caron
  * @since 7/17/2015
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestDtWithCoverageReadingSingle {
+public class TestDtWithCoverageReadingSingleP {
 
   @BeforeClass
   public static void before() {
@@ -95,8 +95,8 @@ public class TestDtWithCoverageReadingSingle {
   Double vert_val;
   Integer time_idx;
 
-  public TestDtWithCoverageReadingSingle(String endpoint, CoverageCoordSys.Type type, String covName, String rt_val, Double ens_val,
-                                         String time_val, Double vert_val, Integer time_idx) {
+  public TestDtWithCoverageReadingSingleP(String endpoint, CoverageCoordSys.Type type, String covName, String rt_val, Double ens_val,
+                                          String time_val, Double vert_val, Integer time_idx) {
     this.endpoint = endpoint;
     this.type = type;
     this.covName = covName;
@@ -155,11 +155,11 @@ public class TestDtWithCoverageReadingSingle {
 
         /* static void readAllVertLevels(Coverage cover, GridDatatype dt, CalendarDate rt_val, int rt_idx, CalendarDate time_val, int time_idx,
         //                              double ens_val, int ens_idx, CoordinateAxis1D vertAxis)
-        TestDtWithCoverageReading.readAllVertLevels(cover, dt, rt_val, rt_idx, time_val, calcTimeIdx,
+        TestDtWithCoverageReadingP.readAllVertLevels(cover, dt, rt_val, rt_idx, time_val, calcTimeIdx,
                  ens_val == null ? 0 : ens_val, ens_idx,
                 vertAxis); // */
 
-        TestDtWithCoverageReading.readOneSlice(cover, dt,
+        TestDtWithCoverageReadingP.readOneSlice(cover, dt,
                 rt_val, rt_idx,
                 time_val, calcTimeIdx,
                 ens_val == null ? 0 : ens_val, ens_idx,

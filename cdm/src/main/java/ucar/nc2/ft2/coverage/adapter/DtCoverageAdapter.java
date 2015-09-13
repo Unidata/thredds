@@ -302,7 +302,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
     DtCoverage grid = (DtCoverage) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCoordSys.subset(params, false);
+    ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCoordSys.subset(params);
     if (!opt.isPresent())
       throw new InvalidRangeException(opt.getErrorMessage());
 

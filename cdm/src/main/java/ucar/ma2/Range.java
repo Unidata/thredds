@@ -189,6 +189,7 @@ public class Range implements RangeIterator  {
     return new Range(this.first(), this.last(), stride);
   }
 
+  @Override
   public Range setName(String name) {
     if (name.equals(this.getName())) return this;
     try {

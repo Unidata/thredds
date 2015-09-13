@@ -46,7 +46,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Optional;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -271,7 +270,18 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     return new int[] {ncoords};
   }
 
-  public RangeIterator getRange() {
+  public Range getRange() {
+    if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
+      return Range.EMPTY;
+
+    try {
+      return new Range(axisType.toString(), 0, ncoords-1);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public RangeIterator getRangeIterator() {
     if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
       return Range.EMPTY;
 

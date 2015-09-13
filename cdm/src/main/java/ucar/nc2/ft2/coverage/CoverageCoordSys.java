@@ -326,7 +326,7 @@ public class CoverageCoordSys {
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getAxisType().isHoriz()) continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
-        result.add(axis.getRange());
+        result.add(axis.getRangeIterator());
     }
 
     result.addAll(horizCoordSys.getRanges()); // may be 2D
@@ -378,7 +378,11 @@ public class CoverageCoordSys {
 
   ////////////////////////////////////////////////
 
-  public Optional<CoverageCoordSys> subset(SubsetParams params, boolean makeCFcompliant) {
+  public Optional<CoverageCoordSys> subset(SubsetParams params) {
+    return subset(params, false, true);
+  }
+
+  public Optional<CoverageCoordSys> subset(SubsetParams params, boolean makeCFcompliant, boolean finish) {
     Formatter errMessages = new Formatter();
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
@@ -395,7 +399,8 @@ public class CoverageCoordSys {
         // subset any dependent axes
         for (CoverageCoordAxis dependent : getDependentAxes(subsetInd)) {
           Optional<CoverageCoordAxis> depo = dependent.subsetDependent(subsetInd);
-          if (depo.isPresent()) subsetAxes.add(depo.get()); else errMessages.format("%s;%n", depo.getErrorMessage());
+          if (depo.isPresent()) subsetAxes.add(depo.get());
+          else errMessages.format("%s;%n", depo.getErrorMessage());
         }
       }
     }
@@ -406,7 +411,7 @@ public class CoverageCoordSys {
       if (!time2Do.isPresent())
         errMessages.format("%s;%n", time2Do.getErrorMessage());
       else
-        subsetAxes.addAll( time2Do.get());
+        subsetAxes.addAll(time2Do.get());
     }
 
     Optional<HorizCoordSys> horizo = horizCoordSys.subset(params);
@@ -432,7 +437,7 @@ public class CoverageCoordSys {
     resultCoordSys.setDataset(fakeDataset);
     resultCoordSys.setHorizCoordSys(resultCoordSys.makeHorizCoordSys());
     resultCoordSys.setIsConstantForecast(isConstantForecast.get());
-    resultCoordSys.setImmutable();
+    if (finish) resultCoordSys.setImmutable();
 
     return Optional.of(resultCoordSys);
   }

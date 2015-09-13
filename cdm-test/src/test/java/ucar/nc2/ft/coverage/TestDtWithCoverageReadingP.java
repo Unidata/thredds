@@ -36,7 +36,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestDtWithCoverageReading {
+public class TestDtWithCoverageReadingP {
 
   @BeforeClass
   public static void before() {
@@ -71,7 +71,7 @@ public class TestDtWithCoverageReading {
   CoverageCoordSys.Type expectType;
   //int domain, range, ncoverages;
 
-  public TestDtWithCoverageReading(String endpoint, CoverageCoordSys.Type expectType) {
+  public TestDtWithCoverageReadingP(String endpoint, CoverageCoordSys.Type expectType) {
     this.endpoint = endpoint;
     this.expectType = expectType;
   }

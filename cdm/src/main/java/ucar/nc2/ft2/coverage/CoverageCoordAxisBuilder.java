@@ -3,6 +3,7 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
+import ucar.ma2.RangeComposite;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
@@ -40,6 +41,8 @@ public class CoverageCoordAxisBuilder {
 
   // 1D only
   public Range range; // set when its a subset
+  public RangeComposite crange;
+
   //int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
   //public int stride = 1;
   public boolean isTime2D;
@@ -158,6 +161,11 @@ public class CoverageCoordAxisBuilder {
     return this;
   }
 
+  CoverageCoordAxisBuilder setCompositeRange(RangeComposite cr) {
+    this.crange = cr;
+    this.isSubset = true;
+    return this;
+  }
 
   void setReferenceDate(CalendarDate refDate) {
     this.timeHelper = timeHelper.setReferenceDate(refDate);

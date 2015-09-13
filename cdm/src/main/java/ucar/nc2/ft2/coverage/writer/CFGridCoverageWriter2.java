@@ -93,11 +93,11 @@ public class CFGridCoverageWriter2 {
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     // we need global atts, subsetted axes, the transforms, and the coverages with attributes and referencing subsetted axes
-    Optional<CoverageDataset> subsetDataseto = CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
-    if (!subsetDataseto.isPresent())
-      return ucar.nc2.util.Optional.empty(subsetDataseto.getErrorMessage());
+    Optional<CoverageDataset> opt = CoverageSubsetter2.makeCoverageDatasetSubset(gdsOrg, gridNames, subsetParams);
+    if (!opt.isPresent())
+      return ucar.nc2.util.Optional.empty(opt.getErrorMessage());
 
-    CoverageDataset subsetDataset = subsetDataseto.get();
+    CoverageDataset subsetDataset = opt.get();
 
     long total_size = 0;
     for (Coverage grid : subsetDataset.getCoverages()) {
@@ -154,8 +154,11 @@ public class CFGridCoverageWriter2 {
 
       Variable v = writer.addVariable(null, axis.getName(), axis.getDataType(), dims);
       addVariableAttributes(v, axis.getAttributes());
+      v.addAttribute(new Attribute(CDM.UNITS, axis.getUnits())); // override what was in att list
       if (hasBounds)
         v.addAttribute(new Attribute(CF.BOUNDS, axis.getName()+BOUNDS));
+      if (axis.getAxisType() == AxisType.TimeOffset)
+        v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
 
     }
 
