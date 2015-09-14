@@ -1,32 +1,30 @@
 = Configuring TDS with the featureCollection element
 :linkcss:
 :stylesheet: ../../cdm.css
+:toc:
 
 == Overview
 
 The *featureCollection* element is a way to tell the TDS to serve collections of link:../../../netcdf-java/reference/FeatureDatasets/Overview.html[CDM
 Feature Datasets]. Currently this is used for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack.
-This allows the TDS to automatically create logical datasets composed of collections of files, and to allow subsetting in coordinate space on them, eg
-through the WMS, WCS, and Netcdf Subsetting Service.
+This allows the TDS to automatically create logical datasets composed of collections of files, and to allow subsetting in coordinate space on them,
+through the WMS, WCS, Netcdf Subsetting and CDM Remote Feature services.
 
 Feature Collections have been undergoing continual development and refinement in the recent version of the TDS, and as you upgrade there are (mostly)
 minor changes to configuration and usage. The *featureCollection* element was first introduced TDS 4.2, replacing the *fmrcDataset* element in earlier
 versions. TDS 4.2 allowed featureType = _FMRC, Point,_ and __Station__. TDS 4.3 added featureType = __GRIB__, used for collections of GRIB files. TDS
-4.5 changed this usage to featureType = _GRIB1 or GRIB2_. *Currently, one should only serve GRIB files with featureCollection=GRIB1 or GRIB2. One
+4.5 changed this usage to featureType = _GRIB1 or GRIB2_. TDS 5.0 added refinements for performance.
+
+*Currently, one should only serve GRIB files with featureCollection=GRIB1 or GRIB2. One
 should not use FMRC, or NcML Aggregations on GRIB files.*
 
 A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance,
 and in managing collections that change. For high-performance servers, it is necessary to let a background process manage indexing, and the THREDDS
 Data Manager (link:TDM.html[TDM]) is now available for that purpose.
 
-=== Contents:
+===
 
-* link:#example[Example catalog elements]
-* link:#elements[Description of elements in TDS Configuration catalogs]
-* link:#changing[Static vs changing datasets]
-* link:#ncml[NcML Modifications]
-
-This document gives an overview of Feature Collections, as well as a complete syntax of allowed elements. For Feature Type specific information, see:
+This document gives an overview of Feature Collections, as well as a complete syntax of allowed elements, using the current server catalog XML Schema 1.2. For Feature Type specific information, see:
 
 * link:FmrcCollection.html[FMRC Collections]http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[]
 * link:PointFeatures.html[Point Collections]
@@ -45,53 +43,61 @@ inside of a *dataset* element can be used inside of a *featureCollection* elemen
 
 === Example 1: Simple case using defaults:
 
- 1) <featureCollection name="NCEP Polar Sterographic" featureType="GRIB2" path="grib/NCEP/NAM/Polar_90km">
- 2)   <collection name="NCEP-NAM-Polar_90km" spec="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_.*\.grib2$"/>
-    </featureCollection>
+[source,xml]
+----
+ <featureCollection name="NCEP Polar Sterographic" featureType="GRIB2" path="grib/NCEP/NAM/Polar_90km"> # <1>
+   <collection name="NCEP-NAM-Polar_90km" spec="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_.*\.grib2$"/> # <2>
+ </featureCollection>
+----
 
-1.  A GRIB2 Feature Collection dataset is defined, with the "human readable" name of "NCEP Polar Sterographic". Its URL path(s) will look like
+<1>  A GRIB2 Feature Collection dataset is defined, with the "human readable" name of "NCEP Polar Sterographic". Its URL path(s) will look like
 _http://server/thredds/<service>/grib/NCEP/NAM/Polar_90km/..._ The Dataset ID is automatically set to the path, so that its dataset page will be
 __http://server/thredds/catalog/grib/NCEP/NAM/Polar_90km/catalog.xml?dataset=grib/NCEP/NAM/Polar_90km__/...
-2.  Defines the files in the collection as any files in the directory _/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/_ which match the regular
+<2>  Defines the files in the collection as any files in the directory _/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/_ which match the regular
 expression __"NAM_Polar_90km_.*\.grib2$__" . In this case, it means any filename starting with _"NAM_Polar_90km_"_ and ending with "__.grib2__". The
 collection name is "NCEP-NAM-Polar_90km", which is used for index file names etc.
 
 === Example 2: More fully specify the options explicitly:
 
- <featureCollection name="NCEP NAM Alaska(11km)" featureType="GRIB2" path="grib/NCEP/NAM/Alaska_11km">
-   <metadata inherited="true">
- 1)  <serviceName>GribServices</serviceName>
- 2)  <documentation type="summary">NCEP GFS Model : AWIPS 230 grid</documentation>
-   </metadata>
- 3)<collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$"
-               name="NAM_Alaska_11km"
- 4)            dateFormatMark="#NAM_Alaska_11km_#yyyyMMdd_HHmm"
- 5)            timePartition="file"
- 6)            olderThan="5 min"/>
- 7)<update startup="nocheck" trigger="allow"/>
- 8)<tdm rewrite="test" rescan="0 0/15 * * * ? *" />
- 9)<gribConfig datasetTypes="TwoD Best Latest" />
- </featureCollection>
+[source,xml]
+----
+<featureCollection name="NCEP NAM Alaska(11km)" featureType="GRIB2" path="grib/NCEP/NAM/Alaska_11km">
+ <metadata inherited="true">
+   <serviceName>GribServices</serviceName> # <1>
+   <documentation type="summary">NCEP GFS Model : AWIPS 230 grid</documentation> # <2>
+ </metadata>
+ <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$" # <3>
+             name="NAM_Alaska_11km"
+             dateFormatMark="#NAM_Alaska_11km_#yyyyMMdd_HHmm" # <4>
+             timePartition="file" # <5>
+             olderThan="5 min"/> # <6>
+ <update startup="nocheck"/> # <7>
+ <tdm rewrite="test" rescan="0 0/15 * * * ? *" /> # <8>
+ <gribConfig datasetTypes="TwoD Best Latest" /> # <9>
+</featureCollection>
+----
 
-1.  Arbitrary metadata can be added to the catalog. Here, we indicate to use the service called "GribServices" (not shown, but likely a compound
+<1>  Arbitrary metadata can be added to the catalog. Here, we indicate to use the service called "GribServices" (not shown, but likely a compound
 service that includes all the services you want to provide for GRIB Feature Collections).
-2.  A documention element of type "__summary__" is added to the catalog for this dataset.
-3.  The collection consists of all files ending with "__grib2__" in the directory "__/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/__".
-4.  A date will be extracted from the filename, and the files will then be sorted by date. Important if the lexigraphic ordering is different that the
+<2>  A documention element of type "__summary__" is added to the catalog for this dataset.
+<3>  The collection consists of all files ending with "__grib2__" in the directory "__/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/__".
+<4>  A date will be extracted from the filename, and the files will then be sorted by date. Important if the lexigraphic ordering is different that the
 date order.
-5.  Partitioning will happen at the file level.
-6.  Only include files whose lastModified date is more than 5 minutes old. This is to exclude files that are actively being created.
-7.  Instruct the TDS to use the collection index if it already exists, without testing if its up-to-date, and also to allow external triggers.
-8.  Instruct the TDM to examine all the files to detect if they have changed since the index was written. Rescan every 15 minutes.
-9.  (GRIB specific) Show the _TwoD_ and _Best_ datasets, as well as a link to the _latest_ partition.
+<5>  Partitioning will happen at the file level.
+<6>  Only include files whose lastModified date is more than 5 minutes old. This is to exclude files that are actively being created.
+<7>  Instruct the TDS to use the collection index if it already exists, without testing if its up-to-date.
+<8>  Instruct the TDM to examine all the files to detect if they have changed since the index was written. Rescan every 15 minutes.
+<9>  (GRIB specific) Show the _TwoD_ and _Best_ datasets, as well as a link to the _latest_ partition.
 
-== Description of elements in TDS Configuration catalogs
+== Description of elements in TDS Configuration catalogs [[elements]]
 
 === featureCollection element
 
 A *featureCollection* is a kind of *dataset* element, and so can contain the same elements and attributes of that element. Following is the XML Schema
 definition for the _featureCollection_ element:
 
+[source,xml]
+----
   <xsd:element name="featureCollection" substitutionGroup="dataset">
     <xsd:complexType>
       <xsd:complexContent>
@@ -114,75 +120,99 @@ definition for the _featureCollection_ element:
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:simpleType name="featureTypeChoice">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="FMRC"/>
+          <xsd:enumeration value="GRIB1"/>
+          <xsd:enumeration value="GRIB2"/>
+          <xsd:enumeration value="Point"/>
+          <xsd:enumeration value="Station"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+----
+
 Here is an example *featureCollection* as you might put it into a TDS catalog:
 
- 1)<featureCollection name="Metar Station Data" harvest="true" featureType="Station" path="nws/metar/ncdecoded">
- 2) <metadata inherited="true">
+[source,xml]
+----
+<featureCollection name="Metar Station Data" harvest="true" featureType="Station" path="nws/metar/ncdecoded"> # <1>
+  <metadata inherited="true"> # <2>
      <serviceName>fullServices</serviceName>
      <documentation type="summary">Metars: hourly surface weather observations</documentation>
      <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information"/>
      <keyword>metar</keyword>
      <keyword>surface observations</keyword>
-    </metadata>
- 3) <collection name="metars" spec="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$" />
- 4) <update startup="test" rescan="0 0/15 * * * ? *"/>
- 5) <protoDataset choice="Penultimate" />
- 6) <pointConfig datasetTypes="cdmrFeature Files"/>
- 7) <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-      <attribute name="Conventions" value="CF-1.6"/>
-    </netcdf>
- </featureCollection>
+   </metadata>
+  <collection name="metars" spec="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$" /> # <3>
+  <update startup="test" rescan="0 0/15 * * * ? *"/> # <4>
+  <protoDataset choice="Penultimate" /> # <5>
+  <pointConfig datasetTypes="cdmrFeature Files"/> # <6>
+  <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"> # <7>
+     <attribute name="Conventions" value="CF-1.6"/>
+  </netcdf>
+</featureCollection>
+----
 
-1.  A *featureCollection* is declared, using the _name_ and _harvest_ attributes declared by the dataset element. The *_featureType_* is a mandatory
-attribute defining the type of the feature collection. The _*path*_ is also required, which defines what the URL of this collection will be. It must
+<1>  A *featureCollection* is declared, using the _name_ and _harvest_ attributes declared by the dataset element. The *_featureType_* is a mandatory
+attribute defining the type of the feature collection. The *_path_* is also required, which defines what the URL of this collection will be. It must
 be unique over the entire TDS. If an _ID_ attribute is not specified on the featureCollection, the path attribute is used as the ID (this is a
 recommended idiom).
-2.  As is usual with dataset elements, a block of metadata can be declared that will be inherited by all the datasets.
-3.  The collection of files is defined. Each dataset is assigned a nominal time by extracting a date from the filename.
-4.  Specify that the collection is updated, when the TDS starts and in a background thread, every 15 minutes.
-5.  The prototype dataset is the next-to-last in the collection when sorted by time.
-6.  Configuration specific to the Point feature type: expose a _cdmrRemote_ service on the entire collection, and also serve all the component files
+<2>  As is usual with dataset elements, a block of metadata can be declared that will be inherited by all the datasets.
+<3>  The collection of files is defined. Each dataset is assigned a nominal time by extracting a date from the filename.
+<4>  Specify that the collection is updated, when the TDS starts and in a background thread, every 15 minutes.
+<5>  The prototype dataset is the next-to-last in the collection when sorted by time.
+<6>  Configuration specific to the Point feature type: expose a _cdmrRemote_ service on the entire collection, and also serve all the component files
 using the default service, in this example the compound service __fullServices__.
-7.  This NcML wraps each dataset in the collection. This attribute overrides any existing one in the datasets; it tells the CDM to parse the station
+<7>  This NcML wraps each dataset in the collection. This attribute overrides any existing one in the datasets; it tells the CDM to parse the station
 information using the CF Conventions.
 
 === collection element
 
 A *collection* element defines the collection of datasets. Example:
 
+[source,xml]
+----
  <collection spec="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_.*gini$"
             dateFormatMark="#WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm"
             name="WEST-CONUS_4km" olderThan="15 min" />
+----
 
 The XML Schema for the _collection_ element:
 
-  <xsd:complexType name="collectionType">
- 1)  <xsd:attribute name="spec" type="xsd:string" use="required"/>
- 2)  <xsd:attribute name="name" type="xsd:token"/>
- 3)  <xsd:attribute name="olderThan" type="xsd:string" />
- 4)  <xsd:attribute name="dateFormatMark" type="xsd:string"/>
- 5)  <xsd:attribute name="timePartition" type="xsd:string"/>
-  </xsd:complexType>
+[source,xml]
+----
+ <xsd:complexType name="collectionType">
+   <xsd:attribute name="spec" type="xsd:string" use="required"/> # <1>
+   <xsd:attribute name="name" type="xsd:token"/> # <2>
+   <xsd:attribute name="olderThan" type="xsd:string" /> # <3>
+   <xsd:attribute name="dateFormatMark" type="xsd:string"/> # <4>
+   <xsd:attribute name="timePartition" type="xsd:string"/> # <5>
+ </xsd:complexType>
+----
 
 where
 
-1.  *spec* (required): link:CollectionSpecification.html[collection specification] string. In this example, the collection contains all files in the
+<1>  *spec* (required): link:CollectionSpecification.html[collection specification] string. In this example, the collection contains all files in the
 directory _/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/_ whose filename matches the regular expression _"WEST-CONUS_4km_3.9_.*gini$"_ (where
 _".*"_ means "match any number of characters" and _"gini$"_ means "ends with the characters **gini"**. If you wanted to match **".gini"**, you would
 need to escape the ".", ie __"\.gini$"__).
-2.  *name* (required): the collection name, which __*must be unique for all collections served by your TDS*__. This is used for external triggers, for
+<2>  *name* (required): the collection name, which __*must be unique for all collections served by your TDS*__. This is used for external triggers, for
 the CDM collection index files, and for logging and debugging messages. If missing, the _name_ attribute on the _<featureCollection>_ element is used.
 However, we recommend that you create a unique, immutable name for the dataset collection, and put it in this *name* attribute of the *collection*
 element.
-3.  *olderThan* (optional): Only files whose lastModified date is older than this are included. This is used to exclude files that are in the process
+<3>  *olderThan* (optional): Only files whose lastModified date is older than this are included. This is used to exclude files that are in the process
 of being written. However, it only applies to newly found files; that is, once a file is in the collection it is not removed because it was updated.
-4.  *dateFormatMark* (optional): This defines a __link:#dateExtractor[DateExtractor]__, which is applied to each file in the collection to assign it a
+<4>  *dateFormatMark* (optional): This defines a __link:#dateExtractor[DateExtractor]__, which is applied to each file in the collection to assign it a
 date, which is used for sorting, getting the latest file, and possibly for time partitioning. In this example, the string *WEST-CONUS_4km_3.9_* is
 located in each file path, then the link:SimpleDateFormat.html[SimpleDateFormat] template *yyyyMMdd_HHmm* is applied to the next characters of the
 filename to create a date. A DateExtractor can also be defined in the link:CollectionSpecification.html[collection specification] string, but in that
 case the date must be contained just in the file name, as opposed to the complete file path which includes all of the parent directory names. _Use
 this OR a date extractor in the specification string, but not both._
-5.  *timePartition* (optional): Currently only used by GRIB collections, see link:Partitions.html[here] for more info.
+<5>  *timePartition* (optional): Currently only used by GRIB collections, see link:Partitions.html[here] for more info.
 
 === Date Extractor
 
@@ -230,28 +260,32 @@ Note that whatever you match on must be unique in the pathname.
 Provides control over the choice of the *_prototype dataset_* for the collection. The prototype dataset is used to populate the metadata for the
 feature collection. Example:
 
+[source,xml]
+----
  <protoDataset choice="Penultimate" change="0 2 3 * * ? *">
    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
      <attribute name="featureType" value="timeSeries"/>
    </netcdf>
  </protoDataset>
+----
 
 The XML Schema definition for the _protoDataset_ element:
 
-  <xsd:complexType name="protoDatasetType">
-    <xsd:sequence>
- 1)   <xsd:element ref="ncml:netcdf" minOccurs="0"/>
-    </xsd:sequence>
- 2) <xsd:attribute name="choice" type="protoChoices"/>
- 3) <xsd:attribute name="change" type="xsd:string"/>
-  </xsd:complexType>
+[source,xml]
+----
+<xsd:complexType name="protoDatasetType">
+  <xsd:sequence>
+    <xsd:element ref="ncml:netcdf" minOccurs="0"/>  # <1>
+  </xsd:sequence>
+  <xsd:attribute name="choice" type="protoChoices"/> # <2>
+  <xsd:attribute name="change" type="xsd:string"/> # <3>
+</xsd:complexType>
+----
 
-where:
-
-1.  *ncml:netcdf* = (optional) ncml elements that modify the prototype dataset
-2.  **choice**= [First | Random | Penultimate | Latest] : select prototype from a time ordered list, using the first, a randomly selected one, the
+<1>  *ncml:netcdf* = (optional) ncml elements that modify the prototype dataset
+<2>  **choice**= [First | Random | Penultimate | Latest] : select prototype from a time ordered list, using the first, a randomly selected one, the
 next to last, or the last dataset in the list. The default is "Penultimate".
-3.  **change**= "cron expr" (optional). On rolling datsets, you need to change the prototype periodically, otherwise it will get deleted eventually.
+<3>  **change**= "cron expr" (optional). On rolling datsets, you need to change the prototype periodically, otherwise it will get deleted eventually.
 This attribute specifies when the protoDataset should be reselected, using a http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron
 expression].
 * _change = "0 2 3 * * ? *"_ means every day at 3.02 am.
@@ -265,7 +299,7 @@ have missing data for those times.
 3.  If a variable does not appears in the prototype dataset, it will not appear in the feature collection dataset, even if it appears in other
 datasets.
 
-=== update element
+=== [[update]] update element
 
 For collections that change, the *update* element provides options to update the collection, either synchronously (while a user request waits) or
 asynchronously (in a background task, so that requests do not wait). If there is no update element, then the dataset is considered __static__, and the
@@ -278,92 +312,119 @@ name>.ncx**.). Examples:
 
  <update startup="never" trigger="allow" />
 
-1.  The first example says to test if the dataset has been updated when the TDS starts up, then test in a background process every 30 minutes. (Cannot
+.  The first example says to test if the dataset has been updated when the TDS starts up, then test in a background process every 30 minutes. (Cannot
 use for GRIB collections, see _tdm_ element below). Do not allow external triggers.
-2.  The second example says to test if the dataset has been updated only when a request comes in for it, and the dataset hasn't been checked for 15
+.  The second example says to test if the dataset has been updated only when a request comes in for it, and the dataset hasn't been checked for 15
 minutes.
-3.  The third example tells the TDS to never update the collection indices, but to allow an external program (such as the TDM) to send a trigger
+.  The third example tells the TDS to never update the collection indices, but to allow an external program (such as the TDM) to send a trigger
 telling the TDS that it should reread the collection into memory. This is useful for large collections of data where even testing if a dataset has
 changed can be costly.
 
 The XML Schema definition for the _update_ element:
 
+[source,xml]
+----
  <xsd:complexType name="updateType">
-  1)  <xsd:attribute name="startup" type="xsd:token"/>
-  2)  <xsd:attribute name="recheckAfter" type="xsd:string" />
-  3)  <xsd:attribute name="rescan" type="xsd:token"/>
-  4)  <xsd:attribute name="trigger" type="xsd:token"/>
+   <xsd:attribute name="recheckAfter" type="xsd:string" /> # <1>
+   <xsd:attribute name="rescan" type="xsd:token"/> # <2>
+   <xsd:attribute name="trigger" type="collectionUpdateType"/> # <3>
+   <xsd:attribute name="startup" type="collectionUpdateType"/> # <4>
  </xsd:complexType>
+----
 
-where:
-
-1.  **startup**: [__never__ | _nocheck_ | _testIndexOnly_ | _test_ | __always__] The collection may be read in on server startup, and tested whether
-it is up to date.
-* If "__never__", the collection is used as it is. The collection index must already exist. Use this for very large collections that you dont want to
-inadvertently scan.
-* If "__nocheck__", the collection index is used if it exists, without checking whether its up-to-date. If it doesnt exist, build it. *This is the default in version 5.*
-* If "__testIndexOnly__", the collection index is used if it exists and it is newer than all of its immediate children. (**experimental**)
-* If "__test__" or "__true__", the collection is scanned and the new collection of children is compared to the old collection. If there are any
-changes the index is rebuilt.
-* If "__always__", the collection is always rescanned and the indices are rebuilt.
-2.  **recheckAfter**: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait
-until the scan is finished and a new collection is built (if needed), and so is called __synchronous updating__. _*This option will be ignored if you
-are using the rescan attribute or if you have a tdm element.*_
-3.  **rescan**: uses a http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expression] to specify when the collection should be
+<1>  **recheckAfter**: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait
+until the scan is finished and a new collection is built (if needed), and so is called __synchronous updating__. *This option will be ignored if you
+are using the rescan attribute or if you have a tdm element.*
+<2>  **rescan**: uses a http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expression] to specify when the collection should be
 rescanned in a background task, and testsed to see if it has changed. This is called __asynchronous updating__.
-4.  **trigger**: if set to "allow" (default), then external triggering will be allowed. This allows collections to be updated by an external program
+<3>  **trigger**: if set to "allow" (default), then external triggering will be allowed. This allows collections to be updated by an external program
 (or person using a browser) sending an explicit "trigger" URL to the server. This URL is protected by HTTPS, so you must link:#trigger[enable
-triggers]link:../RemoteManagement.html[] for this to work. Set this to "false" to disable triggering.
+triggers] for this to work. Set this to "false" to disable triggering.
+<4>  **startup**: [_never_ | _nocheck_ | _testIndexOnly_ | _test_ | _always_]. The collection is read on server startup, and tested whether
+it is up to date, depending on  the link:#collectionUpdateType[*_collectionUpdateType_*].
 
 For GRIB collections, dynamic updating of the collection by the TDS is no longer supported (use the TDM for this). Therefore _recheckAfter_ and
 _rescan_ are ignored on an _update_ element for a GRIB collection.
+
+=== The *_collectionUpdateType_* [[collectionUpdateType]]
+
+[source,xml]
+----
+ <xsd:simpleType name="collectionUpdateType">
+   <xsd:union memberTypes="xsd:token">
+     <xsd:simpleType>
+       <xsd:restriction base="xsd:token">
+         <xsd:enumeration value="never"/>
+         <xsd:enumeration value="nocheck"/>
+         <xsd:enumeration value="testIndexOnly"/>
+         <xsd:enumeration value="test"/>
+         <xsd:enumeration value="always"/>
+       </xsd:restriction>
+     </xsd:simpleType>
+   </xsd:union>
+ </xsd:simpleType>
+----
+
+. *_never_*: the collection is used as it is, and no checking is done. The collection index must already exist. For a trigger, it means just reread the index. Use this for very large collections that you dont want to
+inadvertently scan.
+. *_nocheck_*: the collection index is used if it exists, without checking whether its up-to-date. If it doesnt exist, build it. *This is the default in version 5.*
+. *_testIndexOnly_*: the collection index is used if it exists and it is newer than all of its immediate children.
+. *_test_* or *_true_*: the collection's data files are scanned and the new collection of children is compared to the old collection. If there are any
+changes, the index is rebuilt.
+. *_always_*: the collection is always rescanned and the indices are rebuilt.
 
 === tdm element (GRIB only)
 
 You must use the *tdm* element for GRIB collections that change. The link:TDM.html[TDM] is a separate process that uses the same configuration
 catalogs as the TDS, and updates GRIB collections in the background. Example:
 
+[source,xml]
+----
  <tdm rewrite="test" rescan="0 4,19,34,49 * * * ? *"  />
+----
 
 * This example tells the TDM (not the TDS) to test if the dataset has changed 4 times every hour, specifically, at 4,19,34, and 49 minutes past the
 hour. If the collection has changed, new indices will be recreated, and a trigger will be sent to the TDS.
+* The TDM uses the trigger *\https://server/thredds/admin/collection/trigger?collection=_name_&trigger=nocheck* . It is sent when the TDM has done a rescan, and made
+  a new collection index, so the
 
 The XML Schema definition for the _tdm_ element:
 
- <xsd:complexType name="updateType">
-  1)  <xsd:attribute name="rewrite" type="xsd:token"/>
-  2)  <xsd:attribute name="rescan" type="xsd:token"/>
+[source,xml]
+----
+ <xsd:complexType name="tdmType">
+   <xsd:attribute name="rewrite" type="collectionUpdateType"/> # <1>
+   <xsd:attribute name="rescan" type="xsd:token"/> # <2>
  </xsd:complexType>
+----
 
-where:
-
-1.  **rewrite**: [__test__ | __always__] If "__always__", the collection index is always rebuilt. If "__test__", the collection is scanned and a new
-index is built if the collection has changed.
-2.  **rescan**: uses a http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expression] to specify when the collection should be
+<1>  **rewrite**: one of the link:#collectionUpdateType[collectionUpdateTypes], except for *_never_*. The most useful value is *_test_*.
+<2>  **rescan**: uses a http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expression] to specify when the collection should be
 rescanned.
 
-=== Enabling Triggers
+=== Enabling Triggers [[trigger]]
 
-1.  You must give the role "tdsTrigger" to any user who you want to have the right to send a trigger.
-2.  You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page
-*https://server:port/thredds/admin/debug?Collections/showCollection*
-3.  The URL for the actual trigger is https://server:port/thredds/admin/collection/trigger?collection=__name__, where _name_ is the collection
-name. This does a rescan, and updates if anything has changed.
-4.  The TDM uses the trigger *https://server:port/thredds/admin/collection/trigger?collection=__name__&nocheck* . This does not rescan the
-directory, it simply recreates the dataset using the current index.
-5.  Also see link:../RemoteManagement.html[enabling Remote Management]
+.  You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page
+*\https://server/thredds/admin/debug?Collections/showCollection*
+.  The URL for the actual trigger is *\https://server/thredds/admin/collection/trigger?collection=_name_&trigger=_type_*, where _name_ is the collection
+name, and _type_ is a link:#collectionUpdateType[collectionUpdateType].
+.  You must give the role _tdsTrigger_ to any user who has the right to send a trigger.
+.  Triggering is password protected and uses SSH, see link:../RemoteManagement.html[enabling Remote Management] to enable SSH.
 
 === File Sorting
 
 When a collection shows a list of files, the files will be sorted by increasing name. To use a decreasing sort, use the fileSort inside the
 featureCollection element:
 
+[source,xml]
+----
  <featureCollection ... >
    ...
    <filesSort increasing = "false" />
  </featureCollection>
+----
 
-== Static vs. changing datasets
+== Static vs. changing datasets [[changing]]
 
 There are several way to update a feature collection when it changes, specified by attributes on the *update* element:
 
@@ -462,40 +523,39 @@ The dataset will be read in at startup time by using the existing indexes which 
 at 3 am, and send a trigger to the TDS if needed.
 
 
-== NcML Modifications
+== NcML Modifications [[ncml]]
 
 NcML is no longer used to define the collection, but it may still be used to modify the feature collection dataset, for FMRC or Point (not GRIB).
 
----------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <featureCollection featureType="FMRC" name="RTOFS Forecast Model Run Collection" path="fmrc/rtofs">
-1) <collection spec="c:/rps/cf/rtofs/.*ofs_atl.*\.grib2$" recheckAfter="10 min" olderThan="5 min"/>
+  <collection spec="c:/rps/cf/rtofs/.*ofs_atl.*\.grib2$" recheckAfter="10 min" olderThan="5 min"/> # <1>
 
-2) <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"> # <2>
     <variable name="time">
       <attribute name="units" value="hours since 1953-11-29T08:57"/>
      </variable>
-   </netcdf>
+  </netcdf>
 
-   <protoDataset>
-3)  <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <protoDataset>
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"> # <3>
       <attribute name="speech" value="I'd like to thank all the little people..."/>
       <variable name="mixed_layer_depth">
        <attribute name="long_name" value="mixed_layer_depth @ surface"/>
        <attribute name="units" value="m"/>
       </variable>
      </netcdf>
-   </protoDataset>
+  </protoDataset>
    
 </featureCollection>
----------------------------------------------------------------------------------------------------
+----
 
-where:
-
-1.  The collection is defined by a _collection_ element, allowing any number of forecast times per file
-2.  When you want __to modify the component files of the collection__, you put an NcML element inside the _featureCollection_ element. This modifies
+<1>  The collection is defined by a _collection_ element, allowing any number of forecast times per file
+<2>  When you want __to modify the component files of the collection__, you put an NcML element inside the _featureCollection_ element. This modifies
 the component files before they are turned into a gridded dataset. In this case we haved fixed the time coordinate units attribute, otherwise the
 individual files would not get recognized as Grid datasets, and the feature collection will fail.
-3.  When you want _to modify the resulting FMRC dataset,_ you put an NcML element inside the _protoDataset_ element. In this case we have added a
+<3>  When you want _to modify the resulting FMRC dataset,_ you put an NcML element inside the _protoDataset_ element. In this case we have added a
 global attribute named _speech_ and 2 attributes on the variable named __mixed_layer_depth__.
 
 Also see:
@@ -505,4 +565,4 @@ Also see:
 
 '''''
 
-image:../../thread.png[image] This document was last updated August 2015
+image:../../thread.png[image] This document was last updated September 2015

@@ -456,7 +456,7 @@ public class FeatureCollectionConfig {
 
   static public boolean useGenTypeDef = false, useTableVersionDef = false, intvMergeDef = true, useCenterDef = false;
 
-  static public class GribConfig {                                                // LOOK make Immutable
+  static public class GribConfig {
 
     public Map<Integer, Integer> gdsHash;  // map one gds hash to another
     public Map<Integer, String> gdsNamer;  // hash, group name
