@@ -33,6 +33,16 @@
 
 package ucar.nc2.ft.point.writer;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -43,7 +53,11 @@ import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
@@ -53,12 +67,6 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
 
 /**
  * generate capabilities XML for a FeatureDatasetPoint / StationTimeSeriesFeatureCollection
@@ -226,6 +234,8 @@ public class FeatureDatasetPointXML {
   }
 
   private Element writeVariable(VariableSimpleIF v) {
+    NcMLWriter ncMLWriter = new NcMLWriter();
+
     Element varElem = new Element("variable");
     varElem.setAttribute("name", v.getShortName());
 
@@ -235,7 +245,7 @@ public class FeatureDatasetPointXML {
 
     // attributes
     for (Attribute att : v.getAttributes()) {
-      varElem.addContent(NcMLWriter.writeAttribute(att, "attribute", null));
+      varElem.addContent(ncMLWriter.makeAttributeElement(att));
     }
 
     return varElem;

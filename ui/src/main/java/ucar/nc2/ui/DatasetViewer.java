@@ -33,25 +33,6 @@
 
 package ucar.nc2.ui;
 
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.stream.NcStreamWriter;
-import ucar.nc2.ui.dialog.CompareDialog;
-import ucar.nc2.ui.dialog.NetcdfOutputChooser;
-import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.write.Nc4ChunkingStrategy;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTable;
-import ucar.util.prefs.ui.Debug;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,11 +40,46 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.jdom2.Element;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.FileWriter2;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.stream.NcStreamWriter;
+import ucar.nc2.ui.dialog.CompareDialog;
+import ucar.nc2.ui.dialog.NetcdfOutputChooser;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.FileManager;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.Nc4ChunkingStrategy;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
+import ucar.util.prefs.ui.Debug;
 
 /**
  * A Swing widget to view the content of a netcdf dataset.
@@ -546,17 +562,16 @@ public class DatasetViewer extends JPanel {
     Variable v = getCurrentVariable(from);
     if (v == null) return;
     infoTA.clear();
-    if (isNcml) {
-      Formatter out = new Formatter();
-      try {
-        NCdumpW.writeNcMLVariable( v, out);
-      } catch (IOException e) {
-        e.printStackTrace(); 
-      }
-      infoTA.appendLine( out.toString());
 
+    if (isNcml) {
+      NcMLWriter ncmlWriter = new NcMLWriter();
+      ncmlWriter.setNamespace(null);
+      ncmlWriter.getXmlFormat().setOmitDeclaration(true);
+
+      Element varElement = ncmlWriter.makeVariableElement(v, false);
+      infoTA.appendLine(ncmlWriter.writeToString(varElement));
     } else {
-      infoTA.appendLine( v.toString());
+      infoTA.appendLine(v.toString());
     }
 
     if (Debug.isSet( "Xdeveloper")) {
@@ -565,6 +580,7 @@ public class DatasetViewer extends JPanel {
       infoTA.appendLine("\n");
       infoTA.appendLine(v.toStringDebug());
     }
+
     infoTA.gotoTop();
     infoWindow.setTitle("Variable Info");
     infoWindow.show();

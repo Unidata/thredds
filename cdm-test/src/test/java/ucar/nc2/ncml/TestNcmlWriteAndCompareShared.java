@@ -1,7 +1,15 @@
 package ucar.nc2.ncml;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -9,23 +17,13 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.ma2.DataType;
-import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
 
 /**
  * TestWrite NcML, read back and compare with original.
@@ -141,21 +139,22 @@ public class TestNcmlWriteAndCompareShared {
     if (useRecords)
       org.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-    NcMLWriter writer = new NcMLWriter();
-
     // create a file and write it out
     int pos = location.lastIndexOf("/");
     String filenameTmp = location.substring(pos + 1);
     String ncmlOut = TestDir.temporaryLocalDataDir + filenameTmp + ".ncml";
     if (showFiles) System.out.println(" output filename= " + ncmlOut);
     try {
-      OutputStream out = new BufferedOutputStream(new FileOutputStream(ncmlOut, false));
-      if (explicit)
-        writer.writeXMLexplicit( org, out, null);
-      else
-        writer.writeXML(org, out, null);
-      out.close();
+      NcMLWriter ncmlWriter = new NcMLWriter();
+      Element netcdfElement;
 
+      if (explicit) {
+        netcdfElement = ncmlWriter.makeExplicitNetcdfElement(org, null);
+      } else {
+        netcdfElement = ncmlWriter.makeNetcdfElement(org, null);
+      }
+
+      ncmlWriter.writeToFile(netcdfElement, new File(ncmlOut));
     } catch (IOException ioe) {
       // ioe.printStackTrace();
       assert false : ioe.getMessage();

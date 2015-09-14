@@ -2,6 +2,10 @@ configure(javaProjects + rootProject) {
     // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
     apply plugin: "jacoco"
 
+    jacoco {
+        toolVersion = '0.7.5.201505241946'  // The latest version as of 2015-06-26.
+    }
+
     tasks.withType(Test).all {
         // Add the execution data that Jacoco generates as a task output.
         outputs.file jacoco.destinationFile

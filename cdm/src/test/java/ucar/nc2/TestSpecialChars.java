@@ -32,18 +32,17 @@
  */
 package ucar.nc2;
 
-import junit.framework.TestCase;
-
+import java.io.File;
 import java.io.IOException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
-import ucar.ma2.DataType;
+import junit.framework.TestCase;
+import org.jdom2.Element;
 import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ncml.NcMLWriter;
 
 public class TestSpecialChars extends TestCase {
 
@@ -71,46 +70,47 @@ public class TestSpecialChars extends TestCase {
     ncfilew.writeStringData(tvar, data);
     ncfilew.close();
 
-    NetcdfFile ncfile = NetcdfFile.open(filename, null);
-    String val = ncfile.findAttValueIgnoreCase(null, "omy", null);
-    assert val != null;
-    assert val.equals(trouble);
+    try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
+      String val = ncfile.findAttValueIgnoreCase(null, "omy", null);
+      assert val != null;
+      assert val.equals(trouble);
 
-    Variable v = ncfile.findVariable("t");
-    v.setCachedData( v.read(), true);
+      Variable v = ncfile.findVariable("t");
+      v.setCachedData(v.read(), true);
 
-    val = ncfile.findAttValueIgnoreCase(v, "yow", null);
-    assert val != null;
-    assert val.equals(trouble);
+      val = ncfile.findAttValueIgnoreCase(v, "yow", null);
+      assert val != null;
+      assert val.equals(trouble);
 
-    ncfile.writeCDL(System.out, false);
-    ncfile.writeNcML(System.out, null);
+      ncfile.writeCDL(System.out, false);
+      ncfile.writeNcML(System.out, null);
 
-    NcMLWriter w = new NcMLWriter();
-    w.writeXML(ncfile, System.out, null);
+      NcMLWriter ncmlWriter = new NcMLWriter();
+      Element netcdfElem = ncmlWriter.makeNetcdfElement(ncfile, null);
 
-    OutputStream out = new FileOutputStream(TestLocal.temporaryDataDir +"testSpecialChars.ncml");
-    w.writeXML(ncfile, out, null);
-    out.close();
+      ncmlWriter.writeToStream(netcdfElem, System.out);
+      ncmlWriter.writeToFile(netcdfElem, new File(TestLocal.temporaryDataDir, "testSpecialChars.ncml"));
+    }
 
-    String filename2 = TestLocal.temporaryDataDir +"testSpecialChars.ncml";
-    NetcdfFile ncfile2 = NetcdfDataset.openFile(filename2, null);
-    System.out.println("ncml= "+ncfile2.getLocation());
+    String filename2 = TestLocal.temporaryDataDir + "testSpecialChars.ncml";
 
-    String val2 = ncfile2.findAttValueIgnoreCase(null, "omy", null);
-    assert val2 != null;
-    assert val2.equals(trouble);
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename2, null)) {
+      System.out.println("ncml= " + ncfile.getLocation());
 
-    Variable v2 = ncfile2.findVariable("t");
-    v2.setCachedData( v2.read(), true);
+      String val = ncfile.findAttValueIgnoreCase(null, "omy", null);
+      assert val != null;
+      assert val.equals(trouble);
 
-    val2 = ncfile2.findAttValueIgnoreCase(v2, "yow", null);
-    assert val2 != null;
-    assert val2.equals(trouble);
+      Variable v = ncfile.findVariable("t");
+      v.setCachedData(v.read(), true);
 
-    NcMLWriter writer = new NcMLWriter();
-    writer.writeXML(ncfile2, System.out, null);
+      val = ncfile.findAttValueIgnoreCase(v, "yow", null);
+      assert val != null;
+      assert val.equals(trouble);
 
-    ncfile.close();
+      NcMLWriter ncmlWriter = new NcMLWriter();
+      Element netcdfElem = ncmlWriter.makeNetcdfElement(ncfile, null);
+      ncmlWriter.writeToStream(netcdfElem, System.out);
+    }
   }
 }
