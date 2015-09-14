@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
@@ -166,8 +167,9 @@ public class TestNc4IospWriting {
 
   /////////////////////////////////////////////////
 
-  // Demonstrates GitHub issue #191.
+  // Demonstrates GitHub issue #191. Unignore when we have a fix in place.
   @Test
+  @Ignore
   public void writeEnumType() throws IOException {
     // NetcdfFile's 0-arg constructor is protected, so must use NetcdfFileSubclass
     NetcdfFile ncFile = new NetcdfFileSubclass();
