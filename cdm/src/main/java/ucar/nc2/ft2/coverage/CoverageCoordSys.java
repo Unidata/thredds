@@ -158,12 +158,12 @@ public class CoverageCoordSys {
     }
   }
 
-  void setHorizCoordSys(HorizCoordSys horizCoordSys) {
+  public void setHorizCoordSys(HorizCoordSys horizCoordSys) {
     if (immutable) throw new RuntimeException("Cant change CoverageCoordSys horizCoordSys once set immutable");
     this.horizCoordSys = horizCoordSys;
   }
 
-  HorizCoordSys makeHorizCoordSys() {
+  public HorizCoordSys makeHorizCoordSys() {
     CoverageCoordAxis xaxis = getAxis(AxisType.GeoX);
     CoverageCoordAxis yaxis = getAxis(AxisType.GeoY);
     CoverageCoordAxis lataxis = getAxis(AxisType.Lat);

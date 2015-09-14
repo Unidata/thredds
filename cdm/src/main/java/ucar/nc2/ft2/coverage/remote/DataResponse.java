@@ -59,6 +59,7 @@ class DataResponse implements CoordSysContainer {
 
     for (CoverageCoordSys csys : coordSys) {
       csys.setDataset(this); // LOOK More that should be done ??
+      csys.setHorizCoordSys(csys.makeHorizCoordSys());
     }
   }
 

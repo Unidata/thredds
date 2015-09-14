@@ -456,7 +456,7 @@ public class DatasetHtmlWriter {
 
   private String makeHref(String urlPath, String query, String title) {
     if (title == null) title = urlPath;
-    urlPath = urlPathEscaper.escape(urlPath);
+    // urlPath = urlPathEscaper.escape(urlPath);
     if (query != null)
       urlPath += "?" + query;
     return "<a href='" + htmlEscaper.escape(urlPath) + "'>" + htmlEscaper.escape(title) + "</a>";
