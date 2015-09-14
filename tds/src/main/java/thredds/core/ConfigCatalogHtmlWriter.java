@@ -366,17 +366,17 @@ public class ConfigCatalogHtmlWriter {
                                       boolean isLocalCatalog) {
     Formatter out = new Formatter();
 
-    out.format("%s<head>\r\n", getHtmlDoctypeAndOpenTag());
-    out.format("<title> Catalog Services</title>\r\n");
-    out.format("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\r\n");
-    out.format("%s</head>\r\n", getTdsPageCssLink());
-    out.format("<body>\r\n");
+    out.format("%s<head>%n", getHtmlDoctypeAndOpenTag());
+    out.format("<title> Catalog Services</title>%n");
+    out.format("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>%n");
+    out.format("%s</head>%n", getTdsPageCssLink());
+    out.format("<body>%n");
 
     StringBuilder sb = new StringBuilder();
     appendOldStyleHeader(sb);
-    out.format("%s\r\n", sb);
+    out.format("%s%n", sb);
 
-    out.format("<h2> Catalog %s</h2>\r\n", catURL);
+    out.format("<h2> Catalog %s</h2>%n", catURL);
 
     DatasetHtmlWriter writer = new DatasetHtmlWriter();
     // (Formatter out, Dataset ds, boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents, boolean resolveRelativeUrls)
@@ -386,10 +386,10 @@ public class ConfigCatalogHtmlWriter {
     if (isLocalCatalog)
       viewerService.showViewers(out, dataset, request);
 
-    out.format("%s\r\n", getGoogleTrackingContent());
+    out.format("%s%n", getGoogleTrackingContent());
 
-    out.format("</body>\r\n");
-    out.format("</html>\r\n");
+    out.format("</body>%n");
+    out.format("</html>%n");
 
     return out.toString();
   }

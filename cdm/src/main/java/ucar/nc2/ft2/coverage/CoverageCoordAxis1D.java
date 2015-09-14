@@ -69,11 +69,15 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     super(builder);
 
     if (axisType == null && builder.dependenceType == DependenceType.independent)
-      assert false : "independent axis must have type";
+      throw new IllegalArgumentException("independent axis must have type");
 
     // make sure range has axisType as the name
     String rangeName = (axisType != null) ? axisType.toString() : null;
-    this.range = (builder.range == null) ? Range.make(rangeName, getNcoords()) : builder.range.setName(rangeName);
+    if (builder.range != null) {
+      this.range = (rangeName != null) ? builder.range.setName(rangeName) : builder.range;
+    } else {
+      this.range = Range.make(rangeName, getNcoords());
+    }
     this.crange = builder.crange;
     this.isTime2D = builder.isTime2D;
   }

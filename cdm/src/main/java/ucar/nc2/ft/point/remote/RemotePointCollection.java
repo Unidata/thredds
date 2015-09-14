@@ -33,7 +33,6 @@
 
 package ucar.nc2.ft.point.remote;
 
-import com.sun.istack.internal.NotNull;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorEmpty;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -45,6 +44,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -118,7 +118,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   // Must override default subsetting implementation for efficiency
 
   @Override
-  @NotNull
+  @Nonnull
   public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
   }

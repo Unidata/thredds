@@ -410,6 +410,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   public CoverageDataset getGridCoverage(String matchPath) throws IOException {
     NetcdfDataset ncd = getNetcdfDataset(matchPath);
+    if (ncd == null) return null;
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
     CoverageDatasetCollection cc = DtCoverageAdapter.factory(gds);
     if (cc == null) return null;

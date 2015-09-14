@@ -131,7 +131,7 @@ public class DatasetManager implements InitializingBean {
 
   // used only for the case of Dataset (not DatasetScan) that have an NcML element inside.
   // This makes the NcML dataset the target of the server.
-  private class NcmlFileFactory implements FileFactory {
+  private static class NcmlFileFactory implements FileFactory {
     private String ncml;
 
     NcmlFileFactory(String ncml) {

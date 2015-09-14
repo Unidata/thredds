@@ -1220,7 +1220,7 @@ public class CFpointObs extends TableConfigurerImpl {
     stnTable.lat = lat.getFullName();
     stnTable.lon = lon.getFullName();
 
-    if (info.encoding != Encoding.single) {
+    if (info.encoding != Encoding.single && stationDim != null) {
       stnTable.dimName = stationDim.getShortName();
       makeStructureInfo(stnTable, ds, stnIdVar.getParentStructure(), stationDim);
     }

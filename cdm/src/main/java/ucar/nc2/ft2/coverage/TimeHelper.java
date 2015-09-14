@@ -128,8 +128,6 @@ public class TimeHelper {
   }
 
   public CalendarDate getRefDate() {
-    if (refDate == null)
-      System.out.printf("HEY%n");
     return refDate;
   }
 
@@ -148,8 +146,6 @@ public class TimeHelper {
   }
 
   public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
-    if (start == null)
-      System.out.printf("HEY%n");
     return start.add(addTo, dateUnit.getTimeUnit().getField());
   }
 

@@ -394,6 +394,8 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
     if (isInterval()) {
       ArrayDouble.D3 bounds = getCoordBoundsArray();
+      if (bounds == null)
+        throw new IllegalStateException("getCoordBoundsArray returned null for coordinate "+getFullName());
       ArrayDouble.D2 boundsForRun = (ArrayDouble.D2) bounds.slice(0,run_idx );
 
       int idx = findSingleHit(boundsForRun, wantOffset);
