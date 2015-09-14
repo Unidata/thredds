@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
@@ -47,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Helper class for Time coordinates
+ * Helper class for Time coordinate axes
  *
  * @author caron
  * @since 7/11/2015

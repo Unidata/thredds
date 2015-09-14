@@ -105,7 +105,9 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 ** logging of routine cache cleanup is now at _DEBUG_ level
 
 ==== ucar.ma2.Range
-** Currently specified by _start:end:stride_
+** _Range.copy(String name)_ replaced by _Range.setName(String name)_
+** _Range.getIterator()_ deprecated, use _Range.iterator()_
+** Currently a Range is specified by _start:end:stride_
 ** In the future, will be extended with subclasses *RangeScatter* and *RangeComposite*
 ** You should use the iterator now to ensure correct functionality. To iterate over the values of the Range:
 

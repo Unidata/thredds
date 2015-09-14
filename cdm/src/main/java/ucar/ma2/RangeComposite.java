@@ -32,24 +32,25 @@
  */
 package ucar.ma2;
 
-
 import net.jcip.annotations.Immutable;
 
+import java.util.*;
+
 /**
- * Description
+ * A Composite of other RangeIterators.
+ * Iterate over them in sequence.
  *
  * @author John
  * @since 8/19/2015
  */
 @Immutable
 public class RangeComposite implements RangeIterator {
-  private final Range[] ranges;
+  private final List<RangeIterator> ranges;
   private final String name;
 
-  public RangeComposite(String name, Range... r) throws InvalidRangeException {
-    //super(name, 0, 1, r.length);  // what does first, last mean here ??
+  public RangeComposite(String name, List<RangeIterator> ranges) throws InvalidRangeException {
     this.name = name;
-    this.ranges = r;
+    this.ranges = ranges;
   }
 
   @Override
@@ -57,24 +58,59 @@ public class RangeComposite implements RangeIterator {
     return name;
   }
 
-  /* @Override
-  public Range copy(String name) {
+  public List<RangeIterator> getRanges() {
+    return ranges;
+  }
+
+  @Override
+  public RangeIterator setName(String name) {
+    if (name.equals(this.getName())) return this;
     try {
       return new RangeComposite(name, ranges);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen
     }
-  }  */
+  }
 
   @Override
   public java.util.Iterator<Integer> iterator() {
-    return null;
+    Collection<Iterable<Integer>> iters = new ArrayList<>();
+    for (RangeIterator r : ranges)
+      iters.add(r);
+
+    return new CompositeIterator<>(iters);
   }
 
   @Override
   public int length() {
-    return ranges.length;
+    int result = 0;
+    for (RangeIterator r : ranges)
+      result += r.length();
+    return result;
   }
 
+  // generic could be moved to utils
+  static private class CompositeIterator<T> implements Iterator<T> {
+    Iterator<Iterable<T>> iters;
+    Iterator<T> current;
+
+    CompositeIterator(Collection<Iterable<T>> iters) {
+      this.iters = iters.iterator();
+      current = this.iters.next().iterator();
+    }
+
+    @Override
+    public boolean hasNext() {
+      if (current.hasNext()) return true;
+      if (!iters.hasNext()) return false;
+      current = iters.next().iterator();
+      return hasNext();
+    }
+
+    @Override
+    public T next() {
+      return current.next();
+    }
+  }
 
 }

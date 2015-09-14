@@ -29,7 +29,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestCoverageSubset {
+public class TestGribCoverageSubsetP {
 
   @BeforeClass
   public static void before() {
@@ -46,6 +46,14 @@ public class TestCoverageSubset {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
+    ////////////// dt
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", "RH",
+            null, "2003-06-12T22:00:00Z", null, 400.0});   // projection, no reftime, no timeOffset
+
+    ////////////// grib
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1", "Pressure_surface",
+            "2012-02-27T00:00:00Z", null, 42.0, null});   // projection, scalar reftime
+
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "Momentum_flux_u-component_surface_Mixed_intervals_Average",
             "2015-03-01T06:00:00Z", "2015-03-01T12:00:00Z", null, null});   // time
 
@@ -57,7 +65,6 @@ public class TestCoverageSubset {
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "Ozone_Mixing_Ratio_isobaric",
             "2015-03-01T06:00:00Z", null, 213.0, 10000.});   // specific level
-
 // */
     return result;
   }
@@ -66,7 +73,7 @@ public class TestCoverageSubset {
   CalendarDate rt_val, time_val;
   Double time_offset, vert_level;
 
-  public TestCoverageSubset(String endpoint, String covName, String rt_val, String time_val, Double time_offset, Double vert_level) {
+  public TestGribCoverageSubsetP(String endpoint, String covName, String rt_val, String time_val, Double time_offset, Double vert_level) {
     this.endpoint = endpoint;
     this.covName = covName;
     this.rt_val = (rt_val == null) ? null : CalendarDate.parseISOformat(null, rt_val);
@@ -77,12 +84,12 @@ public class TestCoverageSubset {
 
   @Test
   public void testGridCoverageDatasetFmrc() throws IOException, InvalidRangeException {
-    System.out.printf("Test Dataset %s%n", endpoint);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
       CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
       if (gcs == null) return;
+      System.out.printf("testGridCoverageDatasetFmrc %s%n", endpoint);
 
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -93,7 +100,7 @@ public class TestCoverageSubset {
 
   @Test
   public void testGridCoverageDatasetBest() throws IOException, InvalidRangeException {
-    System.out.printf("Test Dataset %s%n", endpoint);
+    System.out.printf("testGridCoverageDatasetBest %s%n", endpoint);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -108,8 +115,42 @@ public class TestCoverageSubset {
   }
 
   @Test
+  public void testFmrcStride() throws IOException, InvalidRangeException {
+
+    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, cc);
+      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      if (gcs == null) return; // not all datasets have an Fmrc
+      System.out.printf("testFmrcStride %s%n", endpoint);
+
+      Coverage cover = gcs.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+      CoverageCoordSys csys = cover.getCoordSys();
+      int[] csysShape =  csys.getShape();
+      System.out.printf("csys shape = %s%n", Misc.showInts(csysShape));
+
+      SubsetParams params = new SubsetParams().set(SubsetParams.horizStride, 2).set(SubsetParams.runtimeAll, true);
+      Optional<CoverageCoordSys> opt = csys.subset(params);
+      if (!opt.isPresent()) {
+        System.out.printf("err=%s%n", opt.getErrorMessage());
+        assert false;
+      }
+
+      CoverageCoordSys subsetCoordSys = opt.get();
+      int[] subsetShape =  subsetCoordSys.getShape();
+      System.out.printf("csysSubset shape = %s%n", Misc.showInts(subsetShape));
+
+      int n = csysShape.length;
+      csysShape[n-1] = (csysShape[n-1]+1)/2;
+      csysShape[n-2] = (csysShape[n-2]+1)/2;
+
+      Assert.assertArrayEquals(csysShape, subsetShape);
+    }
+  }
+
+  @Test
   public void testBestStride() throws IOException, InvalidRangeException {
-    System.out.printf("Test Dataset %s%n", endpoint);
+    System.out.printf("testBestStride %s%n", endpoint);
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -122,14 +163,14 @@ public class TestCoverageSubset {
       System.out.printf("csys shape = %s%n", Misc.showInts(csysShape));
 
       SubsetParams params = new SubsetParams().set(SubsetParams.horizStride, 2);
-      Optional<CoverageCoordSysSubset> csysSubseto = csys.subset(params, false);
-      if (!csysSubseto.isPresent()) {
-        System.out.printf("err=%s%n", csysSubseto.getErrorMessage());
+      Optional<CoverageCoordSys> opt = csys.subset(params);
+      if (!opt.isPresent()) {
+        System.out.printf("err=%s%n", opt.getErrorMessage());
         assert false;
       }
 
-      CoverageCoordSys csysSubset = csysSubseto.get().coordSys;
-      int[] subsetShape =  csysSubset.getShape();
+      CoverageCoordSys subsetCoordSys = opt.get();
+      int[] subsetShape =  subsetCoordSys.getShape();
       System.out.printf("csysSubset shape = %s%n", Misc.showInts(subsetShape));
 
       int n = csysShape.length;
@@ -140,7 +181,7 @@ public class TestCoverageSubset {
     }
   }
 
-  void readOne(Coverage cover, CalendarDate rt_val, CalendarDate time_val, Double time_offset, Double vert_level) throws IOException, InvalidRangeException {
+  static void readOne(Coverage cover, CalendarDate rt_val, CalendarDate time_val, Double time_offset, Double vert_level) throws IOException, InvalidRangeException {
     System.out.printf("%n===Request Subset %s runtime=%s time=%s timeOffset=%s vert=%s %n", cover.getName(), rt_val, time_val, time_offset, vert_level);
 
     SubsetParams subset = new SubsetParams();
@@ -177,7 +218,8 @@ public class TestCoverageSubset {
         Assert.assertEquals(1, runAxis.getNcoords());
         double val = runAxis.getStartValue();
         CalendarDate runDate = runAxis.makeDate(val);
-        Assert.assertEquals(rt_val, runDate);
+        if (rt_val != null)
+          Assert.assertEquals(rt_val, runDate);
         Assert.assertEquals(1, timeOffsetAxis.getNcoords());
 
         if (time_val != null) {

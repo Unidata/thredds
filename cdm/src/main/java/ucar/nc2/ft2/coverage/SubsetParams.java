@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
@@ -62,7 +63,6 @@ public class SubsetParams {
   public static final String timeOffset = "timeOffset"; // value = Double
   public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
 
-  // public static final String vertIndex = "vertIndex";   // value = Integer    LOOK BAD
   public static final String vertCoord = "vertCoord";   // value = Double
   public static final String ensCoord = "ensCoord";     // value = double ??
 

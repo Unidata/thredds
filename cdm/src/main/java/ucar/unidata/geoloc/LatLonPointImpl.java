@@ -104,7 +104,7 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    *
    * @param lon    lon to normalize
    * @param start starting point
-   * @return longitude into the range [center +/- 180] deg
+   * @return longitude into the [start, start+360] deg
    */
   static public double lonNormalFrom(double lon, double start) {
     while (lon < start) lon += 360;
@@ -124,6 +124,16 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
     } else {
       return lon;
     }
+  }
+
+  /**
+   * Find difference (lon1 - lon2) normalized so that maximum value is += 180.
+   * @param lon1 start
+   * @param lon2 end
+   * @return
+   */
+  static public double lonDiff(double lon1, double lon2) {
+    return Math.IEEEremainder(lon1-lon2, 360.0);
   }
 
   /**

@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
@@ -46,7 +47,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Optional;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,12 +70,11 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     discontiguousInterval   // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1..
   }
 
-
   public enum DependenceType {
     independent,             // has its own dimension, is a coordinate variable, eg x(x)
-    dependent,               // aux coordinate, reftime(time) or time_bounds(time);
-    scalar,                  // reftime
-    twoD                     // time(reftime, time), lat(x,y)
+    dependent,               // aux coordinate, eg reftime(time) or time_bounds(time);
+    scalar,                  // eg reftime
+    twoD                     // eg time(reftime, time), lat(x,y)
   }
 
   protected final String name;
@@ -98,7 +97,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   protected final String units;
 
   // may be lazy eval
-  protected double[] values;     // null if isRegular, CoordAxisReader for lazy eval
+  protected double[] values;     // null if isRegular, or use CoordAxisReader for lazy eval
 
   protected CoverageCoordAxis( CoverageCoordAxisBuilder builder) {
     this.name = builder.name;
@@ -271,7 +270,18 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     return new int[] {ncoords};
   }
 
-  public RangeIterator getRange() {
+  public Range getRange() {
+    if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
+      return Range.EMPTY;
+
+    try {
+      return new Range(axisType.toString(), 0, ncoords-1);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public RangeIterator getRangeIterator() {
     if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
       return Range.EMPTY;
 
@@ -287,7 +297,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     indent.incr();
 
     f.format("%s", getDependenceType());
-    if (dependsOn != null && dependsOn.size() > 0) {
+    if (dependsOn.size() > 0) {
       f.format(" :");
       for (String s : dependsOn) f.format(" %s", s);
     }

@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage.remote;
 
@@ -56,8 +57,9 @@ class DataResponse implements CoordSysContainer {
     this.transforms = transforms;
     this.arrayResponse = arrayResponse;
 
-    for (CoverageCoordSys csys : coordSys)
-      csys.setDataset(this);
+    for (CoverageCoordSys csys : coordSys) {
+      csys.setDataset(this); // LOOK More that should be done ??
+    }
   }
 
   public CoverageCoordSys findCoordSys(String csysName) {

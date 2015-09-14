@@ -29,17 +29,18 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Misc;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 
 import ucar.nc2.util.Optional;
@@ -268,7 +269,6 @@ class CoordAxisHelper {
 
   // look could specialize when only one point
   // look must handle discon interval different
-  @Nullable
   private Optional<CoverageCoordAxisBuilder> subsetValues(double minValue, double maxValue, int stride) {
     if (axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval)
       return subsetValuesDiscontinuous(minValue, maxValue, stride);
@@ -300,11 +300,42 @@ class CoordAxisHelper {
     }
   }
 
+  public Optional<RangeIterator> makeRange(double minValue, double maxValue, int stride) {
+    //if (axis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval)
+    //  return subsetValuesDiscontinuous(minValue, maxValue, stride);
+
+    double lower = axis.isAscending() ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
+    double upper = axis.isAscending() ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
+
+    int minIndex = findCoordElement(lower, false);
+    int maxIndex = findCoordElement(upper, false);
+
+    if (minIndex >= axis.getNcoords())
+      return Optional.empty(String.format("no points in subset: lower %f > end %f", lower, axis.getEndValue()));
+    if (maxIndex < 0)
+      return Optional.empty(String.format("no points in subset: upper %f < start %f", upper, axis.getStartValue()));
+
+    if (minIndex < 0)
+      minIndex = 0;
+    if (maxIndex >= axis.getNcoords())
+      maxIndex = axis.getNcoords() - 1;
+
+    int count = maxIndex - minIndex + 1;
+    if (count <= 0)
+      return Optional.empty("no points in subset");
+
+    try {
+      return Optional.of( new Range(minIndex, maxIndex, stride));
+    } catch (InvalidRangeException e) {
+      return Optional.empty(e.getMessage());
+    }
+  }
+
   private Optional<CoverageCoordAxisBuilder> subsetValuesDiscontinuous(double minValue, double maxValue, int stride) {
     return Optional.empty("subsetValuesDiscontinuous not done yet");
   }
 
-  // min, max must be valid, min <= max, [min,max] inclusive
+  // Range must be contained in this range
   @Nonnull
   CoverageCoordAxisBuilder subsetByIndex(Range range) throws InvalidRangeException {
     int ncoords = range.length();
@@ -410,7 +441,7 @@ class CoordAxisHelper {
       return Misc.closeEnough(fval, ival) ? (int) ival : (int) -ival - 1; // LOOK
     }
 
-    // otherwise do a binary searcg
+    // otherwise do a binary search
     return Arrays.binarySearch(axis.getValues(), want);
   }
 }

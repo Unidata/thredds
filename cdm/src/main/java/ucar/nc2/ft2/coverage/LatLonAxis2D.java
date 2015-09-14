@@ -29,10 +29,12 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
@@ -54,11 +56,11 @@ import java.util.List;
 public class LatLonAxis2D extends CoverageCoordAxis {
 
   // can only be set once
-  private int[] shape;
+  private int[] shape;        // y, x
   private Object userObject;
 
-  public LatLonAxis2D( CoverageCoordAxisBuilder builder) {
-    super( builder);
+  public LatLonAxis2D(CoverageCoordAxisBuilder builder) {
+    super(builder);
     this.shape = builder.shape;
     this.userObject = builder.userObject;
   }
@@ -77,7 +79,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
           throw new IllegalStateException("LatLonAxis2D cant find axis " + axisName);
       } else {
         shape[count] = axis.getNcoords();
-        dependentAxes.add( axis);
+        dependentAxes.add(axis);
       }
     }
     this.shape = shape;
@@ -99,8 +101,8 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   public List<RangeIterator> getRanges() {
     List<RangeIterator> result = new ArrayList<>();
-    result.add(new Range(shape[0]));  // LOOK wrong
-    result.add(new Range(shape[1]));
+    result.add(Range.make(AxisType.Lat.toString(), shape[0]));  // LOOK wrong, need subset Range
+    result.add(Range.make(AxisType.Lon.toString(), shape[1]));
     return result;
   }
 
@@ -113,24 +115,24 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   public double getCoord(int yindex, int xindex) {
     // assume values hold 2D coord
     getValues();
-    int idx = yindex*shape[1] + xindex;
+    int idx = yindex * shape[1] + xindex;
     return values[idx];
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(SubsetParams params) {  // LOOK not implemented
-    return Optional.of(new LatLonAxis2D( new CoverageCoordAxisBuilder(this)));
+  public Optional<CoverageCoordAxis> subset(SubsetParams params) {  // Handled in HorzCoordSys2D
+    throw new UnsupportedOperationException();
   }
 
   @Override
-  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented
-    return Optional.of( new LatLonAxis2D( new CoverageCoordAxisBuilder(this)));
+  public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // Handled in HorzCoordSys2D
+    throw new UnsupportedOperationException();
   }
 
   @Override
   @Nonnull
   public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -146,19 +148,21 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   public LatLonAxis2D subset(RangeIterator rangex, RangeIterator rangey) {
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(this);
+
     // subset the values
+    double[] values = getValues(); // make sure values are read in
     int nx = rangex.length();
     int ny = rangey.length();
-    double[] svalues = new double[nx*ny];
+    double[] svalues = new double[nx * ny];
     int count = 0;
     for (int y : rangey)
       for (int x : rangex)
-        svalues[count++] = values[y*nx + x];
+        svalues[count++] = values[y * nx + x];
 
     builder.values = svalues;
     builder.isSubset = true;
-    builder.ncoords = nx*ny;
-    builder.shape = new int[] {ny, nx};
+    builder.ncoords = nx * ny;
+    builder.shape = new int[]{ny, nx};
 
     return new LatLonAxis2D(builder);
   }

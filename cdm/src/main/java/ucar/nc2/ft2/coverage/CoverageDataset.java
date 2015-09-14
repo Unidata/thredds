@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
@@ -94,9 +95,9 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
 
   private List<CoordSysSet> wireObjectsTogether(List<Coverage> coverages) {
     for (CoverageCoordAxis axis : coordAxes)
-      axisMap.put( axis.getName(), axis);
+      axisMap.put(axis.getName(), axis);
     for (CoverageCoordAxis axis : coordAxes)
-      axis.setDataset( this);
+      axis.setDataset(this);
 
     // wire dependencies
     Map<String, CoordSysSet> map = new HashMap<>();
@@ -119,9 +120,13 @@ public class CoverageDataset implements AutoCloseable, CoordSysContainer {
   }
 
   private HorizCoordSys wireHorizCoordSys() {
-    HorizCoordSys hcs = coordSys.get(0).getHorizCoordSys();
+    CoverageCoordSys csys1 = coordSys.get(0);
+    HorizCoordSys hcs = csys1.makeHorizCoordSys();
+
+    // we want them to share the same object for efficiency, esp 2D
     for (CoverageCoordSys csys : coordSys) {
-      csys.setHorizCoordSys(hcs);  // make sure they all share same one
+      csys.setHorizCoordSys(hcs);
+      csys.setImmutable();
     }
     return hcs;
   }

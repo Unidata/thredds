@@ -685,7 +685,7 @@ public class CoverageRenderer {
   private void drawGridHoriz(java.awt.Graphics2D g, GeoReferencedArray geo) {
     CoverageCoordSys csData = geo.getCoordSysForData();
     HorizCoordSys hcs = csData.getHorizCoordSys();
-    if (!hcs.is2DlatLon) {
+    if (!hcs.isLatLon2D()) {
       drawGridHorizRegular(g, geo);
       return;
     }

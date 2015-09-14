@@ -20,7 +20,7 @@ import java.io.IOException;
  * @author caron
  * @since 7/14/2015
  */
-public class TestDtCoverageBuilding {
+public class TestDtWithCoverageBuilding {
 
   @Test
   public void testScalarRuntimeCoordinate() throws IOException {

@@ -30,10 +30,22 @@ public class RangeScatter implements RangeIterator {
     this.vals = val;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
+  public RangeIterator setName(String name) {
+    if (name.equals(this.getName())) return this;
+    try {
+      return new RangeScatter(name, vals);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
+  }
+
+  @Override
   public int length() {
     return vals.length;
   }

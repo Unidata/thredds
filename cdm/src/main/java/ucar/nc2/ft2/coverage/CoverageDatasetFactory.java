@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage;
 
@@ -43,6 +44,11 @@ import java.lang.reflect.Method;
 
 /**
  * factory for CoverageDataset
+ *  1) Remote CdmrFeatureDataset
+ *  2) GRIB collections
+ *  3) DtCoverageDataset (forked from ucar.nc2.dt.grid), the cdm IOSP / CoordSys stack
+ *
+ *  Would like to add a seperate implementation for FMRC collections
  *
  * @author caron
  * @since 5/26/2015

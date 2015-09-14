@@ -915,13 +915,11 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
     GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();
-    ucar.nc2.util.Optional<CoverageCoordSysSubset> coordSysSubseto = orgCoordSys.subset(params, false);
-    if (!coordSysSubseto.isPresent())
-      throw new InvalidRangeException(coordSysSubseto.getErrorMessage());
+    ucar.nc2.util.Optional<CoverageCoordSys> opt = orgCoordSys.subset(params, false, true);
+    if (!opt.isPresent())
+      throw new InvalidRangeException(opt.getErrorMessage());
 
-    CoverageCoordSysSubset coordSysSubset = coordSysSubseto.get();
-    CoverageCoordSys subsetCoordSys = coordSysSubset.coordSys;
-
+    CoverageCoordSys subsetCoordSys = opt.get();
     List<CoverageCoordAxis> coordsSetAxes = new ArrayList<>(); // for CoordsSet.factory()
 
     // this orders the coords based on the grib coords, which also orders the iterator in CoordsSet. could be different i think
@@ -934,7 +932,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
           break;
 
         case time2D:
-          if (coordSysSubset.isConstantForecast) {
+          if (subsetCoordSys.isConstantForecast()) {
             CoverageCoordAxis toAxis = subsetCoordSys.getAxis(AxisType.TimeOffset); // aux
             coordsSetAxes.addAll(axisAndDependents(toAxis, subsetCoordSys));
 
@@ -977,12 +975,14 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     List<RangeIterator> yxRange = subsetCoordSys.getHorizCoordSys().getRanges(); // may be 2D
 
     // iterator over all except x, y
-    CoordsSet coordIter = CoordsSet.factory(coordSysSubset.isConstantForecast, coordsSetAxes);
+    CoordsSet coordIter = CoordsSet.factory(subsetCoordSys.isConstantForecast(), coordsSetAxes);
 
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
     Array data = dataReader.readData2(coordIter, yxRange.get(0), yxRange.get(1));
 
-    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, geoArrayAxes, subsetCoordSys.getType());
+    return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, subsetCoordSys);
+
+    // return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), data, geoArrayAxes, orgCoordSys.getTransforms(), subsetCoordSys.getType());
   }
 
   // LOOK dependent axis could get added multiple times

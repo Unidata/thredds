@@ -29,6 +29,7 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft2.coverage.adapter;
 
@@ -566,11 +567,11 @@ public class DtCoverage implements IsMissingEvaluator {
    *
    * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
    */
-  public Array readDataSection(List<Range> subset, boolean canonicalOrder) throws InvalidRangeException, IOException {
+  public Array readDataSection(Section subset, boolean canonicalOrder) throws InvalidRangeException, IOException {
 
     // get the ranges list in the order of the variable; a null range means "all" to vs.read()
     Range[] varRange = new Range[getRank()];
-    for (Range r : subset) {
+    for (Range r : subset.getRanges()) {
       AxisType type = AxisType.valueOf(r.getName());
       switch (type) {
         case Lon:

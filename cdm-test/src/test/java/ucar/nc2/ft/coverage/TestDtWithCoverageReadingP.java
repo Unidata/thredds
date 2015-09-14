@@ -29,14 +29,14 @@ import java.util.List;
 
 /**
  * GridCoverage Subsetting
- * Read all the data for a coverage variable and compare it to
+ * Read all the data for a coverage variable and compare it to dt.Grid
  *
  * @author caron
  * @since 6/1/2015
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGridCoverageReading {
+public class TestDtWithCoverageReadingP {
 
   @BeforeClass
   public static void before() {
@@ -71,7 +71,7 @@ public class TestGridCoverageReading {
   CoverageCoordSys.Type expectType;
   //int domain, range, ncoverages;
 
-  public TestGridCoverageReading(String endpoint, CoverageCoordSys.Type expectType) {
+  public TestDtWithCoverageReadingP(String endpoint, CoverageCoordSys.Type expectType) {
     this.endpoint = endpoint;
     this.expectType = expectType;
   }

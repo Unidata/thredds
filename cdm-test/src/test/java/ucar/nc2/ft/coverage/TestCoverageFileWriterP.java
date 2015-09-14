@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestCoverageFileWriter {
+public class TestCoverageFileWriterP {
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -63,7 +63,7 @@ public class TestCoverageFileWriter {
   CoverageCoordSys.Type type;
   SubsetParams params;
 
-  public TestCoverageFileWriter(String endpoint, CoverageCoordSys.Type type, List<String> covList, SubsetParams params, NetcdfFileWriter.Version version) {
+  public TestCoverageFileWriterP(String endpoint, CoverageCoordSys.Type type, List<String> covList, SubsetParams params, NetcdfFileWriter.Version version) {
     this.endpoint = endpoint;
     this.type = type;
     this.covList = covList;
@@ -92,7 +92,7 @@ public class TestCoverageFileWriter {
         throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
     }
 
-    // open the new file as a Coverage
+    // open the new file as a Coverage. SInce its a netcdf file, it will open through the DtAdapter (!)
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(tempFile.getPath())) {
       Assert.assertNotNull(endpoint, cc);
       Assert.assertEquals(1, cc.getCoverageDatasets().size());
