@@ -123,19 +123,6 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 ==== ucar.nc2.dataset
 ** CoordinateAxis2D.getMidpoints() was deprecated and now removed, use getCoordValuesArray()
 
-Catalogs
-^^^^^^^^
-
-* All uses of classes in *thredds.catalog* are deprecated. If you still need these, you must add *legacy.jar* to your path.
-* TDS and CDM now use *thredds.server.catalog* and *thredds.client.catalog*
-
-Viewers
-^^^^^^^
-
-* *thredds.servlet.Viewer* has *InvDatasetImpl* changed to *Dataset*
-* *thredds.servlet.ViewerLinkProvider* has *InvDatasetImpl* changed to *Dataset*
-* *thredds.server.viewer.dataservice.ViewerService* has *InvDatasetImpl* changed to *Dataset*
-
 Coordinate Systems
 ^^^^^^^^^^^^^^^^^^
 
@@ -150,6 +137,12 @@ Feature Types
 * *ucar.nc2.dt.TypedDatasetFactory* has been removed. Use *ucar.nc2.ft.FeatureDatasetFactoryManager*
 * *ucar.nc2.dt.grid* is deprecated (but not removed) and is replaced by *ucar.nc2.ft2.coverage*
 * *ucar.nc2.dt.point* and *ucar.nc2.dt.trajectory* has been removed, replaced by *ucar.nc2.ft.**
+
+Catalogs
+^^^^^^^^
+
+* All uses of classes in *thredds.catalog* are deprecated. If you still need these, you must add *legacy.jar* to your path.
+* TDS and CDM now use *thredds.server.catalog* and *thredds.client.catalog*
 
 Catalog Schema changes
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -171,6 +164,13 @@ Server Configuration Catalogs
 * *service* elements no longer need to be explicitly defined in each config catalog, but may reference user defined global services
 * if the *datatype/featureType* is defined for a dataset, then the *service* element may be ommited, and the default set of services for that
 *datatype* will be used.
+
+Viewers
+^^^^^^^
+
+* *thredds.servlet.Viewer* has *InvDatasetImpl* changed to *Dataset*
+* *thredds.servlet.ViewerLinkProvider* has *InvDatasetImpl* changed to *Dataset*
+* *thredds.server.viewer.dataservice.ViewerService* has *InvDatasetImpl* changed to *Dataset*
 
 DatasetScan
 ^^^^^^^^^^^

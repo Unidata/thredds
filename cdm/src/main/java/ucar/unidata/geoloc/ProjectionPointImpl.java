@@ -38,7 +38,7 @@ import ucar.unidata.util.Format;
 import java.util.Formatter;
 
 /**
- * Our implementation of ProjectionPoint,
+ * Implementation of ProjectionPoint
  *
  * @author John Caron
  * @see ProjectionPoint
@@ -99,14 +99,25 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
     this.y = y;
   }
 
-  /**
-   * Returns true if this represents the same point as pt.
-   *
-   * @param pt point to check
-   * @return true if this represents the same point as pt.
-   */
-  public boolean equals(ProjectionPoint pt) {
-    return (pt.getX() == getX()) && (pt.getY() == getY());
+  // must be exact compare to be consistent with hashCode
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ProjectionPointImpl that = (ProjectionPointImpl) o;
+    if (Double.compare(that.x, x) != 0) return false;
+    return Double.compare(that.y, y) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    temp = Double.doubleToLongBits(x);
+    result = (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(y);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    return result;
   }
 
   /**
@@ -115,7 +126,7 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
    * @param pt2 point to check against
    * @return true if this represents the same point as pt2.
    */
-  public boolean closeEnough(ProjectionPoint pt2) {
+  public boolean equals(ProjectionPoint pt2) {
     return Misc.closeEnough(getX(), pt2.getX()) &&  Misc.closeEnough(getY(), pt2.getY());
   }
 

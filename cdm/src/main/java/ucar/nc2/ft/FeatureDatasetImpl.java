@@ -49,6 +49,7 @@ import java.util.*;
 /**
  * Abstract superclass for implementations of FeatureDataset.
  * Subclass must implement getFeatureClass(), and add specific functionality.
+ * Possible set dataVariables
  * @author caron
  * @since Sep 7, 2007
  */
@@ -191,8 +192,9 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   public LatLonRect getBoundingBox() { return boundingBox; }
 
   public List<VariableSimpleIF> getDataVariables() {
-    return (dataVariables == null) ? new ArrayList<VariableSimpleIF>() : dataVariables;
+    return (dataVariables == null) ? new ArrayList<>() : dataVariables;
   }
+
   public VariableSimpleIF getDataVariable( String shortName) {
     for (VariableSimpleIF s : getDataVariables()) {
       String ss = s.getShortName();
@@ -200,7 +202,6 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     }
     return null;
   }
-
 
   public String getImplementationName() {
     return getClass().getName();

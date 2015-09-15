@@ -87,6 +87,28 @@ public class NcssParamsBean {
 
   protected Double longitude;
 
+  public NcssParamsBean() {}
+
+  public NcssParamsBean(NcssParamsBean from) {
+    this.accept = from.accept;
+    this.var = from.var;
+    this.time_start = from.time_start;
+    this.time_end = from.time_end;
+    this.time_duration = from.time_duration;
+    this.time = from.time;
+    this.temporal = from.temporal;
+    this.north = from.north;
+    this.south = from.south;
+    this.east = from.east;
+    this.west = from.west;
+    this.latitude = from.latitude;
+    this.longitude = from.longitude;
+    this.date = from.date;
+    this.dateRange = from.dateRange;
+    this.time_window = from.time_window;
+    this.timeWindow = from.timeWindow;
+  }
+
   /////////////////////////////////////////////////////
 
   public String getAccept() {

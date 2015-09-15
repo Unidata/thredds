@@ -49,6 +49,7 @@ public class SubsetParams {
   public static final String latlonBB = "latlonBB";     // value = LatLonRect
   public static final String projBB = "projBB";         // value = ProjRect
   public static final String horizStride = "horizStride";  // value = Integer
+  public static final String latlonPoint = "latlonPoint";  // value = LatLonPointImpl
 
   public static final String time = "time";             // value = CalendarDate
   public static final String timeRange = "timeRange";   // value = CalendarDateRange

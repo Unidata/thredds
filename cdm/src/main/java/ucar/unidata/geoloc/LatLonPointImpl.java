@@ -34,6 +34,8 @@ package ucar.unidata.geoloc;
 
 import ucar.unidata.util.Format;
 
+import java.util.Formatter;
+
 /**
  * Standard implementation of LatLonPoint.
  * Longitude is always between -180 and +180 deg.
@@ -156,21 +158,19 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * Make a nicely formatted representation of a latitude, eg 40.34N or 12.9S.
    *
    * @param lat       the latitude.
-   * @param sigDigits numer of significant digits to display.
+   * @param ndec      number of digits to right of decimal point
    * @return String representation.
    */
-  static public String latToString(double lat, int sigDigits) {
+  static public String latToString(double lat, int ndec) {
     boolean is_north = (lat >= 0.0);
-    if (!is_north) {
+    if (!is_north)
       lat = -lat;
-    }
 
-    StringBuilder latBuff = new StringBuilder(20);
-    latBuff.setLength(0);
-    latBuff.append(Format.d(lat, sigDigits));
-    latBuff.append(is_north
-        ? "N"
-        : "S");
+    String f = "%."+ndec+"f";
+
+    Formatter latBuff = new Formatter();
+    latBuff.format(f, lat);
+    latBuff.format("%s", is_north ? "N" : "S");
 
     return latBuff.toString();
   }
@@ -179,24 +179,22 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * Make a nicely formatted representation of a longitude, eg 120.3W or 99.99E.
    *
    * @param lon       the longitude.
-   * @param sigDigits numer of significant digits to display.
+   * @param ndec      number of digits to right of decimal point
    * @return String representation.
    */
-  static public String lonToString(double lon, int sigDigits) {
+  static public String lonToString(double lon, int ndec) {
     double wlon = lonNormal(lon);
     boolean is_east = (wlon >= 0.0);
-    if (!is_east) {
+    if (!is_east)
       wlon = -wlon;
-    }
 
-    StringBuilder lonBuff = new StringBuilder(20);
-    lonBuff.setLength(0);
-    lonBuff.append(Format.d(wlon, sigDigits));
-    lonBuff.append(is_east
-        ? "E"
-        : "W");
+    String f = " %."+ndec+"f";
 
-    return lonBuff.toString();
+    Formatter latBuff = new Formatter();
+    latBuff.format(f, wlon);
+    latBuff.format("%s", is_east ? "E" : "W");
+
+    return latBuff.toString();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -382,11 +380,8 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
    * @return String representation
    */
   public String toString(int sigDigits) {
-    StringBuilder sbuff = new StringBuilder(40);
-    sbuff.setLength(0);
-    sbuff.append(latToString(lat, sigDigits));
-    sbuff.append(" ");
-    sbuff.append(lonToString(lon, sigDigits));
+    Formatter sbuff = new Formatter();
+    sbuff.format("%s %s", latToString(lat, sigDigits), lonToString(lon, sigDigits));
     return sbuff.toString();
   }
 

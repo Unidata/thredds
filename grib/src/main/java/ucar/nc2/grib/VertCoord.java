@@ -144,7 +144,7 @@ public class VertCoord {
       return false;
 
     for (int i = 0; i < coords.size(); i++) {
-      if (!coords.get(i).equals(other.coords.get(i)))
+      if (!coords.get(i).closeEnough(other.coords.get(i)))
         return false;
     }
 
@@ -230,23 +230,30 @@ public class VertCoord {
     }
 
     @Override
-    public boolean equals(Object oo) {
-      if (this == oo) return true;
-      if (!(oo instanceof Level))
-        return false;
-      Level other = (Level) oo;
-      return (ucar.nc2.util.Misc.closeEnough(value1, other.value1) && ucar.nc2.util.Misc.closeEnough(value2, other.value2));
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Level level = (Level) o;
+      if (Double.compare(level.value1, value1) != 0) return false;
+      if (Double.compare(level.value2, value2) != 0) return false;
+      return isLayer == level.isLayer;
     }
 
     @Override
     public int hashCode() {
       int result;
       long temp;
-      temp = value1 != +0.0d ? Double.doubleToLongBits(value1) : 0L;
+      temp = Double.doubleToLongBits(value1);
       result = (int) (temp ^ (temp >>> 32));
-      temp = value2 != +0.0d ? Double.doubleToLongBits(value2) : 0L;
+      temp = Double.doubleToLongBits(value2);
       result = 31 * result + (int) (temp ^ (temp >>> 32));
+      result = 31 * result + (isLayer ? 1 : 0);
       return result;
+    }
+
+    // cannot do approx equals and be consistent with hashCode, so make seperate call
+    public boolean closeEnough(Level other) {
+      return (ucar.nc2.util.Misc.closeEnough(value1, other.value1) && ucar.nc2.util.Misc.closeEnough(value2, other.value2));
     }
 
     public String toString() {

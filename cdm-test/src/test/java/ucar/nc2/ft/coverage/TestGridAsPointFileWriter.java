@@ -13,7 +13,7 @@ import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.SubsetParams;
-import ucar.nc2.ft2.coverage.writer.DSGGridCoverageWriter;
+import ucar.nc2.ft2.coverage.writer.CoverageAsPoint;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test DSGGridCoverageWriter
+ * Test CoverageAsPoint
  *
  * @author caron
  * @since 7/8/2015
@@ -66,7 +66,7 @@ public class TestGridAsPointFileWriter {
 
         NetcdfFileWriter ncwriter = NetcdfFileWriter.createNew(version, tempFile.getPath(), null);
 
-        DSGGridCoverageWriter writer = new DSGGridCoverageWriter(gds, covList, new SubsetParams());
+        CoverageAsPoint writer = new CoverageAsPoint(gds, covList, new SubsetParams());
       }
 
       /* open the new file as a Coverage

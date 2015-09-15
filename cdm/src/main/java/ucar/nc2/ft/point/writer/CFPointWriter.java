@@ -137,7 +137,6 @@ public abstract class CFPointWriter implements AutoCloseable {
 
       } else if (fc instanceof SectionFeatureCollection) {
         return writeTrajectoryProfileFeatureCollection(fdpoint, (SectionFeatureCollection) fc, fileOut, config);
-
       }
     }
 
@@ -171,6 +170,7 @@ public abstract class CFPointWriter implements AutoCloseable {
 
     try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
+
       ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, (CalendarDateRange) null); // LOOK
 
       int count = 0;

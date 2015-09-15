@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point;
 
+import com.beust.jcommander.internal.Lists;
 import ucar.nc2.Variable;
 import ucar.nc2.ft.*;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -85,8 +86,7 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
   }
 
   protected void setPointFeatureCollection(FeatureCollection collection) {
-    this.collectionList = new ArrayList<>(1);
-    this.collectionList.add(collection);
+    this.collectionList = Lists.newArrayList(collection);
   }
 
   @Override

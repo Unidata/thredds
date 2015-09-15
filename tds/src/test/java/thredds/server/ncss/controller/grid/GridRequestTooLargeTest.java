@@ -60,7 +60,7 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
-public class GridRequestException2Test {
+public class GridRequestTooLargeTest {
 
 	@Autowired
 	private NcssGridController featureDatasetController;
@@ -83,7 +83,6 @@ public class GridRequestException2Test {
 
 	@Test(expected=RequestTooLargeException.class)
 	public void testRequestTooLargeException() throws Exception{
-
 		BindingResult validationResult;
 		NcssGridParamsBean params = new NcssGridParamsBean();
 		params.setTemporal("all");
@@ -94,16 +93,6 @@ public class GridRequestException2Test {
 		params.setVar(vars);
 		validationResult = new BeanPropertyBindingResult(params, "params");
 		featureDatasetController.handleRequest(request, response, params, validationResult);
-	}
-
-	@After
-	public void tearDown() throws IOException{
-
-		//GridDataset gds = gridDataController.getGridDataset();
-		//gds.close();
-		//gds = null;
-		//gridDataController =null;
-
 	}
 
 }

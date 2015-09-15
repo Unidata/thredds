@@ -397,6 +397,23 @@ class CoordAxisHelper {
     return builder;
   }
 
+  Optional<CoverageCoordAxisBuilder> subsetContaining(double want) {
+    int index = findCoordElement(want, false); // not bounded, may not be valid index
+    if (index < 0 || index >= axis.ncoords)
+      return Optional.empty(String.format("value %f not in axis %s", want, axis.getName()));
+
+    double val = axis.getCoord(index);
+
+    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
+    builder.subset(1, val, val, 0.0, makeValues(index));
+    try {
+      builder.setRange(new Range(index, index));
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
+    return Optional.of(builder);
+  }
+
   @Nonnull
   private CoverageCoordAxisBuilder subsetValuesLatest() {
     int last = axis.getNcoords() - 1;

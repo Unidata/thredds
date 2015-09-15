@@ -42,9 +42,7 @@ import java.util.List;
  * @author caron
  * @since 4/29/2015
  */
-public class NcssPointParamsBean  extends NcssParamsBean {
-
-
+public class NcssPointParamsBean extends NcssParamsBean {
 
   //// station only
 	private List<String> stns;
@@ -59,6 +57,12 @@ public class NcssPointParamsBean  extends NcssParamsBean {
 
   public boolean hasStations() {
     return stns != null && !stns.isEmpty();
+  }
+
+  public NcssPointParamsBean() {}
+
+  public NcssPointParamsBean(NcssParamsBean from) {
+    super(from);
   }
 
 }
