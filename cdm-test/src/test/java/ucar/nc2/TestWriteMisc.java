@@ -38,12 +38,12 @@ public class TestWriteMisc {
     NetcdfFileWriter fileWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, TestLocal.temporaryDataDir + "objnames.nc");
     Dimension[] dim = new Dimension[1];
     int aSize = 8;
-    dim[0] = setDimension(fileWriter, "ñ", "blah", aSize);
+    dim[0] = setDimension(fileWriter, "ñÁÉ", "blah", aSize);
     Variable v = fileWriter.addVariable(null, "áéíóú", DataType.FLOAT, Arrays.asList(dim));
     fileWriter.addVariableAttribute(v, new Attribute("_FillValue", -9999));
     fileWriter.addVariableAttribute(v, new Attribute(CDM.MISSING_VALUE, -9999));
-    System.out.println("Did not throw exception");
-    fileWriter.create();  // throws error missing native C
+    System.out.println("Did not throw exception - good");
+    fileWriter.create();
     System.out.println("Writing netcdf <=");
     int[] shape = new int[]{aSize};
     float[] floatStorage = new float[aSize];
