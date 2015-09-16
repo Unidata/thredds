@@ -278,7 +278,7 @@ public abstract class GribDataReader {
 
         if (GribDataReader.validator != null && dr.validation != null && rafData != null) {
           GribDataReader.validator.validate(gribCollection.cust, rafData, dr.dataPos, dr.validation);
-        } else if (show) { // for validation
+        } else if (show && rafData != null) { // for validation
           show( dr.validation);
           show(rafData, dr.dataPos);
         }
