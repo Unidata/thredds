@@ -32,7 +32,21 @@
  */
 package ucar.nc2.dataset;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.http.Header;
+import org.jdom2.Element;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.httpservices.HTTPFactory;
@@ -40,7 +54,16 @@ import ucar.httpservices.HTTPMethod;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.EnumTypedef;
+import ucar.nc2.FileWriter2;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Sequence;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ncml.NcMLGWriter;
@@ -55,12 +78,6 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
 
 /**
  * NetcdfDataset extends the netCDF API, adding standard attribute parsing such as
@@ -1354,8 +1371,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param uri use this for the url attribute; if null use getLocation().
    * @throws IOException
    */
+  @Override
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
-    new NcMLWriter().writeXML(this, os, uri);
+    NcMLWriter ncmlWriter = new NcMLWriter();
+    Element netcdfElem = ncmlWriter.makeNetcdfElement(this, uri);
+    ncmlWriter.writeToStream(netcdfElem, os);
   }
 
   /**

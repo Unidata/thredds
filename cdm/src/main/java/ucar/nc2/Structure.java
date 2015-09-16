@@ -32,11 +32,23 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.*;
-import ucar.nc2.util.Indent;
-
-import java.util.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.util.Indent;
 
 /**
  * A Structure is a type of Variable that contains other Variables, like a struct in C.
@@ -44,7 +56,7 @@ import java.io.IOException;
  *<p>
  * A call to structure.read() will read all of the data in a Structure,
  * including nested structures, and returns an Array of StructureData, with all of the data in memory.
- * If there is a nested sequence, the sequence data may be read into memory all at once, ot it may be
+ * If there is a nested sequence, the sequence data may be read into memory all at once, or it may be
  * read in increments as the iteration proceeds.
  * <p>
  * Generally, the programmer can assume that the data in one Structure are stored together,

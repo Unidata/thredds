@@ -1,13 +1,30 @@
 package ucar.nc2.ui;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.*;
+import javax.swing.text.PlainDocument;
+
 import org.bounce.text.LineNumberMargin;
 import org.bounce.text.ScrollableEditorPanel;
 import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLEditorKit;
 import org.bounce.text.xml.XMLStyleConstants;
+import org.jdom2.Element;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
@@ -17,20 +34,9 @@ import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.ComboBox;
-
-import javax.swing.*;
-import javax.swing.text.PlainDocument;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.*;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Describe
@@ -242,15 +248,13 @@ public class NcmlEditor extends JPanel {
       if (ds == null) {
         editor.setText("Failed to open <" + location + ">");
       } else {
-        result = new NcMLWriter().writeXML(ds);
+        NcMLWriter ncmlWriter = new NcMLWriter();
+        Element netcdfElem = ncmlWriter.makeNetcdfElement(ds, null);
+        result = ncmlWriter.writeToString(netcdfElem);
+
         editor.setText(result);
         editor.setCaretPosition(0);
       }
-
-    } catch (FileNotFoundException ioe) {
-      editor.setText("Failed to open <" + location + ">");
-      err = true;
-
     } catch (Exception e) {
       StringWriter sw = new StringWriter(10000);
       e.printStackTrace();

@@ -304,7 +304,7 @@ netcdf feb.nc {
 <p>A <em><strong>JoinNew</strong></em> aggregation has to create a new coordinate variable. In the above example, one
   was automatically created with type double, to match the coordValues specified on the netcdf elements. However, it
   has no units or other attributes. To specify attributes on the coordinate system, you can use the following (download
-  <a href="examples/aggNewCoord.ncml">aggNewCoord.ncm):</a></p>
+  <a href="examples/aggNewCoord.ncml">aggNewCoord.ncml</a>):</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
 <strong>(1)</strong>&lt;variable name=&quot;time&quot; type=&quot;int&quot; &gt;
      &lt;attribute name=&quot;units&quot; value=&quot;months since 2000-6-16 6:00&quot;/&gt;
@@ -412,7 +412,7 @@ netcdf feb.nc {
 <h3>Extracting date coordinates from the filename</h3>
 
 <p>For the common case that the filename contains date information from which you can derive a time coordinate, you can
-  use the <strong>dateFormatMark</strong> attribute (download <a href="examples/aggDateFormat.ncml">aggDateFormat</a>.ncml
+  use the <strong>dateFormatMark</strong> attribute (download <a href="examples/aggDateFormat.ncml">aggDateFormat.ncml</a>
   and <a href="examples/cg.zip">cg.zip</a>, unzip the latter and place in your data directory). In the ToolsUI
   <strong>NcML Tab</strong>, open <strong>aggDateFormat.ncml</strong> and change the scan location to point to your
   data directory, and then save it <img src="images/saveButt.png" width="31" height="30" alt="">:</p>

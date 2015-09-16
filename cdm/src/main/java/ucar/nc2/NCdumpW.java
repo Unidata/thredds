@@ -32,22 +32,37 @@
  */
 package ucar.nc2;
 
-import com.google.common.escape.Escaper;
-import com.google.common.xml.XmlEscapers;
-import ucar.ma2.*;
+import java.io.BufferedWriter;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.StringTokenizer;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import org.jdom2.Element;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.ArraySequence;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.Index;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.Indent;
-import ucar.unidata.util.StringUtil2;
-
-import java.io.*;
-import java.math.BigInteger;
-import java.util.StringTokenizer;
-import java.util.List;
-import java.util.Formatter;
-import java.nio.ByteBuffer;
 
 /**
  * Print contents of an existing netCDF file, using a Writer.
@@ -129,8 +144,6 @@ public class NCdumpW {
 
   /**
    * NCdump that parses a command string, using default options.
-   * Usage:
-   * <pre>NCdump filename [-ncml] [-c | -vall] [-v varName;...]</pre>
    *
    * @param command command string
    * @param out     send output here
@@ -143,8 +156,6 @@ public class NCdumpW {
 
   /**
    * ncdump that parses a command string.
-   * Usage:
-   * <pre>NCdump filename [-ncml] [-c | -vall] [-v varName;...]</pre>
    *
    * @param command command string
    * @param out     send output here
@@ -312,11 +323,9 @@ public class NCdumpW {
    */
   public static boolean print(NetcdfFile nc, Writer out, WantValues showValues,
                               boolean ncml, boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
-
     boolean headerOnly = (showValues == WantValues.none) && (varNames == null);
 
     try {
-
       if (ncml)
         writeNcML(nc, out, showValues, null); // output schema in NcML
       else if (headerOnly)
@@ -746,245 +755,46 @@ public class NCdumpW {
    * This method implements only the "core" NcML for plain ole netcdf files.
    *
    * @param ncfile     write NcML for this file
-   * @param os         write to this Writer. Must be using UTF-8 encoding (where applicable)
-   * @param showCoords show coordinate variable values.
+   * @param writer     write to this Writer. Must be using UTF-8 encoding (where applicable)
+   * @param showValues do you want the variable values printed?
    * @param url        use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException on write error
    */
-  static public void writeNcML(NetcdfFile ncfile, java.io.Writer os, boolean showCoords, String url) throws IOException {
-    writeNcML(ncfile, os, showCoords ? WantValues.coordsOnly : WantValues.none, url);
-  }
+  static public void writeNcML(NetcdfFile ncfile, Writer writer, WantValues showValues, String url) throws IOException {
+    Preconditions.checkNotNull(ncfile);
+    Preconditions.checkNotNull(writer);
+    Preconditions.checkNotNull(showValues);
 
-  static public void writeNcML(NetcdfFile ncfile, java.io.Writer os, WantValues showValues, String url) throws IOException {
-    writeNcML(ncfile, new Formatter(os), showValues, url);
-  }
-
-  static public void writeNcML(NetcdfFile ncfile, Formatter out, WantValues showValues, String url) throws IOException {
-    out.format("<?xml version='1.0' encoding='UTF-8'?>%n");
-    out.format("<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'%n");
-
-    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
-    if (url != null)
-      out.format("    location='%s' >%n%n", escaper.escape(url));
-    else
-      out.format("    location='%s' >%n%n", escaper.escape(URLnaming.canonicalizeWrite(ncfile.getLocation())));
-
-    if (ncfile.getId() != null)
-      out.format("    id='%s'%n", escaper.escape(ncfile.getId()));
-    if (ncfile.getTitle() != null)
-      out.format("    title='%s'%n", escaper.escape(ncfile.getTitle()));
-
-    writeNcMLGroup(ncfile, ncfile.getRootGroup(), out, new Indent(2), showValues);
-
-    out.format("</netcdf>%n");
-    out.flush();
-  }
-
-  static public void writeNcMLVariable(Variable v, Formatter out) throws IOException {
-    if (v instanceof Structure) {
-      writeNcMLStructure((Structure) v, out, new Indent(2), WantValues.none);
-    } else {
-      writeNcMLVariable(v, out, new Indent(2), WantValues.none);
-    }
-  }
-
-
-  static private void writeNcMLGroup(NetcdfFile ncfile, Group g, Formatter out, Indent indent, WantValues showValues) throws IOException {
-    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
-    if (g != ncfile.getRootGroup())
-      out.format("%s<group name='%s' >%n", indent, escaper.escape(g.getShortName()));
-    indent.incr();
-
-    List<Dimension> dimList = g.getDimensions();
-    for (Dimension dim : dimList) {
-      out.format("%s<dimension name='%s' length='%s'", indent, escaper.escape(dim.getShortName()), dim.getLength());
-      if (dim.isUnlimited())
-        out.format(" isUnlimited='true'");
-      out.format(" />%n");
-    }
-    if (dimList.size() > 0)
-      out.format("%n");
-
-    List<Attribute> attList = g.getAttributes();
-    for (Attribute att : attList) {
-      writeNcMLAtt(att, out, indent);
-    }
-    if (attList.size() > 0)
-      out.format("%n");
-
-    for (Variable v : g.getVariables()) {
-      if (v instanceof Structure) {
-        writeNcMLStructure((Structure) v, out, indent, showValues);
-      } else {
-        writeNcMLVariable(v, out, indent, showValues);
-      }
+    Predicate<Variable> writeVarsPred;
+    switch (showValues) {
+      case none:
+        writeVarsPred = NcMLWriter.writeNoVariablesPredicate;
+        break;
+      case coordsOnly:
+        writeVarsPred = NcMLWriter.writeCoordinateVariablesPredicate;
+        break;
+      case all:
+        writeVarsPred = NcMLWriter.writeAllVariablesPredicate;
+        break;
+      default:
+        String message = String.format(
+            "CAN'T HAPPEN: showValues (%s) != null and checked all possible enum values.", showValues);
+        throw new AssertionError(message);
     }
 
-    // nested groups
-    List groupList = g.getGroups();
-    for (int i = 0; i < groupList.size(); i++) {
-      if (i > 0) out.format("%n");
-      Group nested = (Group) groupList.get(i);
-      writeNcMLGroup(ncfile, nested, out, indent, showValues);
-    }
+    NcMLWriter ncmlWriter = new NcMLWriter();
+    ncmlWriter.setWriteVariablesPredicate(writeVarsPred);
 
-    indent.decr();
-
-    if (g != ncfile.getRootGroup()) {
-      out.format("%s</group>%n", indent);
-    }
-  }
-
-  static private void writeNcMLStructure(Structure s, Formatter out, Indent indent, WantValues showValues) throws IOException {
-    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
-    out.format("%s<structure name='%s", indent, escaper.escape(s.getShortName()));
-
-    // any dimensions?
-    if (s.getRank() > 0) {
-      writeNcMLDimension(s, out);
-    }
-    out.format(">%n");
-
-    indent.incr();
-
-    List<Attribute> attList = s.getAttributes();
-    for (Attribute att : attList) {
-      writeNcMLAtt(att, out, indent);
-    }
-    if (attList.size() > 0)
-      out.format("%n");
-
-    List<Variable> varList = s.getVariables();
-    for (Variable v : varList) {
-      writeNcMLVariable(v, out, indent, showValues);
-    }
-
-    indent.decr();
-
-    out.format("%s</structure>%n", indent);
-  }
-
-  static private void writeNcMLVariable(Variable v, Formatter out, Indent indent, WantValues showValues) throws IOException {
-    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
-    out.format("%s<variable name='%s' type='%s'", indent, escaper.escape(v.getShortName()), v.getDataType());
-
-    // any dimensions (scalers must skip this attribute) ?
-    if (v.getRank() > 0) {
-      writeNcMLDimension(v, out);
-    }
-
-    indent.incr();
-
-    boolean closed = false;
-
-    // any attributes ?
-    java.util.List<Attribute> atts = v.getAttributes();
-    if (atts.size() > 0) {
-      out.format(" >%n");
-      closed = true;
-      for (Attribute att : atts) {
-        writeNcMLAtt(att, out, indent);
-      }
-    }
-
-    // print data ?
-    if ((showValues == WantValues.all) ||
-            ((showValues == WantValues.coordsOnly) && v.isCoordinateVariable())) {
-      if (!closed) {
-        out.format(" >%n");
-        closed = true;
-      }
-      writeNcMLValues(v, out, indent);
-    }
-
-    indent.decr();
-
-    // close variable element
-    if (!closed)
-      out.format(" />%n");
-    else {
-      out.format("%s</variable>%n", indent);
-    }
-
-  }
-
-  // LOOK anon dimensions
-
-  static private void writeNcMLDimension(Variable v, Formatter out) {
-    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
-    out.format(" shape='");
-    java.util.List<Dimension> dims = v.getDimensions();
-    for (int j = 0; j < dims.size(); j++) {
-      Dimension dim = dims.get(j);
-      if (j != 0)
-        out.format(" ");
-      if (dim.isShared())
-        out.format("%s", escaper.escape(dim.getShortName()));
-      else
-        out.format("%d", dim.getLength());
-    }
-    out.format("'");
-  }
-
-  @SuppressWarnings({"ObjectToString"})
-  static private void writeNcMLAtt(Attribute att, Formatter out, Indent indent) {
-    Escaper escaper = XmlEscapers.xmlAttributeEscaper();
-    out.format("%s<attribute name='%s' value='", indent, escaper.escape(att.getShortName()));
-    if (att.isString()) {
-      for (int i = 0; i < att.getLength(); i++) {
-        if (i > 0) out.format("\\, "); // ??
-        out.format("%s", escaper.escape(att.getStringValue(i)));
-      }
-    } else {
-      for (int i = 0; i < att.getLength(); i++) {
-        if (i > 0) out.format(" ");
-        out.format("%s ", att.getNumericValue(i));
-      }
-      out.format("' type='%s", att.getDataType());
-    }
-    out.format("' />%n");
-  }
-
-  static private void writeNcMLValues(Variable v, Formatter out, Indent indent) throws IOException {
-    Array data = v.read();
-    int width = formatValues(indent + "<values>", out, 0, indent);
-
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext())
-      width = formatValues(ii.next() + " ", out, width, indent);
-    formatValues("</values>\n", out, width, indent);
-  }
-
-  static private int formatValues(String s, Formatter out, int width, Indent indent) {
-    int len = s.length();
-    int totalWidth = 80;
-    if (len + width > totalWidth) {
-      out.format("%n%s", indent);
-      width = indent.toString().length();
-    }
-    out.format("%s", s);
-    width += len;
-    return width;
-  }
-
-  private static char[] org = {'\b', '\f', '\n', '\r', '\t', '\\', '\'', '\"'};
-  private static String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\\'", "\\\""};
-
-  /**
-   * Replace special characters '\t', '\n', '\f', '\r'.
-   *
-   * @param s string to quote
-   * @return equivilent string replacing special chars
-   */
-  static public String encodeString(String s) {
-    return StringUtil2.replace(s, org, replace);
+    Element netcdfElement = ncmlWriter.makeNetcdfElement(ncfile, url);
+    ncmlWriter.writeToWriter(netcdfElement, writer);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Main program.
-   * <p><strong>ucar.nc2.NCdump filename [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)] </strong>
+   * <p><strong>ucar.nc2.NCdumpW filename [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]
+   * </strong>
    * <p>where: <ul>
    * <li> filename : path of any CDM readable file
    * <li> cdl or ncml: output format is CDL or NcML
@@ -998,7 +808,6 @@ public class NCdumpW {
    * @param args arguments
    */
   public static void main(String[] args) {
-
     if (args.length == 0) {
       System.out.println(usage);
       return;

@@ -32,33 +32,6 @@
  */
 package ucar.nc2.ui.grid;
 
-import ucar.ma2.Array;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDatasetInfo;
-import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.ui.event.ActionCoordinator;
-import ucar.nc2.ui.event.ActionSourceListener;
-import ucar.nc2.ui.event.ActionValueEvent;
-import ucar.nc2.ui.geoloc.*;
-import ucar.nc2.ui.util.Renderer;
-import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.ScaledPanel;
-import ucar.nc2.util.NamedObject;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.ProjectionPointImpl;
-import ucar.unidata.geoloc.ProjectionRect;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.Debug;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,6 +45,41 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import org.jdom2.Element;
+import ucar.ma2.Array;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDatasetInfo;
+import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.ui.event.ActionCoordinator;
+import ucar.nc2.ui.event.ActionSourceListener;
+import ucar.nc2.ui.event.ActionValueEvent;
+import ucar.nc2.ui.geoloc.CursorMoveEvent;
+import ucar.nc2.ui.geoloc.CursorMoveEventListener;
+import ucar.nc2.ui.geoloc.NavigatedPanel;
+import ucar.nc2.ui.geoloc.NewMapAreaEvent;
+import ucar.nc2.ui.geoloc.NewMapAreaListener;
+import ucar.nc2.ui.geoloc.NewProjectionEvent;
+import ucar.nc2.ui.geoloc.NewProjectionListener;
+import ucar.nc2.ui.geoloc.PickEvent;
+import ucar.nc2.ui.geoloc.PickEventListener;
+import ucar.nc2.ui.util.Renderer;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.ScaledPanel;
+import ucar.nc2.util.NamedObject;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.ProjectionRect;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.Debug;
 
 /**
  * The controller manages the interactions between GRID data and renderers.
@@ -536,12 +544,10 @@ public class GridController {
 
   String getNcML() {
     if (gridDataset == null) return "Null gridset";
-    try {
-      return new NcMLWriter().writeXML( gridDataset.getNetcdfFile());
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-    return "";
+
+    NcMLWriter ncmlWriter = new NcMLWriter();
+    Element netcdfElement = ncmlWriter.makeNetcdfElement(gridDataset.getNetcdfFile(), null);
+    return ncmlWriter.writeToString(netcdfElement);
   }
 
   NetcdfDataset getNetcdfDataset() { return netcdfDataset; }
