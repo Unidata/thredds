@@ -2,7 +2,7 @@
 <catalog name="TDS Unit Test Server"
          xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
          xmlns:xlink="http://www.w3.org/1999/xlink"
-         xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+         xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" version="1.2">
 
   <service name="latest" serviceType="Resolver" base=""/>
   <service name="opendapOnly" serviceType="OpenDAP" base="/thredds/dodsC/"/>

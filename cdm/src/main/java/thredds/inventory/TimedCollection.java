@@ -69,8 +69,8 @@ public class TimedCollection {
     this.manager = manager;
 
     // get the inventory, sorted by path
-    if (manager instanceof CollectionManager) {
-      ((CollectionManager)manager).scanIfNeeded();
+    if (manager != null) {
+      manager.scanIfNeeded();
     }
     update();
 
@@ -117,7 +117,7 @@ public class TimedCollection {
 
   private TimedCollection(TimedCollection from, CalendarDateRange want) {
     this.manager = from.manager;
-    datasets = new ArrayList<TimedCollection.Dataset>(from.datasets.size());
+    datasets = new ArrayList<>(from.datasets.size());
     for (TimedCollection.Dataset d : from.datasets)
       if (want.intersects(d.getDateRange()))
         datasets.add(d);

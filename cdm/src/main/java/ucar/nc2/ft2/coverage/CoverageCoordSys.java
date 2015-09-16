@@ -158,12 +158,12 @@ public class CoverageCoordSys {
     }
   }
 
-  void setHorizCoordSys(HorizCoordSys horizCoordSys) {
+  public void setHorizCoordSys(HorizCoordSys horizCoordSys) {
     if (immutable) throw new RuntimeException("Cant change CoverageCoordSys horizCoordSys once set immutable");
     this.horizCoordSys = horizCoordSys;
   }
 
-  HorizCoordSys makeHorizCoordSys() {
+  public HorizCoordSys makeHorizCoordSys() {
     CoverageCoordAxis xaxis = getAxis(AxisType.GeoX);
     CoverageCoordAxis yaxis = getAxis(AxisType.GeoY);
     CoverageCoordAxis lataxis = getAxis(AxisType.Lat);
@@ -257,6 +257,8 @@ public class CoverageCoordSys {
   public CoverageCoordAxis getZAxis() {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
+      if (axis == null)
+        throw new IllegalStateException("Cant find axis with name "+axisName);
       if (axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.Height || axis.getAxisType() == AxisType.Pressure)
         return axis;
     }
@@ -274,7 +276,7 @@ public class CoverageCoordSys {
     for (String axisName : getAxisNames()) {
       CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
       if (axis == null)
-        throw new IllegalStateException("Cant find " + axisName);
+        throw new IllegalStateException("Cant find axis with name "+axisName);
       else if (axis.getAxisType() == type) {
         return axis;
       }
@@ -352,7 +354,7 @@ public class CoverageCoordSys {
     return new LatLonProjection();
   }
 
-  private class MyCoordSysContainer implements CoordSysContainer {
+  private static class MyCoordSysContainer implements CoordSysContainer {
     public List<CoverageCoordAxis> axes;
     public List<CoverageTransform> transforms;
 

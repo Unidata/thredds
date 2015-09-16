@@ -316,22 +316,4 @@ public class Fmrc {
     checkNeeded(false);
     fmrcDataset.showDetails(out);
   }
-
-  public static void main(String[] args) throws IOException {
-    Formatter errlog = new Formatter();
-
-    String spec1 = "/data/testdata/ncml/nc/nam_c20s/NAM_CONUS_20km_surface_#yyyyMMdd_HHmm#.grib1";
-    String spec2 = "/data/testdata/grid/grib/grib1/data/agg/.*grb";
-    String spec3 = "/data/testdata/ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1";
-    String spec4 = "/data/testdata/cdmUnitTest/rtmodels/.*_nmm\\.GrbF[0-9]{5}$";
-
-    String cat1 = "catalog:http://thredds.ucar.edu/thredds/catalog/fmrc/NCEP/RUC2/CONUS_40km/files/catalog.xml";
-    String cat2 = "catalog:http://thredds.ucar.edu/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml";
-
-    String specH = "C:/data/datasets/nogaps/US058GMET-GR1mdl.*air_temp";
-    String specH2 = "C:/data/ft/grid/cg/.*nc$";
-    String specH3 = "C:/data/ft/grid/namExtract/#yyyyMMdd_HHmm#.*nc$";
-    new Fmrc(specH3, errlog);
-    System.out.printf("errlog = %s%n", errlog);
-  }
 }

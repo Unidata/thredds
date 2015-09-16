@@ -74,7 +74,7 @@ public class TestBitReader {
 	}
 
 	@Test
-	@Ignore
+	@Ignore("why is this failing?")
 	public void testSignedNegative3() throws IOException {
 		BitReader bu = new BitReader(new byte[] {(byte)199,(byte)242,(byte)0,(byte)0,(byte)6,(byte)6});
 		assertEquals(799, (int) bu.bits2UInt(10));

@@ -45,5 +45,5 @@ public enum CollectionUpdateType {
   testIndexOnly,   // test only if top index is up-to-date, use it if exists and younger than data file.
   nocheck,    // if index exists, use it, otherwise create it
   never,      // only use existing, fail if doesnt already exist
-  last        // LOOK not implemented: need an option to only look at last partition, for very large collection that change only in latest
+  last        // LOOK not implemented: need an option to only examine last partition, for very large collection that change only in latest
 }

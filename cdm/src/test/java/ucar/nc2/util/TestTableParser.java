@@ -18,7 +18,6 @@ public class TestTableParser {
 
     ////////////////////////////////////////////////////////////////////////////////////
   static final String testName3 = "/resources/nj22/tables/nexrad.tbl";
-  static final String testRepeat = "C:\\data\\ghcnm\\ghcnm.v3.0.0-beta1.20101207.qae.dat"; // LOOK put this into cdmUnitTest
 
   @Test
   public void testReadNexradTable() throws IOException {
@@ -42,19 +41,5 @@ public class TestTableParser {
     Assert.assertEquals(-9622.0, (Double)rec.get(4), 0.1);
     Assert.assertEquals(417.0, (Double)rec.get(5), 0.1);
   }
-
-  @Test
-  @Ignore("ghcnm.v3.0.0-beta1.20101207.qae.dat isn't in repo")
-  public void testReadgGghcnmTable() throws IOException {
-    List<TableParser.Record> recs = TableParser.readTable(testRepeat, "11L,15i,19,(24i,25,26,27)*10", 5);
-    for (TableParser.Record record : recs) {
-      for (int j = 0; j < record.values.size(); j++) {
-        Object s = record.values.get(j);
-        System.out.print(" " + s.toString());
-      }
-      System.out.println();
-    }
-  }
-
 
 }

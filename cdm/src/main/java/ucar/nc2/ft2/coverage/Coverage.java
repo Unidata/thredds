@@ -145,6 +145,8 @@ public class Coverage implements IsMissingEvaluator {
     long total = 1;
     for (String axisName : coordSys.getAxisNames()) {  // LOOK this assumes a certain order
       CoverageCoordAxis axis = coordSys.getAxis(axisName);
+      if (axis == null)
+        throw new IllegalStateException("Cant find axis with name "+axisName);
       total *= axis.getNcoords();
     }
     total *= getDataType().getSize();

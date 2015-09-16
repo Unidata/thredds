@@ -716,10 +716,10 @@
       <xsd:simpleType>
         <xsd:restriction base="xsd:token">
           <xsd:enumeration value="FMRC"/>
-          <xsd:enumeration value="GRIB"/>
-          <xsd:enumeration value="Station"/>
+          <xsd:enumeration value="GRIB1"/>
+          <xsd:enumeration value="GRIB2"/>
           <xsd:enumeration value="Point"/>
-          <xsd:enumeration value="Station_Profile"/>
+          <xsd:enumeration value="Station"/>
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:union>
@@ -735,20 +735,34 @@
   </xsd:complexType>
 
   <xsd:complexType name="updateType">
-    <xsd:attribute name="startup" type="xsd:string"/>
     <xsd:attribute name="recheckAfter" type="xsd:string"/>
     <xsd:attribute name="rescan" type="xsd:token"/>
-    <xsd:attribute name="rewrite" type="xsd:string"/>
-    <xsd:attribute name="trigger" type="xsd:token"/>
+    <xsd:attribute name="rewrite" type="collectionUpdateType"/>
+    <xsd:attribute name="startup" type="collectionUpdateType"/>
+    <xsd:attribute name="trigger" type="xsd:string"/>
   </xsd:complexType>
 
   <xsd:complexType name="tdmType">
     <xsd:sequence>
       <xsd:element ref="manage" minOccurs="0"/>
     </xsd:sequence>
-    <xsd:attribute name="rewrite" type="xsd:string"/>
+    <xsd:attribute name="rewrite" type="collectionUpdateType"/>
     <xsd:attribute name="rescan" type="xsd:token"/>
   </xsd:complexType>
+
+  <xsd:simpleType name="collectionUpdateType">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="never"/>
+          <xsd:enumeration value="nocheck"/>
+          <xsd:enumeration value="testIndexOnly"/>
+          <xsd:enumeration value="test"/>
+          <xsd:enumeration value="always"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
 
   <xsd:element name="manage">
     <xsd:complexType>

@@ -64,6 +64,9 @@ public class TestGridCoverageRemote {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
+    result.add(new Object[]{"cdmrfeature/grid/scanCdmUnitTests/ft/grid/GFS_Global_onedeg_20081229_1800.grib2.nc", "Pressure_surface",
+            "2008-12-29T18:00:00Z",  null, null, null});
+
     result.add(new Object[]{"cdmrfeature/grid/grib.v5/NDFD/CONUS_5km/NDFD_CONUS_5km_20131212_0000.grib2", "Categorical_Rain_surface",
             "2013-12-12T00:00:00Z",  "2013-12-17T12:00:00Z", null, null});
 
@@ -71,7 +74,7 @@ public class TestGridCoverageRemote {
             "2012-02-28T00:00:00Z",  "2012-02-28T00:00:00Z", null, 850.0});        // set runtime for best
 
     result.add(new Object[]{"cdmrfeature/grid/gribCollection.v5/GFS_CONUS_80km/Best", "Temperature_isobaric",
-            null,  "2012-02-28T00:00:00Z", null, 850.0});
+            null,  "2012-02-28T00:00:00Z", null, 850.0}); // */
 
     return result;
   }

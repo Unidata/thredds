@@ -49,6 +49,7 @@ import java.util.Formatter;
 /**
  * FmrcTimeAxis2D: time(runtime, time)
  * LOOK not up to date
+ *
  * @author caron
  * @since 7/15/2015
  */
@@ -58,8 +59,8 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   private int[] shape;
   private CoverageCoordAxis1D runCoord;
 
-  public FmrcTimeAxis2D( CoverageCoordAxisBuilder builder) {
-    super( builder);
+  public FmrcTimeAxis2D(CoverageCoordAxisBuilder builder) {
+    super(builder);
   }
 
   @Override
@@ -68,6 +69,8 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
     shape = new int[2];
     String axisName = dependsOn.get(0);
     CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
+    if (axis == null)
+      throw new IllegalStateException("FmrcTimeAxis2D cant find axis with name "+axisName);
     shape[0] = axis.getNcoords();
     shape[1] = ncoords / shape[0];
 
@@ -91,19 +94,19 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
     super.toString(f, indent);
     f.format("%s  %s%n", indent, Misc.showInts(shape));
     Array data = getCoordsAsArray();
-    f.format("%s%n", NCdumpW.toString(data, getName()+" values", null));
+    f.format("%s%n", NCdumpW.toString(data, getName() + " values", null));
   }
 
   @Override
   public Optional<CoverageCoordAxis> subset(SubsetParams params) {
     if (params == null)
-      return Optional.of(new FmrcTimeAxis2D( new CoverageCoordAxisBuilder(this)));
+      return Optional.of(new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this)));
 
     CoordAxisHelper helper = new CoordAxisHelper(runCoord);
     int run_index = -1;
 
     if (params.isTrue(SubsetParams.runtimeLatest))
-      run_index = runCoord.getNcoords()-1;
+      run_index = runCoord.getNcoords() - 1;
     else {
       CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
       if (rundate != null) {
@@ -117,18 +120,18 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       return time1D.subset(params);
     }
 
-    return Optional.of(new FmrcTimeAxis2D( new CoverageCoordAxisBuilder(this)));
+    return Optional.of(new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
   public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented, maybe illegal ??
-    return Optional.of(new FmrcTimeAxis2D( new CoverageCoordAxisBuilder(this)));
+    return Optional.of(new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
   @Nonnull
   public Optional<CoverageCoordAxis> subsetDependent(CoverageCoordAxis1D from) { // LOOK not implemented, maybe illegal ??
-    return null; // LOOK
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -165,9 +168,9 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
       return new CoverageCoordAxis1D(
               new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
-              AttributeContainerHelper.filter(attributes, "_Coordinate"),
-              dependenceType, getDependsOn(), spacing, n, values[0], values[n - 1],
-              0.0, values, reader, true));
+                      AttributeContainerHelper.filter(attributes, "_Coordinate"),
+                      dependenceType, getDependsOn(), spacing, n, values[0], values[n - 1],
+                      0.0, values, reader, true));
     }
 
     if (spacing == Spacing.discontiguousInterval) {
@@ -182,9 +185,9 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
       return new CoverageCoordAxis1D(
               new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
-              AttributeContainerHelper.filter(attributes, "_Coordinate"),
-              dependenceType, getDependsOn(), spacing, n/2, values[0], values[n - 1],
-              0.0, values, reader, true));
+                      AttributeContainerHelper.filter(attributes, "_Coordinate"),
+                      dependenceType, getDependsOn(), spacing, n / 2, values[0], values[n - 1],
+                      0.0, values, reader, true));
     }
 
     return null;

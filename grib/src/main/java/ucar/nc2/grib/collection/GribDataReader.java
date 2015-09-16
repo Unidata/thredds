@@ -276,7 +276,7 @@ public abstract class GribDataReader {
 
         if (dr.dataPos == GribCollectionMutable.MISSING_RECORD) continue;
 
-        if (GribDataReader.validator != null && dr.validation != null) {
+        if (GribDataReader.validator != null && dr.validation != null && rafData != null) {
           GribDataReader.validator.validate(gribCollection.cust, rafData, dr.dataPos, dr.validation);
         } else if (show) { // for validation
           show( dr.validation);

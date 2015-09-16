@@ -33,23 +33,28 @@
 
 package ucar.nc2.ft.point.standard.plug;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+import ucar.ma2.DataType;
+import ucar.nc2.Dimension;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.ft.point.standard.*;
-import ucar.nc2.ft.point.standard.CoordSysEvaluator;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants.CF;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
-import ucar.ma2.DataType;
-
-import java.util.*;
-import java.io.IOException;
+import ucar.nc2.ft.point.standard.CoordSysEvaluator;
+import ucar.nc2.ft.point.standard.Evaluator;
+import ucar.nc2.ft.point.standard.JoinArray;
+import ucar.nc2.ft.point.standard.Table;
+import ucar.nc2.ft.point.standard.TableConfig;
+import ucar.nc2.ft.point.standard.TableConfigurerImpl;
 
 /**
  * CF "point obs" Convention.
@@ -1220,7 +1225,7 @@ public class CFpointObs extends TableConfigurerImpl {
     stnTable.lat = lat.getFullName();
     stnTable.lon = lon.getFullName();
 
-    if (info.encoding != Encoding.single) {
+    if (info.encoding != Encoding.single && stationDim != null) {
       stnTable.dimName = stationDim.getShortName();
       makeStructureInfo(stnTable, ds, stnIdVar.getParentStructure(), stationDim);
     }
