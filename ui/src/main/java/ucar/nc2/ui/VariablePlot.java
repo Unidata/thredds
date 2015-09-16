@@ -33,29 +33,19 @@
 
 package ucar.nc2.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Rectangle;
-import java.awt.Window;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.*;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-import javax.swing.JPanel;
-
+import javax.swing.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
@@ -69,7 +59,6 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.Attribute;
@@ -203,8 +192,9 @@ public class VariablePlot extends JPanel {
 	    	p.getDomainAxis().setLabel(xUnit.getStringValue());
 	    else
 	    	p.getDomainAxis().setLabel(dimName);
-	    		    
-	    log.info("X axis type " + xUnit.getDataType() + " value " + xUnit.toString() + " is Time " + xIsTime);	    
+
+        if (xAxis != null)
+	        log.info("X axis type " + xUnit.getDataType() + " value " + xUnit.toString() + " is Time " + xIsTime);
     }
 
     int ax = 0;

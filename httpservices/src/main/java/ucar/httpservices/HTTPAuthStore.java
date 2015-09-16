@@ -33,14 +33,13 @@
 
 package ucar.httpservices;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.client.CredentialsProvider;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.client.CredentialsProvider;
 
 
 /**
@@ -171,9 +170,12 @@ public class HTTPAuthStore implements Serializable
             }
         }
 
-        if(old != null)
+        if(old != null) {
             scopes.remove(old);
-        return old.provider;
+            return old.provider;
+        } else {
+            return null;
+        }
     }
 
     /**
