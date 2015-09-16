@@ -1,10 +1,8 @@
-image:images/unidataLogo.png[Unidata] Upgrading To TDS version 5
-----------------------------------------------------------------
+= Upgrading to TDS version 5
+:linkcss:
+:stylesheet: tds.css
 
-'''''
-
-Requirements
-~~~~~~~~~~~~
+== Requirements
 
 * Java 8 is now required
 * Tomcat 8 (servlet 3.1)
@@ -15,8 +13,7 @@ content directory. Note that this is **$\{tomcat}/content/**, not **$\{tomcat}/c
 -Dtds.content.root.path=/opt/tomcat-home/content/
 -------------------------------------------------
 
-Overview
-~~~~~~~~
+== Overview
 
 The configuration catalogs and internal state of the TDS has been extensively reworked to be able to scale to large numbers of catalogs, datasets, and
 internal objects without excessive use of memory. A running TDS can be triggered to reread the configuration catalogs without having to restart. It
@@ -32,11 +29,9 @@ The use of these make code simpler and more reliable.
 
 Deprecated classes and methods have been removed, and the module structure and third-party jar use has been improved.
 
-API Changes
-~~~~~~~~~~~
+== API Changes
 
-Unsigned Types
-^^^^^^^^^^^^^^
+=== Unsigned Types
 
 * *DataType* now has unsigned types: _UBYTE, USHORT, UINT, ULONG_
 * *Array, ArrayScalar, ArrayByte, ArrayInt, ArrayShort, ArrayLong* factory and constructor methods now require _isUnsigned_ parameter.
@@ -47,7 +42,7 @@ Unsigned Types
 * _new Attribute(String name, List values) -> new Attribute(String name, List values, boolean isUnsigned)_
 * _StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, boolean isUnsigned, Number val ) -> StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, Number val )_
 
-==== AutoCloseable
+=== AutoCloseable
 *AutoCloseable* was introduced in Java 7, along with the _try-with-resources_ language feature. Use of this feature makes code more readable
 and more reliable in ensuring that resources (like file handles) are released when done. We strongly recommend that you modify your code to take advantage of it
 wherever possible, eg:
@@ -71,7 +66,7 @@ wherever possible, eg:
 ** *StructureDataIterator*, *PointFeatureIterator*, *PointFeatureCollectionIterator*, *NestedPointFeatureCollectionIterator*,
 ** *thredds.client.catalog.tools.DataFactory.Result*
 
-==== Iterable
+=== Iterable
 *Iterable* was introduced in Java 7, along with the _foreach_ language feature, and makes code more readable with less boilerplate, eg:
 
 [source,java]
@@ -96,7 +91,7 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 ** *SectionFeature* implements _Iterable<ProfileFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
 ** *SectionFeatureCollection* implements _Iterable<SectionFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
 
-==== ucar.nc2.util.DiskCache2
+=== ucar.nc2.util.DiskCache2
 ** all instances of *DiskCache2* now have one cleanup thread
 ** The _DiskCache2.exit()_ method is now static and need only be called once when the application is exiting.
 ** _DiskCache2.setLogger()_ is removed.
@@ -120,60 +115,52 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
    ...
 ----
 
-==== ucar.nc2.dataset
+=== ucar.nc2.dataset
 ** CoordinateAxis2D.getMidpoints() was deprecated and now removed, use getCoordValuesArray()
 
-Coordinate Systems
-^^^^^^^^^^^^^^^^^^
+=== Coordinate Systems
 
 * *ucar.nc2.dataset.CoordTransBuilderIF* is split into *ucar.nc2.dataset.builder.HorizTransformBuilderIF* and *ucar.nc2.dataset.builder.VertTransformBuilderIF*
 * *HorizTransformBuilderIF* now uses *AttributeContainer* instead of *NetcdfDataset, Variable*
 * _CoordinateTransform.makeCoordinateTransform(NetcdfDataset ds, Variable ctv)_ is now _ProjectionCT makeCoordinateTransform(AttributeContainer ctv)_
 * Previously, the optional _false_easting_, and _false_northing_ should match the units of the x and y projection coordinates
 
-Feature Types
-^^^^^^^^^^^^^
+=== Feature Types
 
 * *ucar.nc2.dt.TypedDatasetFactory* has been removed. Use *ucar.nc2.ft.FeatureDatasetFactoryManager*
 * *ucar.nc2.dt.grid* is deprecated (but not removed) and is replaced by *ucar.nc2.ft2.coverage*
 * *ucar.nc2.dt.point* and *ucar.nc2.dt.trajectory* has been removed, replaced by *ucar.nc2.ft.**
 
-Catalogs
-^^^^^^^^
+=== Catalogs
 
 * All uses of classes in *thredds.catalog* are deprecated. If you still need these, you must add *legacy.jar* to your path.
 * TDS and CDM now use *thredds.server.catalog* and *thredds.client.catalog*
 
-Catalog Schema changes
-~~~~~~~~~~~~~~~~~~~~~~
+==== Catalog Schema changes
 
 Schema version is now 1.2.
 
-Client Catalogs
-^^^^^^^^^^^^^^^
+==== Client Catalogs
 
 * *service* elements may not be nested inside of *dataset* elements, they must be directly contained in the *catalog* element.
 
-Server Configuration Catalogs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+==== Server Configuration Catalogs
 
-* the *catalogScan* element is now available, which scans a directory for catalog files (any file ending in xml)
-* the *datasetFmrc* element is no longer supported
+* The *catalogScan* element is now available, which scans a directory for catalog files (any file ending in xml)
+* The *datasetFmrc* element is no longer supported
 * *datasetRoot* elements may not be contained inside of *service* elements, they must be directly contained in the *catalog* element
 * *service* elements may not be nested inside of *dataset* elements, they must be directly contained in the *catalog* element.
 * *service* elements no longer need to be explicitly defined in each config catalog, but may reference user defined global services
-* if the *datatype/featureType* is defined for a dataset, then the *service* element may be ommited, and the default set of services for that
-*datatype* will be used.
+* If the *datatype/featureType* is defined for a dataset, then the *service* element may be ommited, and the default set of services for that *datatype* will be used.
+* The *expires* attribute is no longer used.
 
-Viewers
-^^^^^^^
+==== Viewers
 
 * *thredds.servlet.Viewer* has *InvDatasetImpl* changed to *Dataset*
 * *thredds.servlet.ViewerLinkProvider* has *InvDatasetImpl* changed to *Dataset*
 * *thredds.server.viewer.dataservice.ViewerService* has *InvDatasetImpl* changed to *Dataset*
 
-DatasetScan
-^^^^^^^^^^^
+==== DatasetScan
 
 * *addID* is no longer needed, ids are always added
 * *addDatasetSize* is no longer needed, the dataset size is always added
@@ -186,8 +173,7 @@ _link:reference/DatasetScan.html#filesSort[filesSort]_ element.
 crawlableDatasetSorterImpl) are no longer supported. (This was never officially released or documented).
 * DatasetScan details are link:catalog/InvCatalogServerSpec.html[here]
 
-Standard Services
-^^^^^^^^^^^^^^^^^
+==== Standard Services
 
 * The TDS provides standard service elements, which know which services are appropriate for each Feature Type.
 * User defined services in the root catalog are global and can be referenced by name in any other config catalog.
@@ -196,8 +182,7 @@ Standard Services
 ** Except for remote catalog services
 * Standard service details are link:reference/Services.html[here]
 
-FeatureCollections
-^^^^^^^^^^^^^^^^^^
+==== FeatureCollections
 
 * The *link:reference/collections/FeatureCollections.html#update[update]* element default is now __startup="never"__, meaning do not update collection
 on startup, and use existing indices when the collection is accessed.
@@ -213,8 +198,7 @@ that element in the *<gribConfig>* element, or the older verbose *lexigraphicByN
 -----------------------------------------------------------
 * Feature Collection details are link:reference/collections/FeatureCollections.html[here]
 
-Recommendations for 5.0 catalogs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+==== Recommendations for 5.0 catalogs
 
 * Put all *datasetRoot* elements in root catalog.
 * Put all *catalogScan* elements in root catalog.
@@ -222,8 +206,12 @@ Recommendations for 5.0 catalogs
 * Put all user-defined *service* elements in root catalog.
 * Only use user-defined *service* elements in non-root catalogs when they are experimental or truly a special case.
 
-CdmrFeature Service
-~~~~~~~~~~~~~~~~~~~
+=== Netcdf Subset Service (NCSS)
+
+NCSS queries and responses have been improved and clarified. Generally the previous queries are backwards compatible. See
+link:reference/services/NetcdfSubsetServiceReference.adoc[NCSS Reference] for details.
+
+=== CdmrFeature Service
 
 A new TDS service has been added for remote access to CDM Feature Datasets.
 
@@ -231,8 +219,7 @@ A new TDS service has been added for remote access to CDM Feature Datasets.
 * Target is a python client that has full access to all of the coordinate information and coordinate based subsetting capabilities of the Java client.
 * Compatible / integrated with the Netcdf Subset Service (NCSS), using the same web API.
 
-ThreddsConfig.xml
-~~~~~~~~~~~~~~~~~
+=== ThreddsConfig.xml
 
 * You no longer turn catalog caching on or off, but you can control how many catalogs are cached (see
 link:reference/ThreddsConfigXMLFile.html#CatalogCaching[here] for the new syntax). So the following is no longer used:
@@ -245,8 +232,7 @@ link:reference/ThreddsConfigXMLFile.html#CatalogCaching[here] for the new syntax
 ----------------------
 * By default, most services are enabled, but may still be turned off in threddsConfig.xml.
 
-Recommendations for ESGF
-~~~~~~~~~~~~~~~~~~~~~~~~
+== Recommendations for ESGF
 
 You must determine the number of datasets that are contained in all of your catalogs. To get a report, enable
 link:reference/RemoteManagement.html[Remote Management], and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__. This may
@@ -284,7 +270,7 @@ the other catalogs.
 For example:
 
 [source,xml]
----------------------------------------------------------------------------------------------------------------------------------------------------------
+----
 <?xml version='1.0' encoding='UTF-8'?>
 <catalog name="ESGF Master Catalog" version="1.2"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -320,7 +306,7 @@ For example:
  <catalogScan name="ESGF catalogs" path="esgcet" location="esgcet" />
 
 </catalog>
----------------------------------------------------------------------------------------------------------------------------------------------------------
+----
 
 '''''
 

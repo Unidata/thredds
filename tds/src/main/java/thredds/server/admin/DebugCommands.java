@@ -72,7 +72,7 @@ public class DebugCommands {
 
   public Category findCategory(String name) {
     for (Category dh : dhList) {
-      if (dh.name.equals(name))
+      if (dh.name.equalsIgnoreCase(name))
         return dh;
     }
     return new Category(name);

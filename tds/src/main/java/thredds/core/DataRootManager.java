@@ -251,21 +251,6 @@ public class DataRootManager implements InitializingBean {
     };
     debugHandler.addAction(act);
 
-
-    /* act = new DebugCommands.Action("reinit", "Reinitialize") {
-      public void doAction(DebugCommands.Event e) {
-        try {
-          singleton.reinit();
-          e.pw.println("reinit ok");
-
-        } catch (Exception e1) {
-          e.pw.println("Error on reinit " + e1.getMessage());
-          log.error("Error on reinit " + e1.getMessage());
-        }
-      }
-    };
-    debugHandler.addAction(act); */
-
   }
 
 }

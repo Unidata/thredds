@@ -78,7 +78,7 @@ public class AdminTriggerController {
 
       act = new DebugCommands.Action("reportStats", "Make Catalog Report") {
         public void doAction(DebugCommands.Event e) {
-          // look background thread
+          // look want background thread ?
           e.pw.printf("%n%s%n", makeReport());
         }
       };
@@ -86,16 +86,18 @@ public class AdminTriggerController {
 
       act = new DebugCommands.Action("reinit", "Read all catalogs") {
         public void doAction(DebugCommands.Event e) {
-          // look background thread
-          catInit.reread(ConfigCatalogInitialization.ReadMode.always, false);
+          // look want background thread ?
+          boolean ok = catInit.reread(ConfigCatalogInitialization.ReadMode.always, false);
           e.pw.printf("<p/>Reading all catalogs%n");
+          if (ok) e.pw.printf("reinit ok%n");
+          else e.pw.printf("reinit failed%n");
         }
       };
       debugHandler.addAction(act);
 
       act = new DebugCommands.Action("recheck", "Read changed catalogs") {
         public void doAction(DebugCommands.Event e) {
-          // look background thread
+          // look want background thread ?
           catInit.reread(ConfigCatalogInitialization.ReadMode.check, false);
           e.pw.printf("<p/>Reading changed catalogs%n");
         }

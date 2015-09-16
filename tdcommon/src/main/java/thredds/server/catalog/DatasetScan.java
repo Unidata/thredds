@@ -60,6 +60,7 @@ import java.util.*;
 
 /**
  * DatasetScan
+ * Look: how to check if this directory should not be shown, eg not in a catalog?
  *
  * @author John
  * @since 1/12/2015

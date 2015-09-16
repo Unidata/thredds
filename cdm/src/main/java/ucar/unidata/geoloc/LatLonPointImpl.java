@@ -32,8 +32,6 @@
  */
 package ucar.unidata.geoloc;
 
-import ucar.unidata.util.Format;
-
 import java.util.Formatter;
 
 /**
@@ -188,7 +186,7 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
     if (!is_east)
       wlon = -wlon;
 
-    String f = " %."+ndec+"f";
+    String f = "%."+ndec+"f";
 
     Formatter latBuff = new Formatter();
     latBuff.format(f, wlon);

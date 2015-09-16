@@ -127,11 +127,11 @@ public class NcssParamsBean {
     this.var = var;
   }
 
+  // time - do not use directly, use time methods below
   public String getTime_start() {
     return time_start;
   }
 
-  // time
   public void setTime_start(String time_start) {
     this.time_start = time_start;
   }

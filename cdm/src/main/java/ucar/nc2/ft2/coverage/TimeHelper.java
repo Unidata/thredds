@@ -41,6 +41,7 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 
@@ -158,5 +159,10 @@ public class TimeHelper {
   public Calendar getCalendar() {
     return cal;
   }
+
+  public CalendarDateUnit getCalendarDateUnit() {
+    return dateUnit;
+  }
+
 
 }
