@@ -38,7 +38,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
@@ -153,26 +152,11 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       syncExtendOnly = value.equalsIgnoreCase("true");
   }
 
-  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][^\\x00-\\x1F\\x2F\\x7F]*");
-
-//   /**
-//    * Determine if the given name can be used for a Dimension, Attribute, or Variable name.
-//    * Should match makeValidNetcdfObjectName()
-//    * @param name test this.
-//    * @return  true if valid name.
-//    */
-//   static public boolean isValidNetcdfObjectName(String name) {
-//     if (name == null)
-//       return false;
-//     Matcher m = objectNamePattern.matcher(name);
-//     return m.matches();
-//   }
-
   /**
-   * Determine if the given name can be used for a Dimension, Attribute, or Variable name. The allowed name
-   * syntax (in RE form) is:
+   * Determine if the given name can be used for a NetCDF object, i.e. a Dimension, Attribute, or Variable.
+   * The allowed name syntax (in RE form) is:
    *
-   * ([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*
+   * <pre>([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*</pre>
    *
    * where UTF8 represents a multi-byte UTF-8 encoding. Also, no trailing spaces are permitted in names. We do not
    * allow '/' because HDF5 does not permit slashes in names as slash is used as a group separator. If UTF-8 is
@@ -185,12 +169,13 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   // https://github.com/Unidata/netcdf-c/blob/v4.3.3.1/libdispatch/dstring.c#L169
   // Should match makeValidNetcdfObjectName()
   public static boolean isValidNetcdfObjectName(String name) {
-    if (name == null || name.isEmpty()) {
+    if (name == null || name.isEmpty()) {  // Null and empty names disallowed
       return false;
     }
 
     int cp = name.codePointAt(0);
 
+    // First char must be [a-z][A-Z][0-9]_ | UTF8
     if (cp <= 0x7f) {
       if (!('A' <= cp && cp <= 'Z')
               && !('a' <= cp && cp <= 'z')
@@ -203,12 +188,15 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     for (int i = 1; i < name.length(); ++i) {
       cp = name.codePointAt(i);
 
-      if (cp <= 0x7f && (cp < ' ' || cp > 0x7E)) {  // control char or DEL
-        return false;
+      // handle simple 0x00-0x7f characters here
+      if (cp <= 0x7f) {
+        if (cp < ' ' || cp > 0x7E || cp == '/') {  // control char, DEL, or forward-slash
+          return false;
+        }
       }
     }
 
-    if (cp <= 0x7f && Character.isWhitespace(cp)) {
+    if (cp <= 0x7f && Character.isWhitespace(cp)) {  // trailing spaces disallowed
       return false;
     }
 
@@ -218,36 +206,56 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   /**
    * Convert a name to a legal netcdf-3 name.
    *
-   * @param name convert this name
-   * @return converted name
+   * @param name  the name to convert.
+   * @return  the converted name.
+   * @see #isValidNetcdfObjectName(String)
    */
-  static public String makeValidNetcdfObjectName(String name) {
-    StringBuilder sb = new StringBuilder(name.trim()); // remove starting and trailing blanks
+  public static String makeValidNetcdfObjectName(String name) {
+    StringBuilder sb = new StringBuilder(name);
 
     while (sb.length() > 0) {
-      char c = sb.charAt(0);
-      if (Character.isLetter(c) || Character.isDigit(c) || (c == '_')) break;
-      sb.deleteCharAt(0);
-    }
+      int cp = sb.codePointAt(0);
 
-    int pos = 1;
-    while (pos < sb.length()) {
-      int c = sb.codePointAt(pos);
-      if (((c >= 0) && (c < 0x20)) || (c == 0x2f) || (c == 0x7f)) {
-        sb.delete(pos, pos + 1);
-        pos--;
+      // First char must be [a-z][A-Z][0-9]_ | UTF8
+      if (cp <= 0x7f) {
+        if (!('A' <= cp && cp <= 'Z')
+                && !('a' <= cp && cp <= 'z')
+                && !('0' <= cp && cp <= '9')
+                && cp != '_') {
+          sb.deleteCharAt(0);
+          continue;
+        }
       }
-      pos++;
+      break;
     }
 
-    if (sb.length() == 0)
-      throw new IllegalArgumentException("Illegal name");
-    return sb.toString();
-  }
+    for (int pos = 1; pos < sb.length(); ++pos) {
+      int cp = sb.codePointAt(pos);
 
-  public static void main(String[] args) {
-    String s = " ŠĚƏ";
-    System.out.println(isValidNetcdfObjectName(s));
+      // handle simple 0x00-0x7F characters here
+      if (cp <= 0x7F) {
+        if (cp < ' ' || cp > 0x7E || cp == '/') {  // control char, DEL, or forward-slash
+          sb.deleteCharAt(pos);
+          --pos;
+        }
+      }
+    }
+
+    while (sb.length() > 0) {
+      int cp = sb.codePointAt(sb.length() - 1);
+
+      if (cp <= 0x7f && Character.isWhitespace(cp)) {
+        sb.deleteCharAt(sb.length() - 1);
+      } else {
+        break;
+      }
+    }
+
+    if (sb.length() == 0) {
+      throw new IllegalArgumentException(String.format("Illegal NetCDF object name: '%s'", name));
+    }
+
+    return sb.toString();
   }
 
   /////////////////////////////////////////////////////////////////
@@ -306,6 +314,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     return m.matches();
   }
 
+  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][^\\x00-\\x1F\\x2F\\x7F]*");
 
   /**
    * Valid Netcdf Object name as a regular expression.
