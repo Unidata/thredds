@@ -42,5 +42,5 @@ import ucar.nc2.ft.PointFeature;
  * @since Aug 27, 2009
  */
 public interface StationPointFeature extends PointFeature {
-  public StationFeature getStation();
+  StationFeature getStation();
 }

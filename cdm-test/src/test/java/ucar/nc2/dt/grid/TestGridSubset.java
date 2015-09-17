@@ -517,7 +517,7 @@ public class TestGridSubset {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       System.out.println("projection mapArea= " + pr);
-      assert (pr.equals(gcs2.getBoundingBox()));
+      assert (pr.closeEnough(gcs2.getBoundingBox()));
     }
   }
 
@@ -546,7 +546,7 @@ public class TestGridSubset {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       System.out.println("projection mapArea= " + pr);
-      assert (pr.equals(gcs2.getBoundingBox()));
+      assert (pr.closeEnough(gcs2.getBoundingBox()));
     }
   }
 
@@ -628,7 +628,7 @@ public class TestGridSubset {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       System.out.println("projection mapArea= " + pr);
-      assert (pr.equals(gcs2.getBoundingBox()));
+      assert (pr.closeEnough(gcs2.getBoundingBox()));
     }
   }
 
@@ -659,7 +659,7 @@ public class TestGridSubset {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       System.out.println("projection mapArea= " + pr);
-      assert (pr.equals(gcs2.getBoundingBox()));
+      assert (pr.closeEnough(gcs2.getBoundingBox()));
 
       CoordinateAxis xaxis = gcs.getXHorizAxis();
       CoordinateAxis yaxis = gcs.getYHorizAxis();
@@ -743,7 +743,7 @@ public class TestGridSubset {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       System.out.println("projection mapArea= " + pr);
-      assert (pr.equals(gcs2.getBoundingBox()));
+      assert (pr.closeEnough(gcs2.getBoundingBox()));
     }
   }
 

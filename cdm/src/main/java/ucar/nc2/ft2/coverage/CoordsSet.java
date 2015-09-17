@@ -185,6 +185,7 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
         else if (!constantForecast && axis.getAxisType() == AxisType.TimeOffset) {
           result.put(timeOffsetCoord, coord);
           double val = axis.isInterval() ? (axis1D.getCoordEdge1(coordIdx) + axis1D.getCoordEdge2(coordIdx)) / 2.0  : axis1D.getCoord(coordIdx);
+          assert runtime != null;
           result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, val)); // validation
         }
 

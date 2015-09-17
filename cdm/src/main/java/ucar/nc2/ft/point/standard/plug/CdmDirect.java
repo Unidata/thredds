@@ -174,9 +174,18 @@ public class CdmDirect extends TableConfigurerImpl {
       if (v.getDataType() == DataType.SEQUENCE)
         profile = (Structure) v;
     }
+    if (profile == null) {
+      errlog.format("getStationProfileConfig: must have Sequence varibale for profile%n");
+      return null;
+    }
     TableConfig profileTc = new TableConfig(Table.Type.NestedStructure, profile.getFullName());
     profileTc.nestedTableName = profile.getShortName();
     Variable elev = findZAxisNotStationAlt(ds);
+    if (elev == null) {
+      errlog.format("getStationProfileConfig: must have ZAxis that is not the StationAlt%n");
+      return null;
+    }
+
     profileTc.elev = elev.getShortName();
      if (profileTc.elev == null) {
       errlog.format("Must have a level coordinate%n");

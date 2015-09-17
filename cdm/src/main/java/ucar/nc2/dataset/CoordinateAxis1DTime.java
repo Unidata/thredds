@@ -130,7 +130,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     List<CalendarDate> cdates = getCalendarDates();
     List<NamedObject> names = new ArrayList<>(cdates.size());
     for (CalendarDate cd : cdates)
-      names.add(new NamedAnything(CalendarDateFormatter.toDateTimeString(cd), getShortName())); // "calendar date"));
+      names.add(new NamedAnything(CalendarDateFormatter.toDateTimeStringISO(cd), getShortName())); // "calendar date"));
     return names;
   }
 

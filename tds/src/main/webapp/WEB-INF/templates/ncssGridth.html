@@ -120,7 +120,7 @@
           <div id="inputLatLonSubset" class="selected">
             <span class="bold">Lat/lon subset</span>
           </div>
-          <div id="inputCoordSubset" class="unselected" th:if="${gcd.horizCoordSys.hasProjection}">
+          <div id="inputCoordSubset" class="unselected" th:if="${gcd.horizCoordSys.isProjection}">
             <span class="bold">Coordinate subset</span>
           </div>
 
@@ -156,7 +156,7 @@
                 <span class="blueLink" id="resetLatLonbbox">reset to full extension</span>
               </div>
 
-              <div id="coordinateSubset" class="hidden absoluteTopLeft borderLightGrey" th:if="${gcd.horizCoordSys.hasProjection}">
+              <div id="coordinateSubset" class="hidden absoluteTopLeft borderLightGrey" th:if="${gcd.horizCoordSys.isProjection}">
                 <span class="bold">projection coords:</span>
 
                 <div class="top">

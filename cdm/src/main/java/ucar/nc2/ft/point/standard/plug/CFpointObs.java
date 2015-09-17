@@ -1190,7 +1190,10 @@ public class CFpointObs extends TableConfigurerImpl {
   private TableConfig makeStationTable(NetcdfDataset ds, FeatureType ftype, EncodingInfo info, Formatter errlog) throws IOException {
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     Variable lon = CoordSysEvaluator.findCoordByType(ds, AxisType.Lon);
-
+    if (lat == null || lon == null) {
+      errlog.format("CFpointObs: must have lat and lon coordinates%n");
+      return null;
+    }
     //Dimension stationDim = (info.encoding == Encoding.single) ? null : lat.getDimension(0); // assumes outer dim of lat is parent dimension, single = scalar
 
     Table.Type stationTableType = Table.Type.Structure;

@@ -97,7 +97,7 @@ public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
         staxWriter.writeCharacters("\n    ");
         staxWriter.writeStartElement("stationFeature");
         staxWriter.writeAttribute("date",
-                CalendarDateFormatter.toDateTimeString(stationPointFeat.getObservationTimeAsCalendarDate()));
+                CalendarDateFormatter.toDateTimeStringISO(stationPointFeat.getObservationTimeAsCalendarDate()));
 
         staxWriter.writeCharacters("\n        ");
         staxWriter.writeStartElement("station");

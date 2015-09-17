@@ -1,4 +1,4 @@
-= NetCDF Subset Service (NCSS) Reference
+= NetCDF Subset Service (NCSS) For Point Data
 :linkcss:
 :stylesheet: ../../tds.css
 :cdmDocs: ../../../netcdf-java/reference/
@@ -50,58 +50,22 @@ Point Dataset::
 Point datasets contain a collection of point features which can be subset by space and time.
 
 * Example http://thredds-test.unidata.ucar.edu/thredds/ncss/pointData/cf_doc_dsg/example/H.1.1.nc/dataset.xml[*Point Dataset*] document
-(link:../files/pointDataset.xml[offline] example) 
+(link:../files/pointDataset.xml[offline] example)�
 
-== Subsetting Parameters for NCSS
-
-=== Grid (Coverage) datasets
-
-These parameters are identical to CdmrFeature:
-
-include::{cdmDocs}stream/CdmrCoverageParams.adoc[]
-
-In addition, NCSS supports these parameters for Grids:
-
-[width="100%",cols="20%,10%,30%,30%,10%",options="header",]
-|====
-| Parameter Name | Required  | Description  | Constraints | default
-| *latitude, longitude* | no | Point location. units of degrees_east, degrees_north | Must be within the dataset bounding box |
-| *addLatLon* | no |  make output strictly CF compliant by adding lat/lon coordinates if needed. | _true_ or _false_ | false
-| *accept* | no | The returned data format. | _netCDF_ or __netCDF4__ |  __netCDF__
-|====
-
-Grid as Point::
-
-* to make your request a _grid as point_ request, specify a point location with the _latitude, longitude_ parameters. Other horizontal subsetting parameters will be ignored.
-* The returned files are written as CF/DSG files.
-* The lat/lon bounding box declared in the dataset description is an approximated rectangle to the actual lat/lon boundaries so there may be
-  valid points within the data but outside of the declared bounding box in the dataset description,
-  and there may be points in the declared bounding box that are not actually in the data grid.
-
-Adding Lat/Lon coordinate::
-
-* To be strictly CF compliant, lat/lon coordinates must be present in the netCDF file. For datasets that use a projection, this means that the lat/lon coordinate
-will be 2D (lat(y,x), lon(y,x)). Set this parameter to true to add 2D lat/lon coordinates for projected data.
-
-Output Format (__accept__ parameter)::
-
-* __netCDF__: CF/NetCDF-3
-* __netCDF4__: CF/NetCDF-4 classic model
-
-=== Point and Station (Discrete Sampling Geometry) datasets
+== Subsetting Parameters for NCSS Point
 
 [width="100%",cols="20%,10%,30%,30%,10%",options="header",]
 |====
 | Parameter Name | Required  | Description / possible values | Constraints | default
 | *var* | yes | name(s) of variables (comma seperated, no blanks), or "_all_". | Variables must be in the dataset description.  |
 | *latitude, longitude* | no | Point location. units of degrees_east, degrees_north | Must be within the dataset bounding box |
-| *north, south, east, west* | no | lat/lon bounding box, units of degrees_east, degrees_north | north > south,  if crossing 180 meridian, use east boundary > 180 |
+| *north, south, east, west* | no | lat/lon bounding box, units of degrees_east, degrees_north | north > south, �if crossing 180 meridian, use east boundary > 180 |
 | *horizStride* | no | Take only every nth point (both x and y) | Only on grid datasets. | 1
 | *time* | no | Time as a link:#W3Cdate[W3C date] or "_present_". The time slice closest to the requested time is returned | Must be a time within the dataset time range | _present_
-| *time_start, time_end, time_duration* | no | Used to specify a time range. Time as a link:#W3Cdate[W3C date] or "_present_".  Duration as a link:#W3Cduration[W3C time duration]. | Two of time_start, time_end, time_duration must be present to define a valid time range. The provided time range must intersect the dataset time range |
+| *time_start, time_end, time_duration* | no | Used to specify a time range. Time as a link:#W3Cdate[W3C date] or "_present_". �Duration as a�link:#W3Cduration[W3C time duration]. | Two of time_start, time_end, time_duration must be present to define a valid time range. The provided time range must intersect the dataset time range |
 | *temporal* | no | _all_ | Must be equal to "all" to have effect |
 | *vertCoord* | no | Take only the specified vertical level | | All levels
-| *accept* | no | The returned data format. | __netCDF__, __netCDF4__, __XML__, __CSV__, __WaterML2__. | __CSV__
+| *accept* | no | The returned data format. | _netCDF_, _netCDF4_, _XML_, _CSV_, _WaterML2_. | _CSV_
 | *subset* | no | The subsetting type on a station feature. _subset=stns_ means we will provide a station list. | Only on station datasets. May be _stns_ or _bb_ | bb (bounding box)
 | *stns* | no | Used when _subset=stns_ to specify the list of stations in the subset. | Only on station datasets. |
 |====
@@ -119,7 +83,7 @@ Horizontal spatial subsetting::
 
 Vertical spatial subsetting::
 
-* variable with vertical levles will be returnd as profiles, unless a specific level is chosen.
+* variable with vertical levels will be returnd as profiles, unless a specific level is chosen.
 
 Temporal subsetting::
 
@@ -265,96 +229,6 @@ Examples:
 
 * note that the vertical level value must be in the same units used in the dataset - in this example we assume millibars but you will need to check
 the dataset description to be sure.
-
-== URL Construction
-
-------------------------------------------------------------------------------------------------------------------------------------
-http://{host}/{context}/{service}/{dataset}[/{description} | ?{query}]
-
-where:
-  {host}                  = server name, eg thredds.ucar.edu
-  {context}               = "thredds" (usually)
-  {service}               = "ncss/grid" or "ncss/point", depending if the dataset has feature type GRID or one of the Point types.
-  {dataset}               = logical path for the dataset, obtained from the catalog
-  {description}           = dataset.[xml|html] |  pointDataset.[xml|html] | datasetBoundaries.xml | stations.xml
-  dataset.[xml|html]      = the dataset description in xml or as a web form (may be point or grid)
-  pointDataset.[xml|html] = the grid-as-point or the point dataset description in xml or as a web form
-  datasetBoundaries.xml   = the description of the bounding boxes for grid datasets
-  station.xml             = the list of valid stations for a station dataset
-  {query}                 = the KVPs to describe the subset that you want (see below for valid combinations)
-------------------------------------------------------------------------------------------------------------------------------------
-
-Examples:
-
-* http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Pacific_40km/best/dataset.html
-* http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground
-
-== Reference
-
-=== W3C Time Duration
-
-The lexical representation for *duration* is the http://www.w3.org/TR/xmlschema-2/#ISO8601[[ISO 8601]] extended format P__n__Y__n__ M__n__DT__n__H
-__n__M__n__S, where __n__Y represents the number of years, __n__M the number of months, __n__D the number of days, 'T' is the date/time separator,
-__n__H the number of hours, __n__M the number of minutes and __n__S the number of seconds. The number of seconds can include decimal digits to
-arbitrary precision.
-
-The values of the Year, Month, Day, Hour and Minutes components are not restricted but allow an arbitrary unsigned integer, i.e., an integer that
-conforms to the pattern `[0-9]+`. Similarly, the value of the Seconds component allows an arbitrary unsigned decimal. According to
-http://www.w3.org/TR/xmlschema-2/#ISO8601[[ISO 8601]], at least one digit must follow the decimal point if it appears. That is, the value of the
-Seconds component must conform to the pattern `[0-9]+(\.[0-9]+)?`. Thus, the lexical representation of *duration* does not follow the alternative
-format of § 5.5.3.2.1 in http://www.w3.org/TR/xmlschema-2/#ISO8601[[ISO 8601]].
-
-An optional preceding minus sign (`-`) is allowed, to indicate a negative duration. If the sign is omitted, a positive duration is indicated. See also
-http://www.w3.org/TR/xmlschema-2/#isoformats[ISO 8601 Date and Time Formats (§D)].
-
-For example, to indicate a duration of 1 year, 2 months, 3 days, 10 hours, and 30 minutes, one would write: `P1Y2M3DT10H30M`. One could also indicate
-a duration of minus 120 days as: `-P120D`.
-
-Reduced precision and truncated representations of this format are allowed provided they conform to the following:
-
-* If the number of years, months, days, hours, minutes, or seconds in any expression equals zero, the number and its corresponding designator
-http://www.w3.org/TR/xmlschema-2/#dt-may[·may·] be omitted. However, at least one number and its designator
-http://www.w3.org/TR/xmlschema-2/#dt-must[·must·] be present.
-* The seconds part http://www.w3.org/TR/xmlschema-2/#dt-may[·may·] have a decimal fraction.
-* The designator 'T' must be absent if and only if all of the time items are absent. The designator 'P' must always be present.
-
-For example, `P1347Y`, `P1347M`, and `P1Y2MT2H` are all allowed, as are `P0Y1347M` and `P0Y1347M0D`.
-
-`P-1347M` is not allowed although `-P1347M` is. `P1Y2MT` is not.
-
-See XML Schema http://www.w3.org/TR/xmlschema-2/#duration[duration] for full details.
-
-W3C Dates
-^^^^^^^^^
-
-For our purposes, and ISO Date can be a dateTime or a date:
-
-*A dateTime* has the form: `'-'? yyyy '-' mm '-' dd 'T' hh ':' mm ':' ss ('.' s+)? (zzzzzz)?`
-
-where:
-
-* `'-'? yyyy` is a four-or-more digit, optionally negative-signed numeral that represents the year; if more than four digits, leading zeros are
-prohibited, and `'0000'` is prohibited (see the Note above http://www.w3.org/TR/xmlschema-2/#year-zero[(§3.2.7)]; also note that a plus sign is *not*
-permitted);
-* the remaining `'-'`s are separators between parts of the date portion;
-* the first `mm` is a two-digit numeral that represents the month;
-* `dd` is a two-digit numeral that represents the day;
-* `'T'` is a separator indicating that time-of-day follows;
-* `hh` is a two-digit numeral that represents the hour; `'24'` is permitted if the minutes and seconds represented are zero, and the *dateTime* value
-so represented is the first instant of the following day (the hour property of a *dateTime* object in the
-http://www.w3.org/TR/xmlschema-2/#dt-value-space[·value space·] cannot have a value greater than 23);
-* `':'` is a separator between parts of the time-of-day portion;
-* the second `mm` is a two-digit numeral that represents the minute;
-* `ss` is a two-integer-digit numeral that represents the whole seconds;
-* `'.' s+` (if present) represents the fractional seconds;
-* `zzzzzz` (if present) represents the time zone (as described below).
-
-For example, `2002-10-10T12:00:00-05:00` (noon on 10 October 2002, Central Daylight Savings Time as well as Eastern Standard Time in the U.S.) is
-`2002-10-10T17:00:00Z`, five hours later than `2002-10-10T12:00:00Z`.
-
-A *date* is the same as a dateTime without the time part : `'-'? yyyy '-' mm '-' dd     zzzzzz?`
-
-See XML Schema http://www.w3.org/TR/xmlschema-2/#dateTime[dateTime] and http://www.w3.org/TR/xmlschema-2/#date[date] for full details
 
 '''''
 

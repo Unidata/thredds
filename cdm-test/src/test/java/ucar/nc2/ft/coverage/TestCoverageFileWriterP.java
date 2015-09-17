@@ -8,7 +8,6 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
@@ -21,10 +20,7 @@ import ucar.unidata.test.util.TestDir;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Test CFGridCoverageWriter

@@ -40,8 +40,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
@@ -66,6 +64,7 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -88,13 +87,13 @@ public class GridCoverageSubsettingTest {
             //			{ new int[]{1,2,2} , "/ncss/grid/scanCdmUnitTests/ft/grid/GFS_Global_onedeg_20081229_1800.grib2.nc", "Pressure_surface", true, 50.0, -10.0, 50, 110 }, //No vertical levels
             //			{ new int[]{1,2,2} , "/ncss/grid/scanCdmUnitTests/tds/ncep/RR_CONUS_13km_20121028_0000.grib2", "Pressure_surface", true, 45.0, 15.0, -120, -90 }, //No vertical levels
             {"/ncss/grid/scanCdmUnitTests/tds/ncep/RR_CONUS_13km_20121028_0000.grib2", "Pressure_surface", false, 700.0, 2700.0, -2000, 666,
-                    new Expected(new int[]{1, 147, 197}, new ProjectionRect(-1991.200317, 711.427246, 663.619751, 2688.997314)) },
+                    new Expected(new int[]{1, 149, 198}, new ProjectionRect(-2004.745, 697.882, 663.620, 2702.542)) },
             {"/ncss/grid/scanCdmUnitTests/tds/ncep/RR_CONUS_13km_20121028_0000.grib2", "Pressure_surface", false, 0, 4000.0, 1234, 4000,
-                    new Expected(new int[]{1, 293, 113}, new ProjectionRect(1246.0547, 7.087246, 2763.0947, 3962.2273)) },
+                    new Expected(new int[]{1, 294, 114}, new ProjectionRect(1232.509766, -6.457754, 2763.094727, 3962.227295)) },
             {"/ncss/grid/scanCdmUnitTests/tds/ncep/RR_CONUS_13km_20121028_0000.grib2", "Pressure_surface", false, -4000, 444, 1234, 4000,
-                    new Expected(new int[]{1, 77, 113}, new ProjectionRect(1246.0547, -588.89276, 2763.0947, 440.52725)) },
+                    new Expected(new int[]{1, 77, 114}, new ProjectionRect(1232.510, -588.893, 2763.095, 440.527)) },
             {"/ncss/grid/scanCdmUnitTests/tds/ncep/RR_CONUS_13km_20121028_0000.grib2", "Pressure_surface", false, 2000, 4000, -4000, -833.102753,
-                    new Expected(new int[]{1, 145, 185}, new ProjectionRect(-3332.1553, 2011.7473, -839.87524, 3962.2273)) },
+                    new Expected(new int[]{1, 146, 186}, new ProjectionRect(-3332.155, 1998.202, -826.330, 3962.227)) },
     });
   }
 
@@ -191,8 +190,11 @@ public class GridCoverageSubsettingTest {
 
     if (expect != null) {
       v = nf.findVariable(null, vars);
+      System.out.printf("v.getShape()=%s%n", Misc.showInts(v.getShape()));
       assertArrayEquals(expect.shape, v.getShape());
-      assertEquals(expect.rect, prect);
+
+      System.out.printf("ProjectionRect=%s%n", prect.toString2(6));
+      assertTrue(expect.rect.closeEnough(prect));
     }
 
     //ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));

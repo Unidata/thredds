@@ -58,7 +58,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGridCoverageRemote {
+public class TestGridCoverageRemoteP {
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -85,7 +85,7 @@ public class TestGridCoverageRemote {
   CalendarDate time_val;
   Double time_offset, vert_level;
 
-  public TestGridCoverageRemote(String endpoint, String covName, String rt_val, String time_val, Double time_offset, Double vert_level) {
+  public TestGridCoverageRemoteP(String endpoint, String covName, String rt_val, String time_val, Double time_offset, Double vert_level) {
     this.endpoint = "cdmrFeature:" + TestWithLocalServer.withPath(endpoint);
 
     this.covName = covName;

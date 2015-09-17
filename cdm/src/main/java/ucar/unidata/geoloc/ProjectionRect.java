@@ -382,19 +382,13 @@ public class ProjectionRect implements java.io.Serializable {
    * @return a String representation of this object.
    */
   public String toString() {
-    return "min: " + Format.d(getX(), 3) + " " + Format.d(getY(), 3)
-            + " size: " + Format.d(getWidth(), 3) + " "
-            + Format.d(getHeight(), 3);
+    return String.format("min: %.3f %.3f size: %.3f %.3f", getX(), getY(), getWidth(), getHeight());
   }
 
-
-  public String toString2() {
-    return "min: " + Format.d(getX(), 3) + " " + Format.d(getY(), 3)
-            + " max: " + Format.d(getX() + getWidth(), 3) + " " + Format.d(getY() + getHeight(), 3);
+  public String toString2(int ndec) {
+    String f = " %."+ndec+"f";
+    return String.format("min:"+f+f+" max:"+f+f, getX(), getY(), getMaxX(), getMaxY());
   }
-
-
-  // bean serialization
 
   /**
    * set minimum X
@@ -478,18 +472,12 @@ public class ProjectionRect implements java.io.Serializable {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     ProjectionRect that = (ProjectionRect) o;
 
-    if (!Misc.closeEnough(that.height, height)) return false;
-    if (!Misc.closeEnough(that.width, width)) return false;
-    if (!Misc.closeEnough(that.x, x)) return false;
-    if (!Misc.closeEnough(that.y, y)) return false;
-
-    /* if (Double.compare(that.height, height) != 0) return false;
+    if (Double.compare(that.height, height) != 0) return false;
     if (Double.compare(that.width, width) != 0) return false;
     if (Double.compare(that.x, x) != 0) return false;
-    if (Double.compare(that.y, y) != 0) return false;  */
+    if (Double.compare(that.y, y) != 0) return false;
 
     return true;
   }
@@ -509,6 +497,8 @@ public class ProjectionRect implements java.io.Serializable {
     return result;
   }
 
+  // cannot do approx compare and be consistent with equals
+  // so make it a seperate method
   public boolean closeEnough(ProjectionRect that) {
     if (!Misc.closeEnough(that.height, height)) return false;
     if (!Misc.closeEnough(that.width, width)) return false;

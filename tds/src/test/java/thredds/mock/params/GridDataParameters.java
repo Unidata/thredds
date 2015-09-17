@@ -31,6 +31,8 @@
  */
 package thredds.mock.params;
 
+import com.beust.jcommander.internal.Lists;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +56,7 @@ public class GridDataParameters {
 
 		vars = new ArrayList<>();
 		//Variables with no vertical level
-		vars.add(Arrays.asList("Pressure", "Pressure_reduced_to_MSL"));
+		vars.add(Lists.newArrayList("Pressure", "Pressure_reduced_to_MSL"));
 		//Variables with one vertical level
 		vars.add(Arrays.asList("Relative_humidity_height_above_ground", "Temperature_height_above_ground"));
 		//Variables with multiple vertical levels (hPa)

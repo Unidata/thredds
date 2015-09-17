@@ -15,7 +15,7 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 import static org.junit.Assert.*;
 
 @Category(NeedsCdmUnitTest.class)
-public class NcssIntegrationTest {
+public class NcssGridIntegrationTest {
 
   /* @HttpTest(method = Method.GET, path = "ncss/grid/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/GC?var=Temperature_isobaric&latitude=40&longitude=-102&vertCoord=225")
   public void checkGridAsPointXml() throws JDOMException, IOException {

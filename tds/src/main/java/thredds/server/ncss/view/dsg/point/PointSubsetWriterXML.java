@@ -95,7 +95,7 @@ public class PointSubsetWriterXML extends AbstractPointSubsetWriter {
         staxWriter.writeCharacters("\n    ");
         staxWriter.writeStartElement("pointFeature");
         staxWriter.writeAttribute("date",
-                CalendarDateFormatter.toDateTimeString(pointFeat.getObservationTimeAsCalendarDate()));
+                CalendarDateFormatter.toDateTimeStringISO(pointFeat.getObservationTimeAsCalendarDate()));
 
         staxWriter.writeCharacters("\n        ");
         staxWriter.writeEmptyElement("location");

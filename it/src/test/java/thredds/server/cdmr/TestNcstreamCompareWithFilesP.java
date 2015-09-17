@@ -30,7 +30,7 @@ import java.util.List;
 
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestNcstreamCompareWithFiles {
+public class TestNcstreamCompareWithFilesP {
   static String contentRoot = TestDir.cdmUnitTestDir + "formats";
   static String urlPath = "cdmremote/scanCdmUnitTests/formats";
 
@@ -90,7 +90,7 @@ public class TestNcstreamCompareWithFiles {
 
   /////////////////////////////////////////////////////////////
 
-  public TestNcstreamCompareWithFiles(String filename) {
+  public TestNcstreamCompareWithFilesP(String filename) {
     this.filename = filename;
   }
 

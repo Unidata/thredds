@@ -42,17 +42,26 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
+import thredds.server.config.ThreddsConfig;
+import thredds.server.exception.RequestTooLargeException;
 import thredds.server.exception.ServiceNotAllowed;
 import thredds.server.ncss.exception.*;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssGridParamsBean;
+import thredds.server.ncss.params.NcssPointParamsBean;
+import thredds.server.ncss.view.dsg.DsgSubsetWriter;
+import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import thredds.util.Constants;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
+import ucar.nc2.ft2.coverage.writer.CoverageAsPoint;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -75,6 +84,7 @@ import java.util.Random;
 @Controller
 @RequestMapping("/ncss/grid")
 public class NcssGridController extends AbstractNcssController {
+  static private final short ESTIMATED_COMPRESION_RATE = 5;  // Compression rate used to estimate the filesize of netcdf4 compressed files
 
   @Autowired
   private AllowedServices allowedServices;
@@ -85,7 +95,7 @@ public class NcssGridController extends AbstractNcssController {
 
   @RequestMapping("**")     // data request
   public void handleRequest(HttpServletRequest req, HttpServletResponse res, @Valid NcssGridParamsBean params, BindingResult validationResult)
-          throws BindException, IOException, ParseException, NcssException, InvalidRangeException {
+          throws Exception {
 
     if (!allowedServices.isAllowed(StandardService.netcdfSubsetGrid))
       throw new ServiceNotAllowed(StandardService.netcdfSubsetGrid.toString());
@@ -128,8 +138,7 @@ public class NcssGridController extends AbstractNcssController {
       }
 
     String responseFile = getResponseFileName(datasetPath, version);
-    GridResponder gds = new GridResponder(gcd, responseFile);
-    File netcdfResult = gds.getGridResponseFile(params, version);
+    File netcdfResult = makeCFNetcdfFile(gcd, responseFile, params, version);
 
     // filename download attachment
     String suffix = version.getSuffix();
@@ -151,21 +160,75 @@ public class NcssGridController extends AbstractNcssController {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
+  File makeCFNetcdfFile(CoverageDataset gcd, String responseFilename, NcssGridParamsBean params, NetcdfFileWriter.Version version)
+          throws NcssException, InvalidRangeException, ParseException, IOException {
+
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
+    SubsetParams subset = params.makeSubset(gcd);
+
+    // Test maxFileDownloadSize
+    long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
+    if (maxFileDownloadSize > 0) {
+      Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), true, writer);
+      if (!estimatedSizeo.isPresent())
+        throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
+
+      long estimatedSize = estimatedSizeo.get();
+      if (version == NetcdfFileWriter.Version.netcdf4)
+        estimatedSize /= ESTIMATED_COMPRESION_RATE;
+
+      if (estimatedSize > maxFileDownloadSize)
+        throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
+    }
+
+    // write the file
+    Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), false, writer);
+    if (!estimatedSizeo.isPresent())
+      throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
+
+    return new File(responseFilename);
+  }
+
+  private String getResponseFileName(String requestPathInfo, NetcdfFileWriter.Version version) {
+    Random random = new Random(System.currentTimeMillis());
+    int randomInt = random.nextInt();
+
+    String filename = NcssRequestUtils.getFileNameForResponse(requestPathInfo, version);
+    String pathname = Integer.toString(randomInt) + "/" + filename;
+    File ncFile = ncssDiskCache.getDiskCache().getCacheFile(pathname);
+    if (ncFile == null)
+      throw new IllegalStateException("NCSS misconfigured cache");
+    return ncFile.getPath();
+  }
+
+  ///////////////////////////////////////////////////////////////
+
   private void handleRequestGridAsPoint(HttpServletResponse res, NcssGridParamsBean params, String datasetPath, CoverageDataset gcd)
-          throws NcssException, IOException, ParseException, InvalidRangeException {
+          throws Exception {
 
     SupportedFormat sf = SupportedOperation.POINT_REQUEST.getSupportedFormat(params.getAccept());
 
+    CoverageAsPoint covp = new CoverageAsPoint(gcd, params.getVar(), params.makeSubset(gcd));
+    FeatureDatasetPoint fd = covp.asFeatureDatasetPoint();
+
+    NcssPointParamsBean pparams = new NcssPointParamsBean(params); // copy
+
+    DsgSubsetWriter pds = DsgSubsetWriterFactory.newInstance(fd, pparams, ncssDiskCache, res.getOutputStream(), sf);
+    setResponseHeaders(res, pds.getResponseHeaders(fd, sf, datasetPath));
+    pds.respond(res, fd, datasetPath, params, sf);
+  }
+
+    /*
     if (sf.isStream()) {
       GridResponder responder = new GridResponder(gcd, "");
-      responder.streamResponse(res.getOutputStream(), params, sf);
+      responder.streamGridAsPointResponse(res.getOutputStream(), params, sf);
 
     } else {
       NetcdfFileWriter.Version version = (sf == SupportedFormat.NETCDF3) ? NetcdfFileWriter.Version.netcdf3 : NetcdfFileWriter.Version.netcdf4;
       String responseFile = getResponseFileName(datasetPath, version);
 
       GridResponder responder = new GridResponder(gcd, responseFile);
-      File netcdfResult = responder.getPointResponseFile(params, version);
+      File netcdfResult = responder.makeDSGnetcdfFile(params, version);
 
       // filename download attachment
       String suffix = version.getSuffix();
@@ -186,19 +249,8 @@ public class NcssGridController extends AbstractNcssController {
       res.getOutputStream().close();
       res.setStatus(HttpServletResponse.SC_OK);
     }
-  }
+  } */
 
-  private String getResponseFileName(String requestPathInfo, NetcdfFileWriter.Version version) {
-    Random random = new Random(System.currentTimeMillis());
-    int randomInt = random.nextInt();
-
-    String filename = NcssRequestUtils.getFileNameForResponse(requestPathInfo, version);
-    String pathname = Integer.toString(randomInt) + "/" + filename;
-    File ncFile = ncssDiskCache.getDiskCache().getCacheFile(pathname);
-    if (ncFile == null)
-      throw new IllegalStateException("NCSS misconfigured cache");
-    return ncFile.getPath();
-  }
   ///////////////////////////////////////////////////////////
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})

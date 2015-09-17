@@ -176,7 +176,7 @@ public class CdmrGridController implements LastModified {
       response.setHeader("Content-Description", "ncstream");
 
       // construct the subsetted dataset
-      SubsetParams params = qb.makeSubset(gridCoverageDataset.getCalendar(), gridCoverageDataset.getCoverageType() == CoverageCoordSys.Type.Fmrc);
+      SubsetParams params = qb.makeSubset(gridCoverageDataset);
       List<GeoReferencedArray> arrays = new ArrayList<>();
       for (String gridWanted : qb.getVar()) {
         Coverage grid = gridCoverageDataset.findCoverage(gridWanted);

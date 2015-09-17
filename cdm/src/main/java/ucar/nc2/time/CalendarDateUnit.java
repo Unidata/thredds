@@ -190,7 +190,7 @@ public class CalendarDateUnit {
   public String toString() {
     Formatter f = new Formatter();
     if (isCalendarField) f.format("%s", byCalendarString);
-    f.format("%s since %s", periodField, CalendarDateFormatter.toDateTimeString(baseDate));
+    f.format("%s since %s", periodField, CalendarDateFormatter.toDateTimeStringISO(baseDate));
     return f.toString();
   }
 

@@ -71,7 +71,7 @@ public class TestCoverageCurvilinear {
 
       HorizCoordSys hcs = gds.getHorizCoordSys();
       Assert.assertNotNull(endpoint, hcs);
-      Assert.assertTrue(endpoint, !hcs.isProjection());
+      Assert.assertTrue(endpoint, !hcs.getIsProjection());
       Assert.assertNull(endpoint, hcs.getTransform());
 
       String covName = "Mixed_layer_depth_surface";
@@ -99,7 +99,7 @@ public class TestCoverageCurvilinear {
 
       HorizCoordSys hcs = gds.getHorizCoordSys();
       Assert.assertNotNull(endpoint, hcs);
-      Assert.assertTrue(endpoint, !hcs.isProjection());
+      Assert.assertTrue(endpoint, !hcs.getIsProjection());
       Assert.assertNull(endpoint, hcs.getTransform());
 
       String covName = "Mixed_layer_depth_surface";

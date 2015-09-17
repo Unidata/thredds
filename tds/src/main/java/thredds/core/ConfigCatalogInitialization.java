@@ -174,7 +174,7 @@ public class ConfigCatalogInitialization {
   }
 
   // called from init() and from trigger controller
-  public synchronized void reread(ReadMode readMode, boolean isStartup) {
+  public synchronized boolean reread(ReadMode readMode, boolean isStartup) {
     long start = System.currentTimeMillis();
     logCatalogInit.info("ConfigCatalogInitializion readMode={} isStartup={}", readMode, isStartup);
     catPathMap = new HashSet<>();
@@ -253,6 +253,8 @@ public class ConfigCatalogInitialization {
     // cleanup
     catPathMap = null;
     fcNameMap = null;
+
+    return true; // ok
   }
 
   private void readRootCatalogs(ReadMode readMode) {

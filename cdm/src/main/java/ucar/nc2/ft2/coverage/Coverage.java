@@ -36,6 +36,7 @@ package ucar.nc2.ft2.coverage;
 import net.jcip.annotations.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nonnull;

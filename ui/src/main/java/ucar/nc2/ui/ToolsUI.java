@@ -1360,6 +1360,11 @@ public class ToolsUI extends JPanel {
 
     if (threddsData.fatalError) {
       JOptionPane.showMessageDialog(this, "Cant open dataset=" + threddsData.errLog);
+      try {
+        threddsData.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       return;
     }
 
@@ -1392,7 +1397,6 @@ public class ToolsUI extends JPanel {
       stationRadialPanel.setStationRadialDataset(threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(stationRadialPanel);
-
     }
   }
 
