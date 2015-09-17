@@ -31,18 +31,38 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
-import ucar.nc2.constants.DataFormatType;
-import ucar.ma2.*;
-import ucar.nc2.constants.CDM;
-import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.*;
-import ucar.nc2.iosp.*;
-
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.ArrayStructureBB;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.IOServiceProviderWriter;
+import ucar.nc2.iosp.Layout;
+import ucar.nc2.iosp.LayoutRegular;
+import ucar.nc2.iosp.LayoutRegularSegmented;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * IOServiceProvider implementation abstract base class to read/write "version 3" netcdf files.
@@ -133,75 +153,71 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       syncExtendOnly = value.equalsIgnoreCase("true");
   }
 
-/*
- * LOOK do we need to implement this ??
- *
- * Verify that a name string is valid syntax.  The allowed name
- * syntax (in RE form) is:
- *
- * ([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*
- *
- * where UTF8 represents a multibyte UTF-8 encoding.  Also, no
- * trailing spaces are permitted in names.  This definition
- * must be consistent with the one in ncgen.l.  We do not allow '/'
- * because HDF5 does not permit slashes in names as slash is used as a
- * group separator.  If UTF-8 is supported, then a multi-byte UTF-8
- * character can occur anywhere within an identifier.  We later
- * normalize UTF-8 strings to NFC to facilitate matching and queries.
- *
-public String NC_check_name(String name) {
-	int skip;
-	int ch;
-	const char *cp = name;
-	ssize_t utf8_stat;
+  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][^\\x00-\\x1F\\x2F\\x7F]*");
 
-	assert(name != NULL);
+//   /**
+//    * Determine if the given name can be used for a Dimension, Attribute, or Variable name.
+//    * Should match makeValidNetcdfObjectName()
+//    * @param name test this.
+//    * @return  true if valid name.
+//    */
+//   static public boolean isValidNetcdfObjectName(String name) {
+//     if (name == null)
+//       return false;
+//     Matcher m = objectNamePattern.matcher(name);
+//     return m.matches();
+//   }
 
-	if (*name == 0		// empty names disallowed
-	   || strchr(cp, '/'))	// '/' can't be in a name
-		return NC_EBADNAME;
+  /**
+   * Determine if the given name can be used for a Dimension, Attribute, or Variable name. The allowed name
+   * syntax (in RE form) is:
+   *
+   * ([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*
+   *
+   * where UTF8 represents a multi-byte UTF-8 encoding. Also, no trailing spaces are permitted in names. We do not
+   * allow '/' because HDF5 does not permit slashes in names as slash is used as a group separator. If UTF-8 is
+   * supported, then a multi-byte UTF-8 character can occur anywhere within an identifier.
+   *
+   * @param name  the name to validate.
+   * @return  {@code true} if the name is valid.
+   */
+  // Implements "int NC_check_name(const char *name)" from NetCDF-C:
+  // https://github.com/Unidata/netcdf-c/blob/v4.3.3.1/libdispatch/dstring.c#L169
+  // Should match makeValidNetcdfObjectName()
+  public static boolean isValidNetcdfObjectName(String name) {
+    if (name == null || name.isEmpty()) {
+      return false;
+    }
 
-	/* check validity of any UTF-8
-	utf8_stat = utf8proc_check((const unsigned char *)name);
-	if (utf8_stat < 0)
-	    return NC_EBADNAME;
+    int cp = name.codePointAt(0);
 
-	/* First char must be [a-z][A-Z][0-9]_ | UTF8
-	ch = (uchar)*cp;
-	if(ch <= 0x7f) {
-	    if(   !('A' <= ch && ch <= 'Z')
-	       && !('a' <= ch && ch <= 'z')
-	       && !('0' <= ch && ch <= '9')
-	       && ch != '_' )
-		return NC_EBADNAME;
-	    cp++;
-	} else {
-	    if((skip = nextUTF8(cp)) < 0)
-		return NC_EBADNAME;
-	    cp += skip;
-	}
+    if (cp <= 0x7f) {
+      if (!('A' <= cp && cp <= 'Z')
+              && !('a' <= cp && cp <= 'z')
+              && !('0' <= cp && cp <= '9')
+              && cp != '_') {
+        return false;
+      }
+    }
 
-	while(*cp != 0) {
-	  ch = (uchar)*cp;
-	  /* handle simple 0x00-0x7f characters here
-	  if (ch <= 0x7f) {
-      if( ch < ' ' || ch > 0x7E) /* control char or DEL
-		    return NC_EBADNAME;
-		  cp++;
-	  } else {
-		  if((skip = nextUTF8(cp)) < 0) return NC_EBADNAME;
-		  cp += skip;
-	  }
-	  if(cp - name > NC_MAX_NAME)
-		return NC_EMAXNAME;
-	}
-	if (ch <= 0x7f && isspace(ch)) // trailing spaces disallowed
-	    return NC_EBADNAME;
-	return NC_NOERR;
-} */
+    for (int i = 1; i < name.length(); ++i) {
+      cp = name.codePointAt(i);
+
+      if (cp <= 0x7f && (cp < ' ' || cp > 0x7E)) {  // control char or DEL
+        return false;
+      }
+    }
+
+    if (cp <= 0x7f && Character.isWhitespace(cp)) {
+      return false;
+    }
+
+    return true;
+  }
 
   /**
    * Convert a name to a legal netcdf-3 name.
+   *
    * @param name convert this name
    * @return converted name
    */
@@ -229,20 +245,10 @@ public String NC_check_name(String name) {
     return sb.toString();
   }
 
-  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][^\\x00-\\x1F\\x2F\\x7F]*");
-
-   /**
-    * Determine if the given name can be used for a Dimension, Attribute, or Variable name.
-    * Should match makeValidNetcdfObjectName()
-    * @param name test this.
-    * @return  true if valid name.
-    */
-   static public boolean isValidNetcdfObjectName(String name) {
-     if (name == null)
-       return false;
-     Matcher m = objectNamePattern.matcher(name);
-     return m.matches();
-   }
+  public static void main(String[] args) {
+    String s = " ŠĚƏ";
+    System.out.println(isValidNetcdfObjectName(s));
+  }
 
   /////////////////////////////////////////////////////////////////
   // I think these go together - consider deprecated
@@ -1007,14 +1013,4 @@ public String NC_check_name(String name) {
     boolean isValid2 = isValidNetcdfObjectName(convert);
     System.out.printf("new: %s (%s) == %s (%s) %n%n", test, isValid, convert, isValid2);
   }
-
-  public static void main(String[] args) {
-
-    testValid("MOD_Grid_MOD17A3/Data Fields/XDim");
-    testValid("MOD_Grid_MOD17A3/47Data Fields47XDim");
-    testValid("MOD_Grid_MOD17A347Data Fields47XDim");
-
-
-  }
-
 }
