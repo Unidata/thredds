@@ -32,8 +32,6 @@
  */
 package thredds.server.ncss.params;
 
-import ucar.nc2.units.TimeDuration;
-
 import java.util.List;
 
 /**

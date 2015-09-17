@@ -33,6 +33,8 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import ucar.unidata.geoloc.LatLonRect;
+
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -123,4 +125,6 @@ public class SubsetParams {
   public boolean hasTimeOffsetParam() {
     return get(timeOffset) != null || get(timeOffsetFirst) != null;
   }
+
+  public LatLonRect getLatLonBoundingBox() { return (LatLonRect) get(latlonBB);}
 }
