@@ -185,7 +185,7 @@ public class TestNc4IospWriting {
     enumMap.put(3284, "cake");
 
     // Create EnumTypedef and add it to root group.
-    EnumTypedef dessertType = new EnumTypedef("dessertType", enumMap, DataType.ENUM4);
+    EnumTypedef dessertType = new EnumTypedef("dessertType", enumMap, DataType.ENUM2);
     ncFile.getRootGroup().addEnumeration(dessertType);
 
     // Create Variable of type dessertType.
