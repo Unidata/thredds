@@ -163,12 +163,16 @@ public class LambertConformal extends ProjectionImpl {
    * Precalculate some stuff
    */
   private void precalculate() {
-    if (Math.abs(lat0 - PI_OVER_2) < TOLERANCE) {
-      throw new IllegalArgumentException("LambertConformal lat0 = 90");
+    if (Math.abs(lat0) > PI_OVER_2) {
+      throw new IllegalArgumentException("LambertConformal lat0 outside range (-90,90)");
     }
-    if (Math.abs(lat0 + PI_OVER_2) < TOLERANCE) {
-      throw new IllegalArgumentException("LambertConformal lat0 = -90");
+    if (Math.abs(par1) >= 90.0) {
+      throw new IllegalArgumentException("LambertConformal abs(par1) >= 90");
     }
+    if (Math.abs(par2) >= 90.0) {
+      throw new IllegalArgumentException("LambertConformal abs(par2) >= 90");
+    }
+
     if (Math.abs(par1 - 90.0) < TOLERANCE) {
       throw new IllegalArgumentException("LambertConformal par1 = 90");
     }
