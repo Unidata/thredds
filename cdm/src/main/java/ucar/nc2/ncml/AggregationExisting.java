@@ -33,30 +33,41 @@
 
 package ucar.nc2.ncml;
 
-import thredds.client.catalog.Catalog;
-import thredds.inventory.MFile;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.DatasetConstructor;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.*;
-import ucar.nc2.units.DateUnit;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
-
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jdom2.Element;
+import thredds.client.catalog.Catalog;
+import thredds.inventory.MFile;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.Group;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.DatasetConstructor;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.util.CancelTask;
 
 /**
  * JoinExisting Aggregation.
@@ -155,7 +166,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(CF.STANDARD_NAME, "time"));
     }
 
-    if (timeUnitsChange) {
+    if (timeUnitsChange && joinAggCoord != null) {
       readTimeCoordinates(joinAggCoord, cancelTask);
     }
 

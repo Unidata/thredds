@@ -32,21 +32,24 @@
  */
 package thredds.client.catalog.tools;
 
-import thredds.client.catalog.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+import thredds.client.catalog.Access;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Property;
+import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
+import ucar.nc2.stream.CdmRemote;
 import ucar.unidata.util.StringUtil2;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
 
 /**
  * DataFactory from THREDDS client catalogs
@@ -422,13 +425,19 @@ public class DataFactory {
    * @return NetcdfDataset or null if failure
    * @throws IOException on read error
    */
-  public NetcdfDataset openDataset(Access access, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws IOException {
-    Result result = new Result();
-    NetcdfDataset ncd = openDataset(access, acquire, task, result);
-    if (log != null) log.format("%s", result.errLog);
-    if (result.fatalError && ncd != null)
-      ncd.close();
-    return (result.fatalError) ? null : ncd;
+  public NetcdfDataset openDataset(Access access, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log)
+          throws IOException {
+    try (Result result = new Result()) {
+      NetcdfDataset ncd = openDataset(access, acquire, task, result);
+      if (log != null) log.format("%s", result.errLog);
+      if (result.fatalError && ncd != null)
+        ncd.close();
+      return (result.fatalError) ? null : ncd;
+
+      // result.close() will be called at the end of this block, which will close the Result's FeatureDataset, if it
+      // exists. That data member won't have been set by any of the code above, so the close() will essentially be a
+      // no-op.
+    }
   }
 
   private NetcdfDataset openDataset(Access access, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws IOException {

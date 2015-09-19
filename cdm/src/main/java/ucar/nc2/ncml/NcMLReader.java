@@ -1423,7 +1423,10 @@ public class NcMLReader {
         // possible relative location
         dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
 
-        aggc.addDirectoryScanFmrc(dirLocation, suffix, regexpPatternString, subdirs, olderS, runMatcher, forecastMatcher, offsetMatcher);
+        if (dirLocation != null) {
+          aggc.addDirectoryScanFmrc(
+                  dirLocation, suffix, regexpPatternString, subdirs, olderS, runMatcher, forecastMatcher, offsetMatcher);
+        }
 
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;

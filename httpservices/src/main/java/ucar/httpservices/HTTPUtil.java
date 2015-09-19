@@ -33,13 +33,21 @@
 
 package ucar.httpservices;
 
-import org.apache.http.*;
-import org.apache.http.protocol.HttpContext;
-
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.protocol.HttpContext;
 
 abstract public class HTTPUtil
 {
@@ -234,7 +242,7 @@ abstract public class HTTPUtil
     public static boolean schemeEquals(String s1, String s2)
     {
         if(s1 == s2) return true;
-        if((s1 == null) ^ (s2 == null)) return false;
+        if((s1 == null) || (s2 == null)) return false;
         if((s1.length() == 0) ^ (s2.length() == 0)) return true;
         return s1.equals(s2);
     }

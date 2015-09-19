@@ -737,7 +737,7 @@ public class HTTPMethod implements AutoCloseable
     static protected boolean compatibleURL(AuthScope a1, AuthScope a2)
         {
             if(a1 == a2) return true;
-            if((a1 == null) ^ (a2 == null))
+            if((a1 == null) || (a2 == null))
     	        return false;
             return a1.getHost().equals(a2.getHost())
                         && a1.getPort() == a2.getPort();
