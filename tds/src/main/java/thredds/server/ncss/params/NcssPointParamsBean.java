@@ -32,6 +32,14 @@
  */
 package thredds.server.ncss.params;
 
+import ucar.nc2.ft2.coverage.SubsetParams;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.units.TimeDuration;
+import ucar.unidata.geoloc.LatLonPointImpl;
+
 import java.util.List;
 
 /**
@@ -61,6 +69,47 @@ public class NcssPointParamsBean extends NcssParamsBean {
 
   public NcssPointParamsBean(NcssParamsBean from) {
     super(from);
+  }
+
+  ///////////////////////////////
+
+  public SubsetParams makeSubset() {
+
+    SubsetParams subset = new SubsetParams();
+
+    // vars
+    subset.set(SubsetParams.variables, var);
+
+    // horiz
+    if (stns != null)
+      subset.set(SubsetParams.stns, stns);
+    else if (hasLatLonBB())
+      subset.set(SubsetParams.latlonBB, getLatLonBoundingBox());
+    else if (hasLatLonPoint())
+      subset.set(SubsetParams.latlonPoint, new LatLonPointImpl(getLatitude(), getLongitude()));
+
+    // time
+    CalendarDate date = getRequestedDate(Calendar.getDefault());
+    CalendarDateRange dateRange = getCalendarDateRange(Calendar.getDefault());
+    if (isAllTimes()) {
+      subset.set(SubsetParams.timeAll, true);
+
+    } else if (date != null) {
+      subset.set(SubsetParams.time, date);
+
+    } else if (dateRange != null) {
+      subset.set(SubsetParams.timeRange, dateRange);
+
+    } else {
+      subset.set(SubsetParams.timePresent, true);
+    }
+
+    if (timeWindow != null) {
+      CalendarPeriod period = CalendarPeriod.of(timeWindow);
+      subset.set(SubsetParams.timeWindow, period);
+    }
+
+    return subset;
   }
 
 }

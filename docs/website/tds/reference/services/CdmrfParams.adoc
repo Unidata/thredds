@@ -1,11 +1,11 @@
-=== Subsetting Parameters for Grid (Coverage) Datasets:
+=== CDM Remote Feature Subsetting Parameters
 
 [width="100%",cols="20%,10%,30%,30%,10%",options="header",]
 |=====================================================================================================================================================
 |Parameter Name |Required  |Description / possible values                               |Constraints                                   |default
 |*var*            |yes       |Name(s) of variables (comma separated, no blanks), or _all_.  |Variables must be in the dataset description. |
 |*north, south, east, west* |no |lat/lon bounding box, units of degrees_east, degrees_north | south < north, west < east; if crossing 180 meridian, use east boundary > 180  |
-|*minx, miny, maxx, maxy* |no |Projection bounding box, in projection coordinate units (km) |min < max; use only if data is on a projection |
+|*minx, miny, maxx, maxy* |no |Projection bounding box, in projection coordinate units (km) |min < max; use only for gridded data on a projection |
 |*horizStride* |no |Take only every nth point (both x and y) | |1
 |*time* |no | Time as a link:{w3cDate}[W3C date] or _present_ (the time slice closest to the requested time is returned) or _all_ (all times are returned) |Must be a time within the dataset time range |_present_
 |*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present). Times may be a link:#W3Cdate[W3C date] or _present_. Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |

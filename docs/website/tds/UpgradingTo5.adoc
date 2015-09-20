@@ -211,6 +211,16 @@ that element in the *<gribConfig>* element, or the older verbose *lexigraphicByN
 NCSS queries and responses have been improved and clarified. Generally the previous queries are backwards compatible. See
 link:reference/services/NetcdfSubsetServiceReference.adoc[NCSS Reference] for details.
 
+* New functionality:
+. 2D time can now be handled for gridded datasets, with addition of _runtime_ and _timeOffset_ parameters.
+. Handling of interval coordinates has been clarified.
+. Use _ensCoord_ to select an ensemble member.
+
+* Minor syntax changes:
+. Use _time=all_ instead of _temporal=all_
+. For station datasets, _subset=stns_ or _subset=bb_ is not needed. Just define _stns_ or a bounding box.
+
+
 === CdmrFeature Service
 
 A new TDS service has been added for remote access to CDM Feature Datasets.

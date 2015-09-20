@@ -44,6 +44,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.ogc.om.NcOMObservationPropertyType;
 import ucar.nc2.ogc.waterml.NcDocumentMetadataPropertyType;
@@ -56,67 +57,69 @@ import java.io.OutputStream;
  * Created by cwardgar on 2014/06/04.
  */
 public class StationSubsetWriterWaterML extends AbstractStationSubsetWriter {
-    private final OutputStream out;
-    private final CollectionDocument collectionDoc;
-    private final CollectionType collection;
+  private final OutputStream out;
+  private final CollectionDocument collectionDoc;
+  private final CollectionType collection;
 
-    public StationSubsetWriterWaterML(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams, OutputStream out)
-            throws XMLStreamException, NcssException, IOException {
-        super(fdPoint, ncssParams);
+  public StationSubsetWriterWaterML(FeatureDatasetPoint fdPoint, SubsetParams ncssParams, OutputStream out)
+          throws XMLStreamException, NcssException, IOException {
+    super(fdPoint, ncssParams);
 
-        this.out = out;
-        this.collectionDoc = CollectionDocument.Factory.newInstance();
-        this.collection = collectionDoc.addNewCollection();
+    this.out = out;
+    this.collectionDoc = CollectionDocument.Factory.newInstance();
+    this.collection = collectionDoc.addNewCollection();
+  }
+
+  @Override
+  public HttpHeaders getHttpHeaders(String datasetPath, boolean isStream) {
+    HttpHeaders httpHeaders = new HttpHeaders();
+
+    if (!isStream) {
+      httpHeaders.set("Content-Location", datasetPath);
+      String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, ".xml");
+      httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
     }
 
-    @Override
-    public HttpHeaders getHttpHeaders(String datasetPath, boolean isStream) {
-        HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
+    return httpHeaders;
+  }
 
-        if (!isStream) {
-            httpHeaders.set("Content-Location", datasetPath);
-            String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, ".xml");
-            httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-        }
+  @Override
+  protected void writeHeader(StationPointFeature stationPointFeat) throws Exception {
+    MarshallingUtil.resetIds();
 
-        httpHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
-        return httpHeaders;
+    // @gml:id
+    String id = MarshallingUtil.createIdForType(CollectionType.class);
+    collection.setId(id);
+
+    // wml2:metadata
+    NcDocumentMetadataPropertyType.initMetadata(collection.addNewMetadata());
+  }
+
+  @Override
+  protected int writeStationTimeSeriesFeature(StationTimeSeriesFeature stationFeat) throws Exception {
+    if (!headerDone) {
+      writeHeader(null);
+      headerDone = true;
     }
 
-    @Override
-    protected void writeHeader(StationPointFeature stationPointFeat) throws Exception {
-        MarshallingUtil.resetIds();
-
-        // @gml:id
-        String id = MarshallingUtil.createIdForType(CollectionType.class);
-        collection.setId(id);
-
-        // wml2:metadata
-        NcDocumentMetadataPropertyType.initMetadata(collection.addNewMetadata());
+    for (VariableSimpleIF wantedVar : wantedVariables) {
+      // wml2:observationMember
+      NcOMObservationPropertyType.initObservationMember(
+              collection.addNewObservationMember(), stationFeat, wantedVar);
     }
 
-    @Override
-    protected void writeStationTimeSeriesFeature(StationTimeSeriesFeature stationFeat) throws Exception {
-        if (!headerDone) {
-            writeHeader(null);
-            headerDone = true;
-        }
+    return 1; // ??
+  }
 
-        for (VariableSimpleIF wantedVar : wantedVariables) {
-            // wml2:observationMember
-            NcOMObservationPropertyType.initObservationMember(
-                    collection.addNewObservationMember(), stationFeat, wantedVar);
-        }
-    }
+  @Override
+  protected void writeStationPointFeature(StationPointFeature stationPointFeat) throws Exception {
+    throw new UnsupportedOperationException("Method not used in " + getClass());
+  }
 
-    @Override
-    protected void writeStationPointFeature(StationPointFeature stationPointFeat) throws Exception {
-        throw new UnsupportedOperationException("Method not used in " + getClass());
-    }
-
-    @Override
-    protected void writeFooter() throws Exception {
-        MarshallingUtil.writeObject(collectionDoc, out, true);
-        out.flush();
-    }
+  @Override
+  protected void writeFooter() throws Exception {
+    MarshallingUtil.writeObject(collectionDoc, out, true);
+    out.flush();
+  }
 }

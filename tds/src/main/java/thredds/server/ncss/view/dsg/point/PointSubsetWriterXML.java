@@ -34,7 +34,6 @@ package thredds.server.ncss.view.dsg.point;
 
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.ma2.Array;
@@ -43,6 +42,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.util.Format;
@@ -59,7 +59,7 @@ import java.io.OutputStream;
 public class PointSubsetWriterXML extends AbstractPointSubsetWriter {
     private final XMLStreamWriter staxWriter;
 
-    public PointSubsetWriterXML(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
+    public PointSubsetWriterXML(FeatureDatasetPoint fdPoint, SubsetParams ncssParams, OutputStream out)
             throws XMLStreamException, NcssException, IOException {
         super(fdPoint, ncssParams);
 
@@ -89,7 +89,7 @@ public class PointSubsetWriterXML extends AbstractPointSubsetWriter {
     }
 
     @Override
-    public void writePoint(PointFeature pointFeat) throws Exception {
+    public void writePoint(PointFeature pointFeat) throws XMLStreamException, IOException {
         EarthLocation loc = pointFeat.getLocation();
 
         staxWriter.writeCharacters("\n    ");
@@ -104,6 +104,7 @@ public class PointSubsetWriterXML extends AbstractPointSubsetWriter {
         if (!Double.isNaN(loc.getAltitude()))
             staxWriter.writeAttribute("altitude", Format.dfrac(loc.getAltitude(), 0));
 
+        StructureData structureData = pointFeat.getDataAll();
         for (VariableSimpleIF wantedVar : wantedVariables) {
             staxWriter.writeCharacters("\n        ");
             staxWriter.writeStartElement("data");
@@ -111,7 +112,7 @@ public class PointSubsetWriterXML extends AbstractPointSubsetWriter {
             if (wantedVar.getUnitsString() != null)
                 staxWriter.writeAttribute(CDM.UNITS, wantedVar.getUnitsString());
 
-            Array dataArray = pointFeat.getData().getArray(wantedVar.getShortName());
+            Array dataArray = structureData.getArray(wantedVar.getShortName());
             String ss = dataArray.toString();
             Class elemType = dataArray.getElementType();
             if ((elemType == String.class) || (elemType == char.class) || (elemType == StructureData.class))

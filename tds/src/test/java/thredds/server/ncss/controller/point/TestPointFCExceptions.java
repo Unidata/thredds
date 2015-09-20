@@ -78,14 +78,25 @@ public class TestPointFCExceptions {
   }
 
   @Test
-  public void noBB() throws Exception {
+  public void noFeaturesInPointCollectionCSV() throws Exception {
     RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
             .param("longitude", "-105.203").param("latitude", "40.019")
-            .param("accept", "netcdf4")
+            .param("accept", "csv") //
             .param("var", "ICE");
 
     this.mockMvc.perform(rb)
-            .andExpect(MockMvcResultMatchers.status().is(200)); // i guess its ok  LOOK
+            .andExpect(MockMvcResultMatchers.status().is(400));
+  }
+
+  @Test
+  public void noFeaturesInPointCollectionNetcdf() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
+            .param("longitude", "-105.203").param("latitude", "40.019")
+            .param("accept", "netcdf") // empty - netcdf fails
+            .param("var", "ICE");
+
+    this.mockMvc.perform(rb)
+            .andExpect(MockMvcResultMatchers.status().is(400));
   }
 
   @Test

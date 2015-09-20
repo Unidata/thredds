@@ -36,8 +36,6 @@ import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
-import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.server.ncss.view.dsg.point.PointSubsetWriterCSV;
 import thredds.server.ncss.view.dsg.point.PointSubsetWriterNetcdf;
 import thredds.server.ncss.view.dsg.point.PointSubsetWriterXML;
@@ -48,6 +46,7 @@ import thredds.server.ncss.view.dsg.station.StationSubsetWriterXML;
 import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft2.coverage.SubsetParams;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -57,7 +56,7 @@ import java.io.OutputStream;
  * Created by cwardgar on 2014/05/21.
  */
 public abstract class DsgSubsetWriterFactory {
-  public static DsgSubsetWriter newInstance(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams, NcssDiskCache ncssDiskCache,
+  public static DsgSubsetWriter newInstance(FeatureDatasetPoint fdPoint, SubsetParams ncssParams, NcssDiskCache ncssDiskCache,
                                             OutputStream out, SupportedFormat format) throws NcssException, XMLStreamException, IOException {
     FeatureType featureType = fdPoint.getFeatureType();
 
@@ -76,7 +75,7 @@ public abstract class DsgSubsetWriterFactory {
     }
   }
 
-  public static DsgSubsetWriter newPointInstance(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams,
+  public static DsgSubsetWriter newPointInstance(FeatureDatasetPoint fdPoint, SubsetParams ncssParams,
                                                  NcssDiskCache ncssDiskCache, OutputStream out, SupportedFormat format)
           throws XMLStreamException, NcssException, IOException {
     switch (format) {
@@ -100,7 +99,7 @@ public abstract class DsgSubsetWriterFactory {
     }
   }
 
-  public static DsgSubsetWriter newStationInstance(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams,
+  public static DsgSubsetWriter newStationInstance(FeatureDatasetPoint fdPoint, SubsetParams ncssParams,
                                                    NcssDiskCache ncssDiskCache, OutputStream out, SupportedFormat format)
           throws XMLStreamException, NcssException, IOException {
     switch (format) {

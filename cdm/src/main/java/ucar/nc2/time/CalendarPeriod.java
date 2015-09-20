@@ -39,6 +39,7 @@ import net.jcip.annotations.Immutable;
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
+import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -151,6 +152,11 @@ public class CalendarPeriod {
 
     CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(units);
     return CalendarPeriod.of(value, unit);
+  }
+
+  public static CalendarPeriod of(TimeDuration td) {
+    CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(td.getTimeUnit().getUnitString());
+    return CalendarPeriod.of( (int) td.getValue(), unit);
   }
 
   ////////////////////////

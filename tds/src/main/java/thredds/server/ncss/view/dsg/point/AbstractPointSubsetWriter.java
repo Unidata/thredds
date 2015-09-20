@@ -33,9 +33,9 @@
 package thredds.server.ncss.view.dsg.point;
 
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.view.dsg.AbstractDsgSubsetWriter;
+import thredds.server.ncss.view.dsg.DsgSubsetWriter;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft2.coverage.SubsetParams;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,10 +43,10 @@ import java.util.List;
 /**
  * Created by cwardgar on 2014/06/02.
  */
-public abstract class AbstractPointSubsetWriter extends AbstractDsgSubsetWriter {
+public abstract class AbstractPointSubsetWriter extends DsgSubsetWriter {
   protected final PointFeatureCollection pointFeatureCollection;
 
-  public AbstractPointSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
+  public AbstractPointSubsetWriter(FeatureDatasetPoint fdPoint, SubsetParams ncssParams)
           throws NcssException, IOException {
     super(fdPoint, ncssParams);
 
@@ -73,6 +73,7 @@ public abstract class AbstractPointSubsetWriter extends AbstractDsgSubsetWriter 
     if (subsettedPointFeatColl == null) // means theres nothing in the subset
       return;
 
+    int count = 0;
     boolean headerDone = false;
     for (PointFeature pointFeat : subsettedPointFeatColl) {
       if (!headerDone) {
@@ -80,7 +81,11 @@ public abstract class AbstractPointSubsetWriter extends AbstractDsgSubsetWriter 
         headerDone = true;
       }
       writePoint(pointFeat);
+      count++;
     }
+
+    if (count == 0)
+      throw new NcssException("No features are in the requested subset");
 
     writeFooter();
   }

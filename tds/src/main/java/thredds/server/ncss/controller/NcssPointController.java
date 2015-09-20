@@ -50,6 +50,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -115,10 +116,12 @@ public class NcssPointController extends AbstractNcssController {
         throw new UnsupportedOperationException(String.format("%s format not currently supported for DSG subset writing.", fd.getFeatureType()));
     }
 
+    SubsetParams ncssParams = params.makeSubset();
+
     SupportedFormat format = supportedOp.getSupportedFormat(params.getAccept());
-    DsgSubsetWriter pds = DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, params, ncssDiskCache, res.getOutputStream(), format);
-    setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
-    pds.respond(res, fd, datasetPath, params, format);
+    DsgSubsetWriter pds = DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, ncssParams, ncssDiskCache, res.getOutputStream(), format);
+    setResponseHeaders(res, pds.getHttpHeaders(datasetPath, format.isStream() ));
+    pds.respond(res, fd, datasetPath, ncssParams, format);
   }
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})

@@ -1,41 +1,38 @@
 = NCSS For Point Data
 :linkcss:
 :stylesheet: ../../tds.css
-:cdmDocs: ../../../netcdf-java/reference/
 :toc:
 
 == Subsetting Parameters for NCSS Point
 
-These parameters are identical to the CdmrFeature service:
-
-include::{cdmDocs}stream/CdmrCoverageParams.adoc[]
-
-In addition, NCSS supports these parameters for Points:
-
 [width="100%",cols="20%,10%,30%,30%,10%",options="header",]
-|====
-| Parameter Name | Required  | Description  | Constraints | default
-| *latitude, longitude* | no | Point location. units of degrees_east, degrees_north | Must be within the dataset bounding box |
-| *stns* | no | Specify the list of stations in the subset. | Only on station datasets. |
-| *accept* | no | The returned data format. | _netCDF_, _netCDF4_, _XML_, _CSV_, _WaterML2_ | _CSV_
-|====
+|=====================================================================================================================================================
+|Parameter Name |Required  |Description / possible values                               |Constraints                                   |default
+|*var*            |yes       |Name(s) of variables (comma separated, no blanks), or _all_.  |Variables must be in the dataset description. |
+|*stns* | no | Specify a list of stations (comma separated, no blanks) | Only on station datasets. |
+|*latitude, longitude* | no | Point location. units of degrees_east, degrees_north | Must be within the dataset bounding box |
+|*north, south, east, west* |no |lat/lon bounding box, units of degrees_east, degrees_north | south < north, west < east; if crossing 180 meridian, use east boundary > 180  |
+|*time* |no | Time as a link:{w3cDate}[W3C date] or _present_ or _all_ | |_present_
+|*time_window* |no | Use with *time*: how close a match; udunit time or link:{w3cDuration}[W3C time duration] | | _1 hour_
+|*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present). Times may be a link:#W3Cdate[W3C date] or _present_. Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
+|*accept* | no | The returned data format. | _netCDF_, _netCDF4_, _XML_, _CSV_, _WaterML2_ (station only) | _CSV_
+|=====================================================================================================================================================
 
 Variable subsetting::
 
-* For all types, you *must* specify a list of valid variable names.
+* You *must* specify a list of valid variable names, or _all_.
 
 Horizontal spatial subsetting::
 
-* stations: you may specify (in order of precedence): 1) a list of stations, 2) a point location, or 3) a lat/lon bounding box. If none, use all.
+* stations: you may specify (in order of precedence): 1) a list of stations, 2) a point location (find station closest to the point),
+  or 3) a lat/lon bounding box (all stations within the box). If none, use all.
 * points: you may specify a lat/lon bounding box. If none, use all.
-* Note the lat/lon bounding box declared in the dataset description is an approximated rectangle to the actual lat/lon boundaries so there may be
-  valid points within the data but outside of the declared bounding box in the dataset description
 
 Temporal subsetting::
 
 * For all types, you may specify a time range or a specific time. If none, return the time closest to the present.
 * A time range will request all features that intersect the range.
-* A time point will request the feature that is closest to that time.
+* A time point will request the feature that is closest to that time, within the time window. The time window defaults to one hour.
 * If you include _time=all_, then return all times.
 
 Output Format (__accept__ parameter)::
@@ -47,51 +44,28 @@ Output Format (__accept__ parameter)::
 * __netCDF4ext__: NetCDF-4 extended model
 * __WaterML2__: http://www.opengeospatial.org/standards/waterml[OGC WaterML 2.0 Timeseries] (station only)
 
-== *Spatial and coordinate subsetting*
+== *Spatial subsetting*
+
+=== *Station list*
+
+Station datasets only. A comma separated list of stations for this dataset. You can get the list of stations from the stations.xml. Example:
+
+ &stns=LECO,LEST,LEVX
+
+=== *Single-point requests*
+
+Station datasets only. use the station closest to the given latitude, longitude. Example:
+
+ &latitude=40.2&longitude=61.8
 
 === *Lat/lon bounding box*
 
 Specified with the params _north, south, east_ and _west._ The _north_ and _south_ parameters are latitude values, and must
 be in units of _degrees_north_ and lie between +/- 90. The _east_ and _west_ parameters are longitude values with units of __degrees_east__, and may
 be positive or negative, and will be interpreted modulo 360. The requested subset starts at the west longitude and goes eastward until the east
-longitude. Therefore, when crossing the dateline, the west edge may be greater than the east edge. For grids, if the underlying dataset is on a
-projection, the minimum enclosing projection bounding box will be calculated and used. The data contained in the intersection of this rectangle with
-the data is returned. To use, inspect _dataset.xml_ for the <LatLonBox> elements, which indicate the min and max extensions of the grid, for
-example:
-
-[source,xml]
-----
-<LatLonBox>
-  <west>-153.5889</west>
-  <east>-48.5984</east>
-  <south>11.7476</south>
-  <north>57.4843</north>
-</LatLonBox>
-----
-
-Example request:
+longitude. Therefore, when crossing the dateline, the west edge may be greater than the east edge. Example request:
 
  &north=17.3&south=12.088&west=140.2&east=160.0
-
-=== *Station list*
-
-
-=== *Single-point requests*
-
-The NetCDF Subset Service allows the user to extract data for a point of interest by specifying its latitude and longitude. The result differs
-depending on the underlying dataset.
-
-* If it's a station dataset, NCSS will return data for the station nearest the specified lat/lon. The supported output formats are
-_netCDF_, _netCDF4_, _XML_, _CSV_  and _WaterML2_.
-* Point datasets do not support single-point requests. (LOOK is that true?)
-
-For example:
-
---------------------------------------------------
-?req=station&var=temp&latitude=40.2&longitude=61.8
---------------------------------------------------
-
-This finds the station nearest to (lat=40.2, lon=61.8) and returns its temperature data.
 
 == *Temporal subsetting*
 

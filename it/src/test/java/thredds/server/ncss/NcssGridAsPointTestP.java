@@ -71,7 +71,7 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Ncss GridAsPoint queries
+ * Ncss TestGridAsPointMisc queries
  *
  * @author caron
  * @since 9/15/2015.
@@ -87,8 +87,8 @@ public class NcssGridAsPointTestP {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    //result.add(new Object[]{ ds1, varName1, query1, 1, .0046999454, "2012-03-08T00:00:00Z"});
-    result.add(new Object[]{ ds1, varName1, query1+"&time=all", 35, .0046999454, "2012-02-27T00:00:00Z"});
+    result.add(new Object[]{ ds1, varName1, query1, 1, .0046999454, "2012-03-08T00:00:00Z"});
+    result.add(new Object[]{ ds1, varName1, query1+"&time=all", 35, 0.08099997, "2012-02-27T06:00:00Z"});
 
     return result;
   }
@@ -133,7 +133,7 @@ public class NcssGridAsPointTestP {
     System.out.printf("xpathq='%s'%n", xpathq);
     XPathExpression <Element> xpath = XPathFactory.instance().compile(xpathq, Filters.element());
     List<Element> elements = xpath.evaluate(doc);
-    Assert.assertEquals(1, elements.size());
+    Assert.assertEquals((int) ntimes, elements.size());
     Element elem0 = elements.get(0);
     CalendarDate cd = CalendarDate.parseISOformat(null, elem0.getAttributeValue("date"));
     System.out.printf(" xml date=%s%n", cd);

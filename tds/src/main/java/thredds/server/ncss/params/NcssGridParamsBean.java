@@ -213,6 +213,9 @@ public class NcssGridParamsBean extends NcssParamsBean {
 
     SubsetParams subset = new SubsetParams();
 
+    // vars
+    subset.set(SubsetParams.variables, var);
+
     if (vertCoord != null)
       subset.set(SubsetParams.vertCoord, vertCoord);
 
@@ -229,7 +232,7 @@ public class NcssGridParamsBean extends NcssParamsBean {
     if (hasLatLonPoint())
       subset.set(SubsetParams.latlonPoint, new LatLonPointImpl(getLatitude(), getLongitude()));
 
-    if (isFmrc) {
+    if (isFmrc) { // 2D Time subsetting
 
       // runtime
       CalendarDate rundate = getRuntimeDate(cal);
@@ -251,7 +254,7 @@ public class NcssGridParamsBean extends NcssParamsBean {
         CalendarDate date = getRequestedDate(cal);
         CalendarDateRange dateRange = getCalendarDateRange(cal);
         if (isAllTimes() && !allRuntime) {
-          // subset.set(SubsetParams.allTimes, true); // LOOK is this needed?
+          subset.set(SubsetParams.timeAll, true);
           if (timeStride != null && timeStride != 1)
             subset.set(SubsetParams.timeStride, timeStride);
 
@@ -271,7 +274,7 @@ public class NcssGridParamsBean extends NcssParamsBean {
       CalendarDate date = getRequestedDate(cal);
       CalendarDateRange dateRange = getCalendarDateRange(cal);
       if (isAllTimes()) {
-        // subset.set(SubsetParams.allTimes, true); // LOOK is this needed?
+        subset.set(SubsetParams.timeAll, true);
         if (timeStride != null && timeStride != 1)
           subset.set(SubsetParams.timeStride, timeStride);
 

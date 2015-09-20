@@ -211,11 +211,14 @@ public class NcssGridController extends AbstractNcssController {
     CoverageAsPoint covp = new CoverageAsPoint(gcd, params.getVar(), params.makeSubset(gcd));
     FeatureDatasetPoint fd = covp.asFeatureDatasetPoint();
 
-    NcssPointParamsBean pparams = new NcssPointParamsBean(params); // copy
-
-    DsgSubsetWriter pds = DsgSubsetWriterFactory.newInstance(fd, pparams, ncssDiskCache, res.getOutputStream(), sf);
-    setResponseHeaders(res, pds.getResponseHeaders(fd, sf, datasetPath));
-    pds.respond(res, fd, datasetPath, params, sf);
+    // all subsetting is done in CoverageAsPoint
+    //SubsetParams ncssParams = params.makeSubset(gcd);
+    SubsetParams ncssParams = new SubsetParams()
+            .set(SubsetParams.timeAll, true)
+            .set(SubsetParams.variables, params.getVar());
+    DsgSubsetWriter pds = DsgSubsetWriterFactory.newInstance(fd, ncssParams, ncssDiskCache, res.getOutputStream(), sf);
+    setResponseHeaders(res, pds.getHttpHeaders(datasetPath, sf.isStream()));
+    pds.respond(res, fd, datasetPath, ncssParams, sf);
   }
 
     /*

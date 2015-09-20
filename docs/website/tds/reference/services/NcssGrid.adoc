@@ -1,14 +1,13 @@
 = NCSS For Grid Data
 :linkcss:
 :stylesheet: ../../tds.css
-:cdmDocs: ../../../netcdf-java/reference/
 :toc:
 
 == Subsetting Parameters for NCSS Grid
 
 These parameters are identical to the CdmrFeature service:
 
-include::{cdmDocs}stream/CdmrCoverageParams.adoc[]
+include::CdmrfParams.adoc[]
 
 In addition, NCSS supports these parameters for Grids:
 

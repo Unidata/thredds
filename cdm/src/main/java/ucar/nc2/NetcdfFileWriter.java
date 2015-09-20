@@ -841,8 +841,8 @@ public class NetcdfFileWriter implements AutoCloseable {
    * @throws IOException if I/O error
    */
   public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
-    if (defineMode)
-      throw new UnsupportedOperationException("in define mode");
+  //  if (defineMode)
+  //    throw new UnsupportedOperationException("in define mode");
     spiw.updateAttribute(v2, att);
   }
 

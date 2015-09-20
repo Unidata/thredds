@@ -76,6 +76,7 @@ public enum SupportedFormat {
     this.fileSuffix = fileSuffix;
     this.contentType = contentType;
     List<String> aliasesList = new ArrayList<>();
+    aliasesList.add(name());
     Collections.addAll(aliasesList, aliases);
     this.aliases = Collections.unmodifiableList(aliasesList);
   }

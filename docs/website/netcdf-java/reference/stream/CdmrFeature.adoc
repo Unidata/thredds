@@ -1,6 +1,7 @@
 = CDM Remote Feature For Grid (Coverage)
 :linkcss:
 :stylesheet: ../../cdm.css
+:tdsDocs: ../../../tds/reference/services/
 :w3cDate: http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate
 :w3cDuration: http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cduration
 
@@ -28,7 +29,7 @@ http://thredds-dev.unidata.ucar.edu/thredds/cdmrfeature/grid/grib/NCEP/GFS/Globa
 
 See link:CdmrfGrammer.adoc[CdmrFeature Grammer] for a description of the on-the-wire protocol.
 
-include::CdmrCoverageParams.adoc[]
+include::{tdsDocs}CdmrfParams.adoc[]
 
 '''''
 
