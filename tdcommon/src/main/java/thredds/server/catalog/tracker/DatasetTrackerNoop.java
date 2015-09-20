@@ -4,7 +4,6 @@ package thredds.server.catalog.tracker;
 import thredds.client.catalog.Dataset;
 
 import java.util.Formatter;
-import java.util.Map;
 
 /**
  * Description

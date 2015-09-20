@@ -71,6 +71,8 @@ public class DatasetScan extends CatalogRef {
   static private Service latestService;
 
   static public void setLatestService(Service _latestService) {
+    if (latestService != null)
+      throw new RuntimeException("latestService cannot be changes once set");
     latestService = _latestService;
   }
 
@@ -261,12 +263,12 @@ public class DatasetScan extends CatalogRef {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
     MFile nextMFile;
-    long now;
+    //long now;
 
     DatasetScanMFileIterator(Path p) throws IOException {
       dirStream = Files.newDirectoryStream(p);
       dirStreamIterator = dirStream.iterator();
-      now = System.currentTimeMillis();
+      //now = System.currentTimeMillis();
     }
 
     public boolean hasNext() {

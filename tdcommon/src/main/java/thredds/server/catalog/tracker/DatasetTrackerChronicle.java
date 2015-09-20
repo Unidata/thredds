@@ -39,14 +39,14 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   }
 
   private boolean alreadyExists;
-  private boolean changed;
-  private String pathname;
+  //private boolean changed;
+  //private String pathname;
   private File dbFile;
   private long maxDatasets;
   private ChronicleMap<String, Externalizable> datasetMap;
 
   public DatasetTrackerChronicle(String pathname, long maxDatasets, long number) {
-    this.pathname = pathname;
+    // this.pathname = pathname;
     dbFile = new File(pathname + datasetName + "." + number);
     alreadyExists = dbFile.exists();
     this.maxDatasets = maxDatasets;
@@ -150,7 +150,7 @@ public class DatasetTrackerChronicle implements DatasetTracker {
       ncml = xmlOut.outputString(ncmlElem);
     }
 
-    changed = true;
+    // changed = true;
     DatasetTrackerInfo dsext = new DatasetTrackerInfo(0, dataset.getRestrictAccess(), ncml);
     datasetMap.put(path, dsext);
     return true;

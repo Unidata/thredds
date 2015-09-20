@@ -9,7 +9,6 @@ import thredds.client.catalog.Dataset;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
 
-import java.io.Externalizable;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,7 @@ import java.util.Map;
  */
 public class DatasetTrackerInMem implements DatasetTracker {
   static private final Logger logger = LoggerFactory.getLogger(DatasetTracker.class);
-  static final boolean debugResourceControl = false;
+  //static final boolean debugResourceControl = false;
 
   // resource control
   private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
@@ -31,7 +30,7 @@ public class DatasetTrackerInMem implements DatasetTracker {
 
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
   private Map<String, String> ncmlDatasetHash = new HashMap<>();
-  private int count;
+  //private int count;
 
   public boolean init(String dirPath, long maxDatasets) {
     return true;

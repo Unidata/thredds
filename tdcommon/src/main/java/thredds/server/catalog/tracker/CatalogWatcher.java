@@ -50,10 +50,10 @@ public class CatalogWatcher implements AutoCloseable {
     if (trace) {
       Path prev = keys.get(key);
       if (prev == null) {
-        System.out.format("CatalogWatcher register: %s\n", dir);
+        System.out.format("CatalogWatcher register: %s%n", dir);
       } else {
         if (!dir.equals(prev)) {
-          System.out.format("update: %s -> %s\n", prev, dir);
+          System.out.format("update: %s -> %s%n", prev, dir);
         }
       }
     }
@@ -114,7 +114,7 @@ public class CatalogWatcher implements AutoCloseable {
         Path child = dir.resolve(name);
 
         // print out event
-        System.out.format("%s: %s\n", event.kind().name(), child);
+        System.out.format("%s: %s%n", event.kind().name(), child);
 
         // if directory is created, and watching recursively, then
         // register it and its sub-directories
