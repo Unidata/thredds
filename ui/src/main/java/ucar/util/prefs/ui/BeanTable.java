@@ -645,6 +645,9 @@ public class BeanTable extends JPanel {
       // see if editableProperties method exists
       String editableProperties = "";
       MethodDescriptor[] mds = info.getMethodDescriptors();
+      if (mds == null)
+        throw new IllegalStateException("no public methods");
+
       for (MethodDescriptor md : mds) {
         Method m = md.getMethod();
         if (m != null && m.getName().equals("editableProperties")) {

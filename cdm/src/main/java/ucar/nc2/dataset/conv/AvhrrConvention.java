@@ -101,6 +101,7 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
     lon.setDimensions("scan xscan");
 
     Group data = vhrr.findGroup("Image Data");
+    if (data == null) throw new IllegalStateException();
     for (Variable v : data.getVariables()) {
       int[] vs = v.getShape();
       if ((vs.length == 2) && (vs[0] == shape[0]) && (vs[1] == shape[1])) {

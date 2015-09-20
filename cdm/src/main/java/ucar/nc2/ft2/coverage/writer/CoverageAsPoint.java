@@ -224,7 +224,7 @@ public class CoverageAsPoint {
     }
   }
 
-  private class MyPointFeature extends PointFeatureImpl implements StationPointFeature {
+  private static class MyPointFeature extends PointFeatureImpl implements StationPointFeature {
     StationFeature stn;
     StructureData sdata;
 

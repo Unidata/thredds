@@ -81,7 +81,7 @@ public class RadialDatasetTable extends JPanel {
     varTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        setVariable( vb);
+        if (vb != null) setVariable( vb);
       }
     });
 
@@ -91,6 +91,7 @@ public class RadialDatasetTable extends JPanel {
     csPopup.addAction("Show Declaration", new AbstractAction() {
        public void actionPerformed(ActionEvent e) {
          VariableBean vb = (VariableBean) varTable.getSelectedBean();
+         if (vb == null) return;
          VariableSimpleIF v = radialDataset.getDataVariable( vb.getName());
          infoTA.clear();
          infoTA.appendLine( v.toString());
@@ -101,6 +102,7 @@ public class RadialDatasetTable extends JPanel {
     csPopup.addAction("Show Info", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           VariableBean vb = (VariableBean) varTable.getSelectedBean();
+          if (vb == null) return;
           Formatter f = new Formatter();
           showInfo(radialDataset, vb.getName(), f);
           infoTA.clear();
