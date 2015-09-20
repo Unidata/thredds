@@ -366,7 +366,7 @@ public class URLDumpPane extends TextHistoryPane {
 
         } else {
           byte[] body = m.getResponseAsBytes(50 * 1000); // max 50 Kbytes
-          contents = new String(body, charset);
+          contents = (body == null) ? "" : new String(body, charset);
         }
 
         if (contents.length() > 50 * 1000)

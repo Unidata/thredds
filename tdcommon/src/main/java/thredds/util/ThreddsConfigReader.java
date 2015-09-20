@@ -142,7 +142,6 @@ public class ThreddsConfigReader {
     return defValue;
   }
 
-
   public Boolean getBoolean(String paramName) {
     String s = getParam( paramName);
     if (s == null) return null;

@@ -426,6 +426,10 @@ public class Grib1CollectionPanel extends JPanel {
     Grib1Gds gds2 = gdss2.getGDS();
     GdsHorizCoordSys gdsh1 = gds1.makeHorizCoordSys();
     GdsHorizCoordSys gdsh2 = gds2.makeHorizCoordSys();
+    if (gdsh1 == null || gdsh2 == null) {
+      f.format("makeHorizCoordSys failed%n");
+      return;
+    }
 
     f.format("%ncompare gds1 - gds22%n");
     f.format(" Start x diff : %f%n", gdsh1.getStartX() - gdsh2.getStartX());

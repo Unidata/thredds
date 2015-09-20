@@ -561,7 +561,8 @@ public class Grib2ReportPanel extends ReportPanel {
 
       if (pds.isTimeInterval()) {
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
-        counters.count("timeIntervalSize", intv[1]-intv[0]);
+        if (intv != null)
+          counters.count("timeIntervalSize", intv[1]-intv[0]);
       }
 
       counters.count("levelType", pds.getLevelType1());

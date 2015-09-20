@@ -222,7 +222,7 @@ public class CollectionSpecTable extends JPanel {
     }
 
     dcm = scanCollection(spec, f);
-    if (dfm != null) {
+    if (dcm != null && dfm != null) {
       dcm.setDateExtractor(new DateExtractorFromName(dfm, false));
       f.format("dateFormatMark='%s' %n", dfm);
     }

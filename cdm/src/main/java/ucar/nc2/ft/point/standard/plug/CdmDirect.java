@@ -150,6 +150,10 @@ public class CdmDirect extends TableConfigurerImpl {
       if (v.getDataType() == DataType.SEQUENCE)
         obsv = (Structure) v;
     }
+    if (obsv == null)  {
+      errlog.format("Must have a SEQUENCE variable%n");
+      return null;
+    }
     TableConfig obs = new TableConfig(Table.Type.NestedStructure, obsv.getFullName());
     obs.nestedTableName = obsv.getShortName();
     obs.time = CoordSysEvaluator.findCoordShortNameByType(ds, AxisType.Time);
