@@ -58,7 +58,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @param largeFile  if want large file format
    * @throws java.io.IOException if I/O error
    */
-  public void create(String filename, ucar.nc2.NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile) throws IOException;
+  void create(String filename, ucar.nc2.NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile) throws IOException;
 
   /**
    * Open existing file and allow writing.
@@ -68,7 +68,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if I/O error
    */
-  public void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
+  void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException;
 
   /**
@@ -80,7 +80,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    *
    * @param fill set fill mode true or false
    */
-  public void setFill(boolean fill);
+  void setFill(boolean fill);
 
   /**
    * Write data into a variable.
@@ -93,7 +93,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  public void writeData(ucar.nc2.Variable v2, Section section, ucar.ma2.Array values)
+  void writeData(ucar.nc2.Variable v2, Section section, ucar.ma2.Array values)
       throws IOException, ucar.ma2.InvalidRangeException;
 
   /**
@@ -105,7 +105,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException;
+  int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException;
 
 
   /**
@@ -113,7 +113,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @return true if it worked
    * @throws IOException
    */
-  public boolean rewriteHeader(boolean largeFile) throws IOException;
+  boolean rewriteHeader(boolean largeFile) throws IOException;
 
   /**
    * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
@@ -125,12 +125,12 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @param att replace with this value
    * @throws IOException if I/O error
    */
-  public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException;
+  void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException;
 
   /**
    * Flush all data buffers to disk.
    * @throws IOException if I/O error
    */
-  public void flush() throws IOException;
+  void flush() throws IOException;
 
 }

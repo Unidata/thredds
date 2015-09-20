@@ -49,6 +49,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.ft.point.writer.WriterCFStationCollection;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.Station;
@@ -70,7 +71,7 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
     private final WriterCFStationCollection cfWriter;
     private final NcssDiskCache ncssDiskCache;
 
-    public StationSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams, NcssDiskCache ncssDiskCache,
+    public StationSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, SubsetParams ncssParams, NcssDiskCache ncssDiskCache,
                                      OutputStream out, NetcdfFileWriter.Version version) throws NcssException, IOException {
         super(fdPoint, ncssParams);
 

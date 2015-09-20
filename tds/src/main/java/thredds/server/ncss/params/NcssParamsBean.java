@@ -73,7 +73,9 @@ public class NcssParamsBean {
 
   protected String time;
 
-  protected String temporal;  // ="all"  deprecated, use time="all"
+  protected String temporal;  // deprecated, use time="all"
+
+  protected String time_window;        // a time duration; point data only
 
   protected Double north;
 
@@ -105,11 +107,10 @@ public class NcssParamsBean {
     this.longitude = from.longitude;
     this.date = from.date;
     this.dateRange = from.dateRange;
-    this.time_window = from.time_window;
-    this.timeWindow = from.timeWindow;
   }
 
   /////////////////////////////////////////////////////
+  // Bean set/getters, needed by Spring
 
   public String getAccept() {
     return accept;
@@ -165,6 +166,14 @@ public class NcssParamsBean {
   }
   public void setTemporal(String temporal) {
     this.temporal = temporal;
+  }
+
+  public String getTime_window() {
+    return time_window;
+  }
+
+  public void setTime_window(String time_window) {
+    this.time_window = time_window;
   }
 
   // latlon
@@ -232,6 +241,20 @@ public class NcssParamsBean {
       double height = getNorth() - getSouth();
       return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), height, width);
     }
+  }
+
+  //////////////////////////////////////////////////////////
+  // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset
+  // but if the dataset does not have up to date data that could be really far from the current time and most likely useless (esp for observation data).
+  // time_window tells the server give me the data if it's within this period otherwise don't bother. time_window must be a valid W3C time duration or udunit time
+
+  protected TimeDuration timeWindow;
+  public TimeDuration getTimeWindow() {
+    return timeWindow;
+  }
+
+  public void setTimeWindow(TimeDuration timeWindow) {
+    this.timeWindow = timeWindow;
   }
 
   //////////////////////////////////////////////////
@@ -314,32 +337,6 @@ public class NcssParamsBean {
     } catch (ParseException e) {
       throw new NcssException("invalid time duration");
     }
-  }
-
-  /////////////////////
-
-  // not used by grid, for point data i think
-  protected String time_window;        // time duration LOOK not integrated yet
-  // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset
-  // but if the dataset does not have up to date data that could be really far from the current time and most likely useless (esp for observation data).
-  // time_window tells the server give me the data if it's within this period otherwise don't bother. time_window must be a valid W3C time duration.
-
-  public String getTime_window() {
-    return time_window;
-  }
-
-  public void setTime_window(String time_window) {
-    this.time_window = time_window;
-  }
-
-
-  protected TimeDuration timeWindow;
-  public TimeDuration getTimeWindow() {
-    return timeWindow;
-  }
-
-  public void setTimeWindow(TimeDuration timeWindow) {
-    this.timeWindow = timeWindow;
   }
 
 }

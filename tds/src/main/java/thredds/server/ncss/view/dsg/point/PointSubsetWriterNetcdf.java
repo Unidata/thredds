@@ -35,7 +35,6 @@ package thredds.server.ncss.view.dsg.point;
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
@@ -48,6 +47,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.IO;
 
@@ -68,7 +68,7 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
     private final File netcdfResult;
     private final WriterCFPointCollection cfWriter;
 
-    public PointSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, NcssDiskCache ncssDiskCache,
+    public PointSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, SubsetParams ncssParams, NcssDiskCache ncssDiskCache,
                                    OutputStream out, NetcdfFileWriter.Version version) throws NcssException, IOException {
         super(fdPoint, ncssParams);
 
@@ -126,7 +126,7 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
     }
 
     @Override
-    public void writeHeader(PointFeature pf) throws Exception {
+    public void writeHeader(PointFeature pf) throws IOException {
         cfWriter.writeHeader(pf);
     }
 
@@ -136,7 +136,7 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
     }
 
     @Override
-    public void writeFooter() throws Exception {
+    public void writeFooter() throws IOException {
         cfWriter.finish();
         IO.copyFileB(netcdfResult, out, 60000);  // Copy the file in to the OutputStream.
         out.flush();

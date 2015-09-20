@@ -44,6 +44,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
@@ -60,7 +61,7 @@ import java.io.OutputStream;
 public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
     private final XMLStreamWriter staxWriter;
 
-    public StationSubsetWriterXML(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams, OutputStream out)
+    public StationSubsetWriterXML(FeatureDatasetPoint fdPoint, SubsetParams ncssParams, OutputStream out)
             throws XMLStreamException, NcssException, IOException {
         super(fdPoint, ncssParams);
 

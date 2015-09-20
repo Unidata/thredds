@@ -33,10 +33,14 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.units.TimeDuration;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+
+import java.util.*;
 
 /**
  * Describes a subset of a Coverage.
@@ -46,15 +50,20 @@ import java.util.Set;
  * @since 5/6/2015
  */
 public class SubsetParams {
+  public static final String variables = "variables";           // value = List<String>
+
   public static final String latlonBB = "latlonBB";     // value = LatLonRect
   public static final String projBB = "projBB";         // value = ProjRect
   public static final String horizStride = "horizStride";  // value = Integer
   public static final String latlonPoint = "latlonPoint";  // value = LatLonPointImpl
+  public static final String stns = "stns";           // value = List<String>
 
   public static final String time = "time";             // value = CalendarDate
   public static final String timeRange = "timeRange";   // value = CalendarDateRange
   public static final String timeStride = "timeStride"; // value = Integer
   public static final String timePresent = "timePresent"; // value = Boolean
+  public static final String timeAll = "timeAll";         // value = Boolean
+  public static final String timeWindow = "timeWindow";         // value = CalendarPeriod
 
   public static final String runtime = "runtime";       // value = CalendarDate
   public static final String runtimeRange = "runtimeRange";       // value = CalendarDateRange
@@ -123,4 +132,18 @@ public class SubsetParams {
   public boolean hasTimeOffsetParam() {
     return get(timeOffset) != null || get(timeOffsetFirst) != null;
   }
+
+  public LatLonRect getLatLonBoundingBox() { return (LatLonRect) get(latlonBB);}
+  public LatLonPointImpl getLatLonPoint() { return (LatLonPointImpl) get(latlonPoint);}
+
+  public List<String> getStns() { return (List<String>) get(stns);}
+
+  public List<String> getVariables() { return (List<String>) get(variables);}
+
+  public CalendarDate getTime() { return (CalendarDate) get(time);}
+
+  public CalendarDateRange getTimeRange() { return (CalendarDateRange) get(timeRange);}
+
+  public CalendarPeriod getTimeWindow() { return (CalendarPeriod) get(timeWindow);}
+
 }

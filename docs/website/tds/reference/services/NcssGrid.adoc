@@ -1,14 +1,13 @@
-= NetCDF Subset Service (NCSS) For Grid Data
+= NCSS For Grid Data
 :linkcss:
 :stylesheet: ../../tds.css
-:cdmDocs: ../../../netcdf-java/reference/
 :toc:
 
 == Subsetting Parameters for NCSS Grid
 
 These parameters are identical to the CdmrFeature service:
 
-include::{cdmDocs}stream/CdmrCoverageParams.adoc[]
+include::CdmrfParams.adoc[]
 
 In addition, NCSS supports these parameters for Grids:
 
@@ -32,9 +31,8 @@ Output Format (_accept_ parameter)::
 == NCSS Grid as Point
 
 *_Grid as Point_* request parameters are almost identical to regular NCSS Grid request, but what gets returned is different.
-If a netcdf file is requested, it will be written in *_CF / netCDF Discrete Sample Geometry_* format. Other possible formats are the same
-as NCSS Point requests.
-* Will be timeseries or timeSeriesProfile
+If a netcdf file is requested, it will be written in *_CF / netCDF Discrete Sample Geometry_* format. Other possible return
+ types are the same as NCSS Point requests.
 
 [width="100%",cols="20%,10%,30%,30%,10%",options="header",]
 |====
@@ -46,7 +44,8 @@ as NCSS Point requests.
 
 * if you specify a point location with the _latitude, longitude_ parameters, the request becomes a gridAsPoint request.
 Other horizontal subsetting parameters are ignored.
-* The returned files are written as CF/DSG files.
+* variable with vertical levels will be returned as profiles, unless a specific level is chosen.
+* The returned files are written as CF/DSG files, either timeseries (no vertical coordinate) or timeSeriesProfile (if there is a vertical coordinate).
 * The lat/lon bounding box declared in the dataset description is an approximated rectangle to the actual lat/lon boundaries so there may be
   valid points within the data but outside of the declared bounding box in the dataset description,
   and there may be points in the declared bounding box that are not actually in the data grid.
@@ -163,7 +162,6 @@ Examples:
 | _Temperature_pressure for every 5th point on the grid (deltax=deltay=5)_ | *?var=Temperature_pressure&horizStride=5*
 | _Temperature_pressure for every 5th point on the grid over a given lat/lon bounding box_ |*?var=Temperature_pressure&north=41&west=-109.5&east=-102.5&south=37&horizStride=5*
 | _Temperature_pressure at a particular vertical level: 1000 mb_ | *?var=Temperature_pressure&vertCoord=1000*
-| _Air_temperature for stations named LECO, LEST and LEVX_ | *?var=air_temperature&subset=stns&stns=LECO,LEST,LEVX*
 |====
 
 * note that the vertical level value must be in the same units used in the dataset - in this example we assume millibars but you will need to check

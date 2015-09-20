@@ -36,6 +36,7 @@
 package thredds.server.ncss.controller.point;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -106,7 +107,6 @@ public class TestStationFCController {
     RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
             .param("accept", "csv")
             .param("time", "2006-03-29T00:00:00Z")
-            .param("subset", "stns")
             .param("stns", "BJC,LEST")
             .param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 
@@ -120,7 +120,6 @@ public class TestStationFCController {
             .param("accept", "netcdf")
             .param("time_start", "2006-03-02T00:00:00Z")
             .param("time_end", "2006-03-28T00:00:00Z")
-            .param("subset", "stns")
             .param("stns", "BJC,DEN")
             .param("var", "air_temperature,dew_point_temperature,precipitation_amount_24,precipitation_amount_hourly,visibility_in_air");
 
@@ -133,7 +132,6 @@ public class TestStationFCController {
     RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
             .param("accept", "netcdf")
             .param("var", "air_temperature", "dew_point_temperature")
-            .param("subset", "bb")
             .param("north", "43.0")
             .param("south", "38.0")
             .param("west", "-107.0")
@@ -151,7 +149,6 @@ public class TestStationFCController {
     RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
             .param("accept", "netcdf")
             .param("var", "air_temperature", "dew_point_temperature")
-            .param("subset", "bb")
             .param("north", "43.0")
             .param("south", "38.0")
             .param("west", "-107.0")
@@ -164,10 +161,10 @@ public class TestStationFCController {
   }
 
   @Test
+  @Ignore("takes too long")
   public void getAllStnsOnStationDataset() throws Exception {
     RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
             .param("accept", "netcdf")
-            .param("subset", "stns")
             .param("stns", "all")
             .param("var", "air_temperature", "dew_point_temperature")
             .param("time_start", "2006-03-25T00:00:00Z")
@@ -177,11 +174,11 @@ public class TestStationFCController {
     long start = System.currentTimeMillis();
     try {
       this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(ContentType.netcdf.getContentHeader()));
-  } finally {
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("that took %d msecs%n", took);
-  }
+              .andExpect(MockMvcResultMatchers.content().contentType(ContentType.netcdf.getContentHeader()));
+    } finally {
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("that took %d msecs%n", took);
+    }
 
   }
 
@@ -202,6 +199,17 @@ public class TestStationFCController {
         assertTrue(ex instanceof FeaturesNotFoundException);
       }
     });
+  }
+
+  @Test
+  public void noFeaturesInPointCollection() throws Exception {
+    RequestBuilder rb = MockMvcRequestBuilders.get(dataset).servletPath(dataset)
+            .param("longitude", "-105.203").param("latitude", "40.019")
+            .param("accept", "netcdf") //
+            .param("var", "air_temperature", "dew_point_temperature");
+
+    this.mockMvc.perform(rb)
+            .andExpect(MockMvcResultMatchers.status().is(400));
   }
 
 }

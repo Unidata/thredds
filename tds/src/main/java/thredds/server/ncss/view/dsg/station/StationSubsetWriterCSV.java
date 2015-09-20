@@ -43,6 +43,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
@@ -58,7 +59,7 @@ import java.io.PrintWriter;
 public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
     private final PrintWriter writer;
 
-    public StationSubsetWriterCSV(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams, OutputStream out)
+    public StationSubsetWriterCSV(FeatureDatasetPoint fdPoint, SubsetParams ncssParams, OutputStream out)
             throws NcssException, IOException {
         super(fdPoint, ncssParams);
       this.writer = new PrintWriter(new OutputStreamWriter(out, CDM.utf8Charset));
