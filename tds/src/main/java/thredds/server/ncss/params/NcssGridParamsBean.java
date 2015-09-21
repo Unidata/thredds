@@ -57,6 +57,7 @@ public class NcssGridParamsBean extends NcssParamsBean {
   private Double maxx;
   private Double miny;
   private Double maxy;
+
   private boolean addLatLon;
   private Integer horizStride = 1;
 

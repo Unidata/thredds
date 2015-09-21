@@ -116,10 +116,10 @@ public class NcssGridController extends AbstractNcssController {
       // throws exception if grid names not valid
       checkRequestedVars(gcd, params);
 
-      if (!params.hasLatLonPoint()) {
-        handleRequestGrid(res, params, datasetPath, gcd);
-      } else {
+      if (params.hasLatLonPoint()) {
         handleRequestGridAsPoint(res, params, datasetPath, gcd);
+      } else {
+        handleRequestGrid(res, params, datasetPath, gcd);
       }
     }
   }

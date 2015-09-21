@@ -78,7 +78,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class NcssGridAsPointTestP {
+public class TestGridAsPointP {
   static String ds1 = "ncss/grid/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
   static String varName1 = "Vertical_velocity_pressure_isobaric";
   static String query1 = "&latitude=37.86&longitude=-122.2&vertCoord=850"; // this particular variable has only 500, 700, 850 after forecast 120
@@ -100,7 +100,7 @@ public class NcssGridAsPointTestP {
   Double dataVal;
   CalendarDate date0;
 
-  public NcssGridAsPointTestP(String ds, String varName, String query, Integer ntimes, Double dataVal, String date0) {
+  public TestGridAsPointP(String ds, String varName, String query, Integer ntimes, Double dataVal, String date0) {
     this.ds = ds;
     this.varName = varName;
     this.query = query;
