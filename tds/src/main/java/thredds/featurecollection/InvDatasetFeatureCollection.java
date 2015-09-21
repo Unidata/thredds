@@ -212,10 +212,9 @@ public abstract class InvDatasetFeatureCollection {
   }
 
   //////////////////////////////////////////////////////
-  // probably old school
+  // old school : used by FMRC and Point
 
   protected void makeCollection() {
-
     Formatter errlog = new Formatter();
     datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
     topDirectory = datasetCollection.getRoot();
@@ -224,7 +223,7 @@ public abstract class InvDatasetFeatureCollection {
   }
 
   //////////////////////////////////////////////////////
-  // called by eventBus, this is here the trigger comes in
+  // called by eventBus, this is where the trigger comes in
   @Subscribe
   public void processEvent(CollectionUpdateEvent event) {
     if (!config.collectionName.equals(event.getCollectionName())) return; // not for me

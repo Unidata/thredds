@@ -44,7 +44,7 @@
 </pre>
 <pre>
 &lt;fmrcConfig regularize=&quot;false&quot; datasetTypes=&quot;Files&quot;&gt;
-  &lt;dataset name=&quot;Best&quot; offsetsGreaterEqual=&quot;0&quot;/&gt;
+  &lt;bestDataset name=&quot;Best_Exclude_Spinup&quot; offsetsGreaterEqual=&quot;0&quot;/&gt;
 &lt;/fmrcConfig&gt;
 </pre>
 <blockquote>
@@ -70,11 +70,11 @@
         </li>
       </ul>
     </li>
-    <li><strong>dataset</strong>: you can define your own &quot;best dataset&quot;. This uses the same algorithm as the Best dataset above, but  excludes data
+    <li><strong>bestDataset</strong>: you can define your own &quot;best dataset&quot;. This uses the same algorithm as the Best dataset above, but  excludes data
       based on its offset hour. In the above example, a Best dataset is created with offset hours less than 0 excluded.
       
       <ul>
-        <li><strong>name</strong>: the name of the dataset, must be unique within the fmrcConfig element. Do not use &quot;best.ncd&quot;, &quot;fmrc.ncd&quot;,
+        <li><strong>name</strong>: the human visible name of the defined best dataset, must be unique within the fmrcConfig element. Do not use &quot;best.ncd&quot;, &quot;fmrc.ncd&quot;,
           &quot;runs&quot;, &quot;files&quot;, &quot;forecast&quot;, or &quot;offset&quot;.
         </li>
         <li><strong>offsetsGreaterEqual</strong>: forecast offset hours (forecast time - run time) less than this value are excluded.</li>
@@ -229,7 +229,7 @@
 <p>&nbsp;</p>
 <hr width="100%"/>
 <address>
-  <img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated June 2015.
+  <img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Sept 2015.
 </address>
 </body>
 </html>

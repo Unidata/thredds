@@ -82,8 +82,8 @@ import java.util.zip.DeflaterOutputStream;
 @RequestMapping("/cdmrfeature/grid")
 public class CdmrGridController implements LastModified {
   // private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrGridController.class);
-  private static final boolean showReq = true;
-  private static final boolean showRes = true;
+  private static final boolean showReq = false;
+  private static final boolean showRes = false;
 
   @Autowired
   TdsContext tdsContext;

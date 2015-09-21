@@ -193,12 +193,17 @@ public class MetadataManager implements StoreKeyValue {
     return myEnv.getDatabaseNames();
   }
 
-  static public void deleteCollection(String collectionName) throws Exception {
+  static public synchronized void deleteCollection(String collectionName) throws Exception {
+    List<MetadataManager> closeDatabases = new ArrayList<>(openDatabases);
+
     // close any open handles
-    for (MetadataManager mm : openDatabases) {
+    for (MetadataManager mm : closeDatabases) {
       if (mm.collectionName.equals(collectionName)) {
-        if (mm.database != null)
+        if (mm.database != null) {
           mm.database.close();
+          mm.database = null; // allow it to reopen next time its called
+          openDatabases.remove(mm);
+        }
       }
     }
     myEnv.removeDatabase(null, collectionName);
@@ -248,7 +253,7 @@ public class MetadataManager implements StoreKeyValue {
   }
 
   // assumes only one open at a time; could have MetadataManagers share open databases
-  private void openDatabase() {
+  private synchronized void openDatabase() {
     if (database != null) return;
     DatabaseConfig dbConfig = new DatabaseConfig();
     dbConfig.setReadOnly(readOnly);

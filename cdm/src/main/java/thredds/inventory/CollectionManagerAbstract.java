@@ -116,7 +116,7 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   private void initMM() {
     if (getCollectionName() == null) return; // eg no scan in ncml
     try {
-    	if(storeFactory != null)
+    	if (storeFactory != null)
     		store = storeFactory.open(getCollectionName());
     	
     } catch (Exception e) {

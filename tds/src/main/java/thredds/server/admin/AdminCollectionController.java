@@ -175,7 +175,7 @@ public class AdminCollectionController {
         e.pw.println("<p/> <a href='" + statUrl + "'>Show Cache Statistics</a>");
         for (String name : monitor.getCachedCollections()) {
           String ename =  urlParamEscaper.escape(name);
-          String url = urlPathEscaper.escape(tdsContext.getContextPath() + FMRC_PATH) + "?" + COLLECTION + "=" + ename;
+          String url = tdsContext.getContextPath() + FMRC_PATH + "?" + COLLECTION + "=" + ename;
           e.pw.println("<p/> <a href='" + url + "'>" + Escape.html(name) + "</a>");
         }
       }
@@ -382,7 +382,7 @@ public class AdminCollectionController {
 
       // allow delete
       String deleteUrl = tdsContext.getContextPath() + FMRC_PATH + "?" + COLLECTION + "=" + ecollectName + "&" + CMD + "=delete";
-      pw.println("<a href='" + deleteUrl + "'> Delete" + "</a>");
+      pw.println("<a href='" + deleteUrl + "'> Delete Cache" + "</a>");
 
       pw.println("<ol>");
       for (String filename : monitor.getFilesInCollection(collectName)) {
@@ -399,6 +399,7 @@ public class AdminCollectionController {
       try {
         monitor.deleteCollection(collectName);
         pw.println("<p/>deleted");
+
       } catch (Exception e) {
         pw.println("<pre>delete failed on collection = " + Escape.html(collectName));
         e.printStackTrace(pw);
