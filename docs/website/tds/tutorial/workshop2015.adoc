@@ -1,4 +1,5 @@
-:stylesheet: tutorial_adoc.css
+:source-highlighter: coderay
+:stylesheet: ../tds_adoc.css
 :linkcss:
 
 = 2015 Training Workshop Schedule : TDS Configuration and Administration

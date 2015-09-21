@@ -29,7 +29,7 @@ http://thredds-dev.unidata.ucar.edu/thredds/cdmrfeature/grid/grib/NCEP/GFS/Globa
 
 See link:CdmrfGrammer.adoc[CdmrFeature Grammer] for a description of the on-the-wire protocol.
 
-include::{tdsDocs}CdmrfParams.adoc[]
+{% include "../../../tds/reference/services/CdmrfParams.adoc" %}
 
 '''''
 

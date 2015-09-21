@@ -1,7 +1,8 @@
-= TDS Configuration with Properties
 :source-highlighter: coderay
+:stylesheet: ../tds_adoc.css
 :linkcss:
-:stylesheet: ../tds.css
+
+= TDS Configuration with Properties
 
 == System properties
 

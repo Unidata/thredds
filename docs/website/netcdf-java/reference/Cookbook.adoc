@@ -1,0 +1,133 @@
+Cookbook
+========
+
+= Netcdf-Java Cookbook
+
+* link:#writeClassic[Write a dataset to a netCDF-3 format file]
+* link:#readSequences[Reading from Sequences]
+
+'''''
+
+=== Write a dataset to a netCDF-3 format file:
+
+___________________________________________________________________________________________________________________________________________________________________________
+*From the command line:*
+
+-------------------------------------------------------------------------------------------------------------------------
+java -Xmx512m -classpath netdfAll-<version>.jar ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-isLargeFile]
+-------------------------------------------------------------------------------------------------------------------------
+
+*Use NcML to modify the original dataset: +
+*
+
+You can wrap the original dataset in
+http://www.unidata.ucar.edu/software/netcdf/ncml/[NcML]. The NcML file
+must have the suffix ``.ncml'', and it becomes the ``in'' file:
+
+-----------------------------------------------------------------------------------------------------------
+java -Xmx512m -classpath netcdfAll-<version>.jar ucar.nc2.dataset.NetcdfDataset -in myfile.ncml -out out.nc
+-----------------------------------------------------------------------------------------------------------
+
+For
+http://www.unidata.ucar.edu/software/netcdf/ncml/Cookbook.html#remove[example]
+use the <remove> element to remove variables that you don’t want to
+save:
+
+---------------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="/data/file.grib2">
+  <remove name="bad1" type="variable" />
+  <remove name="bad2" type="variable" />
+</netcdf>
+---------------------------------------------------------------------------------------------------
+
+*From a Java program:*
+
+-------------------------------------------------------------------------------------------------------------
+  public boolean writeToNetdf3(String datasetIn, String datasetOut, boolean isLargeFile) throws IOException {
+
+    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
+    System.out.println("Read from " + datasetIn + " write to " + datasetOut);
+    
+    NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, -1, isLargeFile);
+    
+    ncfileIn.close();
+    ncfileOut.close();
+    System.out.println("NetcdfFile successfully written = " + ncfileOut);
+  }
+-------------------------------------------------------------------------------------------------------------
+___________________________________________________________________________________________________________________________________________________________________________
+
+Notes:
+
+* *datasetIn* can be any dataset the CDM can read, e.g. an OPeNDAP
+dataset, a GRIB file, etc. However, the dataset must only use the
+http://www.unidata.ucar.edu/software/netcdf/#fv18[classic model].
+* *datasetOut* will be overwritten
+* **isLargeFile**=true will write
+ahttp://www.unidata.ucar.edu/software/netcdf/#fv1[64-bit offset netCDF-3
+file].
+
+'''''
+
+=== Reading from Sequences
+
+A _Sequence_ is a variable length array of Structures. The only thing
+you can do with them is to iterate over them. Heres an example with a
+nested sequence:
+
+------------------------------------------------------------------------------------------------------
+public void showNestedSequence(String filename, String outerSeq, String innerSeq) throws IOException {
+ PrintWriter pw = new PrintWriter(System.out);
+
+ NetcdfFile ncfile = null;
+1)try {
+   ncfile = NetcdfFile.open(filename);
+   
+   Variable v = ncfile.findVariable(outerSeq);
+   assert v != null;
+   assert v instanceof Sequence;
+
+   Sequence record = (Sequence) v;
+
+   Array data = v.read();
+   assert data instanceof ArraySequence;
+   ArraySequence as = (ArraySequence) data;
+
+   // outer sequence iteration
+   StructureDataIterator iter = as.getStructureDataIterator();
+2) try {
+     while (iter.hasNext()) {
+       StructureData sdata = iter.next();
+       ArraySequence nested = sdata.getArraySequence(innerSeq);
+  
+       // inner sequence iteration
+       StructureDataIterator nestedIter = nested.getStructureDataIterator();
+3)     try {
+         while (nestedIter.hasNext()) {
+           StructureData nestedData = nestedIter.next();
+           NCdumpW.printStructureData(pw, nestedData); // process inner sequencce
+           System.out.printf("%n");
+         }
+3)     } finally {
+         nestedIter.finish();
+       }
+     }
+2) } finally {
+     iter.finish();
+   }
+1)} finally {
+   if (ncfile != null) ncfile.close();
+ }
+}
+------------------------------------------------------------------------------------------------------
+
+Notes:
+
+1.  Make sure that the file gets closed
+2.  Make sure finish() is called on the outer iterator
+3.  Make sure finish() is called on the inner iterator
+
+'''''
+
+image:../nc.gif[image] This document was last updated May 2013

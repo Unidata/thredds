@@ -1,0 +1,150 @@
+NetCDF Markup Language
+======================
+
+= *The NetCDF Markup Language (NcML)*
+
+'''''
+
+== Overview
+
+NcML is an XML representation of netCDF metadata, (approximately) the
+header information one gets from a netCDF file with the ``ncdump -h''
+command. NcML is similar to the netCDF
+http://www.unidata.ucar.edu/packages/netcdf/guidec/guidec-15.html#HEADING15-0[CDL]
+(network Common data form Description Language), except, of course, it
+uses XML syntax.
+
+NcML development is happening on two fronts:
+
+1.  link:#NcML22[NcML-2.2] as implemented by the
+http://www.unidata.ucar.edu/software/netcdf-java/index.html[NetCDF-Java
+library.]
+2.  http://zeus.pin.unifi.it/joomla/index.php?option=com_content&task=view&id=50&Itemid=78%20[ncML-Gml]
+is an extension of ncML core schema, based on GML grammar. It uses both
+NcML and http://en.wikipedia.org/wiki/Geography_Markup_Language[GML] to
+create a bridge to GIS Systems. This work is led by
+http://www.unidata.ucar.edu/projects/THREDDS/Nativi/home.htm[Stefano
+Nativi]at the http://www.unifi.it/[Università degli Studi di
+Firenze]**.**
+* http://zeus.pin.unifi.it/joomla/index.php?option=com_content&task=view&id=50&Itemid=78%20[Home
+page for ncML-Gml]
+* ncML-Gml
+http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/[API]:
+* Demo web application
+(http://athena.pin.unifi.it:8080/galeon2-n2g/[N2G]) for testing
+
+'''''
+
+== NcML 2.2
+
+=== NcML as output
+
+The simplest use of NcML is to describe the metadata and structural
+content of a netCDF file, like the output of **ncdump -h**. There are
+several ways to generate NcML ouput from an existing netCDF file:
+
+1.  In the
+https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[ToolsUI]
+application, use the NcML tab to open a NetCDF dataset, and the NcML
+will be displayed. You can edit and then save the NcML with the **"Save
+NcML**" button.
+2.  In the NetCDF-Java library, use *NetcdfFile.writeNcML()* or
+*NcMLWriter().writeXML().*
+3.  Use the NetCDF-Java library
+file:///C|/dev/github/thredds/docs/web/netcdf-java/site/reference/manPages.html#ncdump[ncdump
+application], eg:
++
+-------------------------------------------------------------------------
+ java -classpath netcdfAll.jar ucar.nc2.NCdumpW <NetCDF-3 filename> -ncml
+-------------------------------------------------------------------------
+4.  In the netCDF C library, version 3.6.1 or later , use *ncdump
+-x<NetCDF filename>*
+
+=== Using NcML to create a NetCDF-3 file
+
+Using the NetCDF-Java library, you can also use NcML to create a new
+netCDF-3 file, similar to the *ncgen* program.
+
+1.  Using a text or XML editor, create the NcML file with an ``xml'' or
+``ncml'' file extension. Open the NcML file with
+**NetcdfDataset.open()**, then call *ucar.nc2.FileWriter.writeFile()*
+2.  In the
+https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[ToolsUI]
+application, open an existing NcML file in the NcML tab, or create a new
+one. You can edit and save the NcML with the **"Save NcML**" button. You
+can create the equivilent binary NetCDF file with the **"Write NetCDF**"
+button.
+
+=== Using NcML to modify an existing CDM file
+
+Using the NetCDF-Java library, you can use NcML to modify an existing
+CDM file, and then write a new netCDF-3 format file with those
+modifications in it.
+
+1.  Using a text or XML editor, create the NcML file with an ``xml'' or
+``ncml'' file extension. Reference the existing file using the
+_location_ attribute, and add, change or delete metadata in the NcML as
+in this link:Tutorial.html#modify[example].
+2.  Write the new file as a netCDF-3 format file:
+1.  Use the NetCDF-Java library
+file:///C|/dev/github/thredds/docs/web/netcdf-java/site/reference/manPages.html#nccopy[nccopy
+application] to write the new file, eg:
++
+------------------------------------------------------------------------------------------------------
+java -Xmx1g -classpath netcdfAll-4.3.jar ucar.nc2.dataset.NetcdfDataset -in myFile.ncml -out myFile.nc
+------------------------------------------------------------------------------------------------------
+2.  (or) In the
+https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[ToolsUI]
+application, open the NcML file in the NcML tab. You can create the
+equivilent binary NetCDF file with the **"Write NetCDF**" button.
+
+=== Advanced NcML
+
+A more advanced use is to modify existing NetCDF files, as well as to
+create ``virtual'' NetCDF datasets, for example through aggregation. In
+that case, you’ll have to read more:
+
+* link:Tutorial.html[Tutorial]
+* link:Aggregation.html[Aggregation]
+* link:Cookbook.html[Cookbook Examples]
+* link:AnnotatedSchema4.html[Annotated Schema for Netcdf-Java 4]
+* http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd[ncml-2.2.xsd]
+
+'''''
+
+== *Acknowledgments and History*
+
+Earlier work in defining XML representations for netCDF data included
+Bear Giles DTD and XML tools in March 2000, a proposed DTD by Stefano
+Nativi and Lorenzo Bigagli at the University of Florence in May 2000,
+and a version developed by John Caron in February 2001.
+
+The original NcML working group consisted of John Caron (Unidata/UCAR),
+Luca Cinquini (SCD/NCAR), Ethan Davis (Unidata/UCAR), Bob Drach
+(PCMDI/LLNL), Stefano Nativi (University of Florence), and Russ Rew
+(Unidata/UCAR).
+
+In the first implementation of NcML (version 2.1), there were three
+parts to NcML with separate schema documents:
+
+1.  *_NcML Core Schema_* represented the existing netCDF-3 data model
+2.  *_NcML Coordinate System_* extended NcML Core Schema and extended
+the netCDF data model to add explicit support for general and
+georeferencing coordinate systems
+3.  _*NcML Dataset*_ extended NcML Core Schema to use NcML to define a
+netCDF file, similar to the *ncgen* command line tool, as well as to
+redefine, aggregate, and subset existing netCDF files.
+
+*_NcML Coordinate System_* is now superceded by
+link:#ncML-Gml[NcML-GML.] *_NcML Core Schema_* and _*NcML Dataset*_ have
+been combined into a single __*link:#NcML22[NcML Schema]*__, and some of
+the _*NcML Dataset*_ syntax and functionality has been modified.
+
+'''''
+
+Please send comments and/or questions to
+mailto:support-netcdf-java@support.unidata.ucar.edu[support-netcdf-java@unidata.ucar.edu]
+
+image:nc.gif[image] This document is maintained by
+mailto:caron@unidata.ucar.edu[John Caron] and was last updated on Nov
+2013

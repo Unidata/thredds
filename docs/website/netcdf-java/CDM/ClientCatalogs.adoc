@@ -1,0 +1,22 @@
+Client Catalogs
+===============
+
+ 
+
+ 
+
+ 
+
+------------------------------------------------------------------------------------
+CatalogBuilder builder = new CatalogBuilder();
+Catalog cat = builder.buildFromLocation(catalogPath);
+
+if (builder.hasFatalError()) {
+  log.warn("Validate failed "+ catalogName+" = \n<"+ builder.getErrorMessage()+">");
+  throw new Exception();
+} 
+
+return cat;
+ 
+ 
+------------------------------------------------------------------------------------

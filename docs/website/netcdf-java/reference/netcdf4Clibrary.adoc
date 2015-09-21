@@ -1,0 +1,238 @@
+NetCDF-4 C library
+==================
+
+= NetCDF-4 C Library Loading
+
+In order to write NetCDF-4 files, you must have the
+https://www.unidata.ucar.edu/software/netcdf/[NetCDF-4 C
+library]—version 4.3.1 or above—available on your system, along with all
+supporting libraries (HDF5, zlib, etc). The details of this differ for
+each operating system, and our experience (so far) is documented below.
+
+== Installation
+
+For all platforms, we strongly recommend 64-bit Java, if you can run it.
+Also, be sure to use the latest version, as security improvements are
+constantly being made.
+
+=== Windows
+
+The simplest option is to download and install one of the
+http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html[pre-built
+binaries]. If you’re feeling intrepid, it’s also possible to
+http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html#netCDF-CMake[build
+from source].
+
+=== Linux
+
+The easiest way to get NetCDF is through a package management program,
+such as rpm, yum, adept, and others. Details will vary with each program
+but ``netcdf'' is usually the package name you want. Of course, it’s
+also possible to build from source, as described
+http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html[here].
+
+==== A note on HDF5
+
+When building HDF5, you *must* do so with both the `--enable-threadsafe`
+and `--with-pthread=DIR` options. The `--with-pthread` option must point
+to the directory that contains the POSIX Threads library install
+(`[DIR]/includes/pthread.h`, `[DIR]/lib/libpthread*`). For more
+information, please see the
+http://www.hdfgroup.org/hdf5-quest.html#mthread[HDF5 FAQ].
+
+=== Mac
+
+The installation process is hopefully similar to Linux.
+http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg11807.html[Here]
+is a support question that may be useful.
+
+== Loading
+
+In order to use NetCDF-4, the CDM must know the location of the
+``netcdf'' shared library, as well as the location(s) of its
+dependencies. These files will have different extensions depending on
+your platform:
+
+* On Windows, they will be .DLL files.
+* On Linux, they will be .SO files.
+* On Mac, they will be .DYLIB files.
+
+There are several ways to specify their locations.
+
+=== Preferred method (requires NetCDF-Java 4.5.4 or later)
+
+Set the system library path. This is the path that the OS will search
+whenever it needs to find a shared library that it doesn’t already know
+the location of. It is not Java-, NetCDF-, or CDM-specific. As usual,
+details will vary with each platform.
+
+==== Windows
+
+The system library path maps to the `PATH` environment variable. To find
+NetCDF-4 and its dependencies, you’ll want to add
+`$NC4_INSTALL_DIR/bin`, `$NC4_INSTALL_DIR/deps/$ARCH/bin`, and
+`$NC4_INSTALL_DIR/deps/$ARCH/lib` to the `PATH` variable.
+`NC4_INSTALL_DIR` is the location where you installed the C library and
+`ARCH` is its architecture (either ``w32'' or ``x64'').
+
+==== Linux
+
+The system library path maps to the `LD_LIBRARY_PATH` environment
+variable. If you used the default installation directory when building,
+NetCDF-4 and its dependencies will all be in `/usr/local/lib`. If you
+got NetCDF from a package manager, it’ll likely have been installed
+elsewhere.
+
+==== Mac
+
+The system library path maps to the `DYLD_LIBRARY_PATH` environment
+variable.
+
+TODO: Where is NetCDF typically installed on Mac?
+
+=== Alternate methods
+
+The following alternatives are Java- and/or CDM-specific. To use these,
+**it is required that NetCDF and all of its dependencies live in the
+same directory**. So, if that is not the case in your current
+configuration, you must manually copy them all to the same place. This
+is a particular issue on Windows, because the libraries are guaranteed
+to be in separate locations by default.
+
+In addition to the library path, the CDM also needs to know the library
+name. This is almost always ``netcdf'', unless you’ve renamed it.
+
+* For TDS users, we recommend setting the library path and name in the
+link:../../tds/reference/ThreddsConfigXMLFile.html#netcdfCLibrary[THREDDS
+configuration file].
+* For standalone CDM library use, you can
+** create a system environment variable: `JNA_PATH=/path/to/library`
+** set a Java property on the command line:
+`-Djna.library.path=/path/to/library`
+** set the library path and name in the
+link:RuntimeLoading.html#XML[runtime configuration file]
+** directly call
+http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/javadocAll/ucar/nc2/jni/netcdf/Nc4Iosp.html#setLibraryAndPath(java.lang.String,%20java.lang.String)[Nc4Iosp.setLibraryAndPath()]
+from your Java program
+
+=== Troubleshooting
+
+If you get a message like this:
+
+-------------------------------------------------------------------------------
+ Warning! ***HDF5 library version mismatched error***
+ The HDF5 header files used to compile this application do not match
+ the version used by the HDF5 library to which this application is linked.
+ Data corruption or segmentation faults may occur if the application continues.
+ This can happen when an application was compiled by one version of HDF5 but
+ linked with a different version of static or shared HDF5 library.
+ You should recompile the application or check your shared library related
+ settings such as 'LD_LIBRARY_PATH'.
+ You can, at your own risk, disable this warning by setting the environment
+ variable 'HDF5_DISABLE_VERSION_CHECK' to a value of '1'.
+ Setting it to 2 or higher will suppress the warning messages totally.
+ Headers are 1.8.10, library is 1.8.5
+ Bye...
+-------------------------------------------------------------------------------
+
+Make sure that you don’t have an old version of the HDF5 library in your
+system library path.
+
+'''''
+
+== Writing NetCDF-4 files
+
+* From the command line: see link:manPages.html#nccopy[nccopy man page]
+* From ToolsUI: in *Viewer* tab, bring up the file to copy, then click
+``Write netCDF file'' button to get dialog.
+* From TDS NetCDF Subset Service: choose *netcdf-4* output type.
+* From a Java program (see _ucar.nc2.dataset.NetcdfDataset.main()_ for
+complete example) :
++
+--------------------------------------------------------------------------------------------
+Nc4Chunking chunker = Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle);
+NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf4;
+
+FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, chunker);
+...
+NetcdfFile ncfileOut = writer.write();
+ncfileIn.close();
+ncfileOut.close();
+--------------------------------------------------------------------------------------------
+
+=== Chunking Strategy (version 4.5)
+
+When writing NetCDF-4 files, one must decide on how the variables are to
+be chunked. In the NetCDF-Java library this is done through the use of a
+Nc4Chunking strategy. The possibilities currently are:
+
+* *standard* : this strategy is used by default (see below for
+description)
+* **grib**: this strategy matches how GRIB files are stored: the
+chunking uses only the two rightmost dimensions, which for GRIB is the x
+and y dimension. Use this strategy when converting GRIB files to
+NetCDF-4, in order to optimize conversion writing time, and to get
+similar access speed.
+* **custom**: you may write your own inplementation of
+*ucar.nc2.write.Nc4Chunking* and pass it into *FileWriter2* or
+**NetcdfFileWriter**. This gives you complete control over chunking.
+
+Both *standard* and *grib* strategies allow you to override individual
+variable chunking if you want by setting the variable’s *_ChunkSizes*
+attribute.
+
+**By default, the Java library will write chunked and compressed
+NetCDF-4 files**, using the default chunking algorithm. You may pass in
+a null for the chunking parameter to use the default.
+
+=== Default chunking strategy
+
+For each Variable:
+
+1.  Look for a variable attribute named "**_ChunkSizes"**, whose value
+is a vector of integer chunk sizes, one for each dimension. If it
+exists, use it.
+2.  If the variable does not have an unlimited dimension:
+* it will be chunked if the total size in bytes >
+*Nc4ChunkingDefault.minVariableSize*
+* chunk size will be __*fillFastest*__****( variable.shape,
+**Nc4ChunkingDefault.defaultChunkSize**)
+3.  If the variable has one or more unlimited dimensions, it will be
+chunked, and the chunk size will be calculated as:
+1.  set unlimited dimensions to length one, then compute
+__*fillFastest*__****( variable.shape,
+**Nc4ChunkingDefault.defaultChunkSize**)
+2.  if the resulting chunk size is greater than
+**Nc4ChunkingDefault.minChunksize**, use it
+3.  if not, set the unlimited dimension chunk sizes so that the
+resulting chunksize is close to *Nc4ChunkingDefault.minChunksize.* If
+there are N unlimited dimensions, take the Nth root, ie evenly divide
+the chunk size among the unlimited dimensions.
+
+The __*fillFastest*__****( int[] shape, **maxSize**) algorithm fills the
+fastest varying (rightmost) dimensions first, until the chunkSize is as
+close to *maxSize* as possible without exceeding. The net effect is that
+the chunkSizes will be close to **Nc4ChunkingDefault.defaultChunkSize**,
+with a minimum of **Nc4ChunkingDefault.minChunksize**, and favoring read
+access along the fast dimensions. Any variable with an unlimited
+dimension will use at least *Nc4ChunkingDefault.minChunksize* bytes
+(approx, but if compressing, unused space should be mostly eliminated).
+
+Current default values (these can be overidden by the user):
+
+* *minVariableSize* = 65K
+* *defaultChunkSize* = 256K
+* *minChunksize* = 8K
+
+By default, compression (deflate level = 5) and the shuffle filter will
+be used. The user can override these by:
+
+------------------------------------------------------------------------------------------------------------
+// set deflate > 0 to compress
+// set shuffle to true for the shuffle filter 
+Nc4Chunking chunker = Nc4Chunking factory(Nc4Chunking.Strategy.standard, int deflateLevel, boolean shuffle);
+------------------------------------------------------------------------------------------------------------
+
+'''''
+
+image:../nc.gif[image] This document was last updated December 2014
