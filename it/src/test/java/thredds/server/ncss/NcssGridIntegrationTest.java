@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
+import thredds.util.ContentType;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -35,7 +36,7 @@ public class NcssGridIntegrationTest {
   public void checkGrid() throws Exception {
     String endpoint = TestWithLocalServer.withPath("/ncss/grid/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1?var=Temperature_isobaric");
 
-    byte[] content = call(endpoint, 200);
+    byte[] content = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
     // Open the binary response in memory
     try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
       ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
@@ -47,38 +48,20 @@ public class NcssGridIntegrationTest {
   @Test
   public void checkGridNoVars() throws Exception {
     String endpoint = TestWithLocalServer.withPath("/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd");
-    call(endpoint, 400);
+    TestWithLocalServer.getContent(endpoint, 400, null);
   }
 
   @Test
   public void checkFmrcBest() throws Exception {
     String endpoint = TestWithLocalServer.withPath("/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd?var=Relative_humidity_height_above_ground,Temperature_height_above_ground");
 
-    byte[] content = call(endpoint, 200);
+    byte[] content = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
 
     // Open the binary response in memory
     try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
       ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
       assertNotNull(gdsDataset.findGridByName("Relative_humidity_height_above_ground"));
       System.out.printf("%s%n", nf);
-    }
-  }
-
-  private byte[] call(String endpoint, int expectCode) throws HTTPException {
-    System.out.printf("req = '%s'%n", endpoint);
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
-      if (statusCode != 200) {
-        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
-        Assert.assertEquals(expectCode, statusCode);
-        return null;
-      }
-
-      Assert.assertEquals(expectCode, statusCode);
-      byte[] content = method.getResponseAsBytes();
-      assert content.length > 1000;
-      return content;
     }
   }
 

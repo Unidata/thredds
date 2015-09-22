@@ -33,12 +33,6 @@
 
 package thredds.server.wms;
 
-import com.eclipsesource.restfuse.Destination;
-import com.eclipsesource.restfuse.HttpJUnitRunner;
-import com.eclipsesource.restfuse.Method;
-import com.eclipsesource.restfuse.Response;
-import com.eclipsesource.restfuse.annotation.Context;
-import com.eclipsesource.restfuse.annotation.HttpTest;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -48,10 +42,11 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Ignore;
-import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
 import thredds.TestWithLocalServer;
+import thredds.util.ContentType;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
@@ -59,27 +54,18 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 
-import static com.eclipsesource.restfuse.Assert.assertOk;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(HttpJUnitRunner.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestWmsServer {
 
-  @Rule
-  public Destination destination = new Destination(TestWithLocalServer.server);
-
-  @Context
-  private Response response; // will be injected after every request
-
   private final Namespace NS_WMS = Namespace.getNamespace("wms", "http://www.opengis.net/wms");
 
-  @Ignore("No WMS Server")
-  @HttpTest(method = Method.GET, path = "/wms/scanCdmUnitTests/conventions/coards/sst.mnmean.nc?service=WMS&version=1.3.0&request=GetCapabilities")
+   @Test
    public void testCapabilites() throws IOException, JDOMException {
-     assertOk(response);
-     String xml = response.getBody(String.class);
-     Reader in = new StringReader(xml);
+    String endpoint = TestWithLocalServer.withPath("/wms/scanCdmUnitTests/conventions/coards/sst.mnmean.nc?service=WMS&version=1.3.0&request=GetCapabilities");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    Reader in = new StringReader( new String(result, CDM.utf8Charset));
      SAXBuilder sb = new SAXBuilder();
      Document doc = sb.build(in);
 

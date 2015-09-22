@@ -46,7 +46,7 @@ public class GetCoverage extends WcsRequest {
   private WcsCoverage coverage;
   private LatLonRect bboxLatLonRect = null;
   private CalendarDateRange timeRange;
-  private WcsCoverage.VerticalRange rangeSetAxisValueRange;
+  private WcsCoverage.VerticalRange verticalRange;
 
   private Request.Format format;
   // GeoTIFF only supported for requests for a single time and a single vertical level.
@@ -59,6 +59,7 @@ public class GetCoverage extends WcsRequest {
                      Request.BoundingBox bbox, CalendarDateRange timeRange,
                      WcsCoverage.VerticalRange verticalRange, Request.Format format)
           throws WcsException {
+
     super(operation, version, dataset);
 
     // Validate coverage ID parameter.
@@ -109,7 +110,7 @@ public class GetCoverage extends WcsRequest {
 
     // Assign and validate PARAMETER ("Vertical") parameter.
     CoverageCoordAxis vertCoord = gcs.getZAxis();
-    this.rangeSetAxisValueRange = verticalRange;
+    this.verticalRange = verticalRange;
     if (verticalRange != null)
       this.isSingleVerticalRequest = verticalRange.isSinglePoint();
     else
@@ -153,7 +154,7 @@ public class GetCoverage extends WcsRequest {
   public File writeCoverageDataToFile() throws WcsException {
     return this.coverage.writeCoverageDataToFile(this.format,
             this.bboxLatLonRect,
-            this.rangeSetAxisValueRange,
+            this.verticalRange,
             this.timeRange);
   }
 

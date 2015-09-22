@@ -1,11 +1,5 @@
 package thredds.server.services;
 
-import com.eclipsesource.restfuse.Destination;
-import com.eclipsesource.restfuse.HttpJUnitRunner;
-import com.eclipsesource.restfuse.Method;
-import com.eclipsesource.restfuse.Response;
-import com.eclipsesource.restfuse.annotation.Context;
-import com.eclipsesource.restfuse.annotation.HttpTest;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -17,12 +11,10 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.xpath.XPath;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
 import thredds.TestWithLocalServer;
+import thredds.util.ContentType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.CDM;
@@ -43,24 +35,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.eclipsesource.restfuse.Assert.assertOk;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Consistency of calendar dates across services: ncss, wms, wcs
  */
 
-@RunWith(HttpJUnitRunner.class)
 @Category(NeedsCdmUnitTest.class)
 public class ConsistentDatesTest {
   private static final boolean show = true;
-
-  @Rule
-  public Destination destination = new Destination(TestWithLocalServer.server);
-
-  @Context
-  private Response response; // will be injected after every request
 
   private final String[] expectedDateTime = {
            "0000-01-16T06:00:00Z",       // these are the actual dates from cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc
@@ -80,18 +63,11 @@ public class ConsistentDatesTest {
   private final List<String> expectedDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
   //private final List<DateTime> expectedWMSDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
 
-  @Before
-  public void setUp() {
-  }
-
-  @Ignore("WMS not operating")
-  @HttpTest(method = Method.GET, path = "/wms/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WMS&version=1.3.0&request=GetCapabilities")
+  @Test
   public void checkWMSDates() throws JDOMException, IOException {
-
-    assertOk(response);
-    assertTrue(response.hasBody());
-    String xml = response.getBody(String.class);
-    Reader in = new StringReader(xml);
+    String endpoint = TestWithLocalServer.withPath("/wms/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WMS&version=1.3.0&request=GetCapabilities");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    Reader in = new StringReader( new String(result, CDM.utf8Charset));
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
@@ -112,15 +88,13 @@ public class ConsistentDatesTest {
     }
 
     assertEquals(expectedDatesAsDateTime, content);
-
   }
 
-  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WCS&version=1.0.0&request=DescribeCoverage&coverage=sst")
+  @Test
   public void checkWCSDates() throws JDOMException, IOException {
-    assertOk(response);
-    assertTrue(response.hasBody());
-    String xml = response.getBody(String.class);
-    Reader in = new StringReader(xml);
+    String endpoint = TestWithLocalServer.withPath("/wcs/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WCS&version=1.0.0&request=DescribeCoverage&coverage=sst");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    Reader in = new StringReader( new String(result, CDM.utf8Charset));
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
@@ -144,16 +118,13 @@ public class ConsistentDatesTest {
     }
 
     assertEquals(expectedDatesAsDateTime, timePositionDateTime);
-
   }
 
-  @HttpTest(method = Method.GET, path = "/ncss/grid/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all")
+  @Test
   public void checkNCSSDates() throws JDOMException, IOException {
-
-    assertOk(response);
-    assertTrue(response.hasBody());
-    String xml = response.getBody(String.class);
-    Reader in = new StringReader(xml);
+    String endpoint = TestWithLocalServer.withPath("/ncss/grid/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=xml");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    Reader in = new StringReader( new String(result, CDM.utf8Charset));
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
@@ -177,12 +148,11 @@ public class ConsistentDatesTest {
   }
 
   // PF5_SST_Climatology:  :units = "hour since 0000-01-01 00:00:00";
-  @HttpTest(method = Method.GET, path = "/ncss/grid/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=netcdf")
+  @Test
   public void checkNCSSDatesInNetcdf() throws JDOMException, IOException {
-
-    assertOk(response);
-    assertTrue(response.hasBody());
-    NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getBody(byte[].class));
+    String endpoint = TestWithLocalServer.withPath("/ncss/grid/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=netcdf");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
+    NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", result);
     NetcdfDataset ds = new NetcdfDataset(nf);
 
     CoordinateAxis1D tAxis = (CoordinateAxis1D) ds.findCoordinateAxis("time");
@@ -222,7 +192,7 @@ public class ConsistentDatesTest {
       :calendar = "360_day";
       :bounds = "time_bnds";
    */
-  @HttpTest(method = Method.GET, path = "/ncss/grid/scanCdmUnitTests/ncss/test/pr_HRM3_2038-2070.CO.nc?var=pr&latitude=40.019&longitude=-105.293&time_start=2038-01-01T03%3A00%3A00Z&time_end=2038-01-02T03%3A00%3A00Z&accept=netcdf")
+  @Test
   public void checkNCSSDatesInNetcdfWithCalendars() throws JDOMException, IOException {
     //Dates for noleap calendar
     CalendarDate[] expectedCalendarDates = {
@@ -238,9 +208,9 @@ public class ConsistentDatesTest {
     };
     List<CalendarDate> expectedDatesAsCalendarDate = Collections.unmodifiableList(Arrays.asList(expectedCalendarDates));
 
-    assertOk(response);
-    assertTrue(response.hasBody());
-    NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getBody(byte[].class));
+    String endpoint = TestWithLocalServer.withPath("/ncss/grid/scanCdmUnitTests/ncss/test/pr_HRM3_2038-2070.CO.nc?var=pr&latitude=40.019&longitude=-105.293&time_start=2038-01-01T03%3A00%3A00Z&time_end=2038-01-02T03%3A00%3A00Z&accept=netcdf");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
+    NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", result);
     NetcdfDataset ds = new NetcdfDataset(nf);
 
     CoordinateAxis1DTime tAxis = CoordinateAxis1DTime.factory(ds, ds.findCoordinateAxis("time"), null);

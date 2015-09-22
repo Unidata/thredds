@@ -32,12 +32,6 @@
  */
 package thredds.server.wcs;
 
-import com.eclipsesource.restfuse.Destination;
-import com.eclipsesource.restfuse.HttpJUnitRunner;
-import com.eclipsesource.restfuse.Method;
-import com.eclipsesource.restfuse.Response;
-import com.eclipsesource.restfuse.annotation.Context;
-import com.eclipsesource.restfuse.annotation.HttpTest;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -47,37 +41,37 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Assert;
-import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
 import thredds.TestWithLocalServer;
+import thredds.util.ContentType;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.IO;
+import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.eclipsesource.restfuse.Assert.assertBadRequest;
-import static com.eclipsesource.restfuse.Assert.assertOk;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /** Test WCS server */
 
-@RunWith(HttpJUnitRunner.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestWcsServer {
   static final boolean showContent = false;
 
-  @Rule
-  public Destination destination = new Destination(TestWithLocalServer.server);
-
-  @Context
-  private Response response; // will be injected after every request
-
   private final Namespace NS_WCS = Namespace.getNamespace("wcs", "http://www.opengis.net/wcs");
-
 
   //private String server = TestWithLocalServer.server+ "wcs/";
   //private String server2 = "http://thredds.ucar.edu/thredds/wcs/";
@@ -86,12 +80,17 @@ public class TestWcsServer {
   //private String ncdcWcsDataset = "http://eclipse.ncdc.noaa.gov:9090/thredds/wcs/gfsmon/largedomain.nc";
   //private String ncdcOpendapDataset = "http://eclipse.ncdc.noaa.gov:9090/thredds/dodsC/gfsmon/largedomain.nc";
 
+  private String baloney = "?service=WCS&version=1.0.0&EXCEPTIONS=application/vnd.ogc.se_xml";
+  private String dataset1 = "/wcs/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc"+baloney;
+  private String dataset2 = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc"+baloney;
 
-  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc?service=WCS&version=1.0.0&request=GetCapabilities")
+
+  @Test
   public void testGetCapabilites() throws IOException, JDOMException {
-    assertOk(response);
-    String xml = response.getBody(String.class);
-    Reader in = new StringReader(xml);
+    String endpoint = TestWithLocalServer.withPath(dataset1+"&request=GetCapabilities");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+
+    Reader in = new StringReader( new String(result, CDM.utf8Charset));
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
@@ -114,154 +113,178 @@ public class TestWcsServer {
     assert names.contains("Pressure_reduced_to_MSL");
   }
 
-  @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=sst")
+  @Test
   public void testDescribeCoverage() throws IOException {
-    assertOk(response);
+    String endpoint = TestWithLocalServer.withPath(dataset2+"&request=DescribeCoverage&coverage=sst");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
   }
 
-  @HttpTest(method = Method.GET, path = "wcs/scanCdmUnitTests/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&request=GetCoverage&COVERAGE=sst&BBOX=1,-79.5,359,89.5&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
-    public void testGetCoverageFail() throws IOException {
-    if (showContent) System.out.printf("%s%n", response.getBody(String.class));
-    assertBadRequest(response);
+  @Test
+  public void testGetCoverageFuzzyTime() throws IOException { // no longer fails because we use closest time. LOOK is that ok?
+    String endpoint = TestWithLocalServer.withPath(dataset2+"&request=GetCoverage&COVERAGE=sst&BBOX=10,0,300,80&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, null);
   }
 
-  @HttpTest(method = Method.GET, path = "wcs/scanCdmUnitTests/conventions/coards/sst.mnmean.nc?service=WCS&version=1.0.0&request=GetCoverage&COVERAGE=sst&BBOX=1,-79.5,359,89.5&TIME=2002-12-01T00:00:00Z&FORMAT=GeoTIFF&EXCEPTIONS=application/vnd.ogc.se_xml")
+  @Test
+  public void testGetCoverageFailBadCoverageName() throws IOException { // should fail because coverage name doesnt exist
+    String endpoint = TestWithLocalServer.withPath(dataset2 + "&request=GetCoverage&COVERAGE=bad&BBOX=10,0,300,80&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 400, null);
+  }
+
+  @Test
   public void testGetCoverage() throws IOException {
-    if (response.getStatus() != 200) {
-      System.out.printf("%s%n", response.getBody(String.class));
+    String endpoint = TestWithLocalServer.withPath(dataset2+"&request=GetCoverage&COVERAGE=sst&BBOX=10,0,300,80&TIME=2002-12-01T00:00:00Z&FORMAT=GeoTIFF");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, null);
+  }
+
+  @Test
+  public void testGetCoverageNetcdf() throws IOException {
+    String endpoint = TestWithLocalServer.withPath(dataset2+"&request=GetCoverage&COVERAGE=sst&BBOX=10,0,300,80&TIME=2002-12-01T00:00:00Z&FORMAT=NetCDF3");
+    byte[] content = TestWithLocalServer.getContent(endpoint, 200, null);
+
+    // Open the binary response in memory
+    try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
+      DtCoverageDataset dt = new DtCoverageDataset(new NetcdfDataset(nf), null);
+      CoverageDatasetCollection cdc = DtCoverageAdapter.factory(dt);
+      Assert.assertEquals(1, cdc.getCoverageDatasets().size());
+      CoverageDataset cd = cdc.getCoverageDatasets().get(0);
+      assertNotNull(cd);
+
+      Coverage cov = cd.findCoverage("sst");
+      assertNotNull("sst", cov);
+
+      CoverageCoordSys csys = cov.getCoordSys();
+      assertNotNull("csys", csys);
+
+      CoverageCoordAxis time = csys.getAxis(AxisType.Time);
+      assertNotNull("time", time);
+      Assert.assertEquals(1, time.getNcoords());
+      CalendarDate date = time.makeDate( time.getStartValue());
+      System.out.printf("date = %s%n", date);
+      Assert.assertEquals(date, CalendarDate.parseISOformat(null, "2002-12-01T00:00:00Z"));
+
+      HorizCoordSys hcs = csys.getHorizCoordSys();
+      CoverageCoordAxis1D xaxis = hcs.getXAxis();
+      Assert.assertEquals(291, xaxis.getNcoords());
+      Assert.assertEquals(10.5, xaxis.getStartValue(), Misc.maxReletiveError);
+      Assert.assertEquals(300.5, xaxis.getEndValue(), Misc.maxReletiveError); // LOOK is that ok? BB = 10-300: its just catching the edge
+      Assert.assertEquals(1.0, xaxis.getResolution(), Misc.maxReletiveError);
+
+      CoverageCoordAxis1D yaxis = hcs.getYAxis();
+      Assert.assertEquals(81, yaxis.getNcoords());
+      Assert.assertEquals(79.5, yaxis.getStartValue(), Misc.maxReletiveError);
+      Assert.assertEquals(-.5, yaxis.getEndValue(), Misc.maxReletiveError); // LOOK is that ok? BB = 0-80: its just catching the edge
+      Assert.assertEquals(-1.0, yaxis.getResolution(), Misc.maxReletiveError);
     }
-    assertOk(response);
   }
 
- /* @org.junit.Test
+  @Test
+  public void saveGetCoverageNetcdf() throws IOException {
+    String endpoint = TestWithLocalServer.withPath(dataset2 + "&request=GetCoverage&COVERAGE=sst&BBOX=10,0.01,299.99,80&TIME=2002-12-01T00:00:00Z&FORMAT=NetCDF3");
+
+    File tempFile = File.createTempFile("tmp", ".nc", new File(TestDir.temporaryLocalDataDir));
+    System.out.printf("write to %s%n", tempFile.getAbsolutePath());
+
+    TestWithLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
+  }
+
+  @Test
+  public void saveGetCoverageNetcdf2() throws IOException {
+    String endpoint = TestWithLocalServer.withPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=NetCDF3");
+
+    File tempFile = File.createTempFile("tmp", ".nc", new File(TestDir.temporaryLocalDataDir));
+    System.out.printf("write to %s%n", tempFile.getAbsolutePath());
+
+    TestWithLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
+  }
+
+  @Test
+  public void multipleVertGeotiffFail() throws IOException {
+    String endpoint = TestWithLocalServer.withPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=Geotiff");
+
+    File tempFile = File.createTempFile("tmp", ".nc", new File(TestDir.temporaryLocalDataDir));
+    System.out.printf("write to %s%n", tempFile.getAbsolutePath());
+
+    TestWithLocalServer.getContent(endpoint, 400, null);
+  }
+
+
+  @Test
+  public void testVert() throws IOException {
+    String endpoint = TestWithLocalServer.withPath(dataset1+
+            "&request=GetCoverage&COVERAGE=Temperature&TIME=2012-04-19T00:00:00Z&FORMAT=NetCDF3&vertical=800");
+    byte[] content = TestWithLocalServer.getContent(endpoint, 200, null);
+
+    // Open the binary response in memory
+    try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
+      DtCoverageDataset dt = new DtCoverageDataset(new NetcdfDataset(nf), null);
+      CoverageDatasetCollection cdc = DtCoverageAdapter.factory(dt);
+      Assert.assertEquals(1, cdc.getCoverageDatasets().size());
+      CoverageDataset cd = cdc.getCoverageDatasets().get(0);
+      assertNotNull(cd);
+
+      Coverage cov = cd.findCoverage("Temperature");
+      assertNotNull("Temperature", cov);
+
+      CoverageCoordSys csys = cov.getCoordSys();
+      assertNotNull("csys", csys);
+
+      CoverageCoordAxis time = csys.getAxis(AxisType.Time);
+      assertNotNull("time", time);
+      Assert.assertEquals(1, time.getNcoords());
+      CalendarDate date = time.makeDate(time.getStartValue());
+      System.out.printf("date = %s%n", date);
+      Assert.assertEquals(date, CalendarDate.parseISOformat(null, "2012-04-19T00:00:00Z"));
+
+      CoverageCoordAxis vert = csys.getZAxis();
+      assertNotNull("vert", vert);
+      Assert.assertEquals(1, vert.getNcoords());
+      double vertCoord = vert.getStartValue();
+      System.out.printf("date = %s%n", date);
+      Assert.assertEquals(800.0, vertCoord, Misc.maxReletiveError);
+    }
+  }
+
+  @org.junit.Test
   public void testFmrc() throws IOException {
-    String dataset = server+"fmrc/NCEP/NAM/CONUS_80km/best.ncd";
-    showGetCapabilities(dataset);
-    showDescribeCoverage(dataset, "Precipitable_water");
-    showGetCoverage(dataset, "Precipitable_water", "2010-09-13T18:00:00Z",null,"220,20,250,50", "netCDF3", false);
-  }
-
- // @org.junit.Test
-  public void testBbox() throws IOException {
-    String dataset = server+"galeon/testdata/RUC.nc";
-    showGetCapabilities(dataset);
-    String fld = "Geopotential_height";
-    showDescribeCoverage(dataset, fld);
-    showGetCoverage(dataset, fld, null, null,"-125.9237889957627,67.498658,-50.43356200423729,132.87735","GeoTIFF", false);
-  }
-
-  //@org.junit.Test
-  public void testNorwayProblem() throws IOException {
-    String dataset = server+"Cdata/problem/FORDAILY_start20061206_dump20061228.nc";
-    showGetCapabilities(dataset);
-    String fld = "temperature";
-    showDescribeCoverage(dataset, fld);
-    showGetCoverage(dataset, fld, null, null,"-10,50,10,80","NetCDF3", false);
-  }
-
- // @org.junit.Test
-  public void eTestForEthan() throws IOException
-  {
-    showGetCapabilities( ncdcWcsDataset );
-    showGetCapabilities( server2 + "?dataset=" + ncdcOpendapDataset + "&" );
-    //showDescribeCoverage( ncdsWcsDataset , "ssta" );
-    //showGetCoverage( ncdsWcsDataset , "ssta",
-    //                 "2005-06-24T00:00:00Z", null, null );
-    //showGetCoverage(ncdsWcsDataset, "u_wind", "2002-12-02T22:00:00Z", "100.0", "-134,11,-47,57.555");
-  }
-
- // @org.junit.Test
-  public void utestGC() throws IOException {
-    testGC("testdata/ocean.nc");
-    testGC("testdata/eta.nc");
-    testGC("testdata/RUC.nc");
-    testGC("testdata/sst.nc");
-    testGC("testdata/striped.nc");
-  }
-
-  private void testGC(String dataset) throws IOException {
-    String url = server+dataset+"?request=GetCapabilities&version=1.0.0&service=WCS";
-    String contents = IO.readURLcontentsWithException( url);
-    System.out.println(url+" is OK, len= "+ contents.length());
-  }
-
-  //@org.junit.Test
-  public void testShow1() throws IOException {
-
-    // "http://localhost:8081/thredds/wcs/galeon/ocean.nc?request=GetCapabilities&version=1.0.0&service=WCS?request=GetCapabilities&version=1.0.0&service=WCS
-    showGetCapabilities(server+"galeon/ocean.nc?");
-    showDescribeCoverage(server+"galeon/ocean.nc?", "u_sfc");
-    showGetCoverage(server+"galeon/ocean.nc?", "u_sfc", "2005-03-17T12:00:00Z", null, "-100,20,-50,44.40", "netCDF3", false);
-  }
-
- // @org.junit.Test
-  public void testDatasetParam() throws IOException {
-     showGetCapabilities(server+"?dataset=http://localhost:8081/thredds/dodsC/testContent/testData.nc&");
-     showDescribeCoverage(server+"?dataset=http://localhost:8081/thredds/dodsC/testContent/testData.nc&", "Z_sfc");
-     showGetCoverage(server+"?dataset=http://localhost:8081/thredds/dodsC/testContent/testData.nc&", "Z_sfc",
-         "2003-09-25T00:00:00Z", null, "-100,20,-50,44.40", "netCDF3", false);
-  }
-
-
-  //@org.junit.Test
-  public void testRoy() throws IOException {
-    String dataset = "http://thredds.ucar.edu/thredds/wcs/fmrc/NCEP/NAM/CONUS_80km/files/NAM_CONUS_80km_20080424_1200.grib1";
-    showGetCapabilities(dataset);
-    String fld = "Total_precipitation";
-    showDescribeCoverage(dataset, fld);
-    showGetCoverage(dataset, fld, "2010-09-14T00:00:00Z", null,"-140,20,-100,40","GeoTIFFfloat", false);
+    String endpoint = TestWithLocalServer.withPath("wcs/testNAMfmrc/NAM_FMRC_best.ncd");
+    showGetCapabilities(endpoint);
+    showDescribeCoverage(endpoint, "Precipitable_water");                   // lon,lat1,lon,lat2
+    showGetCoverage(endpoint, "Precipitable_water", "2006-09-25T09:00:00Z",null,"-60,-20,0,50", "netCDF3", false);
   }
 
   ////////////////////////////////////////////////////////////////
 
   private void showGetCapabilities(String url) throws IOException {
-    showRead(url+"?request=GetCapabilities&version=1.0.0&service=WCS");
+    showRead(url+baloney+"&request=GetCapabilities");
   }
 
   private void showDescribeCoverage(String url, String grid) throws IOException {
-    showRead(url+"?request=DescribeCoverage&version=1.0.0&service=WCS&coverage="+grid);
+    showRead(url+baloney+"&request=DescribeCoverage&coverage="+grid);
   }
 
   // bb = minx,miny,maxx,maxy
   private void showGetCoverage(String url, String grid, String time, String vert, String bb, String format, boolean showOnly) throws IOException {
-    String getURL = url+"?request=GetCoverage&version=1.0.0&service=WCS&coverage="+grid;
+    String getURL = url + baloney + "&request=GetCoverage&coverage=" + grid;
     boolean isNetcdf = format.equalsIgnoreCase("netCDF3");
-    getURL = getURL + "&format="+format;
+    getURL = getURL + "&format=" + format;
     if (time != null)
-      getURL = getURL + "&time="+time;
+      getURL = getURL + "&time=" + time;
     if (vert != null)
-      getURL = getURL + "&vertical="+vert;
+      getURL = getURL + "&vertical=" + vert;
     if (bb != null)
-      getURL = getURL + "&bbox="+bb;
+      getURL = getURL + "&bbox=" + bb;
 
-    System.out.println("****************\n");
-    System.out.println("req= "+getURL);
-    String filename = "C:/TEMP/"+grid;
-    if (isNetcdf)
-      filename = filename + ".nc";
-    else
-      filename = filename + ".tiff";
+    byte[] content = TestWithLocalServer.getContent(getURL, 200, null);
 
-    if (showOnly) {
-      String contents = IO.readURLcontentsWithException( getURL);
-      System.out.println(contents);
-      return;
-    }
-
-    File file = new File(filename);
-    String result = IO.readURLtoFile(getURL, file);
-
-    System.out.println("****************\n");
-    System.out.println("result= "+result);
-    System.out.println(" copied contents to "+file.getPath());
-
+    // Open the binary response in memory
     if (isNetcdf) {
-      NetcdfFile ncfile = NetcdfFile.open(file.getPath());
-      assert ncfile != null;
+      try (NetcdfFile nf = NetcdfFile.openInMemory("WCS-return", content)) {
+        assert nf != null;
+        System.out.printf("%s%n", nf);
+      }
     }
-    //showRead( getURL);
   }
-
 
   private void showRead(String url) throws IOException {
     System.out.println("****************\n");
@@ -269,6 +292,5 @@ public class TestWcsServer {
     String contents = IO.readURLcontentsWithException( url);
     System.out.println(contents);
   }
-   */
 
 }
