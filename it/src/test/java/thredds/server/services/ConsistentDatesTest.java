@@ -11,6 +11,7 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.xpath.XPath;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
@@ -47,7 +48,7 @@ public class ConsistentDatesTest {
 
   private final String[] expectedDateTime = {
            "0000-01-16T06:00:00Z",       // these are the actual dates from cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc
-           "0000-02-15T16:29:06Z",       // this does not have a 360 calendar, so we need to find a dataset that does to test 360calendar
+           "0000-02-15T16:29:06Z",       // this uses CF, so must use the non-standard calendar gregorian instead of proleptic_gregorian
            "0000-03-17T02:58:12Z",
            "0000-04-16T13:27:18Z",
            "0000-05-16T23:56:24Z",
@@ -59,9 +60,7 @@ public class ConsistentDatesTest {
            "0000-11-15T14:51:00Z",
            "0000-12-16T01:20:06Z"};
 
-
   private final List<String> expectedDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
-  //private final List<DateTime> expectedWMSDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
 
   @Test
   public void checkWMSDates() throws JDOMException, IOException {
@@ -98,11 +97,6 @@ public class ConsistentDatesTest {
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
-    // old way - deprecated
-    //XPath xPath = XPath.newInstance("//wcs:temporalDomain/gml:timePosition");
-    //xPath.addNamespace("wcs", doc.getRootElement().getNamespaceURI());
-    // List<Element> timePositionNodes = xPath.selectNodes(doc);
-
     Namespace wcs = Namespace.getNamespace("wcs", doc.getRootElement().getNamespaceURI());
     Namespace gml = Namespace.getNamespace("gml", "http://www.opengis.net/gml");
     XPathExpression<Element> xpath =
@@ -124,27 +118,24 @@ public class ConsistentDatesTest {
   public void checkNCSSDates() throws JDOMException, IOException {
     String endpoint = TestWithLocalServer.withPath("/ncss/grid/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=xml");
     byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
-    Reader in = new StringReader( new String(result, CDM.utf8Charset));
+    String results = new String(result, CDM.utf8Charset);
+    if (show) System.out.printf("checkNCSSDates%n%s%n", results);
+    Reader in = new StringReader( results );
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
-    // old way
-    //XPath xPath = XPath.newInstance("/grid/point/data[@name='date']");
-    //List<Element> dataTimeNodes = xPath.selectNodes(doc);
-
     XPathExpression<Element> xpath =
-            XPathFactory.instance().compile("/grid/point/data[@name='date']", Filters.element());
+            XPathFactory.instance().compile("/stationFeatureCollection/stationFeature", Filters.element());
     List<Element> dataTimeNodes = xpath.evaluate(doc);
 
     List<String> timePositionDateTime = new ArrayList<>();
     for (Element e : dataTimeNodes) {
-      System.out.printf("Date= %s%n", e.getText());
-      CalendarDate cd = CalendarDate.parseISOformat(null,  e.getText());
+      CalendarDate cd = CalendarDate.parseISOformat(null, e.getAttributeValue("date"));
+      System.out.printf(" extract date= %s%n", cd);
       timePositionDateTime.add(cd.toString());;
     }
 
     assertEquals(expectedDatesAsDateTime, timePositionDateTime);
-
   }
 
   // PF5_SST_Climatology:  :units = "hour since 0000-01-01 00:00:00";
