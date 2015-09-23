@@ -38,9 +38,9 @@ import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDateUnit;
+// import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -56,13 +56,13 @@ import java.util.List;
  */
 public abstract class MultipleNestedPointCollectionImpl implements NestedPointFeatureCollection {
   protected String name;
-  protected DateUnit timeUnit;
+  protected CalendarDateUnit timeUnit;
   protected String altUnits;
   protected FeatureType collectionFeatureType;
   protected int npts;
   protected List<Variable> extras;
 
-  protected MultipleNestedPointCollectionImpl(String name, DateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
+  protected MultipleNestedPointCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
     this.name = name;
     this.timeUnit = timeUnit;
     this.altUnits = altUnits;
@@ -76,7 +76,7 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
   }
 
   @Override
-  public DateUnit getTimeUnit() {
+  public CalendarDateUnit getTimeUnit() {
     return timeUnit;
   }
 
@@ -85,7 +85,7 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
     return altUnits;
   }
 
-  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<Variable>() : extras; }
+  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
 
   public int size() {
     return npts;
@@ -114,9 +114,9 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
     return new NestedPointFeatureCollectionFlatten(this, boundingBox, dateRange);
   }
 
-  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  /* public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
     return flatten( boundingBox, CalendarDateRange.of(dateRange));
-  }
+  } */
 
   private static class NestedPointFeatureCollectionFlatten extends PointCollectionImpl {
     protected MultipleNestedPointCollectionImpl from;

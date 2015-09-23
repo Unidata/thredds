@@ -37,7 +37,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.unidata.geoloc.EarthLocation;
@@ -63,14 +63,16 @@ public class WriterCFPointCollection extends CFPointWriter {
   //private Map<String, Variable> varMap  = new HashMap<>();
 
   public WriterCFPointCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra,
-                                 DateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+                                 CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }
 
   public void writeHeader(PointFeature pf) throws IOException {
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+            .add(new Attribute(CF.CALENDAR, timeUnit.getCalendar().toString())));
+
     coords.add(VariableSimpleImpl.makeScalar(latName,  "latitude of measurement", CDM.LAT_UNITS, DataType.DOUBLE));
     coords.add(VariableSimpleImpl.makeScalar(lonName,  "longitude of measurement", CDM.LON_UNITS, DataType.DOUBLE));
     Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);

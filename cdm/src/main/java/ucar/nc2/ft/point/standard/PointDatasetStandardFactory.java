@@ -33,13 +33,13 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.time.CalendarDateUnit;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -143,19 +143,15 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       parseInfo.format(" PointFeatureDatasetImpl=%s%n", getClass().getName());
       this.analyser = analyser;
 
-      List<FeatureCollection> featureCollections = new ArrayList<>();
+      List<DsgFeatureCollection> featureCollections = new ArrayList<>();
       for (NestedTable flatTable : analyser.getFlatTables()) { // each flat table becomes a "feature collection"
 
-        DateUnit timeUnit = null;
+        CalendarDateUnit timeUnit;
         try {
           timeUnit = flatTable.getTimeUnit();
         } catch (Exception e) {
           if (null != errlog) errlog.format("%s%n", e.getMessage());
-          try {
-            timeUnit = new DateUnit("seconds since 1970-01-01");
-          } catch (Exception e1) {
-            log.error("Illegal time units", e1); // cant happen i hope
-          }
+          timeUnit = CalendarDateUnit.unixDateUnit;
         }
 
         String altUnits = flatTable.getAltUnits();

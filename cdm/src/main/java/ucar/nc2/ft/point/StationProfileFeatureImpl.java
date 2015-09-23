@@ -32,9 +32,11 @@
  */
 package ucar.nc2.ft.point;
 
+import ucar.ma2.StructureData;
 import ucar.nc2.ft.*;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.StationImpl;
@@ -42,7 +44,9 @@ import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Abstract superclass for implementations of StationProfileFeature.
@@ -56,13 +60,13 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
   protected Station s;
   protected PointFeatureCollectionIterator localIterator;
 
-  public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits, int npts) {
+  public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
     s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
     this.timeSeriesNpts = npts;
   }
 
-  public StationProfileFeatureImpl(Station s, DateUnit timeUnit, String altUnits, int npts) {
+  public StationProfileFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super( s.getName(), timeUnit, altUnits, FeatureType.STATION_PROFILE);
     this.s = s;
     this.timeSeriesNpts = npts;
@@ -124,16 +128,60 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
   }
 
   @Override
-  public StationProfileFeature subset(DateRange dateRange) throws IOException {
-    return null;  // LOOK
+  public StationProfileFeature subset(LatLonRect boundingBox) throws IOException {
+    return this; // only one station - we could check if its in the bb
   }
 
   @Override
-  public StationProfileFeature subset(LatLonRect dateRange) throws IOException {
-    return this;
+  public StationProfileFeature subset(CalendarDateRange dateRange) throws IOException {
+    return new StationProfileFeatureSubset(this, dateRange);
   }
 
-   /////////////////////////////////////////////////////////////////////////////////////
+  public static class StationProfileFeatureSubset extends StationProfileFeatureImpl {
+    private final StationProfileFeature from;
+    private final CalendarDateRange dateRange;
+
+    public StationProfileFeatureSubset(StationProfileFeatureImpl from, CalendarDateRange filter_date) {
+      super(from.s, from.getTimeUnit(), from.getAltUnits(), -1);
+      this.from = from;
+      this.dateRange = filter_date;
+    }
+
+    @Override
+    public StructureData getFeatureData() throws IOException {
+      return from.getFeatureData();
+    }
+
+    public List<CalendarDate> getTimes() throws IOException {
+      List<CalendarDate> result = new ArrayList<>();
+      for (ProfileFeature pf : this) {
+        if (dateRange.includes(pf.getTime()))
+          result.add(pf.getTime());
+      }
+      return result;
+    }
+
+    @Override
+    public ProfileFeature getProfileByDate(CalendarDate date) throws IOException {
+      return from.getProfileByDate(date);
+    }
+
+    @Override
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new DateFilter());
+    }
+
+    private class DateFilter implements PointFeatureCollectionIterator.Filter {
+      public boolean filter(PointFeatureCollection pointFeatureCollection) {
+        ProfileFeature profileFeature = (ProfileFeature) pointFeatureCollection;
+        return dateRange.includes(profileFeature.getTime());
+      }
+    }
+  }
+
+
+
+  /////////////////////////////////////////////////////////////////////////////////////
 
   public Iterator<ProfileFeature> iterator() {
     return new ProfileFeatureIterator();

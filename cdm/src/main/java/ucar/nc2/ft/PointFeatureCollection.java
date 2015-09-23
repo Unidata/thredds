@@ -32,15 +32,10 @@
  */
 package ucar.nc2.ft;
 
-import ucar.nc2.Variable;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * A collection of PointFeatures.
@@ -48,38 +43,14 @@ import java.util.List;
  * @author caron
  * @since Mar 1, 2008
  */
-public interface PointFeatureCollection extends FeatureCollection, Iterable<PointFeature> {
-
-  /**
-   * The udunit time unit string.
-   * @return  time unit string, may not be null
-   */
-  DateUnit getTimeUnit();
-
-  /**
-   * The altitude unit string if it exists.
-   * @return altitude unit string, may be null
-   */
-  String getAltUnits();
-
-  /**
-   * Other variables needed for co,pleteness, eg joined coordinate variables
-   * @return list of extra variables, may be empty not null
-   */
-  List<Variable> getExtraVariables();
-
-
-  /**
-   * The number of points in the collection. May not be known until after iterating through the collection.
-   * @return number of points in the collection, or -1 if not known.
-   */
-  int size();
+public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<PointFeature> {
 
   /**
    * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.
    *
    * @return the calendar date range for the entire collection, or null if unknown
    */
+  @Nullable
   CalendarDateRange getCalendarDateRange();
 
   /**
@@ -87,28 +58,29 @@ public interface PointFeatureCollection extends FeatureCollection, Iterable<Poin
    *
    * @return the lat/lon boundingBox for the entire collection, or null if unknown.
    */
+  @Nullable
   ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
-  /**
+  /*
    * Set the calendar date range for the FeatureCollection.
    *
    * @param range the calendar date range for the entire collection
-   */
+   *
   void setCalendarDateRange(CalendarDateRange range);
 
   /**
    * Set the boundingBox for the FeatureCollection.
    *
    * @param bb the lat/lon boundingBox for the entire collection.
-   */
+   *
   void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb);
 
   /**
    * Set the size of the FeatureCollection.
    *
    * @param npts size of the collection
-   */
-  void setSize(int npts);
+   *
+  void setSize(int npts); */
 
   /**
    * Caclulate date range and bounding box, and size, even if the data has to be scanned.
@@ -116,8 +88,8 @@ public interface PointFeatureCollection extends FeatureCollection, Iterable<Poin
    * If the collection already knows its size, date range and bounding box, then this has no effect.
    *
    * @throws java.io.IOException or read error.
-   */
-  void calcBounds() throws java.io.IOException;
+   *
+  void calcBounds() throws java.io.IOException; */
 
   /**
    * Subset this collection by boundingBox and/or dateRange
@@ -131,27 +103,6 @@ public interface PointFeatureCollection extends FeatureCollection, Iterable<Poin
 
   //////////////////////////////////////////////////////
   // deprecated
-
-  /**
-   * Date range for the FeatureCollection. May not be known until after iterating through the collection.
-   *
-   * @return the date range for the entire collection, or null if unknown
-   * @deprecated use getCalendarDateRange()
-   */
-  DateRange getDateRange();
-
-  /**
-   * Set the date range for the FeatureCollection.
-   *
-   * @param range the date range for the entire collection
-   * @deprecated use setCalendarDateRange()
-   */
-  void setDateRange(DateRange range);
-
-  /**
-   * @deprecated use CalendarDateRange
-   */
-  PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
   /**
    * Use the internal iterator to check if there is another PointFeature in the iteration.
@@ -192,7 +143,7 @@ public interface PointFeatureCollection extends FeatureCollection, Iterable<Poin
     * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
     * @return iterator over the PointFeatures of this collection
     * @throws IOException on read error
-   * @deprecated use foreach
+    * @deprecated use foreach
     */
    PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
 

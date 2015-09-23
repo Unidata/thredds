@@ -35,7 +35,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 
 import java.io.IOException;
 
@@ -47,7 +47,7 @@ import java.io.IOException;
 public class StandardPointCollectionImpl extends PointCollectionImpl {
   private NestedTable ft;
 
-  StandardPointCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
+  StandardPointCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
     this.extras = ft.getExtras();
@@ -57,7 +57,7 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
     // only one Cursor object needed - it will be used for each iteration with different structData's
     Cursor tableData = new Cursor(ft.getNumberOfLevels());
 
-    PointFeatureIterator iter = new StandardPointFeatureIterator( ft, timeUnit, ft.getObsDataIterator(tableData, bufferSize), tableData);
+    PointFeatureIterator iter = new StandardPointFeatureIterator( this, ft, timeUnit, ft.getObsDataIterator(tableData, bufferSize), tableData);
     if ((boundingBox == null) || (dateRange == null) || (npts < 0))
       iter.setCalculateBounds(this);
     return iter;

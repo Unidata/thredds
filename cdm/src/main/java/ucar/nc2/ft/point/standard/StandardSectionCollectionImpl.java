@@ -37,13 +37,13 @@ import ucar.nc2.ft.point.SectionCollectionImpl;
 import ucar.nc2.ft.point.ProfileFeatureImpl;
 import ucar.nc2.ft.point.SectionFeatureImpl;
 import ucar.nc2.ft.*;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * Nested Table implementation of SectionCollection.
@@ -57,7 +57,7 @@ import java.util.Date;
 public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   private NestedTable ft;
 
-  StandardSectionCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) throws IOException {
+  StandardSectionCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) throws IOException {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
     this.extras = ft.getExtras();
@@ -166,15 +166,9 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     Cursor cursor;
     StructureData profileData;
 
-    StandardSectionProfileFeature( Cursor cursor, double time, StructureData profileData) {
-      super( ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits(),
+    StandardSectionProfileFeature(Cursor cursor, double time, StructureData profileData) {
+      super(ft.getFeatureName(cursor), StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits(),
               ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
-
-
-   /* StandardSectionProfileFeature(Cursor cursor, double time, StructureData profileData) {
-      super( StandardSectionCollectionImpl.this.getTimeUnit().makeStandardDateString(time),
-              StandardSectionCollectionImpl.this.getTimeUnit(), StandardSectionCollectionImpl.this.getAltUnits(),
-              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);  */
 
       this.cursor = cursor;
       this.profileData = profileData;
@@ -185,7 +179,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
-            this.name = timeUnit.makeStandardDateString(this.time);
+            this.name = timeUnit.makeCalendarDate(this.time).toString();
           } else {
             this.name = "empty";
           }
@@ -205,27 +199,27 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     }
 
     @Override
-    public Date getTime() {
-      return timeUnit.makeDate(time);
+    public CalendarDate getTime() {
+      return timeUnit.makeCalendarDate(time);
     }
 
     @Override
     public StructureData getFeatureData() throws IOException {
       return profileData;
     }
-  }
 
-  private static class StandardSectionProfileFeatureIterator extends StandardPointFeatureIterator {
+    private class StandardSectionProfileFeatureIterator extends StandardPointFeatureIterator {
 
-    StandardSectionProfileFeatureIterator(NestedTable ft, DateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
-      super(ft, timeUnit, structIter, cursor);
-    }
+      StandardSectionProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+        super(StandardSectionProfileFeature.this, ft, timeUnit, structIter, cursor);
+      }
 
-    @Override
-    protected boolean isMissing() throws IOException {
-      if (super.isMissing()) return true;
-      // must also check for missing z values
-      return ft.isAltMissing(this.cursor);
+      @Override
+      protected boolean isMissing() throws IOException {
+        if (super.isMissing()) return true;
+        // must also check for missing z values
+        return ft.isAltMissing(this.cursor);
+      }
     }
   }
 

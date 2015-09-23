@@ -35,8 +35,7 @@ package ucar.nc2.ft.point;
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Station;
@@ -55,14 +54,14 @@ import java.io.IOException;
 public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl implements StationTimeSeriesFeature {
   protected Station s;
 
-  public StationTimeSeriesFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits, int npts) {
+  public StationTimeSeriesFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super(name, timeUnit, altUnits);
     s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
     this.timeUnit = timeUnit;
     this.npts = npts;
   }
 
-  public StationTimeSeriesFeatureImpl(Station s, DateUnit timeUnit, String altUnits, int npts) {
+  public StationTimeSeriesFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super(s.getName(), timeUnit, altUnits);
     this.s = s;
     this.npts = npts;
@@ -124,11 +123,6 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
   }
 
   @Override
-  public DateUnit getTimeUnit() {
-      return timeUnit;
-  }
-
-  @Override
   public String toString() {
     return "StationFeatureImpl{" +
         "s=" + s +
@@ -143,11 +137,11 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     return new StationFeatureSubset(this, dateRange);
   }
 
-  @Override
+  /*
   public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
     if (dateRange == null) return this;
     return new StationFeatureSubset(this, CalendarDateRange.of(dateRange));
-  }
+  } */
 
   @Override
   public int compareTo(Station so) {

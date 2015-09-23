@@ -38,7 +38,7 @@ import ucar.nc2.ft.point.TrajectoryFeatureImpl;
 import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.LatLonRect;
@@ -54,11 +54,11 @@ import java.util.Iterator;
 public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionImpl implements TrajectoryFeatureCollection {
   private NestedTable ft;
 
-  protected StandardTrajectoryCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+  protected StandardTrajectoryCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.TRAJECTORY);
   }
 
-  StandardTrajectoryCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
+  StandardTrajectoryCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits, FeatureType.TRAJECTORY);
     this.ft = ft;
     this.extras = ft.getExtras();
@@ -122,7 +122,7 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursorIter = cursor.copy();
       StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursorIter, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, siter, cursorIter);
+      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(this, ft, timeUnit, siter, cursorIter);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;

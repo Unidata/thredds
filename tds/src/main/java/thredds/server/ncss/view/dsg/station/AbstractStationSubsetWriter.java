@@ -37,7 +37,7 @@ import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.view.dsg.DsgSubsetWriter;
 import thredds.server.ncss.view.dsg.FilteredPointFeatureIterator;
 import ucar.ma2.StructureData;
-import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -69,7 +69,7 @@ public abstract class AbstractStationSubsetWriter extends DsgSubsetWriter {
           throws NcssException, IOException {
     super(fdPoint, ncssParams);
 
-    List<FeatureCollection> featColList = fdPoint.getPointFeatureCollectionList();
+    List<DsgFeatureCollection> featColList = fdPoint.getPointFeatureCollectionList();
     assert featColList.size() == 1 : "Is there ever a case when this is NOT 1?";
     assert featColList.get(0) instanceof StationTimeSeriesFeatureCollection :
             "This class only deals with StationTimeSeriesFeatureCollections.";

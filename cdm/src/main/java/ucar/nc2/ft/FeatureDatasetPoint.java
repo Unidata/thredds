@@ -41,9 +41,9 @@ import java.util.List;
  */
 public interface FeatureDatasetPoint extends FeatureDataset {
   /**
-   * Get a list of FeatureCollections contained in this dataset.
+   * Get a list of DsgFeatureCollection contained in this dataset.
    * These will all be of type PointFeatureCollection or NestedPointFeatureCollection.
-   * @return list of FeatureCollections contained in this dataset
+   * @return list of DsgFeatureCollection contained in this dataset
    */
-  List<FeatureCollection> getPointFeatureCollectionList();
+  List<DsgFeatureCollection> getPointFeatureCollectionList();
 }

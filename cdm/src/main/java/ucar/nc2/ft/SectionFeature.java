@@ -43,7 +43,7 @@ import java.io.IOException;
  * @author caron
  * @since Mar 18, 2008
  */
-public interface SectionFeature extends NestedPointFeatureCollection, Iterable<ProfileFeature> {
+public interface SectionFeature extends PointFeatureCC, Iterable<ProfileFeature> {
 
   /**
    * The number of profiles along the trajectory.
@@ -51,10 +51,21 @@ public interface SectionFeature extends NestedPointFeatureCollection, Iterable<P
    */
   int size();
 
+
+  /**
+   * The actual data of just this feature.
+   * @return the actual data of this feature.
+   * @throws java.io.IOException on i/o error
+   */
+  StructureData getFeatureData() throws IOException;
+
+  //////////////////////////////////////////////////////////
+
   /**
    * Use the internal iterator to check if there is another ProfileFeature in the iteration.
    * @return true is there is another ProfileFeature in the iteration.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   boolean hasNext() throws java.io.IOException;
 
@@ -63,20 +74,21 @@ public interface SectionFeature extends NestedPointFeatureCollection, Iterable<P
    * You must call hasNext() before you call this.
    * @return the next ProfileFeature in the iteration
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   ProfileFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the ProfileFeature in this Collection.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   void resetIteration() throws IOException;
 
   /**
-   * The actual data of just this feature.
-   * @return the actual data of this feature.
-   * @throws java.io.IOException on i/o error
+   * @deprecated use foreach
    */
-  StructureData getFeatureData() throws IOException;
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+
 
 }

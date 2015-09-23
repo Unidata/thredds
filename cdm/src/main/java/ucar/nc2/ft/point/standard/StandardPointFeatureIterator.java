@@ -33,14 +33,16 @@
 
 package ucar.nc2.ft.point.standard;
 
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.point.PointIteratorFromStructureData;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.ma2.StructureData;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -50,12 +52,14 @@ import java.io.IOException;
  * @since Mar 29, 2008
  */
 public class StandardPointFeatureIterator extends PointIteratorFromStructureData {
+  protected DsgFeatureCollection dsg;
   protected NestedTable ft;
-  protected DateUnit timeUnit;
+  protected CalendarDateUnit timeUnit;
   protected Cursor cursor;
 
-  StandardPointFeatureIterator(NestedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) throws IOException {
+  StandardPointFeatureIterator(DsgFeatureCollection dsg, NestedTable ft, CalendarDateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) throws IOException {
     super(structIter, null);
+    this.dsg = dsg;
     this.ft = ft;
     this.timeUnit = timeUnit;
     this.cursor = cursor;
@@ -81,7 +85,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
   private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature {
     protected Cursor cursor;
 
-    StandardPointFeature(Cursor cursor, DateUnit timeUnit, double obsTime) {
+    StandardPointFeature(Cursor cursor, CalendarDateUnit timeUnit, double obsTime) {
       super( timeUnit);
       this.cursor = cursor;
       cursor.currentIndex = 1; // LOOK ????
@@ -92,14 +96,22 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
       location = ft.getEarthLocation( this.cursor);
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() {
       return ft.makeObsStructureData( cursor, 0);
     }
 
+    @Nonnull
     @Override
     public StructureData getDataAll() {
       return ft.makeObsStructureData( cursor);
+    }
+
+    @Nonnull
+    @Override
+    public DsgFeatureCollection getFeatureCollection() {
+      return dsg;
     }
 
     @Override

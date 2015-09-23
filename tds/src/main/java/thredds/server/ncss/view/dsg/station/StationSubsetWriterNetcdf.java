@@ -35,22 +35,18 @@ package thredds.server.ncss.view.dsg.station;
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.controller.NcssRequestUtils;
-import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.ft2.coverage.SubsetParams;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.Station;
 
@@ -83,26 +79,11 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
         List<Attribute> attribs = new ArrayList<>();
         attribs.add(new Attribute(CDM.TITLE, "Extracted data from TDS Feature Collection " + fdPoint.getLocation()));
 
-              // A default value in case we can't find a better one in the dataset.
-        // This is the same default that is used in PointDatasetStandard.
-        DateUnit timeUnit = DateUnit.factory("seconds since 1970-01-01");
-
-        // If this remains null, it means the dataset has no altitude variable.
-        String altUnit = null;
-
-        if (fdPoint.getNetcdfFile() instanceof NetcdfDataset) {
-            NetcdfDataset dataset = (NetcdfDataset) fdPoint.getNetcdfFile();
-
-            CoordinateAxis timeAxis = dataset.findCoordinateAxis(AxisType.Time);
-            if (timeAxis != null && timeAxis.getUnitsString() != null) {
-                timeUnit = DateUnit.factory(timeAxis.getUnitsString());
-            }
-
-            CoordinateAxis altAxis = dataset.findCoordinateAxis(AxisType.Height);
-            if (altAxis != null) {
-                altUnit = altAxis.getUnitsString();
-            }
-        }
+        // get the timeUnit and altUnit from the first FeatureCollection
+        assert fdPoint.getPointFeatureCollectionList().size() > 0;
+        DsgFeatureCollection fc = fdPoint.getPointFeatureCollectionList().get(0);
+        CalendarDateUnit timeUnit = fc.getTimeUnit();
+        String altUnit = fc.getAltUnits();
 
         this.cfWriter = new WriterCFStationCollection( netcdfResult.getAbsolutePath(), attribs, wantedVariables, null,
                 timeUnit, altUnit, new CFPointWriterConfig(version) );

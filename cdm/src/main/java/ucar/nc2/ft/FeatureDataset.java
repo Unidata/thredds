@@ -38,8 +38,8 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateRange;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -112,14 +112,14 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    */
   ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
-  /**
+  /*
    * Caclulate date range and bounding box, even if the data has to be scanned.
    * This ensures that getDateRange() and getBoundingBox() return non-null.
    * If the collection already knows its date range and bounding box, then this has no effect.
    *
    * @throws java.io.IOException or read error.
-   */
-  void calcBounds() throws java.io.IOException;
+   *
+  void calcBounds() throws java.io.IOException; */
 
   /**
    * List of global attributes.
@@ -159,6 +159,7 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    *
    * @return the underlying NetcdfFile, or null if none.
    */
+  @Nullable
   ucar.nc2.NetcdfFile getNetcdfFile();
 
   /**
@@ -180,31 +181,5 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    * @return name of implementor
    */
   String getImplementationName();
-
-  /////////////////////////////////////////////////
-  // deprecated
-  /**
-   * Date range for the entire dataset.
-   *
-   * @return the date range for the entire dataset, or null if unknown
-   * @deprecated use getCalendarDateRange
-   */
-  DateRange getDateRange();
-
-  /**
-   * Starting date for the entire dataset.
-   *
-   * @return the starting date for the entire dataset, or null if unknown
-   * @deprecated use getCalendarDateStart
-   */
-  Date getStartDate();
-
-  /**
-   * Ending date for the entire dataset.
-   *
-   * @return the ending date for the entire dataset, or null if unknown
-   * @deprecated use getCalendarDateEnd
-   */
-  Date getEndDate();
 
 }

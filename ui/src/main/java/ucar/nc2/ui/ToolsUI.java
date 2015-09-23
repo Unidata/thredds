@@ -56,6 +56,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.grib.GribData;
@@ -1974,8 +1975,8 @@ public class ToolsUI extends JPanel {
         CalendarDateUnit cdu = CalendarDateUnit.of(null, command);
         ta.appendLine("CalendarDateUnit = " + cdu);
         ta.appendLine(" Calendar        = " + cdu.getCalendar());
-        ta.appendLine(" PeriodField     = " + cdu.getTimeUnit().getField());
-        ta.appendLine(" PeriodValue     = " + cdu.getTimeUnit().getValue());
+        ta.appendLine(" PeriodField     = " + cdu.getCalendarPeriod().getField());
+        ta.appendLine(" PeriodValue     = " + cdu.getCalendarPeriod().getValue());
         ta.appendLine(" Base            = " + cdu.getBaseCalendarDate());
         ta.appendLine(" isCalendarField = " + cdu.isCalendarField());
 
@@ -5415,8 +5416,10 @@ public class ToolsUI extends JPanel {
         public void actionPerformed(ActionEvent e) {
           if (pfDataset == null) return;
           Formatter f = new Formatter();
-          try {
-            pfDataset.calcBounds();
+          pfDataset.getDetailInfo(f);
+          detailTA.setText(f.toString());
+          /* try {
+            // LOOK HERE  pfDataset.calcBounds();
             pfDataset.getDetailInfo(f);
             detailTA.setText(f.toString());
 
@@ -5424,8 +5427,7 @@ public class ToolsUI extends JPanel {
             StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
-          }
-
+          } */
           detailTA.gotoTop();
           detailWindow.show();
         }
@@ -5520,7 +5522,7 @@ public class ToolsUI extends JPanel {
     }
 
     private String getCapabilities(FeatureDatasetPoint fdp) {
-      ucar.nc2.ft.point.writer.FeatureDatasetPointXML xmlWriter = new ucar.nc2.ft.point.writer.FeatureDatasetPointXML(fdp, null);
+      FeatureDatasetCapabilitiesWriter xmlWriter = new FeatureDatasetCapabilitiesWriter(fdp, null);
       return xmlWriter.getCapabilities();
     }
   }
@@ -5570,7 +5572,7 @@ public class ToolsUI extends JPanel {
   private class StationRadialPanel extends OpPanel {
     StationRadialViewer radialViewer;
     JSplitPane split;
-    ucar.nc2.ft.FeatureDataset radarCollectionDataset = null;
+    FeatureDataset radarCollectionDataset = null;
 
     StationRadialPanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
@@ -5645,7 +5647,7 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    boolean setStationRadialDataset(ucar.nc2.ft.FeatureDataset dataset) {
+    boolean setStationRadialDataset(FeatureDataset dataset) {
       if (dataset == null) return false;
 
       try {

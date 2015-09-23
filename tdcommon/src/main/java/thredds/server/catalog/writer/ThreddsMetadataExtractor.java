@@ -45,9 +45,9 @@ import ucar.nc2.dt.*;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -82,7 +82,7 @@ public class ThreddsMetadataExtractor {
         GridDataset gridDataset = (GridDataset) result.featureDataset;
         flds.put(Dataset.GeospatialCoverage, extractGeospatial(gridDataset));
 
-        DateRange tc = extractDateRange(gridDataset);
+        CalendarDateRange tc = extractCalendarDateRange(gridDataset);
         if (tc != null)
           flds.put(Dataset.TimeCoverage, tc);
 
@@ -96,7 +96,7 @@ public class ThreddsMetadataExtractor {
         if (null != llbb)
           flds.put(Dataset.GeospatialCoverage, new ThreddsMetadata.GeospatialCoverage(llbb, null, 0.0, 0.0));
 
-        DateRange tc = extractDateRange(pobsDataset);
+        CalendarDateRange tc = extractCalendarDateRange(pobsDataset);
         if (tc != null)
           flds.put(Dataset.TimeCoverage, tc);
 
@@ -211,7 +211,7 @@ public class ThreddsMetadataExtractor {
     return new ThreddsMetadata.VariableGroup("CF-1.0", null, null, vars);
   }
 
-  public DateRange extractDateRange(GridDataset gridDataset) {
+  /* public DateRange extractDateRange(GridDataset gridDataset) {
     DateRange maxDateRange = null;
 
     for (GridDataset.Gridset gridset : gridDataset.getGridsets()) {
@@ -244,11 +244,7 @@ public class ThreddsMetadataExtractor {
     }
 
     return maxDateRange;
-  }
-
-  public DateRange extractDateRange(FeatureDatasetPoint fd) {
-    return fd.getDateRange();
-  }
+  } */
 
   public CalendarDateRange extractCalendarDateRange(FeatureDatasetPoint fd) {
     return fd.getCalendarDateRange();
@@ -272,9 +268,9 @@ public class ThreddsMetadataExtractor {
           continue;
 
         try {
-          DateUnit du = new DateUnit(time.getUnitsString());
-          Date minDate = du.makeDate(time.getMinValue());
-          Date maxDate = du.makeDate(time.getMaxValue());
+          CalendarDateUnit du = CalendarDateUnit.of(null, time.getUnitsString()); // LOOK no calendar
+          CalendarDate minDate = du.makeCalendarDate(time.getMinValue());
+          CalendarDate maxDate = du.makeCalendarDate(time.getMaxValue());
           dateRange = CalendarDateRange.of(minDate, maxDate);
         } catch (Exception e) {
           logger.warn("Illegal Date Unit " + time.getUnitsString());

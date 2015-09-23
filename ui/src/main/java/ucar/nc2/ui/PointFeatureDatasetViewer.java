@@ -43,6 +43,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.ogc.MarshallingUtil;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.PointController;
@@ -66,7 +67,6 @@ import java.awt.event.ActionEvent;
 import java.beans.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -83,7 +83,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private PreferencesExt prefs;
 
-  private FeatureCollection selectedCollection;
+  private DsgFeatureCollection selectedCollection;
   private FeatureType selectedType;
 
   private BeanTable fcTable, profileTable, stnTable, stnProfileTable;
@@ -393,7 +393,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     // set the feature collection table - all use this
     List<FeatureCollectionBean> fcBeans = new ArrayList<>();
-    for (FeatureCollection fc : dataset.getPointFeatureCollectionList()) {
+    for (DsgFeatureCollection fc : dataset.getPointFeatureCollectionList()) {
       fcBeans.add(new FeatureCollectionBean(fc));
     }
     if (fcBeans.size() == 0)
@@ -403,9 +403,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     infoTA.clear();
 
     // set the date range if possible
-    DateRange dr = dataset.getDateRange();
+    CalendarDateRange dr = dataset.getCalendarDateRange();
     if (dr != null)
-      stationMap.setDateRange(dr);
+      stationMap.setDateRange(dr.toDateRange());
 
     // set the bounding box if possible
     LatLonRect bb = dataset.getBoundingBox();
@@ -491,7 +491,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       iter.setCalculateBounds(pointCollection);
       while (iter.hasNext() && (count++ < maxCount)) {
         PointFeature pob = iter.next();
-        pointBeans.add(new PointObsBean(count++, pob, df));
+        pointBeans.add(new PointObsBean(count++, pob));
       }
     }
 
@@ -545,10 +545,11 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private void subset(LatLonRect geoRegion, DateRange dateRange) throws IOException {
     PointFeatureCollection pc = null;
+    CalendarDateRange cdr = CalendarDateRange.of(dateRange);
 
     if (selectedType == FeatureType.POINT) {
       PointFeatureCollection ptCollection = (PointFeatureCollection) selectedCollection;
-      pc = ptCollection.subset(geoRegion, dateRange);
+      pc = ptCollection.subset(geoRegion, cdr);
     } else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
      /*  if (geoRegion != null) {
@@ -556,11 +557,11 @@ public class PointFeatureDatasetViewer extends JPanel {
         setStations( stationSubset);
         return;
       } else { */
-      pc = stationCollection.flatten(geoRegion, dateRange);
+      pc = stationCollection.flatten(geoRegion, cdr);
       //}
     } else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationProfileCollection = (StationProfileFeatureCollection) selectedCollection;
-      pc = stationProfileCollection.flatten(geoRegion, dateRange);
+      pc = stationProfileCollection.flatten(geoRegion, cdr);
     }
 
     if (null != pc)
@@ -589,7 +590,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
       StationTimeSeriesFeature feature = stationCollection.getStationFeature(sb.s);
       if (dr != null)
-        feature = feature.subset(dr);
+        feature = feature.subset( CalendarDateRange.of(dr));
       setObservations(feature);
 
       // iterator may count points
@@ -779,9 +780,9 @@ public class PointFeatureDatasetViewer extends JPanel {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   static public class FeatureCollectionBean {
-    FeatureCollection fc;
+    DsgFeatureCollection fc;
 
-    public FeatureCollectionBean(FeatureCollection fc) {
+    public FeatureCollectionBean(DsgFeatureCollection fc) {
       this.fc = fc;
     }
 
@@ -894,13 +895,11 @@ public class PointFeatureDatasetViewer extends JPanel {
     private PointFeature pobs;
     private String timeObs;
     private int id;
-    private DateFormatter df;
 
-    public PointObsBean(int id, PointFeature obs, DateFormatter df) {
+    public PointObsBean(int id, PointFeature obs) {
       this.id = id;
       this.pobs = obs;
-      this.df = df;
-      setTime(obs.getObservationTimeAsDate());
+      timeObs = obs.getObservationTimeAsCalendarDate().toString();
     }
 
     // for BeanTable
@@ -910,10 +909,6 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public String getTime() {
       return timeObs;
-    }
-
-    public void setTime(Date timeObs) {
-      this.timeObs = df.toDateTimeString(timeObs);
     }
 
     public String getName() {
@@ -1031,7 +1026,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       super(pfc.getFeatureData());
       this.pfc = pfc;
       try {
-        pfc.calcBounds();
+        // LOOK HERE pfc.calcBounds();
         pfc.resetIteration();
         if (pfc.hasNext())
           pf = pfc.next();
@@ -1122,7 +1117,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       return pfc.getLatLon().getLongitude();
     }
 
-    public Date getDate() {
+    public CalendarDate getDate() {
       return pfc.getTime();
     }
   }

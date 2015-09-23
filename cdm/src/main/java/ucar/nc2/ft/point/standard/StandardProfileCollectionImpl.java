@@ -37,14 +37,16 @@ import ucar.nc2.ft.point.OneNestedPointCollectionImpl;
 import ucar.nc2.ft.point.ProfileFeatureImpl;
 import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
 import ucar.nc2.ft.*;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -55,11 +57,11 @@ import java.util.Iterator;
 public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl implements ProfileFeatureCollection {
   private NestedTable ft;
 
-  protected StandardProfileCollectionImpl(String name, DateUnit timeUnit, String altUnits ) {
+  protected StandardProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits ) {
     super(name, timeUnit, altUnits, FeatureType.PROFILE);
   }
 
-  StandardProfileCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
+  StandardProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits, FeatureType.PROFILE);
     this.ft = ft;
     this.extras = ft.getExtras();
@@ -73,7 +75,16 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     return new StandardProfileCollectionSubset( this, boundingBox);
   }
 
-  private class ProfileIterator implements PointFeatureCollectionIterator {
+  @Override
+  public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+    return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
+  }
+
+  public ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+    return new StandardProfileCollectionSubset( this, boundingBox); // LOOK ignoring dateRange
+  }
+
+  private class ProfileIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
     StructureDataIterator structIter;
     StructureData nextProfileData;
 
@@ -105,7 +116,6 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     public void close() {
       structIter.close();
     }
-
   }
 
   private class StandardProfileFeature extends ProfileFeatureImpl {
@@ -120,7 +130,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
       this.profileData = profileData;
 
       if (name.equalsIgnoreCase("unknown"))
-        name = timeUnit.makeStandardDateString(time); // use time as the name
+        name = timeUnit.makeCalendarDate(time).toString(); // use time as the name
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time
         try {
@@ -128,7 +138,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
-            if (name == null) this.name = timeUnit.makeStandardDateString(this.time);
+            if (name == null) this.name = timeUnit.makeCalendarDate(this.time).toString();
           } else {
             if (name == null) this.name = "empty";
           }
@@ -153,14 +163,14 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     }
 
     @Override
-    public Date getTime() {
-      return timeUnit.makeDate(time);
+    public CalendarDate getTime() {
+      return timeUnit.makeCalendarDate(time);
     }
 
-    class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
+    private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
 
-      StandardProfileFeatureIterator(NestedTable ft, DateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
-        super(ft, timeUnit, structIter, cursor);
+      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+        super(StandardProfileFeature.this, ft, timeUnit, structIter, cursor);
       }
 
       @Override
@@ -177,7 +187,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
   private static class StandardProfileCollectionSubset extends StandardProfileCollectionImpl {
     StandardProfileCollectionImpl from;
-     LatLonRect boundingBox;
+    LatLonRect boundingBox;
 
     StandardProfileCollectionSubset(StandardProfileCollectionImpl from, LatLonRect boundingBox) {
       super(from.getName()+"-subset", from.getTimeUnit(), from.getAltUnits());

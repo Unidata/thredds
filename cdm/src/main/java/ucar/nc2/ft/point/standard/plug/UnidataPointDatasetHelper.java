@@ -34,7 +34,8 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.*;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -43,7 +44,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.util.List;
-import java.util.Date;
 
 /**
  * Helper routines for point feature datasets using Unidata Conventions.
@@ -53,29 +53,29 @@ import java.util.Date;
  */
 public class UnidataPointDatasetHelper {
 
-  static public Date getStartDate(NetcdfDataset ds, DateUnit timeUnit) {
+  static public CalendarDate getStartDate(NetcdfDataset ds, CalendarDateUnit timeUnit) {
     return getDate(ds, timeUnit, "time_coverage_start");
   }
 
-  static public Date getEndDate(NetcdfDataset ds, DateUnit timeUnit) {
+  static public CalendarDate getEndDate(NetcdfDataset ds, CalendarDateUnit timeUnit) {
     return getDate(ds, timeUnit, "time_coverage_end");
   }
 
-  static private Date getDate(NetcdfDataset ds, DateUnit timeUnit, String attName) {
+  static private CalendarDate getDate(NetcdfDataset ds, CalendarDateUnit timeUnit, String attName) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attName);
     if (null == att)
       throw new IllegalArgumentException("Must have a global attribute named "+attName);
 
-    Date result;
+    CalendarDate result;
     if (att.getDataType() == DataType.STRING) {
-      result = DateUnit.getStandardOrISO( att.getStringValue());
-      if (result == null) {
+      result = CalendarDate.parseUdunitsOrIso(null, att.getStringValue());
+      if (result == null && timeUnit != null) {
         double val = Double.parseDouble(att.getStringValue());
-        result = timeUnit.makeDate(val);
+        result = timeUnit.makeCalendarDate(val);
       }
     } else if (timeUnit != null) {
       double val = att.getNumericValue().doubleValue();
-      result = timeUnit.makeDate(val);
+      result = timeUnit.makeCalendarDate(val);
 
     } else {
       throw new IllegalArgumentException(attName+" must be a ISO or udunit date string");

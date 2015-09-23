@@ -29,77 +29,50 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft;
 
-import ucar.nc2.ft.point.StationFeature;
-import ucar.unidata.geoloc.Station;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.util.IOIterator;
 
-import java.util.List;
 import java.io.IOException;
 
 /**
- * A collection of StationProfileFeatures
+ * Single nested PointFeatureCollection
+ *
  * @author caron
- * @since Feb 29, 2008
+ * @since 9/23/2015.
  */
-public interface StationProfileFeatureCollection extends StationCollection, PointFeatureCCC, Iterable<StationProfileFeature> {
+public interface PointFeatureCC extends DsgFeatureCollection {
+
   /**
-   * Get a subsetted StationProfileFeatureCollection
+   * Get a subsetted PointFeatureCC based on a LatLonRect
    *
-   * @param stations only contain these stations
+   * @param boundingBox spatial subset
+   * @param dateRange only points in this date range. may be null.
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  StationProfileFeatureCollection subset(List<Station> stations) throws IOException;
+  PointFeatureCC subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+
+  PointFeatureCC subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
   /**
-   * Get the StationProfileFeature for a specific Station.
-   *
-   * @param s at this station
-   * @return collection of data for this Station.
-   * @throws java.io.IOException on i/o error
+   *  Flatten into a PointFeatureCollection, discarding connectedness information. Optionally subset.
+   * @param boundingBox only points in this lat/lon bounding box. may be null.
+   * @param dateRange only points in this date range. may be null.
+   * @return a PointFeatureCollection, may be null if its empty.
+   * @throws IOException on read error
    */
-  StationProfileFeature getStationProfileFeature(Station s) throws IOException;
+  PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   /**
-   * Get list of stations as StationFeatures
-   *
-   * @return list of stations as StationFeatures
-   * @throws java.io.IOException on i/o error
+   * General way to handle iterations on all classes that implement tis interface.
+   * Better to use class specific foreach
+   * @param bufferSize hint on how much memory to use, -1 for default
+   * @return Iterator over PointFeatureCollection which may throw an IOException
+   * @throws java.io.IOException
    */
-  List<StationFeature> getStationFeatures() throws IOException;
-
-  ///////////////////////////////
-
-  /**
-   * Use the internal iterator to check if there is another StationProfileFeature in the iteration.
-   * @return true is there is another StationProfileFeature in the iteration.
-   * @throws java.io.IOException on read error
-   * @deprecated use foreach
-   */
-  boolean hasNext() throws java.io.IOException;
-
-  /**
-   * Use the internal iterator to get the next StationProfileFeature in the iteration.
-   * You must call hasNext() before you call this.
-   * @return the next StationProfileFeature in the iteration
-   * @throws java.io.IOException on read error
-   * @deprecated use foreach
-   */
-  StationProfileFeature next() throws java.io.IOException;
-
-  /**
-   * Reset the internal iterator for another iteration over the StationProfileFeature in this Collection.
-   * @throws java.io.IOException on read error
-   * @deprecated use foreach
-   */
-  void resetIteration() throws IOException;
-
-  /**
-   * @deprecated use foreach
-   */
-  NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
-
-
+  IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws java.io.IOException;
 }

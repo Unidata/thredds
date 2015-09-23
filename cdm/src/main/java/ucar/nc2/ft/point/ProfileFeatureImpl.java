@@ -34,7 +34,7 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
@@ -48,7 +48,7 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
   private LatLonPoint latlonPoint;
   protected double time;
 
-  public ProfileFeatureImpl( String name, DateUnit timeUnit, String altUnits, double lat, double lon, double time, int npts) {
+  public ProfileFeatureImpl( String name, CalendarDateUnit timeUnit, String altUnits, double lat, double lon, double time, int npts) {
     super(name, timeUnit, altUnits);
     this.latlonPoint = new LatLonPointImpl(lat,lon);
     this.time = time;

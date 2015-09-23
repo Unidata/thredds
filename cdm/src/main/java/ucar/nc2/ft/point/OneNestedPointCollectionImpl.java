@@ -35,9 +35,10 @@ package ucar.nc2.ft.point;
 import ucar.nc2.Variable;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
+//import ucar.nc2.units.DateRange;
+//import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -51,15 +52,15 @@ import java.util.List;
  * @author caron
  * @since Mar 20, 2008
  */
-public abstract class OneNestedPointCollectionImpl implements NestedPointFeatureCollection {
+public abstract class OneNestedPointCollectionImpl implements PointFeatureCC {
   protected String name;
-  protected DateUnit timeUnit;
+  protected CalendarDateUnit timeUnit;
   protected String altUnits;
   protected FeatureType collectionFeatureType;
   protected int npts;
   protected List<Variable> extras;
 
-  protected OneNestedPointCollectionImpl(String name, DateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
+  protected OneNestedPointCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
     this.name = name;
     this.timeUnit = timeUnit;
     this.altUnits = altUnits;
@@ -73,7 +74,7 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
   }
 
   @Override
-  public DateUnit getTimeUnit() {
+  public CalendarDateUnit getTimeUnit() {
     return timeUnit;
   }
 
@@ -83,7 +84,7 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
   }
 
   @Override
-  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<Variable>() : extras; }
+  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
 
   @Override
   public int size() {
@@ -94,7 +95,6 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
     this.npts = npts;
   }
 
-  @Override
   public boolean isMultipleNested() {
     return false;
   }
@@ -105,16 +105,8 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
     return collectionFeatureType;
   }
 
-  @Override
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
     throw new UnsupportedOperationException(getClass().getName()+" (single nested) PointFeatureCollection does not implement getNestedPointFeatureCollectionIterator()");
-  }
-
-  // flatten into a PointFeatureCollection
-  // if empty, may return null
-  @Override
-  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return flatten(boundingBox, CalendarDateRange.of(dateRange));
   }
 
   // flatten into a PointFeatureCollection
@@ -137,7 +129,7 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
     @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       // LOOK need the isMultipleNested case
-      return new PointIteratorFlatten( from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
+      return new PointIteratorFlatten( from.getCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
     }
   }
 }

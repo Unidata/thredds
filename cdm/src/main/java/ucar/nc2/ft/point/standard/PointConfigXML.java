@@ -305,7 +305,7 @@ public class PointConfigXML {
 
       org.jdom2.Document doc;
       try {
-        SAXBuilder builder = new SAXBuilder(false);
+        SAXBuilder builder = new SAXBuilder();
         if (debugURL) System.out.println(" PointConfig URL = <" + resourceLocation + ">");
         doc = builder.build(is);
       } catch (JDOMException e) {
@@ -333,7 +333,7 @@ public class PointConfigXML {
 
     org.jdom2.Document doc;
     try {
-      SAXBuilder builder = new SAXBuilder(false);
+      SAXBuilder builder = new SAXBuilder();
       if (debugURL) System.out.println(" PointConfig URL = <" + fileLocation + ">");
       doc = builder.build(fileLocation);
     } catch (JDOMException e) {

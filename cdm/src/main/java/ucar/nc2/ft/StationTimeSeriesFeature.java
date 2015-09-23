@@ -35,7 +35,6 @@ package ucar.nc2.ft;
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
 
@@ -51,11 +50,6 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
    * @return number of points in the time series, or -1 if not known.
    */
   int size();
-
-  /**
-   * @deprecated use subset(CalendarDateRange dateRange)
-   */
-  StationTimeSeriesFeature subset(DateRange dateRange) throws IOException;
 
   /**
    * Subset this collection by calendar dateRange

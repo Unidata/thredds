@@ -37,8 +37,6 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
-import java.io.IOException;
-
 /**
  * Decorate a PointFeatureIterator with filtering on dateRange and/or bounding box.
  * @author caron

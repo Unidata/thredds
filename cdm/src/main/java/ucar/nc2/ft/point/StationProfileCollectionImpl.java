@@ -34,7 +34,7 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
@@ -51,7 +51,7 @@ import java.io.IOException;
 public abstract class StationProfileCollectionImpl extends MultipleNestedPointCollectionImpl implements StationProfileFeatureCollection {
   private volatile StationHelper stationHelper;
 
-  public StationProfileCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+  public StationProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
   }
 

@@ -356,7 +356,7 @@ public abstract class Table {
   /**
    * ArrayStructure is passed in config.as
    * Used by
-   * UnidataPointFeature: type StationProfile  (deprecated)
+   * UnidataPointFeature: type StationProfile  (removed now)
    */
   public static class TableArrayStructure extends Table {
     ArrayStructure as;

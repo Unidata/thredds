@@ -38,6 +38,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 
+import javax.annotation.Nullable;
+
 /**
  * A Calendar Date. Replaces java.util.Date.
  * Allows non-standard calendars. Default is Calendar.gregorian.
@@ -145,6 +147,29 @@ public class CalendarDate implements Comparable<CalendarDate> {
   /**
    * Get CalendarDate from ISO date string
    * @param calendarName get Calendar from Calendar.get(calendarName). may be null
+   * @param isoOrUdunits ISO or udunits date string
+   * @return  CalendarDate or null if not valid
+   */
+  @Nullable
+  public static CalendarDate parseUdunitsOrIso(String calendarName, String isoOrUdunits) {
+    CalendarDate result;
+    try {
+      result = parseISOformat(calendarName, isoOrUdunits);
+    } catch (Exception e) {
+      try {
+        result = parseUdunits(calendarName, isoOrUdunits);
+      } catch (Exception e2) {
+        return  null;
+      }
+    }
+    return result;
+  }
+
+
+
+  /**
+   * Get CalendarDate from ISO date string
+   * @param calendarName get Calendar from Calendar.get(calendarName). may be null
    * @param isoDateString ISO date string
    * @return  CalendarDate
    */
@@ -153,18 +178,6 @@ public class CalendarDate implements Comparable<CalendarDate> {
     if (cal == null) cal = Calendar.getDefault();
 	  return CalendarDateFormatter.isoStringToCalendarDate(cal, isoDateString);
   }
-
-  /* public static CalendarDate parseISOformatOld(String calendarName, String isoDateString) {
-
-     // Date date = CalendarDateFormatter.parseISODate(isoDateString);
- 	   java.util.Date date = CalendarDateFormatter.isoStringToDate(isoDateString);
-
-     Calendar cal = Calendar.get(calendarName);
-     Chronology chronology = Calendar.getChronology(cal);
-     DateTime dt = new DateTime(date, chronology);
-
-     return new CalendarDate(cal, dt);
-   } */
 
   /**
    * Get CalendarDate from udunit date string

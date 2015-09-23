@@ -32,13 +32,8 @@
  */
 package ucar.nc2.ft;
 
-import ucar.nc2.Variable;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
-
 import java.io.IOException;
-import java.util.List;
 
 /**
  * A collection of PointFeatures nested inside one or more PointFeatureCollection.
@@ -46,31 +41,7 @@ import java.util.List;
  * @author caron
  * @since Mar 20, 2008
  */
-public interface NestedPointFeatureCollection extends FeatureCollection {
-
-  /**
-   * The udunit time unit string.
-   * @return  time unit string, may not be null
-   */
-  DateUnit getTimeUnit();
-
-  /**
-   * The altitude unit string if it exists.
-   * @return altitude unit string, may be null
-   */
-  String getAltUnits();
-
-  /**
-   * Other variables needed for co,pleteness, eg joined coordinate variables
-   * @return list of extra variables, may be empty not null
-   */
-  List<Variable> getExtraVariables();
-
-  /**
-   * The number of elements in the collection. May not be known until after iterating through the collection.
-   * @return number of elements in the collection, or -1 if not known.
-   */
-  int size();
+public interface NestedPointFeatureCollection extends DsgFeatureCollection {
 
   /**
    * If true, use getNestedPointFeatureCollectionIterator, otherwise use getPointFeatureCollectionIterator.
@@ -111,10 +82,5 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
    * @throws IOException on read error
    */
   PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
-
-  /**
-   * @deprecated use  CalendarDateRange
-   */
-  PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
 }

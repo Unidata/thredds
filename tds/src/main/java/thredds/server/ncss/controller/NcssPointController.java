@@ -49,7 +49,7 @@ import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
+import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -149,7 +149,7 @@ public class NcssPointController extends AbstractNcssController {
       if (fd.getFeatureType() != FeatureType.STATION)
         throw new java.lang.UnsupportedOperationException("Station list request is only supported for Station features");
 
-      FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fd, buildDatasetUrl(datasetPath));
+      FeatureDatasetCapabilitiesWriter xmlWriter = new FeatureDatasetCapabilitiesWriter(fd, buildDatasetUrl(datasetPath));
 
       String[] stnsList = new String[]{};
       if (params.getStns() != null)

@@ -33,6 +33,8 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
@@ -44,28 +46,7 @@ import java.util.List;
  * @author caron
  * @since Feb 29, 2008
  */
-public interface StationProfileFeature extends StationFeature, NestedPointFeatureCollection, Iterable<ProfileFeature> {
-
-  /**
-   * Use the internal iterator to check if there is another ProfileFeature in the iteration.
-   * @return true is there is another ProfileFeature in the iteration.
-   * @throws java.io.IOException on read error
-   */
-  boolean hasNext() throws java.io.IOException;
-
-  /**
-   * Use the internal iterator to get the next ProfileFeature in the iteration.
-   * You must call hasNext() before you call this.
-   * @return the next ProfileFeature in the iteration
-   * @throws java.io.IOException on read error
-   */
-  ProfileFeature next() throws java.io.IOException;
-
-  /**
-   * Reset the internal iterator for another iteration over the ProfileFeature in this Collection.
-   * @throws java.io.IOException on read error
-   */
-  void resetIteration() throws IOException;
+public interface StationProfileFeature extends StationFeature, PointFeatureCC, Iterable<ProfileFeature> {
 
   /**
    * The number of profiles in the time series. May not be known until after iterating through the collection.
@@ -79,7 +60,7 @@ public interface StationProfileFeature extends StationFeature, NestedPointFeatur
    * @return subsetted collection, may be null if empty
    * @throws java.io.IOException on read error
    */
-  StationProfileFeature subset(DateRange dateRange) throws IOException;
+  StationProfileFeature subset(CalendarDateRange dateRange) throws IOException;
 
 
   /**
@@ -87,7 +68,7 @@ public interface StationProfileFeature extends StationFeature, NestedPointFeatur
    * @return list of times in the time series of profiles.
    * @throws java.io.IOException on read error
    */
-  List<Date> getTimes() throws IOException;
+  List<CalendarDate> getTimes() throws IOException;
 
   /**
    * Get a particular profile by date. Note that this may be as costly as iterating over the collection.
@@ -95,6 +76,38 @@ public interface StationProfileFeature extends StationFeature, NestedPointFeatur
    * @return profile whose date matches the given date
    * @throws java.io.IOException on read error
    */
-  ProfileFeature getProfileByDate(Date date) throws IOException;
+  ProfileFeature getProfileByDate(CalendarDate date) throws IOException;
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Use the internal iterator to check if there is another ProfileFeature in the iteration.
+   * @return true is there is another ProfileFeature in the iteration.
+   * @throws java.io.IOException on read error
+   * @deprecated use foreach
+   */
+  boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Use the internal iterator to get the next ProfileFeature in the iteration.
+   * You must call hasNext() before you call this.
+   * @return the next ProfileFeature in the iteration
+   * @throws java.io.IOException on read error
+   * @deprecated use foreach
+   */
+  ProfileFeature next() throws java.io.IOException;
+
+  /**
+   * Reset the internal iterator for another iteration over the ProfileFeature in this Collection.
+   * @throws java.io.IOException on read error
+   * @deprecated use foreach
+   */
+  void resetIteration() throws IOException;
+
+  /**
+   * @deprecated use foreach
+   */
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+
 
 }

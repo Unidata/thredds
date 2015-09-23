@@ -29,48 +29,38 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
-package ucar.nc2.ft;
-
-import ucar.ma2.StructureData;
-import ucar.nc2.time.CalendarDate;
-import ucar.unidata.geoloc.LatLonPoint;
+package ucar.nc2.util;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 /**
- * A set of observations along the vertical (z) axis.
- * A profile has a nominal lat/lon and time.
- * Actual time may be constant, or vary with z.
- * The z coordinates are monotonic, and may be increasing or decreasing.
+ * Describe
  *
  * @author caron
- * @since Feb 8, 2008
+ * @since 9/23/2015.
  */
-public interface ProfileFeature extends PointFeatureCollection {
+public interface IOIterator<T> {
 
   /**
-   * Nominal location of this profile
-   * @return the nominal location of this profile
+   * Returns {@code true} if the iteration has more elements.
+   * (In other words, returns {@code true} if {@link #next} would
+   * return an element rather than throwing an exception.)
+   *
+   * @return {@code true} if the iteration has more elements
+   * @throws IOException on read error
    */
-  LatLonPoint getLatLon();
+  boolean hasNext() throws IOException;
 
   /**
-   * Nominal time of the profile
-   * @return the nominal time of this profile
+   * Returns the next element in the iteration.
+   *
+   * @return the next element in the iteration
+   * @throws IOException on read error
+   * @throws NoSuchElementException if the iteration has no more elements
    */
-  CalendarDate getTime();
+  T next() throws IOException;
 
-  /**
-   * The number of points along the z axis. May not be known until after iterating through the collection.
-   * @return number of points along the z axis, or -1 if not known.
-   */
-  int size();
-
-  /**
-   * The actual data of just this feature.
-   * @return the actual data of this feature.
-   * @throws java.io.IOException on i/o error
-   */
-  StructureData getFeatureData() throws IOException;
 }

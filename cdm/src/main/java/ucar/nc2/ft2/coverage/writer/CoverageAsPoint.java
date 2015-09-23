@@ -41,11 +41,11 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +63,7 @@ public class CoverageAsPoint {
   private List<VarData> varData;
   private SubsetParams subset;
   private LatLonPointImpl latLonPoint;
-  private DateUnit dateUnit;
+  private CalendarDateUnit dateUnit;
 
   private class VarData {
     Coverage cov;
@@ -73,7 +73,8 @@ public class CoverageAsPoint {
       this.cov = cov;
       try {
         this.array = cov.readData(subset);
-        if (debug) System.out.printf(" Coverage %s data shape = %s%n", cov.getName(), Misc.showInts(array.getData().getShape()));
+        if (debug)
+          System.out.printf(" Coverage %s data shape = %s%n", cov.getName(), Misc.showInts(array.getData().getShape()));
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
@@ -97,16 +98,10 @@ public class CoverageAsPoint {
         if (dateUnit == null) { // assume all have the same time unit, just use the first one
           CoverageCoordSys csys = cov.getCoordSys();
           CoverageCoordAxis timeAxis = csys.getTimeAxis();
-          CalendarDateUnit cdUnit = timeAxis.getCalendarDateUnit();
-          try {
-            dateUnit = new DateUnit( cdUnit.getUdUnit());
-          } catch (Exception e) {
-            throw new IllegalArgumentException("Could not make DateUnit from "+cdUnit.getUdUnit());
-          }
+          this.dateUnit = timeAxis.getCalendarDateUnit();
         }
       }
     }
-
   }
 
   public FeatureDatasetPoint asFeatureDatasetPoint() {
@@ -117,7 +112,7 @@ public class CoverageAsPoint {
   private class CoverageAsFeatureDatasetPoint extends ucar.nc2.ft.point.PointDatasetImpl {
     protected CoverageAsFeatureDatasetPoint(FeatureType featureType) {
       super(featureType);
-      CoverageAsStationFeatureCollection fc = new CoverageAsStationFeatureCollection(gcd.getName()+" AsStationFeatureCollection", dateUnit, null);
+      CoverageAsStationFeatureCollection fc = new CoverageAsStationFeatureCollection(gcd.getName() + " AsStationFeatureCollection", dateUnit, null);
       setPointFeatureCollection(fc);
 
       List<VariableSimpleIF> dataVars = new ArrayList<>();
@@ -131,7 +126,7 @@ public class CoverageAsPoint {
 
   private class CoverageAsStationFeatureCollection extends StationTimeSeriesCollectionImpl {
 
-    public CoverageAsStationFeatureCollection(String name, DateUnit dateUnit, String altUnits) {
+    public CoverageAsStationFeatureCollection(String name, CalendarDateUnit dateUnit, String altUnits) {
       super(name, dateUnit, altUnits);
     }
 
@@ -147,7 +142,7 @@ public class CoverageAsPoint {
 
   private class MyStationFeature extends StationTimeSeriesFeatureImpl {
 
-    public MyStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits, int npts) {
+    public MyStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt, CalendarDateUnit timeUnit, String altUnits, int npts) {
       // String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits, int npts
       super(name, desc, wmoId, lat, lon, alt, timeUnit, altUnits, npts);
     }
@@ -185,7 +180,7 @@ public class CoverageAsPoint {
         for (VarData vd : varData) {
           Array data = vd.array.getData();
           if (debug) System.out.printf("%s shape=%s%n", vd.cov.getName(), Misc.showInts(data.getShape()));
-          varIters.add( new VarIter( vd.cov, vd.array,  data.getIndexIterator()));
+          varIters.add(new VarIter(vd.cov, vd.array, data.getIndexIterator()));
           nvalues = (int) data.getSize();
 
           if (timeAxis == null) { // assume they are all the same (!)
@@ -222,32 +217,36 @@ public class CoverageAsPoint {
         // ignore
       }
     }
-  }
 
-  private static class MyPointFeature extends PointFeatureImpl implements StationPointFeature {
-    StationFeature stn;
-    StructureData sdata;
+    private class MyPointFeature extends PointFeatureImpl implements StationPointFeature {
+      StationFeature stn;
+      StructureData sdata;
 
-    public MyPointFeature(StationFeature stn, double obsTime, double nomTime, DateUnit timeUnit, StructureData sdata) {
-      super(stn, obsTime, nomTime, timeUnit);
-      this.stn = stn;
-      this.sdata = sdata;
+      public MyPointFeature(StationFeature stn, double obsTime, double nomTime, CalendarDateUnit timeUnit, StructureData sdata) {
+        super(MyStationFeature.this, stn, obsTime, nomTime, timeUnit);
+        this.stn = stn;
+        this.sdata = sdata;
+      }
+
+      @Override
+      @Nonnull
+      public StationFeature getStation() {
+        return stn;
+      }
+
+      @Override
+      @Nonnull
+      public StructureData getFeatureData() throws IOException {
+        return sdata;
+      }
+
+      @Override
+      @Nonnull
+      public StructureData getDataAll() throws IOException {
+        return sdata;
+      }
     }
 
-    @Override
-    public StationFeature getStation() {
-      return stn;
-    }
-
-    @Override
-    public StructureData getFeatureData() throws IOException {
-      return sdata;
-    }
-
-    @Override
-    public StructureData getDataAll() throws IOException {
-      return sdata;
-    }
   }
 
 }

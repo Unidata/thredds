@@ -37,11 +37,13 @@ import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDateUnit;
+// import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -59,39 +61,44 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   protected LatLonRect boundingBox;
   protected CalendarDateRange dateRange;
   protected int npts;
-  protected DateUnit timeUnit;
+  protected CalendarDateUnit timeUnit;
   protected String altUnits;
   protected List<Variable> extras;
 
-  protected PointCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+  protected PointCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     this.name = name;
     this.timeUnit = timeUnit;
     this.altUnits = altUnits;
     this.npts = -1;
   }
 
-  public DateUnit getTimeUnit() {
+  @Nonnull
+  @Override
+  public CalendarDateUnit getTimeUnit() {
     return timeUnit;
   }
 
+  @Nullable
+  @Override
   public String getAltUnits() {
     return altUnits;
   }
 
+  @Nonnull
+  @Override
   public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
 
-  public void setDateRange(DateRange range) {
-    this.dateRange = CalendarDateRange.of(range);
-  }
-
+  //@Override
   public void setCalendarDateRange(CalendarDateRange range) {
     this.dateRange = range;
   }
 
+  //@Override
   public void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb) {
     this.boundingBox = bb;
   }
 
+  //@Override
   public void calcBounds() throws java.io.IOException {
     if ((dateRange != null) && (boundingBox != null) && (size() > 0))
       return;
@@ -103,16 +110,17 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     }
   }
 
+  //@Override
   public void setSize(int npts) {
     this.npts = npts;
   }
 
-
+  @Override
   public String getName() {
     return name;
   }
 
-
+  @Override
   public int size() {
     return npts;
   }
@@ -121,26 +129,26 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     return npts;
   }
 
-  public DateRange getDateRange() {
-    return (dateRange == null) ? null : dateRange.toDateRange();
-  }
-
   public CalendarDateRange getCalendarDateRange() {
     return dateRange;
   }
 
+  @Override
   public ucar.unidata.geoloc.LatLonRect getBoundingBox() {
     return boundingBox;
   }
 
+  @Override
   public FeatureType getCollectionFeatureType() {
     return FeatureType.POINT;
   }
 
+  @Override
   public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     return new PointCollectionSubset(this, boundingBox, dateRange);
   }
 
+  @Override
   public Iterator<PointFeature> iterator() {
     try {
       return getPointFeatureIterator(-1);
@@ -170,6 +178,7 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
       }
     }
 
+    @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), this.boundingBox, this.dateRange);
     }
@@ -178,7 +187,7 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
 
 
   ///////////////////////////////////////////////////////////////////
-  // deprecated
+  // deprecated, use iterator()
 
   protected PointFeatureIterator localIterator;
 
@@ -200,8 +209,9 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     localIterator = getPointFeatureIterator(-1);
   }
 
+  /*
   public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
     return new PointCollectionSubset(this, boundingBox, CalendarDateRange.of(dateRange));
-  }
+  } */
 
 }

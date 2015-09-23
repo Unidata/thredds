@@ -50,7 +50,7 @@ public abstract class AbstractPointSubsetWriter extends DsgSubsetWriter {
           throws NcssException, IOException {
     super(fdPoint, ncssParams);
 
-    List<FeatureCollection> featColList = fdPoint.getPointFeatureCollectionList();
+    List<DsgFeatureCollection> featColList = fdPoint.getPointFeatureCollectionList();
     assert featColList.size() == 1 : "Is there ever a case when this is NOT 1?";
     assert featColList.get(0) instanceof PointFeatureCollection :
             "This class only deals with PointFeatureCollections.";

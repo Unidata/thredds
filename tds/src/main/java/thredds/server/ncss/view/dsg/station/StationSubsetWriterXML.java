@@ -118,7 +118,7 @@ public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
             if (wantedVar.getUnitsString() != null)
                 staxWriter.writeAttribute(CDM.UNITS, wantedVar.getUnitsString());
 
-            Array dataArray = stationPointFeat.getData().getArray(wantedVar.getShortName());
+            Array dataArray = stationPointFeat.getDataAll().getArray(wantedVar.getShortName());
             String ss = dataArray.toString();
             Class elemType = dataArray.getElementType();
             if ((elemType == String.class) || (elemType == char.class) || (elemType == StructureData.class))

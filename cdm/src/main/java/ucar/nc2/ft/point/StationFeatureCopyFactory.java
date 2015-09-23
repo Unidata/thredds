@@ -37,7 +37,7 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataDeep;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -60,10 +60,10 @@ public class StationFeatureCopyFactory {
 
   private final Map<String, StationFeatureImpl> stationMap;
   private final StructureMembers sm;
-  private final DateUnit du;
+  private final CalendarDateUnit du;
   private final int sizeInBytes;
 
-  public StationFeatureCopyFactory(StationPointFeature proto, DateUnit du) throws IOException {
+  public StationFeatureCopyFactory(StationPointFeature proto, CalendarDateUnit du) throws IOException {
     this.du = du;
     stationMap = new HashMap<>();
     StructureData sdata = proto.getDataAll();
@@ -106,7 +106,7 @@ public class StationFeatureCopyFactory {
     StructureData data;
 
     StationPointFeatureCopy(StationFeature station, PointFeature pf) {
-      super(station, pf.getObservationTime(), pf.getNominalTime(), du);
+      super(pf.getFeatureCollection(), station, pf.getObservationTime(), pf.getNominalTime(), du);
       this.station = station;
     }
 

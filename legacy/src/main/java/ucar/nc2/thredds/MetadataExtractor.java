@@ -303,10 +303,6 @@ public class MetadataExtractor {
     return null;
   }
 
-  static public DateRange extractDateRange(FeatureDatasetPoint fd) {
-    return fd.getDateRange();
-  }
-
   static public CalendarDateRange extractCalendarDateRange(FeatureDatasetPoint fd) {
     return fd.getCalendarDateRange();
   }

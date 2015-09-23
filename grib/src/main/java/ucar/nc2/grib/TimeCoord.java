@@ -64,7 +64,7 @@ public class TimeCoord {
   }
 
   private final CalendarDate runDate;
-  private final CalendarPeriod timeUnit;
+  private final CalendarPeriod calendarPeriod;
   protected List<Integer> coords;    // set by subclasses
   protected List<Tinv> intervals;    // set by subclasses
 
@@ -79,7 +79,7 @@ public class TimeCoord {
 
     CalendarDateUnit cdu = CalendarDateUnit.of(null, udunitString);
     this.runDate = cdu.getBaseCalendarDate();
-    this.timeUnit = cdu.getTimeUnit();
+    this.calendarPeriod = cdu.getCalendarPeriod();
 
     Object atom = (coords.size() > 0) ? coords.get(0) : null;
 
@@ -95,7 +95,7 @@ public class TimeCoord {
   // when writing an ncx file
   public TimeCoord(int code, CalendarDate runDate, CalendarPeriod timeUnit, List coords) {
     this.code = code;
-    this.timeUnit = timeUnit;
+    this.calendarPeriod = timeUnit;
     this.units = null;
 
     Object atom = (coords == null || coords.size() == 0) ? null : coords.get(0);
@@ -116,8 +116,8 @@ public class TimeCoord {
       CalendarDate startDate = null; // earliest starting date
       for (Object coord : coords) {
         TinvDate tinvd = (TinvDate) coord;
-        //if (!tinvd.getPeriod().equals(timeUnit))
-        //  throw new IllegalStateException("Mixed Periods in coordinate "+timeUnit+" != "+tinvd.getPeriod());
+        //if (!tinvd.getPeriod().equals(calendarPeriod))
+        //  throw new IllegalStateException("Mixed Periods in coordinate "+calendarPeriod+" != "+tinvd.getPeriod());
         if (startDate == null) startDate = tinvd.start;
         else if (startDate.isAfter(tinvd.start)) startDate = tinvd.start;
       }
@@ -156,12 +156,12 @@ public class TimeCoord {
   public CalendarDateRange getCalendarRange() {
     CalendarDate rd = getRunDate();
     if (coords != null) {
-      CalendarDate start = rd.add(timeUnit.multiply(coords.get(0)));
-      CalendarDate end = rd.add(timeUnit.multiply(coords.get(coords.size() - 1)));
+      CalendarDate start = rd.add(calendarPeriod.multiply(coords.get(0)));
+      CalendarDate end = rd.add(calendarPeriod.multiply(coords.get(coords.size() - 1)));
       return CalendarDateRange.of(start, end);
     } else {
-      CalendarDate start = rd.add(timeUnit.multiply(intervals.get(0).b1));
-      CalendarDate end = rd.add(timeUnit.multiply(intervals.get(intervals.size() - 1).b2));
+      CalendarDate start = rd.add(calendarPeriod.multiply(intervals.get(0).b1));
+      CalendarDate end = rd.add(calendarPeriod.multiply(intervals.get(intervals.size() - 1).b2));
       return CalendarDateRange.of(start, end);
     }
   }
@@ -180,19 +180,19 @@ public class TimeCoord {
 
   public String getUnits() {
     if (units != null) return units;
-    CalendarPeriod.Field cf = timeUnit.getField();
+    CalendarPeriod.Field cf = calendarPeriod.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
       return "calendar "+ cf.toString() + " since " + runDate;
     else
-      return timeUnit.getField().toString() + " since " + runDate;
+      return calendarPeriod.getField().toString() + " since " + runDate;
   }
 
   public double getTimeUnitScale() {
-    return timeUnit.getValue();
+    return calendarPeriod.getValue();
   }
 
   public CalendarPeriod getTimeUnit() {
-    return timeUnit;
+    return calendarPeriod;
   }
 
   public int getCode() {
@@ -225,7 +225,7 @@ public class TimeCoord {
 
     if (same) {
       firstValue = (int) (firstValue * getTimeUnitScale());
-      return firstValue + "_" + timeUnit.getField().toString();
+      return firstValue + "_" + calendarPeriod.getField().toString();
     } else {
       return CoordinateTimeAbstract.MIXED_INTERVALS;
     }
@@ -234,19 +234,19 @@ public class TimeCoord {
   @Override
   public String toString() {
     Formatter out = new Formatter();
-    out.format(" type=%-10s timeUnit=%s runDate= %-26s%n    ", getType(), timeUnit, runDate);
+    out.format(" type=%-10s calendarPeriod=%s runDate= %-26s%n    ", getType(), calendarPeriod, runDate);
     if (isInterval())
       for (Tinv tinv : intervals) out.format("%s, ", tinv);
     else {
       for (Integer val : coords) out.format("%d, ", val);
-      out.format(" units (%s) since %s", timeUnit, runDate);
+      out.format(" units (%s) since %s", calendarPeriod, runDate);
     }
 
     return out.toString();
   }
 
   /**
-   * Instances that have the same runtime, timeUnit and coordinates are equal
+   * Instances that have the same runtime, calendarPeriod and coordinates are equal
    *
    * @param tother compare this TimeCoord's data
    * @return true if data are equal
@@ -254,7 +254,7 @@ public class TimeCoord {
   public boolean equalsData(TimeCoord tother) {
     // LOOK could speed up by using a hashcode - still have to compare coords if true, however
     if (!runDate.equals(tother.runDate)) return false;
-    if (!timeUnit.equals(tother.timeUnit)) return false;
+    if (!calendarPeriod.equals(tother.calendarPeriod)) return false;
 
     if (isInterval() != tother.isInterval()) return false;
 

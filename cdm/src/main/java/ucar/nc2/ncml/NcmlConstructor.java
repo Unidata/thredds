@@ -59,7 +59,7 @@ import java.util.StringTokenizer;
  * @since Feb 26, 2011
  */
 public class NcmlConstructor {
-  static private final boolean validate = false;
+  // static private final boolean validate = false;
   static private final boolean debugConstruct = false;
   static private final boolean showParsedXML = false;
 
@@ -91,7 +91,7 @@ public class NcmlConstructor {
   public boolean populate(InputStream ncml, NetcdfFile target) throws IOException {
     org.jdom2.Document doc;
     try {
-      SAXBuilder builder = new SAXBuilder(validate);
+      SAXBuilder builder = new SAXBuilder();
       doc = builder.build(ncml);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());

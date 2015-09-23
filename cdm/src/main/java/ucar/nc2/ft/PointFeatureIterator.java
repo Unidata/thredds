@@ -34,7 +34,6 @@ package ucar.nc2.ft;
 
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.nc2.units.DateRange;
 
 import java.util.Iterator;
 
@@ -94,13 +93,6 @@ public interface PointFeatureIterator extends AutoCloseable, Iterator<PointFeatu
    * @return BoundingBox of all returned points
    */
   LatLonRect getBoundingBox();
-
-  /**
-   * Get DateRange of observation time after iteration is finished, if calcBounds was set true
-   * @return DateRange of all returned points
-   * @deprecated use getCalendarDateRange()
-   */
-  DateRange getDateRange();
 
   /**
    * Get DateRange of observation time after iteration is finished, if calcBounds was set true

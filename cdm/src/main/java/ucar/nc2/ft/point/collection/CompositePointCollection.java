@@ -40,7 +40,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import javax.annotation.Nonnull;
@@ -60,7 +60,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   protected List<VariableSimpleIF> dataVariables;
   protected List<Attribute> globalAttributes;
 
-  protected CompositePointCollection(String name, DateUnit timeUnit, String altUnits, TimedCollection pointCollections) throws IOException {
+  protected CompositePointCollection(String name, CalendarDateUnit timeUnit, String altUnits, TimedCollection pointCollections) throws IOException {
     super(name, timeUnit, altUnits);
     this.pointCollections = pointCollections;
   }
@@ -139,7 +139,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
       if (CompositeDatasetFactory.debug)
         System.out.printf("CompositePointFeatureIterator open dataset %s%n", td.getLocation());
 
-      List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
+      List<DsgFeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
       PointFeatureCollection pc = (PointFeatureCollection) fcList.get(0);
       return pc.getPointFeatureIterator(bufferSize);
     }

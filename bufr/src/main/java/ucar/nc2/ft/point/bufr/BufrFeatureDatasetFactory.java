@@ -50,7 +50,7 @@ import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
@@ -68,7 +68,7 @@ import java.util.*;
  */
 public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrFeatureDatasetFactory.class);
-  static private DateUnit bufrDateUnits = DateUnit.factory("msecs since 1970-01-01T00:00:00");
+  static private CalendarDateUnit bufrDateUnits = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");
   static private String bufrAltUnits = "m"; // LOOK fake
 
 
@@ -182,7 +182,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         this.extract = new StandardFields.StandardFieldsFromStructure(center, obs);
 
         try {
-          this.timeUnit = new DateUnit("msecs since 1970-01-01T00:00:00");
+          this.timeUnit = bufrDateUnits;
         } catch (Exception e) {
           e.printStackTrace();  //cant happen
         }
@@ -237,7 +237,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           StructureData sdata;
 
           public BufrStationPoint(EarthLocation location, double obsTime, double nomTime, StructureData sdata) {
-            super(location, obsTime, nomTime, bufrDateUnits);
+            super(BufrStation.this, location, obsTime, nomTime, bufrDateUnits);
             this.sdata = sdata;
           }
 
@@ -308,7 +308,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           StructureData sdata;
 
           public BufrPoint(StationFeature want, double obsTime, double nomTime, StructureData sdata) {
-            super(want, obsTime, nomTime, bufrDateUnits);
+            super(BufrPointFeatureCollection.this, want, obsTime, nomTime, bufrDateUnits);
             this.sdata = sdata;
           }
 

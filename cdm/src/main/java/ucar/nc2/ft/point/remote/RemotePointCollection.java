@@ -41,7 +41,7 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import javax.annotation.Nonnull;
@@ -61,7 +61,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   private String uri;
   private QueryMaker queryMaker;
 
-  RemotePointCollection(String uri, DateUnit timeUnit, String altUnits, QueryMaker queryMaker) {
+  RemotePointCollection(String uri, CalendarDateUnit timeUnit, String altUnits, QueryMaker queryMaker) {
     super(uri, timeUnit, altUnits);
     this.uri = uri;
     this.queryMaker = (queryMaker == null) ? this : queryMaker;
@@ -86,7 +86,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
         byte[] b = new byte[len];
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-        PointFeatureIterator iter = new RemotePointFeatureIterator(in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        PointFeatureIterator iter = new RemotePointFeatureIterator(RemotePointCollection.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         iter.setCalculateBounds(this);
         return iter;
 
@@ -137,7 +137,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
       if (filter_date == null) {
         this.dateRange = from.getCalendarDateRange();
       } else {
-        this.dateRange = (from.getDateRange() == null) ? filter_date : from.getCalendarDateRange().intersect(filter_date);
+        this.dateRange = (from.getCalendarDateRange() == null) ? filter_date : from.getCalendarDateRange().intersect(filter_date);
       }
     }
   }

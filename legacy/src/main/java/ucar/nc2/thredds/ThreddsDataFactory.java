@@ -33,6 +33,7 @@
 package ucar.nc2.thredds;
 
 import ucar.nc2.*;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -99,7 +100,7 @@ public class ThreddsDataFactory {
     public Formatter errLog = new Formatter();
 
     public FeatureType featureType;
-    public ucar.nc2.ft.FeatureDataset featureDataset;
+    public FeatureDataset featureDataset;
     public String imageURL;
 
     public String location;

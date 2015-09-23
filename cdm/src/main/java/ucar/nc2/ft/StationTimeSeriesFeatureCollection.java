@@ -46,7 +46,7 @@ import java.util.List;
  *
  * @author caron
  */
-public interface StationTimeSeriesFeatureCollection extends StationCollection, NestedPointFeatureCollection, Iterable<StationTimeSeriesFeature> {
+public interface StationTimeSeriesFeatureCollection extends StationCollection, PointFeatureCC, Iterable<StationTimeSeriesFeature> {
 
   /**
    * Get a subsetted StationCollection based on a list of Stations.
@@ -120,7 +120,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // deprecated
 
-  /**
+  /*
     * Flatten into a PointFeatureCollection, discarding connectedness information.
     *
     * @param stations only contain these stations; if null or empty use all
@@ -129,13 +129,15 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
     * @return a PointFeatureCollection, may be null if its empty.
     * @throws IOException on read error
    * @deprecated use  CalendarDateRange
-    */
+    *
    PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+   */
 
   /**
    * Use the internal iterator to check if there is another StationTimeSeriesFeature in the iteration.
    * @return true is there is another StationTimeSeriesFeature in the iteration.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   boolean hasNext() throws java.io.IOException;
 
@@ -144,6 +146,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
    * You must call hasNext() before you call this.
    * @return the next StationTimeSeriesFeature in the iteration
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   StationTimeSeriesFeature next() throws java.io.IOException;
 
@@ -152,12 +155,20 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
    * You must complete the iteration (until hasNext() returns false)
    *  or call finish().
    * @see PointFeatureIterator#close
+   * @deprecated use foreach
    */
   void finish();
 
   /**
    * Reset the internal iterator for another iteration over the StationTimeSeriesFeatures in this Collection.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   void resetIteration() throws IOException;
+
+  /**
+   * @deprecated use foreach
+   */
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+
 }

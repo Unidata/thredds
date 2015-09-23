@@ -38,7 +38,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.units.DateRange;
 
 import java.util.Iterator;
 
@@ -56,7 +55,6 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
   private LatLonRect bb = null;
   private double minTime = Double.MAX_VALUE;
   private double maxTime = -Double.MAX_VALUE;
-  //private DateUnit timeUnit;
   private int count;
 
   protected PointIteratorAbstract() {
@@ -91,6 +89,8 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
       bb = new LatLonRect(new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);
     }
 
+    // LOOK HERE
+    /*
     if (collection != null) {
       if (collection.getBoundingBox() == null)
         collection.setBoundingBox(bb);
@@ -103,24 +103,22 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
         if (count < 0) count = 0;
         collection.setSize(count);
       }
-    }
+    } */
   }
 
+  @Override
   public LatLonRect getBoundingBox() {
     return bb;
   }
 
-  public DateRange getDateRange() {
-    CalendarDateRange cdr = getCalendarDateRange();
-    return (cdr != null) ? cdr.toDateRange() : null;
-  }
-
+  @Override
   public CalendarDateRange getCalendarDateRange() {
     if (!calcBounds) return null;
     if (collection.getTimeUnit() == null) return null;
     return CalendarDateRange.of(collection.getTimeUnit().makeCalendarDate(minTime), collection.getTimeUnit().makeCalendarDate(maxTime));
   }
 
+  @Override
   public int getCount() { return count; }
 
   static public class Filter implements PointFeatureIterator.Filter {

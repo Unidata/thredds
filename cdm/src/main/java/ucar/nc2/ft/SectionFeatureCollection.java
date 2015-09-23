@@ -41,12 +41,15 @@ import java.io.IOException;
  * @author caron
  * @since Mar 19, 2008
  */
-public interface SectionFeatureCollection extends NestedPointFeatureCollection, Iterable<SectionFeature> {
+public interface SectionFeatureCollection extends PointFeatureCCC, Iterable<SectionFeature> {
+
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * Use the internal iterator to check if there is another SectionFeature in the iteration.
    * @return true is there is another SectionFeature in the iteration.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   boolean hasNext() throws java.io.IOException;
 
@@ -55,13 +58,20 @@ public interface SectionFeatureCollection extends NestedPointFeatureCollection, 
    * You must call hasNext() before you call this.
    * @return the next SectionFeature in the iteration
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   SectionFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the SectionFeatures in this Collection.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   void resetIteration() throws IOException;
+
+  /**
+   * @deprecated use foreach
+   */
+  NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
 
 }

@@ -366,7 +366,7 @@ message Coord {
         if (unit == null)
           throw new IllegalStateException("Null units");
         CalendarDateUnit cdUnit = CalendarDateUnit.of(null, unit);
-        return new CoordinateRuntime(pc.getMsecsList(), cdUnit.getTimeUnit());
+        return new CoordinateRuntime(pc.getMsecsList(), cdUnit.getCalendarPeriod());
 
       case time:
         List<Integer> offs = new ArrayList<>(pc.getValuesCount());

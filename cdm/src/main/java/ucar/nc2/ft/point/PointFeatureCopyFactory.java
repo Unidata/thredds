@@ -37,7 +37,7 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataDeep;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 
 import java.io.IOException;
 
@@ -55,11 +55,11 @@ public class PointFeatureCopyFactory {
   static private final int ARRAY_SIZE = 8;   // assume 64 bit pointers
 
   private final StructureMembers sm;
-  private final DateUnit du;
+  private final CalendarDateUnit du;
   private final int sizeInBytes;
 
-  public PointFeatureCopyFactory(PointFeature proto, DateUnit du) throws IOException {
-    StructureData sdata = proto.getData();
+  public PointFeatureCopyFactory(PointFeature proto, CalendarDateUnit du) throws IOException {
+    StructureData sdata = proto.getDataAll();
     this.du = du;
     sm = new StructureMembers(sdata.getStructureMembers());
     sizeInBytes =  OBJECT_SIZE + POINTER_SIZE +       // PointFeatureCopy - 1 pointer                                             48
@@ -83,7 +83,7 @@ public class PointFeatureCopyFactory {
 
   public PointFeature deepCopy(PointFeature from) throws IOException {
     PointFeatureCopy deep = new PointFeatureCopy(from);
-    deep.data = StructureDataDeep.copy(from.getData(), sm);
+    deep.data = StructureDataDeep.copy(from.getDataAll(), sm);
     return deep;
   }
 
@@ -92,7 +92,7 @@ public class PointFeatureCopyFactory {
     StructureData data;
 
     PointFeatureCopy(PointFeature pf) {
-      super(pf.getLocation(), pf.getObservationTime(), pf.getNominalTime(), du);
+      super(pf.getFeatureCollection(), pf.getLocation(), pf.getObservationTime(), pf.getNominalTime(), du);
     }
 
     @Override

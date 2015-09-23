@@ -33,18 +33,10 @@
 
 package ucar.nc2.ft.point.writer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.List;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import ucar.ma2.DataType;
@@ -53,20 +45,21 @@ import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureCollection;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.*;
 
 /**
  * generate capabilities XML for a FeatureDatasetPoint / StationTimeSeriesFeatureCollection
@@ -74,15 +67,13 @@ import ucar.unidata.geoloc.Station;
  * @author caron
  * @since Aug 19, 2009
  */
-public class FeatureDatasetPointXML {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureDatasetPointXML.class);
+public class FeatureDatasetCapabilitiesWriter {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureDatasetCapabilitiesWriter.class);
 
   private FeatureDatasetPoint fdp;
   private String path;
-  //private PointFeatureCollection pfc;
-  //private NestedPointFeatureCollection pfc;
 
-  public FeatureDatasetPointXML(FeatureDatasetPoint fdp, String path) {
+  public FeatureDatasetCapabilitiesWriter(FeatureDatasetPoint fdp, String path) {
     this.fdp = fdp;
     this.path = path;
   }
@@ -97,21 +88,9 @@ public class FeatureDatasetPointXML {
     fmt.output(getCapabilitiesDocument(), os);
   }
 
-  /*
-   * Write stationCollection XML document
-   *
-  public String writeStationCollectionXML(LatLonRect bb, String[] names) throws IOException {
-    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    return fmt.outputString(makeStationCollectionDocument(bb, names));
-  }
-
-  public void writeStationCollectionXML(OutputStream os) throws IOException {
-    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(makeStationCollectionDocument(), os);
-  } */
-
   /**
-   * Create an XML document for the stations in this dataset.
+   * Create an XML document for the stations in this dataset, possible subsetted by bb.
+   * Must be a station dataset.
    *
    * @param bb    restrict stations to this bounding box, may be null
    * @param names restrict stations to these names, may be null
@@ -120,8 +99,8 @@ public class FeatureDatasetPointXML {
    */
   public Document makeStationCollectionDocument(LatLonRect bb, String[] names) throws IOException {
 
-    List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
-    FeatureCollection fc = list.get(0);
+    List<DsgFeatureCollection> list = fdp.getPointFeatureCollectionList();
+    DsgFeatureCollection fc = list.get(0); // LOOK maybe should pass in the dsg?
 
     if (!(fc instanceof StationTimeSeriesFeatureCollection)) {
       throw new UnsupportedOperationException(fc.getClass().getName() + " not a StationTimeSeriesFeatureCollection");
@@ -158,7 +137,7 @@ public class FeatureDatasetPointXML {
   }
 
   /**
-   * Create the capabilities XML document for this datasets
+   * Create the capabilities XML document for this dataset
    *
    * @return capabilities XML document
    */
@@ -175,8 +154,11 @@ public class FeatureDatasetPointXML {
       rootElem.addContent(elem);
     }
 
-    //rootElem.addContent(new Element("TimeUnit").addContent(fdp.getTimeUnit()));
-    //rootElem.addContent(new Element("AltitudeUnits").addContent(fdp.getAltUnits()));
+    List<DsgFeatureCollection> list = fdp.getPointFeatureCollectionList();
+    DsgFeatureCollection fc = list.get(0); // LOOK maybe should pass in the dsg?
+
+    rootElem.addContent(writeTimeUnit(fc.getTimeUnit()));
+    rootElem.addContent(new Element("AltitudeUnits").addContent(fc.getAltUnits()));
 
     // data variables
     List<? extends VariableSimpleIF> vars = fdp.getDataVariables();
@@ -185,13 +167,14 @@ public class FeatureDatasetPointXML {
       rootElem.addContent(writeVariable(v));
     }
 
-    // add lat/lon bounding box
+    // LOOK HERE
+    /* add lat/lon bounding box
     try {
       fdp.calcBounds();
     } catch (IOException e) {
       //e.printStackTrace();
       log.warn("Unable to compute bounds for dataset " + fdp.getTitle(), e);
-    }
+    } */
 
     LatLonRect bb = fdp.getBoundingBox();
     if (bb != null)
@@ -209,7 +192,7 @@ public class FeatureDatasetPointXML {
       rootElem.addContent(drElem);
     }
 
-    // add accept list
+    /* add accept list
     Element elem = new Element("AcceptList");
     //elem.addContent(new Element("accept").addContent("raw"));
     elem.addContent(new Element("accept").addContent("csv").setAttribute("displayName", "csv"));
@@ -219,9 +202,16 @@ public class FeatureDatasetPointXML {
     elem.addContent(new Element("accept").addContent("waterml2").setAttribute("displayName", "WaterML 2.0"));
     elem.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "CF/NetCDF-3"));
     //elem.addContent(new Element("accept").addContent("ncstream"));
-    rootElem.addContent(elem);
+    rootElem.addContent(elem); */
 
     return doc;
+  }
+
+  private Element writeTimeUnit(CalendarDateUnit dateUnit) {
+    Element elem = new Element("TimeUnit");
+    elem.addContent(dateUnit.getUdUnit());
+    elem.setAttribute("calendar", dateUnit.getCalendar().toString());
+    return elem;
   }
 
   private Element writeBoundingBox(LatLonRect bb) {
@@ -252,6 +242,13 @@ public class FeatureDatasetPointXML {
   }
 
   /////////////////////////////////////////////
+  //
+
+  public Document readCapabilitiesDocument(InputStream in) throws JDOMException, IOException {
+    SAXBuilder builder = new SAXBuilder();
+    return builder.build(in);
+  }
+
   public static LatLonRect getSpatialExtent(Document doc) throws IOException {
     Element root = doc.getRootElement();
     Element latlonBox = root.getChild("LatLonBox");
@@ -304,22 +301,27 @@ public class FeatureDatasetPointXML {
     }
   }
 
-  public static DateUnit getTimeUnit(Document doc) throws IOException {
+  public static CalendarDateUnit getTimeUnit(Document doc) {
     Element root = doc.getRootElement();
-    String timeUnitS = root.getChildText("TimeUnit");
-    if (timeUnitS == null) return null;
+    Element timeUnitE = root.getChild("TimeUnit");
+    if (timeUnitE == null) return null;
+
+    String cal = timeUnitE.getAttributeValue("calendar");
+    String timeUnitS = timeUnitE.getTextNormalize();
 
     try {
-      return new DateUnit(timeUnitS);
+      return CalendarDateUnit.of(cal, timeUnitS);
     } catch (Exception e) {
-      log.error("Illegal date unit {}", timeUnitS);
+      log.error("Illegal date unit {} in FeatureDatasetCapabilitiesXML", timeUnitS);
       return null;
     }
   }
 
   public static String getAltUnits(Document doc) throws IOException {
     Element root = doc.getRootElement();
-    return root.getChildText("AltitudeUnits");
+    String altUnits = root.getChildText("AltitudeUnits");
+    if (altUnits == null || altUnits.length() == 0) return null;
+    return altUnits;
   }
 
   public static List<VariableSimpleIF> getDataVariables(Document doc) throws IOException {
@@ -328,17 +330,17 @@ public class FeatureDatasetPointXML {
     List<VariableSimpleIF> dataVars = new ArrayList<>();
     List<Element> varElems = root.getChildren("variable");
     for (Element varElem : varElems) {
-      dataVars.add(new VariableSimple(varElem));
+      dataVars.add(new VariableSimpleAdapter(varElem));
     }
     return dataVars;
   }
 
-  private static class VariableSimple implements VariableSimpleIF {
+  private static class VariableSimpleAdapter implements VariableSimpleIF {
     String name, desc, units;
     DataType dt;
     List<Attribute> atts;
 
-    VariableSimple(Element velem) {
+    VariableSimpleAdapter(Element velem) {
       name = velem.getAttributeValue("name");
       String type = velem.getAttributeValue("type");
       dt = DataType.getType(type);
@@ -436,7 +438,7 @@ public class FeatureDatasetPointXML {
         return false;
       }
 
-      VariableSimple that = (VariableSimple) o;
+      VariableSimpleAdapter that = (VariableSimpleAdapter) o;
       return name.equals(that.name);
     }
 
@@ -445,49 +447,7 @@ public class FeatureDatasetPointXML {
       return name.hashCode();
     }
   }
-
-  public static void doOne(String location, String path, String result) throws IOException {
-    FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location, null, new Formatter(System.out));
-    FeatureDatasetPointXML xml = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, path);
-    xml.getCapabilities(System.out);
-
-    File f = new File(result);
-    FileOutputStream fos = new FileOutputStream(f);
-    xml.getCapabilities(fos);
-    fos.close();
-    System.out.printf("%s written%n", f.getPath());
-  }
-
-  // debug
-  public static void main(String args[]) throws IOException {
-    /* doOne( "Q:/cdmUnitTest/ft/station/Surface_METAR_20080205_0000.nc",
-          "http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak/collection",
-          "C:/tmp/stationCapabilities.xml"
-    ); */
-
-    doOne("Q:/cdmUnitTest/ft/point/ship/nc/Surface_Buoy_20090920_0000.nc",
-            "http://thredds.ucar.edu/thredds/cdmremote/idd/buoy/collection",
-            "C:/tmp/pointCapabilities.xml"
-    );
-
-
-    /*
-    File f = new File("C:/TEMP/stationCollection.xml");
-    FileOutputStream fos = new FileOutputStream(f);
-    xml.writeStationCollectionXML(fos);
-    fos.close();
-    System.out.println(" size xml=" + f.length());
-    long s1 = f.length();
-
-    f = new File("C:/TEMP/stationCollection.xml.gzip");
-    fos = new FileOutputStream(f);
-    GZIPOutputStream zout = new GZIPOutputStream(fos);
-    xml.writeStationCollectionXML(zout);
-    zout.close();
-    double s2 = (double) f.length();
-    System.out.printf(" size xml zipped=%d ratio=%f%n", f.length(), s1/s2);  */
-  }
-
+  
 }
 
 

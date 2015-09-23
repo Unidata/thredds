@@ -25,7 +25,7 @@ public abstract class NcTimePositionType {
     public static TimePositionType initBeginPosition(
             TimePositionType beginPosition, StationTimeSeriesFeature stationFeat) throws IOException {
         // TEXT
-        stationFeat.calcBounds();
+        // LOOK HERE stationFeat.calcBounds();
         if (stationFeat.getCalendarDateRange() != null) {
             beginPosition.setStringValue(stationFeat.getCalendarDateRange().getStart().toString());
         }
@@ -37,7 +37,7 @@ public abstract class NcTimePositionType {
     public static TimePositionType initEndPosition(
             TimePositionType endPosition, StationTimeSeriesFeature stationFeat) throws IOException {
         // TEXT
-        stationFeat.calcBounds();
+        // LOOK HERE stationFeat.calcBounds();
         if (stationFeat.getCalendarDateRange() != null) {
             endPosition.setStringValue(stationFeat.getCalendarDateRange().getEnd().toString());
         }

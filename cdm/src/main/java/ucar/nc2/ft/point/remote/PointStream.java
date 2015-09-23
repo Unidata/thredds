@@ -39,14 +39,16 @@ import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataDeep;
 import ucar.ma2.StructureMembers;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.Station;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -123,7 +125,7 @@ public class PointStream {
     builder.setName(name);
     builder.setTimeUnit(timeUnitString);
 
-    StructureData sdata = pf.getData();
+    StructureData sdata = pf.getDataAll();
     StructureMembers sm = sdata.getStructureMembers();
     for (StructureMembers.Member m : sm.getMembers()) {
       PointStreamProto.Member.Builder mbuilder = PointStreamProto.Member.newBuilder();
@@ -155,7 +157,7 @@ public class PointStream {
     PointStreamProto.PointFeature.Builder builder = PointStreamProto.PointFeature.newBuilder();
     builder.setLoc(locBuilder);
 
-    StructureData sdata = pf.getData();
+    StructureData sdata = pf.getDataAll();
     ArrayStructureBB abb = StructureDataDeep.copyToArrayBB(sdata);
     ByteBuffer bb = abb.getByteBuffer();
     if (debug) {
@@ -204,15 +206,16 @@ public class PointStream {
   // makes a PointFeature from the raw bytes of the protobuf message
 
   static class ProtobufPointFeatureMaker implements FeatureMaker {
-    private DateUnit dateUnit;
+    private CalendarDateUnit dateUnit;
     private StructureMembers sm;
 
     ProtobufPointFeatureMaker(PointStreamProto.PointFeatureCollection pfc) throws IOException {
       try {
-        dateUnit = new DateUnit(pfc.getTimeUnit());
+        // LOOK No calendar
+        dateUnit = CalendarDateUnit.of(null, pfc.getTimeUnit());
       } catch (Exception e) {
         e.printStackTrace();
-        dateUnit = DateUnit.getUnixDateUnit();
+        dateUnit = CalendarDateUnit.unixDateUnit;
       }
 
       sm = new StructureMembers(pfc.getName());
@@ -224,21 +227,23 @@ public class PointStream {
       ArrayStructureBB.setOffsets(sm);
     }
 
-    public PointFeature make(byte[] rawBytes) throws InvalidProtocolBufferException {
+    public PointFeature make(DsgFeatureCollection dsg, byte[] rawBytes) throws InvalidProtocolBufferException {
       PointStreamProto.PointFeature pfp = PointStreamProto.PointFeature.parseFrom(rawBytes);
       PointStreamProto.Location locp = pfp.getLoc();
       EarthLocationImpl location = new EarthLocationImpl(locp.getLat(), locp.getLon(), locp.getAlt());
-      return new MyPointFeature(location, locp.getTime(), locp.getNomTime(), dateUnit, pfp);
+      return new MyPointFeature(dsg, location, locp.getTime(), locp.getNomTime(), dateUnit, pfp);
     }
 
     private class MyPointFeature extends PointFeatureImpl {
       PointStreamProto.PointFeature pfp;
 
-      MyPointFeature(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, PointStreamProto.PointFeature pfp) {
-        super(location, obsTime, nomTime, timeUnit);
+      MyPointFeature(DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime, CalendarDateUnit timeUnit, PointStreamProto.PointFeature pfp) {
+        super(dsg, location, obsTime, nomTime, timeUnit);
         this.pfp = pfp;
       }
 
+      @Nonnull
+      @Override
       public StructureData getFeatureData() throws IOException {
         ByteBuffer bb = ByteBuffer.wrap(pfp.getData().toByteArray());
         ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
@@ -247,6 +252,7 @@ public class PointStream {
         return asbb.getStructureData(0);
       }
 
+      @Nonnull
       @Override
       public StructureData getDataAll() throws IOException {
         return getFeatureData();

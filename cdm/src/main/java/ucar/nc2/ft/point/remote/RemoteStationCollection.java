@@ -38,7 +38,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.*;
 
 import javax.annotation.Nullable;
@@ -62,7 +62,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
    *
    * @param uri cdmremote endpoint
    */
-  public RemoteStationCollection(String uri, DateUnit timeUnit, String altUnits) {
+  public RemoteStationCollection(String uri, CalendarDateUnit timeUnit, String altUnits) {
     super(uri, timeUnit, altUnits);
     this.uri = uri;
   }
@@ -237,7 +237,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
 
-        riter = new RemotePointFeatureIterator(in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        riter = new RemotePointFeatureIterator(RemoteStationFeatureImpl.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         riter.setCalculateBounds(this);
         return riter;
 

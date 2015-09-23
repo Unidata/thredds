@@ -37,12 +37,12 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,7 +60,7 @@ import java.util.List;
 public class StandardStationProfileCollectionImpl extends StationProfileCollectionImpl {
   private NestedTable ft;
 
-  StandardStationProfileCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) throws IOException {
+  StandardStationProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) throws IOException {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
   }
@@ -137,18 +137,16 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     @Override
-    public List<Date> getTimes() throws IOException {
-      List<Date> result = new ArrayList<>();
-      resetIteration();
-      while (hasNext()) {
-        ProfileFeature pf = next();
+    public List<CalendarDate> getTimes() throws IOException {
+      List<CalendarDate> result = new ArrayList<>();
+      for (ProfileFeature pf : this) {
         result.add(pf.getTime());
       }
       return result;
     }
 
     @Override
-    public ProfileFeature getProfileByDate(Date date) throws IOException {
+    public ProfileFeature getProfileByDate(CalendarDate date) throws IOException {
       for (ProfileFeature pf : this) {
         if (pf.getTime().equals(date)) return pf;
       }
@@ -209,8 +207,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     private Cursor cursor;
     StructureData profileData;
 
-    StandardProfileFeature(Station s, DateUnit timeUnit, String altUnits, double time, Cursor cursor, StructureData profileData) throws IOException {
-      super(timeUnit.makeStandardDateString(time), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time, -1);
+    StandardProfileFeature(Station s, CalendarDateUnit timeUnit, String altUnits, double time, Cursor cursor, StructureData profileData) throws IOException {
+      super(timeUnit.makeCalendarDate(time).toString(), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time, -1);
       this.cursor = cursor;
       this.profileData = profileData;
 
@@ -220,7 +218,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
-            this.name = timeUnit.makeStandardDateString(this.time);
+            this.name = timeUnit.makeCalendarDate(this.time).toString();
           } else {
             this.name = "empty";
           }
@@ -242,27 +240,27 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     @Override
-    public Date getTime() {
-      return timeUnit.makeDate(time);
+    public CalendarDate getTime() {
+      return timeUnit.makeCalendarDate(time);
     }
 
     @Override
     public StructureData getFeatureData() throws IOException {
       return profileData;
     }
-  }
 
-  private static class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
+    private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
 
-    StandardProfileFeatureIterator(NestedTable ft, DateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
-      super(ft, timeUnit, structIter, cursor);
-    }
+      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+        super(StandardProfileFeature.this, ft, timeUnit, structIter, cursor);
+      }
 
-    @Override
-    protected boolean isMissing() throws IOException {
-      if (super.isMissing()) return true;
-      // must also check for missing z values
-      return ft.isAltMissing(this.cursor);
+      @Override
+      protected boolean isMissing() throws IOException {
+        if (super.isMissing()) return true;
+        // must also check for missing z values
+        return ft.isAltMissing(this.cursor);
+      }
     }
   }
 

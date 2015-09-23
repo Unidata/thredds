@@ -41,17 +41,16 @@ import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Implementation of PointFeatureDataset.
- * All of the specialization is in List<PointFeatureCollection> collectionList.
+ * All of the specialization is in List<DsgFeatureCollection> collectionList.
  *
  * @author caron
  * @since Feb 29, 2008
  */
 public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatasetPoint {
-  protected List<FeatureCollection> collectionList;
+  protected List<DsgFeatureCollection> collectionList;
   protected FeatureType featureType;
 
   protected PointDatasetImpl(FeatureType featureType) {
@@ -81,11 +80,11 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     this.featureType = featureType;
   }
 
-  protected void setPointFeatureCollection(List<FeatureCollection> collectionList) {
+  protected void setPointFeatureCollection(List<DsgFeatureCollection> collectionList) {
     this.collectionList = collectionList;
   }
 
-  protected void setPointFeatureCollection(FeatureCollection collection) {
+  protected void setPointFeatureCollection(DsgFeatureCollection collection) {
     this.collectionList = Lists.newArrayList(collection);
   }
 
@@ -99,11 +98,11 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
   }
 
   @Override
-  public List<FeatureCollection> getPointFeatureCollectionList() {
+  public List<DsgFeatureCollection> getPointFeatureCollectionList() {
     return collectionList;
   }
 
-  @Override
+  /* @Override
   public void calcBounds() throws java.io.IOException {  // LOOK this sucks
     if ((boundingBox != null) && (dateRange != null)) return;
 
@@ -148,14 +147,14 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
 
     if (boundingBox == null) boundingBox = bb;
     if (dateRange == null) dateRange = dates;
-  }
+  } */
 
   @Override
   public void getDetailInfo(java.util.Formatter sf) {
     super.getDetailInfo(sf);
 
     int count = 0;
-    for (FeatureCollection fc : collectionList) {
+    for (DsgFeatureCollection fc : collectionList) {
       if (fc instanceof PointFeatureCollection) {
         sf.format("%nPointFeatureCollection %d %n", count);
         PointFeatureCollection pfc = (PointFeatureCollection) fc;

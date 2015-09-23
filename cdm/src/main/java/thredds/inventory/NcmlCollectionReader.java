@@ -54,10 +54,10 @@ import java.util.*;
  * @since Feb 24, 2010
  */
 public class NcmlCollectionReader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
+  // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
 
-  private static boolean debugURL = false, debugXML = false, showParsedXML = false;
-  private static final boolean validate = false;
+  private static final boolean debugURL = false, debugXML = false, showParsedXML = false;
+  //private static final boolean validate = false;
 
   /**
    * Read an NcML file from a URL location, and construct a NcmlCollectionReader from its scan or scanFmrc element.
@@ -75,7 +75,7 @@ public class NcmlCollectionReader {
 
     org.jdom2.Document doc;
     try {
-      SAXBuilder builder = new SAXBuilder(validate);
+      SAXBuilder builder = new SAXBuilder();
       if (debugURL) System.out.println(" NetcdfDataset URL = <" + url + ">");
       doc = builder.build(url);
     } catch (JDOMException e) {

@@ -32,13 +32,22 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.Variable;
+import ucar.nc2.time.CalendarDateUnit;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+
 /**
  * A collection of FeatureTypes.
- * 
+ * Will either be a PointFeatureCollection, NestedPointFeatureCollection, or DoubleNestedPointFeatureCollection
+ * Will either be a PointFeatureCollection, PointFeatureCC, or PointFeatureCCC
+ *
  * @author caron
  * @since Mar 20, 2008
  */
-public interface FeatureCollection {
+public interface DsgFeatureCollection {
   /**
    * Get the name of this feature collection.
    * @return the name of this feature collection
@@ -50,5 +59,32 @@ public interface FeatureCollection {
    * @return the feature type
    */
   ucar.nc2.constants.FeatureType getCollectionFeatureType();
+
+  /**
+   * The time unit.
+   * @return  time unit, may not be null
+   */
+  @Nonnull
+  CalendarDateUnit getTimeUnit();
+
+  /**
+   * The altitude unit string if it exists.
+   * @return altitude unit string, may be null
+   */
+  @Nullable
+  String getAltUnits();
+
+  /**
+   * Other variables needed for completeness, eg joined coordinate variables
+   * @return list of extra variables, may be empty not null
+   */
+  @Nonnull
+  List<Variable> getExtraVariables();
+
+  /**
+   * The number of elements in the collection. May not be known until after iterating through the collection.
+   * @return number of elements in the collection, or -1 if not known.
+   */
+  int size();
 
 }

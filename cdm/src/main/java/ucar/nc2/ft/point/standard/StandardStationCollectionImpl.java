@@ -37,11 +37,12 @@ import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.ft.point.StationHelper;
 import ucar.nc2.ft.*;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.Station;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -58,7 +59,7 @@ import java.io.IOException;
 public class StandardStationCollectionImpl extends StationTimeSeriesCollectionImpl {
   private NestedTable ft;
 
-  StandardStationCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) throws IOException {
+  StandardStationCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) throws IOException {
     super(ft.getName(), timeUnit, altUnits);
     this.ft = ft;
     this.extras = ft.getExtras();
@@ -98,7 +99,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     int recnum;
     StructureData stationData;
 
-    StandardStationFeatureImpl(Station s, DateUnit dateUnit, StructureData stationData, int recnum) {
+    StandardStationFeatureImpl(Station s, CalendarDateUnit dateUnit, StructureData stationData, int recnum) {
       super(s, dateUnit, StandardStationCollectionImpl.this.getAltUnits(), -1);
       this.recnum = recnum;
       this.stationData = stationData;
@@ -115,12 +116,13 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       ft.addParentJoin(cursor); // there may be parent joins
 
       StructureDataIterator obsIter = ft.getLeafFeatureDataIterator(cursor, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(ft, timeUnit, obsIter, cursor);
+      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(StandardStationFeatureImpl.this, ft, timeUnit, obsIter, cursor);
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
         iter.setCalculateBounds(this);
       return iter;
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() {
       return stationData;

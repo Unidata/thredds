@@ -35,6 +35,7 @@ package ucar.nc2.ft;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.EarthLocation;
 
+import javax.annotation.Nonnull;
 import java.util.Date;
 
 /**
@@ -48,6 +49,7 @@ public interface PointFeature {
    * Location of this observation
    * @return the location of this observation
    */
+  @Nonnull
   EarthLocation getLocation();
 
  /**
@@ -60,14 +62,8 @@ public interface PointFeature {
   /**
    * Actual time of this observation, as a Date.
    * @return actual time of this observation, as a Date.
-   * @deprecated use getObservationTimeAsCalendarDate()
    */
-  Date getObservationTimeAsDate();
-
-  /**
-   * Actual time of this observation, as a Date.
-   * @return actual time of this observation, as a Date.
-   */
+  @Nonnull
   CalendarDate getObservationTimeAsCalendarDate();
 
   /**
@@ -80,23 +76,18 @@ public interface PointFeature {
 
   /**
    * Nominal time of this observation, as a Date.
-   * @return Nominal time of this observation, as a Date.
-   * @deprecated use getNominalTimeAsCalendarDate()
-   */
-  Date getNominalTimeAsDate();
-
-  /**
-   * Nominal time of this observation, as a Date.
+   * Will be equal to the observation date if not exists independently.
    * @return Nominal time of this observation, as a Date.
    */
+  @Nonnull
   CalendarDate getNominalTimeAsCalendarDate();
-
 
   /**
    * The actual data of just this feature.
    * @return the actual data of this feature.
    * @throws java.io.IOException on i/o error
    */
+  @Nonnull
   ucar.ma2.StructureData getFeatureData() throws java.io.IOException;
 
   /**
@@ -104,11 +95,14 @@ public interface PointFeature {
    * @return the actual data of this observation.
    * @throws java.io.IOException on i/o error
    */
+  @Nonnull
   ucar.ma2.StructureData getDataAll() throws java.io.IOException;
 
-  /**
-   * @deprecated use getFeatureData() or getDataAll()
-   */
-  ucar.ma2.StructureData getData() throws java.io.IOException;
+ /**
+  * Get the containing FeatureCollection
+  * @return
+  */
+ @Nonnull
+ DsgFeatureCollection getFeatureCollection();
 
 }

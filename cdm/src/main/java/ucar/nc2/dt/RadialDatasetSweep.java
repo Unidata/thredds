@@ -34,6 +34,7 @@ package ucar.nc2.dt;
 
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
+import ucar.nc2.ft.FeatureDataset;
 
 import java.io.IOException;
 import java.util.Date;
@@ -44,7 +45,7 @@ import java.util.Date;
  *
  * @author yuan
  */
-public interface RadialDatasetSweep extends ucar.nc2.ft.FeatureDataset {
+public interface RadialDatasetSweep extends FeatureDataset {
   /**
    * @return radar id
    */

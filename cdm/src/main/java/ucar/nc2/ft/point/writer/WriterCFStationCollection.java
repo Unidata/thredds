@@ -42,7 +42,7 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
@@ -79,7 +79,7 @@ public class WriterCFStationCollection extends CFPointWriter {
   private Map<String, Variable> featureVarMap  = new HashMap<>();
 
   public WriterCFStationCollection(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars, List<Variable> extra,
-                                   DateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+                                   CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, atts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
   }
@@ -109,9 +109,12 @@ public class WriterCFStationCollection extends CFPointWriter {
     StructureData obsData = spf.getFeatureData();
 
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUnitsString(), DataType.DOUBLE));
+    coords.add(VariableSimpleImpl.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+            .add(new Attribute(CF.CALENDAR, timeUnit.getCalendar().toString())));
+
     coords.add(VariableSimpleImpl.makeScalar(stationIndexName, "station index for this observation record", null, DataType.INT)
             .add(new Attribute(CF.INSTANCE_DIMENSION, stationDimName)));
+
     Formatter coordNames = new Formatter().format("%s %s %s", timeName, latName, lonName);
     if (useAlt) coordNames.format(" %s", stationAltName);
 

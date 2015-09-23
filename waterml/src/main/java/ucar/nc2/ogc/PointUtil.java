@@ -39,7 +39,7 @@ public class PointUtil {
     }
 
     public static void printPointFeatures(FeatureDatasetPoint fdPoint, PrintStream outStream) throws IOException {
-        for (FeatureCollection featCol : fdPoint.getPointFeatureCollectionList()) {
+        for (DsgFeatureCollection featCol : fdPoint.getPointFeatureCollectionList()) {
             StationTimeSeriesFeatureCollection stationCol = (StationTimeSeriesFeatureCollection) featCol;
 
             for (StationTimeSeriesFeature stationFeat : stationCol) {

@@ -34,7 +34,7 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -50,7 +50,7 @@ import java.util.Iterator;
 
 public abstract class SectionCollectionImpl extends MultipleNestedPointCollectionImpl implements SectionFeatureCollection {
 
-  protected SectionCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+  protected SectionCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.SECTION);
   }
 

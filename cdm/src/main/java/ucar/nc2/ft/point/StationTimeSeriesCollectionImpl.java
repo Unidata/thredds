@@ -35,9 +35,8 @@ package ucar.nc2.ft.point;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
@@ -55,7 +54,7 @@ import java.io.IOException;
 public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointCollectionImpl implements StationTimeSeriesFeatureCollection {
   private volatile StationHelper stationHelper;
 
-  public StationTimeSeriesCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+  public StationTimeSeriesCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.STATION);
   }
 
@@ -164,9 +163,9 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, subsetStations), dateRange);
   }
 
-  public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+ /* public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     return flatten(stations, CalendarDateRange.of(dateRange), varList);
-  }
+  } */
 
   private static class StationTimeSeriesCollectionSubset extends StationTimeSeriesCollectionImpl {
     private final List<StationFeature> stations;
@@ -188,23 +187,6 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
       return getStationHelper().getStationFeatures();
     }
 
-    /* dont think this is needed
-    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(bufferSize), new Filter());
-    }
-
-    public Station getStation(PointFeature feature) throws IOException {
-      return from.getStation(feature);
-    }
-
-    // LOOK: major ick! FIX THIS
-    private class Filter implements PointFeatureCollectionIterator.Filter {
-
-      public boolean filter(PointFeatureCollection pointFeatureCollection) {
-        StationTimeSeriesFeature stationFeature = (StationTimeSeriesFeature) pointFeatureCollection;
-        return stationHelper.getStation(stationFeature.getName()) != null;
-      }
-    } */
   }
 
   //////////////////////////

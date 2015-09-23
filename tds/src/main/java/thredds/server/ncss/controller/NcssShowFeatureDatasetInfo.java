@@ -47,7 +47,7 @@ import thredds.server.ncss.format.SupportedOperation;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
+import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.writer.CoverageDatasetCapabilities;
 
@@ -80,7 +80,7 @@ public class NcssShowFeatureDatasetInfo {
   private ModelAndView showPointForm(FeatureDatasetPoint fp, String datasetUrlPath, boolean wantXml, String xslt)
           throws IOException {
 
-    FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fp, datasetUrlPath);
+    FeatureDatasetCapabilitiesWriter xmlWriter = new FeatureDatasetCapabilitiesWriter(fp, datasetUrlPath);
     Document doc = xmlWriter.getCapabilitiesDocument();
 
     if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4)) {

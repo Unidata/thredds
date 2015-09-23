@@ -117,9 +117,5 @@ public class SwathDatasetFactory implements FeatureDatasetFactory {
       return FeatureType.SWATH;
     }
 
-    @Override
-    public void calcBounds() throws IOException {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
   }
 }

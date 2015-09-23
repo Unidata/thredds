@@ -34,6 +34,8 @@
 package ucar.nc2.ui;
 
 // import ucar.nc2.thredds.TDSRadarDatasetCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
@@ -122,15 +124,15 @@ public class StationRadialViewer extends JPanel {
     add(splitV, BorderLayout.CENTER);
   }
 
-  public void setDataset(ucar.nc2.ft.FeatureDataset dataset) {
+  public void setDataset(FeatureDataset dataset) {
     this.sds = (ucar.nc2.ft.radial.StationRadialDataset) dataset;
 
     if (debugStationDatsets)
       System.out.println("PointObsViewer open type "+dataset.getClass().getName());
-    Date startDate = dataset.getStartDate();
-    Date endDate = dataset.getEndDate();
+    CalendarDate startDate = dataset.getCalendarDateStart();
+    CalendarDate endDate = dataset.getCalendarDateEnd();
     if ((startDate != null) && (endDate != null))
-      chooser.setDateRange( new DateRange( startDate, endDate));
+      chooser.setDateRange( new DateRange( startDate.toDate(), endDate.toDate()));
 
     List<StationBean> stationBeans = new ArrayList<StationBean>();
       try {
@@ -138,7 +140,7 @@ public class StationRadialViewer extends JPanel {
         if (stations == null) return;
 
         for (ucar.unidata.geoloc.Station station : stations)
-          stationBeans.add(new StationBean((ucar.unidata.geoloc.StationImpl) station));
+          stationBeans.add(new StationBean(station));
 
       } catch (IOException ioe) {
         ioe.printStackTrace();

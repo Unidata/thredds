@@ -129,7 +129,22 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 
 * *ucar.nc2.dt.TypedDatasetFactory* has been removed. Use *ucar.nc2.ft.FeatureDatasetFactoryManager*
 * *ucar.nc2.dt.grid* is deprecated (but not removed) and is replaced by *ucar.nc2.ft2.coverage*
-* *ucar.nc2.dt.point* and *ucar.nc2.dt.trajectory* has been removed, replaced by *ucar.nc2.ft.**
+* *ucar.nc2.dt.point* and *ucar.nc2.dt.trajectory* have been removed, replaced by *ucar.nc2.ft.**
+* *ucar.nc2.ft.FeatureCollection* has been renamed to *ucar.nc2.ft.DsgFeatureCollection* for clarity.
+* In all the Point Feature classes, *DateUnit, Date*, and *DateRange* have been replaced by
+    *CalendarDateUnit*, *CalendarDate*, and *CalendarDateRange* :
+** In *FeatureDataset* deprecated methods _getDateRange(), getStartDate(), getStartDate()_ have been removed
+** In *PointFeature* and subclasses, deprecated methods _getObservationTimeAsDate(), getNominalTimeAsDate()_ have been removed
+** In *ProfileFeature*, _getTime()_ returns _CalendarDate instead of Date
+** In *PointFeatureIterator* and subclasses, deprecated method _getDateRange()_ has been removed
+** In PointFeature implementations and subclasses, all constructors use *CalendarDateUnit* instead of *DateUnit*, and all
+   _subset()_ and _flatten()_ methods use *CalendarDateRange* not *DateRange*
+** In *CFPointWriter* subclasses, all constructors use *CalendarDateUnit* instead of *DateUnit*
+* In *PointFeature*, deprecated method _getData()_ is removed; usually replace it with  _getDataAll()_
+* In *PointFeatureCollection*, mutating methods are removed: _setCalendarDateRange(), setBoundingBox(), setSize(), calcBounds()_
+* In *FeatureDataset*, mutating method removed: _calcBounds()_
+* The time and altitude units for the collection can be found in the *DsgFeatureCollection*, and you can get the collection object
+  from _PointFeature.getFeatureCollection()_
 
 === Catalogs
 

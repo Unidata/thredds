@@ -35,14 +35,14 @@ package ucar.nc2.ft.remote;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
-import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
+import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -88,11 +88,11 @@ public class CdmrFeatureDataset {
     wantFeatureType = FeatureType.getType(fType);
     if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= '%s' url=%s%n", endpoint, fType, endpoint);
 
-    List<VariableSimpleIF> dataVars = FeatureDatasetPointXML.getDataVariables(doc);
-    LatLonRect bb = FeatureDatasetPointXML.getSpatialExtent(doc);
-    CalendarDateRange dr = FeatureDatasetPointXML.getTimeSpan(doc);
-    DateUnit timeUnit = FeatureDatasetPointXML.getTimeUnit(doc);
-    String altUnits = FeatureDatasetPointXML.getAltUnits(doc);
+    List<VariableSimpleIF> dataVars = FeatureDatasetCapabilitiesWriter.getDataVariables(doc);
+    LatLonRect bb = FeatureDatasetCapabilitiesWriter.getSpatialExtent(doc);
+    CalendarDateRange dr = FeatureDatasetCapabilitiesWriter.getTimeSpan(doc);
+    CalendarDateUnit timeUnit = FeatureDatasetCapabilitiesWriter.getTimeUnit(doc);
+    String altUnits = FeatureDatasetCapabilitiesWriter.getAltUnits(doc);
 
     return new PointDatasetRemote(wantFeatureType, endpoint, timeUnit, altUnits, dataVars, bb, dr);
   }
@@ -102,7 +102,7 @@ public class CdmrFeatureDataset {
     InputStream in = null;
     try {
       in = CdmRemote.sendQuery(null, endpoint, "req=capabilities");
-      SAXBuilder builder = new SAXBuilder(false);
+      SAXBuilder builder = new SAXBuilder();
       doc = builder.build(in);  // closes in when done ??
 
     } catch (Throwable t) {
@@ -125,7 +125,7 @@ public class CdmrFeatureDataset {
   public static void main(String args[]) throws IOException {
     String endpoint = "http://localhost:8080/thredds/cdmrfeature/idd/metar/ncdecodedLocalHome";
     FeatureDatasetPoint fd = (FeatureDatasetPoint) CdmrFeatureDataset.factory(FeatureType.ANY, endpoint);
-    FeatureCollection fc = fd.getPointFeatureCollectionList().get(0);
+    DsgFeatureCollection fc = fd.getPointFeatureCollectionList().get(0);
     System.out.printf("Result= %s %n %s %n", fd, fc);
 
     /* StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) fc;

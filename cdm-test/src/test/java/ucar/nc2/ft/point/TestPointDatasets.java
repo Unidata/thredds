@@ -44,8 +44,9 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.*;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -270,10 +271,10 @@ public class TestPointDatasets {
     long start = System.currentTimeMillis();
     int count = 0;
 
-    Date d1 = fdataset.getStartDate();
-    Date d2 = fdataset.getEndDate();
+    CalendarDate d1 = fdataset.getCalendarDateStart();
+    CalendarDate d2 = fdataset.getCalendarDateEnd();
     if ((d1 != null) && (d2 != null))
-      assert d1.before(d2) || d1.equals(d2);
+      assert d1.isBefore(d2) || d1.equals(d2);
 
     List<VariableSimpleIF> dataVars = fdataset.getDataVariables();
     assert dataVars != null;
@@ -285,7 +286,7 @@ public class TestPointDatasets {
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
 
-    for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
+    for (DsgFeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
       assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
 
       if (fc instanceof PointFeatureCollection) {
@@ -340,10 +341,10 @@ public class TestPointDatasets {
     stationProfileFeatureCollection.resetIteration();
     while (stationProfileFeatureCollection.hasNext()) {
       ucar.nc2.ft.StationProfileFeature spf = stationProfileFeatureCollection.next();
-      List<Date> times = spf.getTimes();
+      List<CalendarDate> times = spf.getTimes();
       if (show) {
         System.out.printf("times= ");
-        for (Date t : times) System.out.printf("%s, ", t);
+        for (CalendarDate t : times) System.out.printf("%s, ", t);
         System.out.printf("%n");
       }
 
@@ -416,9 +417,7 @@ public class TestPointDatasets {
         ucar.nc2.ft.ProfileFeature profile = stationProfile.next();
         System.out.printf("-profile=%d %n", profile.hashCode());
 
-        profile.resetIteration();
-        while (profile.hasNext()) {
-          ucar.nc2.ft.PointFeature pointFeature = profile.next();
+        for (ucar.nc2.ft.PointFeature pointFeature : profile) {
           System.out.printf("--pointFeature=%d %n", pointFeature.hashCode());
           StructureData sdata = pointFeature.getDataAll();
           NCdumpW.printStructureData(pw, sdata);
@@ -433,10 +432,10 @@ public class TestPointDatasets {
       System.out.println(" test PointFeatureCollection " + pfc.getName());
       System.out.println(" calcBounds");
     }
-    pfc.calcBounds();
+    // LOOK HERE  pfc.calcBounds();
     if (show) {
       System.out.println("  bb= " + pfc.getBoundingBox());
-      System.out.println("  dateRange= " + pfc.getDateRange());
+      System.out.println("  dateRange= " + pfc.getCalendarDateRange());
       System.out.println("  npts= " + pfc.size());
     }
 
@@ -449,7 +448,7 @@ public class TestPointDatasets {
 
     LatLonRect bb = pfc.getBoundingBox();
     assert bb != null;
-    DateRange dr = pfc.getDateRange();
+    CalendarDateRange dr = pfc.getCalendarDateRange();
     assert dr != null;
 
     // read all the data - check that it is contained in the bbox, dateRange
@@ -461,8 +460,8 @@ public class TestPointDatasets {
       PointFeature pf = pfc.next();
       checkPointFeature(pf, pfc.getTimeUnit());
       assert bb.contains(pf.getLocation().getLatLon()) : pf.getLocation().getLatLon();
-      if (!dr.contains(pf.getObservationTimeAsDate()))
-        System.out.printf("  date out of Range= %s on %s %n", pf.getObservationTimeAsDate(), pfc.getName());
+      if (!dr.includes(pf.getObservationTimeAsCalendarDate()))
+        System.out.printf("  date out of Range= %s on %s %n", pf.getObservationTimeAsCalendarDate(), pfc.getName());
       count++;
     }
     long took = System.currentTimeMillis() - start;
@@ -497,16 +496,16 @@ public class TestPointDatasets {
 
   // check that the location and times are filled out
   // read and test the data
-  static private void checkPointFeature(PointFeature pobs, DateUnit timeUnit) throws java.io.IOException {
+  static private void checkPointFeature(PointFeature pobs, CalendarDateUnit timeUnit) throws java.io.IOException {
 
     EarthLocation loc = pobs.getLocation();
     assert loc != null;
 
-    assert null != pobs.getNominalTimeAsDate();
-    assert null != pobs.getObservationTimeAsDate();
+    assert null != pobs.getNominalTimeAsCalendarDate();
+    assert null != pobs.getObservationTimeAsCalendarDate();
 
-    assert timeUnit.makeDate(pobs.getNominalTime()).equals(pobs.getNominalTimeAsDate());
-    assert timeUnit.makeDate(pobs.getObservationTime()).equals(pobs.getObservationTimeAsDate());
+    assert timeUnit.makeCalendarDate(pobs.getNominalTime()).equals(pobs.getNominalTimeAsCalendarDate());
+    assert timeUnit.makeCalendarDate(pobs.getObservationTime()).equals(pobs.getObservationTimeAsCalendarDate());
 
 
     StructureData sdata = pobs.getDataAll();
@@ -622,9 +621,9 @@ public class TestPointDatasets {
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
 
-    List<FeatureCollection> collectionList = fdpoint.getPointFeatureCollectionList();
+    List<DsgFeatureCollection> collectionList = fdpoint.getPointFeatureCollectionList();
 
-    FeatureCollection fc = collectionList.get(0);
+    DsgFeatureCollection fc = collectionList.get(0);
 
     if (fc instanceof PointFeatureCollection) {
       PointFeatureCollection pfc = (PointFeatureCollection) fc;

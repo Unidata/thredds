@@ -67,7 +67,7 @@ public class CompositeDatasetFactory {
       throw new FileNotFoundException("Collection is empty; spec=" + dcm);
     }
 
-    FeatureCollection first;
+    DsgFeatureCollection first;
     TimedCollection.Dataset d = collection.getPrototype();
     try (FeatureDatasetPoint proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, d.getLocation(), null, errlog)) {
       if (proto == null) {
@@ -75,14 +75,14 @@ public class CompositeDatasetFactory {
       }
       if (wantFeatureType == FeatureType.ANY_POINT) wantFeatureType = proto.getFeatureType();
 
-      List<FeatureCollection> fcList = proto.getPointFeatureCollectionList();
+      List<DsgFeatureCollection> fcList = proto.getPointFeatureCollectionList();
       if (fcList.size() == 0) {
         throw new FileNotFoundException("FeatureCollectionList is empty; spec=" + dcm);
       }
       first = fcList.get(0);
 
       //LatLonRect bb = null;
-      FeatureCollection fc;
+      DsgFeatureCollection fc;
       switch (wantFeatureType) {
         case POINT:
           PointFeatureCollection firstPc = (PointFeatureCollection) first;
@@ -106,10 +106,10 @@ public class CompositeDatasetFactory {
   }
 
   private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection  {
-    private FeatureCollection pfc;
+    private DsgFeatureCollection pfc;
     private List<Attribute> globalAttributes;
 
-    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc,
+    public CompositePointDataset(String location, FeatureType featureType, DsgFeatureCollection pfc,
                                  TimedCollection datasets, LatLonRect bb) {
       super(featureType);
       setLocationURI(location);

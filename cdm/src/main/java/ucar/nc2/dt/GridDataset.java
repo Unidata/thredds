@@ -32,9 +32,7 @@
  */
 package ucar.nc2.dt;
 
-import ucar.nc2.Attribute;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.*;
@@ -44,7 +42,7 @@ import java.util.*;
  * @author caron
  */
 
-public interface GridDataset extends ucar.nc2.ft.FeatureDataset {
+public interface GridDataset extends FeatureDataset {
 
   /** get the list of GridDatatype objects contained in this dataset.
    * @return  list of GridDatatype
