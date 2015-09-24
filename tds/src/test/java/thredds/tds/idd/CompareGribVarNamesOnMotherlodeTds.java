@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +36,7 @@ public class CompareGribVarNamesOnMotherlodeTds
 
   @Before
   public void setUp() {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
   }
 
   /**

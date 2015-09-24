@@ -9,25 +9,26 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * An enumeration of external THREDDS servers used during testing. Tests that call {@link #assumeIsAvailable} will be
+ * An enumeration of external servers used during testing. Tests that call {@link #assumeIsAvailable} will be
  * ignored if the associated server is unavailable.
  *
  * @author cwardgar
  * @since 2015/04/18
  */
-public enum ThreddsServer {
+public enum ExternalServer {
     LIVE("http://thredds.ucar.edu/thredds/"),
     TEST("http://thredds-test.unidata.ucar.edu/thredds/"),
     DEV("http://thredds-dev.unidata.ucar.edu/thredds/"),
-    REMOTETEST("http://remotetest.unidata.ucar.edu/thredds/");
+    REMOTETEST("http://remotetest.unidata.ucar.edu/thredds/"),
+    HTTPKIT("http://echo.httpkit.com");
 
-    private static final Logger logger = LoggerFactory.getLogger(ThreddsServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExternalServer.class);
 
     private final String host;
 
     private Boolean available;
 
-    ThreddsServer(String host) {
+    ExternalServer(String host) {
         this.host = host;
     }
 

@@ -49,7 +49,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -89,7 +89,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
 
   @Before
   public void init() throws IOException {
-      ThreddsServer.TEST.assumeIsAvailable();
+      ExternalServer.TEST.assumeIsAvailable();
       DataFactory.setPreferCdm(true);
       HTTPSession.setGlobalUserAgent("TestMotherlodeDatasets");
   }

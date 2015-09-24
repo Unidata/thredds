@@ -39,7 +39,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +77,7 @@ public class TestServerSiteMotherlodeIDV extends TestCase
   @Override
   protected void setUp()
   {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     wc = new WebConversation();
 
     Properties env = System.getProperties();

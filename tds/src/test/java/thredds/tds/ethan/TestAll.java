@@ -54,7 +54,7 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.*;
 import java.net.URI;
@@ -141,7 +141,7 @@ public class TestAll extends TestCase
   @Override
   protected void setUp()
   {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
 
     if ( null == System.getProperty( "thredds.tds.test.id"))
       System.setProperty( "thredds.tds.test.id", "crawl-newmlode-8080" );

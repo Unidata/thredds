@@ -38,7 +38,7 @@ import org.apache.http.client.CredentialsProvider;
 import ucar.httpservices.*;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

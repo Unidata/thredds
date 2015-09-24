@@ -41,7 +41,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -86,7 +86,7 @@ public class TestServerSite extends TestCase
   @Override
   protected void setUp()
   {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     wc = new WebConversation();
 
     Properties env = System.getProperties();

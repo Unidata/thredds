@@ -36,7 +36,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 /**
  * Describe
@@ -48,7 +48,7 @@ public class TestTime2D {
 
   @Test
   public void testTime2D() throws Exception {
-    ThreddsServer.DEV.assumeIsAvailable();
+    ExternalServer.DEV.assumeIsAvailable();
     try (NetcdfFile dataset = NetcdfDataset.openDataset("dods://thredds-dev.unidata.ucar.edu/thredds/dodsC/grib/NCEP/GFS/Pacific_40km/TwoD")) {
 
       Variable v = dataset.findVariable(null, "Pressure_surface");

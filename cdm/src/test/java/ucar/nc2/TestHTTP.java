@@ -43,7 +43,7 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -55,7 +55,7 @@ public class TestHTTP  {
 
   @Before
   public void setUp() {
-    ThreddsServer.REMOTETEST.assumeIsAvailable();
+    ExternalServer.REMOTETEST.assumeIsAvailable();
   }
 
   @Test
