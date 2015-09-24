@@ -1,18 +1,29 @@
 /* Copyright */
 package ucar.nc2.ft.coverage;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.CoordinateAxis2D;
-import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.ft2.coverage.adapter.*;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.adapter.DtCoverage;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
+import ucar.nc2.ft2.coverage.adapter.FmrcCS;
+import ucar.nc2.ft2.coverage.adapter.GridCS;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
-
-import java.io.IOException;
 
 /**
  * Coverages built with DtCoverageDataset
@@ -20,6 +31,7 @@ import java.io.IOException;
  * @author caron
  * @since 7/14/2015
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestDtWithCoverageBuilding {
 
   @Test

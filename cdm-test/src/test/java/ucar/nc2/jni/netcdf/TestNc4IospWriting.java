@@ -45,6 +45,7 @@ public class TestNc4IospWriting {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void unlimDim0() throws IOException {
     File fin = new File(TestDir.cdmUnitTestDir + "formats/netcdf3/longOffset.nc");
     String datasetOut = tempDir + fin.getName();

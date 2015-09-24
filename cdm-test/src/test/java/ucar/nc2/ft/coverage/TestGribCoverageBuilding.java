@@ -33,15 +33,24 @@
 
 package ucar.nc2.ft.coverage;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.TimeOffsetAxis;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
-
-import java.io.IOException;
 
 /**
  * Description
@@ -49,6 +58,7 @@ import java.io.IOException;
  * @author John
  * @since 8/17/2015
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribCoverageBuilding {
 
   @Test

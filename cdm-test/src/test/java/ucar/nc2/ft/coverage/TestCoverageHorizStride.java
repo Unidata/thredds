@@ -1,20 +1,30 @@
 /* Copyright Unidata */
 package ucar.nc2.ft.coverage;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.GeoReferencedArray;
+import ucar.nc2.ft2.coverage.HorizCoordSys;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
-
-import java.io.IOException;
 
 /**
  * Created by John on 9/11/2015.
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestCoverageHorizStride {
 
   @Test

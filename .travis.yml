@@ -8,9 +8,9 @@ env:
 
 matrix:
   include:
-    - jdk: oraclejdk7
     - jdk: oraclejdk8
-    - jdk: openjdk7
+    # As of 2015-09-24, Travis does not provide "openjdk8".
+
 #      env: BUILD_IDV=true
 
 script:
