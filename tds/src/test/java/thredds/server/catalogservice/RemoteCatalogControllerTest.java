@@ -37,7 +37,7 @@ public class RemoteCatalogControllerTest {
 	@Before
  	public void setup(){
  		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-		allowedServices.setAllow(StandardService.catalogRemote, true);
+		allowedServices.setAllowService(StandardService.catalogRemote, true);
  	}
 
 	String dataset="casestudies/ccs039/grids/netCDF/1998062912_eta.nc";

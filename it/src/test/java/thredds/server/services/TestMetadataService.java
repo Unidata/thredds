@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.util.ArrayList;
@@ -43,17 +44,17 @@ public class TestMetadataService {
   @Test
   public void testOpenXml() {
     String endpoint = TestWithLocalServer.withPath(url+"&accept=xml");
-    String response = TestWithLocalServer.testWithHttpGet(endpoint, ContentType.xml);
+    byte[] response = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
     if (show)
-      System.out.printf("%s%n", response);
+      System.out.printf("%s%n", new String(response, CDM.utf8Charset));
   }
 
   @Test
   public void testOpenHtml() {
     String endpoint = TestWithLocalServer.withPath(url);
-    String response = TestWithLocalServer.testWithHttpGet(endpoint, ContentType.html);
+    byte[] response = TestWithLocalServer.getContent(endpoint, 200, ContentType.html);
     if (show)
-      System.out.printf("%s%n", response);
+      System.out.printf("%s%n", new String(response, CDM.utf8Charset));
   }
 }
 

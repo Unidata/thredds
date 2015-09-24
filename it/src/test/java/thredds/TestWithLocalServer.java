@@ -41,9 +41,12 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.junit.Assert;
-import org.junit.Test;
 import thredds.util.ContentType;
 import ucar.httpservices.*;
+import ucar.nc2.util.IO;
+
+import java.io.File;
+import java.io.InputStream;
 
 /**
  * Describe
@@ -58,27 +61,61 @@ public class TestWithLocalServer {
     return server + StringUtils.stripStart(path, "/\\");  // Remove leading slashes from path.
   }
 
-  public static String testWithHttpGet(String endpoint, ContentType expectContentType) {
-    System.out.printf("testOpenXml req = '%s'%n", endpoint);
-
+  public static byte[] getContent(String endpoint, int expectCode, ContentType expectContentType) {
+    System.out.printf("req = '%s'%n", endpoint);
     try (HTTPSession session = new HTTPSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
-      Assert.assertEquals(200, statusCode);
+      if (statusCode != 200) {
+        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
+        Assert.assertEquals(expectCode, statusCode);
+        return null;
+      }
 
-      String response = method.getResponseAsString();
-      assert response.length() > 0;
+      Assert.assertEquals(expectCode, statusCode);
 
-      Header header = method.getResponseHeader(ContentType.HEADER);
-      Assert.assertEquals(expectContentType.getContentHeader(), header.getValue());
+      if (expectContentType != null) {
+        Header header = method.getResponseHeader(ContentType.HEADER);
+        Assert.assertEquals(expectContentType.getContentHeader(), header.getValue());
+      }
 
-      return response;
+      byte[] content = method.getResponseAsBytes();
+      // assert content.length > 0;
+      return content;
+
     } catch (Exception e) {
       e.printStackTrace();
       assert false;
     }
 
     return null;
+  }
+
+  public static void saveContentToFile(String endpoint, int expectCode, ContentType expectContentType, File saveTo) {
+    System.out.printf("req = '%s'%n", endpoint);
+    try (HTTPSession session = new HTTPSession(endpoint)) {
+      HTTPMethod method = HTTPFactory.Get(session);
+      int statusCode = method.execute();
+      if (statusCode != 200) {
+        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
+        Assert.assertEquals(expectCode, statusCode);
+        return;
+      }
+
+      Assert.assertEquals(expectCode, statusCode);
+
+      if (expectContentType != null) {
+        Header header = method.getResponseHeader(ContentType.HEADER);
+        Assert.assertEquals(expectContentType.getContentHeader(), header.getValue());
+      }
+
+      InputStream content = method.getResponseAsStream(); // closing method may close stream ??
+      IO.appendToFile(content, saveTo.getAbsolutePath());
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      assert false;
+    }
   }
 
 

@@ -32,61 +32,51 @@
  */
 package thredds.server.opendap;
 
-import com.eclipsesource.restfuse.Destination;
-import com.eclipsesource.restfuse.HttpJUnitRunner;
-import com.eclipsesource.restfuse.Method;
-import com.eclipsesource.restfuse.Response;
-import com.eclipsesource.restfuse.annotation.Context;
-import com.eclipsesource.restfuse.annotation.HttpTest;
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
 import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.server.catalog.TdsLocalCatalog;
+import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.List;
 
-import static com.eclipsesource.restfuse.Assert.assertBadRequest;
-import static com.eclipsesource.restfuse.Assert.assertOk;
-
-@RunWith(HttpJUnitRunner.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestTdsDodsServer {
 
-  @Rule
-  public Destination destination = new Destination(TestWithLocalServer.server);
-
-  @Context
-  private Response response; // will be injected after every request
-
-  @HttpTest(method = Method.GET, path = "/dodsC/scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.badascii?Visibility_surface[0:1:0][0:1:0][0:1:0]")
+  @Test
   public void checkBadRequest() {
-    assertBadRequest(response);
+    String endpoint = TestWithLocalServer.withPath("/dodsC/scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.badascii?Visibility_surface[0:1:0][0:1:0][0:1:0]");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 400, null);
   }
 
-  @HttpTest(method = Method.GET, path = "/dodsC/scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.ascii?Visibility_surface[0:1:0][0:1:0][0:1:0]")
+  @Test
   public void testGridArrayAscii() {
-    assertOk(response);
-    String ress = response.getBody(String.class);
-    assert ress.contains("scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2");
-    assert ress.contains("15636.879");
+    String endpoint = TestWithLocalServer.withPath("/dodsC/scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.ascii?Visibility_surface[0:1:0][0:1:0][0:1:0]");
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, null);
+    Assert.assertNotNull(result);
+    String results = new String(result, CDM.utf8Charset);
+    assert results.contains("scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2");
+    assert results.contains("15636.879");
   }
 
   @Test
@@ -120,7 +110,8 @@ public class TestTdsDodsServer {
   -4226.1084
    */
 
-  private void testSingleDataset() throws IOException {
+  @Test
+  public void testSingleDataset() throws IOException {
     Catalog cat = TdsLocalCatalog.open(null);
 
     Dataset ds = cat.findDatasetByID("testDataset2");
@@ -168,8 +159,9 @@ public class TestTdsDodsServer {
     ncd.close();
   }
 
+  @Test
   public void testCompareWithFile() throws IOException {
-    final String urlPrefix = TestWithLocalServer.withPath("/dodsC/opendapTest/");
+    final String urlPrefix = TestWithLocalServer.withPath("/dodsC/scanCdmUnitTests/tds/opendap/");
     final String dirName = TestDir.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
     TestDir.actOnAll(dirName, new TestDir.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestDir.Act() {
@@ -182,7 +174,16 @@ public class TestTdsDodsServer {
 
         NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
         NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);
-        assert ucar.unidata.test.util.CompareNetcdf.compareFiles(org_ncfile, dods_file);
+
+        Formatter f = new Formatter();
+        CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
+        boolean ok = mind.compare(org_ncfile, dods_file, new TestDODScompareWithFiles.DodsObjFilter(), false, false, false);
+        if (!ok) {
+          System.out.printf("--Compare %s%n", filename);
+          System.out.printf("  %s%n", f);
+        }
+        Assert.assertTrue( localPath+ " != "+dodsUrl, ok);
+
         return 1;
       }
     }, false);

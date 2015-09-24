@@ -193,7 +193,14 @@ public class FeatureCollectionConfigBuilder {
       if (null != datasetTypes)
         config.fmrcConfig.addDatasetType(datasetTypes);
 
-      List<Element> bestElems = fmrcElem.getChildren("dataset", Catalog.defNS);
+      List<Element> bestElemsOld = fmrcElem.getChildren("dataset", Catalog.defNS);
+      for (Element best : bestElemsOld) {
+        String bestName = best.getAttributeValue("name");
+        String offs = best.getAttributeValue("offsetsGreaterEqual");
+        double off = Double.parseDouble(offs);
+        config.fmrcConfig.addBestDataset(bestName, off);
+      }
+      List<Element> bestElems = fmrcElem.getChildren("bestDataset", Catalog.defNS);
       for (Element best : bestElems) {
         String bestName = best.getAttributeValue("name");
         String offs = best.getAttributeValue("offsetsGreaterEqual");

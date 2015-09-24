@@ -120,13 +120,19 @@ public class HorizCoordSys2D extends HorizCoordSys {
   }
 
   @Override
-  public boolean findXYindexFromCoord(double x, double y, int[] startIndex) {
+  public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
     if (edges == null) edges = new Edges();
-    boolean ok = edges.findCoordElement(y, x, startIndex);
-    int save = startIndex[0];
-    startIndex[0] = startIndex[1];
-    startIndex[1] = save;
-    return ok;
+    CoordReturn result = new CoordReturn();
+    int[] index = new int[2];
+    boolean ok = edges.findCoordElement(y, x, index);
+    if (!ok)
+      return Optional.empty("not in grid2D");
+
+    result.x = index[1];
+    result.y = index[0];
+    result.xcoord = getLonAxis2D().getCoord(result.y, result.x);
+    result.ycoord = getLatAxis2D().getCoord(result.y, result.x);
+    return Optional.of(result);
   }
 
   @Override

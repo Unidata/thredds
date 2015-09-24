@@ -221,14 +221,14 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     // allows users to control services in ThreddsConfig, but not override the default if they havent set
     // LOOK only exposing the ones alreaady in use. maybe let user override tdsGlobalConfig.xml (phase out ThreddsConfig)
 
-    allowedServices.setAllow(StandardService.catalogRemote, ThreddsConfig.getBoolean("CatalogServices.allowRemote"));
-    allowedServices.setAllow(StandardService.wcs, ThreddsConfig.getBoolean("WCS.allow"));
-    allowedServices.setAllow(StandardService.wms, ThreddsConfig.getBoolean("WMS.allow"));
-    allowedServices.setAllow(StandardService.netcdfSubsetGrid, ThreddsConfig.getBoolean("NetcdfSubsetService.allow"));
-    allowedServices.setAllow(StandardService.netcdfSubsetPoint, ThreddsConfig.getBoolean("NetcdfSubsetService.allow"));
-    allowedServices.setAllow(StandardService.iso_ncml, ThreddsConfig.getBoolean("NCISO.ncmlAllow"));
-    allowedServices.setAllow(StandardService.uddc, ThreddsConfig.getBoolean("NCISO.uddcAllow"));
-    allowedServices.setAllow(StandardService.iso, ThreddsConfig.getBoolean("NCISO.isoAllow"));
+    allowedServices.setAllowService(StandardService.catalogRemote, ThreddsConfig.getBoolean("CatalogServices.allowRemote"));
+    allowedServices.setAllowService(StandardService.wcs, ThreddsConfig.getBoolean("WCS.allow"));
+    allowedServices.setAllowService(StandardService.wms, ThreddsConfig.getBoolean("WMS.allow"));
+    allowedServices.setAllowService(StandardService.netcdfSubsetGrid, ThreddsConfig.getBoolean("NetcdfSubsetService.allow"));
+    allowedServices.setAllowService(StandardService.netcdfSubsetPoint, ThreddsConfig.getBoolean("NetcdfSubsetService.allow"));
+    allowedServices.setAllowService(StandardService.iso_ncml, ThreddsConfig.getBoolean("NCISO.ncmlAllow"));
+    allowedServices.setAllowService(StandardService.uddc, ThreddsConfig.getBoolean("NCISO.uddcAllow"));
+    allowedServices.setAllowService(StandardService.iso, ThreddsConfig.getBoolean("NCISO.isoAllow"));
 
 
     // CDM configuration

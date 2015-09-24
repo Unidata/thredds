@@ -85,6 +85,10 @@ public class DtCoverageDataset implements AutoCloseable {
     return new DtCoverageDataset(ds, null);
   }
 
+  static public DtCoverageDataset open(NetcdfDataset ds) throws java.io.IOException {
+    return new DtCoverageDataset(ds, null);
+  }
+
   ////////////////////////////////////////
 
   private NetcdfDataset ncd;

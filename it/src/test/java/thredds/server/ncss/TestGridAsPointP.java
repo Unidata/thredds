@@ -46,6 +46,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
+import thredds.util.ContentType;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -78,7 +79,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class NcssGridAsPointTestP {
+public class TestGridAsPointP {
   static String ds1 = "ncss/grid/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
   static String varName1 = "Vertical_velocity_pressure_isobaric";
   static String query1 = "&latitude=37.86&longitude=-122.2&vertCoord=850"; // this particular variable has only 500, 700, 850 after forecast 120
@@ -100,7 +101,7 @@ public class NcssGridAsPointTestP {
   Double dataVal;
   CalendarDate date0;
 
-  public NcssGridAsPointTestP(String ds, String varName, String query, Integer ntimes, Double dataVal, String date0) {
+  public TestGridAsPointP(String ds, String varName, String query, Integer ntimes, Double dataVal, String date0) {
     this.ds = ds;
     this.varName = varName;
     this.query = query;
@@ -112,7 +113,7 @@ public class NcssGridAsPointTestP {
   @Test
   public void checkGridAsPointCsv() throws JDOMException, IOException {
     String endpoint = TestWithLocalServer.withPath(ds + "?var=" + varName + query + "&accept=csv");
-    byte[] result = call(endpoint, 200);
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.csv);
     Assert.assertNotNull(result);
     System.out.printf("CSV%n%s%n", new String( result, CDM.utf8Charset));
   }
@@ -120,7 +121,7 @@ public class NcssGridAsPointTestP {
   @Test
   public void checkGridAsPointXml() throws JDOMException, IOException {
     String endpoint = TestWithLocalServer.withPath(ds + "?var=" + varName + query + "&accept=xml");
-    byte[] result = call(endpoint, 200);
+    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
     Assert.assertNotNull(result);
     String xml = new String( result);
 
@@ -169,7 +170,7 @@ public class NcssGridAsPointTestP {
 
     // Open the result file as Station feature dataset
     Formatter errlog = new Formatter();
-    try (ucar.nc2.ft.FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, tempFile.getAbsolutePath(), null, errlog )) {
+    try (ucar.nc2.ft.FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, tempFile.getAbsolutePath(), null, errlog)) {
       assertNotNull(errlog.toString(), fd);
       VariableSimpleIF v = fd.getDataVariable(varName);
       assertNotNull(varName, v);
@@ -179,7 +180,7 @@ public class NcssGridAsPointTestP {
   @Test
   public void checkGridAsPointNetcdf() throws JDOMException, IOException {
     String endpoint = TestWithLocalServer.withPath(ds+"?var="+varName+query+"&accept=netcdf");
-    byte[] content = call(endpoint, 200);
+    byte[] content = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
     Assert.assertNotNull(content);
     System.out.printf("return size = %s%n", content.length);
 
@@ -187,29 +188,12 @@ public class NcssGridAsPointTestP {
     Formatter errlog = new Formatter();
     try (NetcdfFile nf = NetcdfFile.openInMemory("checkGridAsPointNetcdf.nc", content)) {
       // System.out.printf("%s%n", nf);
-      FeatureDataset fd = FeatureDatasetFactoryManager.wrap(FeatureType.STATION, new NetcdfDataset(nf),null, errlog);
+      FeatureDataset fd = FeatureDatasetFactoryManager.wrap(FeatureType.STATION, new NetcdfDataset(nf), null, errlog);
       assertNotNull(errlog.toString(), fd);
       VariableSimpleIF v = fd.getDataVariable(varName);
       assertNotNull(varName, v);
     }
   }
 
-  private byte[] call(String endpoint, int expectCode) throws HTTPException {
-    System.out.printf("req = '%s'%n", endpoint);
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
-      if (statusCode != 200) {
-        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
-        Assert.assertEquals(expectCode, statusCode);
-        return null;
-      }
-
-      Assert.assertEquals(expectCode, statusCode);
-      byte[] content = method.getResponseAsBytes();
-      assert content.length > 0;
-      return content;
-    }
-  }
 
 }

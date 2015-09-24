@@ -73,6 +73,7 @@ public class SubsetParams {
   public static final String timeOffset = "timeOffset"; // value = Double
   public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
 
+  public static final String vertRange = "vertRange";   // value = double[2]
   public static final String vertCoord = "vertCoord";   // value = Double
   public static final String ensCoord = "ensCoord";     // value = double ??
 
@@ -145,5 +146,7 @@ public class SubsetParams {
   public CalendarDateRange getTimeRange() { return (CalendarDateRange) get(timeRange);}
 
   public CalendarPeriod getTimeWindow() { return (CalendarPeriod) get(timeWindow);}
+
+  public double[] getVertRange() { return (double []) get(vertRange);}
 
 }

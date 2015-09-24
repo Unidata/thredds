@@ -483,11 +483,11 @@ public class HorizCoordSys {
     return result;
   }
 
-  public CoverageCoordAxis getXAxis() {
+  public CoverageCoordAxis1D getXAxis() {
     return (xaxis != null) ? xaxis : lonaxis;
   }
 
-  public CoverageCoordAxis getYAxis() {
+  public CoverageCoordAxis1D getYAxis() {
     return (yaxis != null) ? yaxis : lataxis;
   }
 
@@ -503,23 +503,42 @@ public class HorizCoordSys {
   private CoordAxisHelper yhelper;
   private CoordAxisHelper xhelper;
 
-  public boolean findXYindexFromCoord(double x, double y, int[] startIndex) {
+  public static class CoordReturn {
+    public int x, y;
+    public double xcoord, ycoord;
+  }
 
+  public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
+    CoordReturn result = new CoordReturn();
     if (isProjection) {
       if (xhelper == null) xhelper = new CoordAxisHelper(xaxis);
       if (yhelper == null) yhelper = new CoordAxisHelper(yaxis);
-      startIndex[0] = xhelper.findCoordElement(x, false);
-      startIndex[1] = yhelper.findCoordElement(y, false);
+      result.x = xhelper.findCoordElement(x, false);
+      result.y = yhelper.findCoordElement(y, false);
+
+      if (result.x >= 0 && result.x < xaxis.getNcoords() && result.y >= 0 && result.y < yaxis.getNcoords()) {
+        result.xcoord = xaxis.getCoord(result.x);
+        result.ycoord = yaxis.getCoord(result.y);
+        return Optional.of(result);
+      } else {
+        return Optional.empty("not in grid");
+      }
 
     } else { // 1D lat lon case
       if (xhelper == null) xhelper = new CoordAxisHelper(lonaxis);
       if (yhelper == null) yhelper = new CoordAxisHelper(lataxis);
       double lon = LatLonPointImpl.lonNormalFrom(x, lonaxis.getStartValue());
-      startIndex[0] = xhelper.findCoordElement(lon, false);
-      startIndex[1] = yhelper.findCoordElement(y, false);
-    }
+      result.x = xhelper.findCoordElement(lon, false);
+      result.y = yhelper.findCoordElement(y, false);
 
-    return startIndex[0] >= 0 && startIndex[0] < getXAxis().getNcoords() && startIndex[1] >= 0 && startIndex[1] < getYAxis().getNcoords();
+      if (result.x >= 0 && result.x < lonaxis.getNcoords() && result.y >= 0 && result.y < lataxis.getNcoords()) {
+        result.xcoord = lonaxis.getCoord(result.x);
+        result.ycoord = lataxis.getCoord(result.y);
+        return Optional.of(result);
+      } else {
+        return Optional.empty("not in grid");
+      }
+    }
   }
 
 }

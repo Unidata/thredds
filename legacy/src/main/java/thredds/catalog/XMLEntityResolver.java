@@ -169,22 +169,19 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   static private Map<String, String> entityHash = new HashMap<>();
 
   // schema validation
-  static private boolean schemaValidationOk = true;
-  static private final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-  static public final String W3C_XML_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
-  static private final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+  //static private boolean schemaValidationOk = true;
+  //static private final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+  //static public final String W3C_XML_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
+ // static private final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
 
   // catalog namespaces
   //static public final String CATALOG_NAMESPACE_06 = "http://www.unidata.ucar.edu/thredds";
   static public final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
 
-  // dqc namespaces
+  // dqc namespaces (still referenced in legacy)
   //static public final String DQC_NAMESPACE_02 = "http://www.unidata.ucar.edu/schemas/thredds/queryCapability";
   //static public final String DQC_NAMESPACE_03 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3";
   static public final String DQC_NAMESPACE_04 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.4";
-
-  // catgen namespace
-  static public final String CATGEN_NAMESPACE_05 = "http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v0.5";
 
   // nj22 namespaces
   static public final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
@@ -225,8 +222,8 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
     // catalog 1.0 schema
     initEntity( CATALOG_NAMESPACE_10,
-                "/resources/thredds/schemas/InvCatalog.1.0.7.xsd",
-                "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd");
+                "/resources/thredds/schemas/InvCatalog.1.2.xsd",
+                "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd");
 
     /* catalog 0.6 schema
     initEntity( CATALOG_NAMESPACE_06,

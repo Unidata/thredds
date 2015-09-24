@@ -34,6 +34,7 @@ package thredds.server.wcs.v1_0_0_1;
 
 import thredds.server.wcs.Request;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
@@ -90,7 +91,7 @@ public class WcsCoverage {
     WcsRangeField.Axis vertAxis;
     if (zaxis != null && zaxis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) {
       List<String> names = new ArrayList<>();
-      for (NamedObject val :  ((CoverageCoordAxis1D)zaxis).getCoordValueNames())
+      for (NamedObject val : ((CoverageCoordAxis1D) zaxis).getCoordValueNames())
         names.add(val.getName());
       vertAxis = new WcsRangeField.Axis("Vertical", zaxis.getName(), zaxis.getDescription(), true, names);
     } else
@@ -178,39 +179,16 @@ public class WcsCoverage {
   }
 
   public File writeCoverageDataToFile(Request.Format format, LatLonRect bboxLatLonRect, VerticalRange verticalRange, CalendarDateRange timeRange) throws WcsException {
-    /* Get the height range.
-    Range zRange = null;
-    try {
-      zRange = verticalRange != null ? verticalRange.getRange(this.coordSys) : null;
-    } catch (InvalidRangeException e) {
-      log.error("writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + "> along vertical range <" + verticalRange + ">: " + e.getMessage());
-      throw new WcsException(WcsException.Code.CoverageNotDefined, "Vertical", "Failed to subset coverage [" + this.coverage.getName() + "] along vertical range.");
+
+    SubsetParams params = new SubsetParams();
+    if (bboxLatLonRect != null)
+      params.set(SubsetParams.latlonBB, bboxLatLonRect);
+    if (timeRange != null)
+      params.set(SubsetParams.timeRange, timeRange);
+    if (verticalRange != null) {
+      double[] vr = new double[] {verticalRange.min, verticalRange.max};
+      params.set(SubsetParams.vertRange, vr);
     }
-
-    // Get the time range.
-    Range tRange = null;
-    if (timeRange != null) {
-      GridCoordAxisTime timeAxis = dataset.getTimeAxis(coordSys);
-      int startIndex = timeAxis.findTimeIndexFromCalendarDate(timeRange.getStart());
-      int endIndex = timeAxis.findTimeIndexFromCalendarDate(timeRange.getEnd());
-
-      if (startIndex < 0 || startIndex > timeAxis.getSize() - 1 || endIndex < 0 || endIndex > timeAxis.getSize() - 1) {
-        CalendarDateRange cdr = timeAxis.getCalendarDateRange();
-        String availStart = cdr.getStart().toString();
-        String availEnd = cdr.getEnd().toString();
-        String msg = "Requested temporal range [" + timeRange.getStart() + " - " + timeRange.getEnd()
-                + "] not in available range [" + availStart + " - " + availEnd + "].";
-        log.debug("writeCoverageDataToFile(): " + msg);
-        throw new WcsException(WcsException.Code.CoverageNotDefined, "Time", msg);
-      }
-
-      try {
-        tRange = new Range(startIndex, endIndex);
-      } catch (InvalidRangeException e) {
-        log.error("writeCoverageDataToFile(): Failed to subset coverage [" + this.coverage.getName() + "] along time axis [" + timeRange + "]: " + e.getMessage());
-        throw new WcsException(WcsException.Code.CoverageNotDefined, "Time", "Failed to subset coverage [" + this.coverage.getName() + "] along time axis [" + timeRange + "].");
-      }
-    } */
 
     /////////
     try {
@@ -220,17 +198,12 @@ public class WcsCoverage {
         if (log.isDebugEnabled())
           log.debug("writeCoverageDataToFile(): tifFile=" + tifFile.getPath());
 
-        try {
-          //GridCoverage subset = this.coverage.makeSubset(tRange, zRange, bboxLatLonRect, 1, 1, 1);  // LOOK do you need to subset it?
-          GeoReferencedArray array = coverage.readData(new SubsetParams());
+        //GridCoverage subset = this.coverage.makeSubset(tRange, zRange, bboxLatLonRect, 1, 1, 1);  // LOOK do you need to subset it?
+        GeoReferencedArray array = coverage.readData(params);
 
-          GeotiffWriter writer = new GeotiffWriter(tifFile.getPath());
+        try (GeotiffWriter writer = new GeotiffWriter(tifFile.getPath())) {
           writer.writeGrid(array, format == Request.Format.GeoTIFF);
 
-          writer.close();
-          //} catch (InvalidRangeException e) {
-        //  log.error("writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + "> along time axis <" + timeRange + ">: " + e.getMessage());
-       //   throw new WcsException(WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getName() + "].");
         } catch (Throwable e) {
           log.error("writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.coverage.getName() + ">: ", e);
           throw new WcsException(WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getName() + "].");
@@ -244,13 +217,14 @@ public class WcsCoverage {
         if (log.isDebugEnabled())
           log.debug("writeCoverageDataToFile(): ncFile=" + outFile.getPath());
 
-        SubsetParams subset = new SubsetParams();
         NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath());
         // LOOK could test file size
-        Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(this.wcsDataset.getDataset(), Collections.singletonList(this.coverage.getName()),
-                subset, true, false, writer);
-        if (!estimatedSizeo.isPresent())
-          throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
+        Optional<Long> opt = CFGridCoverageWriter2.writeOrTestSize(this.wcsDataset.getDataset(),
+                Collections.singletonList(this.coverage.getName()),
+                params, true, false, writer);
+
+        if (!opt.isPresent())
+          throw new InvalidRangeException("Request contains no data: " + opt.getErrorMessage());
 
         return outFile;
 
@@ -258,6 +232,7 @@ public class WcsCoverage {
         log.error("writeCoverageDataToFile(): Unsupported response encoding format [" + format + "].");
         throw new WcsException(WcsException.Code.InvalidFormat, "Format", "Unsupported response encoding format [" + format + "].");
       }
+
     } catch (InvalidRangeException e) {
       log.error("writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + ">: " + e.getMessage());
       throw new WcsException(WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getName() + "].");

@@ -95,7 +95,7 @@ public class AllowedServices {
   }
 
   // allows users to turn off services in ThreddsConfig
-  public void setAllow(StandardService service, Boolean allow) {
+  public void setAllowService(StandardService service, Boolean allow) {
     if (allow == null) return;
     AllowedService as = allowed.get(service);
     if (as == null)

@@ -4,8 +4,8 @@
                  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
 
 
-  <collection spec="Q:/support/DavidRobertson/espresso/.*.nc$"
-              name="espresso_2013_da_his_fmrc"
+  <collection spec="${cdmUnitTest}/ft/fmrc/espresso/.*.nc$"
+              name="espresso_2013_fmrc"
               dateFormatMark="#espresso_his_#yyyyMMdd_HHmm"
               olderThan="5 min" />
 

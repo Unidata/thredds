@@ -6,6 +6,7 @@ import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;
+import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;
@@ -261,21 +262,20 @@ public class CoverageRenderer {
 
     // find the grid indexes
     HorizCoordSys hcs = lastGrid.getCoordSys().getHorizCoordSys();
-    boolean ok = hcs.findXYindexFromCoord(loc.getX(), loc.getY(), valueIndex);
+    Optional<HorizCoordSys.CoordReturn> opt = hcs.findXYindexFromCoord(loc.getX(), loc.getY());
 
     // get value, construct the string
-    if (!ok)
-      return "outside grid area";
+    if (!opt.isPresent())
+      return opt.getErrorMessage();
     else {
-      int wantx = valueIndex[0];
-      int wanty = valueIndex[1];
+      HorizCoordSys.CoordReturn cr = opt.get();
       try {
         Index imaH = geodata.getIndex();
-        double dataValue = geodata.getDouble(imaH.set(wanty, wantx));
+        double dataValue = geodata.getDouble(imaH.set(cr.y, cr.x));
         // int wantz = (geocs.getZAxis() == null) ? -1 : lastLevel;
-        return makeXYZvalueStr(loc, dataValue, wantx, wanty);
+        return makeXYZvalueStr(dataValue, cr);
       } catch (Exception e) {
-        return "error " + wantx + " " + wanty;
+        return "error " + cr.x + " " + cr.y;
       }
     }
   }
@@ -345,68 +345,12 @@ public class CoverageRenderer {
     }
   } */
 
-  private String makeXYZvalueStr(ProjectionPoint loc, double value, int wantx, int wanty) {
-    if (lastGrid.isMissing(value)) {
-      //if (debugMiss) System.out.println("debug miss = "+value+" "+cs.getIndexFromValue(value));
-      if (Debug.isSet("pick/showGridIndexes"))
-        return ("missing data @ (" + wantx + "," + wanty + ")");
-      else
-        return "missing data";
-    }
-
+  private String makeXYZvalueStr(double value, HorizCoordSys.CoordReturn cr) {
+    String val = lastGrid.isMissing(value) ? "missing value" : Format.d(value, 6);
     Formatter sbuff = new Formatter();
-    sbuff.format("%s %s", Format.d(value, 6), lastGrid.getUnits());
-    sbuff.format(" @ (%f,%f)", loc.getX(), loc.getY());
-    sbuff.format("  [%d,%d]", wantx, wanty);
-
-    /* CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
-    CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
-    CoordinateAxis1D zaxis = geocs.getVerticalAxis();
-
-    sbuff.append(" @ ");
-
-    if ((wantx >= 0) && (wanty >= 0)) {
-      LatLonPointImpl lpt;
-      if (dataProjection.isLatLon())
-        lpt = new LatLonPointImpl(yaxis.getCoordValue(wanty), xaxis.getCoordValue(wantx));
-      else
-        lpt = dataProjection.projToLatLon(xaxis.getCoordValue(wantx), yaxis.getCoordValue(wanty));
-
-      sbuff.append(lpt.toString());
-      if (Debug.isSet("pick/showDataProjectionCoords")) {
-        sbuff.append("(" + Format.d(xaxis.getCoordValue(wantx), 3));
-        sbuff.append(" " + Format.d(yaxis.getCoordValue(wanty), 3));
-        sbuff.append(" " + xaxis.getUnitsString() + ")");
-      }
-      if (Debug.isSet("pick/showDisplayProjectionCoords")) {
-        ProjectionPoint pt = drawProjection.latLonToProj(lpt);
-        sbuff.append("(" + Format.d(pt.getX(), 3));
-        sbuff.append(" " + Format.d(pt.getY(), 3) + ")");
-      }
-      if (Debug.isSet("pick/showGridIndexes")) {
-        sbuff.append("(" + wantx + "," + wanty + ")");
-      }
-    } else if (wantx >= 0) {
-      if (dataProjection.isLatLon())
-        sbuff.append(LatLonPointImpl.latToString(xaxis.getCoordValue(wantx), 3));
-      else {
-        sbuff.append(" " + Format.d(xaxis.getCoordValue(wantx), 3));
-        sbuff.append(" " + xaxis.getUnitsString());
-      }
-    } else if (wanty >= 0) {
-      if (dataProjection.isLatLon())
-        sbuff.append(LatLonPointImpl.latToString(yaxis.getCoordValue(wanty), 3));
-      else {
-        sbuff.append(" " + Format.d(yaxis.getCoordValue(wanty), 3));
-        sbuff.append(" " + yaxis.getUnitsString());
-      }
-    }
-
-    /* if (wantz >= 0) {
-      sbuff.append(" " + Format.d(zaxis.getCoordValue(wantz), 3));
-      sbuff.append(" " + zaxis.getUnitsString());
-    } */
-
+    sbuff.format("%s %s", val, lastGrid.getUnits());
+    sbuff.format(" @ (%f,%f)", cr.xcoord, cr.ycoord);
+    sbuff.format("  [%d,%d]", cr.x, cr.y);
     return sbuff.toString();
   }
 

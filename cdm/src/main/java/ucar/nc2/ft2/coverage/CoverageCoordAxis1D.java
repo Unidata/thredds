@@ -400,9 +400,12 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
       case Pressure:
       case Height:
         Double dval = params.getDouble(SubsetParams.vertCoord);
-        if (dval != null) {
+        if (dval != null)
           return Optional.of(helper.subsetClosest(dval));
-        }
+        double[] vertRange = params.getVertRange();
+        if (vertRange != null)
+          return helper.subset(vertRange[0], vertRange[1], 1);
+
         // default is all
         break;
 
