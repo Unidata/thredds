@@ -10,7 +10,7 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 public class TestCoverageHorizSubset {
 
@@ -114,7 +114,7 @@ public class TestCoverageHorizSubset {
 
   @Test
   public void testDodsSubset() throws Exception {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best";
     System.out.printf("open %s%n", filename);
 
@@ -141,7 +141,7 @@ public class TestCoverageHorizSubset {
 
   @Test
   public void testCdmRemoteSubset() throws Exception {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     String filename = "cdmremote:http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/NAM/CONUS_40km/conduit/best";
     System.out.printf("open %s%n", filename);
 

@@ -1,6 +1,9 @@
 /* Copyright */
 package thredds.server.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -13,10 +16,6 @@ import thredds.util.ContentType;
 import ucar.httpservices.HTTPBasicProvider;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.NotJenkins;
-import ucar.unidata.test.util.NotTravis;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Test Admin services, needs authentications
