@@ -193,12 +193,17 @@ public class MetadataManager implements StoreKeyValue {
     return myEnv.getDatabaseNames();
   }
 
-  static public void deleteCollection(String collectionName) throws Exception {
+  static public synchronized void deleteCollection(String collectionName) throws Exception {
+    List<MetadataManager> closeDatabases = new ArrayList<>(openDatabases);
+
     // close any open handles
-    for (MetadataManager mm : openDatabases) {
+    for (MetadataManager mm : closeDatabases) {
       if (mm.collectionName.equals(collectionName)) {
-        if (mm.database != null)
+        if (mm.database != null) {
           mm.database.close();
+          mm.database = null;
+          openDatabases.remove(mm);
+        }
       }
     }
     myEnv.removeDatabase(null, collectionName);

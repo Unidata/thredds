@@ -377,13 +377,5 @@ public class CollectionController  {
     return null;
   }
 
-  public static void main(String[] args) throws UnsupportedEncodingException {
-    String s = "B:/lead/fmrc/ECMWF_Global_2p5_20150301_0000.nc#fmrInv.xml";
-    String enc = java.net.URLEncoder.encode( s, CDM.UTF8 );
-    String unenc = java.net.URLDecoder.decode(s, CDM.UTF8);
-    System.out.printf("%s == %s == %s%n", s, enc, unenc);
-
-
-  }
 
 }
