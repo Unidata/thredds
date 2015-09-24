@@ -4,10 +4,24 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
-import ucar.ma2.*;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.ArrayFloat;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
+import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.TestDir;
 
+/*
+On Travis, this class was causing:
+ucar.nc2.TestLargeGeneration > generateLargeFile STANDARD_ERROR
+    java.io.IOException: No space left on device
+Apparently, writing a 13.4GB file to disk on Travis is a no-no.
+
+In the future, potentially use the more general "Slow" category, because there's likely more places than just
+Travis where we don't want to run this.
+ */
+@Category(NotTravis.class)
 public class TestLargeGeneration {
 
   String latVarName = "lat";

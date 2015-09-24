@@ -14,7 +14,7 @@ dependencies {
     compile libraries["protobuf-java"]
     compile libraries["guava"]
     compile libraries["jcommander"]
-    compile libraries["aws-java-sdk-s3"]  // For CrawlableDatasetAmazonS3.
+
     // TODO: Do we need this in CDM?
     compile libraries["validation-api"]
     // TODO: Make sure we still need this
@@ -22,11 +22,9 @@ dependencies {
     
     compile libraries["slf4j-api"]
 
-    // These 4 are all for Spock.
+    // These are all for Spock.
     testCompile libraries["spock-core"]
     testCompile libraries["groovy-all"]
-    testRuntime libraries["cglib-nodep"]
-    testRuntime libraries["objenesis"]
 }
 
 test {
