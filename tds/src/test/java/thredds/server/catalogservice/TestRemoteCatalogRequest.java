@@ -35,7 +35,7 @@ package thredds.server.catalogservice;
 import junit.framework.TestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindingResult;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 /**
  * _defunct for now
@@ -66,7 +66,7 @@ public class TestRemoteCatalogRequest extends TestCase
 
   @Override
   public void setUp() {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
   }
 
   public void testCommandDefaultValues()

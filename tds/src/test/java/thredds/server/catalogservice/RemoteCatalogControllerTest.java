@@ -18,8 +18,8 @@ import org.springframework.web.context.WebApplicationContext;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
 import thredds.mock.web.MockTdsContextLoader;
+import ucar.unidata.test.util.ExternalServer;
 import ucar.unidata.test.util.NeedsContentRoot;
-import ucar.unidata.test.util.ThreddsServer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -47,7 +47,7 @@ public class RemoteCatalogControllerTest {
 
 	@Test
 	public void showCommandTest() throws Exception{
-		ThreddsServer.LIVE.assumeIsAvailable();
+		ExternalServer.LIVE.assumeIsAvailable();
 
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
 						.param("command", "SHOW")
@@ -64,7 +64,7 @@ public class RemoteCatalogControllerTest {
 
 	@Test
 	public void subsetCommandTest() throws Exception{
-		ThreddsServer.LIVE.assumeIsAvailable();
+		ExternalServer.LIVE.assumeIsAvailable();
  
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
 						.param("command", "SUBSET")
@@ -82,7 +82,7 @@ public class RemoteCatalogControllerTest {
 
 	@Test
 	public void validateCommandTest() throws Exception{
-		ThreddsServer.LIVE.assumeIsAvailable();
+		ExternalServer.LIVE.assumeIsAvailable();
  
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
 						.param("command", "VALIDATE")

@@ -33,9 +33,12 @@
 package ucar.nc2.util.net;
 
 import org.apache.http.HttpEntity;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import ucar.httpservices.*;
 import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -103,6 +106,12 @@ public class TestFormBuilder extends UnitTestCommon
         prop_visual = true; // force
     }
 
+    @Before
+    public void setUp()
+    {
+        ExternalServer.HTTPKIT.assumeIsAvailable();
+    }
+
     @Test
     public void
     testSimple()
@@ -139,7 +148,7 @@ public class TestFormBuilder extends UnitTestCommon
             exc.printStackTrace();
             pass = false;
         }
-        assertTrue("TestFormBuilder.simple: failed", pass);
+        Assert.assertTrue("TestFormBuilder.simple: failed", pass);
     }
 
     @Test
@@ -185,7 +194,7 @@ public class TestFormBuilder extends UnitTestCommon
             exc.printStackTrace();
             pass = false;
         }
-        assertTrue("TestFormBuilder.multipart: failed", pass);
+        Assert.assertTrue("TestFormBuilder.multipart: failed", pass);
     }
 
     protected HTTPFormBuilder buildForm(boolean multipart)

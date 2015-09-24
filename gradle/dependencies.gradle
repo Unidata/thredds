@@ -9,6 +9,14 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
     repositories {
         mavenCentral()
         maven {
+            // JitPack builds GitHub projects on demand and publishes ready-to-use packages.
+            // We need this because Spock requires CGLIB 3.2+ in order to work on Java 8.
+            // However, as of 2015-08-26, v3.2 hasn't been released, even though working code exists on master.
+            // So, using JitPack, we're going to grab an appropriate CGLIB artifact.
+            // See https://github.com/cglib/cglib/issues/32
+            url "https://jitpack.io"  // For libraries["cglib-nodep"]
+        }
+        maven {
             url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
         }
         maven {
@@ -115,9 +123,18 @@ libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfu
 
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 
-libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.1"
+// These four are all for Spock.
 
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
+
+libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.1"
+
+// In Spock, allows mocking of classes (in addition to interfaces).
+// 5503bcca74 is the most recent commit on the cglib master branch as of 2015-08-26.
+libraries["cglib-nodep"] = "com.github.cglib.cglib:cglib-nodep:5503bcca74"
+
+// In Spock, allows mocking of classes without default constructor (together with CGLIB).
+libraries["objenesis"] = "org.objenesis:objenesis:2.2"
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 
@@ -139,6 +156,9 @@ libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.1"
 
 libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.4.1"
 
+// Old and crufty. Only used by TdsMonitor in :ui. Can we switch to Guava caches?
+libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
+
 libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"
 
 libraries["jcip-annotations"] = "net.jcip:jcip-annotations:1.0"
@@ -149,7 +169,7 @@ libraries["je"] = "com.sleepycat:je:4.0.92"
 
 libraries["jna"] = "net.java.dev.jna:jna:4.1.0"
 
-libraries["joda-time"] = "joda-time:joda-time:2.2"
+libraries["joda-time"] = "joda-time:joda-time:2.8.1"
 
 libraries["jsoup"] = "org.jsoup:jsoup:1.7.2"
 
@@ -187,7 +207,7 @@ libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.1") {
     // This is an external dependency on an old artifact of ours.
     // The "cdm" artifact that we build in this project will take its place.
     // This needs to be a local exclusion; globally excluding "edu.ucar:cdm" would be very bad.
-    exclude group: 'edu.ucar', module: 'cdm'  // version "4.6.0"
+    exclude group: 'edu.ucar', module: 'cdm'  // version "4.6.1"
 }
 
 libraries["geoapi-pending"] = "org.opengis:geoapi-pending:3.1-M04"
@@ -202,7 +222,9 @@ libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.1.Fina
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
-libraries["threddsIso"] = "EDS:threddsIso:2.2.6"
+libraries["threddsIso"] = "EDS:threddsIso:2.2.7"
+
+libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.10.11"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 

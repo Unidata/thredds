@@ -1,5 +1,5 @@
 Making a release for CDM/TDS using Gradle
-Last edited 2015/05/17
+Last edited 2015/08/31
 
 {release.minor} refers to the full, 3-part version, e.g. "4.6.1"
 {release.major} refers to the truncated, 2-part version, e.g. "4.6"
@@ -21,7 +21,7 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
    - gradlew clean publish
    - Check artifacts at http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/
 
-7. On robin, prepare the FTP directory for the new version of TDS and TDM (best to do from SSH)
+7. On www, prepare the FTP directory for the new version of TDS and TDM (best to do from SSH)
   - cd /web/ftp/pub/thredds/{release.major}
   - mkdir {release.minor}
   - move /web/ftp/pub/thredds/{release.major}/current to point to /web/ftp/pub/thredds/{release.major}/{release.minor}
@@ -68,7 +68,7 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
     - chmod 775 .
     - chmod 664 *
 
-14. Release Web Start to robin:/content/software/thredds/v{release.major}/netcdf-java/webstart
+14. Release Web Start to www:/content/software/thredds/v{release.major}/netcdf-java/webstart
     - Make sure that you have the correct gradle.properties (see Christian for info). In particular, you'll need the
       'keystore', 'keystoreAlias', 'keystorePassword', 'webdir', and 'ftpdir' properties defined.
     - Rename old directories
@@ -81,7 +81,7 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
     - If there were no errors and the new Web Start looks good, delete the old stuff.
       * rm -r webstartOld
 
-15. Release Javadoc to robin:/content/software/thredds/v{release.major}/netcdf-java/javadoc and javadocAll
+15. Release Javadoc to www:/content/software/thredds/v{release.major}/netcdf-java/javadoc and javadocAll
     - Rename old directories
       * cd /content/software/thredds/v{release.major}/netcdf-java/
       * mv javadoc javadocOld
@@ -104,9 +104,9 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
 
 17. Update Unidata download page(s)
     - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
-      * modify robin:/content/downloads/thredds/toc.xml as needed
+      * modify www:/content/downloads/thredds/toc.xml as needed
     - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
-      * modify robin:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
+      * modify www:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
 
 18. Commit the changes you've made.
     - At the very least, project.version in the root build script should have been modified.
@@ -118,16 +118,16 @@ change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepa
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
       * For example, if {release.minor}="4.6.1", the next version will be "4.6.2-SNAPSHOT".
     - Commit the change.
-      * The commit message should be something like "Starting work on 4.6.2-SNAPSHOT".
+      * The commit message should be something like "Begin work on 4.6.2-SNAPSHOT".
 
 21. Push the commits upstream.
     - Be sure to include the tag you created.
       * In IntelliJ, check the "Push Tags" box in the "Push Commits" dialog.
 
-22. On Robin, edit /web/content/software/thredds/latest.xml to reflect the correct
+22. On www, edit /web/content/software/thredds/latest.xml to reflect the correct
     {release.minor} version for stable and development. This file is read by all
-    TDS > v4.6 to make log enteries regarding current stable and development versions
-    to give users a heads up of the need update.
+    TDS > v4.6 to make log entries regarding current stable and development versions
+    to give users a heads-up of the need update.
 
 NOTE 1: In the Maven build, the maven-release-plugin roughly handled steps 2-6 and 18-21 for us. In the future, we
 should investigate similar Gradle plugins that offer the same functionality.

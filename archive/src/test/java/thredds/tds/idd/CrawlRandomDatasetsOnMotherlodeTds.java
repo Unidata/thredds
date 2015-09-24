@@ -32,17 +32,17 @@
 
 package thredds.tds.idd;
 
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.Test;
+import ucar.unidata.test.util.ExternalServer;
 import ucar.unidata.test.util.NotTravis;
-import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 
 
 @Category(NotTravis.class)
@@ -86,7 +86,7 @@ public class CrawlRandomDatasetsOnMotherlodeTds
     @Test
     public void crawlDataset()
     {
-        ThreddsServer.LIVE.assumeIsAvailable();
+        ExternalServer.LIVE.assumeIsAvailable();
         CatalogDatasetTestUtils.assertDatasetIsAccessible( this.datasetUrl);
     }
 }

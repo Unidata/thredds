@@ -32,18 +32,30 @@
  */
 package thredds.catalog;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import thredds.catalog.util.DeepCopyUtils;
-import thredds.cataloggen.*;
+import thredds.cataloggen.CatalogBuilder;
+import thredds.cataloggen.CatalogRefExpander;
+import thredds.cataloggen.DatasetEnhancer;
+import thredds.cataloggen.DatasetScanCatalogBuilder;
+import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.cataloggen.datasetenhancer.RegExpAndDurationTimeCoverageEnhancer;
 import thredds.cataloggen.inserter.SimpleLatestProxyDsHandler;
-import thredds.crawlabledataset.*;
+import thredds.crawlabledataset.CrawlableDataset;
+import thredds.crawlabledataset.CrawlableDatasetFactory;
+import thredds.crawlabledataset.CrawlableDatasetFilter;
+import thredds.crawlabledataset.CrawlableDatasetLabeler;
+import thredds.crawlabledataset.CrawlableDatasetSorter;
+import thredds.crawlabledataset.filter.RegExpMatchOnNameFilter;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
-import thredds.crawlabledataset.filter.*;
-
-import java.net.URI;
-import java.io.IOException;
-import java.util.*;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Represents server-side information on how to scan a collection of datasets
@@ -407,46 +419,18 @@ public class InvDatasetScan extends InvCatalogRef {
   public boolean isValid() { return isValid; }
   public String getInvalidMessage() { return invalidMessage.toString(); }
 
-  private CrawlableDataset createScanLocationCrDs()
-  {
-    // Create the CrawlableDataset for the scan location (scanLocation).
-    CrawlableDataset scanLocationCrDs;
-    try
-    {
-      scanLocationCrDs = CrawlableDatasetFactory.createCrawlableDataset( scanLocation, crDsClassName, crDsConfigObj );
-    }
-    catch ( IllegalAccessException e )
-    {
-      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+  private CrawlableDataset createScanLocationCrDs() {
+    try {
+      // Create the CrawlableDataset for the scan location (scanLocation).
+      return CrawlableDatasetFactory.createCrawlableDataset(scanLocation, crDsClassName, crDsConfigObj);
+    } catch (IllegalAccessException | NoSuchMethodException | IOException | InvocationTargetException |
+            InstantiationException | ClassNotFoundException e) {
+      String message = String.format(
+              "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <%s> and class <%s>",
+              scanLocation, crDsClassName);
+      log.error(message, e);
       return null;
     }
-    catch ( NoSuchMethodException e )
-    {
-      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
-      return null;
-    }
-    catch ( IOException e )
-    {
-      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
-      return null;
-    }
-    catch ( InvocationTargetException e )
-    {
-      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
-      return null;
-    }
-    catch ( InstantiationException e )
-    {
-      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
-      return null;
-    }
-    catch ( ClassNotFoundException e )
-    {
-      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
-      return null;
-    }
-
-    return scanLocationCrDs;
   }
 
   private CatalogBuilder buildCatalogBuilder()

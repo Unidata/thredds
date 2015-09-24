@@ -32,13 +32,16 @@
 
 package ucar.nc2.util.net;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.InputStream;
 
@@ -76,11 +79,12 @@ public class TestHTTPMethod extends UnitTestCommon
         setTitle("HTTP Method tests");
     }
 
-    @Override
+    @Before
     public void setUp() {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
+        ExternalServer.REMOTETEST.assumeIsAvailable();
     }
 
+    @Test
     public void
     testGetStream() throws Exception
     {
@@ -105,9 +109,10 @@ public class TestHTTPMethod extends UnitTestCommon
                 pass = true;
             }
         }
-        assertTrue("TestHTTPMethod.testGetStream", pass);
+        Assert.assertTrue("TestHTTPMethod.testGetStream", pass);
     }
 
+    @Test
     public void
     testGetStreamPartial() throws Exception
     {
@@ -131,6 +136,6 @@ public class TestHTTPMethod extends UnitTestCommon
                 pass = true;
             }
         }
-        assertTrue("TestHTTPMethod.testGetStreamPartial", pass);
+        Assert.assertTrue("TestHTTPMethod.testGetStreamPartial", pass);
     }
 }

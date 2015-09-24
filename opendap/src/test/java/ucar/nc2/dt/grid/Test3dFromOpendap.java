@@ -35,13 +35,13 @@ package ucar.nc2.dt.grid;
 import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 public class Test3dFromOpendap {
 
   @Test
   public void test3D() throws Exception {
-    ThreddsServer.TEST.assumeIsAvailable();
+    ExternalServer.TEST.assumeIsAvailable();
     try (GridDataset dataset = GridDataset.open("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
 
       GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");

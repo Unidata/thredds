@@ -68,7 +68,6 @@ public class TestCFPointDatasets {
     return result;
   }
 
-
   public static List<Object[]> getStationDatasets() {
     List<Object[]> result = new ArrayList<>();
 
@@ -112,6 +111,7 @@ public class TestCFPointDatasets {
 
     result.add(new Object[]{CFpointObs_topdir + "trajSingle.ncml", FeatureType.TRAJECTORY, 10});
     result.add(new Object[]{CFpointObs_topdir + "trajMultidim.ncml", FeatureType.TRAJECTORY, 20});
+    result.add(new Object[]{CFpointObs_topdir + "trajMultidimJoinTime.ncml", FeatureType.TRAJECTORY, 20});
     result.add(new Object[]{CFpointObs_topdir + "trajMultidimMissingId.ncml", FeatureType.TRAJECTORY, 30});
     result.add(new Object[]{CFpointObs_topdir + "trajMultidimMissingTime.ncml", FeatureType.TRAJECTORY, 18});
     result.add(new Object[]{CFpointObs_topdir + "trajRaggedContig.ncml", FeatureType.TRAJECTORY, 6});
@@ -180,8 +180,8 @@ public class TestCFPointDatasets {
 
   @Test
   public void checkPointDataset() throws IOException {
-    TestPointDatasets test = new TestPointDatasets(location, ftype, countExpected);
-    assert countExpected == test.checkPointDataset(location, ftype, show);
+    // TestPointDatasets test = new TestPointDatasets(location, ftype, countExpected);
+    assert countExpected == TestPointDatasets.checkPointDataset(location, ftype, show);
   }
 
     // Convert all NCML files in CFpointObs_topdir to NetCDF-3 files.

@@ -32,12 +32,14 @@
 
 package opendap.test;
 
+import org.junit.Assert;
+import org.junit.Test;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.test.Diff;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -77,7 +79,7 @@ public class TestGroups extends UnitTestCommon
     definetestcases()
     {
         String threddsRoot = getThreddsroot();
-        testcases = new ArrayList<Testcase>();
+        testcases = new ArrayList<>();
         if(false) {// use this arm to do debugging
             testcases.add(new Testcase("External user provided group example",
                 "http://" + testserver + "/thredds/dodsC/testdods/K1VHR.nc",
@@ -113,19 +115,20 @@ public class TestGroups extends UnitTestCommon
         }
     }
 
+    @Test
     public void
     testGroup() throws Exception
     {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
+        ExternalServer.REMOTETEST.assumeIsAvailable();
         // Run  with usegroups == true
         if(!usegroups)
-            assertTrue("TestGroups: Group Support not enabled", false);
+            Assert.assertTrue("TestGroups: Group Support not enabled", false);
         System.out.println("TestGroups:");
         for(Testcase testcase : testcases) {
             System.out.println("url: " + testcase.url);
             boolean pass = process1(testcase);
             if(!pass)
-                assertTrue("Testing " + testcase.title, pass);
+                Assert.assertTrue("Testing " + testcase.title, pass);
         }
     }
 

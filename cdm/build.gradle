@@ -14,13 +14,19 @@ dependencies {
     compile libraries["protobuf-java"]
     compile libraries["guava"]
     compile libraries["jcommander"]
+    compile libraries["aws-java-sdk-s3"]  // For CrawlableDatasetAmazonS3.
+    // TODO: Do we need this in CDM?
     compile libraries["validation-api"]
+    // TODO: Make sure we still need this
     compile libraries["jsr305"]
-
-    testCompile libraries["groovy-all"]
-    testCompile libraries["spock-core"]
-
+    
     compile libraries["slf4j-api"]
+
+    // These 4 are all for Spock.
+    testCompile libraries["spock-core"]
+    testCompile libraries["groovy-all"]
+    testRuntime libraries["cglib-nodep"]
+    testRuntime libraries["objenesis"]
 }
 
 test {
@@ -82,7 +88,7 @@ task testJar(type: Jar, dependsOn: testClasses,
         include 'ucar/unidata/test/util/CompareNetcdf.class'
         include 'ucar/unidata/test/util/TestDir*.class'
         include 'ucar/unidata/test/util/TestFileDirUtils.class'
-        include 'ucar/unidata/test/util/ThreddsServer.class'
+        include 'ucar/unidata/test/util/ExternalServer.class'
         include 'ucar/unidata/test/util/UtilsMa2Test.class'
         include 'ucar/unidata/test/util/UtilsTestStructureArray.class'
 

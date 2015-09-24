@@ -2,7 +2,7 @@
 <p:resource xmlns:p="http://datacite.org/schema/kernel-3"
         xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd">
-  <p:identifier identifierType="DOI">10.9999/9999</p:identifier>
+  <p:identifier identifierType="DOI">10.5065/D6N014KG</p:identifier>
   <p:creators>
     <p:creator>
       <p:creatorName>John Caron</p:creatorName>
@@ -36,7 +36,7 @@
     <p:title>Unidata THREDDS Data Server</p:title>
     <p:title titleType="AlternativeTitle">TDS</p:title>
   </p:titles>
-  <p:publisher>University Corporation for Atmospheric Research, Unidata</p:publisher>
+  <p:publisher>UCAR/NCAR - Unidata</p:publisher>
   <p:publicationYear>1997</p:publicationYear>
   <p:subjects>
  	<p:subject subjectScheme="LC"
@@ -73,13 +73,13 @@
 	Julien Chastang
 	-->
     <p:contributor contributorType="Distributor">
-      <p:contributorName>University Corporation for Atmospheric Research, Unidata</p:contributorName>
+      <p:contributorName>University Corporation for Atmospheric Research (UCAR): UCAR Community Programs (UCP): Unidata</p:contributorName>
     </p:contributor>
     <p:contributor contributorType="Funder">
       <p:contributorName>National Science Foundation</p:contributorName>
     </p:contributor>
     <p:contributor contributorType="HostingInstitution">
-      <p:contributorName>University Corporation for Atmospheric Research, Unidata</p:contributorName>
+      <p:contributorName>University Corporation for Atmospheric Research (UCAR): UCAR Community Programs (UCP): Unidata</p:contributorName>
     </p:contributor>
     <!--p:contributor contributorType="ResearchGroup">
       <p:contributorName>National Oceanic and Atmospheric Administration, Earth System Research Laboratory
@@ -89,8 +89,8 @@
   <!-- Please see here for an explanation of date ranges http://www.ukoln.ac.uk/metadata/dcmi/collection-RKMS-ISO8601/ -->
   <p:dates>
     <p:date dateType="Created">1997</p:date>
-    <p:date dateType="Copyrighted">1997/</p:date>
-    <p:date dateType="Updated">1997/</p:date>
+    <p:date dateType="Copyrighted">1997</p:date>
+    <p:date dateType="Updated">1997</p:date>
   </p:dates>
   <p:language>en</p:language>
   <p:formats>

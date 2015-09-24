@@ -41,10 +41,8 @@ import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.test.util.NotTravis;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +58,7 @@ import java.net.URISyntaxException;
 public class TestStream {
   @Test
   public void testStream1() throws URISyntaxException {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
@@ -83,7 +81,7 @@ public class TestStream {
 
   @Test
   public void testString() throws URISyntaxException {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 

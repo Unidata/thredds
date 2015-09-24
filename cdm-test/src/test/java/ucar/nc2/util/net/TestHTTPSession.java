@@ -32,6 +32,7 @@
 
 package ucar.nc2.util.net;
 
+import org.junit.Assert;
 import org.junit.Before;
 import ucar.httpservices.*;
 
@@ -42,7 +43,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.message.AbstractHttpMessage;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class TestHTTPSession extends UnitTestCommon
 
     @Before
     public void setUp() {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
+        ExternalServer.REMOTETEST.assumeIsAvailable();
     }
 
     @Test
@@ -98,11 +99,11 @@ public class TestHTTPSession extends UnitTestCommon
             // Use special interface to access the request
             // Look for the user agent header
             List<Header> agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
-            assertFalse("User-Agent Header not found", agents.size() == 0);
-            assertFalse("Multiple User-Agent Headers", agents.size() > 1);
-            assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
-                    GLOBALAGENT, agents.get(0).getValue()),
-                GLOBALAGENT.equals(agents.get(0).getValue()));
+            Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
+            Assert.assertFalse("Multiple User-Agent Headers", agents.size() > 1);
+            Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
+                            GLOBALAGENT, agents.get(0).getValue()),
+                    GLOBALAGENT.equals(agents.get(0).getValue()));
             System.out.println("*** Pass: set global agent");
 
             System.out.println("Test: HTTPSession.setUserAgent(" + SESSIONAGENT + ")");
@@ -113,11 +114,11 @@ public class TestHTTPSession extends UnitTestCommon
 
             // Use special interface to access the request
             agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
-            assertFalse("User-Agent Header not found", agents.size() == 0);
-            assertFalse("Multiple User-Agent Headers", agents.size() > 1);
-            assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
-                    SESSIONAGENT, agents.get(0).getValue()),
-                SESSIONAGENT.equals(agents.get(0).getValue()));
+            Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
+            Assert.assertFalse("Multiple User-Agent Headers", agents.size() > 1);
+            Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
+                            SESSIONAGENT, agents.get(0).getValue()),
+                    SESSIONAGENT.equals(agents.get(0).getValue()));
             System.out.println("*** Pass: set session agent");
         }
     }
@@ -153,22 +154,22 @@ public class TestHTTPSession extends UnitTestCommon
 
             boolean b = dbgreq.getParams().getBooleanParameter(HTTPSession.ALLOW_CIRCULAR_REDIRECTS, true);
             System.out.println("Test: Circular Redirects");
-            assertTrue("*** Fail: Circular Redirects", b);
+            Assert.assertTrue("*** Fail: Circular Redirects", b);
             System.out.println("*** Pass: Circular Redirects");
 
             System.out.println("Test: Max Redirects");
             int n = dbgreq.getParams().getIntParameter(MAX_REDIRECTS, -1);
-            assertTrue("*** Fail: Max Redirects", n == 111);
+            Assert.assertTrue("*** Fail: Max Redirects", n == 111);
             System.out.println("*** Pass: Max Redirects");
 
             System.out.println("Test: SO Timeout");
             n = dbgreq.getParams().getIntParameter(SO_TIMEOUT, -1);
-            assertTrue("*** Fail: SO Timeout", n == 17777);
+            Assert.assertTrue("*** Fail: SO Timeout", n == 17777);
             System.out.println("*** Pass: SO Timeout");
 
             System.out.println("Test: Connection Timeout");
             n = dbgreq.getParams().getIntParameter(CONN_TIMEOUT, -1);
-            assertTrue("*** Fail: Connection Timeout", n == 37777);
+            Assert.assertTrue("*** Fail: Connection Timeout", n == 37777);
             System.out.println("*** Pass: SO Timeout");
 
         /* no longer used

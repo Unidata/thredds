@@ -34,10 +34,11 @@ package ucar.nc2.util.net;
 
 import ucar.httpservices.*;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.nio.charset.Charset;
 
@@ -77,72 +78,72 @@ public class TestState extends UnitTestCommon
     testState()
         throws Exception
     {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
+        ExternalServer.REMOTETEST.assumeIsAvailable();
         int status = 0;
         HTTPSession session = HTTPFactory.newSession(SESSIONURL); // do NOT use try(){}
-        assertFalse(session.isClosed());
+        Assert.assertFalse(session.isClosed());
 
         // Check state transitions for open and execute
         HTTPMethod method = HTTPFactory.Get(session, TESTSOURCE1);
-        assertFalse(method.isClosed());
+        Assert.assertFalse(method.isClosed());
         int methodcount = session.getMethodcount();
-        assertTrue(methodcount == 1);
+        Assert.assertTrue(methodcount == 1);
 
         // Check that stream close causes method close
         status = method.execute();
         HTTPMethodStream stream = (HTTPMethodStream) method.getResponseBodyAsStream();
-        assertTrue(method.hasStreamOpen());
+        Assert.assertTrue(method.hasStreamOpen());
         stream.close();
-        assertTrue(method.isClosed());
-        assertFalse(method.hasStreamOpen());
+        Assert.assertTrue(method.isClosed());
+        Assert.assertFalse(method.hasStreamOpen());
         methodcount = session.getMethodcount();
-        assertTrue(methodcount == 0);
+        Assert.assertTrue(methodcount == 0);
 
         // Check that method close forcibly closes streams
         method = HTTPFactory.Get(session, TESTSOURCE1);
         methodcount = session.getMethodcount();
-        assertTrue(methodcount == 1);
+        Assert.assertTrue(methodcount == 1);
         status = method.execute();
         stream = (HTTPMethodStream) method.getResponseBodyAsStream();
         method.close();
-        assertTrue(stream.isClosed());
-        assertFalse(method.hasStreamOpen());
-        assertTrue(method.isClosed());
+        Assert.assertTrue(stream.isClosed());
+        Assert.assertFalse(method.hasStreamOpen());
+        Assert.assertTrue(method.isClosed());
 
         // Check that session close closes methods and streams
         // and transitively until stream close
         method = HTTPFactory.Get(session,TESTSOURCE1);
         methodcount = session.getMethodcount();
-        assertTrue(methodcount == 1);
+        Assert.assertTrue(methodcount == 1);
         status = method.execute();
         stream = (HTTPMethodStream) method.getResponseBodyAsStream();
         session.close();
-        assertTrue(stream.isClosed());
-        assertTrue(method.isClosed());
+        Assert.assertTrue(stream.isClosed());
+        Assert.assertTrue(method.isClosed());
         methodcount = session.getMethodcount();
-        assertTrue(methodcount == 0);
-        assertTrue(session.isClosed());
+        Assert.assertTrue(methodcount == 0);
+        Assert.assertTrue(session.isClosed());
 
         // Test Local session
         method = HTTPFactory.Get(TESTSOURCE1);
-        assertTrue(method.isSessionLocal());
+        Assert.assertTrue(method.isSessionLocal());
         session = method.getSession();
         methodcount = session.getMethodcount();
-        assertTrue(methodcount == 1);
+        Assert.assertTrue(methodcount == 1);
         status = method.execute();
         String body = method.getResponseAsString();// will close stream
         try {
             stream = (HTTPMethodStream) method.getResponseBodyAsStream();
             readbinaryfile(stream);
             System.err.println("Stream not closed.");
-            assertFalse(stream.isClosed());
+            Assert.assertFalse(stream.isClosed());
         } catch (Exception e) {
-            assertFalse(method.hasStreamOpen());
+            Assert.assertFalse(method.hasStreamOpen());
         }
-        assertTrue(method.isClosed());
+        Assert.assertTrue(method.isClosed());
         methodcount = session.getMethodcount();
-        assertTrue(methodcount == 0);
-        assertTrue(session.isClosed());
+        Assert.assertTrue(methodcount == 0);
+        Assert.assertTrue(session.isClosed());
     }
 
 

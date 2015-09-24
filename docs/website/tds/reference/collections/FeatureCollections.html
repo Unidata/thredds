@@ -510,64 +510,46 @@ telling the TDS that it should reread the collection into memory. This is useful
 changed can be costly.</p>
 </li>
 </ol>
-</div>
-<div class="paragraph">
-<p>The XML Schema definition for the <em>update</em> element:</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>&lt;xsd:complexType name="updateType"&gt;
- 1)  &lt;xsd:attribute name="startup" type="xsd:token"/&gt;
- 2)  &lt;xsd:attribute name="recheckAfter" type="xsd:string" /&gt;
- 3)  &lt;xsd:attribute name="rescan" type="xsd:token"/&gt;
- 4)  &lt;xsd:attribute name="trigger" type="xsd:token"/&gt;
-&lt;/xsd:complexType&gt;</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>where:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>startup</strong>: [<em>never</em> | <em>nocheck</em> | <em>testIndexOnly</em> | <em>test</em> | <em>always</em>] The collection may be read in on server startup, and tested whether
-it is up to date.</p>
-<div class="ulist">
-<ul>
-<li>
-<p>If "<em>never</em>", the collection is used as it is. The collection index must already exist. Use this for very large collections that you dont want to
-inadvertently scan.</p>
-</li>
-<li>
-<p>If "<em>nocheck</em>", the collection index is used if it exists, without checking whether its up-to-date. If it doesnt exist, build it. <strong>This is the default in version 5.</strong></p>
-</li>
-<li>
-<p>If "<em>testIndexOnly</em>", the collection index is used if it exists and it is newer than all of its immediate children. (<strong>experimental</strong>)</p>
-</li>
-<li>
-<p>If "<em>test</em>" or "<em>true</em>", the collection is scanned and the new collection of children is compared to the old collection. If there are any
-changes the index is rebuilt.</p>
-</li>
-<li>
-<p>If "<em>always</em>", the collection is always rescanned and the indices are rebuilt.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait
-until the scan is finished and a new collection is built (if needed), and so is called <em>synchronous updating</em>. <em>*This option will be ignored if you
-are using the rescan attribute or if you have a tdm element.*</em></p>
-</li>
-<li>
-<p><strong>rescan</strong>: uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be
-rescanned in a background task, and testsed to see if it has changed. This is called <em>asynchronous updating</em>.</p>
-</li>
-<li>
-<p><strong>trigger</strong>: if set to "allow" (default), then external triggering will be allowed. This allows collections to be updated by an external program
-(or person using a browser) sending an explicit "trigger" URL to the server. This URL is protected by HTTPS, so you must <a href="#trigger">enable
-triggers</a><a href="../RemoteManagement.html" class="bare">../RemoteManagement.html</a> for this to work. Set this to "false" to disable triggering.</p>
-</li>
+<p>The XML Schema definition for the <em>update</em> element:
+</p>
+<pre>
+&lt;xsd:complexType name=&quot;updateType&quot;&gt;<br/> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:token&quot;/&gt;<br/> 2)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
+ 3)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br/> 4)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br/>&lt;/xsd:complexType&gt;<br/></pre>
+
+<p> where: </p>
+<ol>
+  <li><strong>startup</strong>: [<em>never</em> | <em>nocheck</em> | <em>testIndexOnly</em> | <em>test</em> | <em>always</em>] The collection is always read in on server startup. This attribute controls whether the collection index is tested and rebuilt.
+    <ul>
+      <li>For GRIB:
+        <ul>
+        <li>If &quot;<em>never</em>&quot;, the collection index is always used and must exist. Use this for very large collections that you dont want to inadvertently scan.</li>
+        <li>If &quot;<em>nocheck</em>&quot;, the collection index is  used if it exists, without checking whether its up-to-date. <strong>This is the default.</strong></li>
+        <li>If
+        &quot;<em>testIndexOnly</em>&quot;, the collection index is  used if it exists and it is newer than all of its immediate children. (<strong>experimental</strong>)</li>
+        <li>If
+        &quot;<em>test</em>&quot; or &quot;<em>true</em>&quot;, the collection is scanned and the new collection of children is compared to the old collection. If there are any changes the index is rebuilt.</li>
+        <li>If &quot;<em>always</em>&quot;, the collection is always rescanned and the indices are rebuilt. </li>
+        </ul>
+      </li>
+      <li>For FMRC:
+      <ul>
+        <li>If
+          &quot;<em>test</em>&quot; or &quot;<em>true</em>&quot;, the collection is scanned and the new collection of children is compared to the old collection. If there are any changes the index is rebuilt.</li>
+        <li>If &quot;<em>nocheck</em>&quot;, the collection index is  used if it exists, without checking whether its up-to-date. <strong>This is the default.</strong></li>
+      </ul>
+      </li>
+    </ul>
+  </li>
+
+  <li><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will
+    wait until the scan is finished and a new collection is built (if needed), and so is called <em>synchronous updating</em>. <em><strong>This option will be
+  ignored if you are using the rescan attribute or if you have a tdm element.</strong></em></li>
+  <li><strong>rescan</strong>: uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the
+    collection should be rescanned in a background task. This is called <em>asynchronous updating</em>.
+  </li>
+  <li><strong>trigger</strong>: if set to &quot;allow&quot; (default), then external triggering will be allowed. This allows
+    collections to be updated by an external program (or person using a browser) sending an explicit &quot;trigger&quot; URL to the server.
+  This URL is protected by HTTPS, so you must <a href="#trigger">enable triggers</a><a href="../RemoteManagement.html"></a> for this to work. Set this to &quot;false&quot; to disable triggering.</li>
 </ol>
 </div>
 <div class="paragraph">
@@ -619,30 +601,15 @@ index is built if the collection has changed.</p>
 rescanned.</p>
 </li>
 </ol>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_enabling_triggers">Enabling Triggers</h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>You must give the role "tdsTrigger" to any user who you want to have the right to send a trigger.</p>
-</li>
-<li>
-<p>You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page
-<strong><a href="https://server:port/thredds/admin/debug?Collections/showCollection" class="bare">https://server:port/thredds/admin/debug?Collections/showCollection</a></strong></p>
-</li>
-<li>
-<p>The URL for the actual trigger is <a href="https://server:port/thredds/admin/collection/trigger?collection=" class="bare">https://server:port/thredds/admin/collection/trigger?collection=</a><em>name</em>, where <em>name</em> is the collection
-name. This does a rescan, and updates if anything has changed.</p>
-</li>
-<li>
-<p>The TDM uses the trigger <strong><a href="https://server:port/thredds/admin/collection/trigger?collection=" class="bare">https://server:port/thredds/admin/collection/trigger?collection=</a><em>name</em>&amp;nocheck</strong> . This does not rescan the
-directory, it simply recreates the dataset using the current index.</p>
-</li>
-<li>
-<p>Also see <a href="../RemoteManagement.html">enabling Remote Management</a></p>
-</li>
+<h3>Enabling Triggers<a name="trigger" id="trigger"></a></h3>
+<ol>
+  <li>You must give the role &quot;tdsTrigger&quot; to any user who you want to have the right to send a trigger.</li>
+  <li>You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page <strong>https://server:port/thredds/admin/debug?Collections/showCollection</strong></li>
+  <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection/trigger?collection=<em>name</em>&amp;trigger=<em>type</em></strong>,
+    where <em>name</em> is the collection name, and <em>type</em> is a collectionUpdateType (see update element above). This does a rescan, and updates if anything has changed. </li>
+  <li>The TDM uses the trigger <strong>https://server:port/thredds/admin/collection/trigger?collection=<em>name</em>&amp;trigger=nocheck</strong>. This
+    does not rescan the directory, it simply recreates the dataset using the current index. </li>
+  <li>Also see <a href="../RemoteManagement.html">enabling Remote Management</a></li>
 </ol>
 </div>
 </div>

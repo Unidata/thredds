@@ -37,6 +37,7 @@ import opendap.dap.BaseType;
 import opendap.servers.*;
 import opendap.servlet.AsciiWriter;
 import opendap.servlet.GuardedDataset;
+import org.junit.Test;
 import thredds.server.opendap.GuardedDatasetCacheAndClone;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.Diff;
@@ -101,9 +102,9 @@ public class TestCEEvaluator extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constructors + etc.
 
-    public TestCEEvaluator(String name)
+    public TestCEEvaluator()
     {
-        super(name);
+        super("TestCEEvaluator");
         // Check to see if we are in the correct working directory
         String userdir = System.getProperty( "user.dir" );
         //if(userdir.endsWith("cdm")) {
@@ -113,13 +114,9 @@ public class TestCEEvaluator extends UnitTestCommon
         }
     }
 
-    protected void setUp()
-    {
-    }
-
-
     //////////////////////////////////////////////////
 
+    @Test
     public void testCEEvaluator() throws Exception
     {
         if(generate) dogenerate();

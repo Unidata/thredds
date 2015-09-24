@@ -358,6 +358,14 @@
   </xsd:simpleType>
 
   <xsd:complexType name="fmrcConfigType">
+    <xsd:sequence>
+      <xsd:element name="dataset" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="name" type="xsd:token" use="required"/>
+          <xsd:attribute name="offsetsGreaterEqual" type="xsd:int" use="required"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
     <xsd:attribute name="regularize" type="xsd:boolean"/>
     <xsd:attribute name="datasetTypes" type="fmrcDatasetTypes"/>
   </xsd:complexType>

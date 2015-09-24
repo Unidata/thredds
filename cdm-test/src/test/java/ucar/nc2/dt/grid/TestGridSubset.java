@@ -51,9 +51,9 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.test.util.ExternalServer;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -196,7 +196,7 @@ public class TestGridSubset {
 
   @Test
   public void testDODS() throws Exception {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     String ds = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
     GridDataset dataset = null;
 
@@ -328,7 +328,7 @@ public class TestGridSubset {
 
   @Test
   public void test3D() throws Exception {
-    ThreddsServer.DEV.assumeIsAvailable();
+    ExternalServer.DEV.assumeIsAvailable();
     try (GridDataset dataset = GridDataset.open("dods://thredds-dev.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
       System.out.printf("%s%n", dataset.getLocation());
       //GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
@@ -494,7 +494,7 @@ public class TestGridSubset {
 
   @Test
   public void testBBSubset() throws Exception {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     try (GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best")) {
       GeoGrid grid = dataset.findGridByName("Pressure_surface");
       assert null != grid;
@@ -523,7 +523,7 @@ public class TestGridSubset {
 
   @Test
   public void testBBSubset2() throws Exception {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     try (GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best")) {
       GeoGrid grid = dataset.findGridByName("Pressure_hybrid");
       assert null != grid;
@@ -749,7 +749,7 @@ public class TestGridSubset {
 
   @Test
   public void testFindVerticalCoordinate() throws Exception {
-    ThreddsServer.LIVE.assumeIsAvailable();
+    ExternalServer.LIVE.assumeIsAvailable();
     String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
     try (GridDataset dataset = GridDataset.open(filename)) {
       GeoGrid grid = dataset.findGridByName("Geopotential_height_isobaric");

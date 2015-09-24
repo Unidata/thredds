@@ -3,9 +3,11 @@ package opendap.test;
 import opendap.dap.*;
 import opendap.util.Getopts;
 import opendap.util.InvalidSwitch;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import ucar.unidata.test.Diff;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.*;
 
@@ -54,9 +56,9 @@ public class TestDConnect2 extends TestSources {
     setTitle("DAP DConnect2 Tests");
   }
 
-  @Override
-  protected void setUp() {
-    ThreddsServer.REMOTETEST.assumeIsAvailable();
+  @Before
+  public void setUp() {
+    ExternalServer.REMOTETEST.assumeIsAvailable();
     passcount = 0;
     xfailcount = 0;
     failcount = 0;
@@ -98,7 +100,7 @@ public class TestDConnect2 extends TestSources {
     testpart(TestPart.DDS, ce);
     if (constrained) testpart(TestPart.DATADDS, ce);
     if (!pass)
-      assertTrue(testname, pass);
+      Assert.assertTrue(testname, pass);
 
   }
 

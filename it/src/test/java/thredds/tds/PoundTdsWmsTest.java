@@ -4,7 +4,7 @@ import org.apache.http.client.HttpClient;
 import org.junit.Test;
 import thredds.TestWithLocalServer;
 import ucar.nc2.util.IO;
-import ucar.unidata.test.util.ThreddsServer;
+import ucar.unidata.test.util.ExternalServer;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,8 +25,9 @@ public class PoundTdsWmsTest {
   }
 
   @Test
-  public void hitMl8081TdsWms() throws IOException {
-    ThreddsServer.LIVE.assumeIsAvailable();
+  public void hitMl8081TdsWms() throws IOException
+  {
+    ExternalServer.LIVE.assumeIsAvailable();
     String curUrl;
     long curUrlResponseSize;
     for (int i = 0; i < ml8081GfsHalfDegreeBestWmsTimeStrings.length; i++) {
@@ -54,9 +55,10 @@ public class PoundTdsWmsTest {
   @Test
   public void hitMl8081TdsWms_MultiThreaded()
           throws IOException,
-          InterruptedException,
-          ExecutionException {
-    ThreddsServer.LIVE.assumeIsAvailable();
+                 InterruptedException,
+                 ExecutionException
+  {
+    ExternalServer.LIVE.assumeIsAvailable();
     final int numThreads = 60;
     final int numToRepeat = 5;
     int timeout = 20 * 1000;

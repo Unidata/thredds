@@ -56,6 +56,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private final float MISSING_FLOAT = Float.NaN;
   static public boolean isSC = false;
   static public boolean isCC = false;
+  static public boolean isCC20 = false;
 
   public boolean isValidFileOld( RandomAccessFile raf) {
     try {
@@ -121,18 +122,28 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
       raf.seek(0);
 
-      byte [] b128 = raf.readBytes(128);
+      byte [] b128 = raf.readBytes(136);
       String radarT = new String(b128);
 
       if(radarT.contains("CINRAD/SC") || radarT.contains("CINRAD/CD")) {
         isSC = true;
+        isCC = false;
+        isCC20 = false;
         return true;
       } else if(radarT.contains("CINRADC")) {
         isCC = true;
-        return true;
-      }
-      else {
         isSC = false;
+        isCC20 = false;
+        return true;
+      } else if(!radarT.contains("CINRADC") && radarT.contains("CINRAD/CC") ) {
+        isCC20 = true;
+        isSC = false;
+        isCC = false;
+        return true;
+      } else {
+        isSC = false;
+        isCC = false;
+        isCC20 = false;
         return false;
       }
     } catch (IOException ioe) {
@@ -198,8 +209,10 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     if (volScan.hasDifferentDopplarResolutions())
       throw new IllegalStateException("volScan.hasDifferentDopplarResolutions");
-
-    radialDim = new Dimension("radial", volScan.getMaxRadials());
+   // if(isCC20)
+      radialDim = new Dimension("radial", volScan.getMinRadials());
+   // else
+   //   radialDim = new Dimension("radial", volScan.getMaxRadials());
     ncfile.addDimension( null, radialDim);
 
     makeVariable( ncfile, Cinrad2Record.REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups());
@@ -313,6 +326,8 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     Array missingArray = Array.factory(DataType.BYTE, new int[] {2}, b);
     if(isCC)
       v.addAttribute( new Attribute(CDM.MISSING_VALUE, (short)-32768));
+    else if(isCC20 && shortName.contains("RadialVelocity"))
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, -128));
     else
       v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     //v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
@@ -412,7 +427,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     for (int i = 0; i < groups.size(); i++) {
       Cinrad2Record[] mapScan = map[i];
       List group = (List) groups.get(i);
-      for (int j = 0; j < group.size(); j++) {
+      for (int j = 0; j < nradials; j++) {
         Cinrad2Record r =  (Cinrad2Record) group.get(j);
         int radial = r.radial_num-1;
         mapScan[radial] = r;
@@ -564,14 +579,15 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
             ngatesIter.setIntNext(r.getGateCount(datatype));
             needFirst = false;
         }
+        if(j < radialDim.getLength()) {
+          int radial = r.radial_num - 1;
+          timeData.setInt(timeIndex.set(scan, radial), r.data_msecs);
+          elevData.setFloat(elevIndex.set(scan, radial), r.getElevation());
+          aziData.setFloat(aziIndex.set(scan, radial), r.getAzimuth());
 
-        int radial = r.radial_num-1;
-        timeData.setInt( timeIndex.set(scan, radial), r.data_msecs);
-        elevData.setFloat( elevIndex.set(scan, radial), r.getElevation());
-        aziData.setFloat( aziIndex.set(scan, radial), r.getAzimuth());
-
-        if (r.data_msecs < last_msecs) logger.warn("makeCoordinateData time out of order "+r.data_msecs);
-        last_msecs = r.data_msecs;
+          if (r.data_msecs < last_msecs) logger.warn("makeCoordinateData time out of order " + r.data_msecs);
+          last_msecs = r.data_msecs;
+        }
       }
 
       nradialsIter.setIntNext( nradials);
