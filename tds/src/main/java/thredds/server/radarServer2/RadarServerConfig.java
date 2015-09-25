@@ -12,13 +12,20 @@ import ucar.nc2.units.TimeDuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.*;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handle configuration for the Radar Server
  */
 public class RadarServerConfig {
+    static ConcurrentHashMap<String, FileSystemProvider> fsproviders = new ConcurrentHashMap<>();
+
     static public List<RadarConfigEntry> readXML(String filename) {
         List<RadarConfigEntry> configs = new ArrayList<>();
 
@@ -41,7 +48,7 @@ public class RadarServerConfig {
                 Element meta = dataset.getChild("metadata", catNS);
                 conf.name = dataset.getAttributeValue("name");
                 conf.urlPath = dataset.getAttributeValue("path");
-                conf.dataPath = dataset.getAttributeValue("location");
+                conf.dataPath = getPath(dataset.getAttributeValue("location"));
                 conf.dataFormat = meta.getChild("dataFormat", catNS).getValue();
                 conf.stationFile = meta.getChild("stationFile", catNS).getAttributeValue("path");
                 conf.doc = meta.getChild("documentation", catNS).getValue();
@@ -68,6 +75,56 @@ public class RadarServerConfig {
         }
 
         return configs;
+    }
+
+    private static Path getPath(String location) throws IOException {
+        FileSystem fs;
+
+        // If we're given an actual URI, use that to find the file system.
+        // Otherwise, use the default.
+        if(location.contains(":")) {
+            URI uri;
+            uri = URI.create(location);
+            location = uri.getPath();
+            fs = getFS(uri);
+        } else {
+            fs = FileSystems.getDefault();
+        }
+        return fs.getPath(location);
+    }
+
+    private static FileSystem getFS(URI uri) throws IOException {
+        FileSystem fs;
+
+        try {
+            fs = getProvider(uri).getFileSystem(uri);
+        } catch (ProviderNotFoundException e) {
+            System.out.println("Provider not found: " + e.getMessage());
+            System.out.println("Using default file system.");
+            fs = FileSystems.getDefault();
+        }
+        return fs;
+    }
+
+    // This is to work around the fact that when we *get* a filesystem, we
+    // cannot pass in the class loader. This results in custom providers (say
+    // S3) not being found. However, the filesystem already exists, so the
+    // filesystem can't be re-created either.
+    private static FileSystemProvider getProvider(URI uri) throws IOException {
+        if(fsproviders.containsKey(uri.getScheme())) {
+            return fsproviders.get(uri.getScheme());
+        } else {
+            FileSystem fs;
+            try {
+                fs = FileSystems.newFileSystem(uri,
+                        new HashMap<String, Object>(),
+                        Thread.currentThread().getContextClassLoader());
+            } catch (FileSystemAlreadyExistsException e) {
+                fs = FileSystems.getFileSystem(uri);
+            }
+            fsproviders.put(uri.getScheme(), fs.provider());
+            return fs.provider();
+        }
     }
 
     protected static RadarConfigEntry.GeoInfo readGeospatialCoverage(Element gcElem) {
@@ -152,7 +209,8 @@ public class RadarServerConfig {
     }
 
     static public class RadarConfigEntry {
-        public String name, urlPath, dataPath, dataFormat, stationFile, doc;
+        public Path dataPath;
+        public String name, urlPath, dataFormat, stationFile, doc;
         public String dateParseRegex, dateFmt, layout;
         public DateRange timeCoverage;
         public GeoInfo  spatialCoverage;
