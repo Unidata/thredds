@@ -156,10 +156,9 @@ public class RadarDataInventory {
 
             public Date getDate(Path path) {
                 Path relPath = base.relativize(path);
-                String[] parts = relPath.toString().split(sep);
                 StringBuilder sb = new StringBuilder("");
                 for (Integer l: levels) {
-                    sb.append(parts[l]);
+                    sb.append(relPath.getName(l));
                 }
                 try {
                     SimpleDateFormat fmt = getFormat();
@@ -171,14 +170,12 @@ public class RadarDataInventory {
         }
 
         private Path base;
-        private String sep;
 
         private List<DirEntry> order;
         private List<Integer> keyIndices;
 
         public DirectoryStructure(Path dir) {
             base = dir;
-            sep = System.getProperty("file.separator");
             order = new ArrayList<>();
             keyIndices = new ArrayList<>();
         }
@@ -193,10 +190,9 @@ public class RadarDataInventory {
         // Get a key for a path based on station/var
         public String getKey(Path path) {
             Path relPath = base.relativize(path);
-            String[] parts = relPath.toString().split(sep);
             StringBuilder sb = new StringBuilder("");
             for (int ind: keyIndices) {
-                sb.append(parts[ind]);
+                sb.append(relPath.getName(ind));
             }
             return sb.toString();
         }
