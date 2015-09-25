@@ -7,7 +7,6 @@ import ucar.nc2.time.*;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.EarthLocation;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -35,7 +34,7 @@ public class RadarDataInventory {
     private String fileTimeRegex, fileTimeFmt, dataFormat;
     private boolean dirty;
     private CalendarDate lastUpdate;
-    private int maxCrawlItems, maxCrawlDepth;
+    private int maxCrawlItems;
     private StationList stations;
     private CalendarPeriod nearestWindow, rangeAdjustment;
     private String name, description;
@@ -48,7 +47,6 @@ public class RadarDataInventory {
         structure = new DirectoryStructure(collectionDir);
         dirty = true;
         maxCrawlItems = 5;
-        maxCrawlDepth = 3;
         stations = new StationList();
         nearestWindow = CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
     }
@@ -124,6 +122,7 @@ public class RadarDataInventory {
     }
 
     public static class DirectoryStructure {
+        int maxCrawlDepth = 1;
         private static class DirEntry {
             public DirType type;
             public String fmt;
@@ -182,6 +181,7 @@ public class RadarDataInventory {
 
         public void addSubDir(DirType type, String fmt) {
             if (type == DirType.Station || type == DirType.Variable) {
+                maxCrawlDepth = order.size() + 1;
                 keyIndices.add(order.size());
             }
             order.add(new DirEntry(type, fmt));
@@ -246,7 +246,7 @@ public class RadarDataInventory {
     private void findItems(Path start, int level) {
         // Add each entry from this level to the appropriate item box
         // and recurse
-        if (level >= structure.order.size() || level >= maxCrawlDepth)
+        if (level >= structure.order.size() || level >= structure.maxCrawlDepth)
             return;
 
         DirectoryStructure.DirEntry entry = structure.order.get(level);
