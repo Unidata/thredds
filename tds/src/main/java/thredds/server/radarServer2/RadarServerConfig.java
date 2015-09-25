@@ -41,7 +41,7 @@ public class RadarServerConfig {
                 Element meta = dataset.getChild("metadata", catNS);
                 conf.name = dataset.getAttributeValue("name");
                 conf.urlPath = dataset.getAttributeValue("path");
-                conf.diskPath = dataset.getAttributeValue("location");
+                conf.dataPath = dataset.getAttributeValue("location");
                 conf.dataFormat = meta.getChild("dataFormat", catNS).getValue();
                 conf.stationFile = meta.getChild("stationFile", catNS).getAttributeValue("path");
                 conf.doc = meta.getChild("documentation", catNS).getValue();
@@ -152,7 +152,7 @@ public class RadarServerConfig {
     }
 
     static public class RadarConfigEntry {
-        public String name, urlPath, diskPath, dataFormat, stationFile, doc;
+        public String name, urlPath, dataPath, dataFormat, stationFile, doc;
         public String dateParseRegex, dateFmt, layout;
         public DateRange timeCoverage;
         public GeoInfo  spatialCoverage;
