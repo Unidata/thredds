@@ -534,39 +534,4 @@ public class RadarDataInventory {
             return filteredFiles;
         }
     }
-
-    public static void main(String[] args) throws IOException {
-        for (String name : args) {
-            File baseDir = new File(name);
-            if (baseDir.isDirectory()) {
-                RadarDataInventory dw = new RadarDataInventory(baseDir.toPath());
-                dw.addVariableDir();
-                dw.addStationDir();
-                dw.addDateDir("yyyyMMdd");
-
-                System.out.println("Stations:");
-                for (Object res : dw.listItems(DirType.Station))
-                    System.out.println("\t" + res);
-
-                System.out.println("Variables:");
-                for (Object res : dw.listItems(DirType.Variable))
-                    System.out.println("\t" + res);
-
-                System.out.println("Dates:");
-                for (Object res : dw.listItems(DirType.Date))
-                    System.out.println("\t" + res);
-
-                Query q = dw.newQuery();
-                q.addVariable("N0Q");
-                q.addStation("TLX");
-                q.addDateRange(CalendarDateRange.of(CalendarDate.of(null, 2014,
-                                6, 24, 0, 0, 0),
-                        CalendarDate.of(null, 2014, 6, 25, 0, 0, 0)));
-
-                System.out.println("Results of query:");
-                for (Query.QueryResultItem i : q.results())
-                    System.out.println("File: " + i.file.toString());
-            }
-        }
-    }
 }
