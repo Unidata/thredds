@@ -45,14 +45,15 @@ import java.io.IOException;
  * @since Mar 19, 2008
  */
 public interface ProfileFeatureCollection extends PointFeatureCC, Iterable<ProfileFeature> {
+
   /**
    * Subset this collection by boundingBox
    * @param boundingBox want only profiles in this lat/lon bounding box.
    * @return subsetted collection, may be null if empty
    * @throws IOException on read error
    */
-  ucar.nc2.ft.ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException;
-  ucar.nc2.ft.ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+  // ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException;
+  ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   //////////////////////////////////////////////////////
 

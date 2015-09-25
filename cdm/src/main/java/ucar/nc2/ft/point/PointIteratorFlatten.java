@@ -71,14 +71,15 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
       this.filter = new Filter(filter_bb, filter_date);
   }
 
+  // LOOK HERE
   public void setBufferSize(int bytes) {
-    collectionIter.setBufferSize(bytes);
+    //collectionIter.setBufferSize(bytes);
   }
 
   public void close() {
     if (finished) return;
     if (pfiter != null) pfiter.close();
-    collectionIter.close();
+    // collectionIter.close();
     finishCalcBounds();
     finished = true;
   }

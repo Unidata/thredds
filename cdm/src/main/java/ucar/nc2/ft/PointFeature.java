@@ -33,10 +33,8 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.geoloc.EarthLocation;
 
 import javax.annotation.Nonnull;
-import java.util.Date;
 
 /**
  * A collection of observations at one time and location.
@@ -50,18 +48,18 @@ public interface PointFeature {
    * @return the location of this observation
    */
   @Nonnull
-  EarthLocation getLocation();
+  ucar.unidata.geoloc.EarthLocation getLocation();
 
  /**
    * Actual time of this observation.
-   * Convert to Date with getTimeUnit().makeDate()
+   * Convert to CalendarDate with getFeatureCollection().getTimeUnit().makeDate()
    * @return actual time of this observation.
    */
   double getObservationTime();
 
   /**
-   * Actual time of this observation, as a Date.
-   * @return actual time of this observation, as a Date.
+   * Actual time of this observation, as a CalendarDate.
+   * @return actual time of this observation, as a CalendarDate.
    */
   @Nonnull
   CalendarDate getObservationTimeAsCalendarDate();
@@ -75,32 +73,27 @@ public interface PointFeature {
   double getNominalTime();
 
   /**
-   * Nominal time of this observation, as a Date.
+   * Nominal time of this observation, as a CalendarDate.
    * Will be equal to the observation date if not exists independently.
-   * @return Nominal time of this observation, as a Date.
+   * @return Nominal time of this observation, as a CalendarDate.
    */
   @Nonnull
   CalendarDate getNominalTimeAsCalendarDate();
 
   /**
-   * The actual data of just this feature.
-   * @return the actual data of this feature.
-   * @throws java.io.IOException on i/o error
+   * The data of the parent feature(s).
    */
   @Nonnull
   ucar.ma2.StructureData getFeatureData() throws java.io.IOException;
 
   /**
-   * All the data of this observation, joined with data from all parent Features, if any.
-   * @return the actual data of this observation.
-   * @throws java.io.IOException on i/o error
+   * All the data of this observation, joined with data from all parent features, if any.
    */
   @Nonnull
   ucar.ma2.StructureData getDataAll() throws java.io.IOException;
 
  /**
-  * Get the containing FeatureCollection
-  * @return
+  * Get the containing DsgFeatureCollection
   */
  @Nonnull
  DsgFeatureCollection getFeatureCollection();

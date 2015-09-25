@@ -567,11 +567,11 @@ public class TestPointDatasets {
     assert countSub <= countStns;
 
     System.out.println("Flatten= " + bb2.toString2());
-    PointFeatureCollection flatten = sfc.flatten(bb2, (CalendarDateRange) null);
+    PointFeatureCollection flatten = sfc.flatten(bb2, null);
     int countFlat = countLocations(flatten);
     assert countFlat <= countStns;
 
-    flatten = sfc.flatten(null, (CalendarDateRange) null);
+    flatten = sfc.flatten(null, null,  null);
     return countObs(flatten);
   }
 

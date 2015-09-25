@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.util.IOIterator;
+
 /**
  * An iterator over NestedPointFeatureCollection.
  * Use try-with-resource to make sure resources are released:
@@ -45,8 +47,8 @@ package ucar.nc2.ft;
  * @author caron
  * @since Mar 20, 2008
  */
-public interface NestedPointFeatureCollectionIterator extends AutoCloseable {
-  
+public interface NestedPointFeatureCollectionIterator extends AutoCloseable, IOIterator<PointFeatureCC> {
+
   /**
    * true if another Feature object is available
    * @return true if another Feature object is available
@@ -60,7 +62,7 @@ public interface NestedPointFeatureCollectionIterator extends AutoCloseable {
    * @return the next NestedPointFeatureCollection object
    * @throws java.io.IOException on i/o error
    */
-  NestedPointFeatureCollection next() throws java.io.IOException;
+  PointFeatureCC next() throws java.io.IOException;
 
   /**
    * Hint to use this much memory in buffering the iteration.
@@ -85,7 +87,7 @@ public interface NestedPointFeatureCollectionIterator extends AutoCloseable {
      * @param nestedPointFeatureCollection check this collection
      * @return true if the collection passes the filter
      */
-    boolean filter(NestedPointFeatureCollection nestedPointFeatureCollection);
+    boolean filter(PointFeatureCC nestedPointFeatureCollection);
   }
 
 }

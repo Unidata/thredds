@@ -37,6 +37,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -58,12 +59,12 @@ public class DsgCollectionHelper {
   public Info calcBounds() throws IOException {
     if (dsg instanceof PointFeatureCollection)
       return calcBounds((PointFeatureCollection) dsg);
-    else if (dsg instanceof NestedPointFeatureCollection) {
-      NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) dsg;
-      if (!npfc.isMultipleNested())
-        return calcBounds(npfc.getPointFeatureCollectionIterator(-1));
-      else
-        return calcBounds(npfc.getNestedPointFeatureCollectionIterator(-1));
+    else if (dsg instanceof PointFeatureCC) {
+      PointFeatureCC pfcc = (PointFeatureCC) dsg;
+      return calcBounds(pfcc);
+    } else if (dsg instanceof PointFeatureCCC) {
+      PointFeatureCCC pfccc = (PointFeatureCCC) dsg;
+        return calcBounds(pfccc);
     }
 
     throw new IllegalStateException(dsg.getClass().getName());
@@ -94,13 +95,14 @@ public class DsgCollectionHelper {
     return new Info(bbox, dateRange);
   }
 
-  private Info calcBounds(NestedPointFeatureCollectionIterator iter) throws IOException {
+  private Info calcBounds(PointFeatureCC pfcc) throws IOException {
 
     Info result = null;
+    IOIterator<PointFeatureCollection> iter = pfcc.getCollectionIterator(-1);
 
     while (iter.hasNext()) {
-      NestedPointFeatureCollection npfc = iter.next();
-      Info b = calcBounds(npfc.getPointFeatureCollectionIterator(-1));
+      PointFeatureCollection pfc = iter.next();
+      Info b = calcBounds(pfc);
       if (result == null)
         result = b;
       else
@@ -110,13 +112,14 @@ public class DsgCollectionHelper {
     return result;
   }
 
-  private Info calcBounds(PointFeatureCollectionIterator iter) throws IOException {
+  private Info calcBounds(PointFeatureCCC pfccc) throws IOException {
 
     Info result = null;
+    IOIterator<PointFeatureCC> iter = pfccc.getCollectionIterator(-1);
 
     while (iter.hasNext()) {
-      PointFeatureCollection pfc = iter.next();
-      Info b = calcBounds(pfc);
+      PointFeatureCC pfcc = iter.next();
+      Info b = calcBounds(pfcc);
       if (result == null)
         result = b;
       else

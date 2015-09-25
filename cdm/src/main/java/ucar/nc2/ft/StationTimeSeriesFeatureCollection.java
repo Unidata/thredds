@@ -34,8 +34,8 @@ package ucar.nc2.ft;
 
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
 
 import java.io.IOException;
@@ -75,6 +75,8 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, P
    */
   StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
+  StationTimeSeriesFeatureCollection subset(List<Station> stns, CalendarDateRange dateRange) throws IOException;
+
   /**
    * Get the collection of data for a particular Station.
    *
@@ -105,7 +107,6 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, P
 
   List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
-
   /**
     * Flatten into a PointFeatureCollection, discarding connectedness information.
     *
@@ -116,6 +117,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, P
     * @throws IOException on read error
     */
    PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+   PointFeatureCollection flatten(LatLonRect llbbox, CalendarDateRange dateRange) throws IOException;
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // deprecated

@@ -33,7 +33,8 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.OneNestedPointCollectionImpl;
+import ucar.nc2.ft.point.CollectionIteratorAdapter;
+import ucar.nc2.ft.point.PointFeatureCCImpl;
 import ucar.nc2.ft.point.ProfileFeatureImpl;
 import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
 import ucar.nc2.ft.*;
@@ -54,7 +55,7 @@ import java.util.Iterator;
  * @author caron
  * @since Jan 20, 2009
  */
-public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl implements ProfileFeatureCollection {
+public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements ProfileFeatureCollection {
   private NestedTable ft;
 
   protected StandardProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits ) {
@@ -67,55 +68,12 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     this.extras = ft.getExtras();
   }
 
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
-  }
-
   public ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException {
     return new StandardProfileCollectionSubset( this, boundingBox);
   }
 
-  @Override
-  public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
-    return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
-  }
-
   public ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     return new StandardProfileCollectionSubset( this, boundingBox); // LOOK ignoring dateRange
-  }
-
-  private class ProfileIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
-    StructureDataIterator structIter;
-    StructureData nextProfileData;
-
-    ProfileIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
-      this.structIter = structIter;
-    }
-
-    public boolean hasNext() throws IOException {
-      while (true) {
-        if (!structIter.hasNext()) return false;
-        nextProfileData = structIter.next();
-        if (!ft.isFeatureMissing(nextProfileData)) break;
-      }
-      return true;
-    }
-
-
-    public ProfileFeature next() throws IOException {
-      Cursor cursor = new Cursor(ft.getNumberOfLevels());
-      cursor.tableData[1] = nextProfileData;
-      cursor.recnum[1] = structIter.getCurrentRecno();
-      cursor.currentIndex = 1;
-      ft.addParentJoin(cursor); // there may be parent joins
-      return new StandardProfileFeature(cursor, ft.getObsTime(cursor), nextProfileData);
-    }
-
-    public void setBufferSize(int bytes) { }
-
-    public void close() {
-      structIter.close();
-    }
   }
 
   private class StandardProfileFeature extends ProfileFeatureImpl {
@@ -210,10 +168,63 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
   /////////////////////////////////////////////////////////////////////////////////////
 
+  @Override
   public Iterator<ProfileFeature> iterator() {
-    return new ProfileFeatureIterator();
+    try {
+      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator(-1);
+      return new CollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
+  @Override
+  public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+    return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
+  }
+
+  @Override
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
+  }
+
+  private class ProfileIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
+    StructureDataIterator structIter;
+    StructureData nextProfileData;
+
+    ProfileIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
+      this.structIter = structIter;
+    }
+
+    public boolean hasNext() throws IOException {
+      while (true) {
+        if (!structIter.hasNext()) return false;
+        nextProfileData = structIter.next();
+        if (!ft.isFeatureMissing(nextProfileData)) break;
+      }
+      return true;
+    }
+
+
+    public ProfileFeature next() throws IOException {
+      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.tableData[1] = nextProfileData;
+      cursor.recnum[1] = structIter.getCurrentRecno();
+      cursor.currentIndex = 1;
+      ft.addParentJoin(cursor); // there may be parent joins
+      return new StandardProfileFeature(cursor, ft.getObsTime(cursor), nextProfileData);
+    }
+
+    public void close() {
+      structIter.close();
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  /* adapt a PointFeatureCollectionIterator to an Iterator<ProfileFeature>
+  // LOOK could generify
   private class ProfileFeatureIterator implements Iterator<ProfileFeature> {
     PointFeatureCollectionIterator pfIterator;
 
@@ -242,7 +253,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
         throw new RuntimeException(e);
       }
     }
-  }
+  } */
 
 
   /////////////////////////////////////////////////////////////////////////////////////

@@ -39,6 +39,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
@@ -86,28 +87,50 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     return new StandardStationProfileFeature(s, stationData, recnum);
   }
 
-  // iterate over stations
+  @Override
+  public Iterator<StationProfileFeature> iterator() {
+    try {
+      NestedPointFeatureCollectionIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
+      return new NestedCollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
+  @Override // new way
+  public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
+    return new StationProfileCollectionIterator();
+  }
+
+  @Override // old way
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new NestedPointFeatureCollectionIterator() {
-      private Iterator iter = getStations().iterator();
+    return new StationProfileCollectionIterator();
+  }
 
-      public boolean hasNext() throws IOException {
-        return iter.hasNext();
-      }
+  private class StationProfileCollectionIterator implements NestedPointFeatureCollectionIterator, IOIterator<PointFeatureCC> {
+    private Iterator<Station> iter;
 
-      public NestedPointFeatureCollection next() throws IOException {
-        return (StandardStationProfileFeature) iter.next();
-      }
 
-      @Override
-      public void close() {
-        // ignore
-      }
+    StationProfileCollectionIterator() throws IOException {
+      // iterate over stations
+      iter = getStations().iterator();
+    }
 
-      public void setBufferSize(int bytes) {
-      }
-    };
+    public boolean hasNext() throws IOException {
+      return iter.hasNext();
+    }
+
+    public PointFeatureCC next() throws IOException {
+      return (StandardStationProfileFeature) iter.next();
+    }
+
+    @Override
+    public void close() {
+      // ignore
+    }
+
+    public void setBufferSize(int bytes) {
+    }
   }
 
   // a time series of profiles at one station
@@ -116,6 +139,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     StationFeature s;
     StructureData stationData;
     int recnum;
+    Cursor cursor;
 
     StandardStationProfileFeature(StationFeature s, StructureData stationData, int recnum) {
       super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(), StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
@@ -127,7 +151,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     // iterate over series of profiles at a given station
 
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = recnum; // the station record
       cursor.tableData[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
       cursor.currentIndex = 2;
@@ -158,7 +182,12 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       return s.getFeatureData();
     }
 
-    private class TimeSeriesOfProfileFeatureIterator implements PointFeatureCollectionIterator {
+    @Override
+    public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+      return new TimeSeriesOfProfileFeatureIterator(cursor.copy());
+    }
+
+    private class TimeSeriesOfProfileFeatureIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
       private Cursor cursor;
       private ucar.ma2.StructureDataIterator iter;
       private int count = 0;

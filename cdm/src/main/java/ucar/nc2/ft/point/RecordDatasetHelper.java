@@ -53,6 +53,7 @@ import ucar.nc2.units.SimpleUnit;
 
 import ucar.unidata.geoloc.*;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.util.*;
 
@@ -84,7 +85,6 @@ public class RecordDatasetHelper {
   protected double altScaleFactor = 1.0;
 
   protected Formatter errs = null;
-  protected boolean showErrors = true;
 
   /**
    * Constructor.
@@ -428,6 +428,7 @@ public class RecordDatasetHelper {
       return new LatLonPointImpl(location.getLatitude(), location.getLongitude());
     }
 
+    @Nonnull
     public StructureData getFeatureData() throws IOException {
       if (null == sdata) {
         try {
@@ -447,6 +448,7 @@ public class RecordDatasetHelper {
       return sdata;
     }
 
+    @Nonnull
     public ucar.ma2.StructureData getDataAll() throws java.io.IOException {
       return getFeatureData();
     }

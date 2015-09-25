@@ -50,7 +50,7 @@ import java.util.Iterator;
  */
 
 
-public abstract class SectionFeatureImpl extends OneNestedPointCollectionImpl implements SectionFeature {
+public abstract class SectionFeatureImpl extends PointFeatureCCImpl implements SectionFeature {
 
   protected SectionFeatureImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.SECTION);
@@ -58,40 +58,15 @@ public abstract class SectionFeatureImpl extends OneNestedPointCollectionImpl im
 
   /////////////////////////////////////////////////////////////////////////////////////
 
+  @Override
   public Iterator<ProfileFeature> iterator() {
-    return new ProfileFeatureIterator();
-  }
-
-  private class ProfileFeatureIterator implements Iterator<ProfileFeature> {
-    PointFeatureCollectionIterator pfIterator;
-
-    public ProfileFeatureIterator() {
-      try {
-        this.pfIterator = getPointFeatureCollectionIterator(-1);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public boolean hasNext() {
-      try {
-        return pfIterator.hasNext();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public ProfileFeature next() {
-      try {
-        return (ProfileFeature) pfIterator.next();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+    try {
+      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator(-1);
+      return new CollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
-
 
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated

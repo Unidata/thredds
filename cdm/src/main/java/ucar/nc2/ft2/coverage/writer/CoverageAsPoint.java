@@ -138,6 +138,7 @@ public class CoverageAsPoint {
       helper.addStation(new MyStationFeature(name, name, null, latLonPoint.getLatitude(), latLonPoint.getLongitude(), 0.0, dateUnit, null, -1));
       return helper;
     }
+
   }
 
   private class MyStationFeature extends StationTimeSeriesFeatureImpl {

@@ -35,6 +35,7 @@ package ucar.nc2.ft.point;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
@@ -48,7 +49,7 @@ import java.io.IOException;
  * @author caron
  * @since Mar 20, 2008
  */
-public abstract class StationProfileCollectionImpl extends MultipleNestedPointCollectionImpl implements StationProfileFeatureCollection {
+public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl implements StationProfileFeatureCollection {
   private volatile StationHelper stationHelper;
 
   public StationProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
@@ -144,8 +145,15 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
       return new NestedPointCollectionIteratorFiltered( from.getNestedPointFeatureCollectionIterator(bufferSize), new Filter());
     }
 
+    @Override
+    public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
+      return null;
+    }
+
+
     private class Filter implements NestedPointFeatureCollectionIterator.Filter {
-      public boolean filter(NestedPointFeatureCollection pointFeatureCollection) {
+      @Override
+      public boolean filter(PointFeatureCC pointFeatureCollection) {
         StationProfileFeature stationFeature = (StationProfileFeature) pointFeatureCollection;
         return getStationHelper().getStation(stationFeature.getName()) != null;
       }
@@ -155,6 +163,16 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
      /////////////////////////////////////////////////////////////////////////////////////
 
   @Override
+  public Iterator<StationProfileFeature> iterator() {
+    try {
+      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator(-1);
+      return new CollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /* @Override
   public Iterator<StationProfileFeature> iterator() {
     return new StationProfileFeatureIterator();
   }
@@ -187,7 +205,7 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
         throw new RuntimeException(e);
       }
     }
-  }
+  } */
 
 
   /////////////////////////////////////////////////////////////////////////////////////

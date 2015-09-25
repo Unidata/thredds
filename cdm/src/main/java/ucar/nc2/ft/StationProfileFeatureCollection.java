@@ -32,7 +32,10 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
 import java.util.List;

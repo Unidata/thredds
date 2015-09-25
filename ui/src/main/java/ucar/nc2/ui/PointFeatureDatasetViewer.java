@@ -529,14 +529,11 @@ public class PointFeatureDatasetViewer extends JPanel {
   private void setSectionCollection(SectionFeatureCollection sectionCollection) throws IOException {
     List<SectionFeatureBean> beans = new ArrayList<>();
 
-    try (NestedPointFeatureCollectionIterator iter = sectionCollection.getNestedPointFeatureCollectionIterator(-1)) {
-      while (iter.hasNext()) {
-        NestedPointFeatureCollection pob = iter.next();
-        SectionFeatureBean bean = new SectionFeatureBean((SectionFeature) pob);
+    for (SectionFeature sectionFeature : sectionCollection) {
+        SectionFeatureBean bean = new SectionFeatureBean(sectionFeature);
         if (bean.pf != null) // may have missing values
           beans.add(bean);
       }
-    }
 
     stnTable.setBeans(beans);
     stationMap.setStations(beans);
@@ -558,11 +555,11 @@ public class PointFeatureDatasetViewer extends JPanel {
         return;
       } else { */
       pc = stationCollection.flatten(geoRegion, cdr);
-      //}
-    } else if (selectedType == FeatureType.STATION_PROFILE) {
+      //} LOOK HERE
+    } /* else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationProfileCollection = (StationProfileFeatureCollection) selectedCollection;
       pc = stationProfileCollection.flatten(geoRegion, cdr);
-    }
+    } */
 
     if (null != pc)
       setObservations(pc);

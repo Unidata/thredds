@@ -33,17 +33,16 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.SectionCollectionImpl;
-import ucar.nc2.ft.point.ProfileFeatureImpl;
-import ucar.nc2.ft.point.SectionFeatureImpl;
+import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.nc2.util.IOIterator;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Nested Table implementation of SectionCollection.
@@ -64,39 +63,62 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   }
 
   @Override
-  public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new NestedPointFeatureCollectionIterator() {
-      private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
-      private StructureData nextSection;
-
-      public SectionFeature next() throws IOException {
-        Cursor cursor = new Cursor(ft.getNumberOfLevels());
-        cursor.recnum[2] = sdataIter.getCurrentRecno();
-        cursor.tableData[2] = nextSection; // obs(leaf) = 0, profile=1, section(root)=2
-        cursor.currentIndex = 2;
-        ft.addParentJoin(cursor); // there may be parent joins
-
-        return new StandardSectionFeature(cursor, nextSection);
-      }
-
-      public boolean hasNext() throws IOException {
-        while (true) {
-          if (!sdataIter.hasNext()) return false;
-          nextSection = sdataIter.next();
-          if (!ft.isFeatureMissing(nextSection)) break;
-        }
-        return true;
-      }
-
-      public void setBufferSize(int bytes) {
-      }
-
-      @Override
-      public void close() {
-        sdataIter.close();
-      }
-    };
+  public Iterator<SectionFeature> iterator() {
+    try {
+      NestedPointFeatureCollectionIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
+      return new NestedCollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
+
+  @Override // new way
+  public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
+    return new SectionCollectionIterator();
+  }
+
+  @Override // old way
+  public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    return new SectionCollectionIterator();
+  }
+
+  private class SectionCollectionIterator implements NestedPointFeatureCollectionIterator, IOIterator<PointFeatureCC> {
+    private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
+    private StructureData nextSection;
+
+    SectionCollectionIterator() throws IOException {
+      sdataIter = ft.getRootFeatureDataIterator(-1);
+    }
+
+    public SectionFeature next() throws IOException {
+      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.recnum[2] = sdataIter.getCurrentRecno();
+      cursor.tableData[2] = nextSection; // obs(leaf) = 0, profile=1, section(root)=2
+      cursor.currentIndex = 2;
+      ft.addParentJoin(cursor); // there may be parent joins
+
+      return new StandardSectionFeature(cursor, nextSection);
+    }
+
+    public boolean hasNext() throws IOException {
+      while (true) {
+        if (!sdataIter.hasNext()) return false;
+        nextSection = sdataIter.next();
+        if (!ft.isFeatureMissing(nextSection)) break;
+      }
+      return true;
+    }
+
+    public void setBufferSize(int bytes) {
+    }
+
+    @Override
+    public void close() {
+      sdataIter.close();
+    }
+  }
+
+  ;
 
   // a single section: a collection of profiles along a trajectory
   private class StandardSectionFeature extends SectionFeatureImpl {
@@ -114,17 +136,17 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       return new StandardSectionFeatureIterator(cursor.copy());
     }
 
-    @Override
-    public NestedPointFeatureCollection subset(LatLonRect boundingBox) throws IOException {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public StructureData getFeatureData() throws IOException {
       return sectionData;
     }
+
+    @Override
+    public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+      return new StandardSectionFeatureIterator(cursor.copy());
+    }
   }
 
-  private class StandardSectionFeatureIterator implements PointFeatureCollectionIterator {
+  private class StandardSectionFeatureIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
     Cursor cursor;
     private ucar.ma2.StructureDataIterator iter;
     StructureData profileData;

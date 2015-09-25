@@ -41,7 +41,9 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -120,10 +122,17 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
 
       PointFeatureCollection pc;
-      if (wantStationsubset)
+      if (wantStationsubset) {
         pc = stnCollection.flatten(stationsSubset, dateRange, varList);
-      else
-        pc = stnCollection.flatten(bbSubset, dateRange);
+      } else if (bbSubset == null) {
+        pc = stnCollection.flatten(null, dateRange, null);
+      } else {
+        List<Station> stations = stnCollection.getStations(bbSubset);
+        List<String> names = new ArrayList<>();
+        for (Station s : stations) names.add(s.getName());
+
+        pc = stnCollection.flatten(names, dateRange, null);
+      }
 
       PointFeatureIterator result = pc.getPointFeatureIterator(bufferSize);
       if (calcBounds) result.setCalculateBounds(pc);  // LOOK barf

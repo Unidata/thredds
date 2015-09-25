@@ -38,6 +38,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.StationImpl;
 import ucar.unidata.geoloc.Station;
@@ -55,7 +56,7 @@ import java.util.List;
  * @author caron
  * @since Feb 29, 2008
  */
-public abstract class StationProfileFeatureImpl extends OneNestedPointCollectionImpl implements StationProfileFeature {
+public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl implements StationProfileFeature {
   protected int timeSeriesNpts;
   protected Station s;
   protected PointFeatureCollectionIterator localIterator;
@@ -127,7 +128,7 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
     return s.getName().compareTo(so.getName());
   }
 
-  @Override
+  // @Override
   public StationProfileFeature subset(LatLonRect boundingBox) throws IOException {
     return this; // only one station - we could check if its in the bb
   }
@@ -166,7 +167,12 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
       return from.getProfileByDate(date);
     }
 
-    @Override
+    @Override // new way
+    public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new DateFilter());
+    }
+
+    @Override // old way
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
       return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new DateFilter());
     }
@@ -178,8 +184,6 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
       }
     }
   }
-
-
 
   /////////////////////////////////////////////////////////////////////////////////////
 

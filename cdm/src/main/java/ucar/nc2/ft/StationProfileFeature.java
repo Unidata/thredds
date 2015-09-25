@@ -35,10 +35,8 @@ package ucar.nc2.ft;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 /**

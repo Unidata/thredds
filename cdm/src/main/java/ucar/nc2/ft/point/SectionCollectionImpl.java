@@ -47,24 +47,15 @@ import java.util.Iterator;
  * @since Oct 22, 2009
  */
 
-
-public abstract class SectionCollectionImpl extends MultipleNestedPointCollectionImpl implements SectionFeatureCollection {
+public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implements SectionFeatureCollection {
 
   protected SectionCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.SECTION);
   }
 
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    throw new UnsupportedOperationException("SectionCollectionImpl does not implement getPointFeatureCollectionIterator()");
-  }
+  /////////////////////////////////////////////////////////////////////////////////////
 
-  public SectionFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
-    return null;
-  }
-
-       /////////////////////////////////////////////////////////////////////////////////////
-
-  @Override
+  /* @Override
   public Iterator<SectionFeature> iterator() {
     return new SectionFeatureIterator();
   }
@@ -97,7 +88,7 @@ public abstract class SectionCollectionImpl extends MultipleNestedPointCollectio
         throw new RuntimeException(e);
       }
     }
-  }
+  } */
 
 
   /////////////////////////////////////////////////////////////////////////////////////

@@ -60,7 +60,7 @@ public class StationTimeSeriesCollectionFlattened extends PointCollectionImpl {
   @Nonnull
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     // LOOK need the isMultipleNested case
-    return new PointIteratorFlatten(from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
+    return new PointIteratorFlatten( from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
   }
 
   @Override

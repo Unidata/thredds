@@ -171,7 +171,7 @@ public abstract class CFPointWriter implements AutoCloseable {
     try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, (CalendarDateRange) null); // LOOK
+      ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, null, null); // all data, but no need to sort by station
 
       int count = 0;
       for (PointFeature pf : pfc) {
@@ -257,6 +257,7 @@ public abstract class CFPointWriter implements AutoCloseable {
 
     try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
+
       cfWriter.setStations(fc.getStationFeatures());
 
       int name_strlen = 0;
@@ -266,8 +267,7 @@ public abstract class CFPointWriter implements AutoCloseable {
         if (spf.size() >= 0)
           countProfiles += spf.size();
         else {
-          while (spf.hasNext()) {
-            spf.next();
+          for (ProfileFeature pf : spf) {
             countProfiles++;
           }
         }

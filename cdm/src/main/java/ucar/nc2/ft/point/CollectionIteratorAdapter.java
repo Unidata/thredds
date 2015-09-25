@@ -31,36 +31,41 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package ucar.nc2.util;
+package ucar.nc2.ft.point;
+
+import ucar.nc2.ft.PointFeatureCollectionIterator;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
+import java.util.Iterator;
 
 /**
- * An Iterator that can throw an IOException
+ * adapt a PointFeatureCollectionIterator to an Iterator<PointFeatureCollection>
  *
  * @author caron
- * @since 9/23/2015.
+ * @since 9/24/2015.
  */
-public interface IOIterator<T> {
+public class CollectionIteratorAdapter<T> implements Iterator<T> {
+    PointFeatureCollectionIterator pfIterator;
 
-  /**
-   * Returns {@code true} if the iteration has more elements.
-   * (In other words, returns {@code true} if {@link #next} would
-   * return an element rather than throwing an exception.)
-   *
-   * @return {@code true} if the iteration has more elements
-   * @throws IOException on read error
-   */
-  boolean hasNext() throws IOException;
+    public CollectionIteratorAdapter(PointFeatureCollectionIterator pfIterator) {
+      this.pfIterator = pfIterator;
+    }
 
-  /**
-   * Returns the next element in the iteration.
-   *
-   * @return the next element in the iteration
-   * @throws IOException on read error
-   * @throws NoSuchElementException if the iteration has no more elements
-   */
-  T next() throws IOException;
+    @Override
+    public boolean hasNext() {
+      try {
+        return pfIterator.hasNext();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
 
+    @Override
+    public T next() {
+      try {
+        return (T) pfIterator.next();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
 }

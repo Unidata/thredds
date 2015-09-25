@@ -53,8 +53,8 @@ public interface SectionFeature extends PointFeatureCC, Iterable<ProfileFeature>
 
 
   /**
-   * The actual data of just this feature.
-   * @return the actual data of this feature.
+   * The data associated with the Section feature.
+   * @return the actual data of this section.
    * @throws java.io.IOException on i/o error
    */
   StructureData getFeatureData() throws IOException;

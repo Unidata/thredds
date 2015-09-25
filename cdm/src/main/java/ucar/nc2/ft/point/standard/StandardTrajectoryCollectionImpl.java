@@ -33,14 +33,13 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.OneNestedPointCollectionImpl;
-import ucar.nc2.ft.point.TrajectoryFeatureImpl;
-import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
+import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -51,7 +50,7 @@ import java.util.Iterator;
  * @author caron
  * @since Dec 31, 2008
  */
-public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionImpl implements TrajectoryFeatureCollection {
+public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl implements TrajectoryFeatureCollection {
   private NestedTable ft;
 
   protected StandardTrajectoryCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
@@ -64,47 +63,8 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     this.extras = ft.getExtras();
   }
 
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new TrajCollectionIterator( ft.getRootFeatureDataIterator(bufferSize));
-  }
-
   public TrajectoryFeatureCollection subset(LatLonRect boundingBox) throws IOException {
     return new StandardTrajectoryCollectionSubset( this, boundingBox);
-  }
-
-  private class TrajCollectionIterator implements PointFeatureCollectionIterator {
-    StructureDataIterator structIter;
-    StructureData nextTraj;
-
-    TrajCollectionIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
-      this.structIter = structIter;
-    }
-
-    public boolean hasNext() throws IOException {
-      while (true) {
-        if(!structIter.hasNext()) return false;
-        nextTraj = structIter.next();
-        if (!ft.isFeatureMissing(nextTraj)) break;
-      }
-      return true;
-    }
-
-    public TrajectoryFeature next() throws IOException {
-      Cursor cursor = new Cursor(ft.getNumberOfLevels());
-      cursor.recnum[1] = structIter.getCurrentRecno();
-      cursor.tableData[1] = nextTraj;
-      cursor.currentIndex = 1;
-      ft.addParentJoin(cursor); // there may be parent joins
-
-      return new StandardTrajectoryFeature(cursor, nextTraj);
-    }
-
-    public void setBufferSize(int bytes) { }
-
-    public void close() {
-      structIter.close();
-    }
-
   }
 
   ///////////////////////////////////////
@@ -162,39 +122,54 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
 
   @Override
   public Iterator<TrajectoryFeature> iterator() {
-    return new TrajectoryFeatureIterator();
-  }
-
-  private class TrajectoryFeatureIterator implements Iterator<TrajectoryFeature> {
-    PointFeatureCollectionIterator pfIterator;
-
-    public TrajectoryFeatureIterator() {
-      try {
-        this.pfIterator = getPointFeatureCollectionIterator(-1);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public boolean hasNext() {
-      try {
-        return pfIterator.hasNext();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public TrajectoryFeature next() {
-      try {
-        return (TrajectoryFeature) pfIterator.next();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+    try {
+      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator(-1);
+      return new CollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    return new TrajCollectionIterator( ft.getRootFeatureDataIterator(bufferSize));
+  }
+
+  @Override
+  public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+    return new TrajCollectionIterator( ft.getRootFeatureDataIterator(bufferSize));
+  }
+
+  private class TrajCollectionIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
+    StructureDataIterator structIter;
+    StructureData nextTraj;
+
+    TrajCollectionIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
+      this.structIter = structIter;
+    }
+
+    public boolean hasNext() throws IOException {
+      while (true) {
+        if(!structIter.hasNext()) return false;
+        nextTraj = structIter.next();
+        if (!ft.isFeatureMissing(nextTraj)) break;
+      }
+      return true;
+    }
+
+    public TrajectoryFeature next() throws IOException {
+      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.recnum[1] = structIter.getCurrentRecno();
+      cursor.tableData[1] = nextTraj;
+      cursor.currentIndex = 1;
+      ft.addParentJoin(cursor); // there may be parent joins
+
+      return new StandardTrajectoryFeature(cursor, nextTraj);
+    }
+
+    public void close() {
+      structIter.close();
+    }
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated

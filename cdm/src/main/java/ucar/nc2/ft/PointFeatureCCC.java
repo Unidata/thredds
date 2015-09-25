@@ -53,8 +53,8 @@ public interface PointFeatureCCC extends DsgFeatureCollection {
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
-   */
-  PointFeatureCCC subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+   *
+  // PointFeatureCCC subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   PointFeatureCCC subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
@@ -64,8 +64,8 @@ public interface PointFeatureCCC extends DsgFeatureCollection {
    * @param dateRange only points in this date range. may be null.
    * @return a PointFeatureCollection, may be null if its empty.
    * @throws IOException on read error
-   */
-  PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+   *
+  PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException; */
 
   /**
    * General way to handle iterations on all classes that implement tis interface.
