@@ -101,6 +101,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
             if (name == null) this.name = timeUnit.makeCalendarDate(this.time).toString();
           } else {
             if (name == null) this.name = "empty";
+            getInfo().npts = 0;
           }
         } catch (IOException e) {
           e.printStackTrace();

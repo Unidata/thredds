@@ -131,8 +131,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
         pc = stnCollection.flatten(names, dateRange, null);
       }
 
-      PointFeatureIterator result = pc.getPointFeatureIterator(bufferSize);
-      return result;
+      return pc.getPointFeatureIterator(bufferSize);
     }
 
     public boolean hasNext() {

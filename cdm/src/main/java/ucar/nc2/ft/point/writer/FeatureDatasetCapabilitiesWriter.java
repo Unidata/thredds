@@ -222,6 +222,7 @@ public class FeatureDatasetCapabilitiesWriter {
   }
 
   private Element writeVariable(VariableSimpleIF v) {
+    NcMLWriter ncMLWriter = new NcMLWriter();
     Element varElem = new Element("variable");
     varElem.setAttribute("name", v.getShortName());
 
@@ -231,7 +232,7 @@ public class FeatureDatasetCapabilitiesWriter {
 
     // attributes
     for (Attribute att : v.getAttributes()) {
-      varElem.addContent(NcMLWriter.writeAttribute(att, "attribute", null));
+      varElem.addContent(ncMLWriter.makeAttributeElement(att));
     }
 
     return varElem;

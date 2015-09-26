@@ -55,7 +55,7 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   protected CalendarDateUnit timeUnit;
   protected String altUnits;
   protected CollectionInfo info;
-  protected List<Variable> extras;
+  protected List<Variable> extras; // variables needed to make CF/DSG writing work
 
   protected DsgCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     this.name = name;
@@ -105,7 +105,6 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   public ucar.unidata.geoloc.LatLonRect getBoundingBox() {
     return (info == null) ? null : info.bbox;
   }
-
 
   @Nonnull
   public CollectionInfo getInfo() { // LOOK exposes mutable fields

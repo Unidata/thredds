@@ -56,7 +56,7 @@ public interface ProfileFeatureCollection extends PointFeatureCC, Iterable<Profi
   ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   //////////////////////////////////////////////////////
-
+  // deprecated use foreach
 
   /**
    * Use the internal iterator to check if there is another ProfileFeature in the iteration.

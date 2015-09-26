@@ -122,19 +122,6 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, P
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // deprecated
 
-  /*
-    * Flatten into a PointFeatureCollection, discarding connectedness information.
-    *
-    * @param stations only contain these stations; if null or empty use all
-    * @param dateRange only points in this date range. may be null.
-    * @param varList only these member variables. may be null. currently ignored
-    * @return a PointFeatureCollection, may be null if its empty.
-    * @throws IOException on read error
-   * @deprecated use  CalendarDateRange
-    *
-   PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
-   */
-
   /**
    * Use the internal iterator to check if there is another StationTimeSeriesFeature in the iteration.
    * @return true is there is another StationTimeSeriesFeature in the iteration.

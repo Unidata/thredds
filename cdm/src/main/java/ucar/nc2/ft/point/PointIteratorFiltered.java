@@ -84,10 +84,7 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
     if ((filter_date != null) && !filter_date.includes(pdata.getObservationTimeAsCalendarDate()))
       return false;
 
-    if ((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()))
-      return false;
-
-    return true;
+    return !((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()));
   }
 
   private PointFeature nextFilteredDataPoint() {

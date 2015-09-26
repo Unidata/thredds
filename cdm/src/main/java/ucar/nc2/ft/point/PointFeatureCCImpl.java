@@ -32,7 +32,6 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.Variable;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
@@ -41,8 +40,6 @@ import ucar.unidata.geoloc.LatLonRect;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Abstract superclass for singly nested NestedPointFeatureCollection, such as Station, Profile, and Trajectory.

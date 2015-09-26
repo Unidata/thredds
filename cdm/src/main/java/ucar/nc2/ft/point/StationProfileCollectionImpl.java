@@ -136,8 +136,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
       return from.getStationHelper().subset(stations);
     }
 
-    // use this only if it is multiply nested
-    public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    public PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
       return new NestedPointCollectionIteratorFiltered( from.getNestedPointFeatureCollectionIterator(bufferSize), new Filter());
     }
 
@@ -146,7 +145,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
       return new NestedCollectionIOIteratorAdapter<>(getNestedPointFeatureCollectionIterator(-1));
     }
 
-    private class Filter implements NestedPointFeatureCollectionIterator.Filter {
+    private class Filter implements PointFeatureCCIterator.Filter {
       @Override
       public boolean filter(PointFeatureCC pointFeatureCollection) {
         StationProfileFeature stationFeature = (StationProfileFeature) pointFeatureCollection;
@@ -157,9 +156,9 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
 
   // LOOK make into top-level; how come section didnt need this?
   public class NestedCollectionIOIteratorAdapter<T> implements IOIterator<T> {
-    NestedPointFeatureCollectionIterator pfIterator;
+    PointFeatureCCIterator pfIterator;
 
-    public NestedCollectionIOIteratorAdapter(NestedPointFeatureCollectionIterator pfIterator) {
+    public NestedCollectionIOIteratorAdapter(PointFeatureCCIterator pfIterator) {
       this.pfIterator = pfIterator;
     }
 
@@ -187,7 +186,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   @Override
   public Iterator<StationProfileFeature> iterator() {
     try {
-      NestedPointFeatureCollectionIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
+      PointFeatureCCIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
       return new NestedCollectionIteratorAdapter<>(pfIterator);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -196,7 +195,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
 
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated
-  protected NestedPointFeatureCollectionIterator localIterator;
+  protected PointFeatureCCIterator localIterator;
 
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();

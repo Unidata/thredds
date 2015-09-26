@@ -35,10 +35,10 @@ package ucar.nc2.ft;
 import ucar.nc2.util.IOIterator;
 
 /**
- * An iterator over NestedPointFeatureCollection.
+ * An iterator over PointFeatureCC.
  * Use try-with-resource to make sure resources are released:
  * <pre>
-   try (NestedPointFeatureCollectionIterator iter = getIter()) {
+   try (PointFeatureCCIterator iter = getIter()) {
      while (iter.hasNext())
        process(iter.next());
    }
@@ -47,7 +47,7 @@ import ucar.nc2.util.IOIterator;
  * @author caron
  * @since Mar 20, 2008
  */
-public interface NestedPointFeatureCollectionIterator extends AutoCloseable, IOIterator<PointFeatureCC> {
+public interface PointFeatureCCIterator extends AutoCloseable, IOIterator<PointFeatureCC> {
 
   /**
    * true if another Feature object is available

@@ -37,7 +37,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.PointFeatureCollection;
 
 import java.util.Iterator;
 
@@ -94,6 +93,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
     info.maxTime = maxTime;
 
     info.npts = count;
+    info.setComplete();
   }
 
   static public class Filter implements PointFeatureIterator.Filter {
@@ -110,10 +110,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
       if ((filter_date != null) && !filter_date.includes(pdata.getObservationTimeAsCalendarDate()))
         return false;
 
-      if ((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()))
-        return false;
-
-      return true;
+      return !((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()));
     }
 
   }

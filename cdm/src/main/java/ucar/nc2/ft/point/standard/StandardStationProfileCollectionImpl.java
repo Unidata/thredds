@@ -84,11 +84,11 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   }
 
   @Override // old way
-  public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
+  public PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
     return new StationProfileIterator();
   }
 
-  private class StationProfileIterator implements NestedPointFeatureCollectionIterator, IOIterator<PointFeatureCC> {
+  private class StationProfileIterator implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
     private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
     private StructureData stationProfileData;
 
@@ -127,7 +127,6 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   //////////////////////////////////////////////////////////
   // a single StationProfileFeature in this collection
   private class StandardStationProfileFeature extends StationProfileFeatureImpl {
-    StructureData stationProfileData;
     int recnum;
     Cursor cursor;
 
@@ -160,6 +159,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       return null;
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return ((StationFeature) station).getFeatureData();

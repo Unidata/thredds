@@ -50,16 +50,16 @@ public interface Join {
    * @return extra data to be added to the row
    * @throws IOException on read error
    */
-  public StructureData getJoinData(Cursor cursor) throws IOException;
+  StructureData getJoinData(Cursor cursor) throws IOException;
 
   /**
    * Find the Variable of the given name in the joined table.
    * @param varName find this Variable
    * @return the named Variable, or null
    */
-  public VariableDS findVariable(String varName);
+  VariableDS findVariable(String varName);
 
-  public Variable getExtraVariable();
+  Variable getExtraVariable();
 
 }
 

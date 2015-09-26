@@ -29,36 +29,62 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
-package ucar.nc2.ft;
+package thredds.featurecollection;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 
 /**
- * An estimate of the cost of performing a data access operation.
- * Experimental.
- * 
+ * Describe
+ *
  * @author caron
+ * @since 9/26/2015.
  */
-class DataCost {
-  private int dataCount;
-  private int timeMsecs;
+@RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
+public class TestFeatureDatasetFactory {
 
-  public DataCost(int dataCount, int timeMsecs) {
-    this.dataCount = dataCount;
-    this.timeMsecs = timeMsecs;
+  @Parameterized.Parameters(name = "{0}")
+  public static List<Object[]> getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
+
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.ANY});
+    // result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.SWATH});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.GRID});
+
+    return result;
   }
 
-  /**
-   * Estimated number of data objects this operation will return
-   *
-   * @return number of data objects or -1 if unknown
-   */
-  int estimateDataCount() { return dataCount; }
+  String ds;
+  FeatureType what;
 
-  /**
-   * Estimated number of millisecs this operation will take.
-   * Zero means data is memory resident.
-   *
-   * @return number of millisecs or -1 if unknown
-   */
-  int estimateTimeCostInMilliSeconds() { return timeMsecs; }
+  public TestFeatureDatasetFactory(String ds, FeatureType what) {
+    this.ds = ds;
+    this.what = what;
+  }
+
+  @Test
+  public void testOpen() throws IOException {
+    Formatter errlog = new Formatter();
+    try (FeatureDataset fd = FeatureDatasetFactoryManager.open(what, ds, null, errlog)) {
+      Assert.assertNotNull(ds, fd);
+      if (what != FeatureType.ANY)
+        Assert.assertEquals(what, fd.getFeatureType());
+    }
+  }
 }

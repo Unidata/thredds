@@ -40,7 +40,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.StationImpl;
-import ucar.unidata.geoloc.LatLonRect;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -123,12 +122,6 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     return new StationFeatureSubset(this, dateRange);
   }
 
-  /*
-  public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
-    if (dateRange == null) return this;
-    return new StationFeatureSubset(this, CalendarDateRange.of(dateRange));
-  } */
-
   @Override
   public int compareTo(Station so) {
     return name.compareTo(so.getName());
@@ -167,6 +160,7 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
       return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), null, filter_date);
     }
 
+    @Nonnull
     @Override
      public StructureData getFeatureData() throws IOException {
        return from.getFeatureData();

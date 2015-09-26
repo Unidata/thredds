@@ -32,7 +32,7 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.NestedPointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeatureCCIterator;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.util.IOIterator;
 
@@ -43,15 +43,15 @@ import java.io.IOException;
  * @author caron
  * @since Mar 20, 2008
  */
-public class NestedPointCollectionIteratorFiltered implements NestedPointFeatureCollectionIterator, IOIterator<PointFeatureCC> {
+public class NestedPointCollectionIteratorFiltered implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
 
-  private NestedPointFeatureCollectionIterator npfciter;
-  private NestedPointFeatureCollectionIterator.Filter filter;
+  private PointFeatureCCIterator npfciter;
+  private PointFeatureCCIterator.Filter filter;
 
   private PointFeatureCC pointFeatureCollection;
   private boolean done = false;
 
-  NestedPointCollectionIteratorFiltered(NestedPointFeatureCollectionIterator npfciter, NestedPointFeatureCollectionIterator.Filter filter) {
+  NestedPointCollectionIteratorFiltered(PointFeatureCCIterator npfciter, PointFeatureCCIterator.Filter filter) {
     this.npfciter = npfciter;
     this.filter = filter;
   }

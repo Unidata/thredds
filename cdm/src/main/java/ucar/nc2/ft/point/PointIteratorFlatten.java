@@ -35,7 +35,6 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.IOIterator;

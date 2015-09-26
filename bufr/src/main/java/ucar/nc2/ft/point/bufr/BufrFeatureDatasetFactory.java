@@ -56,6 +56,7 @@ import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -241,10 +242,12 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
             this.sdata = sdata;
           }
 
+          @Nonnull
           @Override
           public StructureData getDataAll() throws IOException {
             return sdata;
           }
+          @Nonnull
           @Override
            public StructureData getFeatureData() throws IOException {
              return sdata;
@@ -315,10 +318,12 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
             this.sdata = sdata;
           }
 
+          @Nonnull
           @Override
           public StructureData getDataAll() throws IOException {
             return sdata;
           }
+          @Nonnull
           @Override
           public StructureData getFeatureData() throws IOException {
              return sdata;

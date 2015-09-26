@@ -81,32 +81,6 @@ public interface PointFeatureIterator extends AutoCloseable, Iterator<PointFeatu
   }
 
   /**
-   * If this is set, then the iterator will calculate the bounding box, time range, and size,
-   *   and make it available through getBoundingBox(), getDateRange(), and getSize().
-   * @param collection if not null, on complete iteration set the results into the collection.
-   *
-  void setCalculateBounds( PointFeatureCollection collection);
-
-   /**
-   * Get BoundingBox after iteration is finished, if calcBounds was set true
-   * @return BoundingBox of all returned points
-   *
-  LatLonRect getBoundingBox();
-
-  /**
-   * Get DateRange of observation time after iteration is finished, if calcBounds was set true
-   * @return DateRange of all returned points
-   *
-  CalendarDateRange getCalendarDateRange();
-
-  /**
-   * Get number of points after the iteration is finished, if calcBounds was set true
-   * @return number of points in the iteration
-   *
-  int getCount();
-  */
-
-  /**
    * A filter on PointFeatures
    */
   interface Filter {

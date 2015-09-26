@@ -54,7 +54,7 @@ public interface TableConfigurer {
    * @return true if it can be opened as a wantFeatureType dataset
    * @throws IOException on read error
    */
-  public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException;
+  boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException;
 
   /**
    * Create a TableConfig for this dataset.
@@ -64,10 +64,10 @@ public interface TableConfigurer {
    * @return TableConfig for this dataset
    * @throws IOException on read error
    */
-  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException;
+  TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException;
 
-  public String getConvName();
-  public void setConvName(String convName);
-  public String getConvUsed();
-  public void setConvUsed(String convUsed);
+  String getConvName();
+  void setConvName(String convName);
+  String getConvUsed();
+  void setConvUsed(String convUsed);
 }

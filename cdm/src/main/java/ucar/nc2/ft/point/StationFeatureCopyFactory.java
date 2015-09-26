@@ -39,6 +39,7 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateUnit;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,11 +111,13 @@ public class StationFeatureCopyFactory {
       this.station = station;
     }
 
+    @Nonnull
     @Override
     public StructureData getDataAll() throws IOException {
       return data;  // ??
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return data;

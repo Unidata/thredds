@@ -66,7 +66,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   @Override
   public Iterator<SectionFeature> iterator() {
     try {
-      NestedPointFeatureCollectionIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
+      PointFeatureCCIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
       return new NestedCollectionIteratorAdapter<>(pfIterator);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -79,11 +79,11 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   }
 
   @Override // old way
-  public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
+  public PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
     return new SectionIterator();
   }
 
-  private class SectionIterator implements NestedPointFeatureCollectionIterator, IOIterator<PointFeatureCC> {
+  private class SectionIterator implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
     private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
     private StructureData sectionData;
 
@@ -132,6 +132,8 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       return new ProfileIterator(cursor.copy());
     }
 
+    @Nonnull
+    @Override
     public StructureData getFeatureData() throws IOException {
       return sectionData;
     }

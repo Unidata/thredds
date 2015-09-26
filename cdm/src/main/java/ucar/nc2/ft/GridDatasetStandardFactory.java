@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * FeatureDatasetFactory for Grids, using standard coord sys analysis
+ * FeatureDatasetFactory for Grids, using standard coord sys analysis and ucar.nc2.dt.grid.GridDataset
  * @author caron
  * @since Dec 30, 2008
  */

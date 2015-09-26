@@ -61,7 +61,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     this.timeUnit = timeUnit;
     this.cursor = cursor;
     CollectionInfo info = dsg.getInfo();
-    if (!info.complete) setCalculateBounds(info);
+    if (!info.isComplete()) setCalculateBounds(info);
   }
 
   protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {

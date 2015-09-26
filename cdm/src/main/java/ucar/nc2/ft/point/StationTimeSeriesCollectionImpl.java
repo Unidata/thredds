@@ -237,37 +237,6 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     }
   }
 
-  /* private class StationTimeSeriesFeatureIterator implements Iterator<StationTimeSeriesFeature> {
-    PointFeatureCollectionIterator pfIterator;
-
-    public StationTimeSeriesFeatureIterator() {
-      try {
-        this.pfIterator = getPointFeatureCollectionIterator(-1);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public boolean hasNext() {
-      try {
-        return pfIterator.hasNext();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public StationTimeSeriesFeature next() {
-      try {
-        return (StationTimeSeriesFeature) pfIterator.next();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  } */
-
-
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated
 

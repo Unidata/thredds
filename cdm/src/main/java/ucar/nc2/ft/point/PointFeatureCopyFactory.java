@@ -39,6 +39,7 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateUnit;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -95,11 +96,13 @@ public class PointFeatureCopyFactory {
       super(pf.getFeatureCollection(), pf.getLocation(), pf.getObservationTime(), pf.getNominalTime(), du);
     }
 
+    @Nonnull
     @Override
     public StructureData getDataAll() throws IOException {
       return data;
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return data;

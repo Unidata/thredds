@@ -49,7 +49,7 @@ public class CollectionInfo {
   public double minTime = Double.NaN; // in units of dsg.timeUnit
   public double maxTime = Double.NaN;
   public int npts;
-  public boolean complete;
+  private boolean complete;
 
   public CollectionInfo() {}
 
@@ -75,6 +75,14 @@ public class CollectionInfo {
 
   public void setCalendarDateRange(CalendarDateRange dateRange) {
     this.dateRange = dateRange;
+  }
+
+  public boolean isComplete() {
+    return complete;
+  }
+
+  public void setComplete() {
+    this.complete = true;
   }
 
   @Override

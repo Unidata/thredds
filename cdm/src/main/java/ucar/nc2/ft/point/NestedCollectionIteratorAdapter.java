@@ -33,7 +33,7 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.NestedPointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeatureCCIterator;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -45,9 +45,9 @@ import java.util.Iterator;
  * @since 9/24/2015.
  */
 public class NestedCollectionIteratorAdapter<T> implements Iterator<T> {
-  NestedPointFeatureCollectionIterator pfIterator;
+  PointFeatureCCIterator pfIterator;
 
-  public NestedCollectionIteratorAdapter(NestedPointFeatureCollectionIterator pfIterator) {
+  public NestedCollectionIteratorAdapter(PointFeatureCCIterator pfIterator) {
     this.pfIterator = pfIterator;
   }
 

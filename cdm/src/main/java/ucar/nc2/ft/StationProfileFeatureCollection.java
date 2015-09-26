@@ -32,10 +32,7 @@
  */
 package ucar.nc2.ft;
 
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
 import java.util.List;
@@ -47,6 +44,7 @@ import java.io.IOException;
  * @since Feb 29, 2008
  */
 public interface StationProfileFeatureCollection extends StationCollection, PointFeatureCCC, Iterable<StationProfileFeature> {
+
   /**
    * Get a subsetted StationProfileFeatureCollection
    *
@@ -102,7 +100,7 @@ public interface StationProfileFeatureCollection extends StationCollection, Poin
   /**
    * @deprecated use foreach
    */
-  NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+  PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
 
 
 }

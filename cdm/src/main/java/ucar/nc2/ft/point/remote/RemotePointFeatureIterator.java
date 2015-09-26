@@ -63,7 +63,7 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
     this.in = in;
     this.featureMaker = featureMaker;
     CollectionInfo info = dsg.getInfo();
-    if (!info.complete) setCalculateBounds(info);
+    if (!info.isComplete()) setCalculateBounds(info);
   }
 
   public void close() {

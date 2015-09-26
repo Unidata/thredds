@@ -33,10 +33,7 @@
  */
 package ucar.nc2.ft;
 
-import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.IOIterator;
-
-import java.io.IOException;
 
 /**
  * Double nested PointFeatureCollection
@@ -47,29 +44,8 @@ import java.io.IOException;
 public interface PointFeatureCCC extends DsgFeatureCollection {
 
   /**
-   * Get a subsetted PointFeatureCCC based on a LatLonRect
-   *
-   * @param boundingBox spatial subset
-   * @param dateRange only points in this date range. may be null.
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   *
-  // PointFeatureCCC subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
-
-  PointFeatureCCC subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
-
-  /**
-   *  Flatten into a PointFeatureCollection, discarding connectedness information. Optionally subset.
-   * @param boundingBox only points in this lat/lon bounding box. may be null.
-   * @param dateRange only points in this date range. may be null.
-   * @return a PointFeatureCollection, may be null if its empty.
-   * @throws IOException on read error
-   *
-  PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException; */
-
-  /**
-   * General way to handle iterations on all classes that implement tis interface.
-   * Better to use class specific foreach
+   * General way to handle iterations on all classes that implement this interface.
+   * Generally, use class specific foreach
    * @param bufferSize hint on how much memory to use, -1 for default
    * @return Iterator over PointFeatureCC which may throw an IOException
    * @throws java.io.IOException

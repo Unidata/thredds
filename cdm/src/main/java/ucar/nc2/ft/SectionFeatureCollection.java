@@ -72,6 +72,6 @@ public interface SectionFeatureCollection extends PointFeatureCCC, Iterable<Sect
   /**
    * @deprecated use foreach
    */
-  NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+  PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
 
 }

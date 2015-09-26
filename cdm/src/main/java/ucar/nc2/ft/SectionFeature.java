@@ -35,6 +35,7 @@ package ucar.nc2.ft;
 
 import ucar.ma2.StructureData;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -47,23 +48,24 @@ public interface SectionFeature extends PointFeatureCC, Iterable<ProfileFeature>
 
   /**
    * The number of profiles along the trajectory.
-   * @return number of profiles along the trajectory.
+   * @return number of profiles along the trajectory, or -1 if not known.
    */
   int size();
 
-
   /**
    * The data associated with the Section feature.
-   * @return the actual data of this section.
+   * @return the actual data of this section. may be empty, not null.
    * @throws java.io.IOException on i/o error
    */
+  @Nonnull
   StructureData getFeatureData() throws IOException;
 
   //////////////////////////////////////////////////////////
+  // deprecated use foreach
 
   /**
    * Use the internal iterator to check if there is another ProfileFeature in the iteration.
-   * @return true is there is another ProfileFeature in the iteration.
+   * @return true is there is another Section in the iteration.
    * @throws java.io.IOException on read error
    * @deprecated use foreach
    */

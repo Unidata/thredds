@@ -57,10 +57,7 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
     // only one Cursor object needed - it will be used for each iteration with different structData's
     Cursor tableData = new Cursor(ft.getNumberOfLevels());
 
-    PointFeatureIterator iter = new StandardPointFeatureIterator( this, ft, timeUnit, ft.getObsDataIterator(tableData, bufferSize), tableData);
-    //if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-    //  iter.setCalculateBounds(this);
-    return iter;
+    return new StandardPointFeatureIterator(this, ft, timeUnit, ft.getObsDataIterator(tableData, bufferSize), tableData);
   }
 
 }

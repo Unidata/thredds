@@ -42,6 +42,7 @@ import ucar.ma2.StructureData;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -85,6 +86,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
       return new StandardPointFeatureIterator(this, ft, timeUnit, siter, cursorIter);
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() {
       return trajData;

@@ -81,13 +81,14 @@ public interface PointFeature {
   CalendarDate getNominalTimeAsCalendarDate();
 
   /**
-   * The data of the parent feature(s).
+   * The actual data of just this PointFeature.
+   * This is the data of the innermost nested table, aka leaf data.
    */
   @Nonnull
   ucar.ma2.StructureData getFeatureData() throws java.io.IOException;
 
   /**
-   * All the data of this observation, joined with data from all parent features, if any.
+   * All the data of this observation, joined with data from all parent features.
    */
   @Nonnull
   ucar.ma2.StructureData getDataAll() throws java.io.IOException;

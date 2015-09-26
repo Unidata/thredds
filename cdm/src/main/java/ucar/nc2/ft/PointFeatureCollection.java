@@ -56,7 +56,7 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
   PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   //////////////////////////////////////////////////////
-  // deprecated
+  // deprecated, use foreach
 
   /**
    * Use the internal iterator to check if there is another PointFeature in the iteration.
@@ -100,35 +100,5 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
     * @deprecated use foreach
     */
    PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
-
-    /*
-   * Set the calendar date range for the FeatureCollection.
-   *
-   * @param range the calendar date range for the entire collection
-   *
-  void setCalendarDateRange(CalendarDateRange range);
-
-  /**
-   * Set the boundingBox for the FeatureCollection.
-   *
-   * @param bb the lat/lon boundingBox for the entire collection.
-   *
-  void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb);
-
-  /**
-   * Set the size of the FeatureCollection.
-   *
-   * @param npts size of the collection
-   *
-  void setSize(int npts); */
-
-  /**
-   * Caclulate date range and bounding box, and size, even if the data has to be scanned.
-   * This ensures that getDateRange() and getBoundingBox() return non-null.
-   * If the collection already knows its size, date range and bounding box, then this has no effect.
-   *
-   * @throws java.io.IOException or read error.
-   *
-  void calcBounds() throws java.io.IOException; */
 
 }
