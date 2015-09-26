@@ -46,22 +46,6 @@ import java.io.IOException;
 public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<PointFeature> {
 
   /**
-   * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.
-   *
-   * @return the calendar date range for the entire collection, or null if unknown
-   */
-  @Nullable
-  CalendarDateRange getCalendarDateRange();
-
-  /**
-   * The boundingBox for the FeatureCollection. May not be known until after iterating through the collection.
-   *
-   * @return the lat/lon boundingBox for the entire collection, or null if unknown.
-   */
-  @Nullable
-  ucar.unidata.geoloc.LatLonRect getBoundingBox();
-
-  /**
    * Subset this collection by boundingBox and/or dateRange
    * @param boundingBox only points in this lat/lon bounding box. may be null.
    * @param dateRange only points in this date range. may be null.

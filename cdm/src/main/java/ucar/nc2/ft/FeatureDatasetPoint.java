@@ -46,4 +46,6 @@ public interface FeatureDatasetPoint extends FeatureDataset {
    * @return list of DsgFeatureCollection contained in this dataset
    */
   List<DsgFeatureCollection> getPointFeatureCollectionList();
+
+  void calcBounds(java.util.Formatter sf);
 }

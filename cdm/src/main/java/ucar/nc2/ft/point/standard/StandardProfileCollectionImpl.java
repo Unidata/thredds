@@ -47,18 +47,20 @@ import ucar.ma2.StructureData;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Iterator;
 
 /**
  * Nested Table implementation of ProfileCollection
+ *
  * @author caron
  * @since Jan 20, 2009
  */
 public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements ProfileFeatureCollection {
   private NestedTable ft;
 
-  protected StandardProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits ) {
+  protected StandardProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.PROFILE);
   }
 
@@ -69,19 +71,19 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
   }
 
   public ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException {
-    return new StandardProfileCollectionSubset( this, boundingBox);
+    return new StandardProfileCollectionSubset(this, boundingBox);
   }
 
   public ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-    return new StandardProfileCollectionSubset( this, boundingBox); // LOOK ignoring dateRange
+    return new StandardProfileCollectionSubset(this, boundingBox); // LOOK ignoring dateRange
   }
 
   private class StandardProfileFeature extends ProfileFeatureImpl {
     Cursor cursor;
     StructureData profileData;
 
-    StandardProfileFeature( Cursor cursor, double time, StructureData profileData) {
-      super( ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(), StandardProfileCollectionImpl.this.getAltUnits(),
+    StandardProfileFeature(Cursor cursor, double time, StructureData profileData) {
+      super(ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(), StandardProfileCollectionImpl.this.getAltUnits(),
               ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
 
       this.cursor = cursor;
@@ -106,6 +108,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
       }
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() {
       return profileData;
@@ -113,13 +116,11 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursorIter = cursor.copy();
-      StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursorIter, bufferSize);
-      StandardPointFeatureIterator iter = new StandardProfileFeatureIterator(ft, timeUnit, siter, cursorIter);
-      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-        iter.setCalculateBounds(this);
-      return iter;
+      StructureDataIterator siter = ft.getLeafFeatureDataIterator(cursorIter, bufferSize);
+      return new StandardProfileFeatureIterator(ft, timeUnit, siter, cursorIter);
     }
 
+    @Nonnull
     @Override
     public CalendarDate getTime() {
       return timeUnit.makeCalendarDate(time);
@@ -138,7 +139,6 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
         // must also check for missing z values
         return ft.isAltMissing(this.cursor);
-
       }
     }
   }
@@ -148,13 +148,13 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
     LatLonRect boundingBox;
 
     StandardProfileCollectionSubset(StandardProfileCollectionImpl from, LatLonRect boundingBox) {
-      super(from.getName()+"-subset", from.getTimeUnit(), from.getAltUnits());
+      super(from.getName() + "-subset", from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.boundingBox = boundingBox;
     }
 
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new Filter());
+      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(bufferSize), new Filter());
     }
 
     private class Filter implements PointFeatureCollectionIterator.Filter {
@@ -180,12 +180,12 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
   @Override
   public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
-    return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
+    return new ProfileIterator(ft.getRootFeatureDataIterator(bufferSize));
   }
 
   @Override
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
+    return new ProfileIterator(ft.getRootFeatureDataIterator(bufferSize));
   }
 
   private class ProfileIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {

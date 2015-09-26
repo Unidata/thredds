@@ -100,7 +100,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
           if (GribIosp.debugGbxIndexOnly) {
              index = (Grib2Index) GribIndex.open(false, mfile);
            } else {
-             // LOOK here is where gbx9 files get recreated
+             // this is where gbx9 files get recreated
              index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, mfile, CollectionUpdateType.test, logger);
            }
           allFiles.add(mfile);  // add on success

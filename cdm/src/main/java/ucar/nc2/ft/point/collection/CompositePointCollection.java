@@ -106,10 +106,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    CompositePointFeatureIterator iter = new CompositePointFeatureIterator();
-    if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-      iter.setCalculateBounds(this);
-    return iter;
+    return new CompositePointFeatureIterator();
   }
 
   @Override

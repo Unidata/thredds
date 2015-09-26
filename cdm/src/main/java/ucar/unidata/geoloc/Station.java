@@ -32,6 +32,8 @@
  */
 package ucar.unidata.geoloc;
 
+import javax.annotation.Nonnull;
+
 /**
  * A named location on the earth.
  * @author caron
@@ -43,6 +45,7 @@ public interface Station extends EarthLocation, Comparable<Station> {
    * Station name or id. Must be unique within the collection
    * @return station name or id. May not be null.
    */
+  @Nonnull
   String getName();
 
   /**

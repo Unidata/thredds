@@ -1084,7 +1084,7 @@ public abstract class Table {
     TableSingleton(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
       this.sdata = config.sdata;
-      if (sdata == null) return;
+      if (sdata == null) sdata = StructureData.EMPTY;
 
       for (StructureMembers.Member m : sdata.getStructureMembers().getMembers())
         cols.put(m.getName(), new VariableSimpleAdapter(m));
@@ -1162,13 +1162,14 @@ public abstract class Table {
     }
   }
 
-  // ok for sdata to be null
+  // not ok for sdata to be null
   private static class SingletonStructureDataIterator implements StructureDataIterator {
     private int count = 0;
     private StructureData sdata;
 
     SingletonStructureDataIterator(StructureData sdata) {
       this.sdata = sdata;
+      assert sdata != null;
     }
 
     @Override

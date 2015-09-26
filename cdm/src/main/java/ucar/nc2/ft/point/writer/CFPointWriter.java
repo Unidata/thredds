@@ -118,7 +118,6 @@ public abstract class CFPointWriter implements AutoCloseable {
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, CFPointWriterConfig config) throws IOException {
 
     for (DsgFeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
-      assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
 
       if (fc instanceof PointFeatureCollection) {
         return writePointFeatureCollection(fdpoint, (PointFeatureCollection) fc, fileOut, config);

@@ -42,6 +42,7 @@ import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.StationImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -57,34 +58,20 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
   public StationTimeSeriesFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super(name, timeUnit, altUnits);
     s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
-    this.timeUnit = timeUnit;
-    this.npts = npts;
   }
 
   public StationTimeSeriesFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super(s.getName(), timeUnit, altUnits);
     this.s = s;
-    this.npts = npts;
-    setBoundingBox( new LatLonRect(s.getLatLon(), .0001, .0001));
+    if (npts >= 0) {
+      getInfo(); // create the object
+      info.npts = npts;
+    }
   }
 
   @Override
   public String getWmoId() {
     return s.getWmoId();
-  }
-
-  @Override
-  public int size() {
-    return npts;
-  }
-
-  public void setNumberPoints(int npts) {
-    this.npts = npts;
-  }
-
-  @Override
-  public String getName() {
-    return s.getName();
   }
 
   @Override
@@ -117,6 +104,7 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
   }
 
+  @Nonnull
   @Override
   public FeatureType getCollectionFeatureType() {
     return FeatureType.STATION;
@@ -126,8 +114,6 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
   public String toString() {
     return "StationFeatureImpl{" +
         "s=" + s +
-        ", timeUnit=" + timeUnit +
-        ", npts=" + npts +
         '}';
   }
 
@@ -145,7 +131,7 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
 
   @Override
   public int compareTo(Station so) {
-    return name.compareTo( so.getName());
+    return name.compareTo(so.getName());
   }
 
   @Override
@@ -168,21 +154,17 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
 
   public static class StationFeatureSubset extends StationTimeSeriesFeatureImpl {
     private final StationTimeSeriesFeatureImpl from;
+    private CalendarDateRange filter_date;
 
     public StationFeatureSubset(StationTimeSeriesFeatureImpl from, CalendarDateRange filter_date) {
       super(from.s, from.getTimeUnit(), from.getAltUnits(), -1);
       this.from = from;
-
-      if (filter_date == null) {
-        this.dateRange = from.dateRange;
-      } else {
-        this.dateRange = (from.dateRange == null) ? filter_date : from.dateRange.intersect(filter_date);
-      }
+      this.filter_date = filter_date;
     }
 
     @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), null, this.dateRange);
+      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), null, filter_date);
     }
 
     @Override

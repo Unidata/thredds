@@ -226,19 +226,20 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
     CompositeStationFeature(Station s, CalendarDateUnit timeUnit, String altUnits, StructureData sdata, TimedCollection collForFeature) {
       super(s, timeUnit, altUnits, -1);
-      setCalendarDateRange(collForFeature.getDateRange());
       this.sdata = sdata;
       this.collForFeature = collForFeature;
+      CalendarDateRange cdr = collForFeature.getDateRange();
+      if (cdr != null) {
+        getInfo();
+        info.setCalendarDateRange(cdr);
+      }
     }
 
     // an iterator over the observations for this station
 
     @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      CompositeStationFeatureIterator iter = new CompositeStationFeatureIterator();
-      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-        iter.setCalculateBounds(this);
-      return iter;
+      return new CompositeStationFeatureIterator();
     }
 
     /*
@@ -359,8 +360,9 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       }
 
       public PointFeature next() {
-        npts++;
-        return pfIter.next();
+        PointFeature pf =  pfIter.next();
+        calcBounds(pf);
+        return pf;
       }
 
       public void close() {
@@ -380,8 +382,6 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
         finishCalcBounds();
         finished = true;
-        //if (CompositeStationFeature.this.npts < 0) // LOOK needed ?
-        //  CompositeStationFeature.this.npts = getCount();
       }
 
       public void setBufferSize(int bytes) {

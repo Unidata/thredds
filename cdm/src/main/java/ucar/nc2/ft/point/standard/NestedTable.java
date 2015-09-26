@@ -129,7 +129,7 @@ public class NestedTable {
     altVE = findCoordinateAxis(Table.CoordName.Elev, leaf, 0);
     nomTimeVE = findCoordinateAxis(Table.CoordName.TimeNominal, leaf, 0);
 
-    // look for station info
+    // search for station info
     stnVE = findCoordinateAxis(Table.CoordName.StnId, leaf, 0);
     stnDescVE = findCoordinateAxis(Table.CoordName.StnDesc, leaf, 0);
     wmoVE = findCoordinateAxis(Table.CoordName.WmoId, leaf, 0);

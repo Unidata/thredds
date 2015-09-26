@@ -58,8 +58,8 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
     Cursor tableData = new Cursor(ft.getNumberOfLevels());
 
     PointFeatureIterator iter = new StandardPointFeatureIterator( this, ft, timeUnit, ft.getObsDataIterator(tableData, bufferSize), tableData);
-    if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-      iter.setCalculateBounds(this);
+    //if ((boundingBox == null) || (dateRange == null) || (npts < 0))
+    //  iter.setCalculateBounds(this);
     return iter;
   }
 

@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.point;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -76,7 +77,7 @@ public class TestPreCFpointDatasets {
 
   @Test
   public void checkPointDataset() throws IOException {
-    assert 0 < TestPointDatasets.checkPointDataset(location, ftype, show);
+    Assert.assertTrue("npoints", 0 < TestPointDatasets.checkPointFeatureDataset(location, ftype, show));
   }
 
 }

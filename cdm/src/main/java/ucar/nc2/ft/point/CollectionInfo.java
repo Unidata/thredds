@@ -29,81 +29,61 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
-package ucar.nc2.ft;
+package ucar.nc2.ft.point;
 
-import ucar.nc2.Variable;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
- * A collection of FeatureTypes.
- * Will either be a PointFeatureCollection, NestedPointFeatureCollection, or DoubleNestedPointFeatureCollection
- * Will either be a PointFeatureCollection, PointFeatureCC, or PointFeatureCCC
+ * Value class to hold bounds info for a collection
  *
  * @author caron
- * @since Mar 20, 2008
+ * @since 9/25/2015.
  */
-public interface DsgFeatureCollection {
-  /**
-   * Get the name of this feature collection.
-   * @return the name of this feature collection
-   */
-  @Nonnull
-  String getName();
+public class CollectionInfo {
+  public LatLonRect bbox;
+  private CalendarDateRange dateRange;
+  public double minTime = Double.NaN; // in units of dsg.timeUnit
+  public double maxTime = Double.NaN;
+  public int npts;
+  public boolean complete;
 
-  /**
-   * All features in this collection have this feature type
-   * @return the feature type
-   */
-  @Nonnull
-  ucar.nc2.constants.FeatureType getCollectionFeatureType();
+  public CollectionInfo() {}
 
-  /**
-   * The time unit.
-   * @return  time unit, may not be null
-   */
-  @Nonnull
-  CalendarDateUnit getTimeUnit();
+  public CollectionInfo(LatLonRect bbox, CalendarDateRange dateRange, int npts) {
+    this.bbox = bbox;
+    this.dateRange = dateRange;
+    this.npts = npts;
+  }
 
-  /**
-   * The altitude unit string if it exists.
-   * @return altitude unit string, may be null
-   */
-  @Nullable
-  String getAltUnits();
+  void extend(CollectionInfo info) {
+    bbox.extend(info.bbox);
+    dateRange = dateRange.extend(info.dateRange);
+    npts += info.npts;
+  }
 
-  /**
-   * Other variables needed for completeness, eg joined coordinate variables
-   * @return list of extra variables, may be empty not null
-   */
-  @Nonnull
-  List<Variable> getExtraVariables();
+  public CalendarDateRange getCalendarDateRange(CalendarDateUnit timeUnit) {
+    if (dateRange != null) return dateRange;
+    if (timeUnit != null && !Double.isNaN(minTime) && !Double.isNaN(minTime)) {
+      dateRange = CalendarDateRange.of(timeUnit.makeCalendarDate(minTime), timeUnit.makeCalendarDate(maxTime));
+    }
+    return dateRange;
+  }
 
-  /**
-   * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.
-   *
-   * @return the calendar date range for the entire collection, or null if unknown
-   */
-  @Nullable
-  CalendarDateRange getCalendarDateRange();
+  public void setCalendarDateRange(CalendarDateRange dateRange) {
+    this.dateRange = dateRange;
+  }
 
-  /**
-   * The boundingBox for the FeatureCollection. May not be known until after iterating through the collection.
-   *
-   * @return the lat/lon boundingBox for the entire collection, or null if unknown.
-   */
-  @Nullable
-  ucar.unidata.geoloc.LatLonRect getBoundingBox();
-
-  /**
-   * The number of Features in the collection. May not be known until after iterating through the collection.
-   * @return number of elements in the collection, or -1 if not known.
-   */
-  int size();
-
+  @Override
+  public String toString() {
+    return "CollectionInfo{" +
+            "bbox=" + bbox +
+            ", dateRange=" + dateRange +
+            ", npts=" + npts +
+            ", complete=" + complete +
+            '}';
+  }
 }

@@ -69,7 +69,9 @@ public interface NestedPointFeatureCollectionIterator extends AutoCloseable, IOI
    * No guarentee that it will be used by the implementation.
    * @param bytes amount of memory in bytes
    */
-  void setBufferSize( int bytes);
+  default void setBufferSize( int bytes) {
+    //do nothing
+  }
 
   /**
    * Make sure that the iterator is complete, and recover resources.

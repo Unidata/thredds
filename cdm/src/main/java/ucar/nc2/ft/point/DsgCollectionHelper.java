@@ -34,7 +34,6 @@
 package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
@@ -56,29 +55,28 @@ public class DsgCollectionHelper {
     this.dsg = dsg;
   }
 
-  public Info calcBounds() throws IOException {
+  public CollectionInfo calcBounds() throws IOException {
     if (dsg instanceof PointFeatureCollection)
       return calcBounds((PointFeatureCollection) dsg);
+
     else if (dsg instanceof PointFeatureCC) {
-      PointFeatureCC pfcc = (PointFeatureCC) dsg;
-      return calcBounds(pfcc);
+      return calcBounds((PointFeatureCC) dsg);
+
     } else if (dsg instanceof PointFeatureCCC) {
-      PointFeatureCCC pfccc = (PointFeatureCCC) dsg;
-        return calcBounds(pfccc);
+      return calcBounds((PointFeatureCCC) dsg);
     }
 
     throw new IllegalStateException(dsg.getClass().getName());
   }
 
-  private Info calcBounds(PointFeatureCollection pfc) {
+  private CollectionInfo calcBounds(PointFeatureCollection pfc) {
 
     LatLonRect bbox = null;
     double minTime = Double.MAX_VALUE;
     double maxTime = -Double.MAX_VALUE;
+    int count = 0;
 
     for (PointFeature pf : pfc) {
-      CalendarDate cd = pf.getObservationTimeAsCalendarDate();
-
       if (bbox == null)
         bbox = new LatLonRect(pf.getLocation().getLatLon(), .001, .001);
       else
@@ -87,22 +85,23 @@ public class DsgCollectionHelper {
       double obsTime = pf.getObservationTime();
       minTime = Math.min(minTime, obsTime);
       maxTime = Math.max(maxTime, obsTime);
+      count++;
     }
 
     CalendarDateUnit cdu = dsg.getTimeUnit();
     CalendarDateRange dateRange = CalendarDateRange.of(cdu.makeCalendarDate(minTime), cdu.makeCalendarDate(maxTime));
 
-    return new Info(bbox, dateRange);
+    return new CollectionInfo(bbox, dateRange, count);
   }
 
-  private Info calcBounds(PointFeatureCC pfcc) throws IOException {
+  private CollectionInfo calcBounds(PointFeatureCC pfcc) throws IOException {
 
-    Info result = null;
+    CollectionInfo result = null;
     IOIterator<PointFeatureCollection> iter = pfcc.getCollectionIterator(-1);
 
     while (iter.hasNext()) {
       PointFeatureCollection pfc = iter.next();
-      Info b = calcBounds(pfc);
+      CollectionInfo b = calcBounds(pfc);
       if (result == null)
         result = b;
       else
@@ -112,14 +111,14 @@ public class DsgCollectionHelper {
     return result;
   }
 
-  private Info calcBounds(PointFeatureCCC pfccc) throws IOException {
+  private CollectionInfo calcBounds(PointFeatureCCC pfccc) throws IOException {
 
-    Info result = null;
+    CollectionInfo result = null;
     IOIterator<PointFeatureCC> iter = pfccc.getCollectionIterator(-1);
 
     while (iter.hasNext()) {
       PointFeatureCC pfcc = iter.next();
-      Info b = calcBounds(pfcc);
+      CollectionInfo b = calcBounds(pfcc);
       if (result == null)
         result = b;
       else
@@ -129,18 +128,4 @@ public class DsgCollectionHelper {
     return result;
   }
 
-  public static class Info {
-    LatLonRect bbox;
-    CalendarDateRange dateRange;
-
-    public Info(LatLonRect bbox, CalendarDateRange dateRange) {
-      this.bbox = bbox;
-      this.dateRange = dateRange;
-    }
-
-    void extend(Info info) {
-      bbox.extend(info.bbox);
-      dateRange = dateRange.extend(info.dateRange);
-    }
-  }
 }

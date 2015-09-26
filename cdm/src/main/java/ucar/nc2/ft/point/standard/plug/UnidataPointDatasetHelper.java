@@ -107,7 +107,7 @@ public class UnidataPointDatasetHelper {
 
   /**
    * Tries to find the coordinate variable of the specified type.
-   * @param ds look in this dataset
+   * @param ds search in this dataset
    * @param a AxisType.LAT, LON, HEIGHT, or TIME
    * @return coordinate variable, or null if not found.
    */
@@ -149,7 +149,7 @@ public class UnidataPointDatasetHelper {
 
   /**
    * Tries to find the coordinate variable of the specified type, which has the specified dimension as its firsst dimension
-   * @param ds look in this dataset
+   * @param ds search in this dataset
    * @param a AxisType.LAT, LON, HEIGHT, or TIME
    * @param dim must use this dimension
    * @return coordinate variable, or null if not found.
@@ -169,7 +169,7 @@ public class UnidataPointDatasetHelper {
 
   /**
    * Tries to find the coordinate variable of the specified type.
-   * @param ds look in this dataset
+   * @param ds search in this dataset
    * @param a AxisType.LAT, LON, HEIGHT, or TIME
    * @return coordinate variable, or null if not found.
    */

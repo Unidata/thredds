@@ -265,7 +265,10 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         BufrPointFeatureCollection(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
           super("BufrPointFeatureCollection", bufrDateUnits, bufrAltUnits);
           setBoundingBox(boundingBox);
-          setCalendarDateRange(dateRange);
+          if (dateRange != null) {
+            getInfo();
+            info.setCalendarDateRange(dateRange);
+          }
           createStationHelper();
           stationsWanted = getStationHelper().subset(boundingBox);
           if (dateRange != null) filter = new PointIteratorAbstract.Filter(null, dateRange);
@@ -298,7 +301,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
           @Override
           public void close() {
-            System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getCount());
+            System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getInfo().npts);
             super.close();
           }
 

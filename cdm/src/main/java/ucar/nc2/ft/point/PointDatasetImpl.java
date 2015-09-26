@@ -40,6 +40,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -102,91 +103,38 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     return collectionList;
   }
 
-  /* @Override
-  public void calcBounds() throws java.io.IOException {  // LOOK this sucks
-    if ((boundingBox != null) && (dateRange != null)) return;
-
-    LatLonRect bb = null;
-    CalendarDateRange dates = null;
-    for (FeatureCollection fc : collectionList) {
-
-      if (fc instanceof PointFeatureCollection) {
-        PointFeatureCollection pfc = (PointFeatureCollection) fc;
-        pfc.calcBounds();
-        if (bb == null)
-          bb = pfc.getBoundingBox();
-        else
-          bb.extend(pfc.getBoundingBox());
-        if (dates == null)
-          dates = pfc.getCalendarDateRange();
-        else
-          dates.extend(pfc.getCalendarDateRange());
-
-      }  else if (fc instanceof StationTimeSeriesFeatureCollection) {
-
-        StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
-        if (this.boundingBox == null) {
-          if (bb == null) {
-            bb = sc.getBoundingBox();
-          } else if (sc.getBoundingBox() != null) {
-            bb.extend(sc.getBoundingBox());
-          }
-        }
-
-        if (dateRange == null) {
-          PointFeatureCollection pfc = sc.flatten(null, (CalendarDateRange) null);
-          pfc.calcBounds();
-          if (dates == null)
-            dates = pfc.getCalendarDateRange();
-          else
-            dates.extend(pfc.getCalendarDateRange());
-        }
-      }
-
-    }
-
-    if (boundingBox == null) boundingBox = bb;
-    if (dateRange == null) dateRange = dates;
-  } */
-
   @Override
   public void getDetailInfo(java.util.Formatter sf) {
     super.getDetailInfo(sf);
 
     int count = 0;
-    for (DsgFeatureCollection fc : collectionList) {
-      if (fc instanceof PointFeatureCollection) {
-        sf.format("%nPointFeatureCollection %d %n", count);
-        PointFeatureCollection pfc = (PointFeatureCollection) fc;
-        sf.format(" %s %s %n", pfc.getCollectionFeatureType(), pfc.getName());
-        sf.format("   npts = %d %n", pfc.size());
-        sf.format("     bb = %s %n", pfc.getBoundingBox() == null ? "" : pfc.getBoundingBox().toString2());
-        sf.format("  dates = %s %n", pfc.getCalendarDateRange());
-        List<Variable> extra = pfc.getExtraVariables();
-        if (extra.size() > 0) {
-          sf.format("  extra variables = ");
-          for (Variable v : extra) sf.format("%s,", v.getNameAndDimensions());
-          sf.format("%n");
-        }
-        sf.format("   timeUnit = %s %n", pfc.getTimeUnit());
-        sf.format("    altUnit = %s %n", pfc.getAltUnits());
-
-    } else if (fc instanceof NestedPointFeatureCollection) {
-        sf.format("NestedPointFeatureCollection %d %n", count);
-        NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
-        sf.format(" %s %s %n", npfc.getCollectionFeatureType(), npfc.getName());
-        sf.format("      npts = %d %n", npfc.size());
-        sf.format("    multipleNested = %s %n", npfc.isMultipleNested());
-        List<Variable> extra = npfc.getExtraVariables();
-        if (extra.size() > 0) {
-          sf.format("  extra variables = ");
-          for (Variable v : extra) sf.format("%s,", v.getNameAndDimensions());
-          sf.format("%n");
-        }
-        sf.format("   timeUnit = %s %n", npfc.getTimeUnit());
-        sf.format("    altUnit = %s %n", npfc.getAltUnits());
+    for (DsgFeatureCollection pfc : collectionList) {
+      sf.format("%nPointFeatureCollection %d %n", count);
+      sf.format(" %s %s %n", pfc.getCollectionFeatureType(), pfc.getName());
+      sf.format("   npts = %d %n", pfc.size());
+      List<Variable> extra = pfc.getExtraVariables();
+      if (extra.size() > 0) {
+        sf.format("  extra variables = ");
+        for (Variable v : extra) sf.format("%s,", v.getNameAndDimensions());
+        sf.format("%n");
       }
+      sf.format("   timeUnit = %s %n", pfc.getTimeUnit());
+      sf.format("    altUnit = %s %n", pfc.getAltUnits());
       count++;
+    }
+  }
+
+  public void calcBounds(java.util.Formatter sf) {
+    super.getDetailInfo(sf);
+
+    for (DsgFeatureCollection pfc : collectionList) {
+      try {
+        CollectionInfo info  = new DsgCollectionHelper(pfc).calcBounds();
+        sf.format("     bb = %s %n", info.bbox == null ? "" :info.bbox.toString2());
+        sf.format("  dates = %s %n", info.getCalendarDateRange(pfc.getTimeUnit()));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 

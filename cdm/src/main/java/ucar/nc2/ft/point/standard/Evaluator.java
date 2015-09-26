@@ -127,7 +127,7 @@ public abstract class Evaluator {
 
   /**
    * Find first variable with given attribute name and value.
-   * If not found, look one level into structures.
+   * If not found, search one level into structures.
    *
    * @param ds       in this dataset
    * @param attName  attribute name, case insensitive
@@ -231,8 +231,8 @@ public abstract class Evaluator {
   /**
    * Translate key to value
    *
-   * @param ds     look in this dataset
-   * @param key    if starts with ":", look for global attribute
+   * @param ds     search in this dataset
+   * @param key    if starts with ":", search for global attribute
    * @param errlog error messages here
    * @return return global attribute value or the key itself
    */

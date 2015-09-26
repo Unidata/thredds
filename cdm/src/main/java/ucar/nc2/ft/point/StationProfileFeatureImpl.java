@@ -44,6 +44,7 @@ import ucar.unidata.geoloc.StationImpl;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -58,18 +59,18 @@ import java.util.List;
  */
 public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl implements StationProfileFeature {
   protected int timeSeriesNpts;
-  protected Station s;
+  protected Station station;
   protected PointFeatureCollectionIterator localIterator;
 
   public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
-    s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
+    station = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
     this.timeSeriesNpts = npts;
   }
 
   public StationProfileFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super( s.getName(), timeUnit, altUnits, FeatureType.STATION_PROFILE);
-    this.s = s;
+    this.station = s;
     this.timeSeriesNpts = npts;
   }
 
@@ -80,7 +81,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
 
   @Override
   public String getWmoId() {
-    return s.getWmoId();
+    return station.getWmoId();
   }
 
   @Override
@@ -88,34 +89,35 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
     return timeSeriesNpts;
   }
 
+  @Nonnull
   @Override
   public String getName() {
-    return s.getName();
+    return station.getName();
   }
 
   @Override
   public String getDescription() {
-    return s.getDescription();
+    return station.getDescription();
   }
 
   @Override
   public double getLatitude() {
-    return s.getLatitude();
+    return station.getLatitude();
   }
 
   @Override
   public double getLongitude() {
-    return s.getLongitude();
+    return station.getLongitude();
   }
 
   @Override
   public double getAltitude() {
-    return s.getAltitude();
+    return station.getAltitude();
   }
 
   @Override
   public LatLonPoint getLatLon() {
-    return s.getLatLon();
+    return station.getLatLon();
   }
   
   @Override
@@ -125,7 +127,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
 
   @Override
   public int compareTo(Station so) {
-    return s.getName().compareTo(so.getName());
+    return station.getName().compareTo(so.getName());
   }
 
   // @Override
@@ -143,7 +145,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
     private final CalendarDateRange dateRange;
 
     public StationProfileFeatureSubset(StationProfileFeatureImpl from, CalendarDateRange filter_date) {
-      super(from.s, from.getTimeUnit(), from.getAltUnits(), -1);
+      super(from.station, from.getTimeUnit(), from.getAltUnits(), -1);
       this.from = from;
       this.dateRange = filter_date;
     }

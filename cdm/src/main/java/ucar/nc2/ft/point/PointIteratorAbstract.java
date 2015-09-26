@@ -50,19 +50,19 @@ import java.util.Iterator;
  */
 public abstract class PointIteratorAbstract implements PointFeatureIterator, Iterator<PointFeature> {
   protected boolean calcBounds = false;
-  protected PointFeatureCollection collection;
+  protected CollectionInfo info;
 
   private LatLonRect bb = null;
   private double minTime = Double.MAX_VALUE;
   private double maxTime = -Double.MAX_VALUE;
-  private int count;
+  private int count = 0;
 
   protected PointIteratorAbstract() {
   }
 
-  public void setCalculateBounds( PointFeatureCollection collection) {
-    this.calcBounds = true;
-    this.collection = collection;
+  public void setCalculateBounds( CollectionInfo info) {
+    this.calcBounds = (info != null);
+    this.info = info;
   }
 
   protected void calcBounds(PointFeature pf) {
@@ -89,37 +89,12 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
       bb = new LatLonRect(new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);
     }
 
-    // LOOK HERE
-    /*
-    if (collection != null) {
-      if (collection.getBoundingBox() == null)
-        collection.setBoundingBox(bb);
-      if (collection.getCalendarDateRange() == null) {
-        CalendarDateRange dr = getCalendarDateRange();
-        if (dr != null)
-          collection.setCalendarDateRange(dr);
-      }
-      if (collection.size() <= 0) {
-        if (count < 0) count = 0;
-        collection.setSize(count);
-      }
-    } */
-  }
+    info.bbox = bb;
+    info.minTime = minTime;
+    info.maxTime = maxTime;
 
-  @Override
-  public LatLonRect getBoundingBox() {
-    return bb;
+    info.npts = count;
   }
-
-  @Override
-  public CalendarDateRange getCalendarDateRange() {
-    if (!calcBounds) return null;
-    if (collection.getTimeUnit() == null) return null;
-    return CalendarDateRange.of(collection.getTimeUnit().makeCalendarDate(minTime), collection.getTimeUnit().makeCalendarDate(maxTime));
-  }
-
-  @Override
-  public int getCount() { return count; }
 
   static public class Filter implements PointFeatureIterator.Filter {
 

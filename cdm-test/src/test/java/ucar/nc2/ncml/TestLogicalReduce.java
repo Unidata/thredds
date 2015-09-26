@@ -28,7 +28,7 @@ public class TestLogicalReduce {
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
     for (DsgFeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
-      assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
+      assert (fc instanceof PointFeatureCC) : fc.getClass().getName();
       assert fc.getCollectionFeatureType() == FeatureType.STATION;
     }
   }
@@ -44,7 +44,7 @@ public class TestLogicalReduce {
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
     for (DsgFeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
-      assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
+      assert (fc instanceof PointFeatureCCC) : fc.getClass().getName();
       assert fc.getCollectionFeatureType() == FeatureType.STATION_PROFILE;
       assert (fc instanceof StationProfileFeatureCollection);
 

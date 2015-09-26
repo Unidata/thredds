@@ -46,6 +46,8 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.CollectionInfo;
+import ucar.nc2.ft.point.DsgCollectionHelper;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
@@ -167,21 +169,17 @@ public class FeatureDatasetCapabilitiesWriter {
       rootElem.addContent(writeVariable(v));
     }
 
-    // LOOK HERE
-    /* add lat/lon bounding box
+    CollectionInfo info;
     try {
-      fdp.calcBounds();
+      info = new DsgCollectionHelper(fc).calcBounds();
     } catch (IOException e) {
-      //e.printStackTrace();
-      log.warn("Unable to compute bounds for dataset " + fdp.getTitle(), e);
-    } */
+      throw new RuntimeException(e);
+    }
 
-    LatLonRect bb = fdp.getBoundingBox();
-    if (bb != null)
-      rootElem.addContent(writeBoundingBox(bb));
+    rootElem.addContent(writeBoundingBox(info.bbox));
 
     // add date range
-    CalendarDateRange dateRange = fdp.getCalendarDateRange();
+    CalendarDateRange dateRange = info.getCalendarDateRange(null);
     if (dateRange != null) {
       Element drElem = new Element("TimeSpan"); // from KML
       drElem.addContent(new Element("begin").addContent(dateRange.getStart().toString()));
@@ -224,8 +222,6 @@ public class FeatureDatasetCapabilitiesWriter {
   }
 
   private Element writeVariable(VariableSimpleIF v) {
-    NcMLWriter ncMLWriter = new NcMLWriter();
-
     Element varElem = new Element("variable");
     varElem.setAttribute("name", v.getShortName());
 
@@ -235,7 +231,7 @@ public class FeatureDatasetCapabilitiesWriter {
 
     // attributes
     for (Attribute att : v.getAttributes()) {
-      varElem.addContent(ncMLWriter.makeAttributeElement(att));
+      varElem.addContent(NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
     return varElem;
@@ -447,7 +443,8 @@ public class FeatureDatasetCapabilitiesWriter {
       return name.hashCode();
     }
   }
-  
+
+
 }
 
 

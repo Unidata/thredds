@@ -34,10 +34,7 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.ft.point.PointIteratorFromStructureData;
-import ucar.nc2.ft.point.PointFeatureImpl;
-import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.ma2.StructureData;
@@ -52,17 +49,19 @@ import java.io.IOException;
  * @since Mar 29, 2008
  */
 public class StandardPointFeatureIterator extends PointIteratorFromStructureData {
-  protected DsgFeatureCollection dsg;
+  protected PointCollectionImpl dsg;
   protected NestedTable ft;
   protected CalendarDateUnit timeUnit;
   protected Cursor cursor;
 
-  StandardPointFeatureIterator(DsgFeatureCollection dsg, NestedTable ft, CalendarDateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) throws IOException {
+  StandardPointFeatureIterator(PointCollectionImpl dsg, NestedTable ft, CalendarDateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) throws IOException {
     super(structIter, null);
     this.dsg = dsg;
     this.ft = ft;
     this.timeUnit = timeUnit;
     this.cursor = cursor;
+    CollectionInfo info = dsg.getInfo();
+    if (!info.complete) setCalculateBounds(info);
   }
 
   protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {

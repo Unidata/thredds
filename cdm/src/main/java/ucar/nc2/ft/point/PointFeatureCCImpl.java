@@ -39,6 +39,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,50 +51,16 @@ import java.util.List;
  * @author caron
  * @since Mar 20, 2008
  */
-public abstract class PointFeatureCCImpl implements PointFeatureCC {
-  protected String name;
-  protected CalendarDateUnit timeUnit;
-  protected String altUnits;
+public abstract class PointFeatureCCImpl extends DsgCollectionImpl implements PointFeatureCC {
   protected FeatureType collectionFeatureType;
-  protected int npts;
-  protected List<Variable> extras;
 
   protected PointFeatureCCImpl(String name, CalendarDateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
-    this.name = name;
-    this.timeUnit = timeUnit;
-    this.altUnits = altUnits;
+    super(name, timeUnit, altUnits);
     this.collectionFeatureType = collectionFeatureType;
-    this.npts = -1;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public CalendarDateUnit getTimeUnit() {
-    return timeUnit;
-  }
-
-  @Override
-  public String getAltUnits() {
-    return altUnits;
-  }
-
-  @Override
-  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
-
-  @Override
-  public int size() {
-    return npts;
-  }
-
-  protected void setSize( int npts) {
-    this.npts = npts;
   }
 
   // All features in this collection have this feature type
+  @Nonnull
   @Override
   public FeatureType getCollectionFeatureType() {
     return collectionFeatureType;
@@ -108,18 +75,19 @@ public abstract class PointFeatureCCImpl implements PointFeatureCC {
 
   private static class NestedPointFeatureCollectionFlatten extends PointCollectionImpl {
     protected PointFeatureCCImpl from;
+    protected LatLonRect filter_bb;
+    protected CalendarDateRange filter_date;
 
     NestedPointFeatureCollectionFlatten(PointFeatureCCImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
       super( from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
-      this.boundingBox = filter_bb;
-      this.dateRange = filter_date;
+      this.filter_bb = filter_bb;
+      this.filter_date = filter_date;
     }
 
     @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      // LOOK need the isMultipleNested case
-      return new PointIteratorFlatten( from.getCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
+      return new PointIteratorFlatten( from.getCollectionIterator(bufferSize), filter_bb, filter_date);
     }
   }
 }

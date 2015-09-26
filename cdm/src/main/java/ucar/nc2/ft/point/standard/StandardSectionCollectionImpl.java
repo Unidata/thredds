@@ -41,6 +41,7 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.util.IOIterator;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -74,42 +75,39 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
   @Override // new way
   public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
-    return new SectionCollectionIterator();
+    return new SectionIterator();
   }
 
   @Override // old way
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new SectionCollectionIterator();
+    return new SectionIterator();
   }
 
-  private class SectionCollectionIterator implements NestedPointFeatureCollectionIterator, IOIterator<PointFeatureCC> {
+  private class SectionIterator implements NestedPointFeatureCollectionIterator, IOIterator<PointFeatureCC> {
     private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
-    private StructureData nextSection;
+    private StructureData sectionData;
 
-    SectionCollectionIterator() throws IOException {
+    SectionIterator() throws IOException {
       sdataIter = ft.getRootFeatureDataIterator(-1);
-    }
-
-    public SectionFeature next() throws IOException {
-      Cursor cursor = new Cursor(ft.getNumberOfLevels());
-      cursor.recnum[2] = sdataIter.getCurrentRecno();
-      cursor.tableData[2] = nextSection; // obs(leaf) = 0, profile=1, section(root)=2
-      cursor.currentIndex = 2;
-      ft.addParentJoin(cursor); // there may be parent joins
-
-      return new StandardSectionFeature(cursor, nextSection);
     }
 
     public boolean hasNext() throws IOException {
       while (true) {
         if (!sdataIter.hasNext()) return false;
-        nextSection = sdataIter.next();
-        if (!ft.isFeatureMissing(nextSection)) break;
+        sectionData = sdataIter.next();
+        if (!ft.isFeatureMissing(sectionData)) break;
       }
       return true;
     }
 
-    public void setBufferSize(int bytes) {
+    public SectionFeature next() throws IOException {
+      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.recnum[2] = sdataIter.getCurrentRecno();
+      cursor.tableData[2] = sectionData; // obs(leaf) = 0, profile=1, section(root)=2
+      cursor.currentIndex = 2;
+      ft.addParentJoin(cursor); // there may be parent joins
+
+      return new StandardSectionFeature(cursor, sectionData);
     }
 
     @Override
@@ -117,8 +115,6 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       sdataIter.close();
     }
   }
-
-  ;
 
   // a single section: a collection of profiles along a trajectory
   private class StandardSectionFeature extends SectionFeatureImpl {
@@ -133,7 +129,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
     @Override
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new StandardSectionFeatureIterator(cursor.copy());
+      return new ProfileIterator(cursor.copy());
     }
 
     public StructureData getFeatureData() throws IOException {
@@ -142,45 +138,44 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
     @Override
     public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
-      return new StandardSectionFeatureIterator(cursor.copy());
+      return new ProfileIterator(cursor.copy());
     }
   }
 
-  private class StandardSectionFeatureIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
+  private class ProfileIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
     Cursor cursor;
-    private ucar.ma2.StructureDataIterator iter;
+    private ucar.ma2.StructureDataIterator sdataIter;
     StructureData profileData;
 
-    StandardSectionFeatureIterator(Cursor cursor) throws IOException {
+    ProfileIterator(Cursor cursor) throws IOException {
       this.cursor = cursor;
-      iter = ft.getMiddleFeatureDataIterator(cursor, -1);
+      sdataIter = ft.getMiddleFeatureDataIterator(cursor, -1);
     }
 
     public boolean hasNext() throws IOException {
-      return iter.hasNext();
+      return sdataIter.hasNext();
     }
 
     public PointFeatureCollection next() throws IOException {
       Cursor cursorIter = cursor.copy();
-      profileData = iter.next();
+      profileData = sdataIter.next();
       cursorIter.tableData[1] = profileData;
-      cursorIter.recnum[1] = iter.getCurrentRecno();
+      cursorIter.recnum[1] = sdataIter.getCurrentRecno();
       cursorIter.currentIndex = 1;
-      ft.addParentJoin(cursor); // there may be parent joins
+      ft.addParentJoin(cursorIter); // there may be parent joins LOOK cursor or cursorIter ?
 
       // double time = ft.getObsTime(cursorIter);
       return new StandardSectionProfileFeature(cursorIter, ft.getObsTime(cursor), profileData);
     }
 
     public void setBufferSize(int bytes) {
-      iter.setBufferSize(bytes);
+      sdataIter.setBufferSize(bytes);
     }
 
     @Override
     public void close() {
-      iter.close();
+      sdataIter.close();
     }
-
   }
 
   // LOOK duplicate from StandardProfileCollection - also check StationProfile
@@ -214,25 +209,24 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursorIter = cursor.copy();
       StructureDataIterator siter = ft.getLeafFeatureDataIterator(cursorIter, bufferSize);
-      StandardPointFeatureIterator iter = new StandardSectionProfileFeatureIterator(ft, timeUnit, siter, cursorIter);
-      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-        iter.setCalculateBounds(this);
-      return iter;
+      return new PointIterator(ft, timeUnit, siter, cursorIter);
     }
 
+    @Nonnull
     @Override
     public CalendarDate getTime() {
       return timeUnit.makeCalendarDate(time);
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return profileData;
     }
 
-    private class StandardSectionProfileFeatureIterator extends StandardPointFeatureIterator {
+    private class PointIterator extends StandardPointFeatureIterator {
 
-      StandardSectionProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+      PointIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
         super(StandardSectionProfileFeature.this, ft, timeUnit, structIter, cursor);
       }
 

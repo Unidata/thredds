@@ -56,17 +56,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TestMiscPointFeature {
-
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testProblem() throws IOException {
-    String location =  TestDir.cdmLocalTestDataDir + "point/trajMultidimJoinTime.ncml";
-    assert 20 == TestPointDatasets.checkPointDataset(location, FeatureType.TRAJECTORY, true);
-  }
-
-  @Test
-  public void testProblem2() throws IOException {
-    String location =  TestDir.cdmLocalTestDataDir + "point/stationMultidimTimeJoin.ncml";
-    assert 15 == TestPointDatasets.checkPointDataset(location, FeatureType.STATION, true);
+    String location = TestPointDatasets.topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
+    Assert.assertEquals("npoints", 383, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY, true));
   }
 
   @Test
@@ -117,7 +111,6 @@ public class TestMiscPointFeature {
         assert m.getDataType() == DataType.STRING : "stnInfo not a string";
         System.out.printf("stnInfo=%s%n", sdata2.getScalarString(m));
       }
-
     }
   }
 
@@ -228,7 +221,7 @@ public class TestMiscPointFeature {
      try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
        List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
        assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-       NestedPointFeatureCollection fc = (NestedPointFeatureCollection) collectionList.get(0);
+       DsgFeatureCollection fc = collectionList.get(0);
        assert fc.getAltUnits() != null : "no Alt Units";
        assert fc.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
      }
@@ -244,7 +237,6 @@ public class TestMiscPointFeature {
     try (FeatureDataset fdataset = FeatureDatasetFactoryManager.open(null, location, null, errlog)) {
       assert (fdataset == null);
     }
-
   }
 
   @Test
@@ -257,7 +249,6 @@ public class TestMiscPointFeature {
     }
     ncd.close();
   }
-
 
   // This is a regression test for TDS-513: https://bugtracking.unidata.ucar.edu/browse/TDS-513
   @Test
@@ -344,12 +335,12 @@ public class TestMiscPointFeature {
       System.out.println("llr = " + llr);
       if (fc instanceof PointFeatureCollection) {
         collection = (PointFeatureCollection) fc;
-        collection = collection.subset(llr, (CalendarDateRange) null);
+        collection = collection.subset(llr, null);
 
-      } else if (fc instanceof NestedPointFeatureCollection) {
-        NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+      } else if (fc instanceof StationTimeSeriesFeatureCollection) {
+        StationTimeSeriesFeatureCollection npfc = (StationTimeSeriesFeatureCollection) fc;
         npfc = npfc.subset(llr);
-        collection = npfc.flatten(llr, (CalendarDateRange) null);
+        collection = npfc.flatten(llr, null);
 
       } else {
         throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
@@ -357,13 +348,9 @@ public class TestMiscPointFeature {
 
       List<PointFeature> pos = new ArrayList<>(100000);
       List<CalendarDate> times = new ArrayList<>(100000);
-      PointFeatureIterator dataIterator = collection.getPointFeatureIterator(16384);
-
-      while (dataIterator.hasNext()) {
-        PointFeature po = dataIterator.next();
+      for (PointFeature po : collection) {
         pos.add(po);
         times.add(po.getNominalTimeAsCalendarDate());
-        // System.out.println("po = " + po);
         if (sample) {
           break;
         }

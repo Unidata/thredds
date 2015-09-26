@@ -82,10 +82,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursorIter = cursor.copy();
       StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursorIter, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(this, ft, timeUnit, siter, cursorIter);
-      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-        iter.setCalculateBounds(this);
-      return iter;
+      return new StandardPointFeatureIterator(this, ft, timeUnit, siter, cursorIter);
     }
 
     @Override
@@ -106,10 +103,10 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     }
 
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new Filter());
+      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new FilterBB());
     }
 
-    private class Filter implements PointFeatureCollectionIterator.Filter {
+    private class FilterBB implements PointFeatureCollectionIterator.Filter {
 
       public boolean filter(PointFeatureCollection pointFeatureCollection) {
         ProfileFeature profileFeature = (ProfileFeature) pointFeatureCollection;

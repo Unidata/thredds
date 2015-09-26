@@ -193,7 +193,9 @@ public class CoverageAsPoint {
 
       @Override
       public boolean hasNext() {
-        return curr < nvalues;
+        boolean more =  curr < nvalues;
+        if (!more) close();
+        return more;
       }
 
       @Override
@@ -205,17 +207,14 @@ public class CoverageAsPoint {
           coords.addMember(vi.cov.getName(), null, null, vi.cov.getDataType(), (Number) vi.dataIter.getObjectNext());
         }
         curr++;
-        return new MyPointFeature(MyStationFeature.this, obsTime, 0.0, timeUnit, coords);
+        PointFeature pf = new MyPointFeature(MyStationFeature.this, obsTime, 0.0, timeUnit, coords);
+        calcBounds(pf);
+        return pf;
       }
 
       @Override
       public void close() {
-        // ignore
-      }
-
-      @Override
-      public void setBufferSize(int bytes) {
-        // ignore
+        finishCalcBounds();
       }
     }
 

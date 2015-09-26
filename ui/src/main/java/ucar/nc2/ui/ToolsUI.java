@@ -5386,17 +5386,18 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton);
 
-      /* AbstractButton collectionButton = BAMutil.makeButtcon("Information", "Collection Parsing Info", false);
-      collectionButton.addActionListener(new ActionListener() {
+      AbstractButton calcButton = BAMutil.makeButtcon("V3", "Calculate the latlon/dateRange", false);
+      calcButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
+          if (pfDataset == null) return;
           Formatter f = new Formatter();
-          pfViewer.showCollectionInfo(f);
+          pfDataset.calcBounds(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
         }
       });
-      buttPanel.add(collectionButton); */
+      buttPanel.add(calcButton);
 
       AbstractButton xmlButton = BAMutil.makeButtcon("XML", "pointConfig.xml", false);
       xmlButton.addActionListener(new ActionListener() {
@@ -5410,29 +5411,6 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(xmlButton);
-
-      AbstractButton calcButton = BAMutil.makeButtcon("V3", "CalcBounds", false);
-      calcButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (pfDataset == null) return;
-          Formatter f = new Formatter();
-          pfDataset.getDetailInfo(f);
-          detailTA.setText(f.toString());
-          /* try {
-            // LOOK HERE  pfDataset.calcBounds();
-            pfDataset.getDetailInfo(f);
-            detailTA.setText(f.toString());
-
-          } catch (IOException ioe) {
-            StringWriter sw = new StringWriter(5000);
-            ioe.printStackTrace(new PrintWriter(sw));
-            detailTA.setText(sw.toString());
-          } */
-          detailTA.gotoTop();
-          detailWindow.show();
-        }
-      });
-      buttPanel.add(calcButton);
     }
 
     boolean process(Object o) {

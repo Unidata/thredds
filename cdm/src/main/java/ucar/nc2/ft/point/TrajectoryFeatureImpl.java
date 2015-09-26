@@ -36,6 +36,8 @@ import ucar.nc2.ft.TrajectoryFeature;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateUnit;
 
+import javax.annotation.Nonnull;
+
 /**
  * Implementation of TrajectoryFeature
  * @author caron
@@ -45,9 +47,13 @@ public abstract class TrajectoryFeatureImpl extends PointCollectionImpl implemen
 
   public TrajectoryFeatureImpl( String name, CalendarDateUnit timeUnit, String altUnits, int npts) {
     super(name, timeUnit, altUnits);
-    this.npts = npts;
+    if (npts >= 0) {
+      getInfo(); // create the object
+      info.npts = npts;
+    }
   }
 
+  @Nonnull
   @Override
   public FeatureType getCollectionFeatureType() {
     return FeatureType.TRAJECTORY;

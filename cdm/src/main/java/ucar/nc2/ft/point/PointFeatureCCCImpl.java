@@ -50,78 +50,17 @@ import java.util.List;
  * @author caron
  * @since Mar 26, 2008
  */
-public abstract class PointFeatureCCCImpl implements PointFeatureCCC {
-  protected String name;
-  protected CalendarDateUnit timeUnit;
-  protected String altUnits;
+public abstract class PointFeatureCCCImpl extends DsgCollectionImpl implements PointFeatureCCC {
   protected FeatureType collectionFeatureType;
-  protected int npts;
-  protected List<Variable> extras;
 
   protected PointFeatureCCCImpl(String name, CalendarDateUnit timeUnit, String altUnits, FeatureType collectionFeatureType) {
-    this.name = name;
-    this.timeUnit = timeUnit;
-    this.altUnits = altUnits;
+    super( name, timeUnit, altUnits);
     this.collectionFeatureType = collectionFeatureType;
-    this.npts = -1;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public CalendarDateUnit getTimeUnit() {
-    return timeUnit;
-  }
-
-  @Override
-  public String getAltUnits() {
-    return altUnits;
-  }
-
-  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
-
-  public int size() {
-    return npts;
-  }
-
-  protected void setSize( int npts) {
-    this.npts = npts;
   }
 
   // All features in this collection have this feature type
   public FeatureType getCollectionFeatureType() {
     return collectionFeatureType;
   }
-
-  /* flatten into a PointFeatureCollection
-  // if empty, may return null
-  public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-    return new NestedPointFeatureCollectionFlatten(this, boundingBox, dateRange);
-  }
-
-  /* public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return flatten( boundingBox, CalendarDateRange.of(dateRange));
-  }
-
-  private static class NestedPointFeatureCollectionFlatten extends PointCollectionImpl {
-    protected PointFeatureCCCImpl from;
-
-    NestedPointFeatureCollectionFlatten(PointFeatureCCCImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
-      super(from.getName(), from.getTimeUnit(), from.getAltUnits());
-      this.from = from;
-      this.boundingBox = filter_bb;
-      this.dateRange = filter_date;
-    }
-
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      // LOOK need the isMultipleNested case
-      return new PointIteratorFlatten(from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
-    }
-
-  } */
-
 
 }

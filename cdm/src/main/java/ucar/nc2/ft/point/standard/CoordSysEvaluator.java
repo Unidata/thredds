@@ -52,10 +52,10 @@ import java.util.List;
 public class CoordSysEvaluator {
 
   /**
-   * Look for Axis by Type, assign to TableConfig if found.
-   * Looks for Lat, Lon, Time, Height.
+   * search for Axis by Type, assign to TableConfig if found.
+   * search for Lat, Lon, Time, Height.
    * @param nt set coordinates short names in this table.
-   * @param ds look in this dataset's "Best" coordinate system. If no CoordSystem, try list of coordinate axes
+   * @param ds search in this dataset's "Best" coordinate system. If no CoordSystem, try list of coordinate axes
    */
   static public void findCoords(TableConfig nt, NetcdfDataset ds, Predicate p) {
     nt.lat =  findCoordShortNameByType(ds, AxisType.Lat, p);
@@ -67,9 +67,9 @@ public class CoordSysEvaluator {
   }
 
    /**
-   * Look for Axis by Type.
-   * @param ds look in this dataset's "Best" coordinate system.
-   * @param atype look for this type of CoordinateAxis. takes the first one it finds.
+   * search for Axis by Type.
+   * @param ds search in this dataset's "Best" coordinate system.
+   * @param atype search for this type of CoordinateAxis. takes the first one it finds.
     * @return the found CoordinateAxis name, or null if none
    */
    static public String findCoordNameByType(NetcdfDataset ds, AxisType atype) {
@@ -88,9 +88,9 @@ public class CoordSysEvaluator {
   }
 
   /**
-   * Look for Axis by Type.
-   * @param ds look in this dataset's "Best" coordinate system.
-   * @param atype look for this type of CoordinateAxis. takes the first one it finds.
+   * Search for Axis by Type.
+   * @param ds search in this dataset's "Best" coordinate system.
+   * @param atype search for this type of CoordinateAxis. takes the first one it finds.
    * @return the found CoordinateAxis, or null if none
    */
   static public CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype) {
@@ -98,9 +98,9 @@ public class CoordSysEvaluator {
   }
 
   /**
-   * Look for Axis by Type and test against a predicate
-   * @param ds look in this dataset's "Best" coordinate system.
-   * @param atype look for this type of CoordinateAxis.
+   * search for Axis by Type and test against a predicate
+   * @param ds search in this dataset's "Best" coordinate system.
+   * @param atype search for this type of CoordinateAxis.
    * @param p match this predicate; may be null
    * @return the found CoordinateAxis, or null if none
    */
@@ -116,7 +116,7 @@ public class CoordSysEvaluator {
   }
 
   static public CoordinateAxis findCoordByType(List<CoordinateAxis> axes, AxisType atype, Predicate p) {
-    // first look for matching AxisType and "CF axis" attribute
+    // first search for matching AxisType and "CF axis" attribute
     for (CoordinateAxis axis : axes) {
       if (axis.getAxisType() == atype) {
         Attribute att = axis.findAttribute(CF.AXIS);
@@ -134,14 +134,14 @@ public class CoordSysEvaluator {
     return null;
   }
 
-  static public interface Predicate {
+  public interface Predicate {
     boolean match(CoordinateAxis axis);
   }
 
   /**
-   * Look for Dimension used by axis of given by Type.
-   * @param ds look in this dataset's "Best" coordinate system.
-   * @param atype look for this type of CoordinateAxis. takes the first one it finds.
+   * search for Dimension used by axis of given by Type.
+   * @param ds search in this dataset's "Best" coordinate system.
+   * @param atype search for this type of CoordinateAxis. takes the first one it finds.
    * @return the found CoordinateAxis' first Dimension, or null if none or scalar
    */
   static public Dimension findDimensionByType(NetcdfDataset ds, AxisType atype) {
@@ -153,7 +153,7 @@ public class CoordSysEvaluator {
 
   /**
    * Find the CoordinateSystem with the most number of CoordinateAxes
-   * @param ds look in this dataset
+   * @param ds search in this dataset
    * @return CoordinateSystem or null if none
    */
   static private CoordinateSystem findBestCoordinateSystem(NetcdfDataset ds) {

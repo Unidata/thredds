@@ -488,7 +488,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     int count = 0;
 
     try (PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1)) {
-      iter.setCalculateBounds(pointCollection);
       while (iter.hasNext() && (count++ < maxCount)) {
         PointFeature pob = iter.next();
         pointBeans.add(new PointObsBean(count++, pob));
@@ -547,6 +546,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     if (selectedType == FeatureType.POINT) {
       PointFeatureCollection ptCollection = (PointFeatureCollection) selectedCollection;
       pc = ptCollection.subset(geoRegion, cdr);
+
     } else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
      /*  if (geoRegion != null) {
@@ -555,7 +555,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         return;
       } else { */
       pc = stationCollection.flatten(geoRegion, cdr);
-      //} LOOK HERE
+      //} LOOK
     } /* else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationProfileCollection = (StationProfileFeatureCollection) selectedCollection;
       pc = stationProfileCollection.flatten(geoRegion, cdr);
@@ -1022,15 +1022,10 @@ public class PointFeatureDatasetViewer extends JPanel {
     public ProfileFeatureBean(ProfileFeature pfc) throws IOException {
       super(pfc.getFeatureData());
       this.pfc = pfc;
-      try {
-        // LOOK HERE pfc.calcBounds();
-        pfc.resetIteration();
-        if (pfc.hasNext())
-          pf = pfc.next();
-      } catch (IOException ioe) {
-        log.warn("Profile empty ", ioe);
+      // this calculates the size, etc
+      for (PointFeature pf2 : pfc) {
+        pf = pf2; // a random point
       }
-      pfc.finish();
       npts = pfc.size();
     }
 

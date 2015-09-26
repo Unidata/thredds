@@ -66,7 +66,7 @@ public class TestCFPointWriterMisc {
      try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.PROFILE, file, null, buf)) {
        List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
        assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-       NestedPointFeatureCollection fc1 = (NestedPointFeatureCollection) collectionList.get(0);
+       DsgFeatureCollection fc1 = collectionList.get(0);
        assert fc1 instanceof ProfileFeatureCollection;
 
        ProfileFeatureCollection profileCollection = (ProfileFeatureCollection) fc1;
@@ -91,11 +91,9 @@ public class TestCFPointWriterMisc {
        try (FeatureDatasetPoint rewrite = rewriteDataset(pods, "nc", new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3))) {
          collectionList = rewrite.getPointFeatureCollectionList();
          DsgFeatureCollection fc2 = collectionList.get(0);
-         assert fc2 instanceof NestedPointFeatureCollection;
-         NestedPointFeatureCollection npc = (NestedPointFeatureCollection) fc2;
-         assert npc instanceof ProfileFeatureCollection;
+         assert fc2 instanceof ProfileFeatureCollection;
+         ProfileFeatureCollection profileCollection2 = (ProfileFeatureCollection) fc2;
 
-         ProfileFeatureCollection profileCollection2 = (ProfileFeatureCollection) npc;
          PointFeatureCollectionIterator iter2 = profileCollection2.getPointFeatureCollectionIterator(-1);
          while (iter2.hasNext()) {
            PointFeatureCollection pfc = iter2.next();
@@ -128,18 +126,17 @@ public class TestCFPointWriterMisc {
      try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
        List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
        assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-       NestedPointFeatureCollection fc1 = (NestedPointFeatureCollection) collectionList.get(0);
+       DsgFeatureCollection fc1 = collectionList.get(0);
        assert fc1.getAltUnits() != null : "no Alt Units";
        assert fc1.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
 
        FeatureDatasetPoint rewrite =  rewriteDataset(pods, "nc4", new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4));
        collectionList = rewrite.getPointFeatureCollectionList();
        DsgFeatureCollection fc2 = collectionList.get(0);
-       assert fc2 instanceof NestedPointFeatureCollection;
-       NestedPointFeatureCollection npc = (NestedPointFeatureCollection) fc2;
+       assert fc2 instanceof PointFeatureCC;
 
-       assert npc.getAltUnits() != null : "no Alt Units";
-       assert npc.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
+       assert fc2.getAltUnits() != null : "no Alt Units";
+       assert fc2.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
 
        rewrite.close();
 

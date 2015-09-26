@@ -91,7 +91,7 @@ public class CompositeDatasetFactory {
           fc = pfc;
           break;
         case STATION:
-          NestedPointFeatureCollection firstNpc = (NestedPointFeatureCollection) first;
+          PointFeatureCC firstNpc = (PointFeatureCC) first;
           CompositeStationCollection sfc = new CompositeStationCollection(
                   dcm.getCollectionName(), firstNpc.getTimeUnit(), firstNpc.getAltUnits(), collection);
           //bb = sfc.getBoundingBox();
@@ -189,88 +189,3 @@ public class CompositeDatasetFactory {
   }
 
 }
-
-  /* static public FeatureDataset factory(String locationURI, File configFile, Formatter errlog) throws IOException {
-    SAXBuilder builder = new SAXBuilder();
-    Document configDoc;
-    try {
-      configDoc = builder.build(configFile);
-    } catch (JDOMException e) {
-      errlog.format("CompositeDatasetFactory failed to read config document %s err= %s %n", configFile.getPath(), e.getMessage());
-      return null;
-    }
-
-    Element root = configDoc.getRootElement();
-    String type = root.getChild("type").getText();
-    FeatureType wantFeatureType = FeatureType.getType(type);
-
-    String location = root.getChild("location").getText();
-    String dateFormatMark = root.getChild("dateFormatMark").getText();
-
-    Element geo = root.getChild("geospatialCoverage");
-    Element northsouth = geo.getChild("northsouth");
-    double latStart = readDouble(northsouth.getChild("start"), errlog);
-    double latSize = readDouble(northsouth.getChild("size"), errlog);
-    Element eastwest = geo.getChild("eastwest");
-    double lonStart = readDouble(eastwest.getChild("start"), errlog);
-    double lonSize = readDouble(eastwest.getChild("size"), errlog);
-    LatLonRect llbb = new LatLonRect(new LatLonPointImpl(latStart, lonStart), latSize, lonSize);
-
-    Element timeCoverage = root.getChild("timeCoverage");
-    DateType start = readDate(timeCoverage.getChild("start"), errlog);
-    DateType end = readDate(timeCoverage.getChild("end"), errlog);
-    TimeDuration duration = readDuration(timeCoverage.getChild("duration"), errlog);
-
-    DateRange dateRange = null;
-    try {
-      dateRange = new DateRange(start, end, duration, null);
-    } catch (java.lang.IllegalArgumentException e) {
-      errlog.format(" ** warning: TimeCoverage error = %s%n", e.getMessage());
-      return null;
-    }
-
-    // LOOK : WRONG
-    CompositePointDataset fd = (CompositePointDataset) factory(locationURI, wantFeatureType, location + "?" + dateFormatMark, errlog);
-    if (fd == null) return null;
-
-    fd.setBoundingBox(llbb);
-    fd.setDateRange(dateRange);
-    return fd;
-  }
-
-  static double readDouble(Element elem, Formatter errlog) {
-    if (elem == null) return Double.NaN;
-    String text = elem.getText();
-    try {
-      return Double.parseDouble(text);
-    } catch (NumberFormatException e) {
-      errlog.format(" ** Parse error: Bad double format %s%n", text);
-      return Double.NaN;
-    }
-  }
-
-  static DateType readDate(Element elem, Formatter errlog) {
-    if (elem == null) return null;
-    String format = elem.getAttributeValue("format");
-    String type = elem.getAttributeValue("type");
-    String text = elem.getText();
-    if (text == null) return null;
-    try {
-      return new DateType(text, format, type);
-    } catch (java.text.ParseException e) {
-      errlog.format(" ** Parse error: Bad date format = %s%n", text);
-      return null;
-    }
-  }
-
-  static TimeDuration readDuration(Element elem, Formatter errlog) {
-    if (elem == null) return null;
-    String text = null;
-    try {
-      text = elem.getText();
-      return new TimeDuration(text);
-    } catch (java.text.ParseException e) {
-      errlog.format(" ** Parse error: Bad duration format = %s%n", text);
-      return null;
-    }
-  }  */

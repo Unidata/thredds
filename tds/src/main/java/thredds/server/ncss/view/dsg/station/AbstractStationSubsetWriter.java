@@ -48,6 +48,7 @@ import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -142,7 +143,11 @@ public abstract class AbstractStationSubsetWriter extends DsgSubsetWriter {
             StationTimeSeriesFeatureImpl stationFeat, CalendarDate wantedTime) throws IOException {
       super(stationFeat, stationFeat.getTimeUnit(), stationFeat.getAltUnits(), -1);
       this.stationFeat = stationFeat;
-      this.dateRange = stationFeat.getCalendarDateRange();
+      CalendarDateRange cdr = stationFeat.getCalendarDateRange();
+      if (cdr != null) {
+        getInfo();
+        info.setCalendarDateRange(cdr);
+      }
 
       long smallestDiff = Long.MAX_VALUE;
 

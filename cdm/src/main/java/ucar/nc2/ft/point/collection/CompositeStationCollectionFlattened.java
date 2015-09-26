@@ -85,10 +85,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    PointIterator iter = new PointIterator();
-    if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-      iter.setCalculateBounds(this);
-    return iter;
+    return new PointIterator();
   }
 
   private class PointIterator extends PointIteratorAbstract {
@@ -135,7 +132,6 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       }
 
       PointFeatureIterator result = pc.getPointFeatureIterator(bufferSize);
-      if (calcBounds) result.setCalculateBounds(pc);  // LOOK barf
       return result;
     }
 
@@ -165,7 +161,9 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
     }
 
     public PointFeature next() {
-      return pfIter.next();
+      PointFeature pf =  pfIter.next();
+      calcBounds(pf);
+      return pf;
     }
 
     public void close() {

@@ -52,20 +52,17 @@ public class StationTimeSeriesCollectionFlattened extends PointCollectionImpl {
 
   public StationTimeSeriesCollectionFlattened(StationTimeSeriesCollectionImpl from, CalendarDateRange dateRange) {
     super( from.getName(), from.getTimeUnit(), from.getAltUnits());
-    this.dateRange = dateRange;
     this.from = from;
+    if (dateRange != null) {
+      getInfo();
+      info.setCalendarDateRange(dateRange);
+    }
   }
 
   @Override
   @Nonnull
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    // LOOK need the isMultipleNested case
-    return new PointIteratorFlatten( from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
-  }
-
-  @Override
-  public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return new PointIteratorFlatten( from.getPointFeatureCollectionIterator(bufferSize), null, this.getCalendarDateRange());
   }
 
 }

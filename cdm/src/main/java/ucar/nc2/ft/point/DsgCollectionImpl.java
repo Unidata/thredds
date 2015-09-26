@@ -29,81 +29,88 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
-package ucar.nc2.ft;
+package ucar.nc2.ft.point;
 
 import ucar.nc2.Variable;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A collection of FeatureTypes.
- * Will either be a PointFeatureCollection, NestedPointFeatureCollection, or DoubleNestedPointFeatureCollection
- * Will either be a PointFeatureCollection, PointFeatureCC, or PointFeatureCCC
+ * Common methods for DsgFeatureCollection.
  *
  * @author caron
- * @since Mar 20, 2008
+ * @since 9/25/2015.
  */
-public interface DsgFeatureCollection {
-  /**
-   * Get the name of this feature collection.
-   * @return the name of this feature collection
-   */
-  @Nonnull
-  String getName();
+public abstract class DsgCollectionImpl implements DsgFeatureCollection {
 
-  /**
-   * All features in this collection have this feature type
-   * @return the feature type
-   */
-  @Nonnull
-  ucar.nc2.constants.FeatureType getCollectionFeatureType();
+  protected String name;
+  protected CalendarDateUnit timeUnit;
+  protected String altUnits;
+  protected CollectionInfo info;
+  protected List<Variable> extras;
 
-  /**
-   * The time unit.
-   * @return  time unit, may not be null
-   */
-  @Nonnull
-  CalendarDateUnit getTimeUnit();
+  protected DsgCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
+    this.name = name;
+    this.timeUnit = timeUnit;
+    this.altUnits = altUnits;
+  }
 
-  /**
-   * The altitude unit string if it exists.
-   * @return altitude unit string, may be null
-   */
+  @Nonnull
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Nonnull
+  @Override
+  public CalendarDateUnit getTimeUnit() {
+    return timeUnit;
+  }
+
   @Nullable
-  String getAltUnits();
+  @Override
+  public String getAltUnits() {
+    return altUnits;
+  }
 
-  /**
-   * Other variables needed for completeness, eg joined coordinate variables
-   * @return list of extra variables, may be empty not null
-   */
   @Nonnull
-  List<Variable> getExtraVariables();
+  @Override
+  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
 
-  /**
-   * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.
-   *
-   * @return the calendar date range for the entire collection, or null if unknown
-   */
+  @Override
+  public int size() {
+    return getNobs();
+  }
+
+  public int getNobs() {
+    return (info == null) ? -1 : info.npts;
+  }
+
   @Nullable
-  CalendarDateRange getCalendarDateRange();
+  @Override
+  public CalendarDateRange getCalendarDateRange() {
+    return (info == null) ? null : info.getCalendarDateRange(timeUnit);
+  }
 
-  /**
-   * The boundingBox for the FeatureCollection. May not be known until after iterating through the collection.
-   *
-   * @return the lat/lon boundingBox for the entire collection, or null if unknown.
-   */
   @Nullable
-  ucar.unidata.geoloc.LatLonRect getBoundingBox();
+  @Override
+  public ucar.unidata.geoloc.LatLonRect getBoundingBox() {
+    return (info == null) ? null : info.bbox;
+  }
 
-  /**
-   * The number of Features in the collection. May not be known until after iterating through the collection.
-   * @return number of elements in the collection, or -1 if not known.
-   */
-  int size();
 
+  @Nonnull
+  public CollectionInfo getInfo() { // LOOK exposes mutable fields
+    if (info == null)
+      info = new CollectionInfo();
+    return info;
+  }
 }

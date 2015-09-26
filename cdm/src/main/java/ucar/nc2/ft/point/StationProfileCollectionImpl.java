@@ -117,10 +117,6 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
     return (StationProfileFeature) s;  // LOOK subclass must override if not true
   }
 
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    throw new UnsupportedOperationException("StationProfileFeatureCollection does not implement getPointFeatureCollectionIterator()");
-  }
-
   public int compareTo(Station so) {
     return name.compareTo( so.getName());
   }
@@ -147,9 +143,8 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
 
     @Override
     public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
-      return null;
+      return new NestedCollectionIOIteratorAdapter<>(getNestedPointFeatureCollectionIterator(-1));
     }
-
 
     private class Filter implements NestedPointFeatureCollectionIterator.Filter {
       @Override
@@ -160,32 +155,12 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
     }
   }
 
-     /////////////////////////////////////////////////////////////////////////////////////
-
-  @Override
-  public Iterator<StationProfileFeature> iterator() {
-    try {
-      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator(-1);
-      return new CollectionIteratorAdapter<>(pfIterator);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /* @Override
-  public Iterator<StationProfileFeature> iterator() {
-    return new StationProfileFeatureIterator();
-  }
-
-  private class StationProfileFeatureIterator implements Iterator<StationProfileFeature> {
+  // LOOK make into top-level; how come section didnt need this?
+  public class NestedCollectionIOIteratorAdapter<T> implements IOIterator<T> {
     NestedPointFeatureCollectionIterator pfIterator;
 
-    public StationProfileFeatureIterator() {
-      try {
-        this.pfIterator = getNestedPointFeatureCollectionIterator(-1);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+    public NestedCollectionIOIteratorAdapter(NestedPointFeatureCollectionIterator pfIterator) {
+      this.pfIterator = pfIterator;
     }
 
     @Override
@@ -198,15 +173,26 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
     }
 
     @Override
-    public StationProfileFeature next() {
+    public T next() {
       try {
-        return (StationProfileFeature) pfIterator.next();
+        return (T) pfIterator.next();
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     }
-  } */
+  }
 
+  /////////////////////////////////////////////////////////////////////////////////////
+
+  @Override
+  public Iterator<StationProfileFeature> iterator() {
+    try {
+      NestedPointFeatureCollectionIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
+      return new NestedCollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated

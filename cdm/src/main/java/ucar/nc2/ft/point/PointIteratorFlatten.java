@@ -71,7 +71,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
       this.filter = new Filter(filter_bb, filter_date);
   }
 
-  // LOOK HERE
+  // LOOK
   public void setBufferSize(int bytes) {
     //collectionIter.setBufferSize(bytes);
   }

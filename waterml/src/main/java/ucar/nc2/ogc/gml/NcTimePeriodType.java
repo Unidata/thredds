@@ -2,7 +2,10 @@ package ucar.nc2.ogc.gml;
 
 import net.opengis.gml.x32.TimePeriodType;
 import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.point.CollectionInfo;
+import ucar.nc2.ft.point.DsgCollectionHelper;
 import ucar.nc2.ogc.MarshallingUtil;
+import ucar.nc2.time.CalendarDateRange;
 
 import java.io.IOException;
 
@@ -17,11 +20,19 @@ public abstract class NcTimePeriodType {
         String id = MarshallingUtil.createIdForType(TimePeriodType.class);
         timePeriod.setId(id);
 
+        CollectionInfo info;
+        try {
+            info = new DsgCollectionHelper(stationFeat).calcBounds();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        CalendarDateRange cdr = info.getCalendarDateRange(stationFeat.getTimeUnit());
+
         // gml:beginPosition
-        NcTimePositionType.initBeginPosition(timePeriod.addNewBeginPosition(), stationFeat);
+        NcTimePositionType.initBeginPosition(timePeriod.addNewBeginPosition(), cdr.getStart());
 
         // gml:endPosition
-        NcTimePositionType.initEndPosition(timePeriod.addNewEndPosition(), stationFeat);
+        NcTimePositionType.initEndPosition(timePeriod.addNewEndPosition(), cdr.getEnd());
 
         return timePeriod;
     }
