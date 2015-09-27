@@ -96,23 +96,4 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
     info.setComplete();
   }
 
-  static public class Filter implements PointFeatureIterator.Filter {
-
-    private final LatLonRect filter_bb;
-    private final CalendarDateRange filter_date;
-
-    public Filter(LatLonRect filter_bb, CalendarDateRange filter_date) {
-      this.filter_bb = filter_bb;
-      this.filter_date = filter_date;
-    }
-
-    public boolean filter(PointFeature pdata) {
-      if ((filter_date != null) && !filter_date.includes(pdata.getObservationTimeAsCalendarDate()))
-        return false;
-
-      return !((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()));
-    }
-
-  }
-
 }

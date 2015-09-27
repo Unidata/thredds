@@ -157,7 +157,8 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
 
     @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), null, filter_date);
+      PointFeatureIterator.Filter filter = new PointIteratorFiltered.BoundsFilter(null, filter_date);
+      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), filter);
     }
 
     @Nonnull

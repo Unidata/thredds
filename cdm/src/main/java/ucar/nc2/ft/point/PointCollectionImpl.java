@@ -93,7 +93,8 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
 
     @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), filter_bb, filter_date);
+      PointFeatureIterator.Filter filter = new PointIteratorFiltered.BoundsFilter(filter_bb, filter_date);
+      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), filter);
     }
   }
 

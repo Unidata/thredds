@@ -274,7 +274,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           }
           createStationHelper();
           stationsWanted = getStationHelper().subset(boundingBox);
-          if (dateRange != null) filter = new PointIteratorAbstract.Filter(null, dateRange);
+          if (dateRange != null) filter = new PointIteratorFiltered.BoundsFilter(null, dateRange);
         }
 
         @Override

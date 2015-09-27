@@ -38,22 +38,20 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**
- * Decorate a PointFeatureIterator with filtering on dateRange and/or bounding box.
+ * Decorate a PointFeatureIterator with filtering.
  * @author caron
  * @since Mar 20, 2008
  */
 public class PointIteratorFiltered extends PointIteratorAbstract {
   private PointFeatureIterator orgIter;
-  private LatLonRect filter_bb;
-  private CalendarDateRange filter_date;
+  private PointFeatureIterator.Filter filter;
 
   private PointFeature pointFeature;
   private boolean finished = false;
 
-  PointIteratorFiltered(PointFeatureIterator orgIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
+  PointIteratorFiltered(PointFeatureIterator orgIter, PointFeatureIterator.Filter filter) {
     this.orgIter = orgIter;
-    this.filter_bb = filter_bb;
-    this.filter_date = filter_date;
+    this.filter = filter;
   }
 
   public void setBufferSize(int bytes) {
@@ -80,25 +78,39 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
     return pointFeature;
   }
 
-  private boolean filter(PointFeature pdata) {
-    if ((filter_date != null) && !filter_date.includes(pdata.getObservationTimeAsCalendarDate()))
-      return false;
-
-    return !((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()));
-  }
-
   private PointFeature nextFilteredDataPoint() {
     if ( orgIter == null) return null;
     if (!orgIter.hasNext()) return null;
 
     PointFeature pdata = orgIter.next();
-    while (!filter(pdata)) {
+    while (!filter.filter(pdata)) {
       if (!orgIter.hasNext()) return null;
       pdata = orgIter.next();
     }
 
     return pdata;
   }
+
+  static public class BoundsFilter implements PointFeatureIterator.Filter {
+
+    private final LatLonRect filter_bb;
+    private final CalendarDateRange filter_date;
+
+    public BoundsFilter(LatLonRect filter_bb, CalendarDateRange filter_date) {
+      this.filter_bb = filter_bb;
+      this.filter_date = filter_date;
+    }
+
+    public boolean filter(PointFeature pdata) {
+      if ((filter_date != null) && !filter_date.includes(pdata.getObservationTimeAsCalendarDate()))
+        return false;
+
+      return !((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()));
+    }
+
+  }
+
+
 
 }
 

@@ -67,7 +67,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
   PointIteratorFlatten(IOIterator<PointFeatureCollection> collectionIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
     this.collectionIter = collectionIter;
     if ((filter_bb != null) || (filter_date != null))
-      this.filter = new Filter(filter_bb, filter_date);
+      this.filter = new PointIteratorFiltered.BoundsFilter(filter_bb, filter_date);
   }
 
   // LOOK

@@ -33,11 +33,10 @@
 package ucar.ma2;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * An iterator over StructureData.
-  * Make sure that you call finish().
+  * Make sure that you call close().
   * Best to put in a try/finally block like:
 <pre>
 try {
@@ -89,13 +88,6 @@ public interface StructureDataIterator extends AutoCloseable {
   int getCurrentRecno();
 
   /**
-   * @deprecated use close() or try-with-resource
-  */
-  default void finish() {
-     close();
-   }
-
-  /**
    * Make sure that the iterator is complete, and recover resources.
    * Best to put in a try/finally block like:
    * <pre>
@@ -108,6 +100,17 @@ public interface StructureDataIterator extends AutoCloseable {
   default void close() {
     // doan do nuthin
   }
+
+  ////////////
+
+  /**
+   * @deprecated use close() or try-with-resource
+   */
+  default void finish() {
+    close();
+  }
+
+
 
 
 }
