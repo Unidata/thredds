@@ -3,6 +3,7 @@ package ucar.nc2;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.ArrayFloat;
@@ -42,6 +43,7 @@ public class TestLargeGeneration {
   String units = "mm";
 
   @Test
+  @Ignore("takes too long")
   public void generateLargeFile() throws IOException, InvalidRangeException {
     File tempFile = File.createTempFile("tmp", "nc", new File(TestDir.temporaryLocalDataDir));
     long startAll = System.nanoTime();

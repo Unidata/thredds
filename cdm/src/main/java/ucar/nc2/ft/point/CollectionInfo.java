@@ -44,8 +44,8 @@ import ucar.unidata.geoloc.LatLonRect;
  * @since 9/25/2015.
  */
 public class CollectionInfo {
-  public LatLonRect bbox;
-  private CalendarDateRange dateRange;
+  public LatLonRect bbox;              // can be null if count == 0
+  private CalendarDateRange dateRange;// can be null if count == 0
   public double minTime = Double.NaN; // in units of dsg.timeUnit
   public double maxTime = Double.NaN;
   public int npts;
@@ -60,12 +60,14 @@ public class CollectionInfo {
   }
 
   void extend(CollectionInfo info) {
+    if (info.npts == 0) return;
     bbox.extend(info.bbox);
     dateRange = dateRange.extend(info.dateRange);
     npts += info.npts;
   }
 
   public CalendarDateRange getCalendarDateRange(CalendarDateUnit timeUnit) {
+    if (npts == 0) return null;
     if (dateRange != null) return dateRange;
     if (timeUnit != null && !Double.isNaN(minTime) && !Double.isNaN(minTime)) {
       dateRange = CalendarDateRange.of(timeUnit.makeCalendarDate(minTime), timeUnit.makeCalendarDate(maxTime));

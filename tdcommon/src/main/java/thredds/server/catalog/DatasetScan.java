@@ -71,8 +71,8 @@ public class DatasetScan extends CatalogRef {
   static private Service latestService;
 
   static public void setLatestService(Service _latestService) {
-    if (latestService != null)
-      throw new RuntimeException("latestService cannot be changes once set");
+    if (latestService != null && !latestService.equals(_latestService)) // mocking framework sets multiple times
+      throw new RuntimeException("latestService cannot be changed once set");
     latestService = _latestService;
   }
 

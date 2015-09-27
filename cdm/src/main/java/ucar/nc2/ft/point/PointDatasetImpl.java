@@ -125,8 +125,6 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
   }
 
   public void calcBounds(java.util.Formatter sf) {
-    super.getDetailInfo(sf);
-
     for (DsgFeatureCollection pfc : collectionList) {
       try {
         CollectionInfo info  = new DsgCollectionHelper(pfc).calcBounds();

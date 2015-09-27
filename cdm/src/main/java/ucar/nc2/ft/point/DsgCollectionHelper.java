@@ -88,9 +88,12 @@ public class DsgCollectionHelper {
       count++;
     }
 
+    if (count == 0) {
+      return new CollectionInfo(null, null, 0);
+    }
+
     CalendarDateUnit cdu = dsg.getTimeUnit();
     CalendarDateRange dateRange = CalendarDateRange.of(cdu.makeCalendarDate(minTime), cdu.makeCalendarDate(maxTime));
-
     return new CollectionInfo(bbox, dateRange, count);
   }
 

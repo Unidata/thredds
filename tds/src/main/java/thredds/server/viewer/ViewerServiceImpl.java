@@ -250,7 +250,7 @@ public class ViewerServiceImpl implements ViewerService {
         viewerUrl = viewerValue;
         viewerTitle = viewerName;
       }
-      viewerUrl = Escape.html(sub(viewerUrl, ds));
+      viewerUrl = sub(viewerUrl, ds);
 
       return new ViewerLink(viewerTitle, viewerUrl);
     }
