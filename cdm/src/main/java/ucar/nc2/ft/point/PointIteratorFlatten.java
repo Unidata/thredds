@@ -35,9 +35,9 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -50,7 +50,7 @@ import java.io.IOException;
  * @since Mar 19, 2008
  */
 public class PointIteratorFlatten extends PointIteratorAbstract {
-  private PointFeatureCollectionIterator collectionIter;
+  private IOIterator<PointFeatureCollection> collectionIter;
   private Filter filter = null;
 
   private PointFeatureIterator pfiter; // iterator over the current PointFeatureCollection
@@ -64,20 +64,21 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
    * @param filter_bb      boundingbox, or null
    * @param filter_date    data range, or null
    */
-  PointIteratorFlatten(PointFeatureCollectionIterator collectionIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
+  PointIteratorFlatten(IOIterator<PointFeatureCollection> collectionIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
     this.collectionIter = collectionIter;
     if ((filter_bb != null) || (filter_date != null))
-      this.filter = new Filter(filter_bb, filter_date);
+      this.filter = new PointIteratorFiltered.BoundsFilter(filter_bb, filter_date);
   }
 
+  // LOOK
   public void setBufferSize(int bytes) {
-    collectionIter.setBufferSize(bytes);
+    //collectionIter.setBufferSize(bytes);
   }
 
   public void close() {
     if (finished) return;
     if (pfiter != null) pfiter.close();
-    collectionIter.close();
+    // collectionIter.close();
     finishCalcBounds();
     finished = true;
   }

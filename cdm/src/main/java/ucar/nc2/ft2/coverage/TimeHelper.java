@@ -41,7 +41,6 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 
@@ -69,7 +68,7 @@ public class TimeHelper {
     CalendarDateUnit dateUnit;
     try {
       dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
-      return new TimeHelper( cal, dateUnit);
+      return new TimeHelper( dateUnit);
     } catch (IllegalArgumentException e) {
       return null;
     }
@@ -77,22 +76,22 @@ public class TimeHelper {
 
   //////////////////////////////////////////////
 
-  final Calendar cal;
+  // final Calendar cal;
   final CalendarDateUnit dateUnit;
-  final CalendarDate refDate;
-  final double duration;
+  // final CalendarDate refDate;
+  // final double duration;
 
-  private TimeHelper(Calendar cal, CalendarDateUnit dateUnit) {
-    this.cal = cal;
+  private TimeHelper(CalendarDateUnit dateUnit) {
+    // this.cal = cal;
     this.dateUnit = dateUnit;
-    this.refDate = dateUnit.getBaseCalendarDate();
-    this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
+    //this.refDate = dateUnit.getBaseCalendarDate();
+    //this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
   }
 
   // copy on modify
   public TimeHelper setReferenceDate(CalendarDate refDate) {
-    CalendarDateUnit cdUnit = CalendarDateUnit.of(cal, dateUnit.getTimeUnit().getField(), refDate);
-    return new TimeHelper(cal, cdUnit);
+    CalendarDateUnit cdUnit = CalendarDateUnit.of(dateUnit.getCalendar(), dateUnit.getCalendarField(), refDate);
+    return new TimeHelper(cdUnit);
   }
 
   public String getUdUnit() {
@@ -101,8 +100,7 @@ public class TimeHelper {
 
   // get offset from runDate, in units of dateUnit
   public double offsetFromRefDate(CalendarDate date) {
-    long msecs = date.getDifferenceInMsecs(refDate);
-    return msecs / duration;
+    return dateUnit.makeOffsetFromRefDate(date);
   }
 
   public List<NamedObject> getCoordValueNames(CoverageCoordAxis1D axis) {
@@ -129,7 +127,7 @@ public class TimeHelper {
   }
 
   public CalendarDate getRefDate() {
-    return refDate;
+    return dateUnit.getBaseCalendarDate();
   }
 
   public CalendarDate makeDate(double value) {
@@ -143,11 +141,11 @@ public class TimeHelper {
   }
 
   public double getOffsetInTimeUnits(CalendarDate start, CalendarDate end) {
-    return dateUnit.getTimeUnit().getOffset(start, end);
+    return dateUnit.getCalendarPeriod().getOffset(start, end);
   }
 
   public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
-    return start.add(addTo, dateUnit.getTimeUnit().getField());
+    return start.add(addTo, dateUnit.getCalendarField());
   }
 
   public static ucar.nc2.time.Calendar getCalendarFromAttribute(AttributeContainer atts) {
@@ -157,7 +155,7 @@ public class TimeHelper {
   }
 
   public Calendar getCalendar() {
-    return cal;
+    return dateUnit.getCalendar();
   }
 
   public CalendarDateUnit getCalendarDateUnit() {

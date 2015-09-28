@@ -37,7 +37,7 @@ import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -52,7 +52,7 @@ import java.util.List;
  */
 public class PointDatasetRemote extends PointDatasetImpl {
 
-  public PointDatasetRemote(FeatureType wantFeatureType, String uri, DateUnit timeUnit, String altUnits, List<VariableSimpleIF> vars, LatLonRect bb, CalendarDateRange dr) throws IOException {
+  public PointDatasetRemote(FeatureType wantFeatureType, String uri, CalendarDateUnit timeUnit, String altUnits, List<VariableSimpleIF> vars, LatLonRect bb, CalendarDateRange dr) throws IOException {
 
     super(wantFeatureType);
     setBoundingBox(bb);

@@ -1,5 +1,6 @@
 package ucar.nc2.ft.point.writer;
 
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -149,7 +150,7 @@ public class TestCFPointWriter {
 
       // sanity checks
       compare( fdpoint, (FeatureDatasetPoint) result);
-      assert 0 < TestPointDatasets.checkPointDataset(result, show);
+      Assert.assertTrue("npoints", 0 < TestPointDatasets.checkPointFeatureDataset(result, show));
 
       result.close();
     }

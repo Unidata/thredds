@@ -50,12 +50,13 @@ import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -68,7 +69,7 @@ import java.util.*;
  */
 public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrFeatureDatasetFactory.class);
-  static private DateUnit bufrDateUnits = DateUnit.factory("msecs since 1970-01-01T00:00:00");
+  static private CalendarDateUnit bufrDateUnits = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");
   static private String bufrAltUnits = "m"; // LOOK fake
 
 
@@ -182,7 +183,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         this.extract = new StandardFields.StandardFieldsFromStructure(center, obs);
 
         try {
-          this.timeUnit = new DateUnit("msecs since 1970-01-01T00:00:00");
+          this.timeUnit = bufrDateUnits;
         } catch (Exception e) {
           e.printStackTrace();  //cant happen
         }
@@ -237,14 +238,16 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           StructureData sdata;
 
           public BufrStationPoint(EarthLocation location, double obsTime, double nomTime, StructureData sdata) {
-            super(location, obsTime, nomTime, bufrDateUnits);
+            super(BufrStation.this, location, obsTime, nomTime, bufrDateUnits);
             this.sdata = sdata;
           }
 
+          @Nonnull
           @Override
           public StructureData getDataAll() throws IOException {
             return sdata;
           }
+          @Nonnull
           @Override
            public StructureData getFeatureData() throws IOException {
              return sdata;
@@ -265,10 +268,13 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         BufrPointFeatureCollection(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
           super("BufrPointFeatureCollection", bufrDateUnits, bufrAltUnits);
           setBoundingBox(boundingBox);
-          setCalendarDateRange(dateRange);
+          if (dateRange != null) {
+            getInfo();
+            info.setCalendarDateRange(dateRange);
+          }
           createStationHelper();
           stationsWanted = getStationHelper().subset(boundingBox);
-          if (dateRange != null) filter = new PointIteratorAbstract.Filter(null, dateRange);
+          if (dateRange != null) filter = new PointIteratorFiltered.BoundsFilter(null, dateRange);
         }
 
         @Override
@@ -298,7 +304,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
           @Override
           public void close() {
-            System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getCount());
+            System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getInfo().npts);
             super.close();
           }
 
@@ -308,14 +314,16 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           StructureData sdata;
 
           public BufrPoint(StationFeature want, double obsTime, double nomTime, StructureData sdata) {
-            super(want, obsTime, nomTime, bufrDateUnits);
+            super(BufrPointFeatureCollection.this, want, obsTime, nomTime, bufrDateUnits);
             this.sdata = sdata;
           }
 
+          @Nonnull
           @Override
           public StructureData getDataAll() throws IOException {
             return sdata;
           }
+          @Nonnull
           @Override
           public StructureData getFeatureData() throws IOException {
              return sdata;

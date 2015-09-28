@@ -41,8 +41,7 @@ import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.SectionFeature;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 
 import java.io.IOException;
 import java.util.*;
@@ -70,7 +69,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
   private boolean headerDone = false;
 
   public WriterCFTrajectoryProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra,
-                                   DateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+                                             CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectoryProfile.name()));
   }
@@ -171,7 +170,8 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
 
     profileVars.add(VariableSimpleImpl.makeScalar(latName, "profile latitude", CDM.LAT_UNITS, DataType.DOUBLE));
     profileVars.add(VariableSimpleImpl.makeScalar(lonName, "profile longitude", CDM.LON_UNITS, DataType.DOUBLE));
-    profileVars.add(VariableSimpleImpl.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUnitsString(), DataType.DOUBLE));
+    profileVars.add(VariableSimpleImpl.makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
+            .add(new Attribute(CF.CALENDAR, timeUnit.getCalendar().toString())));
 
     profileVars.add(VariableSimpleImpl.makeScalar(trajectoryIndexName, "trajectory index for this profile", null, DataType.INT)
             .add(new Attribute(CF.INSTANCE_DIMENSION, trajDimName)));
@@ -195,13 +195,13 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
 
   private int profileRecno = 0;
   public void writeProfileData(int sectionIndex, ProfileFeature profile, int nobs) throws IOException {
-    trackBB(profile.getLatLon(), CalendarDate.of(profile.getTime()));
+    trackBB(profile.getLatLon(), profile.getTime());
 
     StructureDataScalar profileCoords = new StructureDataScalar("Coords");
     profileCoords.addMember(latName, null, null, DataType.DOUBLE, profile.getLatLon().getLatitude());
     profileCoords.addMember(lonName, null, null, DataType.DOUBLE, profile.getLatLon().getLongitude());
     // double time = (profile.getTime() != null) ? (double) profile.getTime().getTime() : 0.0;
-    double timeInMyUnits = timeUnit.makeValue(profile.getTime());
+    double timeInMyUnits = timeUnit.makeOffsetFromRefDate(profile.getTime());
     profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, timeInMyUnits);  // LOOK time not always part of profile
     profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
     profileCoords.addMember(numberOfObsName, null, null, DataType.INT, nobs);

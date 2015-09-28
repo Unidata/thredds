@@ -41,13 +41,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
-import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
+import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.ft2.coverage.writer.CoverageDatasetCapabilities;
 
@@ -67,33 +66,24 @@ public class NcssShowFeatureDatasetInfo {
     FeatureType ft = fd.getFeatureType();
     switch (ft) {
       case STATION:
-        return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncss/ncssSobs.xsl");
+        return showPointForm((FeatureDatasetPoint) fd, SupportedOperation.POINT_REQUEST, datasetUrlPath, wantXml, "ncss/ncssSobs.xsl");
 
       case POINT:
-        return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncss/ncssPobs.xsl");
+        return showPointForm((FeatureDatasetPoint) fd, SupportedOperation.STATION_REQUEST, datasetUrlPath, wantXml, "ncss/ncssPobs.xsl");
 
       default:
         throw new IllegalStateException("Unsupported feature type " + ft);
     }
   }
 
-  private ModelAndView showPointForm(FeatureDatasetPoint fp, String datasetUrlPath, boolean wantXml, String xslt)
+  private ModelAndView showPointForm(FeatureDatasetPoint fp, SupportedOperation ops, String datasetUrlPath, boolean wantXml, String xslt)
           throws IOException {
 
-    FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fp, datasetUrlPath);
+    FeatureDatasetCapabilitiesWriter xmlWriter = new FeatureDatasetCapabilitiesWriter(fp, datasetUrlPath);
     Document doc = xmlWriter.getCapabilitiesDocument();
-
-    if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4)) {
-      String xPathForGridElement = "capabilities/AcceptList";
-      addElement(doc, xPathForGridElement,
-              new Element("accept").addContent("netcdf4").setAttribute("displayName", SupportedFormat.NETCDF4.getFormatName()));
-    }
-
-    if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4EXT)) {
-      String xPathForGridElement = "capabilities/AcceptList";
-      addElement(doc, xPathForGridElement,
-              new Element("accept").addContent("netcdf4ext").setAttribute("displayName", SupportedFormat.NETCDF4EXT.getFormatName()));
-    }
+    Element root = doc.getRootElement();
+    root.setAttribute("location", datasetUrlPath);
+    root.addContent(makeAcceptList(ops)); // must add the accept elements
 
     if (wantXml) {
       return new ModelAndView("threddsXmlView", "Document", doc);
@@ -106,30 +96,30 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  public ModelAndView showGridFormTh(CoverageDataset gcd, String datsetUrlPath, boolean wantXml) throws IOException {
+  public ModelAndView showGridFormTh(CoverageDataset gcd, String datasetUrlPath, boolean wantXml) throws IOException {
     if (wantXml) {
       CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
       Document doc = writer.makeDatasetDescription();
       Element root = doc.getRootElement();
-      root.setAttribute("location", datsetUrlPath);
-      root.addContent(makeAcceptList());
+      root.setAttribute("location", datasetUrlPath);
+      root.addContent(makeAcceptList(SupportedOperation.GRID_REQUEST));
       return new ModelAndView("threddsXmlView", "Document", doc);
 
     } else {
       Map<String, Object> model = new HashMap<>();
       model.put("gcd", gcd);
-      model.put("datasetPath", datsetUrlPath);
+      model.put("datasetPath", datasetUrlPath);
       return new ModelAndView("templates/ncssGridth", model);
     }
   }
 
-  public ModelAndView showGridForm(CoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) throws IOException {
+  public ModelAndView showGridForm(CoverageDataset gcd, String datasetUrlPath, boolean wantXml, boolean isPoint) throws IOException {
     CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
 
     Document doc = writer.makeDatasetDescription();
     Element root = doc.getRootElement();
-    root.setAttribute("location", datsetUrlPath);
-    root.addContent(makeAcceptList());
+    root.setAttribute("location", datasetUrlPath);
+    root.addContent(makeAcceptList(SupportedOperation.GRID_REQUEST));
 
     if (wantXml) {
       return new ModelAndView("threddsXmlView", "Document", doc);
@@ -143,40 +133,15 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  private Element makeAcceptList() {
+  private Element makeAcceptList(SupportedOperation ops) {
 
-    // add accept list
-    Element elem = new Element("AcceptList");
-    //accept list for Grid As Point requests
-    Element gridAsPoint = new Element("GridAsPoint");
-    for (SupportedFormat sf : SupportedOperation.GRID_AS_POINT_REQUEST.getSupportedFormats()) {
-      gridAsPoint.addContent(new Element("accept").addContent(sf.getFormatName()).setAttribute("displayName", sf.getFormatName()));
+    Element acceptList = new Element("AcceptList");
+    for (SupportedFormat sf : ops.getSupportedFormats()) {
+      Element accept = new Element("accept").addContent(sf.getFormatName()).setAttribute("displayName", sf.getFormatName());
+      acceptList.addContent(accept);
     }
 
-    //accept list for Grid requests
-    Element grids = new Element("Grid");
-    for (SupportedFormat sf : SupportedOperation.GRID_REQUEST.getSupportedFormats()) {
-      grids.addContent(new Element("accept").addContent(sf.getFormatName()).setAttribute("displayName", sf.getFormatName()));
-    }
-
-    elem.addContent(gridAsPoint);
-    elem.addContent(grids);
-    return elem;
+    return acceptList;
   }
-
-  private void addElement(Document doc, String xPath, Element element) {
-    try {
-      XPath gridXpath = XPath.newInstance(xPath);
-      Element acceptListParent = (Element) gridXpath.selectSingleNode(doc);
-      if (acceptListParent != null)
-        acceptListParent.addContent(element);
-      else
-        System.out.printf("Cant find xPath '%s'%n", xPath);
-
-    } catch (JDOMException je) {
-      throw new RuntimeException(je);
-    }
-  }
-
 
 }

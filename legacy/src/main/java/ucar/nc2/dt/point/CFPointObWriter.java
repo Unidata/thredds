@@ -49,7 +49,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
-import ucar.nc2.dt.point.PointObVar;
 import ucar.unidata.geoloc.EarthLocation;
 
 import java.io.*;
@@ -325,8 +324,8 @@ public class CFPointObWriter {
   public static int writePointFeatureCollection(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
     // extract the PointFeatureCollection
     PointFeatureCollection pointFeatureCollection = null;
-    List<FeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
-    for (FeatureCollection featureCollection : featureCollectionList) {
+    List<DsgFeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
+    for (DsgFeatureCollection featureCollection : featureCollectionList) {
       if (featureCollection instanceof PointFeatureCollection)
         pointFeatureCollection = (PointFeatureCollection) featureCollection;
     }
@@ -353,10 +352,8 @@ public class CFPointObWriter {
     } */
 
     int count = 0;
-    pointFeatureCollection.resetIteration();
-    while (pointFeatureCollection.hasNext()) {
-      PointFeature pointFeature = (PointFeature) pointFeatureCollection.next();
-      StructureData data = pointFeature.getData();
+    for (PointFeature pointFeature : pointFeatureCollection) {
+      StructureData data = pointFeature.getDataAll();
       if (count == 0) {
         EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong

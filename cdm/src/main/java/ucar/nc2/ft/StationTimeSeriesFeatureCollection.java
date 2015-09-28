@@ -34,8 +34,8 @@ package ucar.nc2.ft;
 
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ import java.util.List;
  *
  * @author caron
  */
-public interface StationTimeSeriesFeatureCollection extends StationCollection, NestedPointFeatureCollection, Iterable<StationTimeSeriesFeature> {
+public interface StationTimeSeriesFeatureCollection extends StationCollection, PointFeatureCC, Iterable<StationTimeSeriesFeature> {
 
   /**
    * Get a subsetted StationCollection based on a list of Stations.
@@ -74,6 +74,8 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
    * @throws java.io.IOException on i/o error
    */
   StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+
+  StationTimeSeriesFeatureCollection subset(List<Station> stns, CalendarDateRange dateRange) throws IOException;
 
   /**
    * Get the collection of data for a particular Station.
@@ -105,7 +107,6 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
 
   List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
-
   /**
     * Flatten into a PointFeatureCollection, discarding connectedness information.
     *
@@ -116,26 +117,16 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
     * @throws IOException on read error
     */
    PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+   PointFeatureCollection flatten(LatLonRect llbbox, CalendarDateRange dateRange) throws IOException;
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // deprecated
 
   /**
-    * Flatten into a PointFeatureCollection, discarding connectedness information.
-    *
-    * @param stations only contain these stations; if null or empty use all
-    * @param dateRange only points in this date range. may be null.
-    * @param varList only these member variables. may be null. currently ignored
-    * @return a PointFeatureCollection, may be null if its empty.
-    * @throws IOException on read error
-   * @deprecated use  CalendarDateRange
-    */
-   PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
-
-  /**
    * Use the internal iterator to check if there is another StationTimeSeriesFeature in the iteration.
    * @return true is there is another StationTimeSeriesFeature in the iteration.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   boolean hasNext() throws java.io.IOException;
 
@@ -144,6 +135,7 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
    * You must call hasNext() before you call this.
    * @return the next StationTimeSeriesFeature in the iteration
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   StationTimeSeriesFeature next() throws java.io.IOException;
 
@@ -152,12 +144,20 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
    * You must complete the iteration (until hasNext() returns false)
    *  or call finish().
    * @see PointFeatureIterator#close
+   * @deprecated use foreach
    */
   void finish();
 
   /**
    * Reset the internal iterator for another iteration over the StationTimeSeriesFeatures in this Collection.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   void resetIteration() throws IOException;
+
+  /**
+   * @deprecated use foreach
+   */
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+
 }

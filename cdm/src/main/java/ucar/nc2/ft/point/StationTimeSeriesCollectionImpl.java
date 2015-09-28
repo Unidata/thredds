@@ -35,9 +35,9 @@ package ucar.nc2.ft.point;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
@@ -52,10 +52,10 @@ import java.io.IOException;
  * @author caron
  * @since Feb 5, 2008
  */
-public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointCollectionImpl implements StationTimeSeriesFeatureCollection {
+public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl implements StationTimeSeriesFeatureCollection {
   private volatile StationHelper stationHelper;
 
-  public StationTimeSeriesCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+  public StationTimeSeriesCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.STATION);
   }
 
@@ -81,30 +81,6 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
 
   // Allow StationHelper to be lazily initialized.
   protected abstract StationHelper createStationHelper() throws IOException;
-
-  // note this assumes that a Station is-a PointFeatureCollection
-  // subclasses must override if thats not true
-  // note that subset() may have made a subset of stationHelper
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new PointFeatureCollectionIterator() {  // an anonymous class iterating over the stations
-      Iterator<StationFeature> stationIter = getStationHelper().getStationFeatures().iterator();
-
-      public boolean hasNext() throws IOException {
-        return stationIter.hasNext();
-      }
-
-      public PointFeatureCollection next() throws IOException {
-        return (StationTimeSeriesFeature) stationIter.next();
-      }
-
-      public void setBufferSize(int bytes) {
-      }
-
-      public void close() {
-      }
-
-    };
-  }
 
   // note this assumes that a Station is-a StationTimeSeriesFeature
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
@@ -148,6 +124,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   }
 
   // might need to override for efficiency
+  @Override
   public PointFeatureCollection flatten(List<String> stationNames, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     if ((stationNames == null) || (stationNames.size() == 0))
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
@@ -164,9 +141,9 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, subsetStations), dateRange);
   }
 
-  public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+ /* public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     return flatten(stations, CalendarDateRange.of(dateRange), varList);
-  }
+  } */
 
   private static class StationTimeSeriesCollectionSubset extends StationTimeSeriesCollectionImpl {
     private final List<StationFeature> stations;
@@ -188,23 +165,6 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
       return getStationHelper().getStationFeatures();
     }
 
-    /* dont think this is needed
-    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(bufferSize), new Filter());
-    }
-
-    public Station getStation(PointFeature feature) throws IOException {
-      return from.getStation(feature);
-    }
-
-    // LOOK: major ick! FIX THIS
-    private class Filter implements PointFeatureCollectionIterator.Filter {
-
-      public boolean filter(PointFeatureCollection pointFeatureCollection) {
-        StationTimeSeriesFeature stationFeature = (StationTimeSeriesFeature) pointFeatureCollection;
-        return stationHelper.getStation(stationFeature.getName()) != null;
-      }
-    } */
   }
 
   //////////////////////////
@@ -236,46 +196,46 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   }
 
   @Override
-  public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    throw new UnsupportedOperationException("StationFeatureCollection does not implement getNestedPointFeatureCollection()");
+  public StationTimeSeriesFeatureCollection subset(List<Station> stns, CalendarDateRange dateRange) throws IOException {
+    return null;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
 
+  @Override
   public Iterator<StationTimeSeriesFeature> iterator() {
-    return new StationTimeSeriesFeatureIterator();
-  }
-
-  private class StationTimeSeriesFeatureIterator implements Iterator<StationTimeSeriesFeature> {
-    PointFeatureCollectionIterator pfIterator;
-
-    public StationTimeSeriesFeatureIterator() {
-      try {
-        this.pfIterator = getPointFeatureCollectionIterator(-1);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public boolean hasNext() {
-      try {
-        return pfIterator.hasNext();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public StationTimeSeriesFeature next() {
-      try {
-        return (StationTimeSeriesFeature) pfIterator.next();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+    try {
+      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator(-1);
+      return new CollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
+  @Override
+  public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+    return new StationIterator();
+  }
+
+  @Override
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    return new StationIterator();
+  }
+
+  // note this assumes that a Station is-a StationTimeSeriesFeature (see the cast in next())
+  // subclasses must override if thats not true
+  // note that subset() may have made a subset of stationHelper
+  private class StationIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
+    Iterator<StationFeature> stationIter = getStationHelper().getStationFeatures().iterator();
+
+    public boolean hasNext() throws IOException {
+      return stationIter.hasNext();
+    }
+
+    public PointFeatureCollection next() throws IOException {
+      return (StationTimeSeriesFeature) stationIter.next();
+    }
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated

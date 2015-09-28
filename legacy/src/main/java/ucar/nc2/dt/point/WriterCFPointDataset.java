@@ -40,7 +40,7 @@ import ucar.nc2.dt.PointObsDataset;
 import ucar.nc2.dt.DataIterator;
 import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.constants.FeatureType;
@@ -249,7 +249,7 @@ public class WriterCFPointDataset {
     if (debug) System.out.println("PointFeature= " + pf);
 
     EarthLocation loc = pf.getLocation();
-    int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pf.getObservationTimeAsDate());
+    int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pf.getObservationTimeAsCalendarDate().toDate());
 
     for (int i = count; i < recordVars.size(); i++) {
       Variable v = recordVars.get(i);
@@ -319,8 +319,8 @@ public class WriterCFPointDataset {
   public static int writePointFeatureCollection(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
     // extract the PointFeatureCollection
     PointFeatureCollection pointFeatureCollection = null;
-    List<FeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
-    for ( FeatureCollection featureCollection : featureCollectionList) {
+    List<DsgFeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
+    for ( DsgFeatureCollection featureCollection : featureCollectionList) {
       if (featureCollection instanceof PointFeatureCollection)
         pointFeatureCollection = (PointFeatureCollection) featureCollection;
     }
@@ -347,10 +347,8 @@ public class WriterCFPointDataset {
     }
 
     int count = 0;
-    pointFeatureCollection.resetIteration();
-    while (pointFeatureCollection.hasNext()) {
-      PointFeature pointFeature = (PointFeature) pointFeatureCollection.next();
-      StructureData data = pointFeature.getData();
+    for (PointFeature pointFeature : pointFeatureCollection) {
+      StructureData data = pointFeature.getDataAll();
       if (count == 0) {
         EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong

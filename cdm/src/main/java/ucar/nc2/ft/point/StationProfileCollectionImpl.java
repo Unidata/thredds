@@ -34,7 +34,8 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
@@ -48,10 +49,10 @@ import java.io.IOException;
  * @author caron
  * @since Mar 20, 2008
  */
-public abstract class StationProfileCollectionImpl extends MultipleNestedPointCollectionImpl implements StationProfileFeatureCollection {
+public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl implements StationProfileFeatureCollection {
   private volatile StationHelper stationHelper;
 
-  public StationProfileCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+  public StationProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super( name, timeUnit, altUnits, FeatureType.STATION_PROFILE);
   }
 
@@ -116,10 +117,6 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     return (StationProfileFeature) s;  // LOOK subclass must override if not true
   }
 
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    throw new UnsupportedOperationException("StationProfileFeatureCollection does not implement getPointFeatureCollectionIterator()");
-  }
-
   public int compareTo(Station so) {
     return name.compareTo( so.getName());
   }
@@ -139,35 +136,30 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
       return from.getStationHelper().subset(stations);
     }
 
-    // use this only if it is multiply nested
-    public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    public PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
       return new NestedPointCollectionIteratorFiltered( from.getNestedPointFeatureCollectionIterator(bufferSize), new Filter());
     }
 
-    private class Filter implements NestedPointFeatureCollectionIterator.Filter {
-      public boolean filter(NestedPointFeatureCollection pointFeatureCollection) {
+    @Override
+    public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
+      return new NestedCollectionIOIteratorAdapter<>(getNestedPointFeatureCollectionIterator(-1));
+    }
+
+    private class Filter implements PointFeatureCCIterator.Filter {
+      @Override
+      public boolean filter(PointFeatureCC pointFeatureCollection) {
         StationProfileFeature stationFeature = (StationProfileFeature) pointFeatureCollection;
         return getStationHelper().getStation(stationFeature.getName()) != null;
       }
     }
   }
 
-     /////////////////////////////////////////////////////////////////////////////////////
+  // LOOK make into top-level; how come section didnt need this?
+  public class NestedCollectionIOIteratorAdapter<T> implements IOIterator<T> {
+    PointFeatureCCIterator pfIterator;
 
-  @Override
-  public Iterator<StationProfileFeature> iterator() {
-    return new StationProfileFeatureIterator();
-  }
-
-  private class StationProfileFeatureIterator implements Iterator<StationProfileFeature> {
-    NestedPointFeatureCollectionIterator pfIterator;
-
-    public StationProfileFeatureIterator() {
-      try {
-        this.pfIterator = getNestedPointFeatureCollectionIterator(-1);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+    public NestedCollectionIOIteratorAdapter(PointFeatureCCIterator pfIterator) {
+      this.pfIterator = pfIterator;
     }
 
     @Override
@@ -180,19 +172,30 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
     }
 
     @Override
-    public StationProfileFeature next() {
+    public T next() {
       try {
-        return (StationProfileFeature) pfIterator.next();
+        return (T) pfIterator.next();
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////
+
+  @Override
+  public Iterator<StationProfileFeature> iterator() {
+    try {
+      PointFeatureCCIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
+      return new NestedCollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated
-  protected NestedPointFeatureCollectionIterator localIterator;
+  protected PointFeatureCCIterator localIterator;
 
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();

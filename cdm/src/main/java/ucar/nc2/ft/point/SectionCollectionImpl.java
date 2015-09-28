@@ -34,10 +34,9 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * Superclass for implementations of SectionFeatureCollection: series of profiles along a trajectory
@@ -47,62 +46,15 @@ import java.util.Iterator;
  * @since Oct 22, 2009
  */
 
+public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implements SectionFeatureCollection {
 
-public abstract class SectionCollectionImpl extends MultipleNestedPointCollectionImpl implements SectionFeatureCollection {
-
-  protected SectionCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
+  protected SectionCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.SECTION);
   }
 
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    throw new UnsupportedOperationException("SectionCollectionImpl does not implement getPointFeatureCollectionIterator()");
-  }
-
-  public SectionFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
-    return null;
-  }
-
-       /////////////////////////////////////////////////////////////////////////////////////
-
-  @Override
-  public Iterator<SectionFeature> iterator() {
-    return new SectionFeatureIterator();
-  }
-
-  private class SectionFeatureIterator implements Iterator<SectionFeature> {
-    NestedPointFeatureCollectionIterator pfIterator;
-
-    public SectionFeatureIterator() {
-      try {
-        this.pfIterator = getNestedPointFeatureCollectionIterator(-1);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public boolean hasNext() {
-      try {
-        return pfIterator.hasNext();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public SectionFeature next() {
-      try {
-        return (SectionFeature) pfIterator.next();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-
   /////////////////////////////////////////////////////////////////////////////////////
   // deprecated
-  protected NestedPointFeatureCollectionIterator localIterator;
+  protected PointFeatureCCIterator localIterator;
 
   public boolean hasNext() throws IOException {
      if (localIterator == null) resetIteration();

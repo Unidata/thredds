@@ -44,13 +44,16 @@ import ucar.nc2.ft.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.StructurePseudoDS;
+import ucar.nc2.ft2.coverage.TimeHelper;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.SimpleUnit;
 
 import ucar.unidata.geoloc.*;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.util.*;
 
@@ -77,12 +80,11 @@ public class RecordDatasetHelper {
 
   protected LatLonRect boundingBox;
   protected double minDate, maxDate;
-  protected DateUnit timeUnit;
+  protected CalendarDateUnit timeUnit;
 
   protected double altScaleFactor = 1.0;
 
   protected Formatter errs = null;
-  protected boolean showErrors = true;
 
   /**
    * Constructor.
@@ -111,7 +113,7 @@ public class RecordDatasetHelper {
     } else {
       if (recDimName == null)
         throw new IllegalArgumentException("File <" + this.ncfile.getLocation() +
-            "> has no unlimited dimension, specify psuedo record dimension with observationDimension global attribute.");
+                "> has no unlimited dimension, specify psuedo record dimension with observationDimension global attribute.");
       this.obsDim = this.ncfile.getRootGroup().findDimension(recDimName);
       this.recordVar = new StructurePseudoDS(this.ncfile, null, "record", null, obsDim);
     }
@@ -128,22 +130,22 @@ public class RecordDatasetHelper {
     // need the time units
     Variable timeVar = ncfile.findVariable(obsTimeVName);
     String timeUnitString = ncfile.findAttValueIgnoreCase(timeVar, CDM.UNITS, "seconds since 1970-01-01");
+    Calendar cal = TimeHelper.getCalendarFromAttribute(timeVar);
+
     try {
-      timeUnit = new DateUnit(timeUnitString);
+      timeUnit = CalendarDateUnit.withCalendar(cal, timeUnitString);
+
     } catch (Exception e) {
       if (null != errs)
         errs.format("Error on string = %s == %s%n", timeUnitString, e.getMessage());
-      try {
-        timeUnit = new DateUnit("seconds since 1970-01-01");
-      } catch (Exception e1) {
-        // cant happen
-      }
+      timeUnit = CalendarDateUnit.unixDateUnit;
     }
   }
 
   /**
    * Set extra information used by station obs datasets.
    * Use stnIdVName or stnIndexVName.
+   *
    * @param stnIdVName   the obs variable that is used to find the station in the stnHash; may be type  int or a String (char).
    * @param stnDescVName optional station var containing station description
    */
@@ -201,29 +203,29 @@ public class RecordDatasetHelper {
     return unlimitedDim.getLength();
   }
 
-  public void setTimeUnit(DateUnit timeUnit) {
+  public void setTimeUnit(CalendarDateUnit timeUnit) {
     this.timeUnit = timeUnit;
   }
 
-  public DateUnit getTimeUnit() {
+  public CalendarDateUnit getTimeUnit() {
     return this.timeUnit;
   }
 
   public LatLonPoint getLocation(StructureData sdata) {
     StructureMembers members = sdata.getStructureMembers();
-    double lat = sdata.convertScalarDouble( members.findMember( latVName));
-    double lon = sdata.convertScalarDouble( members.findMember(lonVName));
+    double lat = sdata.convertScalarDouble(members.findMember(latVName));
+    double lon = sdata.convertScalarDouble(members.findMember(lonVName));
     return new LatLonPointImpl(lat, lon);
   }
 
   public double getLatitude(StructureData sdata) {
     StructureMembers members = sdata.getStructureMembers();
-    return sdata.convertScalarDouble( members.findMember( latVName));
+    return sdata.convertScalarDouble(members.findMember(latVName));
   }
 
   public double getLongitude(StructureData sdata) {
     StructureMembers members = sdata.getStructureMembers();
-    return sdata.convertScalarDouble( members.findMember( lonVName));
+    return sdata.convertScalarDouble(members.findMember(lonVName));
   }
 
   public double getZcoordinate(StructureData sdata) {
@@ -235,12 +237,12 @@ public class RecordDatasetHelper {
     return zcoordUnits;
   }
 
-  public Date getObservationTimeAsDate(StructureData sdata) {
-    return timeUnit.makeDate( getObservationTime(sdata));
+  public CalendarDate getObservationTimeAsDate(StructureData sdata) {
+    return timeUnit.makeCalendarDate(getObservationTime(sdata));
   }
 
   public double getObservationTime(StructureData sdata) {
-    return getTime( sdata.findMember(obsTimeVName), sdata);
+    return getTime(sdata.findMember(obsTimeVName), sdata);
   }
 
   private double getTime(StructureMembers.Member timeVar, StructureData sdata) {
@@ -250,7 +252,7 @@ public class RecordDatasetHelper {
       String time = sdata.getScalarString(timeVar);
       CalendarDate date = CalendarDateFormatter.isoStringToCalendarDate(null, time);
       if (date == null) {
-        log.error("Cant parse date - not ISO formatted, = "+time);
+        log.error("Cant parse date - not ISO formatted, = " + time);
         return 0.0;
       }
       return date.getMillis() / 1000.0;
@@ -396,8 +398,8 @@ public class RecordDatasetHelper {
     }
 
     // Constructor for the case where you keep track of the location, time of each record, but not the data.
-    protected RecordPointObs(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
-      super(location, obsTime, nomTime, timeUnit);
+    protected RecordPointObs(DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime, CalendarDateUnit timeUnit, int recno) {
+      super(dsg, location, obsTime, nomTime, timeUnit);
       this.recno = recno;
     }
 
@@ -426,6 +428,7 @@ public class RecordDatasetHelper {
       return new LatLonPointImpl(location.getLatitude(), location.getLongitude());
     }
 
+    @Nonnull
     public StructureData getFeatureData() throws IOException {
       if (null == sdata) {
         try {
@@ -445,6 +448,7 @@ public class RecordDatasetHelper {
       return sdata;
     }
 
+    @Nonnull
     public ucar.ma2.StructureData getDataAll() throws java.io.IOException {
       return getFeatureData();
     }
@@ -465,8 +469,8 @@ public class RecordDatasetHelper {
      * @param nomTime nominal time (may be NaN)
      * @param recno   data is at this record number
      */
-    protected RecordStationObs(Station station, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
-      super(station, obsTime, nomTime, timeUnit, recno);
+    protected RecordStationObs(DsgFeatureCollection dsg, Station station, double obsTime, double nomTime, CalendarDateUnit timeUnit, int recno) {
+      super(dsg, station, obsTime, nomTime, timeUnit, recno);
       this.station = station;
     }
 
@@ -507,20 +511,21 @@ public class RecordDatasetHelper {
         // this assumes the station id/name is stored in the obs record
         String stationId;
         if (stationIdType == DataType.INT) {
-          stationId = Integer.toString( sdata.getScalarInt(stnIdVName));
+          stationId = Integer.toString(sdata.getScalarInt(stnIdVName));
         } else
           stationId = sdata.getScalarString(stnIdVName).trim();
         station = stationHelper.getStation(stationId);
         if (null != errs) errs.format(" cant find station id = <%s> when reading record %d%n", stationId, recno);
-        log.error(" cant find station id = <"+stationId+"> when reading record "+recno);
+        log.error(" cant find station id = <" + stationId + "> when reading record " + recno);
 
       } else {
         // use a station index
         List<Station> stations = stationHelper.getStations();
         int stationIndex = sdata.getScalarInt(stnIndexVName);
         if (stationIndex < 0 || stationIndex >= stations.size()) {
-          if (null != errs) errs.format(" cant find station at index =%d when reading record %d%n", stationIndex, recno);
-          log.error("cant find station at index = "+stationIndex+" when reading record "+recno);
+          if (null != errs)
+            errs.format(" cant find station at index =%d when reading record %d%n", stationIndex, recno);
+          log.error("cant find station at index = " + stationIndex + " when reading record " + recno);
         } else
           station = stations.get(stationIndex);
       }

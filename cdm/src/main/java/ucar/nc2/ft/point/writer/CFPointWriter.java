@@ -48,7 +48,7 @@ import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
@@ -117,8 +117,7 @@ public abstract class CFPointWriter implements AutoCloseable {
    */
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, CFPointWriterConfig config) throws IOException {
 
-    for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
-      assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
+    for (DsgFeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
 
       if (fc instanceof PointFeatureCollection) {
         return writePointFeatureCollection(fdpoint, (PointFeatureCollection) fc, fileOut, config);
@@ -171,11 +170,10 @@ public abstract class CFPointWriter implements AutoCloseable {
     try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, (CalendarDateRange) null); // LOOK
+      ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, null, null); // all data, but no need to sort by station
 
       int count = 0;
-      while (pfc.hasNext()) {
-        PointFeature pf = pfc.next();
+      for (PointFeature pf : pfc) {
         StationPointFeature spf = (StationPointFeature) pf;
         if (count == 0)
           cfWriter.writeHeader(fc.getStationFeatures(), spf);
@@ -258,6 +256,7 @@ public abstract class CFPointWriter implements AutoCloseable {
 
     try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
+
       cfWriter.setStations(fc.getStationFeatures());
 
       int name_strlen = 0;
@@ -267,8 +266,7 @@ public abstract class CFPointWriter implements AutoCloseable {
         if (spf.size() >= 0)
           countProfiles += spf.size();
         else {
-          while (spf.hasNext()) {
-            spf.next();
+          for (ProfileFeature pf : spf) {
             countProfiles++;
           }
         }
@@ -347,7 +345,7 @@ public abstract class CFPointWriter implements AutoCloseable {
   protected final CFPointWriterConfig config;
   protected NetcdfFileWriter writer;
 
-  protected DateUnit timeUnit = null;
+  protected CalendarDateUnit timeUnit = null;
   protected String altUnits = null;
   protected String altitudeCoordinateName = altName;
 
@@ -383,7 +381,7 @@ public abstract class CFPointWriter implements AutoCloseable {
    * @throws IOException
    */
   protected CFPointWriter(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars, List<Variable> extra,
-                          DateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
+                          CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     createWriter(fileOut, config);
     this.dataVars = dataVars;
     this.timeUnit = timeUnit;

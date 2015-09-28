@@ -34,10 +34,11 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateUnit;
+// import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 
-import java.util.Date;
+import javax.annotation.Nonnull;
 
 /**
  * Abstract superclass for implementations of PointFeature.
@@ -47,28 +48,38 @@ import java.util.Date;
  * @since Feb 29, 2008
  */
 
-
 public abstract class PointFeatureImpl implements PointFeature, Comparable<PointFeature> {
 
+  protected DsgFeatureCollection dsg;
   protected EarthLocation location;
   protected double obsTime, nomTime;
-  protected DateUnit timeUnit;
+  protected CalendarDateUnit timeUnit;
 
-  public PointFeatureImpl( DateUnit timeUnit) {
+  protected PointFeatureImpl( CalendarDateUnit timeUnit) {
     this.timeUnit = timeUnit;
   }
 
-  public PointFeatureImpl( EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit) {
+  public PointFeatureImpl( DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime, CalendarDateUnit timeUnit) {
+    this.dsg = dsg;
     this.location = location;
     this.obsTime = obsTime;
     this.nomTime = (nomTime == 0) ? obsTime : nomTime; // LOOK temp kludge until protobuf accepts NaN as defaults
     this.timeUnit = timeUnit;
   }
 
+  @Nonnull
+  @Override
+  public DsgFeatureCollection getFeatureCollection() {
+    return dsg;
+  }
+
+  @Nonnull
   @Override
   public EarthLocation getLocation() { return location; }
+
   @Override
   public double getNominalTime() { return nomTime; }
+
   @Override
   public double getObservationTime() { return obsTime; }
 
@@ -76,27 +87,19 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
     return location.toString(); // ??
   }
 
-  @Override
-  public Date getObservationTimeAsDate() {
-    return timeUnit.makeDate( getObservationTime());
-  }
-
-  @Override
-  public Date getNominalTimeAsDate() {
-    return timeUnit.makeDate(getNominalTime());
-  }
-
+  @Nonnull
   @Override
   public CalendarDate getObservationTimeAsCalendarDate() {
     return timeUnit.makeCalendarDate( getObservationTime());
   }
 
+  @Nonnull
   @Override
   public CalendarDate getNominalTimeAsCalendarDate() {
     return timeUnit.makeCalendarDate( getNominalTime());
   }
 
-  public int compareTo(PointFeature other) {
+  public int compareTo(@Nonnull PointFeature other) {
     if (obsTime < other.getObservationTime()) return -1;
     if (obsTime > other.getObservationTime()) return 1;
     return 0;
@@ -110,11 +113,6 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
         ", nomTime=" + nomTime +
         ", timeUnit=" + timeUnit +
         '}';
-  }
-
-  @Override
-  public ucar.ma2.StructureData getData() throws java.io.IOException {
-    return getDataAll();
   }
 
 }

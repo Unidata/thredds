@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.point;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -44,9 +45,12 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.*;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -69,15 +73,19 @@ import java.util.*;
 public class TestPointDatasets {
 
   public static List<Object[]> getAllFilesInDirectory(String topdir, FileFilter filter) {
-    List<FileSort> files = new ArrayList<>();
+    List<Object[]> result = new ArrayList<>();
+
     File topDir = new File(topdir);
-    for (File f : topDir.listFiles()) {
+    File[] filea = topDir.listFiles();
+    if (filea == null) return result;
+
+    List<FileSort> files = new ArrayList<>();
+    for (File f : filea) {
       if (filter != null && !filter.accept(f)) continue;
       files.add( new FileSort(f));
     }
     Collections.sort(files);
 
-    List<Object[]> result = new ArrayList<>();
     for (FileSort f : files) {
       result.add(new Object[] {f.path, FeatureType.ANY_POINT});
       System.out.printf("%s%n", f.path);
@@ -110,7 +118,8 @@ public class TestPointDatasets {
   //////////////////////////////////////////////////////////////////////
 
   public static String topdir = TestDir.cdmUnitTestDir;
-  private static final boolean showStructureData = false;
+  static boolean showStructureData = false;
+  static boolean showAll = false;
 
   public static List<Object[]> getCFDatasets() {
     List<Object[]> result = new ArrayList<>();
@@ -199,7 +208,6 @@ public class TestPointDatasets {
     return result;
   }
 
-
   public static List<Object[]> getMiscDatasets() {
     List<Object[]> result = new ArrayList<>();
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/ldm/04061912_buoy.nc", FeatureType.POINT, 218});
@@ -225,7 +233,7 @@ public class TestPointDatasets {
   String location;
   FeatureType ftype;
   int countExpected;
-  boolean show = false;
+  boolean show = true;
 
   public TestPointDatasets(String location, FeatureType ftype, int countExpected) {
     this.location = location;
@@ -234,11 +242,15 @@ public class TestPointDatasets {
   }
 
   @Test
-  public void checkPointDataset() throws IOException {
-    assert countExpected == checkPointDataset(location, ftype, show);
+  public void checkPointFeatureDataset() throws IOException {
+    Assert.assertEquals("npoints", countExpected, checkPointFeatureDataset(location, ftype, show));
   }
 
-  public static int checkPointDataset(String location, FeatureType type, boolean show) throws IOException {
+  ///////////////////////////////////////////////////////////
+  // static so can be used outside class
+
+  // return number of PointFeatures
+  public static int checkPointFeatureDataset(String location, FeatureType type, boolean show) throws IOException {
     File fileIn = new File(location);
     String absIn = fileIn.getCanonicalPath();
     absIn = StringUtil2.replace(absIn, "\\", "/");
@@ -253,7 +265,7 @@ public class TestPointDatasets {
       }
 
       // FeatureDataset
-      if (show) {
+      if (showAll) {
         System.out.printf("----------- testPointDataset getDetailInfo -----------------%n");
         fdataset.getDetailInfo(out);
         System.out.printf("%s %n", out);
@@ -261,38 +273,36 @@ public class TestPointDatasets {
         System.out.printf("  Feature Type %s %n", fdataset.getFeatureType());
       }
 
-      return checkPointDataset(fdataset, show);
+      return checkPointFeatureDataset(fdataset, show);
     }
   }
 
-
-  public static int checkPointDataset(FeatureDataset fdataset, boolean show) throws IOException {
+  public static int checkPointFeatureDataset(FeatureDataset fdataset, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
 
-    Date d1 = fdataset.getStartDate();
-    Date d2 = fdataset.getEndDate();
+    CalendarDate d1 = fdataset.getCalendarDateStart();
+    CalendarDate d2 = fdataset.getCalendarDateEnd();
     if ((d1 != null) && (d2 != null))
-      assert d1.before(d2) || d1.equals(d2);
+      Assert.assertTrue("calendar date min <= max", d1.isBefore(d2) || d1.equals(d2));
 
     List<VariableSimpleIF> dataVars = fdataset.getDataVariables();
-    assert dataVars != null;
+    Assert.assertNotNull("fdataset.getDataVariables()", dataVars);
     for (VariableSimpleIF v : dataVars) {
-      assert null != fdataset.getDataVariable(v.getShortName());
+      Assert.assertNotNull(v.getShortName(), fdataset.getDataVariable(v.getShortName()));
     }
 
     // FeatureDatasetPoint
-    assert fdataset instanceof FeatureDatasetPoint;
+    Assert.assertTrue("fdataset instanceof FeatureDatasetPoint", fdataset instanceof FeatureDatasetPoint);
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
 
-    for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
-      assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
+    for (DsgFeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
+      checkDsgFeatureCollection(fc);
 
       if (fc instanceof PointFeatureCollection) {
         PointFeatureCollection pfc = (PointFeatureCollection) fc;
         count = checkPointFeatureCollection(pfc, show);
-        System.out.println("PointFeatureCollection getData count= " + count + " size= " + pfc.size());
-        assert count == pfc.size();
+        Assert.assertEquals("PointFeatureCollection getData count = size", count, pfc.size());
 
       } else if (fc instanceof StationTimeSeriesFeatureCollection) {
         count = checkStationFeatureCollection((StationTimeSeriesFeatureCollection) fc);
@@ -308,8 +318,8 @@ public class TestPointDatasets {
       } else if (fc instanceof ProfileFeatureCollection) {
         count = checkProfileFeatureCollection((ProfileFeatureCollection) fc, show);
 
-      } else {
-        count = checkNestedPointFeatureCollection((NestedPointFeatureCollection) fc, show);
+      } else  {
+        count = checkOther(fc, show);
       }
     }
 
@@ -318,45 +328,40 @@ public class TestPointDatasets {
     return count;
   }
 
-  static int checkNestedPointFeatureCollection(NestedPointFeatureCollection npfc, boolean show) throws IOException {
-    long start = System.currentTimeMillis();
-    int count = 0;
-    PointFeatureCollectionIterator iter = npfc.getPointFeatureCollectionIterator(-1);
-    while (iter.hasNext()) {
-      PointFeatureCollection pfc = iter.next();
-      if (show)
-        System.out.printf(" PointFeatureCollection=%s %n", pfc);
-      count += checkPointFeatureCollection(pfc, show);
-    }
-    long took = System.currentTimeMillis() - start;
-    if (show)
-      System.out.println(" testNestedPointFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
-    return count;
+  static void checkDsgFeatureCollection( DsgFeatureCollection dsg) {
+    String what = dsg.getClass().getName();
+    Assert.assertNotNull(what+" name", dsg.getName());
+    Assert.assertNotNull(what + " featureTYpe", dsg.getCollectionFeatureType());
+    Assert.assertNotNull(what+" timeUnit", dsg.getTimeUnit());
+    // Assert.assertNotNull(what + " altUnits", dsg.getAltUnits());
+    Assert.assertNotNull(what + " extraVars", dsg.getExtraVariables());
   }
 
-  static int checkStationProfileFeatureCollection(StationProfileFeatureCollection stationProfileFeatureCollection, boolean show) throws IOException {
+  static int checkPointFeatureCollection(PointFeatureCollection pfc, boolean show) throws IOException {
+    long start = System.currentTimeMillis();
+    int counts = 0;
+    for (PointFeature pf : pfc) {
+      checkPointFeature(pf, pfc.getTimeUnit());
+      counts++;
+    }
+    long took = System.currentTimeMillis() - start;
+    if (show) System.out.println(" testPointFeatureCollection subset count= " + counts + " full iter took= " + took + " msec");
+
+    checkPointFeatureCollectionBB(pfc, show);
+    return counts;
+  }
+
+  static int checkProfileFeatureCollection(ProfileFeatureCollection profileFeatureCollection, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
-    stationProfileFeatureCollection.resetIteration();
-    while (stationProfileFeatureCollection.hasNext()) {
-      ucar.nc2.ft.StationProfileFeature spf = stationProfileFeatureCollection.next();
-      List<Date> times = spf.getTimes();
-      if (show) {
-        System.out.printf("times= ");
-        for (Date t : times) System.out.printf("%s, ", t);
-        System.out.printf("%n");
-      }
+    for (ProfileFeature profile : profileFeatureCollection) {
+      checkDsgFeatureCollection(profile);
+      Assert.assertNotNull("ProfileFeature time", profile.getTime());
+      Assert.assertNotNull("ProfileFeature latlon", profile.getLatLon());
+      Assert.assertNotNull("ProfileFeature featureData", profile.getFeatureData());
 
-      spf.resetIteration();
-      while (spf.hasNext()) {
-        ucar.nc2.ft.ProfileFeature pf = spf.next();
-        assert pf.getName() != null;
-        //assert pf.getTime() != null;
-
-        if (show)
-          System.out.printf(" ProfileFeature=%s %n", pf);
-        count += checkPointFeatureCollection(pf, show);
-      }
+      // assert pf.getTime() != null;
+      count += checkPointFeatureCollection(profile, show);
     }
     long took = System.currentTimeMillis() - start;
     if (show)
@@ -364,154 +369,152 @@ public class TestPointDatasets {
     return count;
   }
 
-  static int checkSectionFeatureCollection(SectionFeatureCollection sectionFeatureCollection, boolean show) throws IOException {
-     long start = System.currentTimeMillis();
-     int count = 0;
-     sectionFeatureCollection.resetIteration();
-     while (sectionFeatureCollection.hasNext()) {
-       ucar.nc2.ft.SectionFeature spf = sectionFeatureCollection.next();
+  static int checkStationFeatureCollection(StationTimeSeriesFeatureCollection sfc) throws IOException {
+    System.out.printf("--------------------------\nComplete Iteration for %s %n", sfc.getName());
+    int countStns = countLocations(sfc);
 
-       spf.resetIteration();
-       while (spf.hasNext()) {
-         ucar.nc2.ft.ProfileFeature pf = spf.next();
-         assert pf.getName() != null;
-         // assert pf.getTime() != null;
+    // try a subset
+    LatLonRect bb = sfc.getBoundingBox();
+    assert bb != null;
+    LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
+    System.out.println("Subset= " + bb2.toString2());
+    StationTimeSeriesFeatureCollection sfcSub = sfc.subset(bb2);
+    int countSub = countLocations(sfcSub);
+    assert countSub <= countStns;
 
-         if (show)
-           System.out.printf(" ProfileFeature=%s %n", pf);
-         count += checkPointFeatureCollection(pf, show);
-       }
-     }
-     long took = System.currentTimeMillis() - start;
-     if (show)
-       System.out.println(" testStationProfileFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
-     return count;
-   }
+    System.out.println("Flatten= " + bb2.toString2());
+    PointFeatureCollection flatten = sfc.flatten(bb2, null);
+    int countFlat = countLocations(flatten);
+    assert countFlat <= countStns;
 
-  static int checkProfileFeatureCollection(ProfileFeatureCollection profileFeatureCollection, boolean show) throws IOException {
-     long start = System.currentTimeMillis();
-     int count = 0;
-     profileFeatureCollection.resetIteration();
-     while (profileFeatureCollection.hasNext()) {
-       ucar.nc2.ft.ProfileFeature pf = profileFeatureCollection.next();
-       assert pf.getName() != null;
-       // assert pf.getTime() != null;
-       count += checkPointFeatureCollection(pf, show);
-     }
-     long took = System.currentTimeMillis() - start;
-     if (show)
-       System.out.println(" testStationProfileFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
-     return count;
-   }
-
-  static void showStructureData(StationProfileFeatureCollection stationProfileFeatureCollection) throws IOException {
-    PrintWriter pw = new PrintWriter(System.out);
-
-    stationProfileFeatureCollection.resetIteration();
-    while (stationProfileFeatureCollection.hasNext()) {
-      ucar.nc2.ft.StationProfileFeature stationProfile = stationProfileFeatureCollection.next();
-      System.out.printf("stationProfile=%d %n", stationProfile.hashCode());
-      stationProfile.resetIteration();
-      while (stationProfile.hasNext()) {
-        ucar.nc2.ft.ProfileFeature profile = stationProfile.next();
-        System.out.printf("-profile=%d %n", profile.hashCode());
-
-        profile.resetIteration();
-        while (profile.hasNext()) {
-          ucar.nc2.ft.PointFeature pointFeature = profile.next();
-          System.out.printf("--pointFeature=%d %n", pointFeature.hashCode());
-          StructureData sdata = pointFeature.getDataAll();
-          NCdumpW.printStructureData(pw, sdata);
-        }
-      }
-    }
+    flatten = sfc.flatten(null, null,  null);
+    return countObs(flatten);
   }
 
-  static int checkPointFeatureCollection(PointFeatureCollection pfc, boolean show) throws IOException {
-    if (show) {
-      System.out.printf("----------- testPointFeatureCollection -----------------%n");
-      System.out.println(" test PointFeatureCollection " + pfc.getName());
-      System.out.println(" calcBounds");
-    }
-    pfc.calcBounds();
-    if (show) {
-      System.out.println("  bb= " + pfc.getBoundingBox());
-      System.out.println("  dateRange= " + pfc.getDateRange());
-      System.out.println("  npts= " + pfc.size());
+  static int countLocations(StationTimeSeriesFeatureCollection sfc) throws IOException {
+    System.out.printf(" Station List Size = %d %n", sfc.getStations().size());
+
+    // check uniqueness
+    Map<String, StationTimeSeriesFeature> stns = new HashMap<>(5000);
+    Map<MyLocation, StationTimeSeriesFeature> locs = new HashMap<>(5000);
+
+    int dups = 0;
+    for (StationTimeSeriesFeature sf : sfc) {
+      StationTimeSeriesFeature other = stns.get(sf.getName());
+      if (other != null && dups < 10) {
+        System.out.printf("  duplicate name = %s %n", sf);
+        System.out.printf("   of = %s %n", other);
+        dups++;
+      } else
+        stns.put(sf.getName(), sf);
+
+      MyLocation loc = new MyLocation(sf);
+      StationTimeSeriesFeature already = locs.get(loc);
+      if (already != null) {
+        System.out.printf("  duplicate location %s(%s) of %s(%s) %n", sf.getName(), sf.getDescription(),
+                already.getName(), already.getDescription());
+      } else
+        locs.put(loc, sf);
     }
 
-    int n = pfc.size();
-    if (n <= 0) {
-      System.out.println("  empty " + pfc.getName());
-      //pfc.calcBounds();
-      return 0; // empty
-    }
+    System.out.printf(" duplicate names = %d %n", dups);
+    System.out.printf(" unique locs = %d %n", locs.size());
+    System.out.printf(" unique stns = %d %n", stns.size());
 
-    LatLonRect bb = pfc.getBoundingBox();
-    assert bb != null;
-    DateRange dr = pfc.getDateRange();
-    assert dr != null;
+    return stns.size();
+  }
 
-    // read all the data - check that it is contained in the bbox, dateRange
-    if (show) System.out.println(" complete iteration");
+  static int checkStationProfileFeatureCollection(StationProfileFeatureCollection stationProfileFeatureCollection, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
-    pfc.resetIteration();
-    while (pfc.hasNext()) {
-      PointFeature pf = pfc.next();
-      checkPointFeature(pf, pfc.getTimeUnit());
-      assert bb.contains(pf.getLocation().getLatLon()) : pf.getLocation().getLatLon();
-      if (!dr.contains(pf.getObservationTimeAsDate()))
-        System.out.printf("  date out of Range= %s on %s %n", pf.getObservationTimeAsDate(), pfc.getName());
-      count++;
+    for (StationProfileFeature spf : stationProfileFeatureCollection) {
+      checkDsgFeatureCollection(spf);
+      Assert.assertNotNull("StationProfileFeature latlon", spf.getLatLon());
+      Assert.assertNotNull("StationProfileFeature featureData", spf.getFeatureData());
+
+      List<CalendarDate> times = spf.getTimes();
+      if (showAll) {
+        System.out.printf("  times= ");
+        for (CalendarDate t : times) System.out.printf("%s, ", t);
+        System.out.printf("%n");
+      }
+
+      for (ProfileFeature pf : spf) {
+        checkDsgFeatureCollection(pf);
+        Assert.assertNotNull("ProfileFeature time", pf.getTime());
+        Assert.assertNotNull("ProfileFeature latlon", pf.getLatLon());
+        Assert.assertNotNull("ProfileFeature featureData", pf.getFeatureData());
+
+        if (show) System.out.printf(" ProfileFeature=%s %n", pf.getName());
+        count += checkPointFeatureCollection(pf, show);
+      }
     }
     long took = System.currentTimeMillis() - start;
-    if (show)
-      System.out.println(" testPointFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+    if (show) System.out.println(" testStationProfileFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+    return count;
+  }
 
-    // subset with a bounding box, test result is in the bounding box
-    LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
-    PointFeatureCollection subset = pfc.subset(bb2, (CalendarDateRange) null);
-    if (show) System.out.println(" subset bb= " + bb2.toString2());
+  static int checkSectionFeatureCollection(SectionFeatureCollection sectionFeatureCollection, boolean show) throws IOException {
+    long start = System.currentTimeMillis();
+    int count = 0;
+    for (SectionFeature section : sectionFeatureCollection) {
+      checkDsgFeatureCollection(section);
+      Assert.assertNotNull("SectionFeature featureData", section.getFeatureData());
 
-    start = System.currentTimeMillis();
-    int counts = 0;
-    PointFeatureIterator iters = subset.getPointFeatureIterator(-1);
-    while (iters.hasNext()) {
-      PointFeature pf = iters.next();
-      assert pf != null;
-      assert pf.getLocation() != null;
+      for (ProfileFeature profile : section) {
+        checkDsgFeatureCollection(profile);
+        Assert.assertNotNull("ProfileFeature time", profile.getTime());
+        Assert.assertNotNull("ProfileFeature latlon", profile.getLatLon());
+        Assert.assertNotNull("ProfileFeature featureData", profile.getFeatureData());
 
-      assert bb2.contains(pf.getLocation().getLatLon()) : bb2.toString2() + " does not contains point " + pf.getLocation().getLatLon();
-      //System.out.printf(" contains point %s%n",pf.getLocation().getLatLon());
-
-      checkPointFeature(pf, pfc.getTimeUnit());
-      counts++;
+        if (show) System.out.printf(" ProfileFeature=%s %n", profile.getName());
+        count += checkPointFeatureCollection(profile, show);
+      }
     }
-    took = System.currentTimeMillis() - start;
-    if (show)
-      System.out.println(" testPointFeatureCollection subset count= " + counts + " full iter took= " + took + " msec");
+    long took = System.currentTimeMillis() - start;
+    if (show) System.out.println(" testStationProfileFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+    return count;
+  }
+
+  // stuff we havent got around to coding specific tests for
+  static int checkOther(DsgFeatureCollection dsg, boolean show) throws IOException {
+    long start = System.currentTimeMillis();
+    int count = 0;
+
+    // we will just run through everything
+    try {
+      CollectionInfo info  = new DsgCollectionHelper(dsg).calcBounds();
+      if (show) System.out.printf(" info=%s%n", info);
+      count = info.npts;
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      return 0;
+    }
+
+    long took = System.currentTimeMillis() - start;
+    if (show) System.out.println(" testNestedPointFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
 
     return count;
   }
 
+
+  /////////////////////////////////////////////
+
+
   // check that the location and times are filled out
   // read and test the data
-  static private void checkPointFeature(PointFeature pobs, DateUnit timeUnit) throws java.io.IOException {
+  static private void checkPointFeature(PointFeature pobs, CalendarDateUnit timeUnit) throws java.io.IOException {
 
-    EarthLocation loc = pobs.getLocation();
-    assert loc != null;
+    Assert.assertNotNull("PointFeature location", pobs.getLocation());
+    Assert.assertNotNull("PointFeature time", pobs.getNominalTimeAsCalendarDate());
+    Assert.assertNotNull("PointFeature dataAll", pobs.getDataAll());
+    Assert.assertNotNull("PointFeature featureData", pobs.getFeatureData());
 
-    assert null != pobs.getNominalTimeAsDate();
-    assert null != pobs.getObservationTimeAsDate();
+    Assert.assertEquals("PointFeature makeCalendarDate", timeUnit.makeCalendarDate(pobs.getObservationTime()), pobs.getObservationTimeAsCalendarDate());
 
-    assert timeUnit.makeDate(pobs.getNominalTime()).equals(pobs.getNominalTimeAsDate());
-    assert timeUnit.makeDate(pobs.getObservationTime()).equals(pobs.getObservationTimeAsDate());
-
-
-    StructureData sdata = pobs.getDataAll();
-    assert null != sdata;
-    checkData(sdata);
+    assert timeUnit.makeCalendarDate(pobs.getObservationTime()).equals(pobs.getObservationTimeAsCalendarDate());
+    checkData( pobs.getDataAll());
   }
 
   // read each field, check datatype
@@ -552,62 +555,95 @@ public class TestPointDatasets {
     }
   }
 
-  ////////////////////////////////////////////////////////////
+  static void showStructureData(PointFeatureCCC ccc) throws IOException {
+    PrintWriter pw = new PrintWriter(System.out);
 
-  static int checkStationFeatureCollection(StationTimeSeriesFeatureCollection sfc) throws IOException {
-    System.out.printf("--------------------------\nComplete Iteration for %s %n", sfc.getName());
-    int countStns = countLocations(sfc);
+    IOIterator<PointFeatureCC> iter = ccc.getCollectionIterator(-1);
+    while (iter.hasNext()) {
+      PointFeatureCC cc = iter.next();
+      System.out.printf(" 1.hashCode=%d %n", cc.hashCode());
+      IOIterator<PointFeatureCollection> iter2 = cc.getCollectionIterator(-1);
+      while (iter2.hasNext()) {
+        PointFeatureCollection pfc = iter2.next();
+        System.out.printf("  2.hashcode%d %n", pfc.hashCode());
 
-    // try a subset
-    LatLonRect bb = sfc.getBoundingBox();
-    assert bb != null;
-    LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
-    System.out.println("Subset= " + bb2.toString2());
-    StationTimeSeriesFeatureCollection sfcSub = sfc.subset(bb2);
-    int countSub = countLocations(sfcSub);
-    assert countSub <= countStns;
-
-    System.out.println("Flatten= " + bb2.toString2());
-    PointFeatureCollection flatten = sfc.flatten(bb2, (CalendarDateRange) null);
-    int countFlat = countLocations(flatten);
-    assert countFlat <= countStns;
-
-    flatten = sfc.flatten(null, (CalendarDateRange) null);
-    return countObs(flatten);
+        for (ucar.nc2.ft.PointFeature pointFeature : pfc) {
+          System.out.printf("   3.hashcode=%d %n", pointFeature.hashCode());
+          StructureData sdata = pointFeature.getDataAll();
+          NCdumpW.printStructureData(pw, sdata);
+        }
+      }
+    }
   }
 
-  static int countLocations(StationTimeSeriesFeatureCollection sfc) throws IOException {
-    System.out.printf(" Station List Size = %d %n", sfc.getStations().size());
+  /////////////////////////////////////////////////////
 
-    // check uniqueness
-    Map<String, StationTimeSeriesFeature> stns = new HashMap<>(5000);
-    Map<MyLocation, StationTimeSeriesFeature> locs = new HashMap<>(5000);
-
-    sfc.resetIteration();
-    while (sfc.hasNext()) {
-      StationTimeSeriesFeature sf = sfc.next();
-      StationTimeSeriesFeature other = stns.get(sf.getName());
-      if (other != null) {
-        System.out.printf("  duplicate name = %s %n", sf);
-        System.out.printf("   of = %s %n", other);
-      } else
-        stns.put(sf.getName(), sf);
-
-      MyLocation loc = new MyLocation(sf);
-      StationTimeSeriesFeature already = locs.get(loc);
-      if (already != null) {
-        System.out.printf("  duplicate location %s(%s) of %s(%s) %n", sf.getName(), sf.getDescription(),
-                already.getName(), already.getDescription());
-      } else
-        locs.put(loc, sf);
+  static int checkPointFeatureCollectionBB(PointFeatureCollection pfc, boolean show) throws IOException {
+    if (show) {
+      System.out.printf("----------- testPointFeatureCollection -----------------%n");
+      System.out.println(" test PointFeatureCollection " + pfc.getName());
+      System.out.println(" calcBounds");
+    }
+    if (show) {
+      System.out.println("  bb= " + pfc.getBoundingBox());
+      System.out.println("  dateRange= " + pfc.getCalendarDateRange());
+      System.out.println("  npts= " + pfc.size());
     }
 
-    System.out.printf(" unique locs = %d %n", locs.size());
-    System.out.printf(" unique stns = %d %n", stns.size());
+    int n = pfc.size();
+    if (n == 0) {
+      System.out.println("  empty " + pfc.getName());
+      return 0; // empty
+    }
 
-    return stns.size();
+    LatLonRect bb = pfc.getBoundingBox();
+    assert bb != null;
+    CalendarDateRange dr = pfc.getCalendarDateRange();
+    assert dr != null;
+
+    // read all the data - check that it is contained in the bbox, dateRange
+    if (show) System.out.println(" complete iteration");
+    long start = System.currentTimeMillis();
+    int count = 0;
+    for (PointFeature pf : pfc) {
+      checkPointFeature(pf, pfc.getTimeUnit());
+      if (!bb.contains(pf.getLocation().getLatLon()))
+        System.out.printf("  point not in BB = %s on %s %n", pf.getLocation().getLatLon(), pfc.getName());
+
+      if (!dr.includes(pf.getObservationTimeAsCalendarDate()))
+        System.out.printf("  date out of Range= %s on %s %n", pf.getObservationTimeAsCalendarDate(), pfc.getName());
+      count++;
+    }
+    long took = System.currentTimeMillis() - start;
+    if (show)
+      System.out.println(" testPointFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+
+    // subset with a bounding box, test result is in the bounding box
+    LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
+    PointFeatureCollection subset = pfc.subset(bb2, null);
+    if (show) System.out.println(" subset bb= " + bb2.toString2());
+    assert subset != null;
+
+    start = System.currentTimeMillis();
+    int counts = 0;
+    for (PointFeature pf : subset) {
+      LatLonPoint llpt = pf.getLocation().getLatLon();
+      if (!bb2.contains(llpt)) {
+        System.out.printf("  point not in BB = %s on %s %n", llpt, pfc.getName());
+        bb2.contains(llpt);
+      }
+
+      checkPointFeature(pf, pfc.getTimeUnit());
+      counts++;
+    }
+    took = System.currentTimeMillis() - start;
+    if (show)
+      System.out.println(" testPointFeatureCollection subset count= " + counts + " full iter took= " + took + " msec");
+
+    return count;
   }
 
+  ////////////////////////////////////////////////////////////
 
   /////////////////////////////////////////////////////////
 
@@ -622,9 +658,9 @@ public class TestPointDatasets {
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
 
-    List<FeatureCollection> collectionList = fdpoint.getPointFeatureCollectionList();
+    List<DsgFeatureCollection> collectionList = fdpoint.getPointFeatureCollectionList();
 
-    FeatureCollection fc = collectionList.get(0);
+    DsgFeatureCollection fc = collectionList.get(0);
 
     if (fc instanceof PointFeatureCollection) {
       PointFeatureCollection pfc = (PointFeatureCollection) fc;

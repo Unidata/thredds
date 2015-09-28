@@ -35,8 +35,8 @@ package ucar.nc2.ft;
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -53,11 +53,6 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
   int size();
 
   /**
-   * @deprecated use subset(CalendarDateRange dateRange)
-   */
-  StationTimeSeriesFeature subset(DateRange dateRange) throws IOException;
-
-  /**
    * Subset this collection by calendar dateRange
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection, may be null if empty
@@ -66,9 +61,10 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
   StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException;
 
   /**
-   * The actual data of just this feature.
-   * @return the actual data of this feature.
+   * The actual data of just this StationTimeSeries feature.
+   * @return the actual data associated with this featire
    * @throws java.io.IOException on i/o error
    */
+  @Nonnull
   StructureData getFeatureData() throws IOException;
 }

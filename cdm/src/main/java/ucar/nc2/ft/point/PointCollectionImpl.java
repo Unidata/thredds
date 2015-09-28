@@ -32,20 +32,17 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.Variable;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Abstract superclass for PointFeatureCollection
@@ -54,93 +51,24 @@ import java.util.List;
  * @author caron
  * @since Mar 1, 2008
  */
-public abstract class PointCollectionImpl implements PointFeatureCollection {
-  protected String name;
-  protected LatLonRect boundingBox;
-  protected CalendarDateRange dateRange;
-  protected int npts;
-  protected DateUnit timeUnit;
-  protected String altUnits;
-  protected List<Variable> extras;
+public abstract class PointCollectionImpl extends DsgCollectionImpl implements PointFeatureCollection {
 
-  protected PointCollectionImpl(String name, DateUnit timeUnit, String altUnits) {
-    this.name = name;
-    this.timeUnit = timeUnit;
-    this.altUnits = altUnits;
-    this.npts = -1;
+  protected PointCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
+    super(name, timeUnit, altUnits);
   }
 
-  public DateUnit getTimeUnit() {
-    return timeUnit;
-  }
-
-  public String getAltUnits() {
-    return altUnits;
-  }
-
-  public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
-
-  public void setDateRange(DateRange range) {
-    this.dateRange = CalendarDateRange.of(range);
-  }
-
-  public void setCalendarDateRange(CalendarDateRange range) {
-    this.dateRange = range;
-  }
-
-  public void setBoundingBox(ucar.unidata.geoloc.LatLonRect bb) {
-    this.boundingBox = bb;
-  }
-
-  public void calcBounds() throws java.io.IOException {
-    if ((dateRange != null) && (boundingBox != null) && (size() > 0))
-      return;
-
-    try (PointFeatureIterator iter = getPointFeatureIterator(-1)) {
-      iter.setCalculateBounds(this);
-      while (iter.hasNext())
-        iter.next();
-    }
-  }
-
-  public void setSize(int npts) {
-    this.npts = npts;
-  }
-
-
-  public String getName() {
-    return name;
-  }
-
-
-  public int size() {
-    return npts;
-  }
-
-  public int getNobs() {
-    return npts;
-  }
-
-  public DateRange getDateRange() {
-    return (dateRange == null) ? null : dateRange.toDateRange();
-  }
-
-  public CalendarDateRange getCalendarDateRange() {
-    return dateRange;
-  }
-
-  public ucar.unidata.geoloc.LatLonRect getBoundingBox() {
-    return boundingBox;
-  }
-
+  @Nonnull
+  @Override
   public FeatureType getCollectionFeatureType() {
     return FeatureType.POINT;
   }
 
+  @Override
   public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     return new PointCollectionSubset(this, boundingBox, dateRange);
   }
 
+  @Override
   public Iterator<PointFeature> iterator() {
     try {
       return getPointFeatureIterator(-1);
@@ -153,32 +81,25 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   // subclasses may do something better
   protected static class PointCollectionSubset extends PointCollectionImpl {
     protected PointCollectionImpl from;
+    protected LatLonRect filter_bb;
+    protected CalendarDateRange filter_date;
 
     public PointCollectionSubset(PointCollectionImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
       super(from.name, from.getTimeUnit(), from.getAltUnits());
       this.from = from;
-
-      if (filter_bb == null)
-        this.boundingBox = from.boundingBox;
-      else
-        this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect(filter_bb);
-
-      if (filter_date == null) {
-        this.dateRange = from.dateRange;
-      } else {
-        this.dateRange = (from.dateRange == null) ? filter_date : from.dateRange.intersect(filter_date);
-      }
+      this.filter_bb = filter_bb;
+      this.filter_date = filter_date;
     }
 
+    @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), this.boundingBox, this.dateRange);
+      PointFeatureIterator.Filter filter = new PointIteratorFiltered.BoundsFilter(filter_bb, filter_date);
+      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), filter);
     }
-
   }
 
-
   ///////////////////////////////////////////////////////////////////
-  // deprecated
+  // deprecated, use iterator()
 
   protected PointFeatureIterator localIterator;
 
@@ -199,9 +120,4 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   public void resetIteration() throws IOException {
     localIterator = getPointFeatureIterator(-1);
   }
-
-  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new PointCollectionSubset(this, boundingBox, CalendarDateRange.of(dateRange));
-  }
-
 }

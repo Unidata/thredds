@@ -37,8 +37,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.units.DateRange;
 
 import java.util.Iterator;
 
@@ -51,20 +49,19 @@ import java.util.Iterator;
  */
 public abstract class PointIteratorAbstract implements PointFeatureIterator, Iterator<PointFeature> {
   protected boolean calcBounds = false;
-  protected PointFeatureCollection collection;
+  protected CollectionInfo info;
 
   private LatLonRect bb = null;
   private double minTime = Double.MAX_VALUE;
   private double maxTime = -Double.MAX_VALUE;
-  //private DateUnit timeUnit;
-  private int count;
+  private int count = 0;
 
   protected PointIteratorAbstract() {
   }
 
-  public void setCalculateBounds( PointFeatureCollection collection) {
-    this.calcBounds = true;
-    this.collection = collection;
+  public void setCalculateBounds( CollectionInfo info) {
+    this.calcBounds = (info != null);
+    this.info = info;
   }
 
   protected void calcBounds(PointFeature pf) {
@@ -91,58 +88,12 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
       bb = new LatLonRect(new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);
     }
 
-    if (collection != null) {
-      if (collection.getBoundingBox() == null)
-        collection.setBoundingBox(bb);
-      if (collection.getCalendarDateRange() == null) {
-        CalendarDateRange dr = getCalendarDateRange();
-        if (dr != null)
-          collection.setCalendarDateRange(dr);
-      }
-      if (collection.size() <= 0) {
-        if (count < 0) count = 0;
-        collection.setSize(count);
-      }
-    }
-  }
+    info.bbox = bb;
+    info.minTime = minTime;
+    info.maxTime = maxTime;
 
-  public LatLonRect getBoundingBox() {
-    return bb;
-  }
-
-  public DateRange getDateRange() {
-    CalendarDateRange cdr = getCalendarDateRange();
-    return (cdr != null) ? cdr.toDateRange() : null;
-  }
-
-  public CalendarDateRange getCalendarDateRange() {
-    if (!calcBounds) return null;
-    if (collection.getTimeUnit() == null) return null;
-    return CalendarDateRange.of(collection.getTimeUnit().makeCalendarDate(minTime), collection.getTimeUnit().makeCalendarDate(maxTime));
-  }
-
-  public int getCount() { return count; }
-
-  static public class Filter implements PointFeatureIterator.Filter {
-
-    private final LatLonRect filter_bb;
-    private final CalendarDateRange filter_date;
-
-    public Filter(LatLonRect filter_bb, CalendarDateRange filter_date) {
-      this.filter_bb = filter_bb;
-      this.filter_date = filter_date;
-    }
-
-    public boolean filter(PointFeature pdata) {
-      if ((filter_date != null) && !filter_date.includes(pdata.getObservationTimeAsCalendarDate()))
-        return false;
-
-      if ((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()))
-        return false;
-
-      return true;
-    }
-
+    info.npts = count;
+    info.setComplete();
   }
 
 }

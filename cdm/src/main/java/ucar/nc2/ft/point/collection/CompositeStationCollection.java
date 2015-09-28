@@ -41,12 +41,10 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
@@ -65,7 +63,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   protected List<Attribute> globalAttributes;
 
   protected CompositeStationCollection(
-          String name, DateUnit timeUnit, String altUnits, TimedCollection dataCollection) throws IOException {
+          String name, CalendarDateUnit timeUnit, String altUnits, TimedCollection dataCollection) throws IOException {
     super(name, timeUnit, altUnits);
     this.dataCollection = dataCollection;
     TimedCollection.Dataset td = dataCollection.getPrototype();
@@ -86,7 +84,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
       StationHelper stationHelper = new StationHelper();
 
-      List<FeatureCollection> fcList = openDataset.getPointFeatureCollectionList();
+      List<DsgFeatureCollection> fcList = openDataset.getPointFeatureCollectionList();
       StationTimeSeriesCollectionImpl openCollection = (StationTimeSeriesCollectionImpl) fcList.get(0);
       List<Station> stns = openCollection.getStations();
 
@@ -226,27 +224,28 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     private TimedCollection collForFeature;
     private StructureData sdata;
 
-    CompositeStationFeature(Station s, DateUnit timeUnit, String altUnits, StructureData sdata, TimedCollection collForFeature) {
+    CompositeStationFeature(Station s, CalendarDateUnit timeUnit, String altUnits, StructureData sdata, TimedCollection collForFeature) {
       super(s, timeUnit, altUnits, -1);
-      setCalendarDateRange(collForFeature.getDateRange());
       this.sdata = sdata;
       this.collForFeature = collForFeature;
+      CalendarDateRange cdr = collForFeature.getDateRange();
+      if (cdr != null) {
+        getInfo();
+        info.setCalendarDateRange(cdr);
+      }
     }
 
     // an iterator over the observations for this station
 
     @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      CompositeStationFeatureIterator iter = new CompositeStationFeatureIterator();
-      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-        iter.setCalculateBounds(this);
-      return iter;
+      return new CompositeStationFeatureIterator();
     }
 
-    @Override
+    /*
     public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
       return subset(CalendarDateRange.of(dateRange));  // Handles dateRange == null.
-    }
+    } */
 
     @Override
     public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
@@ -320,7 +319,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         if (currentDataset == null)
           throw new IllegalStateException("Cant open FeatureDatasetPoint " + td.getLocation());
 
-        List<FeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
+        List<DsgFeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
         Station s = stnCollection.getStation(getName());
         if (s == null) {
@@ -361,8 +360,9 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       }
 
       public PointFeature next() {
-        npts++;
-        return pfIter.next();
+        PointFeature pf =  pfIter.next();
+        calcBounds(pf);
+        return pf;
       }
 
       public void close() {
@@ -382,8 +382,6 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
         finishCalcBounds();
         finished = true;
-        //if (CompositeStationFeature.this.npts < 0) // LOOK needed ?
-        //  CompositeStationFeature.this.npts = getCount();
       }
 
       public void setBufferSize(int bytes) {

@@ -41,7 +41,7 @@ import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationFeatureImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
@@ -57,14 +57,14 @@ import java.io.IOException;
  * A NestedTable is initialized with a TableConfig.
  * A NestedTable Table is created after the Tables have been joined, and the leaves identified.
  * It is a single chain of Table objects from child to parent. Highest parent is root. Lowest child is leaf
- * <p/>
+ * <p>
  * A nested table starts with a leaf table (no children), plus all of its parents.
  * There is a "join" for each child and parent.
- * <p/>
+ * <p>
  * Assumes that we have Tables that can be iterated over with a StructureDataIterator.
  * A parent-child join assumes that for each row of the parent, a StructureDataIterator exists that
  * iterates over the rows of the child table for that parent.
- * <p/>
+ * <p>
  * Nested Tables must be put in canonical form, based on feature type:
  * <ol>
  * <li> point : obsTable
@@ -111,7 +111,7 @@ public class NestedTable {
     if (featureType == null)
       featureType = FeatureDatasetFactoryManager.findFeatureType(ds);
 
-    /* look for joins with extra variables
+    /* find joins with extra variables
     t = leaf;
     while (t != null) {
       if (t.extraJoins != null) {
@@ -129,14 +129,14 @@ public class NestedTable {
     altVE = findCoordinateAxis(Table.CoordName.Elev, leaf, 0);
     nomTimeVE = findCoordinateAxis(Table.CoordName.TimeNominal, leaf, 0);
 
-    // look for station info
+    // search for station info
     stnVE = findCoordinateAxis(Table.CoordName.StnId, leaf, 0);
     stnDescVE = findCoordinateAxis(Table.CoordName.StnDesc, leaf, 0);
     wmoVE = findCoordinateAxis(Table.CoordName.WmoId, leaf, 0);
     stnAltVE = findCoordinateAxis(Table.CoordName.StnAlt, leaf, 0);
 
     missingVE = findCoordinateAxis(Table.CoordName.MissingVar, leaf, 0);
-    idVE = findCoordinateAxis(Table.CoordName.FeatureId, root, nlevels-1); // LOOK start at root ??
+    idVE = findCoordinateAxis(Table.CoordName.FeatureId, root, nlevels - 1); // LOOK start at root ??
 
     // LOOK: Major kludge
     if (featureType == null) {
@@ -145,7 +145,7 @@ public class NestedTable {
       if (nlevels == 3) featureType = FeatureType.STATION_PROFILE;
     }
 
-        // look for coordinates that are not part of the extras
+    // find coordinates that are not part of the extras
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if (!isCoordinate(axis) && !isExtra(axis)
               && axis.getDimensionsAll().size() <= 1)  // Only permit 0-D and 1-D axes as extra variables.
@@ -180,23 +180,22 @@ public class NestedTable {
     return extras;
   }
 
-  private void addExtraVariable( Variable v) {
+  private void addExtraVariable(Variable v) {
     if (v == null) return;
     if (extras == null) extras = new ArrayList<>();
     extras.add(v);
   }
 
   // Has v already been added to the set of extra variables?
-  private boolean isExtra( Variable v) {
-    if (v == null) return false;
-    return extras != null && extras.contains(v);
+  private boolean isExtra(Variable v) {
+    return v != null && extras != null && extras.contains(v);
   }
 
   // Is v a coordinate axis for this feature type?
-  private boolean isCoordinate( Variable v) {
+  private boolean isCoordinate(Variable v) {
     if (v == null) return false;
     String name = v.getShortName();
-    return  (latVE != null && latVE.axisName.equals(name)) ||
+    return (latVE != null && latVE.axisName.equals(name)) ||
             (lonVE != null && lonVE.axisName.equals(name)) ||
             (altVE != null && altVE.axisName.equals(name)) ||
             (stnAltVE != null && stnAltVE.axisName.equals(name)) ||
@@ -204,7 +203,7 @@ public class NestedTable {
             (nomTimeVE != null && nomTimeVE.axisName.equals(name));
   }
 
-  // look for a coord axis of the given type in the table and its parents
+  // find a coord axis of the given type in the table and its parents
   private CoordVarExtractor findCoordinateAxis(Table.CoordName coordName, Table t, int nestingLevel) {
     if (t == null) return null;
 
@@ -242,7 +241,7 @@ public class NestedTable {
       errlog.format("NestedTable: cant find variable '%s' for coordinate type %s %n", axisName, coordName);
     }
 
-    // look in the parent
+    // check the parent
     return findCoordinateAxis(coordName, t.parent, nestingLevel + 1);
   }
 
@@ -278,7 +277,7 @@ public class NestedTable {
       if (isString()) {
         String s = getCoordValueString(sdata);
         double test = (s.length() == 0) ? 0 : (double) s.charAt(0);
-        return coordVar.isMissing(test);       
+        return coordVar.isMissing(test);
       } else {
         double val = getCoordValue(sdata);
         return coordVar.isMissing(val);
@@ -451,9 +450,9 @@ public class NestedTable {
     return (timeVE != null) && (latVE != null) && (lonVE != null);
   }
 
-  public DateUnit getTimeUnit() {
+  public CalendarDateUnit getTimeUnit() {
     try {
-      return new DateUnit(timeVE.getUnitsString());
+      return CalendarDateUnit.of(null, timeVE.getUnitsString()); // LOOK dont know the calendar
     } catch (Exception e) {
       throw new IllegalArgumentException("Error on time string = " + timeVE.getUnitsString() + " == " + e.getMessage());
     }
@@ -530,7 +529,7 @@ public class NestedTable {
       String timeString = timeVE.getCoordValueString(tableData);
       CalendarDate date = CalendarDateFormatter.isoStringToCalendarDate(null, timeString);
       if (date == null) {
-        log.error("Cant parse date - not ISO formatted, = "+timeString);
+        log.error("Cant parse date - not ISO formatted, = " + timeString);
         return 0.0;
       }
       return date.getMillis();

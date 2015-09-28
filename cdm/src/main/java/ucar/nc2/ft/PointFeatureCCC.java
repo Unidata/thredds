@@ -29,26 +29,27 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.util.IOIterator;
+
 /**
- * A collection of FeatureTypes.
- * 
+ * Double nested PointFeatureCollection
+ *
  * @author caron
- * @since Mar 20, 2008
+ * @since 9/23/2015.
  */
-public interface FeatureCollection {
-  /**
-   * Get the name of this feature collection.
-   * @return the name of this feature collection
-   */
-  String getName();
+public interface PointFeatureCCC extends DsgFeatureCollection {
 
   /**
-   * All features in this collection have this feature type
-   * @return the feature type
+   * General way to handle iterations on all classes that implement this interface.
+   * Generally, use class specific foreach
+   * @param bufferSize hint on how much memory to use, -1 for default
+   * @return Iterator over PointFeatureCC which may throw an IOException
+   * @throws java.io.IOException
    */
-  ucar.nc2.constants.FeatureType getCollectionFeatureType();
+  IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws java.io.IOException;
 
 }

@@ -1,5 +1,6 @@
 package ucar.nc2.ft.point;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -107,7 +108,7 @@ public class TestCfDocDsgExamples {
     private String location;
     private FeatureType ftype;
     private int countExpected;
-    private boolean show = true;
+    private boolean show = false;
 
     public TestCfDocDsgExamples(String location, FeatureType ftype, int countExpected) {
         this.location = cfDocDsgExamplesDir + location;
@@ -117,9 +118,11 @@ public class TestCfDocDsgExamples {
 
     @Test
     public void checkPointDataset() throws IOException {
-        assert countExpected == TestPointDatasets.checkPointDataset(location, ftype, show);
+        Assert.assertEquals("npoints", countExpected, TestPointDatasets.checkPointFeatureDataset(location, ftype, show));
     }
 
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Convert all NCML files in cfDocDsgExamplesDir to NetCDF-3 files.
     public static void main(String[] args) throws IOException {
         File examplesDir = new File(cfDocDsgExamplesDir);

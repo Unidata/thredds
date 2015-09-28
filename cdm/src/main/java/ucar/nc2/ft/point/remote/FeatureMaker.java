@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point.remote;
 
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -43,5 +44,5 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * @see RemotePointFeatureIterator
  */
 public interface FeatureMaker {
-  PointFeature make(byte[] rawBytes) throws InvalidProtocolBufferException;
+  PointFeature make(DsgFeatureCollection dsg, byte[] rawBytes) throws InvalidProtocolBufferException;
 }

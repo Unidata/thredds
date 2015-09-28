@@ -31,7 +31,7 @@ public class Convert2Version2 {
     InputStream is = null;
     try {
       is = new FileInputStream(filename);
-      SAXBuilder builder = new SAXBuilder(false);
+      SAXBuilder builder = new SAXBuilder();
       doc = builder.build(is);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());

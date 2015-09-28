@@ -29,36 +29,38 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
-package ucar.nc2.ft;
+package ucar.nc2.util;
+
+import java.io.IOException;
+import java.util.NoSuchElementException;
 
 /**
- * An estimate of the cost of performing a data access operation.
- * Experimental.
- * 
+ * An Iterator that can throw an IOException
+ *
  * @author caron
+ * @since 9/23/2015.
  */
-class DataCost {
-  private int dataCount;
-  private int timeMsecs;
-
-  public DataCost(int dataCount, int timeMsecs) {
-    this.dataCount = dataCount;
-    this.timeMsecs = timeMsecs;
-  }
+public interface IOIterator<T> {
 
   /**
-   * Estimated number of data objects this operation will return
+   * Returns {@code true} if the iteration has more elements.
+   * (In other words, returns {@code true} if {@link #next} would
+   * return an element rather than throwing an exception.)
    *
-   * @return number of data objects or -1 if unknown
+   * @return {@code true} if the iteration has more elements
+   * @throws IOException on read error
    */
-  int estimateDataCount() { return dataCount; }
+  boolean hasNext() throws IOException;
 
   /**
-   * Estimated number of millisecs this operation will take.
-   * Zero means data is memory resident.
+   * Returns the next element in the iteration.
    *
-   * @return number of millisecs or -1 if unknown
+   * @return the next element in the iteration
+   * @throws IOException on read error
+   * @throws NoSuchElementException if the iteration has no more elements
    */
-  int estimateTimeCostInMilliSeconds() { return timeMsecs; }
+  T next() throws IOException;
+
 }

@@ -120,7 +120,7 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
     return z;
   }
 
-  // look for an axis which is  not the station altitude
+  // search for an axis which is  not the station altitude
   private static class NotStationAlt implements CoordSysEvaluator.Predicate {
 
     @Override

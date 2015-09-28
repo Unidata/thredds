@@ -32,60 +32,78 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.Variable;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+
 /**
- * An iterator over NestedPointFeatureCollection.
- * Use try-with-resource to make sure resources are released:
- * <pre>
-   try (NestedPointFeatureCollectionIterator iter = getIter()) {
-     while (iter.hasNext())
-       process(iter.next());
-   }
-   </pre>
+ * A collection of FeatureTypes.
+ * Will either be a PointFeatureCollection, NestedPointFeatureCollection, or DoubleNestedPointFeatureCollection
+ * Will either be a PointFeatureCollection, PointFeatureCC, or PointFeatureCCC
  *
  * @author caron
  * @since Mar 20, 2008
  */
-public interface NestedPointFeatureCollectionIterator extends AutoCloseable {
-  
+public interface DsgFeatureCollection {
   /**
-   * true if another Feature object is available
-   * @return true if another Feature object is available
-   * @throws java.io.IOException on i/o error
+   * Get the name of this feature collection.
+   * @return the name of this feature collection
    */
-  boolean hasNext() throws java.io.IOException;
+  @Nonnull
+  String getName();
 
   /**
-   * Returns the next NestedPointFeatureCollection object
-   * You must call hasNext() before calling next(), even if you know it will return true.
-   * @return the next NestedPointFeatureCollection object
-   * @throws java.io.IOException on i/o error
+   * All features in this collection have this feature type
+   * @return the feature type
    */
-  NestedPointFeatureCollection next() throws java.io.IOException;
+  @Nonnull
+  ucar.nc2.constants.FeatureType getCollectionFeatureType();
 
   /**
-   * Hint to use this much memory in buffering the iteration.
-   * No guarentee that it will be used by the implementation.
-   * @param bytes amount of memory in bytes
+   * The time unit.
+   * @return  time unit, may not be null
    */
-  void setBufferSize( int bytes);
+  @Nonnull
+  CalendarDateUnit getTimeUnit();
 
   /**
-   * Make sure that the iterator is complete, and recover resources.
-   * You must complete the iteration (until hasNext() returns false) or call close().
-   * may be called more than once.
+   * The altitude unit string if it exists.
+   * @return altitude unit string, may be null
    */
-  void close();
+  @Nullable
+  String getAltUnits();
 
   /**
-   * A filter on nestedPointFeatureCollection
+   * Other variables needed for completeness, eg joined coordinate variables
+   * @return list of extra variables, may be empty not null
    */
-  interface Filter {
-    /**
-     * Filter collections.
-     * @param nestedPointFeatureCollection check this collection
-     * @return true if the collection passes the filter
-     */
-    boolean filter(NestedPointFeatureCollection nestedPointFeatureCollection);
-  }
+  @Nonnull
+  List<Variable> getExtraVariables();
+
+  /**
+   * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.
+   *
+   * @return the calendar date range for the entire collection, or null if unknown
+   */
+  @Nullable
+  CalendarDateRange getCalendarDateRange();
+
+  /**
+   * The boundingBox for the FeatureCollection. May not be known until after iterating through the collection.
+   *
+   * @return the lat/lon boundingBox for the entire collection, or null if unknown.
+   */
+  @Nullable
+  ucar.unidata.geoloc.LatLonRect getBoundingBox();
+
+  /**
+   * The number of Features in the collection. May not be known until after iterating through the collection.
+   * @return number of elements in the collection, or -1 if not known.
+   */
+  int size();
 
 }

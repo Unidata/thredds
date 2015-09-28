@@ -116,8 +116,5 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     return sdata;
   }
 
-  public void setBufferSize(int bytes) {
-    // no op
-  }
 }
 

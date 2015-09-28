@@ -76,7 +76,7 @@ public class TestJustRead {
     return filesRead;
   }
 
-  @Test
+  // @Test
   public void testProblem() throws Exception {
     show = true;
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, -1, -1));

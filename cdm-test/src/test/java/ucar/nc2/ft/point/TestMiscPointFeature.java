@@ -42,8 +42,8 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
@@ -52,22 +52,15 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TestMiscPointFeature {
-
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testProblem() throws IOException {
-    String location =  TestDir.cdmLocalTestDataDir + "point/trajMultidimJoinTime.ncml";
-    assert 20 == TestPointDatasets.checkPointDataset(location, FeatureType.TRAJECTORY, true);
-  }
-
-  @Test
-  public void testProblem2() throws IOException {
-    String location =  TestDir.cdmLocalTestDataDir + "point/stationMultidimTimeJoin.ncml";
-    assert 15 == TestPointDatasets.checkPointDataset(location, FeatureType.STATION, true);
+    String location = TestPointDatasets.topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
+    Assert.assertEquals("npoints", 383, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY, true));
   }
 
   @Test
@@ -75,9 +68,9 @@ public class TestMiscPointFeature {
     String file = TestDir.cdmLocalTestDataDir + "point/stationData2Levels.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
-      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-      FeatureCollection fc = collectionList.get(0);
+      DsgFeatureCollection fc = collectionList.get(0);
       assert fc instanceof StationCollection;
       assert fc instanceof StationTimeSeriesFeatureCollection;
       StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
@@ -118,7 +111,6 @@ public class TestMiscPointFeature {
         assert m.getDataType() == DataType.STRING : "stnInfo not a string";
         System.out.printf("stnInfo=%s%n", sdata2.getScalarString(m));
       }
-
     }
   }
 
@@ -128,9 +120,9 @@ public class TestMiscPointFeature {
     String file = TestDir.cdmLocalTestDataDir + "point/stationSingle.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
-      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-      FeatureCollection fc = collectionList.get(0);
+      DsgFeatureCollection fc = collectionList.get(0);
       assert fc instanceof StationCollection;
       StationCollection sc = (StationCollection) fc;
       List<Station> stations = sc.getStations();
@@ -150,9 +142,9 @@ public class TestMiscPointFeature {
     String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
-      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-      FeatureCollection fc = collectionList.get(0);
+      DsgFeatureCollection fc = collectionList.get(0);
       assert fc instanceof StationCollection;
       StationCollection sc = (StationCollection) fc;
       List<Station> stations = sc.getStations();
@@ -172,9 +164,9 @@ public class TestMiscPointFeature {
     String file = TestDir.cdmLocalTestDataDir + "point/profileSingle.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.PROFILE, file, null, buf)) {
-      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-      FeatureCollection fc = collectionList.get(0);
+      DsgFeatureCollection fc = collectionList.get(0);
       assert fc instanceof ProfileFeatureCollection;
       ProfileFeatureCollection pc = (ProfileFeatureCollection) fc;
       int count = 0;
@@ -193,9 +185,9 @@ public class TestMiscPointFeature {
     String file = TestDir.cdmLocalTestDataDir + "point/stationMultidim.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
-      List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+      List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-      FeatureCollection fc = collectionList.get(0);
+      DsgFeatureCollection fc = collectionList.get(0);
       assert fc instanceof StationCollection;
       StationCollection sc = (StationCollection) fc;
       List<Station> stations = sc.getStations();
@@ -227,9 +219,9 @@ public class TestMiscPointFeature {
      String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
      Formatter buf = new Formatter();
      try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
-       List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
        assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
-       NestedPointFeatureCollection fc = (NestedPointFeatureCollection) collectionList.get(0);
+       DsgFeatureCollection fc = collectionList.get(0);
        assert fc.getAltUnits() != null : "no Alt Units";
        assert fc.getAltUnits().equalsIgnoreCase("m") : "Alt Units should be 'm'";
      }
@@ -245,7 +237,6 @@ public class TestMiscPointFeature {
     try (FeatureDataset fdataset = FeatureDatasetFactoryManager.open(null, location, null, errlog)) {
       assert (fdataset == null);
     }
-
   }
 
   @Test
@@ -259,7 +250,6 @@ public class TestMiscPointFeature {
     ncd.close();
   }
 
-
   // This is a regression test for TDS-513: https://bugtracking.unidata.ucar.edu/browse/TDS-513
   @Test
   public void testStationProfileMultidim1dTime() throws IOException {
@@ -272,9 +262,9 @@ public class TestMiscPointFeature {
     assert featDset != null && featDset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint featDsetPoint = (FeatureDatasetPoint) featDset;
 
-    List<FeatureCollection> featCols = featDsetPoint.getPointFeatureCollectionList();
+    List<DsgFeatureCollection> featCols = featDsetPoint.getPointFeatureCollectionList();
     assert !featCols.isEmpty();
-    FeatureCollection featCol = featCols.get(0);  // We only care about the first one.
+    DsgFeatureCollection featCol = featCols.get(0);  // We only care about the first one.
 
     assert featCol instanceof StationProfileFeatureCollection;
     StationProfileFeatureCollection stationProfileFeatCol = (StationProfileFeatureCollection) featCol;
@@ -282,26 +272,26 @@ public class TestMiscPointFeature {
     assert stationProfileFeatCol.hasNext();
     StationProfileFeature stationProfileFeat = stationProfileFeatCol.next();  // We only care about the first one.
 
-    List<Date> timesList = stationProfileFeat.getTimes();
-    Set<Date> timesSet = new TreeSet<Date>(stationProfileFeat.getTimes());  // Nukes dupes.
+    List<CalendarDate> timesList = stationProfileFeat.getTimes();
+    Set<CalendarDate> timesSet = new TreeSet<>(stationProfileFeat.getTimes());  // Nukes dupes.
     Assert.assertEquals(timesList.size(), timesSet.size());  // Assert that the times are unique.
   }
 
   @Test
-  public void testIterator() {  // kunicki
+  public void testIterator() throws IOException {  // kunicki
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     Formatter formatter = new Formatter(System.err);
     try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter)) {
       if (fd != null && fd instanceof FeatureDatasetPoint) {
         FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
-        FeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);
+        DsgFeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);
         if (fc != null && fc instanceof StationTimeSeriesFeatureCollection) {
           StationTimeSeriesFeatureCollection stsfc = (StationTimeSeriesFeatureCollection) fc;
           // subset criteria not important, just want to get data
           // into flattened representation
           PointFeatureCollection pfc = stsfc.flatten(
                   new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180)),
-                  new DateRange(df.parse("1900-01-01"), df.parse("2100-01-01")));
+                  CalendarDateRange.of(CalendarDate.parseISOformat(null, "1900-01-01"), CalendarDate.parseISOformat(null, "2100-01-01")));
 
           try (PointFeatureIterator pfi = pfc.getPointFeatureIterator(-1)) {
             while (pfi.hasNext()) {
@@ -316,9 +306,6 @@ public class TestMiscPointFeature {
           }
         }
       }
-    } catch (IOException | ParseException e) {
-      e.printStackTrace();
-      assert false;
     }
   }
 
@@ -335,39 +322,35 @@ public class TestMiscPointFeature {
       System.out.printf("can't open file=%s%n error=%s%n", file, buf);
       throw new Exception("can't open file " + file);
     }
-    List<FeatureCollection> collectionList = pods.getPointFeatureCollectionList();
+    List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
     if (collectionList.size() > 1) {
       throw new IllegalArgumentException("Can't handle point data with multiple collections");
     }
     boolean sample;
     for (int time = 0; time < 2; time++) {
       sample = time < 1;
-      FeatureCollection fc = collectionList.get(0);
+      DsgFeatureCollection fc = collectionList.get(0);
       PointFeatureCollection collection = null;
       LatLonRect llr = new LatLonRect(new LatLonPointImpl(33.4, -92.2), new LatLonPointImpl(47.9, -75.89));
       System.out.println("llr = " + llr);
       if (fc instanceof PointFeatureCollection) {
         collection = (PointFeatureCollection) fc;
-        collection = collection.subset(llr, (CalendarDateRange) null);
+        collection = collection.subset(llr, null);
 
-      } else if (fc instanceof NestedPointFeatureCollection) {
-        NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
+      } else if (fc instanceof StationTimeSeriesFeatureCollection) {
+        StationTimeSeriesFeatureCollection npfc = (StationTimeSeriesFeatureCollection) fc;
         npfc = npfc.subset(llr);
-        collection = npfc.flatten(llr, (CalendarDateRange) null);
+        collection = npfc.flatten(llr, null);
 
       } else {
         throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
       }
 
       List<PointFeature> pos = new ArrayList<>(100000);
-      List<Date> times = new ArrayList<>(100000);
-      PointFeatureIterator dataIterator = collection.getPointFeatureIterator(16384);
-
-      while (dataIterator.hasNext()) {
-        PointFeature po = dataIterator.next();
+      List<CalendarDate> times = new ArrayList<>(100000);
+      for (PointFeature po : collection) {
         pos.add(po);
-        times.add(po.getNominalTimeAsDate());
-        // System.out.println("po = " + po);
+        times.add(po.getNominalTimeAsCalendarDate());
         if (sample) {
           break;
         }

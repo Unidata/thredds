@@ -47,7 +47,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
-import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -170,7 +169,7 @@ public class TestGridAsPointP {
 
     // Open the result file as Station feature dataset
     Formatter errlog = new Formatter();
-    try (ucar.nc2.ft.FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, tempFile.getAbsolutePath(), null, errlog)) {
+    try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, tempFile.getAbsolutePath(), null, errlog)) {
       assertNotNull(errlog.toString(), fd);
       VariableSimpleIF v = fd.getDataVariable(varName);
       assertNotNull(varName, v);

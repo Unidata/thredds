@@ -160,24 +160,24 @@ public class TableAnalyzer {
   static public TableConfigurer getTableConfigurer(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException {
     String convUsed = null;
 
-    // look for the Conventions attribute
+    // search for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (convName == null)
       convName = ds.findAttValueIgnoreCase(null, "Convention", null);
 
-    // now look for TableConfigurer using that Convention
+    // now search for TableConfigurer using that Convention
     Configurator anal = null;
     if (convName != null) {
       convName = convName.trim();
 
-      // look for Convention parsing class
+      // search for Convention parsing class
       anal = matchConfigurator(convName);
       if (anal != null) {
         convUsed = convName;
         if (debug) System.out.println("  TableConfigurer found using convName "+convName);
       }
 
-      // now look for comma or semicolon or / delimited list
+      // now search for comma or semicolon or / delimited list
       if (anal == null) {
         List<String> names = new ArrayList<>();
 
@@ -211,7 +211,7 @@ public class TableAnalyzer {
       }
     }
 
-    // look for ones that dont use Convention attribute, in order added.
+    // search for ones that dont use Convention attribute, in order added.
     // call method isMine() using reflection.
     if (anal == null) {
       for (Configurator conv : conventionList) {
@@ -460,7 +460,7 @@ public class TableAnalyzer {
 
     if (tableSet.size() > 0) return;
 
-    // look at dimensions that lat, lon, time coordinates use
+    // search at dimensions that lat, lon, time coordinates use
     Set<Dimension> dimSet = new HashSet<>(10);
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if ((axis.getAxisType() == AxisType.Lat) || (axis.getAxisType() == AxisType.Lon)|| (axis.getAxisType() == AxisType.Time))
@@ -538,7 +538,7 @@ public class TableAnalyzer {
         //nestedTable.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
         //joins.add(nestedTable.join);
 
-        findNestedStructures((Structure) v, nestedTable); // look for nested structures
+        findNestedStructures((Structure) v, nestedTable); // search for nested structures
       }
     }
   }

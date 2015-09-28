@@ -33,27 +33,26 @@
 package ucar.nc2;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
 import org.jdom2.Element;
+import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
+import ucar.unidata.test.util.TestDir;
 
-public class TestSpecialChars extends TestCase {
+public class TestSpecialChars {
 
-  public TestSpecialChars( String name) {
-    super(name);
-  }
-
+  String filename = TestLocal.temporaryDataDir +"testSpecialChars.nc";
   String trouble = "here is a &, <, >, \', \", \n, \r, \t, to handle";
 
+  @Test
   public void testWriteAndRead() throws IOException, InvalidRangeException {
-    String filename = TestLocal.temporaryDataDir +"testSpecialChars.nc";
     NetcdfFileWriter ncfilew = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
     ncfilew.addGlobalAttribute("omy", trouble);
 
@@ -108,8 +107,11 @@ public class TestSpecialChars extends TestCase {
       assert val != null;
       assert val.equals(trouble);
 
+      File temp = TestDir.getTempFile();
+      System.out.printf("write to %s%n", temp.getAbsoluteFile());
       NcMLWriter ncmlWriter = new NcMLWriter();
       Element netcdfElem = ncmlWriter.makeNetcdfElement(ncfile, null);
+      ncmlWriter.writeToStream(netcdfElem, new FileOutputStream(temp));
       ncmlWriter.writeToStream(netcdfElem, System.out);
     }
   }

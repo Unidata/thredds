@@ -3,12 +3,11 @@ package ucar.nc2.ncml;
 import org.junit.Test;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * Use Ncml logicalReduce to fix datasets with extraneous length 1 dimensions
@@ -28,8 +27,8 @@ public class TestLogicalReduce {
 
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
-    for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
-      assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
+    for (DsgFeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
+      assert (fc instanceof PointFeatureCC) : fc.getClass().getName();
       assert fc.getCollectionFeatureType() == FeatureType.STATION;
     }
   }
@@ -44,8 +43,8 @@ public class TestLogicalReduce {
 
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
-    for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
-      assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
+    for (DsgFeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
+      assert (fc instanceof PointFeatureCCC) : fc.getClass().getName();
       assert fc.getCollectionFeatureType() == FeatureType.STATION_PROFILE;
       assert (fc instanceof StationProfileFeatureCollection);
 
@@ -60,7 +59,7 @@ public class TestLogicalReduce {
     while (stationProfileFeatureCollection.hasNext()) {
       ucar.nc2.ft.StationProfileFeature spf = stationProfileFeatureCollection.next();
 
-      Date last = null;
+      CalendarDate last = null;
       spf.resetIteration();
       while (spf.hasNext()) {
         ucar.nc2.ft.ProfileFeature pf = spf.next();

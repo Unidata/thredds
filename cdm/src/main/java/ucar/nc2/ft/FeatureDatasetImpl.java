@@ -39,7 +39,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
+// import ucar.nc2.units.DateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -49,7 +49,7 @@ import java.util.*;
 /**
  * Abstract superclass for implementations of FeatureDataset.
  * Subclass must implement getFeatureClass(), and add specific functionality.
- * Possible set dataVariables
+ * Also set dataVariables
  * @author caron
  * @since Sep 7, 2007
  */
@@ -186,9 +186,6 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     return (dateRange == null) ? null : dateRange.getEnd();
   }
 
-  public DateRange getDateRange() { return (dateRange == null) ? null : dateRange.toDateRange(); }
-  public Date getStartDate() { return (getDateRange() == null) ? null : getDateRange().getStart().getDate(); }
-  public Date getEndDate() { return (getDateRange() == null) ? null : getDateRange().getEnd().getDate(); }
   public LatLonRect getBoundingBox() { return boundingBox; }
 
   public List<VariableSimpleIF> getDataVariables() {

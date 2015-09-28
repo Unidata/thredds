@@ -98,8 +98,9 @@ public class AdminTriggerController {
       act = new DebugCommands.Action("recheck", "Read changed catalogs") {
         public void doAction(DebugCommands.Event e) {
           // look want background thread ?
-          catInit.reread(ConfigCatalogInitialization.ReadMode.check, false);
+          boolean ok = catInit.reread(ConfigCatalogInitialization.ReadMode.check, false);
           e.pw.printf("<p/>Reading changed catalogs%n");
+          if (ok) e.pw.printf("reinit ok%n");
         }
       };
       debugHandler.addAction(act);

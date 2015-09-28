@@ -33,9 +33,8 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.geoloc.EarthLocation;
 
-import java.util.Date;
+import javax.annotation.Nonnull;
 
 /**
  * A collection of observations at one time and location.
@@ -48,26 +47,21 @@ public interface PointFeature {
    * Location of this observation
    * @return the location of this observation
    */
-  EarthLocation getLocation();
+  @Nonnull
+  ucar.unidata.geoloc.EarthLocation getLocation();
 
  /**
    * Actual time of this observation.
-   * Convert to Date with getTimeUnit().makeDate()
+   * Convert to CalendarDate with getFeatureCollection().getTimeUnit().makeDate()
    * @return actual time of this observation.
    */
   double getObservationTime();
 
   /**
-   * Actual time of this observation, as a Date.
-   * @return actual time of this observation, as a Date.
-   * @deprecated use getObservationTimeAsCalendarDate()
+   * Actual time of this observation, as a CalendarDate.
+   * @return actual time of this observation, as a CalendarDate.
    */
-  Date getObservationTimeAsDate();
-
-  /**
-   * Actual time of this observation, as a Date.
-   * @return actual time of this observation, as a Date.
-   */
+  @Nonnull
   CalendarDate getObservationTimeAsCalendarDate();
 
   /**
@@ -79,36 +73,30 @@ public interface PointFeature {
   double getNominalTime();
 
   /**
-   * Nominal time of this observation, as a Date.
-   * @return Nominal time of this observation, as a Date.
-   * @deprecated use getNominalTimeAsCalendarDate()
+   * Nominal time of this observation, as a CalendarDate.
+   * Will be equal to the observation date if not exists independently.
+   * @return Nominal time of this observation, as a CalendarDate.
    */
-  Date getNominalTimeAsDate();
-
-  /**
-   * Nominal time of this observation, as a Date.
-   * @return Nominal time of this observation, as a Date.
-   */
+  @Nonnull
   CalendarDate getNominalTimeAsCalendarDate();
 
-
   /**
-   * The actual data of just this feature.
-   * @return the actual data of this feature.
-   * @throws java.io.IOException on i/o error
+   * The actual data of just this PointFeature.
+   * This is the data of the innermost nested table, aka leaf data.
    */
+  @Nonnull
   ucar.ma2.StructureData getFeatureData() throws java.io.IOException;
 
   /**
-   * All the data of this observation, joined with data from all parent Features, if any.
-   * @return the actual data of this observation.
-   * @throws java.io.IOException on i/o error
+   * All the data of this observation, joined with data from all parent features.
    */
+  @Nonnull
   ucar.ma2.StructureData getDataAll() throws java.io.IOException;
 
-  /**
-   * @deprecated use getFeatureData() or getDataAll()
-   */
-  ucar.ma2.StructureData getData() throws java.io.IOException;
+ /**
+  * Get the containing DsgFeatureCollection
+  */
+ @Nonnull
+ DsgFeatureCollection getFeatureCollection();
 
 }

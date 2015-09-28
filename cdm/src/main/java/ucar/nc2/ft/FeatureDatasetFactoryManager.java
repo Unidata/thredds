@@ -411,24 +411,6 @@ public class FeatureDatasetFactoryManager {
     return null;
   }
 
-  public static void main(String[] args) throws  IOException {
-    String server = "http://thredds.ucar.edu/";
-    String dataset = "/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2009-05-13T12:00:00Z";
-    String testFile = "Q:/cdmUnitTest/formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
-    Formatter errlog = new Formatter();
-    FeatureDataset fd = null;
 
-    //FeatureDataset fd = FeatureDatasetFactoryManager.open( FeatureType.ANY, testFile,  null, errlog );
-    //System.out.printf("ANY = %s%n", fd);
-
-    if (fd == null) {
-      fd = FeatureDatasetFactoryManager.open( FeatureType.SWATH, testFile,  null, errlog );
-      System.out.printf("Swath = %s%n", fd);
-    }
-    if (fd == null) {
-      fd = FeatureDatasetFactoryManager.open( FeatureType.GRID, testFile,  null, errlog );
-      System.out.printf("Grid = %s%n", fd);
-    }
-  }
 
 }

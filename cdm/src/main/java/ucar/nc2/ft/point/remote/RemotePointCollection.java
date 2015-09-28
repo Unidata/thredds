@@ -41,7 +41,7 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 import javax.annotation.Nonnull;
@@ -60,8 +60,10 @@ import javax.validation.constraints.NotNull;
 class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   private String uri;
   private QueryMaker queryMaker;
+  LatLonRect filter_bb;
+  CalendarDateRange filter_date;
 
-  RemotePointCollection(String uri, DateUnit timeUnit, String altUnits, QueryMaker queryMaker) {
+  RemotePointCollection(String uri, CalendarDateUnit timeUnit, String altUnits, QueryMaker queryMaker) {
     super(uri, timeUnit, altUnits);
     this.uri = uri;
     this.queryMaker = (queryMaker == null) ? this : queryMaker;
@@ -69,7 +71,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
 
   @Override
   public String makeQuery() {
-    return PointDatasetRemote.makeQuery(null, boundingBox, dateRange); // default query
+    return PointDatasetRemote.makeQuery(null, filter_bb, filter_date); // default query
   }
 
   @Override
@@ -86,9 +88,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
         byte[] b = new byte[len];
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-        PointFeatureIterator iter = new RemotePointFeatureIterator(in, new PointStream.ProtobufPointFeatureMaker(pfc));
-        iter.setCalculateBounds(this);
-        return iter;
+        return new RemotePointFeatureIterator(RemotePointCollection.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
 
       } else if (mtype == PointStream.MessageType.End) {
         return new PointIteratorEmpty(); // nothing in the iteration
@@ -124,21 +124,14 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
     return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
   }
 
-
   private class PointFeatureCollectionSubset extends RemotePointCollection {
+    LatLonRect filter_bb;
+    CalendarDateRange filter_date;
+
     PointFeatureCollectionSubset(RemotePointCollection from, LatLonRect filter_bb, CalendarDateRange filter_date) throws IOException {
       super(from.uri, RemotePointCollection.this.getTimeUnit(), RemotePointCollection.this.getAltUnits(), null);
-
-      if (filter_bb == null)
-        this.boundingBox = from.getBoundingBox();
-      else
-        this.boundingBox = (from.getBoundingBox() == null) ? filter_bb : from.getBoundingBox().intersect(filter_bb);
-
-      if (filter_date == null) {
-        this.dateRange = from.getCalendarDateRange();
-      } else {
-        this.dateRange = (from.getDateRange() == null) ? filter_date : from.getCalendarDateRange().intersect(filter_date);
-      }
+      this.filter_bb = filter_bb;
+      this.filter_date = filter_date;
     }
   }
 }

@@ -211,11 +211,11 @@ public class CalendarPeriod {
       log.warn(" CalendarDate.convert on Month or Year");
     }
 
-    return (double)from.millisecs() / millisecs();
+    return (double) from.millisecs() / millisecs();
   }
 
   /**
-   * Get the duration in seconds                                               -+
+   * Get the duration in milliseconds                                               -+
    * @return the duration in seconds
    * @deprecated dont use because these are fixed length and thus approximate.
    */

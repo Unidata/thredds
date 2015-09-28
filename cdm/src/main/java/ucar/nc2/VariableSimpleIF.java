@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import ucar.ma2.DataType;
+import ucar.nc2.ft.FeatureDataset;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ import java.util.List;
  * A lightweight abstractions of a Variable.
  *
  * @author caron
- * @see ucar.nc2.ft.FeatureDataset
+ * @see FeatureDataset
  */
 public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
 

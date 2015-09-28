@@ -38,6 +38,7 @@ import org.junit.experimental.categories.Category;
 import ucar.nc2.dt.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -47,7 +48,6 @@ import ucar.unidata.test.util.TestDir;
 import java.io.IOException;
 import java.io.File;
 import java.util.List;
-import java.util.Date;
 import java.util.Formatter;
 
 /** Test radial datasets in the JUnit framework. */
@@ -119,10 +119,10 @@ public class TestRadialDataset extends TestCase {
     rds.getDetailInfo(errlog);
     if (show) System.out.println(errlog);
 
-    Date d1 = rds.getStartDate();
-    Date d2 = rds.getEndDate();
+    CalendarDate d1 = rds.getCalendarDateStart();
+    CalendarDate d2 = rds.getCalendarDateEnd();
     if ((d1 != null) && (d2 != null))
-      assert d1.before(d2) || d1.equals( d2);
+      assert d1.isBefore(d2) || d1.equals( d2);
 
     ucar.unidata.geoloc.EarthLocation eloc = rds.getCommonOrigin();
     assert eloc != null;

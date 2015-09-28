@@ -42,12 +42,13 @@ import java.util.Iterator;
  * @author caron
  * @since Mar 19, 2008
  */
-public interface TrajectoryFeatureCollection extends NestedPointFeatureCollection, Iterable<TrajectoryFeature> {
+public interface TrajectoryFeatureCollection extends PointFeatureCC, Iterable<TrajectoryFeature> {
 
   /**
    * Use the internal iterator to check if there is another TrajectoryFeature in the iteration.
    * @return true is there is another TrajectoryFeature in the iteration.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   boolean hasNext() throws java.io.IOException;
 
@@ -56,14 +57,22 @@ public interface TrajectoryFeatureCollection extends NestedPointFeatureCollectio
    * You must call hasNext() before you call this.
    * @return the next TrajectoryFeature in the iteration
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   TrajectoryFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the TrajectoryFeatures in this Collection.
    * @throws java.io.IOException on read error
+   * @deprecated use foreach
    */
   void resetIteration() throws IOException;
- 
+
+  /**
+   * @deprecated use foreach
+   */
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+
+
 }
 

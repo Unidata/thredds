@@ -54,7 +54,7 @@ Station datasets only. A comma separated list of stations for this dataset. You 
 
 === *Single-point requests*
 
-Station datasets only. use the station closest to the given latitude, longitude. Example:
+Station datasets only. Find the station closest to the given latitude, longitude. Example:
 
  &latitude=40.2&longitude=61.8
 

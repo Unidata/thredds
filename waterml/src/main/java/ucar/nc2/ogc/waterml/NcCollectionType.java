@@ -3,7 +3,7 @@ package ucar.nc2.ogc.waterml;
 import net.opengis.waterml.x20.CollectionType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
@@ -57,7 +57,7 @@ public abstract class NcCollectionType {
                     datasetFileName, fdPoint.getFeatureType()));
         }
 
-        List<FeatureCollection> featCollList = fdPoint.getPointFeatureCollectionList();
+        List<DsgFeatureCollection> featCollList = fdPoint.getPointFeatureCollectionList();
 
         if (featCollList.size() != 1) {
             throw new IllegalArgumentException(String.format("Expected %s to contain 1 FeatureCollection, not %s.",

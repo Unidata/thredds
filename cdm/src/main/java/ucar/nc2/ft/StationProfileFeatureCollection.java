@@ -43,28 +43,7 @@ import java.io.IOException;
  * @author caron
  * @since Feb 29, 2008
  */
-public interface StationProfileFeatureCollection extends NestedPointFeatureCollection, StationCollection, Iterable<StationProfileFeature> {
-
-  /**
-   * Use the internal iterator to check if there is another StationProfileFeature in the iteration.
-   * @return true is there is another StationProfileFeature in the iteration.
-   * @throws java.io.IOException on read error
-   */
-  boolean hasNext() throws java.io.IOException;
-
-  /**
-   * Use the internal iterator to get the next StationProfileFeature in the iteration.
-   * You must call hasNext() before you call this.
-   * @return the next StationProfileFeature in the iteration
-   * @throws java.io.IOException on read error
-   */
-  StationProfileFeature next() throws java.io.IOException;
-
-  /**
-   * Reset the internal iterator for another iteration over the StationProfileFeature in this Collection.
-   * @throws java.io.IOException on read error
-   */
-  void resetIteration() throws IOException;
+public interface StationProfileFeatureCollection extends StationCollection, PointFeatureCCC, Iterable<StationProfileFeature> {
 
   /**
    * Get a subsetted StationProfileFeatureCollection
@@ -91,5 +70,37 @@ public interface StationProfileFeatureCollection extends NestedPointFeatureColle
    * @throws java.io.IOException on i/o error
    */
   List<StationFeature> getStationFeatures() throws IOException;
+
+  ///////////////////////////////
+
+  /**
+   * Use the internal iterator to check if there is another StationProfileFeature in the iteration.
+   * @return true is there is another StationProfileFeature in the iteration.
+   * @throws java.io.IOException on read error
+   * @deprecated use foreach
+   */
+  boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Use the internal iterator to get the next StationProfileFeature in the iteration.
+   * You must call hasNext() before you call this.
+   * @return the next StationProfileFeature in the iteration
+   * @throws java.io.IOException on read error
+   * @deprecated use foreach
+   */
+  StationProfileFeature next() throws java.io.IOException;
+
+  /**
+   * Reset the internal iterator for another iteration over the StationProfileFeature in this Collection.
+   * @throws java.io.IOException on read error
+   * @deprecated use foreach
+   */
+  void resetIteration() throws IOException;
+
+  /**
+   * @deprecated use foreach
+   */
+  PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+
 
 }

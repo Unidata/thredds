@@ -3,8 +3,8 @@ package ucar.nc2.ogc.gml;
 import net.opengis.gml.x32.TimePositionType;
 import org.joda.time.DateTime;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ogc.MarshallingUtil;
+import ucar.nc2.time.CalendarDate;
 
 import java.io.IOException;
 
@@ -23,24 +23,18 @@ public abstract class NcTimePositionType {
 
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition
     public static TimePositionType initBeginPosition(
-            TimePositionType beginPosition, StationTimeSeriesFeature stationFeat) throws IOException {
+            TimePositionType beginPosition, CalendarDate date) throws IOException {
         // TEXT
-        stationFeat.calcBounds();
-        if (stationFeat.getCalendarDateRange() != null) {
-            beginPosition.setStringValue(stationFeat.getCalendarDateRange().getStart().toString());
-        }
+            beginPosition.setStringValue(date.toString());
 
         return beginPosition;
     }
 
     // wml2:Collection/wml2:observationMember/om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:endPosition
     public static TimePositionType initEndPosition(
-            TimePositionType endPosition, StationTimeSeriesFeature stationFeat) throws IOException {
+            TimePositionType endPosition, CalendarDate date) throws IOException {
         // TEXT
-        stationFeat.calcBounds();
-        if (stationFeat.getCalendarDateRange() != null) {
-            endPosition.setStringValue(stationFeat.getCalendarDateRange().getEnd().toString());
-        }
+            endPosition.setStringValue(date.toString());
 
         return endPosition;
     }

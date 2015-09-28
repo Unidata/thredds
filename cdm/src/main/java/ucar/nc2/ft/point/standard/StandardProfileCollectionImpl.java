@@ -33,47 +33,163 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.OneNestedPointCollectionImpl;
+import ucar.nc2.ft.point.CollectionIteratorAdapter;
+import ucar.nc2.ft.point.PointFeatureCCImpl;
 import ucar.nc2.ft.point.ProfileFeatureImpl;
 import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
 import ucar.nc2.ft.*;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Iterator;
 
 /**
  * Nested Table implementation of ProfileCollection
+ *
  * @author caron
  * @since Jan 20, 2009
  */
-public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl implements ProfileFeatureCollection {
+public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements ProfileFeatureCollection {
   private NestedTable ft;
 
-  protected StandardProfileCollectionImpl(String name, DateUnit timeUnit, String altUnits ) {
+  protected StandardProfileCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.PROFILE);
   }
 
-  StandardProfileCollectionImpl(NestedTable ft, DateUnit timeUnit, String altUnits) {
+  StandardProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits, FeatureType.PROFILE);
     this.ft = ft;
     this.extras = ft.getExtras();
   }
 
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new ProfileIterator( ft.getRootFeatureDataIterator(bufferSize));
-  }
-
   public ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException {
-    return new StandardProfileCollectionSubset( this, boundingBox);
+    return new StandardProfileCollectionSubset(this, boundingBox);
   }
 
-  private class ProfileIterator implements PointFeatureCollectionIterator {
+  public ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+    return new StandardProfileCollectionSubset(this, boundingBox); // LOOK ignoring dateRange
+  }
+
+  private class StandardProfileFeature extends ProfileFeatureImpl {
+    Cursor cursor;
+    StructureData profileData;
+
+    StandardProfileFeature(Cursor cursor, double time, StructureData profileData) {
+      super(ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(), StandardProfileCollectionImpl.this.getAltUnits(),
+              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+
+      this.cursor = cursor;
+      this.profileData = profileData;
+
+      if (name.equalsIgnoreCase("unknown"))
+        name = timeUnit.makeCalendarDate(time).toString(); // use time as the name
+
+      if (Double.isNaN(time)) { // gotta read an obs to get the time
+        try {
+          PointFeatureIterator iter = getPointFeatureIterator(-1);
+          if (iter.hasNext()) {
+            PointFeature pf = iter.next();
+            this.time = pf.getObservationTime();
+            if (name == null) this.name = timeUnit.makeCalendarDate(this.time).toString();
+          } else {
+            if (name == null) this.name = "empty";
+            getInfo().npts = 0;
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
+    @Nonnull
+    @Override
+    public StructureData getFeatureData() {
+      return profileData;
+    }
+
+    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+      Cursor cursorIter = cursor.copy();
+      StructureDataIterator siter = ft.getLeafFeatureDataIterator(cursorIter, bufferSize);
+      return new StandardProfileFeatureIterator(ft, timeUnit, siter, cursorIter);
+    }
+
+    @Nonnull
+    @Override
+    public CalendarDate getTime() {
+      return timeUnit.makeCalendarDate(time);
+    }
+
+    private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
+
+      StandardProfileFeatureIterator(NestedTable ft, CalendarDateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
+        super(StandardProfileFeature.this, ft, timeUnit, structIter, cursor);
+      }
+
+      @Override
+      protected boolean isMissing() throws IOException {
+        // standard filter is to check for missing time data
+        if (super.isMissing()) return true;
+
+        // must also check for missing z values
+        return ft.isAltMissing(this.cursor);
+      }
+    }
+  }
+
+  private static class StandardProfileCollectionSubset extends StandardProfileCollectionImpl {
+    StandardProfileCollectionImpl from;
+    LatLonRect boundingBox;
+
+    StandardProfileCollectionSubset(StandardProfileCollectionImpl from, LatLonRect boundingBox) {
+      super(from.getName() + "-subset", from.getTimeUnit(), from.getAltUnits());
+      this.from = from;
+      this.boundingBox = boundingBox;
+    }
+
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(bufferSize), new Filter());
+    }
+
+    private class Filter implements PointFeatureCollectionIterator.Filter {
+
+      public boolean filter(PointFeatureCollection pointFeatureCollection) {
+        ProfileFeature profileFeature = (ProfileFeature) pointFeatureCollection;
+        return boundingBox.contains(profileFeature.getLatLon());
+      }
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////
+
+  @Override
+  public Iterator<ProfileFeature> iterator() {
+    try {
+      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator(-1);
+      return new CollectionIteratorAdapter<>(pfIterator);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+    return new ProfileIterator(ft.getRootFeatureDataIterator(bufferSize));
+  }
+
+  @Override
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    return new ProfileIterator(ft.getRootFeatureDataIterator(bufferSize));
+  }
+
+  private class ProfileIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
     StructureDataIterator structIter;
     StructureData nextProfileData;
 
@@ -100,110 +216,16 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
       return new StandardProfileFeature(cursor, ft.getObsTime(cursor), nextProfileData);
     }
 
-    public void setBufferSize(int bytes) { }
-
     public void close() {
       structIter.close();
     }
-
   }
 
-  private class StandardProfileFeature extends ProfileFeatureImpl {
-    Cursor cursor;
-    StructureData profileData;
+  ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    StandardProfileFeature( Cursor cursor, double time, StructureData profileData) {
-      super( ft.getFeatureName(cursor), StandardProfileCollectionImpl.this.getTimeUnit(), StandardProfileCollectionImpl.this.getAltUnits(),
-              ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
 
-      this.cursor = cursor;
-      this.profileData = profileData;
-
-      if (name.equalsIgnoreCase("unknown"))
-        name = timeUnit.makeStandardDateString(time); // use time as the name
-
-      if (Double.isNaN(time)) { // gotta read an obs to get the time
-        try {
-          PointFeatureIterator iter = getPointFeatureIterator(-1);
-          if (iter.hasNext()) {
-            PointFeature pf = iter.next();
-            this.time = pf.getObservationTime();
-            if (name == null) this.name = timeUnit.makeStandardDateString(this.time);
-          } else {
-            if (name == null) this.name = "empty";
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-
-    @Override
-    public StructureData getFeatureData() {
-      return profileData;
-    }
-
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      Cursor cursorIter = cursor.copy();
-      StructureDataIterator siter = ft.getLeafFeatureDataIterator( cursorIter, bufferSize);
-      StandardPointFeatureIterator iter = new StandardProfileFeatureIterator(ft, timeUnit, siter, cursorIter);
-      if ((boundingBox == null) || (dateRange == null) || (npts < 0))
-        iter.setCalculateBounds(this);
-      return iter;
-    }
-
-    @Override
-    public Date getTime() {
-      return timeUnit.makeDate(time);
-    }
-
-    class StandardProfileFeatureIterator extends StandardPointFeatureIterator {
-
-      StandardProfileFeatureIterator(NestedTable ft, DateUnit timeUnit, StructureDataIterator structIter, Cursor cursor) throws IOException {
-        super(ft, timeUnit, structIter, cursor);
-      }
-
-      @Override
-      protected boolean isMissing() throws IOException {
-        // standard filter is to check for missing time data
-        if (super.isMissing()) return true;
-
-        // must also check for missing z values
-        return ft.isAltMissing(this.cursor);
-
-      }
-    }
-  }
-
-  private static class StandardProfileCollectionSubset extends StandardProfileCollectionImpl {
-    StandardProfileCollectionImpl from;
-     LatLonRect boundingBox;
-
-    StandardProfileCollectionSubset(StandardProfileCollectionImpl from, LatLonRect boundingBox) {
-      super(from.getName()+"-subset", from.getTimeUnit(), from.getAltUnits());
-      this.from = from;
-      this.boundingBox = boundingBox;
-    }
-
-    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new Filter());
-    }
-
-    private class Filter implements PointFeatureCollectionIterator.Filter {
-
-      public boolean filter(PointFeatureCollection pointFeatureCollection) {
-        ProfileFeature profileFeature = (ProfileFeature) pointFeatureCollection;
-        return boundingBox.contains(profileFeature.getLatLon());
-      }
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////
-
-  public Iterator<ProfileFeature> iterator() {
-    return new ProfileFeatureIterator();
-  }
-
+  /* adapt a PointFeatureCollectionIterator to an Iterator<ProfileFeature>
+  // LOOK could generify
   private class ProfileFeatureIterator implements Iterator<ProfileFeature> {
     PointFeatureCollectionIterator pfIterator;
 
@@ -232,7 +254,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
         throw new RuntimeException(e);
       }
     }
-  }
+  } */
 
 
   /////////////////////////////////////////////////////////////////////////////////////

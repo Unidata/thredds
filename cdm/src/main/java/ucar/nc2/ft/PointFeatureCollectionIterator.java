@@ -33,6 +33,8 @@
 
 package ucar.nc2.ft;
 
+import ucar.nc2.util.IOIterator;
+
 /**
  * An iterator over PointFeatureCollections.
  * Use try-with-resource to make sure resources are released:
@@ -45,7 +47,7 @@ package ucar.nc2.ft;
  *
  * @author caron
  */
-public interface PointFeatureCollectionIterator extends AutoCloseable {
+public interface PointFeatureCollectionIterator extends AutoCloseable, IOIterator<PointFeatureCollection> {
 
   /**
    * true if another PointFeatureCollection is available
@@ -67,7 +69,9 @@ public interface PointFeatureCollectionIterator extends AutoCloseable {
    * You must complete the iteration (until hasNext() returns false) or call close().
    * may be called more than once.
    */
-  void close();
+  default void close()  {
+    // doan do nuthin
+  }
 
   /**
    * @deprecated use try-with-resource
@@ -81,7 +85,9 @@ public interface PointFeatureCollectionIterator extends AutoCloseable {
    * No guarantee that it will be used by the implementation.
    * @param bytes amount of memory in bytes
    */
-  void setBufferSize( int bytes);
+  default void setBufferSize(int bytes)  {
+    // doan do nuthin
+  }
 
   /**
    * A filter on PointFeatureCollection.

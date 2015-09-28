@@ -1,25 +1,27 @@
-Point Feature Datasets
-----------------------
+= Point Feature Datasets
+:linkcss:
+:stylesheet: ../../cdm.css
 
-Point Feature Datasets (also known as Discrete Sampling Geometry (DSG) datasets) are collections of Point Features. Point Feature Datasets contain one
-or more FeatureCollections:
+*_Point Feature Datasets_* (also known as _Discrete Sampling Geometry (DSG) datasets_) are collections of Point Features.
+Point Feature Datasets contain one or more DsgFeatureCollections:
 
----------------------------------------------------------------------------------------
-  public interface ucar.nc2.ft.FeatureDatasetPoint extends ucar.nc2.ft.FeatureDataset {
-    List<FeatureCollection> getPointFeatureCollectionList();
-  }
----------------------------------------------------------------------------------------
+[source,java]
+----
+public interface ucar.nc2.ft.FeatureDatasetPoint extends ucar.nc2.ft.FeatureDataset {
+  List<DsgFeatureCollection> getPointFeatureCollectionList();
+}
+----
 
-Point Feature Datasets will contain *PointFeatureCollections* or **NestedPointFeatureCollections**, described below. We take the approach that all
-point feature types are arrangements of collections of _PointFeatures_ (a set of measurements at the same point in space and time), distinguished by
-the geometry and topology of the collections. The *_Point Feature Types_* that we implement are:
+We take the approach that all point feature types are arrangements of collections of _PointFeatures_
+(a set of measurements at the same point in space and time), distinguished by the geometry and topology of the collections.
+The *_Point Feature Types_* that we implement are:
 
-1.  *Point feature* : one or more parameters measured at one point in time and space.
-2.  *Station time series feature* : a time-series of data points all at the same location, with varying time.
-3.  *Profile feature* : a set of data points along a vertical line.
-4.  *Station Profile feature* : a time-series of profile ****features at a named location.
-5.  *Trajectory feature* : a set of data points along a 1D curve in time and space.
-6.  *Section feature* : a collection of profile**** features which originate along a trajectory.
+.  *Point feature* : one or more parameters measured at one point in time and space.
+.  *Station time series feature* : a time-series of data points all at the same location, with varying time.
+.  *Profile feature* : a set of data points along a vertical line.
+.  *Station Profile feature* : a time-series of profile ****features at a named location.
+.  *Trajectory feature* : a set of data points along a 1D curve in time and space.
+.  *Section feature* : a collection of profile**** features which originate along a trajectory.
 
 Related documents:
 ^^^^^^^^^^^^^^^^^^
@@ -31,413 +33,378 @@ Related documents:
 
 '''''
 
-Point Features
-~~~~~~~~~~~~~~
+== Point Features
 
 image:PF1.png[image]
 
-A *PointFeature* is a collection of data (usually observational) taken at a single time and a single place:
+A *PointFeature* is a collection of data taken at a single time and a single place:
 
 [source,java]
-----------------------------------------------------------------
-  public interface ucar.nc2.ft.PointFeature {
-    ucar.unidata.geoloc.EarthLocation getLocation();
+----
+public interface ucar.nc2.ft.PointFeature {
+  ucar.nc2.ft.DsgFeatureCollection getFeatureCollection();
 
-    double getObservationTime();
-    Date getObservationTimeAsDate();
-    double getNominalTime();
-    Date getNominalTimeAsDate();
-    DateUnit getTimeUnit();
+  ucar.unidata.geoloc.EarthLocation getLocation();
 
-    ucar.ma2.StructureData getData() throws java.io.IOException;
-  }
-----------------------------------------------------------------
+  double getObservationTime();
+  CalendarDate getObservationTimeAsCalendarDate();
+  double getNominalTime();
+  CalendarDate getNominalTimeAsCalendarDate();
+  CalendarDateUnit getTimeUnit();
 
-The time can be retrieved as a Date or as a double. The actual time of the data sample is the **observation time**. It is common in some observational
-systems to bin data into standard intervals, in which case there is also a **nominal time**. When the nominal time is not given in the data, it is
-usually set to the observational time, which must always be present.
+  ucar.ma2.StructureData getDataAll() throws java.io.IOException;
+  ucar.ma2.StructureData getFeatureData() throws java.io.IOException; // LOOK
+}
+----
+
+The time can be retrieved as a CalendarDate or as a double in units of _getFeatureCollection().getTimeUnit()_.
+The actual time of the data sample is the *observation time*, and is always present.
+Some observational systems bin data into standard intervals, in which case there is also a **nominal time**.
+When the nominal time is not given in the data, it is usually set to the observational time.
+Conversion between time as a double and as a *CalendarDate* is done by _getFeatureCollection().getTimeUnits()_.
 
 The location is represented by:
 
 [source,java]
-------------------------------------------------------
-  public interface ucar.unidata.geoloc.EarthLocation {
-    double getLatitude();
-    double getLongitude();
-    double getAltitude();
-    ucar.unidata.geoloc.LatLonPoint getLatLon();
-  }
-------------------------------------------------------
+----
+public interface ucar.unidata.geoloc.EarthLocation {
+  double getLatitude();
+  double getLongitude();
+  double getAltitude();
+  ucar.unidata.geoloc.LatLonPoint getLatLon();
+}
+----
 
-The _latitude_ and _longitude_ are required, while the _altitude_ may be missing and if so, is set to __Double.NaN__. altitude units and datum ??
+The _latitude_ and _longitude_ are required, while the _altitude_ may be missing and if so, is set to __Double.NaN__.
+The altitude units (if they exist) can be found from _getFeatureCollection().getAltUnits()_.
 
 The actual data of the observation is contained in a **link:../StructureData.html#StructureData[ucar.ma2.StructureData]**, which has a collection of
 *StructureMembers* which describe the individual data members**,** along with many convenience routines for extracting the data.
 
-*PointFeatureIterator*
-^^^^^^^^^^^^^^^^^^^^^^
+getDataAll vs getFeatureData
 
-One way to access data in point feature collections is to iterate over the data with a *PointFeatureIterator.*
-
-[source,java]
----------------------------------------------------------
- public interface ucar.nc2.ft.PointFeatureIterator extends AutoCloseable, Iterator<PointFeature> {
-   boolean hasNext();
-   ucar.nc2.ft.PointFeature next();
-   void close();
- }
----------------------------------------------------------
-
-When the iteration is complete, any system resources used by it are released. If the iteration is not completed, you must explicitly call finish().
-*_Therefore best practice is to put your iteration in a try-with-resource block like_*:
-
-[source,java]
-------------------------------------------------------------------
-  try (PointFeatureIterator pfi = collection.getPointFeatureIterator()) {
-   while (pfi.hasNext()) {
-     ucar.nc2.ft.PointFeature pf = pfi.next();
-     ...
-   }
- }
-------------------------------------------------------------------
-
-Note that calling __hasNext__() is required before calling __next__(), and the order in which the PointFeatures are returned is arbitrary, if not
-otherwise specified.
-
-An alternative way to access data is to use the *_foreach_* construct, as shown in the examples below.
-
-*PointFeatureCollection*
-^^^^^^^^^^^^^^^^^^^^^^^^
+=== PointFeatureCollection
 
 A PointFeatureCollection is a collection of PointFeatures:
 
 [source,java]
----------------------------------------------------------------------------------------------
-  public interface ucar.nc2.ft.PointFeatureCollection extends FeatureCollection, Iterable<PointFeature> {
-    String getName();
-    int size();
-    ucar.nc2.units.DateRange getDateRange();
-    ucar.unidata.geoloc.LatLonRect getBoundingBox();
-    void calcBounds();
-    
-    PointFeatureIterator getPointFeatureIterator(int buffersize);
-    PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
-  }
----------------------------------------------------------------------------------------------
+----
+public interface ucar.nc2.ft.PointFeatureCollection extends FeatureCollection, Iterable<PointFeature> {
 
-All FeatureCollections have a _name_ that must be unique within its containing collection (if any). The _size_ of its collection is the number of
+  String getName();
+  int size();
+  ucar.nc2.time.CalendarDateRange getCalendarDateRange();
+  ucar.unidata.geoloc.LatLonRect getBoundingBox();
+
+  PointFeatureCollection subset(LatLonRect, CalendarDateRange);
+}
+----
+
+All FeatureCollections have a _name_ that must be unique within its containing collection. The _size_ of its collection is the number of
 PointFeatures that will be returned by the iterator. The size, boundingBox, and dateRange may not be known until after iterating through the
 collection, that is, actually reading the data. You can force the discovery of these by calling calcBounds(), but that may cost a complete iteration
 through the data.
 
-PointFeatureCollection implements Iterable<PointFeature>, so can be used in a *_foreach_* block::
+A PointFeatureCollection implements _Iterable<PointFeature>_, so can be used in a *_foreach_* block:
 
 [source,java]
-----------------------------------------------------
-   for (PointFeature pf : pointFeatureCollection) {
-     ...
-   }
-----------------------------------------------------
+----
+ for (PointFeature pf : pointFeatureCollection) {
+   ...
+ }
+----
 
 You may subset a PointFeatureCollection with a lat/lon bounding box, and/or a dateRange:
 
 [source,java]
------------------------------------------------------------------------------------------------------------
-  ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
-  PointFeatureCollection subset = pointFeatureCollection.subset(new LatLonRect("40,-105,2,2"), 
-        new DateRange( dformat.getISODate("1999-09-31T12:00:00"), null, new TimeDuration("3 days"), null); 
+----
+CalendarDateRange dateRange = CalendarDateRange.of(start, end);
+LatLonRect horizSubset = new LatLonRect(40,-105,10.0,20.0);
 
-  // get all the points in that subset
-  for (PointFeature pf : subset) {
+// get all the points in that subset
+PointFeatureCollection subset = original.subset(horizSubset, dateRange);
+for (PointFeature pf : subset) {
     ...
-  } 
------------------------------------------------------------------------------------------------------------
+}
+----
 
-'''''
-
-*Profile Feature Collection*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+== Profile Features
 
 image:ProfileFeature.png[image]
 
 A *ProfileFeature* is a set of PointFeatures along a vertical line.
 
 [source,java]
---------------------------------------------------------------------------------------------------------
-  public interface ProfileFeature extends PointFeatureCollection {
-    String getName();
-    ucar.unidata.geoloc.LatLonPoint getLatLon();
-    int size();
+----
+public interface ProfileFeature extends PointFeatureCollection, Iterable<PointFeature> {
+  String getName();
+  LatLonPoint getLatLon();
+  CalendarDate getTime();
+  int size();
 
-    ucar.nc2.ft.PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
-  }
---------------------------------------------------------------------------------------------------------
+  StructureData getFeatureData() throws IOException;
+}
+----
 
-Note that a *ProfileFeature* is a collection of PointFeatures, extending **PointFeatureCollection**. In this case, the iteration will return
+A *ProfileFeature* is a collection of PointFeatures, extending *PointFeatureCollection*. An iteration will return
 PointFeatures that all belong to the same profile, with the same lat/lon point and varying heights. The number of points in the collection may be
-available through the __size__() method. When that number can only be determined by reading through the data, a -1 is returned.
+available through the _size()_ method. When that number can only be determined by reading through the data, a -1 is returned.
 
 Note that the *subset* method, inherited from the _PointFeatureCollection_ interface, is not normally useful here, since the lat/lon values are
 identical. The time values are also often identical, although that is not required.
 
-ProfileFeatureCollection
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-A ProfileFeature is a __PointFeatureCollection__, and a collection of ProfileFeatures is a **ProfileFeatureCollection**, which extends
-NestedPointFeatureCollection:
+Since a profile is a *PointFeatureCollection*, it implements _Iterable<PointFeature>_, so you get its data using:
 
 [source,java]
------------------------------------------------------------------------------------------------------------------
-  public interface ProfileFeatureCollection extends FeatureCollection, NestedPointFeatureCollection {
-    String getName();
-    int size();
+----
+ for (PointFeature pf : profile) {
+   ...
+ }
+----
 
-    ucar.nc2.ft.ProfileFeatureCollection subset(ucar.unidata.geoloc.LatLonRect);
-    ucar.nc2.ft.PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
-  }
------------------------------------------------------------------------------------------------------------------
+=== ProfileFeatureCollection
 
-To read all the data, iterate through each *ProfileFeature* in the collection, then through each *PointFeature* of the ProfileFeature:
+A collection of *ProfileFeatures* is a *ProfileFeatureCollection*:
 
 [source,java]
--------------------------------------------------------------------------
-  for (ucar.nc2.ft.ProfileFeature profile : profileFeatureCollection) {
-    for ( ucar.nc2.ft.PointFeature pointFeature : profile) {
-      ...
-    }
-  }
--------------------------------------------------------------------------
+----
+public interface ProfileFeatureCollection extends PointFeatureCC, Iterable<ProfileFeature> {
 
-You may *subset* a ProfileFeatureCollection with a lat/lon bounding box, getting back another **ProfileFeatureCollection**:
+  String getName();
+  int size();
+
+  ProfileFeatureCollection subset(LatLonRect);
+  PointFeatureCollection flatten(LatLonRect, CalendarDateRange);
+}
+----
+
+To read all the data, iterate through each *ProfileFeature* in the collection, then through each *PointFeature* of the *ProfileFeature*:
 
 [source,java]
------------------------------------------------------------------------------------------------------
-  ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
-  ProfileFeatureCollection subset = profileFeatureCollection.subset(new LatLonRect("-60,120,12,20"));
-
-  // get all the profiles in the specified bounding box
-  for (ucar.nc2.ft.ProfileFeature profile : subset) {
-    for ( ucar.nc2.ft.PointFeature pointFeature : profile) {
-      ...
-    }
+----
+for (ProfileFeature profile : profileFeatureCollection) {
+  for (PointFeature pointFeature : profile) {
+    ...
   }
------------------------------------------------------------------------------------------------------
+}
+----
+
+You may *subset* a ProfileFeatureCollection with a lat/lon bounding box, getting back another *ProfileFeatureCollection*:
+
+[source,java]
+----
+LatLonRect wantBB = new LatLonRect("-60,120,12,20");
+ProfileFeatureCollection subset = profileFeatureCollection.subset(wantBB);
+
+// get all the profiles in the specified bounding box
+for (ProfileFeature profile : subset) {
+  for (PointFeature pointFeature : profile) {
+    ...
+  }
+}
+----
 
 You may *flatten* a ProfileFeatureCollection with a lat/lon bounding box, and/or a dateRange, which throws away all the connectedness information of
 the profile, and treats the data as a collection of points. In this case, you get back a **PointFeatureCollection**:
 
 [source,java]
--------------------------------------------------------------------------------------------------------------
-  ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
-  PointFeatureCollection subset = profileFeatureCollection.flatten(new LatLonRect("-60,120,12,20"), 
-        new DateRange( dformat.getISODate("1999-09-30T00:00:00"), dformat.getISODate("1999-09-31T00:00:00"));
+----
+LatLonRect wantBB = new LatLonRect("-60,120,12,20");
+CalendarDateRange dateRange = CalendarDateRange.of(start, end);
+PointFeatureCollection subset = profileFeatureCollection.flatten(wantBB, dateRange);
 
-  // get all the points in that subset
-  for (ucar.nc2.ft.ProfileFeature profile : subset) {
-    for ( ucar.nc2.ft.PointFeature pointFeature : profile) {
-      ...
-    }
-  }  
--------------------------------------------------------------------------------------------------------------
+// get all the points in that subset
+for ( ucar.nc2.ft.PointFeature pointFeature : subset) {
+  ...
+}
+----
 
-'''''
-
-Trajectory Feature Collection
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-image:TrajectoryFeature.png[image]
-
-TrajectoryFeature
-^^^^^^^^^^^^^^^^^
-
-TrajectoryFeatureCollection
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
- 
-
-'''''
-
-*Station Time Series Features*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-*StationTimeSeriesFeature*
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+== Station Time Series Features
 
 image:StationTimeSeries.png[image]
 
-A *StationTimeSeriesFeature* is a time series of PointFeatures at a single, named location called a **Station**:
+A *StationTimeSeriesFeature* is a time series of PointFeatures at a single, named location called a *Station*:
 
 [source,java]
-----------------------------------------------------------------------------------------------------------------------
-  public interface StationTimeSeriesFeature extends Station, PointFeatureCollection {
-    String getName();
-    String getDescription();
-    String getWmoId();
-    double getLatitude();
-    double getLongitude();
-    double getAltitude();
-    ucar.unidata.geoloc.LatLonPoint getLatLon();
+----
+public interface StationTimeSeriesFeature extends Station, PointFeatureCollection {
+  String getName();
+  String getDescription();
+  String getWmoId();
+  double getLatitude();
+  double getLongitude();
+  double getAltitude();
+  LatLonPoint getLatLon();
 
-    ucar.nc2.ft.StationTimeSeriesFeature subset(ucar.nc2.units.DateRange);
-    ucar.nc2.ft.PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange); // not useful
-  }
-----------------------------------------------------------------------------------------------------------------------
+  StationTimeSeriesFeature subset(CalendarDateRange);
+}
+----
 
-Note that a StationTimeSeriesFeature is a collection of PointFeatures, extending **PointFeatureCollection**. In this case, the iteration will return
+A *StationTimeSeriesFeature* is a collection of PointFeatures, and an iteration will return
 PointFeatures that all belong to the same station. These may or may not be time-ordered.
 
 Note that the *subset(LatLonRect, DateRange)* method, inherited from the _PointFeatureCollection_ interface, is not normally useful here, since the
 lat/lon values at all points are identical. Subsetting on just the DateRange is useful, however, and returns another *StationTimeSeriesFeature* whose
 PointFeatures lie within the specified range of dates.
 
-StationTimeSeriesFeatureCollection
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== StationTimeSeriesFeatureCollection
 
-A *StationTimeSeriesFeatureCollection* is a collection of StationTimeSeriesFeatures:
+A *StationTimeSeriesFeatureCollection* is a collection of stations with time series data at each:
 
 [source,java]
----------------------------------------------------------------------------------------------------------------------------
-  public interface ucar.nc2.ft.StationTimeSeriesFeatureCollection extends StationCollection, NestedPointFeatureCollection {
+----
+public interface StationTimeSeriesFeatureCollection extends StationCollection, PointFeatureCC, Iterable<StationTimeSeriesFeature> {
+
     String getName();
 
     List<Station> getStations();
-    List<Station> getStations(ucar.unidata.geoloc.LatLonRect subset);
+    List<Station> getStations(LatLonRect subset);
     ucar.nc2.ft.Station getStation(String stationName);
     ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
-    ucar.nc2.ft.PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
-    ucar.nc2.ft.StationTimeSeriesFeatureCollection subset(List<Station> stns);
-    ucar.nc2.ft.StationTimeSeriesFeature getStationFeature(ucar.nc2.ft.Station);
+    PointFeatureCollection flatten(LatLonRect, CalendarDateRange);
+    StationTimeSeriesFeatureCollection subset(List<Station> stns);
+    StationTimeSeriesFeature getStationFeature(ucar.nc2.ft.Station);
   }
----------------------------------------------------------------------------------------------------------------------------
+----
 
-A *StationTimeSeriesFeatureCollection* is a collection of Stations, extending **StationCollection**, from which you can get the list of available
-Stations, a bounding box, etc. You may subset the StationTimeSeriesFeatureCollection by passing in a list of Stations. You may also *flatten* the
-**NestedPointFeatureCollection**, throwing away the station information, and making it into a collection of PointFeatures. The flattening may include
-subsetting by lat/lon bounding box, and/or a dateRange.
+A *StationTimeSeriesFeatureCollection* is a collection of stations, extending *StationCollection*, from which you can get the list of available
+stations, a bounding box, etc. You may subset the collection by passing in a list of stations. You may also flatten the
+collection, throwing away the station information, and making it into a collection of PointFeatures. The flattening may include
+subsetting by lat/lon bounding box, and/or a dateRange. Flattening can sometimes improve performance.
 
-To access the data, you may get a StationTimeSeriesFeature for a specified Station, or you can iterate over all StationTimeSeriesFeatures in the
-collection.
+To access the data, you may get a *StationTimeSeriesFeature* for a specified Station, or you can iterate over all *StationTimeSeriesFeatures* in the
+collection:
 
 [source,java]
------------------------------------------------------------------------------------------------
-  for (ucar.nc2.ft.StationTimeSeriesFeature timeSeries : stationTimeSeriesFeatureCollection) {
-    for (ucar.nc2.ft.PointFeature pointFeature : timeSeries) {
-      ...
-    }
+----
+for (StationTimeSeriesFeature timeSeries : stationCollection) {
+  for (ucar.nc2.ft.PointFeature pointFeature : timeSeries) {
+    ...
   }
------------------------------------------------------------------------------------------------
+}
+----
 
 To get a time series at a particular station:
 
 [source,java]
--------------------------------------------------------------------------------------------
-  Station stn = stationTimeSeriesCollection.getStation("FXOW");
-  StationTimeSeriesFeature timeSeries = stationTimeSeriesCollection.getStationFeature(stn);
-  for (ucar.nc2.ft.PointFeature pointFeature : timeSeries) {
-    ...
-  }
--------------------------------------------------------------------------------------------
+----
+Station stn = stationTimeSeriesCollection.getStation("FXOW");
+StationTimeSeriesFeature timeSeries = stationTimeSeriesCollection.getStationFeature(stn);
+for (ucar.nc2.ft.PointFeature pointFeature : timeSeries) {
+  ...
+}
+----
 
-To get all PointFeatures in a specific area and time range:
+To get all *PointFeatures* in a specific area and time range, it can help performance sometimes to
+flatten the *StationTimeSeriesCollection*, so that the points can be returned in the order they are
+stored, instead of sorting by Station. One can still retrieve the associated station by casting the
+*PointFeature* to a *StationPointFeature*:
 
 [source,java]
-----------------------------------------------------------------------------------------------------------------
-  LatLonRect bb = new LatLonRect( new LatLonPointImpl(40.0, -105.0), new LatLonPointImpl(42.0, -100.0));
-  ucar.nc2.ft.PointFeatureCollection points = stationTimeSeriesCollection.flatten(bb, new DateRange(start, end))
-  for (ucar.nc2.ft.PointFeature pointFeature : points) {
-    ...
-  }
-----------------------------------------------------------------------------------------------------------------
+----
+LatLonRect bb = new LatLonRect( new LatLonPointImpl(40.0, -105.0),
+                                new LatLonPointImpl(42.0, -100.0));
+CalendarDateRange dateRange = CalendarDateRange.of(start, end);
+PointFeatureCollection points = stationTimeSeriesCollection.flatten(bb,dateRange);
+for (PointFeature pointFeature : points) {
+  StationPointFeature stationFeature = (StationPointFeature) pointFeature;
+  String stationName = stationFeature.getName();
+}
+----
 
-'''''
+== Trajectory Features
 
-Station Profile Features
-~~~~~~~~~~~~~~~~~~~~~~~~
+image:TrajectoryFeature.png[image]
+
+=== TrajectoryFeature
+
+=== TrajectoryFeatureCollection
+
+== Station Profile Features
 
 image:StationProfile.png[image]
-
-*StationProfileFeature*
-^^^^^^^^^^^^^^^^^^^^^^^
 
 A *StationProfileFeature* is a time series of ProfileFeatures at a single, named location.
 
 [source,java]
-----------------------------------------------------------------------------------------------------------------------------
-  public interface StationProfileFeature extends Station, NestedPointFeatureCollection {
+----
+public interface StationProfileFeature extends Station, NestedPointFeatureCollection {
 
-    String getName();
-    String getDescription();
-    String getWmoId();
+  String getName();
+  String getDescription();
+  String getWmoId();
 
-    double getLatitude();
-    double getLongitude();
-    double getAltitude();
-    ucar.unidata.geoloc.LatLonPoint getLatLon();
+  double getLatitude();
+  double getLongitude();
+  double getAltitude();
+  ucar.unidata.geoloc.LatLonPoint getLatLon();
 
-    ucar.nc2.ft.PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
-    ucar.nc2.ft.StationProfileFeature subset(ucar.nc2.units.DateRange);
-  }
-----------------------------------------------------------------------------------------------------------------------------
+  PointFeatureCollection flatten(LatLonRect, CalendarDateRange);
+  StationProfileFeature subset(CalendarDateRange);
+}
+----
 
-A *StationProfileFeature* is a collection of ProfileFeatures, extending **NestedPointFeatureCollection**.. To access the data, you can iterate over
-all ProfileFeatures in the collection, then through all PointFeatures of the ProfileFeature:
+A *StationProfileFeature* is a collection of ProfileFeatures, extending *NestedPointFeatureCollection*, all at the same location,
+thus its a time series of profiles at a named location.
+To access the data, you can iterate over all *ProfileFeatures* in the collection, then through all *PointFeatures* of the *ProfileFeature*:
 
 [source,java]
-----------------------------------------------------------------------
-    for (ucar.nc2.ft.ProfileFeature profile : stationProfileFeature) {
-      for (ucar.nc2.ft.PointFeature pointFeature : profile) {
-        ...
-      }
-    }
-----------------------------------------------------------------------
+----
+for (ucar.nc2.ft.ProfileFeature profile : stationProfileFeature) {
+  for (ucar.nc2.ft.PointFeature pointFeature : profile) {
+    ...
+  }
+}
+----
 
-Note that the *flatten(LatLonRect, DateRange)* method, inherited from the _NestedPointFeatureCollection_ interface, is not normally useful here, since
-the lat/lon values are identical. Subsetting on just the DateRange is useful, however, and returns another**StationProfileFeature** ** whose
+Note that the _flatten(LatLonRect, CalendarDateRange)_ method, inherited from the *NestedPointFeatureCollection* interface, is not normally useful here, since
+the lat/lon values are identical. Subsetting on just the CalendarDateRange is useful, however, and returns another *StationProfileFeature* whose
 ProfileFeatures lie within the specified range of dates.
 
-*StationProfileFeatureCollection*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== StationProfileFeatureCollection
 
-A *StationProfileFeatureCollection* is a collection of **StationProfileFeature**, ie. a collection of time series of ProfileFeatures.
+A *StationProfileFeatureCollection* is a collection of *StationProfileFeature*, ie. a collection of time series of ProfileFeatures
+at named locations.
 
 [source,java]
-------------------------------------------------------------------------------------------------------------------------
+----
   public interface StationProfileFeatureCollection extends StationCollection, NestedPointFeatureCollection {
+
     String getName();
 
     List<Station> getStations();
-    List<Station> getStations(ucar.unidata.geoloc.LatLonRect subset);
-    ucar.nc2.ft.Station getStation(String stationName);
-    ucar.unidata.geoloc.LatLonRect getBoundingBox();
+    List<Station> getStations(LatLonRect subset);
+    Station getStation(String stationName);
+    LatLonRect getBoundingBox();
 
-    ucar.nc2.ft.PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
-    ucar.nc2.ft.StationProfileFeatureCollection subset(List<Station> stns);
-    ucar.nc2.ft.StationProfileFeature getStationProfileFeature(Station stn);
+    PointFeatureCollection flatten(LatLonRect, CalendarDateRange);
+    StationProfileFeatureCollection subset(List<Station> stns);
+    StationProfileFeature getStationProfileFeature(Station stn);
   }
-------------------------------------------------------------------------------------------------------------------------
+----
 
-A StationProfileFeatureCollection extends **StationCollection**, from which you can get the list of available Stations, a bounding box, etc. Note how
+A *StationProfileFeatureCollection* extends *StationCollection*, from which you can get the list of available Stations, a bounding box, etc. Note how
 the *StationCollection* interface makes handling StationProfileFeatureCollection identical to StationTimeSeriesFeatureCollection. You may subset the
-collection ** by passing in a list of Stations, or get a StationProfileFeature from a specific Station.
+collection by passing in a list of Stations, or get a *StationProfileFeature* from a specific station.
 
-To run through all the data, iterate through each *StationProfileFeature* in the collection, then through each ProfileFeature in the
-StationProfileFeature, then through each PointFeature of the ProfileFeatures:
+To run through all the data, iterate through each *StationProfileFeature* in the collection, then through each *ProfileFeature* in the
+*StationProfileFeature*, then through each *PointFeature* of the *ProfileFeatures*:
 
 [source,java]
-------------------------------------------------------------------------------------------------
-  for (ucar.nc2.ft.StationProfileFeature stationProfile : stationProfileFeatureCollection) {
-    for (ucar.nc2.ft.ProfileFeature profile : stationProfile) {
-      for (ucar.nc2.ft.PointFeature pointFeature : profile) {
-        ...
-      }
+----
+for (StationProfileFeature stationProfile : stationProfileFeatureCollection) {
+  for (ProfileFeature profile : stationProfile) {
+    for (PointFeature pointFeature : profile) {
+      ...
     }
   }
-------------------------------------------------------------------------------------------------
+}
+----
 
 As usual, you can *flatten* the collection, throwing away the station and profile information, and making it into a collection of PointFeatures. The
 flattening may include subsetting by lat/lon bounding box, and/or a dateRange.
 
 '''''
 
-image:../../nc.gif[image] This document was last updated Aug 2015
+image:../../nc.gif[image] This document was last updated Sept 2015

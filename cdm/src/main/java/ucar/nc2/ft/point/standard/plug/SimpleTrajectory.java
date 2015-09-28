@@ -66,8 +66,6 @@ public class SimpleTrajectory extends TableConfigurerImpl {
     private static String elevVarName = "altitude";
 
     public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-
-
         List list = ds.getRootGroup().getDimensions();
 
         // should have only one dimension
@@ -85,7 +83,7 @@ public class SimpleTrajectory extends TableConfigurerImpl {
         d = (Dimension) list.get(0);
         if ( ! d.getShortName().equals( timeDimName)) {return false;}
         String units = var.findAttribute( "units").getStringValue();
-        Date date = DateUnit.getStandardDate("0 " + units);
+        Date date = DateUnit.getStandardDate("0 " + units);  // leave this as it doesnt throw an exception on failure
         if ( date == null)  {return false;}
 
         // Check for variable latitude(time) with units of "deg".

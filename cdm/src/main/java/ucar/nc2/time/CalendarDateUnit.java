@@ -33,6 +33,7 @@
 package ucar.nc2.time;
 
 import net.jcip.annotations.Immutable;
+
 import java.util.Date;
 import java.util.Formatter;
 import java.util.regex.Matcher;
@@ -73,6 +74,8 @@ There’s an alternative proposition, in which the new units of calendar_month a
  */
 @Immutable
 public class CalendarDateUnit {
+  public static final CalendarDateUnit unixDateUnit = CalendarDateUnit.of(null, CalendarPeriod.Field.Second, CalendarDate.parseISOformat(null, "1970-01-01T00:00:00"));
+
   private static final String byCalendarString = "calendar ";
   //                                                  1                     2             3    4             5
   public static final String udunitPatternString = "(\\w*)\\s*since\\s*"+CalendarDateFormatter.isodatePatternString;
@@ -119,6 +122,7 @@ public class CalendarDateUnit {
   ////////////////////////////////////////////////////////////////////////////////////////
   private final Calendar cal;
   // private final String unitString;
+  private final CalendarPeriod period;
   private final CalendarPeriod.Field periodField;
   private final CalendarDate baseDate;
   private final boolean isCalendarField;
@@ -141,6 +145,7 @@ public class CalendarDateUnit {
     }
 
     String unitString = m.group(1);
+    period = CalendarPeriod.of(unitString);
     periodField = CalendarPeriod.fromUnitString(unitString);
 
     int pos = dateUnitString.indexOf("since");
@@ -155,22 +160,32 @@ public class CalendarDateUnit {
   private CalendarDateUnit(Calendar calt, CalendarPeriod.Field periodField, CalendarDate baseDate) {
     this.cal = calt;
     this.periodField = periodField;
+    this.period = CalendarPeriod.of(1, periodField);
     this.baseDate = baseDate;
 
-    String periodName;
     if (periodField == CalendarPeriod.Field.Month || periodField == CalendarPeriod.Field.Year) {
-      periodName = "calendar "+ periodField.toString();
       isCalendarField = true;
     } else {
-      periodName = periodField.toString();
       isCalendarField = false;
     }
-    // unitString = periodName;
   }
 
+  // given a CalendarDate, find the values in this unit (secs, days, etc) from the RefDate
+  // inverse of makeCalendarDate
+  public double makeOffsetFromRefDate( CalendarDate date) {
+    if (isCalendarField)
+      throw new UnsupportedOperationException(); // LOOK TODO
+    else {
+      long msecs = date.getDifferenceInMsecs(baseDate);
+      return msecs / period.getValueInMillisecs();
+    }
+  }
+
+  // given a value in this unit (secs, days, etc), create the CalendarDate from the RefDate
+  // inverse of makeOffsetFromRefDate
   public CalendarDate makeCalendarDate(double value) {
     if (isCalendarField)
-      return baseDate.add(CalendarPeriod.of( (int) value, periodField));
+      return baseDate.add(CalendarPeriod.of( (int) value, periodField));  // LOOK int vs double
     else
       return baseDate.add( value, periodField);
   }
@@ -198,8 +213,12 @@ public class CalendarDateUnit {
     return baseDate;
   }
 
-  public CalendarPeriod getTimeUnit() {
-    return CalendarPeriod.of(1, periodField);
+  public CalendarPeriod getCalendarPeriod() {
+    return period;
+  }
+
+  public CalendarPeriod.Field getCalendarField() {
+    return periodField;
   }
 
   public Calendar getCalendar() {

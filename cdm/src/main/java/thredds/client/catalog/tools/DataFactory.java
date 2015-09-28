@@ -46,6 +46,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.stream.CdmRemote;
@@ -89,7 +90,7 @@ public class DataFactory {
     public Formatter errLog = new Formatter();
 
     public FeatureType featureType;
-    public ucar.nc2.ft.FeatureDataset featureDataset;
+    public FeatureDataset featureDataset;
     public String imageURL;
 
     public String location;

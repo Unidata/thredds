@@ -37,7 +37,7 @@ import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.view.dsg.DsgSubsetWriter;
 import thredds.server.ncss.view.dsg.FilteredPointFeatureIterator;
 import ucar.ma2.StructureData;
-import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -48,6 +48,7 @@ import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -69,7 +70,7 @@ public abstract class AbstractStationSubsetWriter extends DsgSubsetWriter {
           throws NcssException, IOException {
     super(fdPoint, ncssParams);
 
-    List<FeatureCollection> featColList = fdPoint.getPointFeatureCollectionList();
+    List<DsgFeatureCollection> featColList = fdPoint.getPointFeatureCollectionList();
     assert featColList.size() == 1 : "Is there ever a case when this is NOT 1?";
     assert featColList.get(0) instanceof StationTimeSeriesFeatureCollection :
             "This class only deals with StationTimeSeriesFeatureCollections.";
@@ -142,7 +143,11 @@ public abstract class AbstractStationSubsetWriter extends DsgSubsetWriter {
             StationTimeSeriesFeatureImpl stationFeat, CalendarDate wantedTime) throws IOException {
       super(stationFeat, stationFeat.getTimeUnit(), stationFeat.getAltUnits(), -1);
       this.stationFeat = stationFeat;
-      this.dateRange = stationFeat.getCalendarDateRange();
+      CalendarDateRange cdr = stationFeat.getCalendarDateRange();
+      if (cdr != null) {
+        getInfo();
+        info.setCalendarDateRange(cdr);
+      }
 
       long smallestDiff = Long.MAX_VALUE;
 

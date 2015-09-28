@@ -32,6 +32,9 @@
  */
 package ucar.nc2.ft.point.remote;
 
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.point.CollectionInfo;
+import ucar.nc2.ft.point.DsgCollectionImpl;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.ft.PointFeature;
@@ -47,17 +50,20 @@ import java.io.IOException;
  * @since May 14, 2009
  */
 public class RemotePointFeatureIterator extends PointIteratorAbstract {
-  private static final boolean debug = false;
 
+  private DsgFeatureCollection dsg;
   private InputStream in;
   private FeatureMaker featureMaker;
 
   private PointFeature pf;
   private boolean finished = false;
 
-  RemotePointFeatureIterator(InputStream in, FeatureMaker featureMaker) throws IOException {
+  RemotePointFeatureIterator(DsgCollectionImpl dsg, InputStream in, FeatureMaker featureMaker) throws IOException {
+    this.dsg = dsg;
     this.in = in;
     this.featureMaker = featureMaker;
+    CollectionInfo info = dsg.getInfo();
+    if (!info.isComplete()) setCalculateBounds(info);
   }
 
   public void close() {
@@ -80,13 +86,11 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype == PointStream.MessageType.PointFeature) {
         int len = NcStream.readVInt(in);
-        if (debug && (getCount() % 100 == 0))
-          System.out.println(" RemotePointFeatureIterator len= " + len + " count = " + getCount());
 
         byte[] b = new byte[len];
         NcStream.readFully(in, b);
 
-        pf = featureMaker.make(b);
+        pf = featureMaker.make(dsg, b);
         return true;
 
       } else if (mtype == PointStream.MessageType.End) {

@@ -8,6 +8,7 @@ dependencies {
     compile project(":grib")
     compile project(":netcdf4")
     compile project(":opendap")
+    compile project(":visadCdm")
     compile project(":waterml")
     compile project(":httpservices")
 

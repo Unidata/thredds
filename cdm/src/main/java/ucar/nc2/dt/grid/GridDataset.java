@@ -57,6 +57,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
@@ -86,7 +87,7 @@ import ucar.unidata.geoloc.ProjectionRect;
  * @author caron
  */
 
-public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.FeatureDataset {
+public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   private NetcdfDataset ncd;
   private ArrayList<GeoGrid> grids = new ArrayList<>();
   private Map<String, Gridset> gridsetHash = new HashMap<>();
