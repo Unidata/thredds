@@ -262,7 +262,7 @@ public class RadarDataInventory {
         int crawled = 0;
         try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(start)) {
             for (Path p : dirStream) {
-                if (p.toFile().isDirectory()) {
+                if (Files.isDirectory(p)) {
                     String item = p.getFileName().toString();
                     values.add(item);
                     // Try to grab station info from some file
@@ -443,7 +443,7 @@ public class RadarDataInventory {
                         for (Object next: queryItem) {
                             for (Path p : results) {
                                 Path nextPath = p.resolve(next.toString());
-                                if (nextPath.toFile().exists())
+                                if (Files.exists(nextPath))
                                     newResults.add(nextPath);
                             }
                         }
