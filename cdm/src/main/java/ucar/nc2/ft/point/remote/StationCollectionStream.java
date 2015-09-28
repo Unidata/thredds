@@ -128,9 +128,9 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
   // NestedPointFeatureCollection
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-    boolean restrictedList = false;
-    QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
-    PointFeatureCollection pfc = new PointCollectionStreamRemote(uri, getTimeUnit(), getAltUnits(), queryMaker);
+    //boolean restrictedList = false;
+    //QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
+    PointFeatureCollection pfc = new PointCollectionStreamRemote(uri, getTimeUnit(), getAltUnits(), null);
     return pfc.subset(boundingBox, dateRange);
   }
 

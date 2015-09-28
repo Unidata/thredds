@@ -79,12 +79,18 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
   }
 
   private PointFeatureCollection nextFilteredPointFeatureCollection() throws IOException {
-    if ( pfciter == null) return null;
-    if (!pfciter.hasNext()) return null;
+    //if ( pfciter == null) return null;
+    if (!pfciter.hasNext()) {
+      pfciter.close();
+      return null;
+    }
 
     PointFeatureCollection pdata = pfciter.next();
     while (!filter(pdata)) {
-      if (!pfciter.hasNext()) return null;
+      if (!pfciter.hasNext()) {
+        pfciter.close();
+        return null;
+      }
       pdata = pfciter.next();
     }
 
