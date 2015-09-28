@@ -39,6 +39,7 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -55,6 +56,7 @@ public class DsgCollectionHelper {
     this.dsg = dsg;
   }
 
+  @Nonnull
   public CollectionInfo calcBounds() throws IOException {
     if (dsg instanceof PointFeatureCollection)
       return calcBounds((PointFeatureCollection) dsg);

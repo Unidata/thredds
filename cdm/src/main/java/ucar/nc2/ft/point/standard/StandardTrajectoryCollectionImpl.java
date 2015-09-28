@@ -148,7 +148,10 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
 
     public boolean hasNext() throws IOException {
       while (true) {
-        if(!structIter.hasNext()) return false;
+        if(!structIter.hasNext()) {
+          structIter.close();
+          return false;
+        }
         nextTraj = structIter.next();
         if (!ft.isFeatureMissing(nextTraj)) break;
       }

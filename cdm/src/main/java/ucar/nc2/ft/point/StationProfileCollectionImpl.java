@@ -137,7 +137,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
     }
 
     public PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new NestedPointCollectionIteratorFiltered( from.getNestedPointFeatureCollectionIterator(bufferSize), new Filter());
+      return new PointFeatureCCIteratorFiltered( from.getNestedPointFeatureCollectionIterator(bufferSize), new Filter());
     }
 
     @Override

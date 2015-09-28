@@ -27,12 +27,14 @@ public abstract class NcTimePeriodType {
             throw new RuntimeException(e);
         }
         CalendarDateRange cdr = info.getCalendarDateRange(stationFeat.getTimeUnit());
+        if (cdr != null) {
 
-        // gml:beginPosition
-        NcTimePositionType.initBeginPosition(timePeriod.addNewBeginPosition(), cdr.getStart());
+            // gml:beginPosition
+            NcTimePositionType.initBeginPosition(timePeriod.addNewBeginPosition(), cdr.getStart());
 
-        // gml:endPosition
-        NcTimePositionType.initEndPosition(timePeriod.addNewEndPosition(), cdr.getEnd());
+            // gml:endPosition
+            NcTimePositionType.initEndPosition(timePeriod.addNewEndPosition(), cdr.getEnd());
+        }
 
         return timePeriod;
     }

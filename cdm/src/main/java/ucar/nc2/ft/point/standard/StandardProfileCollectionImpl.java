@@ -199,7 +199,10 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
     public boolean hasNext() throws IOException {
       while (true) {
-        if (!structIter.hasNext()) return false;
+        if (!structIter.hasNext()) {
+          structIter.close();
+          return false;
+        }
         nextProfileData = structIter.next();
         if (!ft.isFeatureMissing(nextProfileData)) break;
       }

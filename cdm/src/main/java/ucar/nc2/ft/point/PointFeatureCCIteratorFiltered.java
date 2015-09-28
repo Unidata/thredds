@@ -43,7 +43,7 @@ import java.io.IOException;
  * @author caron
  * @since Mar 20, 2008
  */
-public class NestedPointCollectionIteratorFiltered implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
+public class PointFeatureCCIteratorFiltered implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
 
   private PointFeatureCCIterator npfciter;
   private PointFeatureCCIterator.Filter filter;
@@ -51,7 +51,7 @@ public class NestedPointCollectionIteratorFiltered implements PointFeatureCCIter
   private PointFeatureCC pointFeatureCollection;
   private boolean done = false;
 
-  NestedPointCollectionIteratorFiltered(PointFeatureCCIterator npfciter, PointFeatureCCIterator.Filter filter) {
+  PointFeatureCCIteratorFiltered(PointFeatureCCIterator npfciter, PointFeatureCCIterator.Filter filter) {
     this.npfciter = npfciter;
     this.filter = filter;
   }
@@ -81,7 +81,10 @@ public class NestedPointCollectionIteratorFiltered implements PointFeatureCCIter
 
   private PointFeatureCC nextFilteredPointFeatureCollection() throws IOException {
     if ( npfciter == null) return null;
-    if (!npfciter.hasNext()) return null;
+    if (!npfciter.hasNext()) {
+      npfciter.close();
+      return null;
+    }
 
     PointFeatureCC pdata = npfciter.next();
     if (!filter(pdata)) {

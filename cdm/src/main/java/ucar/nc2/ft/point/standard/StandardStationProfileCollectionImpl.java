@@ -74,7 +74,6 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     while (iter.hasNext()) {
       stationHelper.addStation(iter.next());
     }
-
     return stationHelper;
   }
 
@@ -98,7 +97,11 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     public boolean hasNext() throws IOException {
       while (true) {
-        if (!sdataIter.hasNext()) return false;
+        if (!sdataIter.hasNext()) {
+          close();
+          return false;
+        }
+
         stationProfileData = sdataIter.next();
         Station s = ft.makeStation(stationProfileData);
         if (s == null) continue; // skip missing station ids
@@ -127,13 +130,13 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   //////////////////////////////////////////////////////////
   // a single StationProfileFeature in this collection
   private class StandardStationProfileFeature extends StationProfileFeatureImpl {
-    int recnum;
+    //int recnum;
     Cursor cursor;
 
     StandardStationProfileFeature(Station s, Cursor cursor, StructureData stationProfileData, int recnum) throws IOException {
       super(s, StandardStationProfileCollectionImpl.this.getTimeUnit(), StandardStationProfileCollectionImpl.this.getAltUnits(), -1);
       this.cursor = cursor;
-      this.recnum = recnum;
+      //this.recnum = recnum;
 
       cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = recnum; // the station record
@@ -189,6 +192,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       public boolean hasNext() throws IOException {
         while (true) {
           if (!sdataIter.hasNext()) {
+            close();
             timeSeriesNpts = count; // field in StationProfileFeatureImpl
             return false;
           }

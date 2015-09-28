@@ -60,8 +60,8 @@ import javax.validation.constraints.NotNull;
 class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   private String uri;
   private QueryMaker queryMaker;
-  LatLonRect filter_bb;
-  CalendarDateRange filter_date;
+  protected LatLonRect filter_bb;
+  protected CalendarDateRange filter_date;
 
   RemotePointCollection(String uri, CalendarDateUnit timeUnit, String altUnits, QueryMaker queryMaker) {
     super(uri, timeUnit, altUnits);
@@ -125,8 +125,8 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   }
 
   private class PointFeatureCollectionSubset extends RemotePointCollection {
-    LatLonRect filter_bb;
-    CalendarDateRange filter_date;
+    //LatLonRect filter_bb;
+    //CalendarDateRange filter_date;
 
     PointFeatureCollectionSubset(RemotePointCollection from, LatLonRect filter_bb, CalendarDateRange filter_date) throws IOException {
       super(from.uri, RemotePointCollection.this.getTimeUnit(), RemotePointCollection.this.getAltUnits(), null);

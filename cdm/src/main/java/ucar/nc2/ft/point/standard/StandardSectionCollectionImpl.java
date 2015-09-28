@@ -93,7 +93,10 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
     public boolean hasNext() throws IOException {
       while (true) {
-        if (!sdataIter.hasNext()) return false;
+        if (!sdataIter.hasNext()) {
+          close();
+          return false;
+        }
         sectionData = sdataIter.next();
         if (!ft.isFeatureMissing(sectionData)) break;
       }
@@ -155,7 +158,9 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     }
 
     public boolean hasNext() throws IOException {
-      return sdataIter.hasNext();
+      boolean more = sdataIter.hasNext();
+      if (!more) sdataIter.close();
+      return more;
     }
 
     public PointFeatureCollection next() throws IOException {
