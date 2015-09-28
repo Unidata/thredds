@@ -31,7 +31,8 @@ public class RadarDataInventory {
     private EnumMap<DirType, Set<String>> items;
     private Path collectionDir;
     private DirectoryStructure structure;
-    private String fileTimeRegex, fileTimeFmt, dataFormat;
+    private String fileTimeFmt, dataFormat;
+    private java.util.regex.Pattern fileTimeRegex;
     private boolean dirty;
     private CalendarDate lastUpdate;
     private int maxCrawlItems;
@@ -239,7 +240,7 @@ public class RadarDataInventory {
     }
 
     public void addFileTime(String regex, String fmt) {
-        fileTimeRegex = regex;
+        fileTimeRegex = java.util.regex.Pattern.compile(regex);
         fileTimeFmt = fmt;
     }
 
@@ -482,8 +483,7 @@ public class RadarDataInventory {
             for(Path p : filteredResults) {
                 try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
                     for (Path f: dirStream) {
-                        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(fileTimeRegex);
-                        java.util.regex.Matcher regexMatcher = pattern.matcher(f.toString());
+                        java.util.regex.Matcher regexMatcher = fileTimeRegex.matcher(f.toString());
                         if (!regexMatcher.find()) continue;
 
                         try {
