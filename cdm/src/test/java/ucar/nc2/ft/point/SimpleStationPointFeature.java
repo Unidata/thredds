@@ -1,7 +1,7 @@
 package ucar.nc2.ft.point;
 
 import ucar.ma2.StructureData;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 
 /**
  * @author cwardgar
@@ -10,8 +10,8 @@ import ucar.nc2.units.DateUnit;
 public class SimpleStationPointFeature extends SimplePointFeature implements StationPointFeature {
     private final StationFeature stationFeat;
 
-    public SimpleStationPointFeature(
-            StationFeature stationFeat, double obsTime, double nomTime, DateUnit timeUnit, StructureData featureData) {
+    public SimpleStationPointFeature(StationFeature stationFeat, double obsTime, double nomTime,
+            CalendarDateUnit timeUnit, StructureData featureData) {
         super(stationFeat, obsTime, nomTime, timeUnit, featureData);
         this.stationFeat = stationFeat;
     }

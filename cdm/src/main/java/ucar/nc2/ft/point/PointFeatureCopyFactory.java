@@ -34,14 +34,11 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
+import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataDeep;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.time.CalendarDateUnit;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * A factory for making deep copies of PointFeature, so all data is self contained.
@@ -57,7 +54,6 @@ public class PointFeatureCopyFactory {
   static private final int ARRAY_SIZE = 8;   // assume 64 bit pointers
 
   private final StructureMembers sm;
-  private final CalendarDateUnit du;
   private final int sizeInBytes;
 
   public PointFeatureCopyFactory(PointFeature proto) throws IOException {

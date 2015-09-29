@@ -52,6 +52,7 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;

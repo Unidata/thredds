@@ -17,7 +17,7 @@ import ucar.ma2.StructureDataScalar;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.NoFactoryFoundException;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.time.CalendarDateUnit;
 
 public class SortingStationPointFeatureCacheTest {
     @Test
@@ -31,8 +31,8 @@ public class SortingStationPointFeatureCacheTest {
         stationData.addMember("alt", null, "meters", DataType.DOUBLE, 5000);
 
         StationFeature stationFeat = new StationFeatureImpl("Foo", "Bar", "123", 30, 60, 5000, 4, stationData);
-        
-        DateUnit timeUnit = new DateUnit("days since 1970-01-01");
+
+        CalendarDateUnit timeUnit = CalendarDateUnit.of(null, "days since 1970-01-01");
 
         List<StationPointFeature> spfList = new ArrayList<>();
         spfList.add(makeStationPointFeature(stationFeat, timeUnit, 10, 10, 103));
@@ -59,10 +59,10 @@ public class SortingStationPointFeatureCacheTest {
     }
 
     private static StationPointFeature makeStationPointFeature(
-            StationFeature stationFeat, DateUnit timeUnit, double obsTime, double nomTime, double tasmax) {
+            StationFeature stationFeat, CalendarDateUnit timeUnit, double obsTime, double nomTime, double tasmax) {
         StructureDataScalar featureData = new StructureDataScalar("StationPointFeature");
-        featureData.addMember("obsTime", "Observation time", timeUnit.getUnitsString(), DataType.DOUBLE, obsTime);
-        featureData.addMember("nomTime", "Nominal time", timeUnit.getUnitsString(), DataType.DOUBLE, nomTime);
+        featureData.addMember("obsTime", "Observation time", timeUnit.getUdUnit(), DataType.DOUBLE, obsTime);
+        featureData.addMember("nomTime", "Nominal time", timeUnit.getUdUnit(), DataType.DOUBLE, nomTime);
         featureData.addMember("tasmax", "Max temperature", "Celsius", DataType.DOUBLE, tasmax);
 
         return new SimpleStationPointFeature(stationFeat, obsTime, nomTime, timeUnit, featureData);
@@ -105,10 +105,11 @@ public class SortingStationPointFeatureCacheTest {
                 FeatureDatasetPoint fdExpected = PointTestUtil.openPointDataset("cacheTestExpected1.ncml")) {
             cache.addAll(fdInput);
 
-            PointFeatureIterator pointIterExpected =
-                    new FlattenedDatasetPointCollection(fdExpected).getPointFeatureIterator(-1);
-            PointFeatureIterator pointIterActual = cache.getPointFeatureIterator();
-            Assert.assertTrue(PointTestUtil.equals(pointIterExpected, pointIterActual));
+//            PointFeatureIterator pointIterExpected =
+//                    new FlattenedDatasetPointCollection(fdExpected).getPointFeatureIterator(-1);
+//            PointFeatureIterator pointIterActual = cache.getPointFeatureIterator();
+//            Assert.assertTrue(PointTestUtil.equals(pointIterExpected, pointIterActual));
+            Assert.fail("Need to fix FlattenedDatastPointCollection");
         }
     }
 }

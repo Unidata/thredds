@@ -32,19 +32,27 @@
  */
 package ucar.nc2.ft.point.remote;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import javax.annotation.Nullable;
 import ucar.ma2.StructureData;
-import ucar.nc2.ft.point.*;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.point.PointIteratorEmpty;
+import ucar.nc2.ft.point.StationHelper;
+import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.unidata.geoloc.*;
-
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
 
 /**
  * Connect to remote Station Collection using cdmremote
@@ -61,7 +69,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
    *
    * @param uri cdmremote endpoint
    */
-  public RemoteStationCollection(String uri, CalendarDateUnit timeUnit, String altUnits) {
+  public StationCollectionStream(String uri, CalendarDateUnit timeUnit, String altUnits) {
     super(uri, timeUnit, altUnits);
     this.uri = uri;
   }
@@ -239,7 +247,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
 
-        riter = new RemotePointFeatureIterator(RemoteStationFeatureImpl.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        riter = new PointIteratorStream(StationFeature.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         return riter;
 
       } catch (Throwable t) {

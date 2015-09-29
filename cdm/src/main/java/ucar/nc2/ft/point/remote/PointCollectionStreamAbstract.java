@@ -1,5 +1,7 @@
 package ucar.nc2.ft.point.remote;
 
+import java.io.IOException;
+import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -7,11 +9,7 @@ import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorEmpty;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.units.DateUnit;
-import ucar.units.UnitException;
-
-import java.io.IOException;
-import java.io.InputStream;
+import ucar.nc2.time.CalendarDateUnit;
 
 /**
  * Abstract superclass for creating a {@link ucar.nc2.ft.PointFeatureCollection} from a point stream.
@@ -33,7 +31,7 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
      * @param name  the name of this feature collection. May be null.
      */
     public PointCollectionStreamAbstract(String name) {
-        super(name, DateUnit.getUnixDateUnit(), null);  // Default values. altUnits can be null; timeUnit must not be.
+        super(name, CalendarDateUnit.unixDateUnit, null);  // Default values. altUnits can be null; timeUnit must not be.
         this.needUnits = true;  // Client did not provide explicit values for timeUnit and altUnits.
     }
 
@@ -44,7 +42,7 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
      * @param timeUnit  the time unit. May not be null.
      * @param altUnits  the UDUNITS altitude unit string. May be null.
      */
-    public PointCollectionStreamAbstract(String name, DateUnit timeUnit, String altUnits) {
+    public PointCollectionStreamAbstract(String name, CalendarDateUnit timeUnit, String altUnits) {
         super(name, timeUnit, altUnits);
         this.needUnits = false;  // Client provided explicit values for timeUnit and altUnits.
     }
@@ -75,10 +73,10 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
                 if (needUnits) {
                     try {
                         this.altUnits = pfc.hasAltUnit() ? pfc.getAltUnit() : null;
-                        this.timeUnit = new DateUnit(pfc.getTimeUnit());
-                    } catch (UnitException e) {
+                        this.timeUnit = CalendarDateUnit.of(null, pfc.getTimeUnit());
+                    } catch (IllegalArgumentException e) {
                         String message = String.format("Invalid time unit found in stream (%s). Using default (%s).",
-                                pfc.getTimeUnit(), this.timeUnit.getUnitsString());
+                                pfc.getTimeUnit(), this.timeUnit.getUdUnit());
                         logger.error(message, e);
                         // Default value for timeUnit will remain.
                     }
@@ -86,8 +84,8 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
                     needUnits = false;
                 }
 
-                PointFeatureIterator iter = new PointIteratorStream(in, new PointStream.ProtobufPointFeatureMaker(pfc));
-                iter.setCalculateBounds(this);
+                PointFeatureIterator iter = new PointIteratorStream(
+                        PointCollectionStreamAbstract.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
 
                 leaveStreamOpen = true;  // It is now iter's responsiblity to close the stream.
                 return iter;

@@ -56,13 +56,14 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.DataIterator;
 import ucar.nc2.dt.PointObsDataset;
 import ucar.nc2.dt.PointObsDatatype;
-import ucar.unidata.geoloc.EarthLocation;
 import ucar.nc2.dt.TypedDatasetFactory;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
+import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * Write point obs data in CF obs format.

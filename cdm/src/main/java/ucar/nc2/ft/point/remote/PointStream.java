@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nonnull;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.ma2.ArrayStructureBB;
@@ -60,7 +61,6 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.Station;
-import javax.annotation.Nonnull;
 
 /**
  * Defines the point stream format, along with pointStream.proto.
@@ -283,7 +283,7 @@ public class PointStream {
 
   public static int write(PointFeatureCollection pointFeatCol, File outFile) throws IOException {
     String name = outFile.getCanonicalPath();
-    String timeUnitString = pointFeatCol.getTimeUnit().getUnitsString();
+    String timeUnitString = pointFeatCol.getTimeUnit().getUdUnit();
     String altUnits = pointFeatCol.getAltUnits();
     PointFeatureIterator pointFeatIter = pointFeatCol.getPointFeatureIterator(-1);
 

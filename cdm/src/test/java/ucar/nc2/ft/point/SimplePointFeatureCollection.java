@@ -1,12 +1,11 @@
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.units.DateUnit;
-
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.time.CalendarDateUnit;
 
 /**
  * @author cwardgar
@@ -15,7 +14,7 @@ import java.util.List;
 public class SimplePointFeatureCollection extends PointCollectionImpl {
     private final List<PointFeature> pointFeats;
 
-    public SimplePointFeatureCollection(String name, DateUnit timeUnit, String altUnits) {
+    public SimplePointFeatureCollection(String name, CalendarDateUnit timeUnit, String altUnits) {
         super(name, timeUnit, altUnits);
         this.pointFeats = new LinkedList<>();
     }

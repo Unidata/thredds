@@ -74,13 +74,14 @@ public class SortingStationPointFeatureCache {
 
     // fdPoint remains open.
     public void addAll(FeatureDatasetPoint fdPoint) throws IOException {
-        try (PointFeatureIterator pointFeatIter =
-                new FlattenedDatasetPointCollection(fdPoint).getPointFeatureIterator(-1)) {
-            while (pointFeatIter.hasNext()) {
-                StationPointFeature pointFeat = (StationPointFeature) pointFeatIter.next();
-                add(pointFeat);
-            }
-        }
+        // Need to completely re-think FlattenedDatasetPointCollection.
+//        try (PointFeatureIterator pointFeatIter =
+//                new FlattenedDatasetPointCollection(fdPoint).getPointFeatureIterator(-1)) {
+//            while (pointFeatIter.hasNext()) {
+//                StationPointFeature pointFeat = (StationPointFeature) pointFeatIter.next();
+//                add(pointFeat);
+//            }
+//        }
     }
 
     // Double-check idiom for lazy initialization of instance fields. See Effective Java 2nd Ed, p. 283.

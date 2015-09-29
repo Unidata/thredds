@@ -65,7 +65,7 @@ public class PointTestUtil {
 
         if (!Objects.deepEquals(featCol1.getCollectionFeatureType(), featCol2.getCollectionFeatureType())) {
             return false;
-        } else if (!Objects.deepEquals(featCol1.getTimeUnit().getUnitsString(), featCol2.getTimeUnit().getUnitsString())) {
+        } else if (!Objects.deepEquals(featCol1.getTimeUnit().getUdUnit(), featCol2.getTimeUnit().getUdUnit())) {
             return false;
         } else if (!Objects.deepEquals(featCol1.getAltUnits(), featCol2.getAltUnits())) {
             return false;
