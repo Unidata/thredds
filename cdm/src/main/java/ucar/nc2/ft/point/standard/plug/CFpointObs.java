@@ -253,8 +253,10 @@ public class CFpointObs extends TableConfigurerImpl {
         break;
       case multidim:
         obsTable = makeMultidimInner(ds, profileTable, info.childDim, info, errlog);
-        if (z.getRank() == 1) // z(z)
+        if (z.getRank() == 1) {// z(z)
           obsTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+          obsTable.elev = z.getFullName();
+        }
         break;
       case raggedContiguous:
         profileTable.numRecords = info.ragged_rowSize.getFullName();
@@ -377,16 +379,20 @@ public class CFpointObs extends TableConfigurerImpl {
         // make profile table
         TableConfig profileTable = makeStructTable(ds, FeatureType.PROFILE, new EncodingInfo().set(Encoding.multidim, info.childDim), errlog);
         if (profileTable == null) return null;
-        if (time.getRank() == 1) // join time(time)
+        if (time.getRank() == 1) {// join time(time)
           //profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
           profileTable.addJoin(new JoinArray(time, JoinArray.Type.level, 1));
+          profileTable.time = time.getFullName();
+        }
 
         stationTable.addChild(profileTable);
 
         // make the inner (z) table
         TableConfig zTable = makeMultidimInner(ds, profileTable, info.grandChildDim, info, errlog);
-        if (z.getRank() == 1) // join z(z)
+        if (z.getRank() == 1) { // join z(z)
           zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+          zTable.elev = z.getFullName();
+        }
         profileTable.addChild(zTable);
 
         break;
@@ -424,7 +430,6 @@ public class CFpointObs extends TableConfigurerImpl {
         TableConfig profileTable = makeMultidimInner(ds, stationTable, info.childDim, info, errlog);
         if (profileTable == null) return null;
         if (time.getRank() == 1) {// join time(time)
-          // profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
           profileTable.addJoin(new JoinArray(time, JoinArray.Type.level, 1));
           profileTable.time = time.getFullName();
         }
@@ -521,14 +526,18 @@ public class CFpointObs extends TableConfigurerImpl {
         // make profile table
         TableConfig profileTable = makeStructTable(ds, FeatureType.PROFILE, new EncodingInfo().set(Encoding.multidim, info.childDim), errlog);
         if (profileTable == null) return null;
-        if (time.getRank() == 1) // join time(time)
+        if (time.getRank() == 1) { // join time(time)
           profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
-        parentTable.addChild(profileTable);
+          profileTable.time = time.getFullName();
+        }
+          parentTable.addChild(profileTable);
 
         // make the inner (z) table
         TableConfig zTable = makeMultidimInner(ds, profileTable, info.grandChildDim, info, errlog);
-        if (z.getRank() == 1) // join z(z)
+        if (z.getRank() == 1) { // join z(z)
           zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+          zTable.elev = z.getFullName();
+        }
         profileTable.addChild(zTable);
 
         break;
@@ -569,8 +578,10 @@ public class CFpointObs extends TableConfigurerImpl {
 
         // make the inner (z) table
         TableConfig zTable = makeMultidimInner3D(ds, parentTable, profileTable, info.grandChildDim, errlog);
-        if (z.getRank() == 1) // join z(z)
+        if (z.getRank() == 1) { // join z(z)
           zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+          zTable.elev = z.getFullName();
+        }
         profileTable.addChild(zTable);
         break;
       }

@@ -49,14 +49,12 @@ import java.io.IOException;
  * @since Mar 29, 2008
  */
 public class StandardPointFeatureIterator extends PointIteratorFromStructureData {
-  protected PointCollectionImpl dsg;
   protected NestedTable ft;
   protected CalendarDateUnit timeUnit;
   protected Cursor cursor;
 
   StandardPointFeatureIterator(PointCollectionImpl dsg, NestedTable ft, CalendarDateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) throws IOException {
     super(structIter, null);
-    this.dsg = dsg;
     this.ft = ft;
     this.timeUnit = timeUnit;
     this.cursor = cursor;

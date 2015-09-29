@@ -45,6 +45,7 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
@@ -283,6 +284,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       return new StationFeatureSubset(compStnFeatSubset, dateRange);
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return sdata;

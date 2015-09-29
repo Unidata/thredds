@@ -141,14 +141,26 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
   private class TrajCollectionIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
     StructureDataIterator structIter;
     StructureData nextTraj;
+    StandardTrajectoryFeature prev;
+    CollectionInfo calcInfo;
 
     TrajCollectionIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
       this.structIter = structIter;
+      CollectionInfo info = getInfo();
+      if (!info.isComplete())
+        calcInfo = info;
     }
 
     public boolean hasNext() throws IOException {
       while (true) {
-        if(!structIter.hasNext()) return false;
+        if (prev != null && calcInfo != null)
+          calcInfo.extend(prev.getInfo());
+
+        if(!structIter.hasNext()) {
+          structIter.close();
+          if (calcInfo != null) calcInfo.setComplete();
+          return false;
+        }
         nextTraj = structIter.next();
         if (!ft.isFeatureMissing(nextTraj)) break;
       }
@@ -162,7 +174,8 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
       cursor.currentIndex = 1;
       ft.addParentJoin(cursor); // there may be parent joins
 
-      return new StandardTrajectoryFeature(cursor, nextTraj);
+      prev = new StandardTrajectoryFeature(cursor, nextTraj);
+      return prev;
     }
 
     public void close() {

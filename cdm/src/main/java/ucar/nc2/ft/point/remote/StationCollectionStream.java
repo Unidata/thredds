@@ -35,6 +35,7 @@ package ucar.nc2.ft.point.remote;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.PointFeature;
@@ -53,6 +54,11 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * Connect to remote Station Collection using cdmremote
@@ -128,9 +134,9 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
   // NestedPointFeatureCollection
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
-    boolean restrictedList = false;
-    QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
-    PointFeatureCollection pfc = new PointCollectionStreamRemote(uri, getTimeUnit(), getAltUnits(), queryMaker);
+    //boolean restrictedList = false;
+    //QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
+    PointFeatureCollection pfc = new PointCollectionStreamRemote(uri, getTimeUnit(), getAltUnits(), null);
     return pfc.subset(boundingBox, dateRange);
   }
 
@@ -207,6 +213,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
       return new StationFeature(stnFeature, dateRange);
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return stnFeature.getFeatureData();

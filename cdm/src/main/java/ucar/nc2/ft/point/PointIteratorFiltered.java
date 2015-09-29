@@ -142,15 +142,25 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
         private final LatLonRect filter_bb;
         private final CalendarDateRange filter_date;
 
+      /**
+       * @param filter_bb bounding box or null for all
+       * @param filter_date date Range or null for all
+       */
         public SpaceAndTimeFilter(LatLonRect filter_bb, CalendarDateRange filter_date) {
-            this.filter_bb = Preconditions.checkNotNull(filter_bb);
-            this.filter_date = Preconditions.checkNotNull(filter_date);
+          this.filter_bb = filter_bb;
+          this.filter_date = filter_date;
         }
 
         @Override
         public boolean filter(PointFeature pointFeat) {
-            return filter_bb.contains(pointFeat.getLocation().getLatLon()) &&
-                    filter_date.includes(pointFeat.getObservationTimeAsCalendarDate());
+          if ((filter_date != null) && !filter_date.includes(pointFeat.getObservationTimeAsCalendarDate()))
+            return false;
+
+          if ((filter_bb != null) && !filter_bb.contains(pointFeat.getLocation().getLatitude(), pointFeat.getLocation().getLongitude()))
+            return false;
+
+          return true;
         }
     }
+
 }

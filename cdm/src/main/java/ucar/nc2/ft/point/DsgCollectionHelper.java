@@ -39,6 +39,7 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
@@ -55,6 +56,7 @@ public class DsgCollectionHelper {
     this.dsg = dsg;
   }
 
+  @Nonnull
   public CollectionInfo calcBounds() throws IOException {
     if (dsg instanceof PointFeatureCollection)
       return calcBounds((PointFeatureCollection) dsg);
@@ -89,12 +91,12 @@ public class DsgCollectionHelper {
     }
 
     if (count == 0) {
-      return new CollectionInfo(null, null, 0);
+      return new CollectionInfo(null, null, 0, 0);
     }
 
     CalendarDateUnit cdu = dsg.getTimeUnit();
     CalendarDateRange dateRange = CalendarDateRange.of(cdu.makeCalendarDate(minTime), cdu.makeCalendarDate(maxTime));
-    return new CollectionInfo(bbox, dateRange, count);
+    return new CollectionInfo(bbox, dateRange, count, count);
   }
 
   private CollectionInfo calcBounds(PointFeatureCC pfcc) throws IOException {

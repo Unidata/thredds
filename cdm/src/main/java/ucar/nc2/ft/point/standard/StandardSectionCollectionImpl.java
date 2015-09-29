@@ -86,14 +86,26 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   private class SectionIterator implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
     private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
     private StructureData sectionData;
+    DsgCollectionImpl prev;
+    CollectionInfo calcInfo;
 
     SectionIterator() throws IOException {
       sdataIter = ft.getRootFeatureDataIterator(-1);
+      CollectionInfo info = getInfo();
+      if (!info.isComplete())
+        calcInfo = info;
     }
 
     public boolean hasNext() throws IOException {
       while (true) {
-        if (!sdataIter.hasNext()) return false;
+        if (prev != null && calcInfo != null)
+          calcInfo.extend(prev.getInfo());
+
+        if (!sdataIter.hasNext()) {
+          close();
+          if (calcInfo != null) calcInfo.setComplete();
+          return false;
+        }
         sectionData = sdataIter.next();
         if (!ft.isFeatureMissing(sectionData)) break;
       }
@@ -107,7 +119,9 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       cursor.currentIndex = 2;
       ft.addParentJoin(cursor); // there may be parent joins
 
-      return new StandardSectionFeature(cursor, sectionData);
+      SectionFeature result = new StandardSectionFeature(cursor, sectionData);
+      prev = (DsgCollectionImpl) result;
+      return result;
     }
 
     @Override
@@ -148,14 +162,27 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     Cursor cursor;
     private ucar.ma2.StructureDataIterator sdataIter;
     StructureData profileData;
+    DsgCollectionImpl prev;
+    CollectionInfo calcInfo;
 
     ProfileIterator(Cursor cursor) throws IOException {
       this.cursor = cursor;
       sdataIter = ft.getMiddleFeatureDataIterator(cursor, -1);
+      CollectionInfo info = getInfo();
+      if (!info.isComplete())
+        calcInfo = info;
     }
 
     public boolean hasNext() throws IOException {
-      return sdataIter.hasNext();
+      if (prev != null && calcInfo != null)
+        calcInfo.extend(prev.getInfo());
+
+      boolean more = sdataIter.hasNext();
+      if (!more) {
+        sdataIter.close();
+        if (calcInfo != null) calcInfo.setComplete();
+      }
+      return more;
     }
 
     public PointFeatureCollection next() throws IOException {
@@ -167,7 +194,9 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       ft.addParentJoin(cursorIter); // there may be parent joins LOOK cursor or cursorIter ?
 
       // double time = ft.getObsTime(cursorIter);
-      return new StandardSectionProfileFeature(cursorIter, ft.getObsTime(cursor), profileData);
+      PointFeatureCollection result = new StandardSectionProfileFeature(cursorIter, ft.getObsTime(cursor), profileData);
+      prev = (DsgCollectionImpl) result; // common for Station and StationProfile
+      return result;
     }
 
     public void setBufferSize(int bytes) {

@@ -52,12 +52,6 @@ public class Cursor {
     recnum = new int[nlevels];
   }
 
-  private int getParentIndex() { // skip null structureData, to allow dummy tables to be inserted, eg FslWindProfiler
-    int indx = currentIndex;
-    while ((tableData[indx] == null || tableData[indx].getMembers().size() == 0) && (indx < tableData.length-1)) indx++;
-    return indx;
-  }
-
   /* t.kunicki 11/25/10
   // Flattened data can now accurately access parent structure
   private int getParentIndex() {
@@ -70,6 +64,12 @@ public class Cursor {
 
   StructureData getParentStructure() {
     return tableData[getParentIndex()];
+  }
+
+  private int getParentIndex() { // skip null structureData, to allow dummy tables to be inserted, eg FslWindProfiler
+    int indx = currentIndex;
+    while ((tableData[indx] == null || tableData[indx].getMembers().size() == 0) && (indx < tableData.length-1)) indx++;
+    return indx;
   }
 
   int getParentRecnum() {

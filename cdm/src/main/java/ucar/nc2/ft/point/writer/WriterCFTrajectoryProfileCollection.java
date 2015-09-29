@@ -48,7 +48,7 @@ import java.util.*;
 
 /**
  * Write a CF "Discrete Sample" trajectory profile (section) collection file.
- * Example H.3.5. Contiguous ragged array representation of trajectory profile, H.5.3
+ * Contiguous ragged array representation of trajectory profile, H.6.3
  * *
  * @author caron
  * @since 7/14/2014
@@ -72,6 +72,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
                                              CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectoryProfile.name()));
+    writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of trajectory profile, H.6.3"));
   }
 
   public void setFeatureAuxInfo2(int ntraj, int traj_strlen) {

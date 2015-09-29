@@ -232,7 +232,7 @@ public class TestPointDatasets {
   String location;
   FeatureType ftype;
   int countExpected;
-  boolean show = true;
+  boolean show = false;
 
   public TestPointDatasets(String location, FeatureType ftype, int countExpected) {
     this.location = location;
@@ -274,6 +274,7 @@ public class TestPointDatasets {
 
       return checkPointFeatureDataset(fdataset, show);
     }
+
   }
 
   public static int checkPointFeatureDataset(FeatureDataset fdataset, boolean show) throws IOException {
@@ -320,6 +321,7 @@ public class TestPointDatasets {
       } else  {
         count = checkOther(fc, show);
       }
+      checkInfo(fc);
     }
 
     long took = System.currentTimeMillis() - start;
@@ -327,13 +329,19 @@ public class TestPointDatasets {
     return count;
   }
 
-  static void checkDsgFeatureCollection( DsgFeatureCollection dsg) {
+  static void checkDsgFeatureCollection( DsgFeatureCollection dsg) throws IOException {
     String what = dsg.getClass().getName();
-    Assert.assertNotNull(what+" name", dsg.getName());
+    Assert.assertNotNull(what + " name", dsg.getName());
     Assert.assertNotNull(what + " featureTYpe", dsg.getCollectionFeatureType());
-    Assert.assertNotNull(what+" timeUnit", dsg.getTimeUnit());
+    Assert.assertNotNull(what + " timeUnit", dsg.getTimeUnit());
     // Assert.assertNotNull(what + " altUnits", dsg.getAltUnits());
     Assert.assertNotNull(what + " extraVars", dsg.getExtraVariables());
+  }
+
+  static void checkInfo( DsgFeatureCollection dsg) throws IOException {
+    Assert.assertNotNull(dsg.getBoundingBox());
+    Assert.assertNotNull(dsg.getCalendarDateRange());
+    Assert.assertNotNull(dsg.size() > 0);
   }
 
   static int checkPointFeatureCollection(PointFeatureCollection pfc, boolean show) throws IOException {
@@ -353,11 +361,14 @@ public class TestPointDatasets {
   static int checkProfileFeatureCollection(ProfileFeatureCollection profileFeatureCollection, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
+    Set<String> profileNames = new HashSet<>();
     for (ProfileFeature profile : profileFeatureCollection) {
       checkDsgFeatureCollection(profile);
       Assert.assertNotNull("ProfileFeature time", profile.getTime());
       Assert.assertNotNull("ProfileFeature latlon", profile.getLatLon());
       Assert.assertNotNull("ProfileFeature featureData", profile.getFeatureData());
+      Assert.assertTrue(!profileNames.contains(profile.getName()));
+      profileNames.add(profile.getName());
 
       // assert pf.getTime() != null;
       count += checkPointFeatureCollection(profile, show);
@@ -374,12 +385,36 @@ public class TestPointDatasets {
 
     // try a subset
     LatLonRect bb = sfc.getBoundingBox();
-    assert bb != null;
+    Assert.assertNotNull(bb);
     LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
-    System.out.println("Subset= " + bb2.toString2());
+    System.out.println(" BB Subset= " + bb2.toString2());
     StationTimeSeriesFeatureCollection sfcSub = sfc.subset(bb2);
     int countSub = countLocations(sfcSub);
-    assert countSub <= countStns;
+    Assert.assertTrue(countSub <= countStns);
+    System.out.println("  nobs= " + sfcSub.size());
+
+    /* test info
+    CollectionInfo info = new DsgCollectionHelper(sfc).calcBounds(); // sets internal values
+    Assert.assertNotNull(info);
+    CalendarDateRange dr = sfc.getCalendarDateRange();
+    Assert.assertNotNull(dr);
+    Assert.assertEquals(info.getCalendarDateRange(null), dr);
+
+    // subset(bb, dr);
+    long diff = dr.getEnd().getDifferenceInMsecs(dr.getStart());
+    CalendarDate mid = dr.getStart().add(diff/2, CalendarPeriod.Field.Millisec);
+    CalendarDateRange drsubset = CalendarDateRange.of(dr.getStart(), mid);
+    System.out.println(" CalendarDateRange Subset= " + drsubset);
+    StationTimeSeriesFeatureCollection sfcSub2 = sfc.subset(bb2, drsubset);
+    for (StationTimeSeriesFeature sf : sfcSub2) {
+      Assert.assertTrue( bb2.contains(sf.getLatLon()));
+      for (PointFeature pf : sf) {
+        Assert.assertEquals(sf.getLatLon(), pf.getLocation().getLatLon());
+        Assert.assertTrue( drsubset.includes(pf.getObservationTimeAsCalendarDate()));
+      }
+    }
+    System.out.println("  nobs= " + sfcSub2.size());
+    Assert.assertTrue(sfcSub2.size() <= sfcSub.size()); */
 
     System.out.println("Flatten= " + bb2.toString2());
     PointFeatureCollection flatten = sfc.flatten(bb2, null);
@@ -431,6 +466,7 @@ public class TestPointDatasets {
       Assert.assertNotNull("StationProfileFeature latlon", spf.getLatLon());
       Assert.assertNotNull("StationProfileFeature featureData", spf.getFeatureData());
 
+      // iterates through the profile but not the profile data
       List<CalendarDate> times = spf.getTimes();
       if (showAll) {
         System.out.printf("  times= ");
@@ -438,14 +474,17 @@ public class TestPointDatasets {
         System.out.printf("%n");
       }
 
-      for (ProfileFeature pf : spf) {
-        checkDsgFeatureCollection(pf);
-        Assert.assertNotNull("ProfileFeature time", pf.getTime());
-        Assert.assertNotNull("ProfileFeature latlon", pf.getLatLon());
-        Assert.assertNotNull("ProfileFeature featureData", pf.getFeatureData());
+      Set<String> profileNames = new HashSet<>();
+      for (ProfileFeature profile : spf) {
+        checkDsgFeatureCollection(profile);
+        Assert.assertNotNull("ProfileFeature time", profile.getTime());
+        Assert.assertNotNull("ProfileFeature latlon", profile.getLatLon());
+        Assert.assertNotNull("ProfileFeature featureData", profile.getFeatureData());
+        Assert.assertTrue(!profileNames.contains(profile.getName()));
+        profileNames.add(profile.getName());
 
-        if (show) System.out.printf(" ProfileFeature=%s %n", pf.getName());
-        count += checkPointFeatureCollection(pf, show);
+        if (show) System.out.printf(" ProfileFeature=%s %n", profile.getName());
+        count += checkPointFeatureCollection(profile, show);
       }
     }
     long took = System.currentTimeMillis() - start;
@@ -460,11 +499,14 @@ public class TestPointDatasets {
       checkDsgFeatureCollection(section);
       Assert.assertNotNull("SectionFeature featureData", section.getFeatureData());
 
+      Set<String> profileNames = new HashSet<>();
       for (ProfileFeature profile : section) {
         checkDsgFeatureCollection(profile);
         Assert.assertNotNull("ProfileFeature time", profile.getTime());
         Assert.assertNotNull("ProfileFeature latlon", profile.getLatLon());
         Assert.assertNotNull("ProfileFeature featureData", profile.getFeatureData());
+        Assert.assertTrue(!profileNames.contains(profile.getName()));
+        profileNames.add(profile.getName());
 
         if (show) System.out.printf(" ProfileFeature=%s %n", profile.getName());
         count += checkPointFeatureCollection(profile, show);
@@ -484,7 +526,7 @@ public class TestPointDatasets {
     try {
       CollectionInfo info  = new DsgCollectionHelper(dsg).calcBounds();
       if (show) System.out.printf(" info=%s%n", info);
-      count = info.npts;
+      count = info.nobs;
 
     } catch (IOException e) {
       e.printStackTrace();

@@ -64,6 +64,7 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
                                       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectory.name()));
+    writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of trajectories, H.4.3"));
   }
 
   public int writeTrajectory (TrajectoryFeature traj) throws IOException {

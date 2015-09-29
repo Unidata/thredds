@@ -45,11 +45,11 @@ import javax.annotation.Nonnull;
  */
 public abstract class TrajectoryFeatureImpl extends PointCollectionImpl implements TrajectoryFeature {
 
-  public TrajectoryFeatureImpl( String name, CalendarDateUnit timeUnit, String altUnits, int npts) {
+  public TrajectoryFeatureImpl( String name, CalendarDateUnit timeUnit, String altUnits, int nfeatures) {
     super(name, timeUnit, altUnits);
-    if (npts >= 0) {
+    if (nfeatures >= 0) {
       getInfo(); // create the object
-      info.npts = npts;
+      info.nfeatures = nfeatures;
     }
   }
 

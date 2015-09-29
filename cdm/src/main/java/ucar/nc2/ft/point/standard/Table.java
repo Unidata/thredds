@@ -898,7 +898,7 @@ public abstract class Table {
     }
 
     public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-      int recnum = cursor.getParentRecnum();
+      int recnum = cursor.recnum[ cursor.currentIndex]; // LOOK
       try {
         StructureData parentStruct = struct.readStructure(recnum);
         ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{inner.getLength()});
