@@ -35,7 +35,7 @@ package thredds.server.ncss.view.dsg.station;
 import thredds.server.ncss.exception.FeaturesNotFoundException;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.view.dsg.DsgSubsetWriter;
-import thredds.server.ncss.view.dsg.FilteredPointFeatureIterator;
+import ucar.nc2.ft.point.PointIteratorFiltered;
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -191,7 +191,7 @@ public abstract class AbstractStationSubsetWriter extends DsgSubsetWriter {
       if (closestTime == null) {
         return stationFeat.getPointFeatureIterator(bufferSize);
       } else {
-        return new FilteredPointFeatureIterator(
+        return new PointIteratorFiltered(
                 stationFeat.getPointFeatureIterator(bufferSize), new TimeFilter(closestTime));
       }
     }

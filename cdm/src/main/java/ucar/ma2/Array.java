@@ -101,7 +101,7 @@ public abstract class Array {
   }
 
   /* generate new Array with given type and shape and zeroed storage */
-  static private Array factory(DataType dtype, Index index, Object storage) {
+  static public Array factory(DataType dtype, Index index, Object storage) {
     switch (dtype) {
       case DOUBLE:
         return ArrayDouble.factory(index, (double[]) storage);

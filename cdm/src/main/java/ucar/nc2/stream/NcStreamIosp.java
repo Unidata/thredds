@@ -33,15 +33,6 @@
 
 package ucar.nc2.stream;
 
-import ucar.nc2.Structure;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.IO;
-import ucar.unidata.io.RandomAccessFile;
-import ucar.ma2.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,6 +43,20 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructureBB;
+import ucar.ma2.ArrayStructureBBsection;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.IO;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * IOSP to read an ncStream that has been written to a file.
@@ -178,7 +183,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       int dsize = readVInt(raf);
       byte[] data = new byte[dsize];
       raf.readFully(data);
-      Array dataArray = Array.factory(v.getDataType(), null, ByteBuffer.wrap(data));
+      Array dataArray = Array.factory(v.getDataType(), (int[]) null, ByteBuffer.wrap(data));
       result[elem] = dataArray;
     }
     return Array.makeObjectArray(v.getDataType(), result[0].getClass(), new int[]{nelems}, result);

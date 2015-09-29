@@ -33,14 +33,12 @@
 
 package ucar.nc2.ft.point;
 
+import java.io.IOException;
+import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataDeep;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.time.CalendarDateUnit;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * A factory for making deep copies of PointFeature, so all data is self contained.
@@ -56,12 +54,10 @@ public class PointFeatureCopyFactory {
   static private final int ARRAY_SIZE = 8;   // assume 64 bit pointers
 
   private final StructureMembers sm;
-  private final CalendarDateUnit du;
   private final int sizeInBytes;
 
-  public PointFeatureCopyFactory(PointFeature proto, CalendarDateUnit du) throws IOException {
-    StructureData sdata = proto.getDataAll();
-    this.du = du;
+  public PointFeatureCopyFactory(PointFeature proto) throws IOException {
+    StructureData sdata = proto.getFeatureData();
     sm = new StructureMembers(sdata.getStructureMembers());
     sizeInBytes =  OBJECT_SIZE + POINTER_SIZE +       // PointFeatureCopy - 1 pointer                                             48
             2 * 8 + 2 * POINTER_SIZE +                // PointFeatureImpl - 2 doubles and 2 pointers                              32
@@ -84,7 +80,7 @@ public class PointFeatureCopyFactory {
 
   public PointFeature deepCopy(PointFeature from) throws IOException {
     PointFeatureCopy deep = new PointFeatureCopy(from);
-    deep.data = StructureDataDeep.copy(from.getDataAll(), sm);
+    deep.data = StructureDataDeep.copy(from.getFeatureData(), sm);
     return deep;
   }
 
@@ -93,7 +89,8 @@ public class PointFeatureCopyFactory {
     StructureData data;
 
     PointFeatureCopy(PointFeature pf) {
-      super(pf.getFeatureCollection(), pf.getLocation(), pf.getObservationTime(), pf.getNominalTime(), du);
+      super(pf.getFeatureCollection(), pf.getLocation(), pf.getObservationTime(), pf.getNominalTime(),
+              pf.getFeatureCollection().getTimeUnit());
     }
 
     @Nonnull

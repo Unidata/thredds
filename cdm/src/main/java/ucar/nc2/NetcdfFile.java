@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -111,7 +112,7 @@ import ucar.unidata.util.StringUtil2;
  * @author caron
  */
 
-public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoCloseable {
+public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable {
   static public final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   static public final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
   static public final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";

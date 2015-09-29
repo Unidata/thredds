@@ -123,8 +123,9 @@ libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfu
 
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 
-// These four are all for Spock.
+libraries["equalsverifier"] = "nl.jqno.equalsverifier:equalsverifier:1.7.5"
 
+// These four are all for Spock.
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
 
 libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.1"
@@ -144,6 +145,7 @@ libraries["bounce"] = "org.bounce:bounce:0.14"
 libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
 
 libraries["chronicle-map"] = "net.openhft:chronicle-map:2.1.7"
+
 libraries["openhft-lang"] = "net.openhft:lang:6.6.4"
 
 libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
@@ -175,7 +177,7 @@ libraries["jsoup"] = "org.jsoup:jsoup:1.7.2"
 
 libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.0"
 
-libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:2.5.0"
+libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:2.6.1"
 
 libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.0"
 

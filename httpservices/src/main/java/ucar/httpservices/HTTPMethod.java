@@ -147,7 +147,7 @@ import static ucar.httpservices.HTTPSession.*;
  * </ul>
  */
 
-public class HTTPMethod implements AutoCloseable
+public class HTTPMethod implements Closeable
 {
     //////////////////////////////////////////////////
     // Instance fields

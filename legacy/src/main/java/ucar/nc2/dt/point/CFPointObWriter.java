@@ -33,29 +33,37 @@
 
 package ucar.nc2.dt.point;
 
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.Dimension;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.*;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.PointObsDataset;
-import ucar.nc2.dt.TypedDatasetFactory;
-import ucar.nc2.dt.DataIterator;
-import ucar.nc2.dt.PointObsDatatype;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.ma2.DataType;
-import ucar.ma2.StructureData;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.unidata.geoloc.EarthLocation;
-
-import java.io.*;
-import java.util.List;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.List;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.DataType;
+import ucar.ma2.StructureData;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.DataIterator;
+import ucar.nc2.dt.PointObsDataset;
+import ucar.nc2.dt.PointObsDatatype;
+import ucar.nc2.dt.TypedDatasetFactory;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * Write point obs data in CF obs format.

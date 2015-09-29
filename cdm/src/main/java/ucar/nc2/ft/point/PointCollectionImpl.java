@@ -32,17 +32,16 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.constants.FeatureType;
-import ucar.unidata.geoloc.LatLonRect;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Iterator;
+import javax.annotation.Nonnull;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * Abstract superclass for PointFeatureCollection
@@ -93,8 +92,7 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
 
     @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      PointFeatureIterator.Filter filter = new PointIteratorFiltered.BoundsFilter(filter_bb, filter_date);
-      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), filter);
+      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), filter_bb, filter_date);
     }
   }
 

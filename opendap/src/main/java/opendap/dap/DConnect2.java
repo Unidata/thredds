@@ -40,19 +40,28 @@
 
 package opendap.dap;
 
-import java.net.*;
-import java.io.*;
-
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 import opendap.dap.parsers.ParseException;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.*;
-import org.apache.http.auth.*;
-import ucar.httpservices.*;
+import org.apache.http.Header;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.InvalidCredentialsException;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 
 /**
  * Rewritten 1/15/07 jcaron to use HttpCLient library instead of jdk UrlConnection class.
@@ -68,7 +77,7 @@ import ucar.httpservices.*;
  *
  * @author jehamby
  */
-public class DConnect2 implements AutoCloseable
+public class DConnect2 implements Closeable
 {
 
     static private boolean allowSessions = false;

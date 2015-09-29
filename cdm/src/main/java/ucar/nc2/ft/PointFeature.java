@@ -32,25 +32,26 @@
  */
 package ucar.nc2.ft;
 
-import ucar.nc2.time.CalendarDate;
-
 import javax.annotation.Nonnull;
+import ucar.ma2.StructureData;
+import ucar.nc2.time.CalendarDate;
+import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * A collection of observations at one time and location.
+ *
  * @author caron
  * @since Feb 29, 2008
  */
 public interface PointFeature {
-
   /**
    * Location of this observation
    * @return the location of this observation
    */
   @Nonnull
-  ucar.unidata.geoloc.EarthLocation getLocation();
+  EarthLocation getLocation();
 
- /**
+  /**
    * Actual time of this observation.
    * Convert to CalendarDate with getFeatureCollection().getTimeUnit().makeDate()
    * @return actual time of this observation.
@@ -85,18 +86,17 @@ public interface PointFeature {
    * This is the data of the innermost nested table, aka leaf data.
    */
   @Nonnull
-  ucar.ma2.StructureData getFeatureData() throws java.io.IOException;
+  StructureData getFeatureData() throws java.io.IOException;
 
   /**
    * All the data of this observation, joined with data from all parent features.
    */
   @Nonnull
-  ucar.ma2.StructureData getDataAll() throws java.io.IOException;
+  StructureData getDataAll() throws java.io.IOException;
 
  /**
   * Get the containing DsgFeatureCollection
   */
  @Nonnull
  DsgFeatureCollection getFeatureCollection();
-
 }

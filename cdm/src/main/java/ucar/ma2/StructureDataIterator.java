@@ -32,6 +32,7 @@
  */
 package ucar.ma2;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -49,7 +50,7 @@ try {
  * @author caron
  * @since Feb 23, 2008
  */
-public interface StructureDataIterator extends AutoCloseable {
+public interface StructureDataIterator extends Closeable {
 
   /**
    * See if theres more StructureData in the iteration.

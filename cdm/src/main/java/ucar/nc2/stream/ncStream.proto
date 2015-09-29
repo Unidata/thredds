@@ -139,5 +139,6 @@ message Error {
   required string message = 1;
 }
 
-//  cd cdm/src/main/java
-//  protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
+// cd cdm/src/main/java
+// protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
+// Last compiled on 2015/09/20 using Protobuf 2.6.1

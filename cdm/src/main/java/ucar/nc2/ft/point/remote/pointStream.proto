@@ -22,8 +22,8 @@ message Member {
   required string name = 1;
   optional string desc = 2;
   optional string units = 3;
-  required ncstream.DataType dataType = 4;
-  required ncstream.Section section = 5;
+  required DataType dataType = 4;
+  required Section section = 5;
 }
 
 message PointFeatureCollection {
@@ -46,5 +46,6 @@ message StationList {
   repeated Station stations = 1;
 }
 
-// cd c:/dev/github/thredds/cdm/src/main/java
+// cd <THREDDS_ROOT>/cdm/src/main/java
 // protoc --proto_path=. --java_out=. ucar/nc2/ft/point/remote/pointStream.proto
+// Last compiled on 2015/09/20 using Protobuf 2.6.1

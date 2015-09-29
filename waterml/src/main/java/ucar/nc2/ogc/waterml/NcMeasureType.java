@@ -1,13 +1,12 @@
 package ucar.nc2.ogc.waterml;
 
+import java.io.IOException;
+import java.util.Arrays;
 import net.opengis.waterml.x20.MeasureType;
 import ucar.ma2.Array;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.PointFeature;
-
-import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by cwardgar on 2014/03/06.

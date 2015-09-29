@@ -34,11 +34,12 @@
 
 package ucar.nc2.ft2.coverage;
 
-import com.google.common.collect.Lists;
-
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 /**
  * A Collection of CoverageDatasets.
@@ -49,16 +50,16 @@ import java.util.List;
  * @author John
  * @since 8/8/2015
  */
-public class CoverageDatasetCollection implements AutoCloseable {
-  private AutoCloseable closer;
+public class CoverageDatasetCollection implements Closeable {
+  private Closeable closer;
   private List<CoverageDataset> datasets;
 
-  public CoverageDatasetCollection(AutoCloseable closer, CoverageDataset coverageDataset) {
+  public CoverageDatasetCollection(Closeable closer, CoverageDataset coverageDataset) {
     this.closer = closer;
     this.datasets = Lists.newArrayList(coverageDataset);
   }
 
-  public CoverageDatasetCollection(AutoCloseable closer, List<CoverageDataset> datasets) {
+  public CoverageDatasetCollection(Closeable closer, List<CoverageDataset> datasets) {
     this.closer = closer;
     this.datasets = datasets;
   }

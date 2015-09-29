@@ -33,8 +33,9 @@
 
 package ucar.httpservices;
 
-import java.io.IOException;
+import java.io.Closeable;
 import java.io.FilterInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -57,7 +58,7 @@ import java.io.InputStream;
  */
 
 
-public class HTTPMethodStream extends FilterInputStream implements AutoCloseable
+public class HTTPMethodStream extends FilterInputStream implements Closeable
 {
     //////////////////////////////////////////////////////////////////////////
     static public org.slf4j.Logger log = HTTPSession.log;

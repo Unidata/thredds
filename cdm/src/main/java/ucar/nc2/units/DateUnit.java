@@ -135,9 +135,9 @@ public class DateUnit { // extends SimpleUnit {
    * Constructor.
    *
    * @param text udunits String, eg 3 secs since 1991-01-01T03:12
-   * @throws Exception if malformed String.
+   * @throws UnitException if malformed String.
    */
-  public DateUnit(String text) throws Exception {
+  public DateUnit(String text) throws UnitException {
     String timeUnitString;
 
     text = text.trim();
@@ -165,10 +165,10 @@ public class DateUnit { // extends SimpleUnit {
    *
    * @param value          number of time units
    * @param timeUnitString eg "secs"
-   * @param since          date since, eg "secs since 1970-01-01T00:00:00Z"
-   * @throws java.lang.Exception if not valid time unit.
+   * @param since date since, eg "secs since 1970-01-01T00:00:00Z"
+   * @throws UnitException if not valid time unit.
    */
-  public DateUnit(double value, String timeUnitString, Date since) throws Exception {
+  public DateUnit(double value, String timeUnitString, Date since) throws UnitException {
     this.value = value;
     DateFormatter df = new DateFormatter();
     this.udunitString = timeUnitString + " since " + df.toDateTimeStringISO(since);

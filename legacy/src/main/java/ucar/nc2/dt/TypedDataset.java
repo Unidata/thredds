@@ -33,10 +33,12 @@
 
 package ucar.nc2.dt;
 
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.Attribute;
+import java.io.Closeable;
+import java.util.Date;
+import java.util.List;
 
-import java.util.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
 
 /**
  * Superclass for "scientific type" datasets.
@@ -49,55 +51,56 @@ import java.util.*;
  * @author caron
  */
 
-public interface TypedDataset extends AutoCloseable {
+public interface TypedDataset extends Closeable {
 
   /** @return Title of the dataset. */
-  public String getTitle();
+  String getTitle();
 
   /** @return Text information about this dataset. */
-  public String getDescription();
+  String getDescription();
 
   /** @return The URI location of the dataset */
-  public String getLocationURI();
+  String getLocationURI();
 
   /** @return Start date for the entire dataset. */
-  public Date getStartDate();
+  Date getStartDate();
 
   /** @return End date for the entire dataset. */
-  public Date getEndDate();
+  Date getEndDate();
 
   /** @return the boundingBox for the entire dataset. */
-  public ucar.unidata.geoloc.LatLonRect getBoundingBox();
+  ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
   /** List of global attributes.
    * @return List of type ucar.nc2.Attribute */
-  public List<Attribute> getGlobalAttributes();
+  List<Attribute> getGlobalAttributes();
 
   /** @return the global attribute with the given name, ingnoring case.
    * @param name attribute name
    */
-  public ucar.nc2.Attribute findGlobalAttributeIgnoreCase( String name );
+  ucar.nc2.Attribute findGlobalAttributeIgnoreCase( String name );
 
   /** The data Variables available in this dataset.
    * Should just be data variable others might be searching for, not metadata or coordinate
    * system variables, etc.
    * The shape of this VariableSimpleIF does not necessarily match the 
    * @return List of type VariableSimpleIF */
-  public List<VariableSimpleIF> getDataVariables();
+  List<VariableSimpleIF> getDataVariables();
 
   /** Get the named data Variable.
    * @param shortName of data Variable.
    * @return VariableSimpleIF or null. */
-  public VariableSimpleIF getDataVariable( String shortName);
+  VariableSimpleIF getDataVariable( String shortName);
 
   /** @return  underlying NetcdfFile, or null if none. */
-  public ucar.nc2.NetcdfFile getNetcdfFile();
+  ucar.nc2.NetcdfFile getNetcdfFile();
 
   /** Close all resources associated with this dataset.
    * @throws java.io.IOException on I/O error
    */
-  public void close() throws java.io.IOException;
+  @Override
+  void close() throws java.io.IOException;
 
   /** @return  debug / underlying implementation details */
-  public String getDetailInfo();
+  String getDetailInfo();
 }
