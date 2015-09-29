@@ -33,9 +33,10 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import ucar.ma2.InvalidRangeException;
-
+import java.io.Closeable;
 import java.io.IOException;
+
+import ucar.ma2.InvalidRangeException;
 
 /**
  * Abstraction to read the data in a coverage.
@@ -44,7 +45,7 @@ import java.io.IOException;
  * @author caron
  * @since 7/13/2015
  */
-public interface CoverageReader extends AutoCloseable {
+public interface CoverageReader extends Closeable {
 
   // List<ArrayWithCoordinates> readData(List<Coverage> coverage, SubsetParams subset) throws IOException;
 

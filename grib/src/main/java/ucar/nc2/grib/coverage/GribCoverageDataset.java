@@ -32,36 +32,70 @@
  */
 package ucar.nc2.grib.coverage;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
-import ucar.coord.*;
-import ucar.ma2.*;
+import ucar.coord.Coordinate;
+import ucar.coord.CoordinateEns;
+import ucar.coord.CoordinateRuntime;
+import ucar.coord.CoordinateTime;
+import ucar.coord.CoordinateTime2D;
+import ucar.coord.CoordinateTimeAbstract;
+import ucar.coord.CoordinateTimeIntv;
+import ucar.coord.CoordinateVert;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.RangeIterator;
+import ucar.ma2.SectionIterable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.grib.*;
+import ucar.nc2.ft2.coverage.CoordAxisReader;
+import ucar.nc2.ft2.coverage.CoordsSet;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
+import ucar.nc2.ft2.coverage.CoverageCoordAxisBuilder;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageReader;
+import ucar.nc2.ft2.coverage.CoverageTransform;
+import ucar.nc2.ft2.coverage.GeoReferencedArray;
+import ucar.nc2.ft2.coverage.LatLonAxis2D;
+import ucar.nc2.ft2.coverage.SubsetParams;
+import ucar.nc2.ft2.coverage.TimeOffsetAxis;
+import ucar.nc2.grib.EnsCoord;
+import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.time.*;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Create a CoverageDataset from a GribCollection file
@@ -145,7 +179,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() throws IOException {
     gribCollection.close();
   }
 

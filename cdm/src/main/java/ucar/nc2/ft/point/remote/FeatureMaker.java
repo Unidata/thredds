@@ -41,7 +41,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  *
  * @author caron
  * @since May 19, 2009
- * @see RemotePointFeatureIterator
+ * @see PointIteratorStream
  */
 public interface FeatureMaker {
   PointFeature make(DsgFeatureCollection dsg, byte[] rawBytes) throws InvalidProtocolBufferException;

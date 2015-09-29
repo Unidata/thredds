@@ -35,6 +35,7 @@ package ucar.nc2.units;
 
 import ucar.unidata.util.Format;
 import ucar.units.ConversionException;
+import ucar.units.UnitException;
 
 import java.util.StringTokenizer;
 import java.util.Date;
@@ -59,9 +60,9 @@ public class TimeUnit extends SimpleUnit {
   /**
    * Constructor from a String.
    * @param text [value] <time unit> eg "hours" or "13 hours". Time unit is from udunits.
-   * @throws Exception is bad format
+   * @throws UnitException is bad format
    */
-  public TimeUnit(String text) throws Exception {
+  public TimeUnit(String text) throws UnitException {
     super();
 
     if (text == null) {
@@ -91,9 +92,9 @@ public class TimeUnit extends SimpleUnit {
    * Constructor from a value and a unit name.
    * @param value amount of the unit.
    * @param unitString  Time unit string from udunits.
-   * @throws Exception if parse fails
+   * @throws UnitException if parse fails
    */
-  public TimeUnit(double value, String unitString) throws Exception {
+  public TimeUnit(double value, String unitString) throws UnitException {
     this.value = value;
     this.unitString = unitString;
     uu = SimpleUnit.makeUnit( unitString);

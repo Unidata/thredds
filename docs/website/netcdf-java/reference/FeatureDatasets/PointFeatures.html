@@ -529,7 +529,7 @@ usually set to the observational time, which must always be present.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java"> public interface ucar.nc2.ft.PointFeatureIterator extends AutoCloseable, Iterator&lt;PointFeature&gt; {
+<pre class="highlight"><code class="language-java" data-lang="java"> public interface ucar.nc2.ft.PointFeatureIterator extends Closeable, Iterator&lt;PointFeature&gt; {
    boolean hasNext();
    ucar.nc2.ft.PointFeature next();
    void close();

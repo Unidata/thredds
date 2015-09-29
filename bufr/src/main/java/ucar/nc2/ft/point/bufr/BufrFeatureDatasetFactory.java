@@ -33,9 +33,25 @@
 
 package ucar.nc2.ft.point.bufr;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArraySequence;
+import ucar.ma2.DataType;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataComposite;
+import ucar.ma2.StructureDataIterator;
+import ucar.ma2.StructureDataProxy;
+import ucar.ma2.StructureDataW;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -44,8 +60,21 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.*;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactory;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.point.PointCollectionImpl;
+import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.ft.point.PointFeatureImpl;
+import ucar.nc2.ft.point.PointIteratorFiltered;
+import ucar.nc2.ft.point.PointIteratorFromStructureData;
+import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.ft.point.StationHelper;
+import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.time.CalendarDate;
@@ -55,11 +84,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
-
-import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 /**
  * Use BufrConfig to make BUFR files into PointFeatureDataset
@@ -275,7 +299,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           }
           createStationHelper();
           stationsWanted = getStationHelper().subset(boundingBox);
-          if (dateRange != null) filter = new PointIteratorFiltered.BoundsFilter(null, dateRange);
+          if (dateRange != null) filter = new PointIteratorFiltered.SpaceAndTimeFilter(null, dateRange);
         }
 
         @Override

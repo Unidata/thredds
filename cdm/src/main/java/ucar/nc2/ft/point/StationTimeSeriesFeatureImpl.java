@@ -32,17 +32,17 @@
  */
 package ucar.nc2.ft.point;
 
+import java.io.IOException;
+import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
-import ucar.nc2.ft.*;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.StationImpl;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * Superclass for implementations of StationFeature: time series of data at a point
@@ -157,8 +157,7 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
 
     @Override
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      PointFeatureIterator.Filter filter = new PointIteratorFiltered.BoundsFilter(null, filter_date);
-      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), filter);
+      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), null, filter_date);
     }
 
     @Nonnull

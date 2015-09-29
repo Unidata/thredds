@@ -32,18 +32,25 @@
  */
 package ucar.ma2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.Indent;
-
-import java.util.*;
 
 /**
  * A Collection of members contained in a StructureData.
  *
  * @author caron
  */
-
-public class StructureMembers {
+// Effective Java 2nd Edition, Item 17: Design and document for inheritance or else prohibit it.
+public final class StructureMembers {
   private String name;
   private Map<String, Member> memberHash;
   private List<Member> members;
@@ -194,10 +201,43 @@ public class StructureMembers {
     return memberHash.get(memberName);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof StructureMembers)) {
+      return false;
+    }
+
+    StructureMembers that = (StructureMembers) o;
+    return  Objects.equals(this.getStructureSize(), that.getStructureSize()) &&
+            Objects.equals(this.getName(), that.getName()) &&
+            Objects.equals(this.getMembers(), that.getMembers());
+    // memberHash is derived from shape. No need to include it in computation.
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getStructureSize(), getName(), getMembers());
+    // memberHash is derived from shape. No need to include it in computation.
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+            .add("name", name)
+            .add("members", members)
+            .add("structureSize", structureSize)
+            .toString();
+  }
+
+
   /**
    * A member of a StructureData.
    */
-  public class Member { 
+  // Effective Java 2nd Edition, Item 17: Design and document for inheritance or else prohibit it.
+  public final class Member {
     private String name, desc, units;
     private DataType dtype;
     private int size = 1;
@@ -211,10 +251,10 @@ public class StructureMembers {
     private int dataParam;
 
     public Member(String name, String desc, String units, DataType dtype, int[] shape) {
-      this.name = name;
+      this.name = Objects.requireNonNull(name);
       this.desc = desc;
       this.units = units;
-      this.dtype = dtype;
+      this.dtype = Objects.requireNonNull(dtype);
       setShape(shape);
     }
 
@@ -223,15 +263,21 @@ public class StructureMembers {
       this.desc = from.desc;
       this.units = from.units;
       this.dtype = from.dtype;
-      this.members = from.members;
+      setStructureMembers(from.members);
       setShape(from.shape);
     }
 
-    /*
-     * If member is type Structure, you must set its constituent members
-     * @param members set to this value
+    /**
+     * If member is type Structure, you must set its constituent members.
+     *
+     * @param  members set to this value
+     * @throws  IllegalArgumentException if {@code members} is this Member's enclosing class instance.
      */
     public void setStructureMembers(StructureMembers members) {
+      if (members == StructureMembers.this) {
+        throw new IllegalArgumentException(String.format(
+                "%s is already the parent of this Member '%s'; it cannot also be the child.", members, this));
+      }
       this.members = members;
     }
 
@@ -240,7 +286,7 @@ public class StructureMembers {
     }
 
     public void setShape(int[] shape) {
-      this.shape = shape;
+      this.shape = Objects.requireNonNull(shape);
       this.size = (int) Index.computeSize(shape);
       this.isVariableLength = (shape.length > 0 && shape[shape.length - 1] < 0);
     }
@@ -412,7 +458,8 @@ public class StructureMembers {
     }
 
     public void showInternal(Formatter f, Indent indent) {
-      f.format("%sname='%s' desc='%s' units='%s' dtype=%s size=%d dataObject=%s dataParam=%d", indent, name, desc, units, dtype, size, dataObject, dataParam);
+      f.format("%sname='%s' desc='%s' units='%s' dtype=%s size=%d dataObject=%s dataParam=%d",
+              indent, name, desc, units, dtype, size, dataObject, dataParam);
       if (members != null) {
         indent.incr();
         f.format("%n%sNested members %s%n", indent, members.getName());
@@ -426,6 +473,40 @@ public class StructureMembers {
     public String toString() { 
       return name;
     }
-  }
 
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof Member)) {
+        return false;
+      }
+
+      // getStructureMembers() points to the outer class instance. Calling equals() would result in an infinite loop!
+      assert this.getStructureMembers() != StructureMembers.this : "setStructureMembers should've prevented this";
+
+      Member that = (Member) o;
+      return  Objects.equals(this.getName(), that.getName()) &&
+              Objects.equals(this.getDescription(), that.getDescription()) &&
+              Objects.equals(this.getUnitsString(), that.getUnitsString()) &&
+              Objects.equals(this.getDataType(), that.getDataType()) &&
+              Objects.deepEquals(this.getShape(), that.getShape()) &&
+              Objects.equals(this.getStructureMembers(), that.getStructureMembers()) &&
+              MAMath.equals(this.getDataArray(), that.getDataArray()) &&
+              Objects.equals(this.getDataObject(), that.getDataObject()) &&
+              Objects.equals(this.getDataParam(), that.getDataParam());
+      // size and isVariableLength are derived from shape. No need to include them in computation.
+    }
+
+    @Override
+    public int hashCode() {
+      // getStructureMembers() points to the outer class instance. Calling hashCode() would result in an infinite loop!
+      assert this.getStructureMembers() != StructureMembers.this : "setStructureMembers should've prevented this";
+
+      return Objects.hash(getName(), getDescription(), getUnitsString(), getDataType(), Arrays.hashCode(getShape()),
+              getStructureMembers(), MAMath.hashCode(getDataArray()), getDataObject(), getDataParam());
+      // size and isVariableLength are derived from shape. No need to include them in computation.
+    }
+  }
 }

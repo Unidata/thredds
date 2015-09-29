@@ -1,10 +1,12 @@
 /* Copyright */
 package thredds.server.catalog.tracker;
 
-import thredds.client.catalog.Dataset;
-import thredds.server.catalog.ConfigCatalog;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Formatter;
+
+import thredds.client.catalog.Dataset;
+import thredds.server.catalog.ConfigCatalog;
 
 /**
  * DatasetTracker interface
@@ -12,7 +14,7 @@ import java.util.Formatter;
  * @author caron
  * @since 6/6/2015
  */
-public interface DatasetTracker extends AutoCloseable {
+public interface DatasetTracker extends Closeable {
   /* return true on success
   boolean init(String dirPath, long maxDatasets) throws IOException;  */
 

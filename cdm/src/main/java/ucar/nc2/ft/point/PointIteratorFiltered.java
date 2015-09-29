@@ -32,8 +32,10 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.PointFeatureIterator;
+import java.util.NoSuchElementException;
+import com.google.common.base.Preconditions;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -43,74 +45,112 @@ import ucar.unidata.geoloc.LatLonRect;
  * @since Mar 20, 2008
  */
 public class PointIteratorFiltered extends PointIteratorAbstract {
-  private PointFeatureIterator orgIter;
-  private PointFeatureIterator.Filter filter;
+    private final PointFeatureIterator origIter;
+    private final PointFeatureIterator.Filter filter;
+    private PointFeature pointFeature;
 
-  private PointFeature pointFeature;
-  private boolean finished = false;
+    // Originally, this was the only constructor for this class.
+    public PointIteratorFiltered(PointFeatureIterator orgIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
+        this(orgIter, new SpaceAndTimeFilter(filter_bb, filter_date));
+    }
 
-  PointIteratorFiltered(PointFeatureIterator orgIter, PointFeatureIterator.Filter filter) {
-    this.orgIter = orgIter;
-    this.filter = filter;
+    public PointIteratorFiltered(PointFeatureIterator origIter, PointFeatureIterator.Filter filter) {
+        this.origIter = Preconditions.checkNotNull(origIter);
+        this.filter = Preconditions.checkNotNull(filter);
+    }
+    
+    /**
+     * Returns {@code true} if the iteration has more elements. (In other words, returns {@code true} if {@link #next}
+     * would return an element rather than throwing an exception.)
+     * <p/>
+     * This method is <i>idempotent</i>, meaning that when it is called repeatedly without an intervening
+     * {@link #next}, calls after the first will have no effect.
+     *
+     * @return {@code true} if the iteration has more elements
+     */
+    // PointFeatureIterator.hasNext() doesn't guarantee idempotency, but we do.
+    @Override
+    public boolean hasNext() {
+        if (pointFeature != null) {
+            return true;  // pointFeature hasn't yet been consumed.
+        }
+        
+        pointFeature = nextFilteredDataPoint();
+        if (pointFeature == null) {
+            close();
+            return false;
+        } else {
+            return true;
+        }
+    }
+  
+  /**
+   * Returns the next element in the iteration.
+   *
+   * @return the next element in the iteration
+   * @throws java.util.NoSuchElementException if the iteration has no more elements.
+   */
+  // PointFeatureIterator.next() doesn't actually specify the behavior of next() when there are no more elements,
+  // but we can define a stronger contract.
+  @Override
+  public PointFeature next() throws NoSuchElementException {
+    if (!hasNext()) {
+      throw new NoSuchElementException("This iterator has no more elements.");
+    }
+    
+    assert pointFeature != null;
+    PointFeature ret = pointFeature;
+    calcBounds(ret);
+    
+    pointFeature = null;  // Feature has been consumed.
+    return ret;
   }
-
-  public void setBufferSize(int bytes) {
-    orgIter.setBufferSize(bytes);
-  }
-
+  
+  @Override
   public void close() {
-    if (finished) return;
-    orgIter.close();
-    finishCalcBounds();
-    finished = true;
-  }
-
-  public boolean hasNext() {
-    pointFeature = nextFilteredDataPoint();
-    boolean done = (pointFeature == null);
-    if (done) close();
-    return !done;
-  }
-
-  public PointFeature next() {
-    if (pointFeature == null) return null;
-    calcBounds(pointFeature);
-    return pointFeature;
-  }
-
-  private PointFeature nextFilteredDataPoint() {
-    if ( orgIter == null) return null;
-    if (!orgIter.hasNext()) return null;
-
-    PointFeature pdata = orgIter.next();
-    while (!filter.filter(pdata)) {
-      if (!orgIter.hasNext()) return null;
-      pdata = orgIter.next();
+        origIter.close();
+        finishCalcBounds();
     }
 
-    return pdata;
-  }
-
-  static public class BoundsFilter implements PointFeatureIterator.Filter {
-
-    private final LatLonRect filter_bb;
-    private final CalendarDateRange filter_date;
-
-    public BoundsFilter(LatLonRect filter_bb, CalendarDateRange filter_date) {
-      this.filter_bb = filter_bb;
-      this.filter_date = filter_date;
+    @Override
+    public void setBufferSize(int bufferSize) {
+        origIter.setBufferSize(bufferSize);
     }
 
-    public boolean filter(PointFeature pdata) {
-      if ((filter_date != null) && !filter_date.includes(pdata.getObservationTimeAsCalendarDate()))
-        return false;
+    /**
+     * Returns the next point that satisfies the filter, or {@code null} if no such point exists.
+     *
+     * @return the next point that satisfies the filter, or {@code null} if no such point exists.
+     */
+    private PointFeature nextFilteredDataPoint() {
+        while (origIter.hasNext()) {
+            PointFeature pointFeat = origIter.next();
+            if (filter.filter(pointFeat)) {
+                return pointFeat;
+            }
+        }
 
-      return !((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()));
+        return null;
     }
 
-  }
 
+    /**
+     * A filter that only permits features whose lat/lon falls within a given bounding box AND whose
+     * observation time falls within a given date range.
+     */
+    public static class SpaceAndTimeFilter implements PointFeatureIterator.Filter {
+        private final LatLonRect filter_bb;
+        private final CalendarDateRange filter_date;
 
+        public SpaceAndTimeFilter(LatLonRect filter_bb, CalendarDateRange filter_date) {
+            this.filter_bb = Preconditions.checkNotNull(filter_bb);
+            this.filter_date = Preconditions.checkNotNull(filter_date);
+        }
 
+        @Override
+        public boolean filter(PointFeature pointFeat) {
+            return filter_bb.contains(pointFeat.getLocation().getLatLon()) &&
+                    filter_date.includes(pointFeat.getObservationTimeAsCalendarDate());
+        }
+    }
 }
-

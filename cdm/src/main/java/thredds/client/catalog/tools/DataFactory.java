@@ -32,10 +32,12 @@
  */
 package thredds.client.catalog.tools;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
@@ -85,7 +87,7 @@ public class DataFactory {
    * Otherwise, the FeatureType and FeatureDataset is valid.
    * There may still be warning or diagnostic errors in errLog.
    */
-  public static class Result implements AutoCloseable {
+  public static class Result implements Closeable {
     public boolean fatalError;
     public Formatter errLog = new Formatter();
 

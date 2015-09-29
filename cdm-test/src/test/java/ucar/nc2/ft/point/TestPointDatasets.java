@@ -55,7 +55,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;

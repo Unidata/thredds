@@ -32,16 +32,15 @@
  */
 package ucar.nc2.ft.point.remote;
 
+import java.io.IOException;
+import java.io.InputStream;
 import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.CollectionInfo;
 import ucar.nc2.ft.point.DsgCollectionImpl;
+import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.point.PointIteratorAbstract;
-
-import java.io.InputStream;
-import java.io.IOException;
 
 /**
  * Iterate through a stream of PointStream.MessageType.PointFeature until PointStream.MessageType.End
@@ -49,7 +48,7 @@ import java.io.IOException;
  * @author caron
  * @since May 14, 2009
  */
-public class RemotePointFeatureIterator extends PointIteratorAbstract {
+public class PointIteratorStream extends PointIteratorAbstract {
 
   private DsgFeatureCollection dsg;
   private InputStream in;
@@ -58,7 +57,7 @@ public class RemotePointFeatureIterator extends PointIteratorAbstract {
   private PointFeature pf;
   private boolean finished = false;
 
-  RemotePointFeatureIterator(DsgCollectionImpl dsg, InputStream in, FeatureMaker featureMaker) throws IOException {
+  PointIteratorStream(DsgCollectionImpl dsg, InputStream in, FeatureMaker featureMaker) throws IOException {
     this.dsg = dsg;
     this.in = in;
     this.featureMaker = featureMaker;

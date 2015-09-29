@@ -1,5 +1,7 @@
 package ucar.nc2.jni.netcdf;
 
+import java.io.IOException;
+import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -18,9 +20,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.CompareNetcdf;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
-
-import java.io.IOException;
-import java.util.Formatter;
 
 /**
  * Test JNI netcdf-4 iosp
@@ -86,7 +85,7 @@ public class TestNc4IospReading {
       //NCdumpW.printArray(data1);
       System.out.printf("Read from jni%n");
       Array data2 = read(jni, "salinity", "0,11:12,22,:");
-      assert MAMath.isEqual(data1, data2);
+      assert MAMath.fuzzyEquals(data1, data2);
       System.out.printf("data is equal%n");
     }
   }

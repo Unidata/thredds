@@ -33,16 +33,14 @@
 
 package ucar.nc2.ft.point;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataDeep;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.time.CalendarDateUnit;
-
 import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A factory for making deep copies of StationPointFeature, so all data is self contained.
@@ -61,13 +59,11 @@ public class StationFeatureCopyFactory {
 
   private final Map<String, StationFeatureImpl> stationMap;
   private final StructureMembers sm;
-  private final CalendarDateUnit du;
   private final int sizeInBytes;
 
-  public StationFeatureCopyFactory(StationPointFeature proto, CalendarDateUnit du) throws IOException {
-    this.du = du;
+  public StationFeatureCopyFactory(StationPointFeature proto) throws IOException {
     stationMap = new HashMap<>();
-    StructureData sdata = proto.getDataAll();
+    StructureData sdata = proto.getFeatureData();
     sm = new StructureMembers(sdata.getStructureMembers());
     sizeInBytes =  OBJECT_SIZE + POINTER_SIZE +       // PointFeatureCopy - 1 pointer                                             48
             2 * 8 + 2 * POINTER_SIZE +                // PointFeatureImpl - 2 doubles and 2 pointers                              32
@@ -107,7 +103,8 @@ public class StationFeatureCopyFactory {
     StructureData data;
 
     StationPointFeatureCopy(StationFeature station, PointFeature pf) {
-      super(pf.getFeatureCollection(), station, pf.getObservationTime(), pf.getNominalTime(), du);
+      super(pf.getFeatureCollection(), station, pf.getObservationTime(), pf.getNominalTime(),
+              pf.getFeatureCollection().getTimeUnit());
       this.station = station;
     }
 

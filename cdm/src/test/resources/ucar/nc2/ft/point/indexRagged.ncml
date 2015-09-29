@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- See http://cfconventions.org/Data/cf-convetions/cf-conventions-1.6/build/cf-conventions.html#Example%20H.2.5.1 -->
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+    <dimension name="station" length="3"/>
+    <dimension name="obs" length="3" isUnlimited="true"/>
+	<dimension name="name_strlen" length="3"/>
+	
+    <variable name="station_name" shape="station name_strlen" type="char">
+        <attribute name="long_name" value="station name"/>
+        <attribute name="cf_role" value="timeseries_id"/>
+        <values>GGGHHHIII</values>
+    </variable>
+	
+    <variable name="time" shape="obs" type="double">
+        <attribute name="standard_name" value="time"/>
+        <attribute name="long_name" value="time of measurement"/>
+        <attribute name="units" value="days since 1970-01-01 00:00:00"/>
+        <values>200 300 400</values>
+    </variable>
+
+    <variable name="lon" shape="station" type="float">
+        <attribute name="standard_name" value="longitude"/>
+        <attribute name="long_name" value="station longitude"/>
+        <attribute name="units" value="degrees_east"/>
+        <values>110 140 170</values>
+    </variable>
+
+    <variable name="lat" shape="station" type="float">
+        <attribute name="standard_name" value="latitude"/>
+        <attribute name="long_name" value="station latitude"/>
+        <attribute name="units" value="degrees_north"/>
+        <values>15 30 45</values>
+    </variable>
+
+    <variable name="alt" shape="station" type="float">
+        <attribute name="long_name" value="vertical distance above the surface"/>
+        <attribute name="standard_name" value="height"/>
+        <attribute name="units" value="feet"/>
+        <attribute name="positive" value="up"/>
+        <attribute name="axis" value="Z"/>
+        <values>1894 266 5280</values>
+    </variable>
+	
+    <variable name="humidity" shape="obs" type="float">
+        <attribute name="standard_name" value="specific_humidity"/>
+        <attribute name="coordinates" value="time lat lon alt"/>
+        <values start="100" increment="100"/>
+    </variable>
+	
+	<variable name="stationIndex" shape="obs" type="int">
+		<attribute name="long_name" value="which station this obs is for"/>
+		<attribute name="instance_dimension" value="station"/>
+		<values>0 1 2</values>
+	</variable>
+
+    <attribute name="featureType" value="timeSeries"/>
+    <attribute name="Conventions" value="CF-1.6"/>
+</netcdf>

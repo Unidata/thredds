@@ -32,22 +32,39 @@
  */
 package ucar.nc2.stream;
 
-import ucar.nc2.*;
-import ucar.ma2.*;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.WritableByteChannel;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.ArrayStructureBB;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataDeep;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.EnumTypedef;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Sequence;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.unidata.io.RandomAccessFile;
-
-import javax.annotation.Nonnull;
 
 /**
  * Defines the ncstream format, along with ncStream.proto.
@@ -584,7 +601,8 @@ public class NcStream {
     } else {
       ByteString bs = attp.getData();
       ByteBuffer bb = ByteBuffer.wrap(bs.toByteArray());
-      return new Attribute(attp.getName(), Array.factory(dtUse, null, bb)); // if null, then use int[]{bb.limit()}
+      return new Attribute(attp.getName(), Array.factory(dtUse, (int[]) null, bb)); // if null, then use int[]{bb
+      // .limit()}
     }
   }
 

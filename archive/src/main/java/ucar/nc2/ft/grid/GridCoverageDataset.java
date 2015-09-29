@@ -28,7 +28,7 @@ import java.util.*;
  * @author caron
  * @since 5/2/2015
  */
-public class GridCoverageDataset implements AutoCloseable {
+public class GridCoverageDataset implements Closeable {
 
   String name;
   AttributeContainerHelper atts;

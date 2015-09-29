@@ -793,7 +793,8 @@ public class StationWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           try {
             if (count == 0) {  // first time : need a point feature so cant do it in header
-              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), sfc.getTimeUnit().getTimeUnitString(), pf);
+              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(
+                      sfc.getName(), sfc.getTimeUnit().getTimeUnitString(), sfc.getAltUnits(), pf);
               byte[] b = proto.toByteArray();
               PointStream.writeMagic(out, PointStream.MessageType.PointFeatureCollection);
               NcStream.writeVInt(out, b.length);

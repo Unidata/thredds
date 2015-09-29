@@ -46,16 +46,13 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import thredds.server.cdmremote.params.CdmrfQueryBean;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
@@ -66,6 +63,18 @@ import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Format;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * CdmrFeature subsetting for point data.
@@ -361,7 +370,8 @@ public class PointWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           try {
             if (count == 0) {  // first time : need a point feature so cant do it in header
-              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(fd.getLocation(), pfc.getTimeUnit().getTimeUnitString(), pf);
+              PointStreamProto.PointFeatureCollection proto = PointStream.encodePointFeatureCollection(
+                      pfc.getName(), pfc.getTimeUnit().getTimeUnitString(), pfc.getAltUnits(), pf);
               byte[] b = proto.toByteArray();
               PointStream.writeMagic(out, PointStream.MessageType.PointFeatureCollection);
               NcStream.writeVInt(out, b.length);

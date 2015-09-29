@@ -32,7 +32,26 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.ma2.StructureData;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.hdf5.H5header;
@@ -40,12 +59,6 @@ import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.N3raf;
 import ucar.nc2.write.Nc4Chunking;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.*;
 
 /**
  * Writes Netcdf 3 or 4 formatted files to disk.
@@ -74,7 +87,7 @@ import java.util.*;
  * @author caron
  * @since 7/25/12
  */
-public class NetcdfFileWriter implements AutoCloseable {
+public class NetcdfFileWriter implements Closeable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriter.class);
   static private Set<DataType> validN3types = EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT,
           DataType.DOUBLE, DataType.FLOAT);

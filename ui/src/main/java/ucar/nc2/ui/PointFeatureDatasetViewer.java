@@ -33,13 +33,41 @@
 
 package ucar.nc2.ui;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
 import ucar.ma2.StructureData;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.ProfileFeature;
+import ucar.nc2.ft.ProfileFeatureCollection;
+import ucar.nc2.ft.SectionFeature;
+import ucar.nc2.ft.SectionFeatureCollection;
+import ucar.nc2.ft.StationCollection;
+import ucar.nc2.ft.StationProfileFeature;
+import ucar.nc2.ft.StationProfileFeatureCollection;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.TrajectoryFeature;
+import ucar.nc2.ft.TrajectoryFeatureCollection;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.ogc.MarshallingUtil;
@@ -49,7 +77,9 @@ import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.PointController;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.ui.util.Resource;
-import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentDialog;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -58,16 +88,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.beans.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A Swing widget to view the contents of a ucar.nc2.dt2.PointFeatureDataset

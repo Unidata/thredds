@@ -33,14 +33,13 @@
 
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.PointFeatureIterator;
+import java.io.IOException;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
-
-import java.io.IOException;
 
 /**
  * Adapt a PointFeatureCollectionIterator to a PointFeatureIterator, by flattening all the iterators in the collection
@@ -67,7 +66,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
   PointIteratorFlatten(IOIterator<PointFeatureCollection> collectionIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
     this.collectionIter = collectionIter;
     if ((filter_bb != null) || (filter_date != null))
-      this.filter = new PointIteratorFiltered.BoundsFilter(filter_bb, filter_date);
+      this.filter = new PointIteratorFiltered.SpaceAndTimeFilter(filter_bb, filter_date);
   }
 
   // LOOK

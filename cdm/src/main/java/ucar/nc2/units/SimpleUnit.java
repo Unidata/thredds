@@ -102,7 +102,7 @@ public class SimpleUnit {
    * @throws Exception when date parser fails
    * @see ucar.units.UnitFormat#parse
    */
-  static public SimpleUnit factoryWithExceptions(String name) throws Exception {
+  static public SimpleUnit factoryWithExceptions(String name) throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     Unit uu = format.parse(name);
     //if (isDateUnit(uu)) return new DateUnit(name);
@@ -111,7 +111,7 @@ public class SimpleUnit {
   }
 
   // need subclass access
-  static protected Unit makeUnit(String name) throws Exception {
+  static protected Unit makeUnit(String name) throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     return format.parse(name);
   }
@@ -152,9 +152,9 @@ public class SimpleUnit {
    * @param unitString1 compare this unit
    * @param unitString2 compare this unit
    * @return true if the 2 units are compatible
-   * @throws Exception if units parsing fails
+   * @throws UnitException if units parsing fails
    */
-  static public boolean isCompatibleWithExceptions(String unitString1, String unitString2) throws Exception {
+  static public boolean isCompatibleWithExceptions(String unitString1, String unitString2) throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     Unit uu1 = format.parse(unitString1);
     Unit uu2 = format.parse(unitString2);

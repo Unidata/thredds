@@ -32,16 +32,28 @@
  */
 package ucar.nc2.ft.point.remote;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import javax.annotation.Nullable;
 import ucar.ma2.StructureData;
-import ucar.nc2.ft.point.*;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.point.PointIteratorEmpty;
+import ucar.nc2.ft.point.StationHelper;
+import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +64,7 @@ import java.util.List;
  *
  * @author caron
  */
-public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
+public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
   private String uri;
   protected LatLonRect boundingBoxSubset;
   protected CalendarDateRange dateRangeSubset;
@@ -62,7 +74,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
    *
    * @param uri cdmremote endpoint
    */
-  public RemoteStationCollection(String uri, CalendarDateUnit timeUnit, String altUnits) {
+  public StationCollectionStream(String uri, CalendarDateUnit timeUnit, String altUnits) {
     super(uri, timeUnit, altUnits);
     this.uri = uri;
   }
@@ -87,7 +99,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       PointStreamProto.StationList stationsp = PointStreamProto.StationList.parseFrom(b);
       for (ucar.nc2.ft.point.remote.PointStreamProto.Station sp : stationsp.getStationsList()) {
 //        Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
-        stationHelper.addStation(new RemoteStationFeatureImpl(null, null));    // LOOK WRONG
+        stationHelper.addStation(new StationFeature(null, null));    // LOOK WRONG
       }
       return stationHelper;
     }
@@ -109,21 +121,21 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
 //    List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
-    return new RemoteStationCollectionSubset(this, null, null); // LOOK WRONG
+    return new Subset(this, null, null); // LOOK WRONG
   }
 
   @Override
   public StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
     if (boundingBox == null) return this;
-    return new RemoteStationCollectionSubset(this, boundingBox, null);
+    return new Subset(this, boundingBox, null);
   }
 
   // NestedPointFeatureCollection
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     //boolean restrictedList = false;
-    // QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
-    RemotePointCollection pfc = new RemotePointCollection(uri, getTimeUnit(), getAltUnits(), null); // queryMaker);
+    //QueryMaker queryMaker = restrictedList ? new QueryByStationList() : null;
+    PointFeatureCollection pfc = new PointCollectionStreamRemote(uri, getTimeUnit(), getAltUnits(), null);
     return pfc.subset(boundingBox, dateRange);
   }
 
@@ -142,11 +154,10 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  private static class RemoteStationCollectionSubset extends RemoteStationCollection {
-    RemoteStationCollection from;
+  private static class Subset extends StationCollectionStream {
+    StationCollectionStream from;
 
-    RemoteStationCollectionSubset(RemoteStationCollection from, LatLonRect filter_bb,
-            CalendarDateRange filter_date) throws IOException {
+    Subset(StationCollectionStream from, LatLonRect filter_bb, CalendarDateRange filter_date) throws IOException {
       super(from.uri, from.getTimeUnit(), from.getAltUnits());
       this.from = from;
 
@@ -164,7 +175,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
     @Override
     protected StationHelper createStationHelper() throws IOException {
-      List<StationFeature> stations = from.getStationHelper().getStationFeatures(boundingBoxSubset);
+      List<ucar.nc2.ft.point.StationFeature> stations = from.getStationHelper().getStationFeatures(boundingBoxSubset);
       StationHelper stationHelper = new StationHelper();
       stationHelper.setStations(stations);
       return stationHelper;
@@ -178,12 +189,12 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
   ///////////////////////////////////////////////////////////////////////////////
 
-  private class RemoteStationFeatureImpl extends StationTimeSeriesFeatureImpl {
+  private class StationFeature extends StationTimeSeriesFeatureImpl {
     StationTimeSeriesFeature stnFeature;
-    RemotePointFeatureIterator riter;
+    PointIteratorStream riter;
 
-    RemoteStationFeatureImpl(StationTimeSeriesFeature s, CalendarDateRange dateRange) {
-      super(s, RemoteStationCollection.this.getTimeUnit(), RemoteStationCollection.this.getAltUnits(), -1);
+    StationFeature(StationTimeSeriesFeature s, CalendarDateRange dateRange) {
+      super(s, StationCollectionStream.this.getTimeUnit(), StationCollectionStream.this.getAltUnits(), -1);
       this.stnFeature = s;
       if (dateRange != null) {
         getInfo();
@@ -198,7 +209,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     @Override
     public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
       if (dateRange == null) return this;
-      return new RemoteStationFeatureImpl(stnFeature, dateRange);
+      return new StationFeature(stnFeature, dateRange);
     }
 
     @Nonnull
@@ -242,7 +253,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
 
-        riter = new RemotePointFeatureIterator(RemoteStationFeatureImpl.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        riter = new PointIteratorStream(StationFeature.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         return riter;
 
       } catch (Throwable t) {
