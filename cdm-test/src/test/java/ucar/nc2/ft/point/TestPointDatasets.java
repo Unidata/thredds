@@ -232,7 +232,7 @@ public class TestPointDatasets {
   String location;
   FeatureType ftype;
   int countExpected;
-  boolean show = true;
+  boolean show = false;
 
   public TestPointDatasets(String location, FeatureType ftype, int countExpected) {
     this.location = location;

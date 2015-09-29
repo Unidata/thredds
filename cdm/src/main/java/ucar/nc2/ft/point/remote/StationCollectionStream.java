@@ -35,6 +35,7 @@ package ucar.nc2.ft.point.remote;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.PointFeature;
