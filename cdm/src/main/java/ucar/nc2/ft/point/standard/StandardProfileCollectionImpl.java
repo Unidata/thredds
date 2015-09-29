@@ -33,10 +33,7 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.CollectionIteratorAdapter;
-import ucar.nc2.ft.point.PointFeatureCCImpl;
-import ucar.nc2.ft.point.ProfileFeatureImpl;
-import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
+import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -101,7 +98,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
             if (name == null) this.name = timeUnit.makeCalendarDate(this.time).toString();
           } else {
             if (name == null) this.name = "empty";
-            getInfo().npts = 0;
+            getInfo().nfeatures = 0;
           }
         } catch (IOException e) {
           e.printStackTrace();
@@ -192,15 +189,24 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
   private class ProfileIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
     StructureDataIterator structIter;
     StructureData nextProfileData;
+    StandardProfileFeature prev;
+    CollectionInfo calcInfo;
 
     ProfileIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
       this.structIter = structIter;
+      CollectionInfo info = getInfo();
+      if (!info.isComplete())
+        calcInfo = info;
     }
 
     public boolean hasNext() throws IOException {
       while (true) {
+        if (prev != null && calcInfo != null)
+          calcInfo.extend(prev.getInfo());
+
         if (!structIter.hasNext()) {
           structIter.close();
+          if (calcInfo != null) calcInfo.setComplete();
           return false;
         }
         nextProfileData = structIter.next();
@@ -209,14 +215,14 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
       return true;
     }
 
-
     public ProfileFeature next() throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.tableData[1] = nextProfileData;
       cursor.recnum[1] = structIter.getCurrentRecno();
       cursor.currentIndex = 1;
       ft.addParentJoin(cursor); // there may be parent joins
-      return new StandardProfileFeature(cursor, ft.getObsTime(cursor), nextProfileData);
+      prev = new StandardProfileFeature(cursor, ft.getObsTime(cursor), nextProfileData);
+      return prev;
     }
 
     public void close() {

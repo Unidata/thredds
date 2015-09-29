@@ -69,7 +69,7 @@ public interface TrajectoryFeature extends PointFeatureCollection {
 
   /**
    * The actual data of just this Trajectory feature.
-   * @return the actual data of this feature, may not be null but may be empty.
+   * @return the actual data of this Trajectory, may not be null but may be empty.
    * @throws java.io.IOException on i/o error
    */
   @Nonnull

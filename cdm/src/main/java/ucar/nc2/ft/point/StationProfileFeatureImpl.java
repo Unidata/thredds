@@ -150,6 +150,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
       this.dateRange = filter_date;
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return from.getFeatureData();

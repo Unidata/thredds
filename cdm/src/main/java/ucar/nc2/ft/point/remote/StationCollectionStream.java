@@ -54,6 +54,11 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
 /**
  * Connect to remote Station Collection using cdmremote
  *
@@ -207,6 +212,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
       return new StationFeature(stnFeature, dateRange);
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return stnFeature.getFeatureData();

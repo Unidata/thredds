@@ -54,7 +54,7 @@ import java.io.IOException;
  * @author caron
  */
 public class PointDatasetStandardFactory implements FeatureDatasetFactory {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetStandardFactory.class);
+  // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetStandardFactory.class);
   static boolean showTables = false;
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {

@@ -314,7 +314,7 @@ public abstract class CFPointWriter implements Closeable {
       int count = 0;
       for (StationProfileFeature spf : fc) {
         for (ProfileFeature pf : spf) {
-          if (pf.getTime() == null) continue;  // assume this means its a "incomplete multidimensional"
+          if (pf.getTime() == null) continue;  // assume this means its an "incomplete multidimensional"
 
           count += cfWriter.writeProfile(spf, pf);
           if (debug && count % 100 == 0) System.out.printf("%d ", count);
@@ -429,7 +429,7 @@ public abstract class CFPointWriter implements Closeable {
     this.noUnlimitedDimension = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength >= 0;   // LOOK NOT USED
     this.isExtendedModel = writer.getVersion().isExtendedModel();
 
-    setExtraVariables(extra);
+    // setExtraVariables(extra);
     addGlobalAtts(atts);
     addNetcdf3UnknownAtts(noTimeCoverage);
   }
@@ -632,14 +632,8 @@ public abstract class CFPointWriter implements Closeable {
       List<Dimension> dims = makeDimensionList(dimMap, oldVar.getDimensions());
       dims.add(0, recordDim);
 
-      /*      // make dimension list
-      List<Dimension> oldDims = oldVar.getDimensions();
-      StringBuilder dimNames = new StringBuilder(recordDimName);
-      for (Dimension d : oldDims) {
-        if (!d.isUnlimited())
-          dimNames.append(" ").append(d.getShortName());
-      }
-      String dimString = dimNames.toString();  */
+      //if (oldVar.getShortName().equals("PRES"))
+      //  System.out.printf("HEY%n");
 
       Variable newVar;
        if (oldVar.getDataType().equals(DataType.STRING)  && !writer.getVersion().isExtendedModel()) {

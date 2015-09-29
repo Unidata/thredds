@@ -66,6 +66,7 @@ public class WriterCFPointCollection extends CFPointWriter {
                                  CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
+    writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Point Data, H.1"));
   }
 
   public void writeHeader(PointFeature pf) throws IOException {

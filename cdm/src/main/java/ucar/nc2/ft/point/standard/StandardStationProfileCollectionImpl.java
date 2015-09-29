@@ -90,15 +90,25 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   private class StationProfileIterator implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
     private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
     private StructureData stationProfileData;
+    private DsgCollectionImpl prev;
+    private CollectionInfo calcInfo;
 
     StationProfileIterator() throws IOException {
       sdataIter = ft.getRootFeatureDataIterator(-1);
+      CollectionInfo info = getInfo();
+      if (!info.isComplete())
+        calcInfo = info;
     }
 
     public boolean hasNext() throws IOException {
       while (true) {
+        if (prev != null && calcInfo != null)
+          calcInfo.extend(prev.getInfo());
+
         if (!sdataIter.hasNext()) {
           close();
+          if (calcInfo != null)
+            calcInfo.setComplete();
           return false;
         }
 
@@ -117,7 +127,9 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       cursor.currentIndex = 2;
       ft.addParentJoin(cursor); // there may be parent joins
 
-      return new StandardStationProfileFeature(ft.makeStation(stationProfileData), cursor, stationProfileData, cursor.recnum[2]);
+      StationProfileFeature result =  new StandardStationProfileFeature(ft.makeStation(stationProfileData), cursor, stationProfileData, cursor.recnum[2]);
+      prev = (DsgCollectionImpl) result; // common for Station and StationProfile
+      return result;
     }
 
     @Override
@@ -183,17 +195,27 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       private ucar.ma2.StructureDataIterator sdataIter;
       private int count = 0;
       private StructureData profileData;
+      DsgCollectionImpl prev;
+      CollectionInfo calcInfo;
 
       ProfileFeatureIterator(Cursor cursor) throws IOException {
         this.cursor = cursor;
         sdataIter = ft.getMiddleFeatureDataIterator(cursor, -1);
+        CollectionInfo info = getInfo();
+        if (!info.isComplete())
+          calcInfo = info;
       }
 
       public boolean hasNext() throws IOException {
         while (true) {
+          if (prev != null && calcInfo != null)
+            calcInfo.extend(prev.getInfo());
+
           if (!sdataIter.hasNext()) {
             close();
             timeSeriesNpts = count; // field in StationProfileFeatureImpl
+            if (calcInfo != null)
+              calcInfo.setComplete();
             return false;
           }
           //nextProfile = iter.next();
@@ -209,7 +231,9 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       public PointFeatureCollection next() throws IOException {
         count++;
-        return new StandardProfileFeature(station, getTimeUnit(), getAltUnits(), ft.getObsTime(cursor), cursor.copy(), profileData);
+        PointFeatureCollection result = new StandardProfileFeature(station, getTimeUnit(), getAltUnits(), ft.getObsTime(cursor), cursor.copy(), profileData);
+        prev = (DsgCollectionImpl) result;
+        return result;
       }
 
       public void setBufferSize(int bytes) {

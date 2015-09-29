@@ -51,7 +51,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Synthetic (Ncml) datasets for testing point feature variants
+ * Synthetic (Ncml) datasets for testing point feature variants.
+ * not dependent on cdmUnitTest, so can be run with travis.
  *
  * @author caron
  * @since 6/27/2014

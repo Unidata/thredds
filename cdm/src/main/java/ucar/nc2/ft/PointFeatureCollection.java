@@ -32,8 +32,10 @@
  */
 package ucar.nc2.ft;
 
+import ucar.ma2.StructureData;
 import ucar.nc2.time.CalendarDateRange;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 

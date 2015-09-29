@@ -62,7 +62,7 @@ public interface StationTimeSeriesFeature extends StationFeature, PointFeatureCo
 
   /**
    * The actual data of just this StationTimeSeries feature.
-   * @return the actual data associated with this featire
+   * @return the actual data associated with this StationTimeSeries
    * @throws java.io.IOException on i/o error
    */
   @Nonnull

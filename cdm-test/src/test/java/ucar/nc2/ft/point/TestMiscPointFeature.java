@@ -59,11 +59,37 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 public class TestMiscPointFeature {
+
+  // need a place to test individual datasets
+  @Test
+  public void testProblemProfile() throws IOException {
+    String location = TestDir.cdmLocalTestDataDir + "point/profileMultidimZJoin.ncml";
+    Assert.assertEquals("npoints", 50, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.PROFILE, true));
+  }
+
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testProblem() throws IOException {
+  public void testProblemTraj() throws IOException {
     String location = TestPointDatasets.topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
     Assert.assertEquals("npoints", 383, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY, true));
+  }
+
+  @Test
+  public void testProblemStation() throws IOException {
+    String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.4.1.ncml";
+    Assert.assertEquals("npoints", 100, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
+  }
+
+  @Test
+  public void testProblemStationProfile() throws IOException {
+    String location = TestDir.cdmLocalTestDataDir + "point/stationProfileSingle.ncml";
+    Assert.assertEquals("npoints", 9, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true));
+  }
+
+  @Test
+  public void testProblemSection() throws IOException {
+    String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.6.3.1.ncml";
+    Assert.assertEquals("npoints", 145, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.SECTION, true));
   }
 
   @Test
@@ -71,6 +97,7 @@ public class TestMiscPointFeature {
     String file = TestDir.cdmLocalTestDataDir + "point/stationData2Levels.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
+      Assert.assertNotNull(pods);
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
@@ -282,7 +309,6 @@ public class TestMiscPointFeature {
 
   @Test
   public void testIterator() throws IOException {  // kunicki
-    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     Formatter formatter = new Formatter(System.err);
     try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter)) {
       if (fd != null && fd instanceof FeatureDatasetPoint) {
@@ -296,16 +322,19 @@ public class TestMiscPointFeature {
                   new LatLonRect(new LatLonPointImpl(-90, -180), new LatLonPointImpl(90, 180)),
                   CalendarDateRange.of(CalendarDate.parseISOformat(null, "1900-01-01"), CalendarDate.parseISOformat(null, "2100-01-01")));
 
-          try (PointFeatureIterator pfi = pfc.getPointFeatureIterator(-1)) {
-            while (pfi.hasNext()) {
-              PointFeature pf = pfi.next();
+          for (PointFeature pf : pfc) {
               // the call to cursor.getParentStructure() in
               // in StandardPointFeatureIterator.makeStation()
               // is returning the observation structure, not the
               // station structure since Cursor.currentIndex = 0
-              Station s = stsfc.getStation(pf);
-              System.out.println("stn= " + s);
-            }
+              //Station s = stsfc.getStation(pf);
+              StructureData sdata = pf.getFeatureData();
+              Assert.assertNotNull(sdata);
+              //Assert.assertTrue( pf instanceof StationFeature);
+
+            Assert.assertTrue( pf.getClass().getName(), pf instanceof StationFeature);
+            StationFeature sf = (StationFeature) pf;
+
           }
         }
       }
