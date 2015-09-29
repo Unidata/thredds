@@ -41,6 +41,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -200,6 +201,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       return new RemoteStationFeatureImpl(stnFeature, dateRange);
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return stnFeature.getFeatureData();

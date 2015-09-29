@@ -12,6 +12,19 @@ public interface ucar.nc2.ft.FeatureDatasetPoint extends ucar.nc2.ft.FeatureData
 }
 ----
 
+[source,java]
+----
+public interface DsgFeatureCollection {
+  String getName();
+  ucar.nc2.constants.FeatureType getCollectionFeatureType();
+  CalendarDateUnit getTimeUnit();
+  String getAltUnits();
+  CalendarDateRange getCalendarDateRange();
+  ucar.unidata.geoloc.LatLonRect getBoundingBox();
+  int size();
+}
+----
+
 We take the approach that all point feature types are arrangements of collections of _PointFeatures_
 (a set of measurements at the same point in space and time), distinguished by the geometry and topology of the collections.
 The *_Point Feature Types_* that we implement are:
@@ -33,16 +46,16 @@ Related documents:
 
 '''''
 
-== Point Features
+image:PointFeatureUML.svg[PointFeatureUML]
 
-image:PF1.png[image]
+== Point Features
 
 A *PointFeature* is a collection of data taken at a single time and a single place:
 
 [source,java]
 ----
-public interface ucar.nc2.ft.PointFeature {
-  ucar.nc2.ft.DsgFeatureCollection getFeatureCollection();
+public interface PointFeature {
+  DsgFeatureCollection getFeatureCollection();
 
   ucar.unidata.geoloc.EarthLocation getLocation();
 
@@ -53,7 +66,7 @@ public interface ucar.nc2.ft.PointFeature {
   CalendarDateUnit getTimeUnit();
 
   ucar.ma2.StructureData getDataAll() throws java.io.IOException;
-  ucar.ma2.StructureData getFeatureData() throws java.io.IOException; // LOOK
+  ucar.ma2.StructureData getFeatureData() throws java.io.IOException;
 }
 ----
 
@@ -63,7 +76,10 @@ Some observational systems bin data into standard intervals, in which case there
 When the nominal time is not given in the data, it is usually set to the observational time.
 Conversion between time as a double and as a *CalendarDate* is done by _getFeatureCollection().getTimeUnits()_.
 
-The location is represented by:
+When a PointFeature is  part of nested features, _getDataAll()_ will return the data with all of the parent data in
+as single StructureData object, while _getFeatureData()_ will return the data at just the innermost feature. See example below.
+
+The _location_ is returned as:
 
 [source,java]
 ----
@@ -81,29 +97,22 @@ The altitude units (if they exist) can be found from _getFeatureCollection().get
 The actual data of the observation is contained in a **link:../StructureData.html#StructureData[ucar.ma2.StructureData]**, which has a collection of
 *StructureMembers* which describe the individual data members**,** along with many convenience routines for extracting the data.
 
-getDataAll vs getFeatureData
-
 === PointFeatureCollection
 
 A PointFeatureCollection is a collection of PointFeatures:
 
 [source,java]
 ----
-public interface ucar.nc2.ft.PointFeatureCollection extends FeatureCollection, Iterable<PointFeature> {
+public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<PointFeature> {
 
-  String getName();
-  int size();
-  ucar.nc2.time.CalendarDateRange getCalendarDateRange();
-  ucar.unidata.geoloc.LatLonRect getBoundingBox();
-
-  PointFeatureCollection subset(LatLonRect, CalendarDateRange);
+  PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 }
 ----
 
-All FeatureCollections have a _name_ that must be unique within its containing collection. The _size_ of its collection is the number of
-PointFeatures that will be returned by the iterator. The size, boundingBox, and dateRange may not be known until after iterating through the
-collection, that is, actually reading the data. You can force the discovery of these by calling calcBounds(), but that may cost a complete iteration
-through the data.
+A *PointFeatureCollection* inherits from *DsgFeatureCollection*, and so has a _name, featureType, and timeUnit_.
+The _size, boundingBox, and dateRange_ may not be known until after iterating through the
+collection, that is, actually reading the data.
+You can force the discovery of these by calling _ucar.nc2.ft.point.DsgCollectionHelper.calcBounds()_.
 
 A PointFeatureCollection implements _Iterable<PointFeature>_, so can be used in a *_foreach_* block:
 
@@ -114,7 +123,7 @@ A PointFeatureCollection implements _Iterable<PointFeature>_, so can be used in 
  }
 ----
 
-You may subset a PointFeatureCollection with a lat/lon bounding box, and/or a dateRange:
+You may subset a PointFeatureCollection with a lat/lon bounding box, and/or a dateRange, for example:
 
 [source,java]
 ----
@@ -130,28 +139,20 @@ for (PointFeature pf : subset) {
 
 == Profile Features
 
-image:ProfileFeature.png[image]
-
-A *ProfileFeature* is a set of PointFeatures along a vertical line.
+A *ProfileFeature* is a collection of *PointFeatures* along a vertical line.
 
 [source,java]
 ----
 public interface ProfileFeature extends PointFeatureCollection, Iterable<PointFeature> {
-  String getName();
   LatLonPoint getLatLon();
   CalendarDate getTime();
-  int size();
-
   StructureData getFeatureData() throws IOException;
 }
 ----
 
-A *ProfileFeature* is a collection of PointFeatures, extending *PointFeatureCollection*. An iteration will return
-PointFeatures that all belong to the same profile, with the same lat/lon point and varying heights. The number of points in the collection may be
-available through the _size()_ method. When that number can only be determined by reading through the data, a -1 is returned.
-
-Note that the *subset* method, inherited from the _PointFeatureCollection_ interface, is not normally useful here, since the lat/lon values are
-identical. The time values are also often identical, although that is not required.
+*ProfileFeature* extends *PointFeatureCollection* and *DsgFeatureCollection*, so has a name, altUnit, etc.
+The iteration will return *PointFeatures* that all belong to the same profile, with the same lat/lon point and varying heights.
+The time values are often identical, although that is not required.
 
 Since a profile is a *PointFeatureCollection*, it implements _Iterable<PointFeature>_, so you get its data using:
 
@@ -169,12 +170,8 @@ A collection of *ProfileFeatures* is a *ProfileFeatureCollection*:
 [source,java]
 ----
 public interface ProfileFeatureCollection extends PointFeatureCC, Iterable<ProfileFeature> {
-
-  String getName();
-  int size();
-
-  ProfileFeatureCollection subset(LatLonRect);
-  PointFeatureCollection flatten(LatLonRect, CalendarDateRange);
+  ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException;
+  ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 }
 ----
 
@@ -183,13 +180,19 @@ To read all the data, iterate through each *ProfileFeature* in the collection, t
 [source,java]
 ----
 for (ProfileFeature profile : profileFeatureCollection) {
-  for (PointFeature pointFeature : profile) {
+  StructureData profileData = profile.getFeatureData();
+  for (PointFeature obs : profile) {
+    StructureData obsData = obs.getFeatureData();
     ...
   }
 }
 ----
 
-You may *subset* a ProfileFeatureCollection with a lat/lon bounding box, getting back another *ProfileFeatureCollection*:
+Data associated with the entire profile will be found in _profile.getFeatureData()_, while the data along the z axis will
+be in _obs.getFeatureData()_.
+
+You may *subset* a ProfileFeatureCollection with a lat/lon bounding box, getting back another *ProfileFeatureCollection*.
+Typically this is a logical subset, and no data is read until you iterate over the subset:
 
 [source,java]
 ----
@@ -204,24 +207,7 @@ for (ProfileFeature profile : subset) {
 }
 ----
 
-You may *flatten* a ProfileFeatureCollection with a lat/lon bounding box, and/or a dateRange, which throws away all the connectedness information of
-the profile, and treats the data as a collection of points. In this case, you get back a **PointFeatureCollection**:
-
-[source,java]
-----
-LatLonRect wantBB = new LatLonRect("-60,120,12,20");
-CalendarDateRange dateRange = CalendarDateRange.of(start, end);
-PointFeatureCollection subset = profileFeatureCollection.flatten(wantBB, dateRange);
-
-// get all the points in that subset
-for ( ucar.nc2.ft.PointFeature pointFeature : subset) {
-  ...
-}
-----
-
 == Station Time Series Features
-
-image:StationTimeSeries.png[image]
 
 A *StationTimeSeriesFeature* is a time series of PointFeatures at a single, named location called a *Station*:
 
@@ -236,16 +222,32 @@ public interface StationTimeSeriesFeature extends Station, PointFeatureCollectio
   double getAltitude();
   LatLonPoint getLatLon();
 
-  StationTimeSeriesFeature subset(CalendarDateRange);
+  StructureData getFeatureData() throws IOException;
+
+  StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException;
 }
 ----
 
-A *StationTimeSeriesFeature* is a collection of PointFeatures, and an iteration will return
-PointFeatures that all belong to the same station. These may or may not be time-ordered.
+*StationTimeSeriesFeature* extends *PointFeatureCollection* and *DsgFeatureCollection*, so has a _name, altUnit, timeUnits_, etc.
+It also extends *Station* and so has a _description, lat, lon, altitude_ and so on.
 
-Note that the *subset(LatLonRect, DateRange)* method, inherited from the _PointFeatureCollection_ interface, is not normally useful here, since the
-lat/lon values at all points are identical. Subsetting on just the DateRange is useful, however, and returns another *StationTimeSeriesFeature* whose
-PointFeatures lie within the specified range of dates.
+An iteration will return *PointFeatures* that all belong to the same station. These may or may not be time-ordered. One can also
+subset on _dateRange_:
+
+[source,java]
+----
+CalendarDateRange dateRange = CalendarDateRange.of(start, end);
+PointFeatureCollection subset = stationTimeSeriesCollection.subset(dateRange);
+for (PointFeature pointFeature : subset) {
+  StationPointFeature stationFeature = (StationPointFeature) pointFeature;
+  String stationName = stationFeature.getName();
+  StructureData allData = pointFeature.getDataAll();
+  ...
+}
+----
+
+The *PointFeature* will extend *StationPointFeature*, so that the station information is available from it.
+The example also shows getting a single *StructureData* that will include the data from both the station and the observation.
 
 === StationTimeSeriesFeatureCollection
 
@@ -255,25 +257,34 @@ A *StationTimeSeriesFeatureCollection* is a collection of stations with time ser
 ----
 public interface StationTimeSeriesFeatureCollection extends StationCollection, PointFeatureCC, Iterable<StationTimeSeriesFeature> {
 
-    String getName();
+  List<Station> getStations();
+  List<Station> getStations(LatLonRect subset);
+  ucar.nc2.ft.Station getStation(String stationName);
+  ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
-    List<Station> getStations();
-    List<Station> getStations(LatLonRect subset);
-    ucar.nc2.ft.Station getStation(String stationName);
-    ucar.unidata.geoloc.LatLonRect getBoundingBox();
+  List<StationFeature> getStationFeatures() throws IOException;
+  List<StationFeature> getStationFeatures( LatLonRect boundingBox) throws IOException;
+  List<StationFeature> getStationFeatures( List<String> stnNames)  throws IOException;
+  StationTimeSeriesFeature getStationFeature(Station s) throws IOException;
+  Station getStation(PointFeature feature) throws IOException;
 
-    PointFeatureCollection flatten(LatLonRect, CalendarDateRange);
-    StationTimeSeriesFeatureCollection subset(List<Station> stns);
-    StationTimeSeriesFeature getStationFeature(ucar.nc2.ft.Station);
-  }
+  StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException;
+  StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stations) throws IOException;
+  StationTimeSeriesFeatureCollection subset(LatLonRect boundingBox) throws IOException;
+  StationTimeSeriesFeatureCollection subset(List<Station> stns, CalendarDateRange dateRange) throws IOException;
+  StationTimeSeriesFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+
+  PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+  PointFeatureCollection flatten(LatLonRect llbbox, CalendarDateRange dateRange) throws IOException;
+}
 ----
 
 A *StationTimeSeriesFeatureCollection* is a collection of stations, extending *StationCollection*, from which you can get the list of available
-stations, a bounding box, etc. You may subset the collection by passing in a list of stations. You may also flatten the
-collection, throwing away the station information, and making it into a collection of PointFeatures. The flattening may include
+stations, a bounding box, etc. You may subset the collection by passing in a list of stations, a lat/lon bounding box, and/or a dateRange.
+You may _flatten_ the collection, making it into a collection of PointFeatures. The flattening may include
 subsetting by lat/lon bounding box, and/or a dateRange. Flattening can sometimes improve performance.
 
-To access the data, you may get a *StationTimeSeriesFeature* for a specified Station, or you can iterate over all *StationTimeSeriesFeatures* in the
+To access the data, get a *StationTimeSeriesFeature* for a specified Station, or iterate over all *StationTimeSeriesFeatures* in the
 collection:
 
 [source,java]
@@ -310,6 +321,21 @@ PointFeatureCollection points = stationTimeSeriesCollection.flatten(bb,dateRange
 for (PointFeature pointFeature : points) {
   StationPointFeature stationFeature = (StationPointFeature) pointFeature;
   String stationName = stationFeature.getName();
+}
+----
+
+You may *flatten* a ProfileFeatureCollection with a lat/lon bounding box, and/or a dateRange, which throws away all the connectedness information of
+the profile, and treats the data as a collection of points. In this case, you get back a **PointFeatureCollection**:
+
+[source,java]
+----
+LatLonRect wantBB = new LatLonRect("-60,120,12,20");
+CalendarDateRange dateRange = CalendarDateRange.of(start, end);
+PointFeatureCollection subset = profileFeatureCollection.flatten(wantBB, dateRange);
+
+// get all the points in that subset
+for ( ucar.nc2.ft.PointFeature pointFeature : subset) {
+  ...
 }
 ----
 

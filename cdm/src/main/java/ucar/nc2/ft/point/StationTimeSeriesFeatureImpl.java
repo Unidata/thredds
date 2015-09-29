@@ -59,12 +59,12 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
   }
 
-  public StationTimeSeriesFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int npts) {
+  public StationTimeSeriesFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int nfeatures) {
     super(s.getName(), timeUnit, altUnits);
     this.s = s;
-    if (npts >= 0) {
+    if (nfeatures >= 0) {
       getInfo(); // create the object
-      info.npts = npts;
+      info.nfeatures = nfeatures;
     }
   }
 

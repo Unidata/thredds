@@ -148,6 +148,7 @@ public class CoverageAsPoint {
       super(name, desc, wmoId, lat, lon, alt, timeUnit, altUnits, npts);
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return StructureData.EMPTY;

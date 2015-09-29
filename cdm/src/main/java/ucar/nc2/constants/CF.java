@@ -140,6 +140,9 @@ public class CF {
   public static final String SURFACE_ALTITUDE = "surface_altitude"; // alias STATION_ALTITUDE
   public static final String PLATFORM_ID = "platform_id";  // alias STATION_WMOID
 
+  // not official - used in CFwriter for attribute name
+  public static final String DSG_REPRESENTATION = "DSG_representation";
+
   ///////////////////////////////////////////////////////////////////
   // DSG proposed - not adopted; here for backwards compatibility
   public static final String RAGGED_ROWSIZE = "CF:ragged_row_count";

@@ -210,6 +210,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           return new BufrStationIterator(obs.getStructureIterator(), null);
         }
 
+        @Nonnull
         @Override
         public StructureData getFeatureData() throws IOException {
           return StructureData.EMPTY;
@@ -304,7 +305,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
           @Override
           public void close() {
-            System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getInfo().npts);
+            System.out.printf("BufrRecordIterator passed %d features super claims %d%n", countHere, getInfo().nfeatures);
             super.close();
           }
 

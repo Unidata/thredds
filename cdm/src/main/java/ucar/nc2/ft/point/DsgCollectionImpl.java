@@ -87,11 +87,11 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
 
   @Override
   public int size() {
-    return getNobs();
+    return (info == null) ? -1 : info.nfeatures;
   }
 
   public int getNobs() {
-    return (info == null) ? -1 : info.npts;
+    return (info == null) ? -1 : info.nobs;
   }
 
   @Nullable

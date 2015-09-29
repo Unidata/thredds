@@ -32,7 +32,6 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.ft.PointFeature;
@@ -92,7 +91,8 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
     info.minTime = minTime;
     info.maxTime = maxTime;
 
-    info.npts = count;
+    info.nobs = count;
+    info.nfeatures = count;
     info.setComplete();
   }
 

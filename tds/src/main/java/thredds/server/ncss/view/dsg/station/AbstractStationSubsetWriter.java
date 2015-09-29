@@ -54,6 +54,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -167,6 +168,7 @@ public abstract class AbstractStationSubsetWriter extends DsgSubsetWriter {
       }
     }
 
+    @Nonnull
     @Override
     public StructureData getFeatureData() throws IOException {
       return stationFeat.getFeatureData();

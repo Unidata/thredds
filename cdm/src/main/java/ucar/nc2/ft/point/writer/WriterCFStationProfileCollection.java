@@ -49,8 +49,10 @@ import java.util.*;
 
 /**
  * Write a CF "Discrete Sample" station profile collection file.
- * Example H.3.5. Contiguous ragged array representation of station profiles, H.5.3
- * *
+ * Ragged array representation of time series profiles, H.5.3
+ * This uses the contiguous ragged array representation for each profile (9.5.43.3), and the indexed ragged array
+ * representation to organise the profiles into time series (9.3.54).
+ *
  * @author caron
  * @since 7/14/2014
  */
@@ -77,6 +79,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
                                           CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeriesProfile.name()));
+    writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Ragged array representation of time series profiless, H.5.3"));
   }
 
   public void setStations(List<StationFeature> stns) throws IOException {

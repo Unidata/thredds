@@ -35,16 +35,18 @@ package ucar.nc2.ft.point.writer;
 
 import org.junit.Assume;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +60,28 @@ import java.util.List;
  * @since 7/2/2014
  */
 public class TestCFPointWriterMisc {
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testPointProblem() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc";
+    TestCFPointWriter.writeDataset(filename, FeatureType.POINT,
+            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), false);
+  }
+
+  @Test
+  public void testProfileProblem() throws IOException {
+    String filename = TestDir.cdmLocalTestDataDir + "point/profileMultidimZJoin.ncml";
+    TestCFPointWriter.writeDataset(filename, FeatureType.PROFILE,
+            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), false);
+  }
+
+  @Test
+  public void testStationProfileProblem() throws IOException {
+    String filename = TestDir.cdmLocalTestDataDir + "point/stationProfileSingle.ncml";
+    TestCFPointWriter.writeDataset(filename, FeatureType.STATION_PROFILE,
+            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), false);
+  }
 
   @Test
    public void testProfileInnerTime() throws Exception {
@@ -190,13 +214,13 @@ public class TestCFPointWriterMisc {
     String name = location.substring(pos + 1);
     //String prefix = (config.version == NetcdfFileWriter.Version.netcdf3) ? ".nc" : (config.version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc4c";
     if (!name.endsWith(prefix)) name = name + prefix;
-    File fileOut = new File(TestDir.temporaryLocalDataDir, name);
+    File fileOut = TestDir.getTempFile();
 
-    String absIn = fileIn.getAbsolutePath();
-    absIn = StringUtil2.replace(absIn, "\\", "/");
-    String absOut = fileOut.getAbsolutePath();
-    absOut = StringUtil2.replace(absOut, "\\", "/");
-    System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s%n", absIn, fileIn.length(), absOut);
+    //String absIn = fileIn.getAbsolutePath();
+    //absIn = StringUtil2.replace(absIn, "\\", "/");
+    //String absOut = fileOut.getAbsolutePath();
+    //absOut = StringUtil2.replace(absOut, "\\", "/");
+    System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s%n", fileIn.getAbsolutePath(), fileIn.length(), fileOut.getAbsolutePath());
 
     int count = CFPointWriter.writeFeatureCollection(fdpoint, fileOut.getPath(), config);
     long took = System.currentTimeMillis() - start;

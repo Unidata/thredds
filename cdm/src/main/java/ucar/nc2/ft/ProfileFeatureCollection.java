@@ -52,7 +52,7 @@ public interface ProfileFeatureCollection extends PointFeatureCC, Iterable<Profi
    * @return subsetted collection, may be null if empty
    * @throws IOException on read error
    */
-  // ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException;
+  ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException;
   ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   //////////////////////////////////////////////////////

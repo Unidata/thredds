@@ -48,43 +48,44 @@ import java.util.List;
  */
 public interface StationTimeSeriesFeatureCollection extends StationCollection, PointFeatureCC, Iterable<StationTimeSeriesFeature> {
 
-  /**
-   * Get a subsetted StationCollection based on a list of Stations.
-   *
-   * @param stations only contain these stations
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
   StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException;
-
-  /**
-    * Get a subsetted StationCollection based on a list of Stations.
-    *
-    * @param stations only contain these stations
-    * @return subsetted collection
-    * @throws java.io.IOException on i/o error
-    */
-   StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stations) throws IOException;
-
-   /**
-   * Get a subsetted StationCollection from a LatLonRect
-   *
-   * @param boundingBox spatial subset. may be null
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
-  StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
-
   StationTimeSeriesFeatureCollection subset(List<Station> stns, CalendarDateRange dateRange) throws IOException;
+  StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+  StationTimeSeriesFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   /**
-   * Get the collection of data for a particular Station.
+   * Flatten into a PointFeatureCollection, discarding connectedness information.
+   *
+   * @param stations only contain these stations; if null or empty use all
+   * @param dateRange only points in this date range. may be null.
+   * @param varList only these member variables. may be null. currently ignored
+   * @return a PointFeatureCollection, may be null if its empty.
+   * @throws IOException on read error
+   */
+  PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+  PointFeatureCollection flatten(LatLonRect llbbox, CalendarDateRange dateRange) throws IOException;
+
+  //////////////////////////////////////////////////////////////
+  // StationFeature
+
+  /**
+   * Get the StationTimeSeriesFeature for a particular Station.
    *
    * @param s get data for this station, must have come from this Collection
    * @return collection of data for this Station.
    * @throws java.io.IOException on i/o error
    */
   StationTimeSeriesFeature getStationFeature(Station s) throws IOException;
+
+  /**
+   * Get a subsetted StationCollection based on a list of StationFeatures.
+   *
+   * @param stations only contain these stations
+   * @return subsetted collection
+   * @throws java.io.IOException on i/o error
+   */
+  StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stations) throws IOException;
+
 
   /**
    * Get the station that belongs to this feature
@@ -107,17 +108,6 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, P
 
   List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
-  /**
-    * Flatten into a PointFeatureCollection, discarding connectedness information.
-    *
-    * @param stations only contain these stations; if null or empty use all
-    * @param dateRange only points in this date range. may be null.
-    * @param varList only these member variables. may be null. currently ignored
-    * @return a PointFeatureCollection, may be null if its empty.
-    * @throws IOException on read error
-    */
-   PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
-   PointFeatureCollection flatten(LatLonRect llbbox, CalendarDateRange dateRange) throws IOException;
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // deprecated

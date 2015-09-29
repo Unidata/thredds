@@ -60,7 +60,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
   /**
    * Constructor.
    *
-   * @param collectionIter iterator over the PointFeatureCollection
+   * @param collectionIter iterator over the collections
    * @param filter_bb      boundingbox, or null
    * @param filter_date    data range, or null
    */
