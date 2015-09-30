@@ -64,7 +64,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   }
 
   @Override
-  public Iterator<SectionFeature> iterator() {
+  public Iterator<TrajectoryProfileFeature> iterator() {
     try {
       PointFeatureCCIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
       return new NestedCollectionIteratorAdapter<>(pfIterator);
@@ -112,14 +112,14 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       return true;
     }
 
-    public SectionFeature next() throws IOException {
+    public TrajectoryProfileFeature next() throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = sdataIter.getCurrentRecno();
       cursor.tableData[2] = sectionData; // obs(leaf) = 0, profile=1, section(root)=2
       cursor.currentIndex = 2;
       ft.addParentJoin(cursor); // there may be parent joins
 
-      SectionFeature result = new StandardSectionFeature(cursor, sectionData);
+      TrajectoryProfileFeature result = new StandardSectionFeature(cursor, sectionData);
       prev = (DsgCollectionImpl) result;
       return result;
     }

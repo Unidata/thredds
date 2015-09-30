@@ -113,7 +113,6 @@ public class TestMiscPointFeature {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
-      assert fc instanceof StationCollection;
       assert fc instanceof StationTimeSeriesFeatureCollection;
       StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
       List<StationFeature> stations = sc.getStationFeatures();
@@ -165,9 +164,9 @@ public class TestMiscPointFeature {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
-      assert fc instanceof StationCollection;
-      StationCollection sc = (StationCollection) fc;
-      List<Station> stations = sc.getStations();
+      assert fc instanceof StationTimeSeriesFeatureCollection;
+      StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
+      List<StationFeature> stations = sc.getStationFeatures();
       assert (stations.size() > 0) : "No stations";
       Station s = stations.get(0);
       assert s.getName().equals("666") : "name should be '666'";
@@ -187,9 +186,9 @@ public class TestMiscPointFeature {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
-      assert fc instanceof StationCollection;
-      StationCollection sc = (StationCollection) fc;
-      List<Station> stations = sc.getStations();
+      assert fc instanceof StationTimeSeriesFeatureCollection;
+      StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
+      List<StationFeature> stations = sc.getStationFeatures();
       assert (stations.size() == 3) : "Should be 3 stations";
       for (Station s : stations) {
         System.out.printf("%s%n", s);
@@ -230,9 +229,9 @@ public class TestMiscPointFeature {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
-      assert fc instanceof StationCollection;
-      StationCollection sc = (StationCollection) fc;
-      List<Station> stations = sc.getStations();
+      assert fc instanceof StationTimeSeriesFeatureCollection;
+      StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
+      List<StationFeature> stations = sc.getStationFeatures();
       assert (stations.size() == 5) : "Should be 5 stations";
       for (Station s : stations) {
         System.out.printf("%s%n", s);

@@ -119,12 +119,12 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   // StationTimeSeriesFeatureCollection
 
   @Override
-  public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
+  public StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) throws IOException {
     if (stations == null) {
       return this;
     } else {
-      List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
-      return new CompositeStationCollectionSubset(this, subset);
+      // List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
+      return new CompositeStationCollectionSubset(this, stations);
     }
   }
 
@@ -138,11 +138,11 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     }
   }
 
-  @Override
+  /* @Override
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
     StationFeature stnFeature = getStationHelper().getStationFeature(s);
     return new CompositeStationFeature(stnFeature, timeUnit, altUnits, stnFeature.getFeatureData(), dataCollection);
-  }
+  } */
 
   @Override
   public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
@@ -224,7 +224,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     private TimedCollection collForFeature;
     private StructureData sdata;
 
-    CompositeStationFeature(Station s, CalendarDateUnit timeUnit, String altUnits, StructureData sdata, TimedCollection collForFeature) {
+    CompositeStationFeature(StationFeature s, CalendarDateUnit timeUnit, String altUnits, StructureData sdata, TimedCollection collForFeature) {
       super(s, timeUnit, altUnits, -1);
       this.sdata = sdata;
       this.collForFeature = collForFeature;
@@ -322,14 +322,14 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
         List<DsgFeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
-        Station s = stnCollection.getStation(getName());
+        StationFeature s = stnCollection.findStationFeature(getName());
         if (s == null) {
           System.out.printf("CompositeStationFeatureIterator dataset: %s missing station %s%n",
                   td.getLocation(), getName());
           return getNextIterator();
         }
 
-        StationTimeSeriesFeature stnFeature = stnCollection.getStationFeature(s);
+        StationTimeSeriesFeature stnFeature = stnCollection.getStationTimeSeriesFeature(s);
         if (CompositeDatasetFactory.debug)
           System.out.printf("CompositeStationFeatureIterator open dataset: %s for %s%n", td.getLocation(), s.getName());
         return stnFeature.getPointFeatureIterator(bufferSize);

@@ -48,7 +48,6 @@ import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -315,8 +314,8 @@ public class TestPointDatasets {
         count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
         if (showStructureData) showStructureData((StationProfileFeatureCollection) fc);
 
-      } else if (fc instanceof SectionFeatureCollection) {
-        count = checkSectionFeatureCollection((SectionFeatureCollection) fc, show);
+      } else if (fc instanceof TrajectoryProfileFeatureCollection) {
+        count = checkSectionFeatureCollection((TrajectoryProfileFeatureCollection) fc, show);
 
       } else if (fc instanceof ProfileFeatureCollection) {
         count = checkProfileFeatureCollection((ProfileFeatureCollection) fc, show);
@@ -338,7 +337,7 @@ public class TestPointDatasets {
     Assert.assertNotNull(what + " featureTYpe", dsg.getCollectionFeatureType());
     Assert.assertNotNull(what + " timeUnit", dsg.getTimeUnit());
     // Assert.assertNotNull(what + " altUnits", dsg.getAltUnits());
-    Assert.assertNotNull(what + " extraVars", dsg.getExtraVariables());
+    // Assert.assertNotNull(what + " extraVars", dsg.getExtraVariables());
   }
 
   static void checkInfo( DsgFeatureCollection dsg) throws IOException {
@@ -396,7 +395,7 @@ public class TestPointDatasets {
     Assert.assertTrue(countSub <= countStns);
     System.out.println("  nobs= " + sfcSub.size());
 
-    // test info
+    /* test info
     CollectionInfo info = new DsgCollectionHelper(sfc).calcBounds(); // sets internal values
     Assert.assertNotNull(info);
     CalendarDateRange dr = sfc.getCalendarDateRange();
@@ -430,7 +429,7 @@ public class TestPointDatasets {
   }
 
   static int countLocations(StationTimeSeriesFeatureCollection sfc) throws IOException {
-    System.out.printf(" Station List Size = %d %n", sfc.getStations().size());
+    System.out.printf(" Station List Size = %d %n", sfc.getStationFeatures().size());
 
     // check uniqueness
     Map<String, StationTimeSeriesFeature> stns = new HashMap<>(5000);
@@ -496,10 +495,10 @@ public class TestPointDatasets {
     return count;
   }
 
-  static int checkSectionFeatureCollection(SectionFeatureCollection sectionFeatureCollection, boolean show) throws IOException {
+  static int checkSectionFeatureCollection(TrajectoryProfileFeatureCollection sectionFeatureCollection, boolean show) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
-    for (SectionFeature section : sectionFeatureCollection) {
+    for (TrajectoryProfileFeature section : sectionFeatureCollection) {
       checkDsgFeatureCollection(section);
       Assert.assertNotNull("SectionFeature featureData", section.getFeatureData());
 

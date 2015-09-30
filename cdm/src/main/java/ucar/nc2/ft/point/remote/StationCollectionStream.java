@@ -43,22 +43,12 @@ import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
-import ucar.nc2.ft.point.PointIteratorEmpty;
-import ucar.nc2.ft.point.StationHelper;
-import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
-import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
+import ucar.nc2.ft.point.*;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.Station;
-
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
 /**
  * Connect to remote Station Collection using cdmremote
@@ -100,18 +90,17 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
       PointStreamProto.StationList stationsp = PointStreamProto.StationList.parseFrom(b);
       for (ucar.nc2.ft.point.remote.PointStreamProto.Station sp : stationsp.getStationsList()) {
 //        Station s = new StationImpl(sp.getId(), sp.getDesc(), sp.getWmoId(), sp.getLat(), sp.getLon(), sp.getAlt());
-        stationHelper.addStation(new StationFeature(null, null));    // LOOK WRONG
+        stationHelper.addStation(new StationFeatureStream(null, null));    // LOOK WRONG
       }
       return stationHelper;
     }
   }
 
   // note this assumes that a PointFeature is-a StationPointFeature
-  @Override
-  public Station getStation(PointFeature feature) throws IOException {
-    StationPointFeature stationFeature = (StationPointFeature) feature; // LOOK probably will fail here
-    return stationFeature.getStation();
-  }
+  /* @Override
+  public StationFeature getStation(PointFeature feature) throws IOException {
+    return (StationFeature) feature; // LOOK probably will fail here
+  } */
 
 
   // Must override default subsetting implementation for efficiency: eg to make a single call to server
@@ -119,7 +108,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
   // StationTimeSeriesFeatureCollection
 
   @Override
-  public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
+  public StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) throws IOException {
     if (stations == null) return this;
 //    List<StationFeature> subset = getStationHelper().getStationFeatures(stations);
     return new Subset(this, null, null); // LOOK WRONG
@@ -144,7 +133,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
     @Override
     public String makeQuery() {
       StringBuilder query = new StringBuilder("stns=");
-      for (Station s : getStationHelper().getStations()) {
+      for (StationFeature s : getStationHelper().getStationFeatures()) {
         query.append(s.getName());
         query.append(",");
       }
@@ -182,19 +171,15 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
       return stationHelper;
     }
 
-    @Override
-    public Station getStation(PointFeature feature) throws IOException {
-      return from.getStation(feature);
-    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////
 
-  private class StationFeature extends StationTimeSeriesFeatureImpl {
+  private class StationFeatureStream extends StationTimeSeriesFeatureImpl {
     StationTimeSeriesFeature stnFeature;
     PointIteratorStream riter;
 
-    StationFeature(StationTimeSeriesFeature s, CalendarDateRange dateRange) {
+    StationFeatureStream(StationTimeSeriesFeature s, CalendarDateRange dateRange) {
       super(s, StationCollectionStream.this.getTimeUnit(), StationCollectionStream.this.getAltUnits(), -1);
       this.stnFeature = s;
       if (dateRange != null) {
@@ -210,7 +195,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
     @Override
     public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
       if (dateRange == null) return this;
-      return new StationFeature(stnFeature, dateRange);
+      return new StationFeatureStream(stnFeature, dateRange);
     }
 
     @Nonnull
@@ -254,7 +239,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
 
-        riter = new PointIteratorStream(StationFeature.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        riter = new PointIteratorStream(StationFeatureStream.this, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         return riter;
 
       } catch (Throwable t) {

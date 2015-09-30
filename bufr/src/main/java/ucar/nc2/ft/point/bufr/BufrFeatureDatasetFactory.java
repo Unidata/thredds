@@ -226,7 +226,8 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
       private class BufrStation extends StationTimeSeriesFeatureImpl {
         private BufrStation(BufrCdmIndexProto.Station proto) {
-          super(proto.getId(), proto.getDesc(), proto.getWmoId(), proto.getLat(), proto.getLon(), proto.getAlt(), bufrDateUnits, bufrAltUnits, proto.getCount());
+          super(proto.getId(), proto.getDesc(), proto.getWmoId(), proto.getLat(), proto.getLon(), proto.getAlt(),
+                  bufrDateUnits, bufrAltUnits, proto.getCount(), StructureData.EMPTY);
         }
 
         @Override

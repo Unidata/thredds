@@ -246,7 +246,7 @@ public abstract class AbstractStationSubsetWriter extends DsgSubsetWriter {
     double lat = pt.getLatitude();
     double lon = pt.getLongitude();
     double cos = Math.cos(Math.toRadians(lat));
-    List<Station> stations = stationFeatCol.getStations();
+    List<StationFeature> stations = stationFeatCol.getStationFeatures();
     Station min_station = stations.get(0);
     double min_dist = Double.MAX_VALUE;
 

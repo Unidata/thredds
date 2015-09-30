@@ -32,7 +32,7 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.SectionFeature;
+import ucar.nc2.ft.TrajectoryProfileFeature;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.constants.FeatureType;
@@ -50,7 +50,7 @@ import java.util.Iterator;
  */
 
 
-public abstract class SectionFeatureImpl extends PointFeatureCCImpl implements SectionFeature {
+public abstract class SectionFeatureImpl extends PointFeatureCCImpl implements TrajectoryProfileFeature {
 
   protected SectionFeatureImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.SECTION);

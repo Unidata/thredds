@@ -80,8 +80,8 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.ProfileFeatureCollection;
-import ucar.nc2.ft.SectionFeature;
-import ucar.nc2.ft.SectionFeatureCollection;
+import ucar.nc2.ft.TrajectoryProfileFeature;
+import ucar.nc2.ft.TrajectoryProfileFeatureCollection;
 import ucar.nc2.ft.StationProfileFeature;
 import ucar.nc2.ft.StationProfileFeatureCollection;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
@@ -172,8 +172,8 @@ public abstract class CFPointWriter implements Closeable {
       } else if (fc instanceof StationProfileFeatureCollection) {
         return writeStationProfileFeatureCollection(fdpoint, (StationProfileFeatureCollection) fc, fileOut, config);
 
-      } else if (fc instanceof SectionFeatureCollection) {
-        return writeTrajectoryProfileFeatureCollection(fdpoint, (SectionFeatureCollection) fc, fileOut, config);
+      } else if (fc instanceof TrajectoryProfileFeatureCollection) {
+        return writeTrajectoryProfileFeatureCollection(fdpoint, (TrajectoryProfileFeatureCollection) fc, fileOut, config);
       }
     }
 
@@ -183,7 +183,7 @@ public abstract class CFPointWriter implements Closeable {
 
   private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut, CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pfc.getExtraVariables(),
+    try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
             pfc.getTimeUnit(), pfc.getAltUnits(), config)) {
 
       int count = 0;
@@ -205,7 +205,7 @@ public abstract class CFPointWriter implements Closeable {
   private static int writeStationFeatureCollection(FeatureDatasetPoint dataset, StationTimeSeriesFeatureCollection fc, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
+    try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
       ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, null, null); // all data, but no need to sort by station
@@ -230,7 +230,7 @@ public abstract class CFPointWriter implements Closeable {
   private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection pds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(),
+    try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
             pds.getTimeUnit(), pds.getAltUnits(), config)) {
 
       // LOOK not always needed
@@ -261,7 +261,7 @@ public abstract class CFPointWriter implements Closeable {
   private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection pds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(),
+    try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
             pds.getTimeUnit(), pds.getAltUnits(), config)) {
 
       // LOOK not always needed
@@ -292,7 +292,7 @@ public abstract class CFPointWriter implements Closeable {
   private static int writeStationProfileFeatureCollection(FeatureDatasetPoint dataset, StationProfileFeatureCollection fc, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
+    try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
       cfWriter.setStations(fc.getStationFeatures());
@@ -327,17 +327,17 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  private static int writeTrajectoryProfileFeatureCollection(FeatureDatasetPoint dataset, SectionFeatureCollection fc, String fileOut,
+  private static int writeTrajectoryProfileFeatureCollection(FeatureDatasetPoint dataset, TrajectoryProfileFeatureCollection fc, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    try (WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
+    try (WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
       int traj_strlen = 0;
       int prof_strlen = 0;
       int countTrajectories = 0;
       int countProfiles = 0;
-      for (SectionFeature spf : fc) {
+      for (TrajectoryProfileFeature spf : fc) {
         countTrajectories++;
         traj_strlen = Math.max(traj_strlen, spf.getName().length());
         if (spf.size() >= 0)
@@ -353,7 +353,7 @@ public abstract class CFPointWriter implements Closeable {
       cfWriter.setFeatureAuxInfo2(countTrajectories, traj_strlen);
 
       int count = 0;
-      for (SectionFeature spf : fc) {
+      for (TrajectoryProfileFeature spf : fc) {
         for (ProfileFeature profile : spf) {
           if (profile.getTime() == null)
             continue;  // assume this means its a "incomplete multidimensional"
@@ -408,7 +408,7 @@ public abstract class CFPointWriter implements Closeable {
 
   // LOOK doesnt work
   protected CFPointWriter(String fileOut, List<Attribute> atts, NetcdfFileWriter.Version version) throws IOException {
-    this(fileOut, atts, null, null, null, null, new CFPointWriterConfig(version));
+    this(fileOut, atts, null, null, null, new CFPointWriterConfig(version));
   }
 
   /**
@@ -418,7 +418,7 @@ public abstract class CFPointWriter implements Closeable {
    * @param config              configure
    * @throws IOException
    */
-  protected CFPointWriter(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars, List<Variable> extra,
+  protected CFPointWriter(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars,
                           CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
     createWriter(fileOut, config);
     this.dataVars = dataVars;

@@ -44,7 +44,7 @@ import java.io.IOException;
  * @author caron
  * @since Mar 18, 2008
  */
-public interface SectionFeature extends PointFeatureCC, Iterable<ProfileFeature> {
+public interface TrajectoryProfileFeature extends PointFeatureCC, Iterable<ProfileFeature> {
 
   /**
    * The number of profiles along the trajectory.

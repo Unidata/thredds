@@ -40,7 +40,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.ProfileFeature;
-import ucar.nc2.ft.SectionFeature;
+import ucar.nc2.ft.TrajectoryProfileFeature;
 import ucar.nc2.time.CalendarDateUnit;
 
 import java.io.IOException;
@@ -68,9 +68,9 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
   private Map<String, Variable> profileVarMap = new HashMap<>();
   private boolean headerDone = false;
 
-  public WriterCFTrajectoryProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra,
+  public WriterCFTrajectoryProfileCollection(String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars,
                                              CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
-    super(fileOut, globalAtts, dataVars, extra, timeUnit, altUnits, config);
+    super(fileOut, globalAtts, dataVars, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.trajectoryProfile.name()));
     writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Contiguous ragged array representation of trajectory profile, H.6.3"));
   }
@@ -81,7 +81,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     trajIndexMap = new HashMap<>(2 * ntraj);
   }
 
-  public int writeProfile (SectionFeature section, ProfileFeature profile) throws IOException {
+  public int writeProfile (TrajectoryProfileFeature section, ProfileFeature profile) throws IOException {
     int count = 0;
     for (PointFeature pf : profile) {
       if (!headerDone) {
@@ -102,7 +102,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
     return count;
   }
 
-  private void writeHeader(SectionFeature section, ProfileFeature profile, PointFeature obs) throws IOException {
+  private void writeHeader(TrajectoryProfileFeature section, ProfileFeature profile, PointFeature obs) throws IOException {
 
     StructureData sectionData = section.getFeatureData();
     StructureData profileData = profile.getFeatureData();
@@ -145,7 +145,7 @@ public class WriterCFTrajectoryProfileCollection extends CFPointWriter {
   }
 
   private int trajRecno = 0;
-  private int writeSectionData(SectionFeature section) throws IOException {
+  private int writeSectionData(TrajectoryProfileFeature section) throws IOException {
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
     coords.addMemberString(trajIdName, null, null, section.getName().trim(), traj_strlen);

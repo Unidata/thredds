@@ -78,9 +78,9 @@ public class WriterCFStationCollection extends CFPointWriter {
   private int desc_strlen = 1, wmo_strlen = 1;
   private Map<String, Variable> featureVarMap  = new HashMap<>();
 
-  public WriterCFStationCollection(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars, List<Variable> extra,
+  public WriterCFStationCollection(String fileOut, List<Attribute> atts, List<VariableSimpleIF> dataVars,
                                    CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {
-    super(fileOut, atts, dataVars, extra, timeUnit, altUnits, config);
+    super(fileOut, atts, dataVars, timeUnit, altUnits, config);
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
     writer.addGroupAttribute(null, new Attribute(CF.DSG_REPRESENTATION, "Timeseries of station data in the indexed ragged array representation, H.2.5"));
   }

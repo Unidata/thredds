@@ -35,7 +35,6 @@ package ucar.nc2.ft;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.Station;
 import ucar.nc2.VariableSimpleIF;
 
 import java.io.IOException;
@@ -46,13 +45,19 @@ import java.util.List;
  *
  * @author caron
  */
-public interface StationTimeSeriesFeatureCollection extends StationCollection, PointFeatureCC, Iterable<StationTimeSeriesFeature> {
+public interface StationTimeSeriesFeatureCollection extends PointFeatureCC, Iterable<StationTimeSeriesFeature> {
 
+  List<StationFeature> getStationFeatures() throws IOException;
+  List<StationFeature> getStationFeatures( List<String> stnNames)  throws IOException;
+  List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+
+  StationFeature findStationFeature(String name);
+  StationTimeSeriesFeature getStationTimeSeriesFeature(StationFeature s) throws IOException;
 
   // subsetting
-  StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException;
+  StationTimeSeriesFeatureCollection subset(List<StationFeature> stations) throws IOException;
   StationTimeSeriesFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
-  StationTimeSeriesFeatureCollection subset(List<Station> stns, CalendarDateRange dateRange) throws IOException;
+  StationTimeSeriesFeatureCollection subset(List<StationFeature> stns, CalendarDateRange dateRange) throws IOException;
   StationTimeSeriesFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   /**
@@ -77,33 +82,31 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, P
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stations) throws IOException;
 
-
-  /**
+  /*
    * Get the StationTimeSeriesFeature for a particular Station.
    *
    * @param s get data for this station, must have come from this Collection
    * @return collection of data for this Station.
    * @throws java.io.IOException on i/o error
-   */
+   *
   StationTimeSeriesFeature getStationFeature(Station s) throws IOException;
 
-  /**
+  /*
    * Get the station that belongs to this feature
    *
    * @param feature PointFeature obtained from a StationTimeSeriesFeature in this collection
    * @return the Station is belongs to
    * @throws java.io.IOException on i/o error
-   */
-  Station getStation(PointFeature feature) throws IOException;
+   *
+  Station getStation(PointFeature feature) throws IOException; */
 
-  List<StationFeature> getStationFeatures() throws IOException;
-  List<StationFeature> getStationFeatures( List<String> stnNames)  throws IOException;
-  List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // deprecated
+
+  // use subset()
+  StationTimeSeriesFeatureCollection subsetFeatures(List<StationFeature> stations) throws IOException;
 
   /**
    * Use the internal iterator to check if there is another StationTimeSeriesFeature in the iteration.

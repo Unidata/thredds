@@ -37,6 +37,7 @@ import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.*;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateUnit;
@@ -124,9 +125,9 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       } else if (bbSubset == null) {
         pc = stnCollection.flatten(null, dateRange, null);
       } else {
-        List<Station> stations = stnCollection.getStations(bbSubset);
+        List<StationFeature> stations = stnCollection.getStationFeatures(bbSubset);
         List<String> names = new ArrayList<>();
-        for (Station s : stations) names.add(s.getName());
+        for (StationFeature s : stations) names.add(s.getName());
 
         pc = stnCollection.flatten(names, dateRange, null);
       }

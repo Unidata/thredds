@@ -82,7 +82,6 @@ public abstract class DsgCollectionImpl implements DsgFeatureCollection {
   }
 
   @Nonnull
-  @Override
   public List<Variable> getExtraVariables() { return (extras == null) ? new ArrayList<>() : extras; }
 
   @Override

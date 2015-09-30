@@ -84,7 +84,7 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
         CalendarDateUnit timeUnit = fc.getTimeUnit();
         String altUnit = fc.getAltUnits();
 
-        this.cfWriter = new WriterCFPointCollection(netcdfResult.getAbsolutePath(), attribs, wantedVariables, null,
+        this.cfWriter = new WriterCFPointCollection(netcdfResult.getAbsolutePath(), attribs, wantedVariables,
                 timeUnit, altUnit, new CFPointWriterConfig(version));
     }
 

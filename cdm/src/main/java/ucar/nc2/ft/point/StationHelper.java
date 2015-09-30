@@ -190,9 +190,9 @@ public class StationHelper {
     return result;
   }
 
-  public StationHelper subset(List<Station> stns) throws IOException {
+  public StationHelper subset(List<StationFeature> stns) throws IOException {
     StationHelper result = new StationHelper();
-    result.setStations( getStationFeatures(stns));
+    result.setStations( stns);
     return result;
   }
 

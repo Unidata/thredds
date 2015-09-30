@@ -145,7 +145,7 @@ public class CoverageAsPoint {
 
     public MyStationFeature(String name, String desc, String wmoId, double lat, double lon, double alt, CalendarDateUnit timeUnit, String altUnits, int npts) {
       // String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, String altUnits, int npts
-      super(name, desc, wmoId, lat, lon, alt, timeUnit, altUnits, npts);
+      super(name, desc, wmoId, lat, lon, alt, timeUnit, altUnits, npts, StructureData.EMPTY);
     }
 
     @Nonnull
