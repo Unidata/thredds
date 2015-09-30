@@ -34,11 +34,13 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.io.IOException;
@@ -80,41 +82,64 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   protected abstract StationHelper createStationHelper() throws IOException;
 
   @Override
-  public List<StationFeature> getStationFeatures() throws IOException {
-    return getStationHelper().getStationFeatures();
-  }
-
-  public List<Station> getStations() {
-    return getStationHelper().getStations();
-  }
-
-  public List<Station> getStations(List<String> stnNames) {
-    return getStationHelper().getStations(stnNames);
-  }
-
-  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
-    return getStationHelper().getStations(boundingBox);
-  }
-
-  public Station getStation(String name) {
-    return getStationHelper().getStation(name);
-  }
-
   public LatLonRect getBoundingBox() {
     return getStationHelper().getBoundingBox();
   }
 
-  public StationProfileCollectionImpl subset(List<Station> stations) throws IOException {
+  @Override
+  public List<StationFeature> getStationFeatures() throws IOException {
+    return getStationHelper().getStationFeatures();
+  }
+
+  @Override
+  public List<StationFeature> getStationFeatures(List<String> stnNames) {
+    return getStationHelper().getStationFeaturesFromNames(stnNames);
+  }
+
+  @Override
+  public List<StationFeature> getStationFeatures(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
+    return getStationHelper().getStationFeatures(boundingBox);
+  }
+
+  @Override
+  public StationFeature findStationFeature(String name) {
+    return getStationHelper().getStation(name);
+  }
+
+  @Override
+  public StationProfileFeature getStationProfileFeature(StationFeature s) throws IOException {
+    return (StationProfileFeature) s; // LOOK
+  }
+
+  @Override
+  public StationProfileCollectionImpl subset(List<StationFeature> stations) throws IOException {
     if (stations == null) return this;
     return new StationProfileFeatureCollectionSubset(this, stations);
   }
 
+  @Override
   public StationProfileCollectionImpl subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
-    return subset(getStations(boundingBox));
+    return subset(getStationFeatures(boundingBox));
   }
 
-  public StationProfileFeature getStationProfileFeature(Station s) throws IOException {
-    return (StationProfileFeature) s;  // LOOK subclass must override if not true
+  @Override
+  public StationProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
+    return subset(getStationFeatures(boundingBox), dateRange);
+  }
+
+  @Override
+  public StationProfileCollectionImpl subset(List<StationFeature> stnsWanted, CalendarDateRange dateRange) throws IOException {
+    if (dateRange == null)
+      return subset(stnsWanted);
+
+    List<StationFeature> subsetStations = new ArrayList<>();
+    for (StationFeature sf : stnsWanted) {
+      StationProfileFeature stsf = (StationProfileFeature) sf; // LOOK
+      StationProfileFeature subset = stsf.subset(dateRange);
+      subsetStations.add(subset);
+    }
+
+    return new StationProfileFeatureCollectionSubset(this, subsetStations);
   }
 
   public int compareTo(Station so) {
@@ -124,9 +149,9 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
   private static class StationProfileFeatureCollectionSubset extends StationProfileCollectionImpl {
     private final StationProfileCollectionImpl from;
-    private final List<Station> stations;
+    private final List<StationFeature> stations;
 
-    StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<Station> stations) throws IOException {
+    StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<StationFeature> stations) throws IOException {
       super( from.getName(), from.getTimeUnit(), from.getAltUnits());
       this.from = from;
       this.stations = stations;

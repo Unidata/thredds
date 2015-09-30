@@ -64,6 +64,7 @@ public class StandardTrajectoryCollectionImpl extends PointFeatureCCImpl impleme
     this.extras = ft.getExtras();
   }
 
+  @Override
   public TrajectoryFeatureCollection subset(LatLonRect boundingBox) throws IOException {
     return new StandardTrajectoryCollectionSubset( this, boundingBox);
   }

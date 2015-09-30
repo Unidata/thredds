@@ -33,6 +33,8 @@
 
 package ucar.nc2.ft;
 
+import ucar.unidata.geoloc.LatLonRect;
+
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -44,12 +46,16 @@ import java.util.Iterator;
  */
 public interface TrajectoryFeatureCollection extends PointFeatureCC, Iterable<TrajectoryFeature> {
 
-  /**
-   * Use the internal iterator to check if there is another TrajectoryFeature in the iteration.
-   * @return true is there is another TrajectoryFeature in the iteration.
-   * @throws java.io.IOException on read error
-   * @deprecated use foreach
-   */
+  TrajectoryFeatureCollection subset(LatLonRect boundingBox) throws IOException;
+
+  ////////////////////////////////////////////////////////////////
+
+    /**
+     * Use the internal iterator to check if there is another TrajectoryFeature in the iteration.
+     * @return true is there is another TrajectoryFeature in the iteration.
+     * @throws java.io.IOException on read error
+     * @deprecated use foreach
+     */
   boolean hasNext() throws java.io.IOException;
 
   /**

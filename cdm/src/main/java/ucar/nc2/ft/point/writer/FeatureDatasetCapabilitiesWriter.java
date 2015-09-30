@@ -48,6 +48,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.CollectionInfo;
 import ucar.nc2.ft.point.DsgCollectionHelper;
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
@@ -112,13 +113,13 @@ public class FeatureDatasetCapabilitiesWriter {
     Element rootElem = new Element("stationCollection");
     Document doc = new Document(rootElem);
 
-    List<Station> stations;
+    List<StationFeature> stations;
     if (bb != null)
-      stations = sobs.getStations(bb);
+      stations = sobs.getStationFeatures(bb);
     else if (names != null)
-      stations = sobs.getStations(Arrays.asList(names));
+      stations = sobs.getStationFeatures(Arrays.asList(names));
     else
-      stations = sobs.getStations();
+      stations = sobs.getStationFeatures();
 
     for (Station s : stations) {
       Element sElem = new Element("station");

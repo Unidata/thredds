@@ -44,7 +44,7 @@ import java.util.Map;
 
 /**
  * Helper class for Station Collections.
- * This assumes that calling getData( Station s) is reletively cheap, ie that theres no cheaper filtering to do.
+ * This assumes that calling getData( Station s) is cheap, ie that theres no cheaper filtering to do.
  * @author caron
  * @since Feb 5, 2008
  */
@@ -190,9 +190,9 @@ public class StationHelper {
     return result;
   }
 
-  public StationHelper subset(List<Station> stns) throws IOException {
+  public StationHelper subset(List<StationFeature> stns) throws IOException {
     StationHelper result = new StationHelper();
-    result.setStations( getStationFeatures(stns));
+    result.setStations( stns);
     return result;
   }
 

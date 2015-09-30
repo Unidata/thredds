@@ -77,12 +77,12 @@ public interface DsgFeatureCollection {
   @Nullable
   String getAltUnits();
 
-  /**
+  /*
    * Other variables needed for completeness, eg joined coordinate variables
    * @return list of extra variables, may be empty not null
-   */
+   *
   @Nonnull
-  List<Variable> getExtraVariables();
+  List<Variable> getExtraVariables(); */
 
   /**
    * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.

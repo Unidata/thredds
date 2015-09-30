@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.point.standard;
 
+import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.ft.point.StationHelper;
@@ -40,7 +41,6 @@ import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
-import ucar.unidata.geoloc.Station;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -73,7 +73,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
    * @return Station or null, skip this Station
    */
   public StationTimeSeriesFeature makeStation(StructureData stationData, int recnum) {
-    Station s = ft.makeStation(stationData);
+    StationFeature s = ft.makeStation(stationData);
     if (s == null) return null;
     return new StandardStationFeatureImpl(s, timeUnit, stationData, recnum);
   }
@@ -85,9 +85,9 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     try (StructureDataIterator siter = ft.getStationDataIterator(-1)) {
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
-        StationTimeSeriesFeature s = makeStation(stationData, siter.getCurrentRecno());
-        if (s != null) {
-          stationHelper.addStation(s);
+        StationTimeSeriesFeature stfs = makeStation(stationData, siter.getCurrentRecno());
+        if (stfs != null) {
+          stationHelper.addStation(stfs);
         }
       }
     }
@@ -99,7 +99,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     int recnum;
     StructureData stationData;
 
-    StandardStationFeatureImpl(Station s, CalendarDateUnit dateUnit, StructureData stationData, int recnum) {
+    StandardStationFeatureImpl(StationFeature s, CalendarDateUnit dateUnit, StructureData stationData, int recnum) {
       super(s, dateUnit, StandardStationCollectionImpl.this.getAltUnits(), -1);
       this.recnum = recnum;
       this.stationData = stationData;
@@ -116,8 +116,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       ft.addParentJoin(cursor); // there may be parent joins
 
       StructureDataIterator obsIter = ft.getLeafFeatureDataIterator(cursor, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(StandardStationFeatureImpl.this, ft, timeUnit, obsIter, cursor);
-      return iter;
+      return new StandardPointFeatureIterator(this, ft, timeUnit, obsIter, cursor);
     }
 
     @Nonnull
@@ -125,7 +124,6 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     public StructureData getFeatureData() {
       return stationData;
     }
-
 
   }
 }

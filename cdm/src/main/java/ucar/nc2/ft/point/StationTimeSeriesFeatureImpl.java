@@ -42,7 +42,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Station;
-import ucar.unidata.geoloc.StationImpl;
 
 /**
  * Superclass for implementations of StationFeature: time series of data at a point
@@ -52,14 +51,15 @@ import ucar.unidata.geoloc.StationImpl;
  */
 
 public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl implements StationTimeSeriesFeature {
-  protected Station s;
+  protected StationFeature s;
 
-  public StationTimeSeriesFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, CalendarDateUnit timeUnit, String altUnits, int npts) {
+  public StationTimeSeriesFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt,
+                                      CalendarDateUnit timeUnit, String altUnits, int npts, StructureData sdata) {
     super(name, timeUnit, altUnits);
-    s = new StationImpl(name, desc, wmoId, lat, lon, alt, npts);
+    s = new StationFeatureImpl(name, desc, wmoId, lat, lon, alt, npts, sdata);
   }
 
-  public StationTimeSeriesFeatureImpl(Station s, CalendarDateUnit timeUnit, String altUnits, int nfeatures) {
+  public StationTimeSeriesFeatureImpl(StationFeature s, CalendarDateUnit timeUnit, String altUnits, int nfeatures) {
     super(s.getName(), timeUnit, altUnits);
     this.s = s;
     if (nfeatures >= 0) {
@@ -122,7 +122,6 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     return new StationFeatureSubset(this, dateRange);
   }
 
-  @Override
   public int compareTo(Station so) {
     return name.compareTo(so.getName());
   }

@@ -33,6 +33,8 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
 import java.util.List;
@@ -43,33 +45,21 @@ import java.io.IOException;
  * @author caron
  * @since Feb 29, 2008
  */
-public interface StationProfileFeatureCollection extends StationCollection, PointFeatureCCC, Iterable<StationProfileFeature> {
+public interface StationProfileFeatureCollection extends PointFeatureCCC, Iterable<StationProfileFeature> {
 
-  /**
-   * Get a subsetted StationProfileFeatureCollection
-   *
-   * @param stations only contain these stations
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
-  StationProfileFeatureCollection subset(List<Station> stations) throws IOException;
-
-  /**
-   * Get the StationProfileFeature for a specific Station.
-   *
-   * @param s at this station
-   * @return collection of data for this Station.
-   * @throws java.io.IOException on i/o error
-   */
-  StationProfileFeature getStationProfileFeature(Station s) throws IOException;
-
-  /**
-   * Get list of stations as StationFeatures
-   *
-   * @return list of stations as StationFeatures
-   * @throws java.io.IOException on i/o error
-   */
   List<StationFeature> getStationFeatures() throws IOException;
+  List<StationFeature> getStationFeatures( List<String> stnNames)  throws IOException;
+  List<StationFeature> getStationFeatures( ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+
+  StationFeature findStationFeature(String name);
+  StationProfileFeature getStationProfileFeature(StationFeature s) throws IOException;
+
+  // subsetting
+  StationProfileFeatureCollection subset(List<StationFeature> stations) throws IOException;
+  StationProfileFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+  StationProfileFeatureCollection subset(List<StationFeature> stns, CalendarDateRange dateRange) throws IOException;
+  StationProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+
 
   ///////////////////////////////
 

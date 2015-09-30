@@ -33,14 +33,13 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.DataType;
@@ -70,7 +69,7 @@ public class TestMiscPointFeature {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testProblemTraj() throws IOException {
-    String location = TestPointDatasets.topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
+    String location = TestDir.cdmUnitTestDir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
     Assert.assertEquals("npoints", 383, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY, true));
   }
 
@@ -78,6 +77,19 @@ public class TestMiscPointFeature {
   public void testProblemStation() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.4.1.ncml";
     Assert.assertEquals("npoints", 100, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
+  }
+
+  @Test
+  @Ignore("Dont support multiple lat/lon coordinates for now")
+  public void testProblemStationWithPreciseCoords() throws IOException {
+    String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.3.2.ncml";
+    Assert.assertEquals("npoints", 100, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
+  }
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testGempakStationProfile() throws IOException {
+    String location = TestDir.cdmUnitTestDir + "ft/sounding/gempak/19580807_upa.ncml";
+    Assert.assertEquals("npoints", 8769, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true));
   }
 
   @Test
@@ -101,7 +113,6 @@ public class TestMiscPointFeature {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
-      assert fc instanceof StationCollection;
       assert fc instanceof StationTimeSeriesFeatureCollection;
       StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
       List<StationFeature> stations = sc.getStationFeatures();
@@ -153,9 +164,9 @@ public class TestMiscPointFeature {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
-      assert fc instanceof StationCollection;
-      StationCollection sc = (StationCollection) fc;
-      List<Station> stations = sc.getStations();
+      assert fc instanceof StationTimeSeriesFeatureCollection;
+      StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
+      List<StationFeature> stations = sc.getStationFeatures();
       assert (stations.size() > 0) : "No stations";
       Station s = stations.get(0);
       assert s.getName().equals("666") : "name should be '666'";
@@ -175,9 +186,9 @@ public class TestMiscPointFeature {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
-      assert fc instanceof StationCollection;
-      StationCollection sc = (StationCollection) fc;
-      List<Station> stations = sc.getStations();
+      assert fc instanceof StationTimeSeriesFeatureCollection;
+      StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
+      List<StationFeature> stations = sc.getStationFeatures();
       assert (stations.size() == 3) : "Should be 3 stations";
       for (Station s : stations) {
         System.out.printf("%s%n", s);
@@ -218,9 +229,9 @@ public class TestMiscPointFeature {
       List<DsgFeatureCollection> collectionList = pods.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
-      assert fc instanceof StationCollection;
-      StationCollection sc = (StationCollection) fc;
-      List<Station> stations = sc.getStations();
+      assert fc instanceof StationTimeSeriesFeatureCollection;
+      StationTimeSeriesFeatureCollection sc = (StationTimeSeriesFeatureCollection) fc;
+      List<StationFeature> stations = sc.getStationFeatures();
       assert (stations.size() == 5) : "Should be 5 stations";
       for (Station s : stations) {
         System.out.printf("%s%n", s);
@@ -308,7 +319,7 @@ public class TestMiscPointFeature {
   }
 
   @Test
-  public void testIterator() throws IOException {  // kunicki
+  public void testFlatten() throws IOException {  // kunicki
     Formatter formatter = new Formatter(System.err);
     try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter)) {
       if (fd != null && fd instanceof FeatureDatasetPoint) {
@@ -328,13 +339,13 @@ public class TestMiscPointFeature {
               // is returning the observation structure, not the
               // station structure since Cursor.currentIndex = 0
               //Station s = stsfc.getStation(pf);
-              StructureData sdata = pf.getFeatureData();
-              Assert.assertNotNull(sdata);
-              //Assert.assertTrue( pf instanceof StationFeature);
+            StructureData sdata = pf.getFeatureData();
+            Assert.assertNotNull(sdata);
 
-            Assert.assertTrue( pf.getClass().getName(), pf instanceof StationFeature);
-            StationFeature sf = (StationFeature) pf;
-
+            StationFeature stnFeat = stsfc.getStationFeature(pf);
+            Assert.assertNotNull(stnFeat);
+            StructureData stnData = stnFeat.getFeatureData();
+            Assert.assertNotEquals(sdata, stnData);
           }
         }
       }

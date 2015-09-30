@@ -46,7 +46,7 @@ import java.io.IOException;
  * @since Oct 22, 2009
  */
 
-public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implements SectionFeatureCollection {
+public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implements TrajectoryProfileFeatureCollection {
 
   protected SectionCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
     super(name, timeUnit, altUnits, FeatureType.SECTION);
@@ -61,8 +61,8 @@ public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implemen
      return localIterator.hasNext();
    }
 
-   public SectionFeature next() throws IOException {
-     return (SectionFeature) localIterator.next();
+   public TrajectoryProfileFeature next() throws IOException {
+     return (TrajectoryProfileFeature) localIterator.next();
    }
 
    public void resetIteration() throws IOException {

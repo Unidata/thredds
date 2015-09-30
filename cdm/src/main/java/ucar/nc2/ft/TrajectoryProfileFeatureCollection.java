@@ -41,7 +41,7 @@ import java.io.IOException;
  * @author caron
  * @since Mar 19, 2008
  */
-public interface SectionFeatureCollection extends PointFeatureCCC, Iterable<SectionFeature> {
+public interface TrajectoryProfileFeatureCollection extends PointFeatureCCC, Iterable<TrajectoryProfileFeature> {
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -60,7 +60,7 @@ public interface SectionFeatureCollection extends PointFeatureCCC, Iterable<Sect
    * @throws java.io.IOException on read error
    * @deprecated use foreach
    */
-  SectionFeature next() throws java.io.IOException;
+  TrajectoryProfileFeature next() throws java.io.IOException;
 
   /**
    * Reset the internal iterator for another iteration over the SectionFeatures in this Collection.

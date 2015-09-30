@@ -112,12 +112,12 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
       sf.format("%nPointFeatureCollection %d %n", count);
       sf.format(" %s %s %n", pfc.getCollectionFeatureType(), pfc.getName());
       sf.format("   npts = %d %n", pfc.size());
-      List<Variable> extra = pfc.getExtraVariables();
+      /* List<Variable> extra = pfc.getExtraVariables();
       if (extra.size() > 0) {
         sf.format("  extra variables = ");
         for (Variable v : extra) sf.format("%s,", v.getNameAndDimensions());
         sf.format("%n");
-      }
+      } */
       sf.format("   timeUnit = %s %n", pfc.getTimeUnit());
       sf.format("    altUnit = %s %n", pfc.getAltUnits());
       count++;

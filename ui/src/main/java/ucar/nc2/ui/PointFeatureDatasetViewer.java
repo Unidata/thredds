@@ -59,8 +59,8 @@ import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.ProfileFeatureCollection;
-import ucar.nc2.ft.SectionFeature;
-import ucar.nc2.ft.SectionFeatureCollection;
+import ucar.nc2.ft.TrajectoryProfileFeature;
+import ucar.nc2.ft.TrajectoryProfileFeatureCollection;
 import ucar.nc2.ft.StationCollection;
 import ucar.nc2.ft.StationProfileFeature;
 import ucar.nc2.ft.StationProfileFeatureCollection;
@@ -80,7 +80,6 @@ import ucar.nc2.ui.util.Resource;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -112,16 +111,11 @@ public class PointFeatureDatasetViewer extends JPanel {
   private StructureTable obsTable;
   private JSplitPane splitFeatures, splitMap, splitObs;
   private IndependentDialog infoWindow;
-  //private IndependentWindow pointDisplayWindow;
   private TextHistoryPane infoTA;
 
   private PointController pointController;
   private NetcdfOutputChooser outChooser;
-
   private FeatureDatasetPoint pfDataset;
-
-
-  private DateFormatter df = new DateFormatter();
 
   private boolean eventsOK = true;
   private boolean debugStationRegionSelect = false, debugQuery = false;
@@ -448,6 +442,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       ProfileFeatureCollection pfc = (ProfileFeatureCollection) fcb.fc;
       setProfileCollection(pfc);
       changingPane.add(stnTable, BorderLayout.CENTER);
+
     } else if (ftype == FeatureType.STATION) {
       StationCollection sfc = (StationCollection) fcb.fc;
       setStations(sfc);
@@ -467,7 +462,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       changingPane.add(stnTable, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.SECTION) {
-      SectionFeatureCollection pfc = (SectionFeatureCollection) fcb.fc;
+      TrajectoryProfileFeatureCollection pfc = (TrajectoryProfileFeatureCollection) fcb.fc;
       setSectionCollection(pfc);
 
       JSplitPane splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, stnTable, profileTable);
@@ -545,10 +540,10 @@ public class PointFeatureDatasetViewer extends JPanel {
     stnTable.clearSelectedCells();
   }
 
-  private void setSectionCollection(SectionFeatureCollection sectionCollection) throws IOException {
+  private void setSectionCollection(TrajectoryProfileFeatureCollection sectionCollection) throws IOException {
     List<SectionFeatureBean> beans = new ArrayList<>();
 
-    for (SectionFeature sectionFeature : sectionCollection) {
+    for (TrajectoryProfileFeature sectionFeature : sectionCollection) {
         SectionFeatureBean bean = new SectionFeatureBean(sectionFeature);
         if (bean.pf != null) // may have missing values
           beans.add(bean);
@@ -605,7 +600,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     } else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
-      StationTimeSeriesFeature feature = stationCollection.getStationFeature(sb.s);
+      StationTimeSeriesFeature feature = stationCollection.getStationTimeSeriesFeature(sb.stnFeat);
       if (dr != null)
         feature = feature.subset( CalendarDateRange.of(dr));
       setObservations(feature);
@@ -618,7 +613,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     } else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationCollection = (StationProfileFeatureCollection) selectedCollection;
-      StationProfileFeature feature = stationCollection.getStationProfileFeature(sb.s);
+      StationProfileFeature feature = stationCollection.getStationProfileFeature(sb.stnFeat);
       setStnProfileObservations(feature);
 
       // iterator may count points
@@ -643,7 +638,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       setSection(sectionBean);
 
       // iterator may count points
-      SectionFeature feature = sectionBean.pfc;
+      TrajectoryProfileFeature feature = sectionBean.pfc;
       int npts = feature.size();
       if (npts >= 0) {
         sb.setNobs(npts);
@@ -687,7 +682,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setSection(SectionFeatureBean sb) throws IOException {
-    SectionFeature feature = sb.pfc;
+    TrajectoryProfileFeature feature = sb.pfc;
     setSectionObservations(feature);
 
     // iterator may count points
@@ -770,7 +765,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     setStnProfiles(pfcList);
   }
 
-  private void setSectionObservations(SectionFeature sectionFeature) throws IOException {
+  private void setSectionObservations(TrajectoryProfileFeature sectionFeature) throws IOException {
     List<PointFeatureCollection> pfcList = new ArrayList<>();
     for (PointFeatureCollection pfc : sectionFeature) {
       pfcList.add(pfc);
@@ -841,7 +836,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   static public class StationBean extends FeatureBean implements ucar.unidata.geoloc.Station {
-    private Station s;
+    private StationFeature stnFeat;
     private int npts = -1;
 
     public StationBean() {
@@ -853,7 +848,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public StationBean(Station s) throws IOException {
       super(((StationFeature) s).getFeatureData());
-      this.s = s;
+      this.stnFeat = (StationFeature) s;
       this.npts = s.getNobs();
     }
 
@@ -871,36 +866,36 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     public String getWmoId() {
-      return s.getWmoId();
+      return stnFeat.getWmoId();
     }
 
     // all the station dependent methods need to be overridden
     public String getName() {
-      return s.getName();
+      return stnFeat.getName();
     }
 
     public String getDescription() {
-      return s.getDescription();
+      return stnFeat.getDescription();
     }
 
     public double getLatitude() {
-      return s.getLatitude();
+      return stnFeat.getLatitude();
     }
 
     public double getLongitude() {
-      return s.getLongitude();
+      return stnFeat.getLongitude();
     }
 
     public double getAltitude() {
-      return s.getAltitude();
+      return stnFeat.getAltitude();
     }
 
     public LatLonPoint getLatLon() {
-      return s.getLatLon();
+      return stnFeat.getLatLon();
     }
 
     public boolean isMissing() {
-      return s.isMissing();
+      return stnFeat.isMissing();
     }
 
     public int compareTo(Station so) {
@@ -1136,10 +1131,10 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   public static class SectionFeatureBean extends StationBean {
     int npts;
-    SectionFeature pfc;
+    TrajectoryProfileFeature pfc;
     ProfileFeature pf;
 
-    public SectionFeatureBean(SectionFeature pfc) throws IOException {
+    public SectionFeatureBean(TrajectoryProfileFeature pfc) throws IOException {
       super(pfc.getFeatureData());
       this.pfc = pfc;
       try {
