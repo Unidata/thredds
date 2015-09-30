@@ -32,17 +32,14 @@
  */
 package ucar.nc2.ft;
 
-import ucar.nc2.Variable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-
 /**
  * A collection of FeatureTypes.
- * Will either be a PointFeatureCollection, NestedPointFeatureCollection, or DoubleNestedPointFeatureCollection
  * Will either be a PointFeatureCollection, PointFeatureCC, or PointFeatureCCC
  *
  * @author caron

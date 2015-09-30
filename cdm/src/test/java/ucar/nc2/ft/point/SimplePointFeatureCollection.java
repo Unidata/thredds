@@ -19,8 +19,9 @@ public class SimplePointFeatureCollection extends PointCollectionImpl {
         this.pointFeats = new LinkedList<>();
     }
 
-    public void add(PointFeature pointFeat) {
+    public PointFeature add(PointFeature pointFeat) {
         this.pointFeats.add(pointFeat);
+        return pointFeat;
     }
 
     @Override

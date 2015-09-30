@@ -1,172 +1,195 @@
-//package ucar.nc2.ft.point
-//
-//import spock.lang.Specification
-//import ucar.nc2.ft.*
-//import ucar.nc2.time.CalendarDateRange
-//import ucar.nc2.units.DateUnit
-//import ucar.unidata.geoloc.EarthLocationImpl
-//import ucar.unidata.geoloc.LatLonPointImpl
-//import ucar.unidata.geoloc.LatLonRect
-//
-///**
-// * @author cwardgar
-// * @since 2015/06/26
-// */
-//class FlattenedDatasetPointCollectionSpec extends Specification {
-//    // FDP used in all feature methods. Its getPointFeatureCollectionList() method will be stubbed to return
-//    // different collections per test.
-//    def fdPoint = Mock(FeatureDatasetPoint)
-//
-//    // PFCs used in many of the feature methods.
-//    PointFeatureCollection pointFeatColAlpha, pointFeatColBeta, pointFeatColGamma
-//
-//    def setup() {   // run before every feature method
-//        setup: "create feature collections"
-//
-//        and: "create alpha"
-//        DateUnit dateUnitAlpha = new DateUnit("d since 1970-01-01 00:00:00")
-//        pointFeatColAlpha = new SimplePointFeatureCollection("Alpha", dateUnitAlpha, "yard");
-//        pointFeatColAlpha.add makePointFeat(-75, -70, 630,  23, dateUnitAlpha)
-//        pointFeatColAlpha.add makePointFeat(-60, -40, 94,   51, dateUnitAlpha)
-//        pointFeatColAlpha.add makePointFeat(-45, -10, 1760, 88, dateUnitAlpha)
-//
-//        and: "test alpha"
-//        pointFeatColAlpha.calcBounds()
-//        assert pointFeatColAlpha.getBoundingBox() ==
-//                new LatLonRect(new LatLonPointImpl(-75, -70), new LatLonPointImpl(-45, -10))
-//        assert pointFeatColAlpha.getCalendarDateRange() ==
-//                CalendarDateRange.of(dateUnitAlpha.makeCalendarDate(23), dateUnitAlpha.makeCalendarDate(88))
-//
-//        and: "create beta"
-//        DateUnit dateUnitBeta = new DateUnit("day since 1970-01-01 00:00:00")
-//        pointFeatColBeta = new SimplePointFeatureCollection("Beta", dateUnitBeta, "millimeter")
-//        pointFeatColBeta.add makePointFeat(-85, 20, 18940, 120, dateUnitBeta)
-//        pointFeatColBeta.add makePointFeat(0,   50, 26600, 150, dateUnitBeta)
-//        pointFeatColBeta.add makePointFeat(85,  80, 52800, 180, dateUnitBeta)
-//
-//        and: "test beta"
-//        pointFeatColBeta.calcBounds()
-//        assert pointFeatColBeta.getBoundingBox() ==
-//                new LatLonRect(new LatLonPointImpl(-85, 20), new LatLonPointImpl(85, 80))
-//        assert pointFeatColBeta.getCalendarDateRange() ==
-//                CalendarDateRange.of(dateUnitBeta.makeCalendarDate(120), dateUnitBeta.makeCalendarDate(180))
-//
-//        and: "create gamma"
-//        DateUnit dateUnitGamma = new DateUnit("days since 1970-01-01 00:00:00")
-//        pointFeatColGamma = new SimplePointFeatureCollection("Gamma", dateUnitGamma, "feet")
-//        pointFeatColGamma.add makePointFeat(15, 110, 1894, 200, dateUnitGamma)
-//        pointFeatColGamma.add makePointFeat(30, 140, 266,  300, dateUnitGamma)
-//        pointFeatColGamma.add makePointFeat(45, 170, 5280, 400, dateUnitGamma)
-//
-//        and: "test gamma"
-//        pointFeatColGamma.calcBounds()
-//        assert pointFeatColGamma.getBoundingBox() ==
-//                new LatLonRect(new LatLonPointImpl(15, 110), new LatLonPointImpl(45, 170))
-//        assert pointFeatColGamma.getCalendarDateRange() ==
-//                CalendarDateRange.of(dateUnitGamma.makeCalendarDate(200), dateUnitGamma.makeCalendarDate(400))
-//    }
-//
-//    private static PointFeature makePointFeat(double lat, double lon, double alt, double time, DateUnit dateUnit) {
-//        def earthLoc = new EarthLocationImpl(lat, lon, alt)
-//
-//        // Pass null StructureData; we only care about the metadata for these tests.
-//        return new SimplePointFeature(earthLoc, time, time, dateUnit, null)
-//    }
-//
-//
-//    def "handles empty FeatureDatasetPoint"() {
-//        setup: "fdPoint returns an empty list of PointFeatureCollections"
-//        fdPoint.getPointFeatureCollectionList() >> []
-//
-//        when: "we construct a FlattenedDatasetPointCollection using our exmpty FeatureDatasetPoint"
-//        def flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
-//
-//        then: "the default unitsString and altUnits are used"
-//        flattenedDatasetCol.timeUnit.unitsString == DateUnit.unixDateUnit.unitsString
-//        flattenedDatasetCol.altUnits == null
-//
-//        when: "get empty collection's iterator"
-//        def flattenedDatasetIter = flattenedDatasetCol.getPointFeatureIterator(-1)
-//
-//        then: "iterator is empty"
-//        !flattenedDatasetIter.hasNext()
-//        flattenedDatasetIter.next() == null
-//    }
-//
-//    def "metadata of aggregate collection is taken from the first collection"() {
-//        setup: "fdPoint returns our 3 feature collections"
-//        fdPoint.getPointFeatureCollectionList() >> [pointFeatColAlpha, pointFeatColBeta, pointFeatColGamma]
-//
-//        when: "we flatten our dataset containing 3 collections into one collection"
-//        def flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
-//
-//        then: "flattenedDatasetCol metadata objects are same as pointFeatColAlpha's"
-//        flattenedDatasetCol.getTimeUnit().is pointFeatColAlpha.getTimeUnit()
-//        flattenedDatasetCol.getAltUnits().is pointFeatColAlpha.getAltUnits()
-//        flattenedDatasetCol.getExtraVariables().is pointFeatColAlpha.getExtraVariables()
-//    }
-//
-//    def "flattens dataset containing 3 feature collections"() {
-//        setup: "fdPoint returns our 3 feature collections"
-//        fdPoint.getPointFeatureCollectionList() >> [pointFeatColAlpha, pointFeatColBeta, pointFeatColGamma]
-//
-//        when: "we flatten our dataset containing 3 collections into one collection and calc bounds"
-//        def flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
-//        flattenedDatasetCol.calcBounds()
-//
-//        then: "the bounds include all 3 collections"
-//        flattenedDatasetCol.size() == 9
-//        flattenedDatasetCol.getBoundingBox() ==
-//                new LatLonRect(new LatLonPointImpl(-85, -70), new LatLonPointImpl(85, 170))
-//
-//        def dateUnit = flattenedDatasetCol.getTimeUnit()
-//        flattenedDatasetCol.getCalendarDateRange() ==
-//                CalendarDateRange.of(dateUnit.makeCalendarDate(23), dateUnit.makeCalendarDate(400))
-//    }
-//
-//    def "iterator is consistent with collection"() {
-//        setup: "get iterator over flattened dataset"
-//        fdPoint.getPointFeatureCollectionList() >> [pointFeatColAlpha, pointFeatColBeta, pointFeatColGamma]
-//        def flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint)
-//        def flattenedDatasetIter = flattenedDatasetCol.getPointFeatureIterator(-1)
-//
-//        when: "turn on bounds calculation and iterator over all elements"
-//        flattenedDatasetIter.setCalculateBounds(flattenedDatasetCol)  // Turn on bounds calculation.
-//        while (flattenedDatasetIter.hasNext()) {
-//            flattenedDatasetIter.next()
-//        }
-//
-//        then: "iterator's and collection's bounds are equal"
-//        flattenedDatasetIter.getBoundingBox() == flattenedDatasetCol.getBoundingBox()
-//        flattenedDatasetIter.getDateRange() == flattenedDatasetCol.getDateRange()
-//        flattenedDatasetIter.getCalendarDateRange() == flattenedDatasetCol.getCalendarDateRange()
-//        flattenedDatasetIter.getCount() == flattenedDatasetCol.size()
-//    }
-//
-//    def "handles NestedPointFeatureCollection"() {
-//        setup: "fdPoint returns a NestedPointFeatureCollection, which flattenes to pointFeatColAlpha"
-//        def npfc1 = Mock(NestedPointFeatureCollection) {
-//            flatten(_, _) >> pointFeatColAlpha
-//        }
-//        fdPoint.getPointFeatureCollectionList() >> [npfc1]
-//
-//        when: "we flatten the dataset and calculate bounds"
-//        PointFeatureCollection flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
-//        flattenedDatasetCol.calcBounds()
-//
-//        then: "flattenedDatasetCol's bounding box equals pointFeatColAlpha's bounding box"
-//        flattenedDatasetCol.getBoundingBox() == pointFeatColAlpha.getBoundingBox()
-//    }
-//
-//    def "throws exception for unexpected FeatureCollection subtype"() {
-//        setup: "create a FeatureCollection that is not a PointFeatureCollection or NestedPointFeatureCollection"
-//        def featCol = Mock(FeatureCollection)
-//        fdPoint.getPointFeatureCollectionList() >> [featCol]
-//
-//        when: "we flatten the dataset"
-//        new FlattenedDatasetPointCollection(fdPoint);
-//
-//        then: "an exception is thrown"
-//        thrown(IllegalArgumentException)
-//    }
-//}
+package ucar.nc2.ft.point
+import spock.lang.Specification
+import ucar.nc2.constants.FeatureType
+import ucar.nc2.ft.DsgFeatureCollection
+import ucar.nc2.ft.FeatureDatasetPoint
+import ucar.nc2.ft.PointFeature
+import ucar.nc2.ft.PointFeatureCC
+import ucar.nc2.ft.PointFeatureCCC
+import ucar.nc2.ft.PointFeatureCollection
+import ucar.nc2.time.CalendarDateRange
+import ucar.nc2.time.CalendarDateUnit
+import ucar.unidata.geoloc.EarthLocationImpl
+import ucar.unidata.geoloc.LatLonPointImpl
+import ucar.unidata.geoloc.LatLonRect
+/**
+ * @author cwardgar
+ * @since 2015/06/26
+ */
+class FlattenedDatasetPointCollectionSpec extends Specification {
+    // FDP used in all feature methods. Its getPointFeatureCollectionList() method will be stubbed to return
+    // different collections per test.
+    def fdPoint = Mock(FeatureDatasetPoint)
+
+    PointFeature pf1, pf2, pf3, pf4, pf5, pf6, pf7, pf8, pf9
+
+    def setup() {   // run before every feature method
+        setup: "create point features"
+        CalendarDateUnit dateUnit = CalendarDateUnit.of(null, "days since 1970-01-01 00:00:00")
+        DsgFeatureCollection dummyDsg = new SimplePointFeatureCollection("dummy", dateUnit, "m")
+
+        pf1 = makePointFeat(dummyDsg, -75, -70,  630,   23,  dateUnit)
+        pf2 = makePointFeat(dummyDsg, -60, -40,  94,    51,  dateUnit)
+        pf3 = makePointFeat(dummyDsg, -45, -10,  1760,  88,  dateUnit)
+        pf4 = makePointFeat(dummyDsg, -85,  20,  18940, 120, dateUnit)
+        pf5 = makePointFeat(dummyDsg,  0,   50,  26600, 150, dateUnit)
+        pf6 = makePointFeat(dummyDsg,  85,  80,  52800, 180, dateUnit)
+        pf7 = makePointFeat(dummyDsg,  15,  110, 1894,  200, dateUnit)
+        pf8 = makePointFeat(dummyDsg,  30,  140, 266,   300, dateUnit)
+        pf9 = makePointFeat(dummyDsg,  45,  170, 5280,  400, dateUnit)
+    }
+
+    private static PointFeature makePointFeat(
+            DsgFeatureCollection dsg, double lat, double lon, double alt, double time, CalendarDateUnit dateUnit) {
+        def earthLoc = new EarthLocationImpl(lat, lon, alt)
+
+        // Pass null StructureData; we only care about the metadata for these tests.
+        return new SimplePointFeature(dsg, earthLoc, time, time, dateUnit, null)
+    }
+
+    def "handles empty FeatureDatasetPoint"() {
+        setup: "fdPoint returns an empty list of PointFeatureCollections"
+        fdPoint.getPointFeatureCollectionList() >> []
+
+        when: "we construct a FlattenedDatasetPointCollection using our exmpty FeatureDatasetPoint"
+        def flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
+
+        then: "the default unitsString and altUnits are used"
+        flattenedDatasetCol.timeUnit.udUnit == CalendarDateUnit.unixDateUnit.udUnit
+        flattenedDatasetCol.altUnits == null
+
+        when: "get empty collection's iterator"
+        def flattenedDatasetIter = flattenedDatasetCol.getPointFeatureIterator(-1)
+
+        then: "iterator is empty"
+        !flattenedDatasetIter.hasNext()
+        flattenedDatasetIter.next() == null
+    }
+
+    def "metadata of aggregate collection is taken from the first collection"() {
+        setup: "create CalendarDateUnits"
+        CalendarDateUnit calDateUnitAlpha = CalendarDateUnit.of(null, "d since 1970-01-01 00:00:00")
+        CalendarDateUnit calDateUnitBeta  = CalendarDateUnit.of(null, "day since 1970-01-01 00:00:00")
+        CalendarDateUnit dateUnitGamma    = CalendarDateUnit.of(null, "days since 1970-01-01 00:00:00")
+
+        and: "create PointFeatureCollections"
+        PointFeatureCollection pointFeatColAlpha = new SimplePointFeatureCollection("Alpha", calDateUnitAlpha, "yard");
+        PointFeatureCollection pointFeatColBeta  = new SimplePointFeatureCollection("Beta", calDateUnitBeta, "mm")
+        PointFeatureCollection pointFeatColGamma = new SimplePointFeatureCollection("Gamma", dateUnitGamma, "feet")
+
+        and: "fdPoint returns our 3 feature collections"
+        fdPoint.getPointFeatureCollectionList() >> [pointFeatColAlpha, pointFeatColBeta, pointFeatColGamma]
+
+        when: "we flatten our dataset containing 3 collections into one collection"
+        def flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
+
+        then: "flattenedDatasetCol metadata objects are same as pointFeatColAlpha's"
+        flattenedDatasetCol.timeUnit.is pointFeatColAlpha.timeUnit
+        flattenedDatasetCol.altUnits.is pointFeatColAlpha.altUnits
+    }
+
+    def "all kinds of empty"() {
+        setup: "create an empty instance of each of the DsgFeatureCollection types"
+        PointFeatureCollection emptyC   = new SimplePointFeatureCollection("emptyC", null, "m")
+        PointFeatureCC         emptyCC  = new SimplePointFeatureCC("emptyCC", null, "y", FeatureType.POINT)
+        PointFeatureCCC        emptyCCC = new SimplePointFeatureCCC("emptyCCC", null, "in", FeatureType.POINT)
+
+        and: "create a non-empty PointFeatureCC that contains an empty PointFeatureCollection"
+        PointFeatureCC nonEmptyCC = new SimplePointFeatureCC("nonEmptyCC", null, "y", FeatureType.POINT)
+        nonEmptyCC.add(emptyC)
+
+        and: "create a non-empty PointFeatureCCC that contains both an empty and non-empty PointFeatureCC"
+        PointFeatureCCC nonEmptyCCC = new SimplePointFeatureCCC("nonEmptyCCC", null, "in", FeatureType.POINT)
+        nonEmptyCCC.add(emptyCC)
+        nonEmptyCCC.add(nonEmptyCC)
+
+        and: "create a mock FeatureDatasetPoint that returns each of our DsgFeatureCollection instances"
+        fdPoint.getPointFeatureCollectionList() >> [
+                emptyC, emptyCC, emptyCCC, nonEmptyCC, nonEmptyCCC
+        ]
+
+        and: "create flattened collection from our mocked dataset"
+        FlattenedDatasetPointCollection flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint)
+
+        expect: "collection contains no PointFeatures"
+        flattenedDatasetCol.asList().isEmpty()
+    }
+
+    def "multiple DsgFeatureCollection types in one FeatureDataset"() {
+        setup: "create PointFeatureCollections"
+        PointFeatureCollection pfc1 = new SimplePointFeatureCollection("pfc1", null, "m")
+        pfc1.add(pf1);
+
+        PointFeatureCollection pfc2 = new SimplePointFeatureCollection("pfc2", null, "m")
+        pfc2.add(pf2)
+        pfc2.add(pf3)
+
+        PointFeatureCollection pfc3 = new SimplePointFeatureCollection("pfc3", null, "m")
+
+        PointFeatureCollection pfc4 = new SimplePointFeatureCollection("pfc4", null, "m")
+        pfc4.add(pf4)
+
+        PointFeatureCollection pfc5 = new SimplePointFeatureCollection("pfc5", null, "m")
+        pfc5.add(pf5)
+        pfc5.add(pf6)
+        pfc5.add(pf7)
+
+        PointFeatureCollection pfc6 = new SimplePointFeatureCollection("pfc6", null, "m")
+        pfc6.add(pf8)
+
+        PointFeatureCollection pfc7 = new SimplePointFeatureCollection("pfc7", null, "m")
+        pfc7.add(pf9)
+
+        and: "create PointFeatureCCs"
+        PointFeatureCC pfcc1 = new SimplePointFeatureCC("pfcc1", null, "m", FeatureType.POINT)
+        pfcc1.add(pfc1)
+        pfcc1.add(pfc2)
+
+        PointFeatureCC pfcc2 = new SimplePointFeatureCC("pfcc2", null, "m", FeatureType.POINT)
+        pfcc2.add(pfc3)
+        pfcc2.add(pfc4)
+
+        PointFeatureCC pfcc3 = new SimplePointFeatureCC("pfcc3", null, "m", FeatureType.POINT)
+        pfcc3.add(pfc6)
+        pfcc3.add(pfc7)
+
+        and: "create PointFeatureCCC"
+        CalendarDateUnit dateUnit = CalendarDateUnit.of(null, "d since 1970-01-01 00:00:00")
+        PointFeatureCCC pfccc = new SimplePointFeatureCCC("pfccc", dateUnit, "m", FeatureType.POINT)
+        pfccc.add(pfcc1)
+        pfccc.add(pfcc2)
+
+        and: "mock FeatureDatasetPoint to return 1 of each DsgFeatureCollection instance, then flatten it"
+        fdPoint.getPointFeatureCollectionList() >> [pfccc, pfc5, pfcc3]
+        FlattenedDatasetPointCollection flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint)
+
+
+        expect: "before iterating over the collection, bounds are null"
+        flattenedDatasetCol.boundingBox == null
+        flattenedDatasetCol.calendarDateRange == null
+
+        when: "get the iterator and enable bounds calculation"
+        PointIteratorAbstract flattenedPointIter = flattenedDatasetCol.getPointFeatureIterator(-1) as PointIteratorAbstract
+        flattenedPointIter.calculateBounds = flattenedDatasetCol.info
+
+        and: "iterate over the collection"
+        def actualPointFeats = []
+        flattenedPointIter.withCloseable {
+            for (PointFeature pointFeat : flattenedPointIter) {
+                actualPointFeats << pointFeat
+            }
+        }
+
+        then: "the 9 PointFeatures are returned in order"
+        actualPointFeats == [pf1, pf2, pf3, pf4, pf5, pf6, pf7, pf8, pf9]
+
+        and: "the bounds include all 9 PointFeatures"
+        flattenedDatasetCol.size() == 9
+        flattenedDatasetCol.boundingBox == new LatLonRect(new LatLonPointImpl(-85, -70), new LatLonPointImpl(85, 170))
+
+        and:
+        def calDateUnit = flattenedDatasetCol.timeUnit
+        flattenedDatasetCol.calendarDateRange == CalendarDateRange.of(
+                calDateUnit.makeCalendarDate(23), calDateUnit.makeCalendarDate(400))
+    }
+}
