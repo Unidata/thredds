@@ -65,16 +65,7 @@ import ucar.nc2.ft.FeatureDatasetFactory;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.point.PointCollectionImpl;
-import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.ft.point.PointFeatureImpl;
-import ucar.nc2.ft.point.PointIteratorFiltered;
-import ucar.nc2.ft.point.PointIteratorFromStructureData;
-import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.ft.point.StationHelper;
-import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
-import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
+import ucar.nc2.ft.point.*;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.nc2.time.CalendarDate;
@@ -260,7 +251,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
           }
         }
 
-        public class BufrStationPoint extends PointFeatureImpl {
+        public class BufrStationPoint extends PointFeatureImpl implements StationFeatureHas {
           StructureData sdata;
 
           public BufrStationPoint(EarthLocation location, double obsTime, double nomTime, StructureData sdata) {
@@ -278,7 +269,12 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
            public StructureData getFeatureData() throws IOException {
              return sdata;
            }
-         }
+
+          @Override
+          public StationFeature getStationFeature() {
+            return BufrStation.this;
+          }
+        }
       }
 
       // flatten into a PointFeatureCollection

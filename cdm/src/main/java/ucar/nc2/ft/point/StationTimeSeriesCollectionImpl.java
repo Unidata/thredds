@@ -193,10 +193,14 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     return new StationTimeSeriesCollectionFlattened(new StationSubset(this, subsetStations), dateRange);
   }
 
- /* public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
-    return flatten(stations, CalendarDateRange.of(dateRange), varList);
-  } */
 
+  @Override
+  public StationFeature getStationFeature(PointFeature flatPointFeature) throws IOException {
+    if (flatPointFeature instanceof StationFeatureHas) {
+      return ((StationFeatureHas)flatPointFeature).getStationFeature();
+    }
+    return null;
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////
 

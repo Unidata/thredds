@@ -29,21 +29,16 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
-
 package ucar.nc2.ft.point;
 
-import ucar.ma2.StructureData;
-import ucar.unidata.geoloc.Station;
-
-import java.io.IOException;
-
 /**
- * A Station that has additional data obtained through getFeatureData().
+ * Describe
  *
  * @author caron
- * @since 7/8/2014
+ * @since 9/30/2015.
  */
-public interface StationFeature extends Station {
-  StructureData getFeatureData() throws IOException;
+public interface StationFeatureHas {
+  StationFeature getStationFeature();
 }

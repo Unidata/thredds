@@ -303,18 +303,20 @@ for (ucar.nc2.ft.PointFeature pointFeature : timeSeries) {
 
 To get all *PointFeatures* in a specific area and time range, it can help performance sometimes to
 flatten the *StationTimeSeriesCollection*, so that the points can be returned in the order they are
-stored, instead of sorting by Station. One can still retrieve the associated station by casting the
-*PointFeature* to a *StationPointFeature*:
+stored, instead of sorting by Station. One can still retrieve the associated station by calling
+_stationCollection.getStationFeature(pointFeature)_:
 
 [source,java]
 ----
 LatLonRect bb = new LatLonRect( new LatLonPointImpl(40.0, -105.0),
                                 new LatLonPointImpl(42.0, -100.0));
 CalendarDateRange dateRange = CalendarDateRange.of(start, end);
-PointFeatureCollection points = stationTimeSeriesCollection.flatten(bb,dateRange);
+PointFeatureCollection points = stnCollection.flatten(bb,dateRange);
+
 for (PointFeature pointFeature : points) {
-  StationPointFeature stationFeature = (StationPointFeature) pointFeature;
+  StationFeature stationFeature = stnCollection.getStationFeature(pointFeature);
   String stationName = stationFeature.getName();
+  ...
 }
 ----
 

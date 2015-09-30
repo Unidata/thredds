@@ -52,6 +52,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
   private IOIterator<PointFeatureCollection> collectionIter;
   private Filter filter = null;
 
+  private PointFeatureCollection currCollection;
   private PointFeatureIterator pfiter; // iterator over the current PointFeatureCollection
   private PointFeature pointFeature; // current PointFeature in the current PointFeatureCollection
   private boolean finished = false;
@@ -93,6 +94,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
         return false;
       }
 
+      currCollection = feature;
       pfiter = feature.getPointFeatureIterator(-1);
       return hasNext();
 

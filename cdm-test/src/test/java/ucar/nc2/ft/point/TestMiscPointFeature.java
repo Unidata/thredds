@@ -319,7 +319,7 @@ public class TestMiscPointFeature {
   }
 
   @Test
-  public void testIterator() throws IOException {  // kunicki
+  public void testFlatten() throws IOException {  // kunicki
     Formatter formatter = new Formatter(System.err);
     try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION, TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter)) {
       if (fd != null && fd instanceof FeatureDatasetPoint) {
@@ -339,13 +339,13 @@ public class TestMiscPointFeature {
               // is returning the observation structure, not the
               // station structure since Cursor.currentIndex = 0
               //Station s = stsfc.getStation(pf);
-              StructureData sdata = pf.getFeatureData();
-              Assert.assertNotNull(sdata);
-              //Assert.assertTrue( pf instanceof StationFeature);
+            StructureData sdata = pf.getFeatureData();
+            Assert.assertNotNull(sdata);
 
-            Assert.assertTrue( pf.getClass().getName(), pf instanceof StationFeature);
-            StationFeature sf = (StationFeature) pf;
-
+            StationFeature stnFeat = stsfc.getStationFeature(pf);
+            Assert.assertNotNull(stnFeat);
+            StructureData stnData = stnFeat.getFeatureData();
+            Assert.assertNotEquals(sdata, stnData);
           }
         }
       }

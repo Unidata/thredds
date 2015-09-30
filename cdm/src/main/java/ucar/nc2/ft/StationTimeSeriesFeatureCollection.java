@@ -71,36 +71,7 @@ public interface StationTimeSeriesFeatureCollection extends PointFeatureCC, Iter
    */
   PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
   PointFeatureCollection flatten(LatLonRect llbbox, CalendarDateRange dateRange) throws IOException;
-
-  //////////////////////////////////////////////////////////////
-  // StationFeature
-
-  /**
-   * Get a subsetted StationCollection based on a list of StationFeatures.
-   *
-   * @param stations only contain these stations
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
-
-  /*
-   * Get the StationTimeSeriesFeature for a particular Station.
-   *
-   * @param s get data for this station, must have come from this Collection
-   * @return collection of data for this Station.
-   * @throws java.io.IOException on i/o error
-   *
-  StationTimeSeriesFeature getStationFeature(Station s) throws IOException;
-
-  /*
-   * Get the station that belongs to this feature
-   *
-   * @param feature PointFeature obtained from a StationTimeSeriesFeature in this collection
-   * @return the Station is belongs to
-   * @throws java.io.IOException on i/o error
-   *
-  Station getStation(PointFeature feature) throws IOException; */
-
+  StationFeature getStationFeature(PointFeature flatPointFeature) throws IOException; // for flattened point only
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // deprecated

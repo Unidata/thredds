@@ -49,12 +49,14 @@ import java.io.IOException;
  * @since Mar 29, 2008
  */
 public class StandardPointFeatureIterator extends PointIteratorFromStructureData {
+  protected PointCollectionImpl collectionDsg;
   protected NestedTable ft;
   protected CalendarDateUnit timeUnit;
   protected Cursor cursor;
 
   StandardPointFeatureIterator(PointCollectionImpl dsg, NestedTable ft, CalendarDateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, Cursor cursor) throws IOException {
     super(structIter, null);
+    this.collectionDsg = dsg;
     this.ft = ft;
     this.timeUnit = timeUnit;
     this.cursor = cursor;
@@ -79,7 +81,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     return ft.isTimeMissing(this.cursor) || ft.isMissing(this.cursor);
   }
 
-  private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature {
+  private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature, StationFeatureHas {
     protected Cursor cursor;
 
     StandardPointFeature(Cursor cursor, CalendarDateUnit timeUnit, double obsTime) {
@@ -114,6 +116,14 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     @Override
     public StationFeature getStation() {
       return ft.makeStation(cursor.getParentStructure());  // LOOK is this always possible??
+    }
+
+    @Override
+    public StationFeature getStationFeature() {
+      if (collectionDsg instanceof StationFeature)
+        return (StationFeature) collectionDsg;
+      else
+        return null;
     }
   }
 
