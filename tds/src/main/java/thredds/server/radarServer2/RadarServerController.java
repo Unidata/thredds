@@ -124,7 +124,8 @@ public class RadarServerController {
         String contentPath = tdsContext.getContentDirectory().getPath();
         List<RadarServerConfig.RadarConfigEntry> configs = RadarServerConfig.readXML(contentPath + "/radar/radarCollections.xml");
         for (RadarServerConfig.RadarConfigEntry conf : configs) {
-            RadarDataInventory di = new RadarDataInventory(conf.dataPath);
+            RadarDataInventory di = new RadarDataInventory(conf.dataPath,
+                    conf.crawlItems);
             di.setName(conf.name);
             di.setDescription(conf.doc);
 

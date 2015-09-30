@@ -42,12 +42,12 @@ public class RadarDataInventory {
     private DateRange timeCoverage;
     private RadarServerConfig.RadarConfigEntry.GeoInfo geoCoverage;
 
-    public RadarDataInventory(Path datasetRoot) {
+    public RadarDataInventory(Path datasetRoot, int numCrawl) {
         items = new EnumMap<>(DirType.class);
         collectionDir = datasetRoot;
         structure = new DirectoryStructure(collectionDir);
         dirty = true;
-        maxCrawlItems = 5;
+        maxCrawlItems = numCrawl;
         stations = new StationList();
         nearestWindow = CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
     }

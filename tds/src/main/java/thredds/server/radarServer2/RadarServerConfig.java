@@ -44,6 +44,12 @@ public class RadarServerConfig {
                 conf.dateParseRegex = collection.getAttributeValue("dateRegex");
                 conf.dateFmt = collection.getAttributeValue("dateFormat");
                 conf.layout = collection.getAttributeValue("layout");
+                String crawlItems = collection.getAttributeValue("crawlItems");
+                if (crawlItems != null) {
+                    conf.crawlItems = Integer.parseInt(crawlItems);
+                } else {
+                    conf.crawlItems = 5;
+                }
 
                 Element meta = dataset.getChild("metadata", catNS);
                 conf.name = dataset.getAttributeValue("name");
@@ -83,8 +89,7 @@ public class RadarServerConfig {
         // If we're given an actual URI, use that to find the file system.
         // Otherwise, use the default.
         if(location.contains(":")) {
-            URI uri;
-            uri = URI.create(location);
+            URI uri = URI.create(location);
             location = uri.getPath();
             fs = getFS(uri);
         } else {
@@ -214,6 +219,7 @@ public class RadarServerConfig {
         public String dateParseRegex, dateFmt, layout;
         public DateRange timeCoverage;
         public GeoInfo  spatialCoverage;
+        public int crawlItems;
         public List<VarInfo> vars;
 
         static public class GeoInfo {
