@@ -49,16 +49,16 @@ public interface Station extends EarthLocation, Comparable<Station> {
   String getName();
 
   /**
-   * WMO station id.
-   * @return WMO station id, or null.
-   */
-  String getWmoId();
-
-  /**
    * Station description
    * @return station description or null
    */
   String getDescription();
+
+  /**
+   * WMO station id.
+   * @return WMO station id, or null.
+   */
+  String getWmoId();
 
   /**
    * get Number of obs at this station

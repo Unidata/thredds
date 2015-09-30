@@ -109,12 +109,16 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   }
 
   // note this assumes that a Station is-a StationTimeSeriesFeature
+  // subclasses must override if not true
   @Override
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
-    return (StationTimeSeriesFeature) getStationHelper().getStationFeature(s);  // subclasses nust override if not true
+    return (StationTimeSeriesFeature) getStationHelper().getStationFeature(s);
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+
   // note this assumes that a PointFeature is-a StationPointFeature
+  // subclasses must override if not true
   @Override
   public Station getStation(PointFeature feature) throws IOException {
     StationPointFeature stationFeature = (StationPointFeature) feature;
@@ -249,7 +253,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
     return new StationIterator();
   }
 
-  // note this assumes that a Station is-a StationTimeSeriesFeature (see the cast in next())
+  // note this assumes that a StationFeature is-a PointFeatureCollection (meaning is-a StationTimeSeriesFeature) (see the cast in next())
   // subclasses must override if thats not true
   // note that subset() may have made a subset of stationHelper
   private class StationIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {

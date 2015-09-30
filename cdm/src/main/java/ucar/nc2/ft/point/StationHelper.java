@@ -44,7 +44,7 @@ import java.util.Map;
 
 /**
  * Helper class for Station Collections.
- * This assumes that calling getData( Station s) is reletively cheap, ie that theres no cheaper filtering to do.
+ * This assumes that calling getData( Station s) is cheap, ie that theres no cheaper filtering to do.
  * @author caron
  * @since Feb 5, 2008
  */

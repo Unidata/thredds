@@ -85,9 +85,9 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     try (StructureDataIterator siter = ft.getStationDataIterator(-1)) {
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
-        StationTimeSeriesFeature s = makeStation(stationData, siter.getCurrentRecno());
-        if (s != null) {
-          stationHelper.addStation(s);
+        StationTimeSeriesFeature stfs = makeStation(stationData, siter.getCurrentRecno());
+        if (stfs != null) {
+          stationHelper.addStation(stfs);
         }
       }
     }
@@ -116,8 +116,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       ft.addParentJoin(cursor); // there may be parent joins
 
       StructureDataIterator obsIter = ft.getLeafFeatureDataIterator(cursor, bufferSize);
-      StandardPointFeatureIterator iter = new StandardPointFeatureIterator(StandardStationFeatureImpl.this, ft, timeUnit, obsIter, cursor);
-      return iter;
+      return new StandardPointFeatureIterator(this, ft, timeUnit, obsIter, cursor);
     }
 
     @Nonnull
@@ -125,7 +124,6 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     public StructureData getFeatureData() {
       return stationData;
     }
-
 
   }
 }

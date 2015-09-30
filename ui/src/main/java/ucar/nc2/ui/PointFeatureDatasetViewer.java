@@ -80,7 +80,6 @@ import ucar.nc2.ui.util.Resource;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -112,16 +111,11 @@ public class PointFeatureDatasetViewer extends JPanel {
   private StructureTable obsTable;
   private JSplitPane splitFeatures, splitMap, splitObs;
   private IndependentDialog infoWindow;
-  //private IndependentWindow pointDisplayWindow;
   private TextHistoryPane infoTA;
 
   private PointController pointController;
   private NetcdfOutputChooser outChooser;
-
   private FeatureDatasetPoint pfDataset;
-
-
-  private DateFormatter df = new DateFormatter();
 
   private boolean eventsOK = true;
   private boolean debugStationRegionSelect = false, debugQuery = false;
@@ -448,6 +442,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       ProfileFeatureCollection pfc = (ProfileFeatureCollection) fcb.fc;
       setProfileCollection(pfc);
       changingPane.add(stnTable, BorderLayout.CENTER);
+
     } else if (ftype == FeatureType.STATION) {
       StationCollection sfc = (StationCollection) fcb.fc;
       setStations(sfc);
@@ -841,7 +836,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   static public class StationBean extends FeatureBean implements ucar.unidata.geoloc.Station {
-    private Station s;
+    private StationFeature s;
     private int npts = -1;
 
     public StationBean() {
@@ -853,7 +848,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public StationBean(Station s) throws IOException {
       super(((StationFeature) s).getFeatureData());
-      this.s = s;
+      this.s = (StationFeature) s;
       this.npts = s.getNobs();
     }
 

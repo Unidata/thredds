@@ -87,11 +87,10 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
       List<DsgFeatureCollection> fcList = openDataset.getPointFeatureCollectionList();
       StationTimeSeriesCollectionImpl openCollection = (StationTimeSeriesCollectionImpl) fcList.get(0);
-      List<Station> stns = openCollection.getStations();
+      List<StationFeature> stns = openCollection.getStationFeatures();
 
-      for (Station s : stns) {
-        StationTimeSeriesFeature stnFeature = openCollection.getStationFeature(s);
-        stationHelper.addStation(new CompositeStationFeature(s, timeUnit, altUnits, stnFeature.getFeatureData(), this.dataCollection));
+      for (StationFeature stnFeature : stns) {
+        stationHelper.addStation(new CompositeStationFeature(stnFeature, timeUnit, altUnits, stnFeature.getFeatureData(), this.dataCollection));
       }
 
       dataVariables = openDataset.getDataVariables();

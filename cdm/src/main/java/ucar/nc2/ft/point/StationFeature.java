@@ -39,7 +39,7 @@ import ucar.unidata.geoloc.Station;
 import java.io.IOException;
 
 /**
- * Interface for Station with getFeatureData()
+ * A Station that has additional data obtained through getFeatureData().
  *
  * @author caron
  * @since 7/8/2014

@@ -33,14 +33,13 @@
 package ucar.nc2.ft.point;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.DataType;
@@ -70,7 +69,7 @@ public class TestMiscPointFeature {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testProblemTraj() throws IOException {
-    String location = TestPointDatasets.topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
+    String location = TestDir.cdmUnitTestDir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc";
     Assert.assertEquals("npoints", 383, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY, true));
   }
 
@@ -78,6 +77,19 @@ public class TestMiscPointFeature {
   public void testProblemStation() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.4.1.ncml";
     Assert.assertEquals("npoints", 100, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
+  }
+
+  @Test
+  @Ignore("Dont support multiple lat/lon coordinates for now")
+  public void testProblemStationWithPreciseCoords() throws IOException {
+    String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.3.2.ncml";
+    Assert.assertEquals("npoints", 100, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION, true));
+  }
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testGempakStationProfile() throws IOException {
+    String location = TestDir.cdmUnitTestDir + "ft/sounding/gempak/19580807_upa.ncml";
+    Assert.assertEquals("npoints", 8769, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.STATION_PROFILE, true));
   }
 
   @Test

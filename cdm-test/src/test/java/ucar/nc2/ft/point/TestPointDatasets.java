@@ -48,6 +48,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -116,25 +117,24 @@ public class TestPointDatasets {
 
   //////////////////////////////////////////////////////////////////////
 
-  public static String topdir = TestDir.cdmUnitTestDir;
   static boolean showStructureData = false;
   static boolean showAll = false;
 
   public static List<Object[]> getCFDatasets() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{topdir + "cfPoint/point/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, 1001});
-    result.add(new Object[]{topdir + "cfPoint/point/nmcbob.shp.nc", FeatureType.POINT, 1196});
-    result.add(new Object[]{topdir + "cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, 17280});
-    result.add(new Object[]{topdir + "cfPoint/station/billNewDicast.nc", FeatureType.STATION, 78912});
-    result.add(new Object[]{topdir + "cfPoint/station/billOldDicast.nc", FeatureType.STATION, 19728});
-    result.add(new Object[]{topdir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, 1728});
-    result.add(new Object[]{topdir + "cfPoint/trajectory/rt_20090512_willy2.ncml", FeatureType.TRAJECTORY, 53176});
-    result.add(new Object[]{topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, 245});
-    result.add(new Object[]{topdir + "cfPoint/stationProfile/timeSeriesProfile-Ragged-SingleStation-H.5.3.nc", FeatureType.STATION_PROFILE, 40});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/point/filtered_apriori_super_calibrated_binned1.nc", FeatureType.POINT, 1001});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/point/nmcbob.shp.nc", FeatureType.POINT, 1196});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, 17280});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/station/billNewDicast.nc", FeatureType.STATION, 78912});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/station/billOldDicast.nc", FeatureType.STATION, 19728});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/station/sampleDataset.nc", FeatureType.STATION, 1728});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/trajectory/rt_20090512_willy2.ncml", FeatureType.TRAJECTORY, 53176});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, 245});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "cfPoint/stationProfile/timeSeriesProfile-Ragged-SingleStation-H.5.3.nc", FeatureType.STATION_PROFILE, 40});
 
         // CF 1.0 multidim with dimensions reversed
-    //testPointDataset(topdir+"cfPoint/station/solrad_point_pearson.ncml", FeatureType.STATION, true);
+    //testPointDataset(TestDir.cdmUnitTestDir+"cfPoint/station/solrad_point_pearson.ncml", FeatureType.STATION, true);
 
     return result;
   }
@@ -143,42 +143,35 @@ public class TestPointDatasets {
     List<Object[]> result = new ArrayList<>();
 
     // cosmic
-    result.add(new Object[]{topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc", FeatureType.TRAJECTORY, 383});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc", FeatureType.TRAJECTORY, 383});
     // ndbc
-    result.add(new Object[]{topdir + "ft/station/ndbc/41001h1976.nc", FeatureType.STATION, 1405});
-    result.add(new Object[]{topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, 124});
-    result.add(new Object[]{topdir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc", FeatureType.STATION, 4848});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/ndbc/41001h1976.nc", FeatureType.STATION, 1405});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, 124});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc", FeatureType.STATION, 4848});
     // fsl wind profilers
-    result.add(new Object[]{topdir + "ft/stationProfile/PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, 198});
-    result.add(new Object[]{topdir + "ft/stationProfile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, 198});
-    result.add(new Object[]{topdir + "ft/stationProfile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, 1728});
-    result.add(new Object[]{topdir + "ft/stationProfile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, 2088});
-    //gempack sounding
-    result.add(new Object[]{topdir + "ft/sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, 8769});
-    // gempak surface
-    result.add(new Object[]{topdir + "ft/point/gempak/2009103008_sb.gem", FeatureType.POINT, 3337});
-    result.add(new Object[]{topdir + "ft/point/gempak/2009110100_ship.gem", FeatureType.POINT, 938});
-    result.add(new Object[]{topdir + "ft/station/gempak/20091030_syn.gem", FeatureType.POINT, 55856});
-    result.add(new Object[]{topdir + "ft/station/gempak/20091030_syn.gem", FeatureType.STATION, 28328});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, 198});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, 198});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, 1728});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, 2088});
     // netcdf buoy / synoptic / metars ( robb's perl decoder output)
-    result.add(new Object[]{topdir + "ft/point/netcdf/Surface_METAR_latest.nc", FeatureType.POINT, 7});
-    result.add(new Object[]{topdir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
-    result.add(new Object[]{topdir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, 1516});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_METAR_latest.nc", FeatureType.POINT, 7});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, 32452});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, 1516});
     //RAF-Nimbus
-    result.add(new Object[]{topdir + "ft/trajectory/aircraft/135_ordrd.nc", FeatureType.TRAJECTORY, 7741});
-    result.add(new Object[]{topdir + "ft/trajectory/aircraft/raftrack.nc", FeatureType.TRAJECTORY, 8157});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/trajectory/aircraft/135_ordrd.nc", FeatureType.TRAJECTORY, 7741});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/trajectory/aircraft/raftrack.nc", FeatureType.TRAJECTORY, 8157});
     // Madis
-    result.add(new Object[]{topdir + "ft/trajectory/acars/acars_20091109_0800.nc", FeatureType.TRAJECTORY, 5063});
-    result.add(new Object[]{topdir + "ft/point/netcdf/19981110_1200", FeatureType.POINT, 2499});
-    result.add(new Object[]{topdir + "ft/station/madis2/hydro/20050729_1200", FeatureType.STATION, 1374});
-    result.add(new Object[]{topdir + "ft/sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, 1788});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/trajectory/acars/acars_20091109_0800.nc", FeatureType.TRAJECTORY, 5063});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/netcdf/19981110_1200", FeatureType.POINT, 2499});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/madis2/hydro/20050729_1200", FeatureType.STATION, 1374});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, 1788});
     // unidata point obs
-    result.add(new Object[]{topdir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});
-    result.add(new Object[]{topdir + "ft/point/netcdf/20080814_LMA.ncml", FeatureType.POINT, 277477});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, 5023});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/netcdf/20080814_LMA.ncml", FeatureType.POINT, 277477});
     // nldn
-    result.add(new Object[]{topdir + "ft/point/200929100.ingest", FeatureType.POINT, 1165});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/200929100.ingest", FeatureType.POINT, 1165});
     // uspln
-    result.add(new Object[]{topdir + "ft/point/uspln_20061023.18", FeatureType.POINT, 3483});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/uspln_20061023.18", FeatureType.POINT, 3483});
 
     // FslRaob
     // assert 63 == checkPointDataset(TestDir.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, false);
@@ -187,10 +180,20 @@ public class TestPointDatasets {
     return result;
   }
 
+  // lots of trouble - remove for now
   public static List<Object[]> getGempakDatasets() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{topdir + "ft/sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, 8769});
+    //gempack sounding
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, 8769});
+
+    // gempak surface
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/gempak/2009103008_sb.gem", FeatureType.POINT, 3337});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/point/gempak/2009110100_ship.gem", FeatureType.POINT, 938});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/gempak/20091030_syn.gem", FeatureType.POINT, 55856});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/gempak/20091030_syn.gem", FeatureType.STATION, 28328});
+
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, 8769});
 
     // (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
     //checkPointDataset(TestDir.cdmUnitTestDir + "formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);
@@ -205,7 +208,8 @@ public class TestPointDatasets {
     //checkPointDataset("collection:D:/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", FeatureType.STATION, true);
 
     return result;
-  }
+  } 
+
 
   public static List<Object[]> getMiscDatasets() {
     List<Object[]> result = new ArrayList<>();
@@ -223,7 +227,6 @@ public class TestPointDatasets {
 
     result.addAll(getCFDatasets());
     result.addAll(getPlugDatasets());
-    result.addAll(getGempakDatasets());
     result.addAll(getMiscDatasets());
 
     return result;
@@ -393,7 +396,7 @@ public class TestPointDatasets {
     Assert.assertTrue(countSub <= countStns);
     System.out.println("  nobs= " + sfcSub.size());
 
-    /* test info
+    // test info
     CollectionInfo info = new DsgCollectionHelper(sfc).calcBounds(); // sets internal values
     Assert.assertNotNull(info);
     CalendarDateRange dr = sfc.getCalendarDateRange();
@@ -410,11 +413,12 @@ public class TestPointDatasets {
       Assert.assertTrue( bb2.contains(sf.getLatLon()));
       for (PointFeature pf : sf) {
         Assert.assertEquals(sf.getLatLon(), pf.getLocation().getLatLon());
-        Assert.assertTrue( drsubset.includes(pf.getObservationTimeAsCalendarDate()));
+        Assert.assertTrue(drsubset.includes(pf.getObservationTimeAsCalendarDate()));
+        // Assert.assertTrue( pf.getClass().getName(), pf instanceof StationFeature);
       }
     }
     System.out.println("  nobs= " + sfcSub2.size());
-    Assert.assertTrue(sfcSub2.size() <= sfcSub.size()); */
+    Assert.assertTrue(sfcSub2.size() <= sfcSub.size()); // */
 
     System.out.println("Flatten= " + bb2.toString2());
     PointFeatureCollection flatten = sfc.flatten(bb2, null);

@@ -85,7 +85,7 @@ public class TestCFPointWriter {
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
-  @Test
+  //@Test
   @Ignore("doesnt work: coordinate axes that are members of nc4 structures")
   public void testWrite4() throws IOException {
     // Ignore this test if NetCDF-4 isn't present.

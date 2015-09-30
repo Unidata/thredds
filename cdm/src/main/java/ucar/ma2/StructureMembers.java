@@ -201,6 +201,7 @@ public final class StructureMembers {
     return memberHash.get(memberName);
   }
 
+  /*
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -221,7 +222,7 @@ public final class StructureMembers {
   public int hashCode() {
     return Objects.hash(getStructureSize(), getName(), getMembers());
     // memberHash is derived from shape. No need to include it in computation.
-  }
+  } */
 
   @Override
   public String toString() {
@@ -474,6 +475,7 @@ public final class StructureMembers {
       return name;
     }
 
+    /*
     @Override
     public boolean equals(Object o) {
       if (this == o) {
@@ -507,6 +509,6 @@ public final class StructureMembers {
       return Objects.hash(getName(), getDescription(), getUnitsString(), getDataType(), Arrays.hashCode(getShape()),
               getStructureMembers(), MAMath.hashCode(getDataArray()), getDataObject(), getDataParam());
       // size and isVariableLength are derived from shape. No need to include them in computation.
-    }
+    } */
   }
 }
