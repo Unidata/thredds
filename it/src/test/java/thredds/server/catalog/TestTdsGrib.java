@@ -37,6 +37,37 @@ import java.util.Set;
 public class TestTdsGrib {
 
   @Test
+  public void testGribDataset2D() throws IOException {
+    String catalog = "/catalog/grib/NDFD/CONUS_5km/catalog.xml";
+    Catalog cat = TdsLocalCatalog.open(catalog);
+
+    Dataset ds = cat.findDatasetByID("grib/NDFD/CONUS_5km/TwoD");
+    assert (ds != null) : "cant find dataset 'dataset=grib/NDFD/CONUS_5km/TwoD'";
+    assert ds.getFeatureType() == FeatureType.GRID;
+
+    DataFactory fac = new DataFactory();
+    try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
+
+      assert dataResult != null;
+      assert !dataResult.fatalError : dataResult.errLog;
+      assert dataResult.featureDataset != null;
+
+      GridDataset gds = (GridDataset) dataResult.featureDataset;
+      GridDatatype grid = gds.findGridDatatype("Maximum_temperature_Forecast_height_above_ground_12_Hour_Maximum");
+      assert grid != null;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert gcs != null;
+
+      CoordinateAxis1D time = gcs.getTimeAxis1D();
+      assert time != null;
+      assert time.getSize() == 4;
+      double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
+      CompareNetcdf2 cn = new CompareNetcdf2();
+      assert cn.compareData("time", time.read(), Array.makeFromJavaArray(want), false);
+    }
+  }
+
+  @Test
   public void testGribLatest() throws IOException {
     String catalog = "/catalog/grib/NDFD/CONUS_5km/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);

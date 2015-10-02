@@ -243,7 +243,7 @@ public class CFGridCoverageWriter2 {
                     "Original Dataset = " + gds.getName() + "; Translation Date = " + CalendarDate.present()));
 
 
-    LatLonRect llbb = gds.getLatLonBoundingBox();
+    LatLonRect llbb = gds.getBoundingBox();
     if (llbb != null) {
       // this will replace any existing
       writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));

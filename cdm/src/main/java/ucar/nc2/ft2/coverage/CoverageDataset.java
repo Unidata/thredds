@@ -45,11 +45,19 @@ import java.util.Map;
 import net.jcip.annotations.Immutable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
+
+import javax.annotation.Nullable;
 
 /**
  * A Coverage Dataset.
@@ -60,7 +68,7 @@ import ucar.unidata.geoloc.ProjectionRect;
  * @since 7/11/2015
  */
 @Immutable
-public class CoverageDataset implements Closeable, CoordSysContainer {
+public class CoverageDataset implements Closeable, CoordSysContainer, FeatureDataset {
 
   private final String name;
   private final AttributeContainerHelper atts;
@@ -137,17 +145,6 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return hcs;
   }
 
-  @Override
-  public void close() throws IOException {
-    try {
-      reader.close();
-    } catch (IOException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new IOException(e);
-    }
-  }
-
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
     return atts.findAttValueIgnoreCase(attName, defaultValue);
   }
@@ -168,7 +165,8 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return atts.getAttributes();
   }
 
-  public LatLonRect getLatLonBoundingBox() {
+  @Override
+  public LatLonRect getBoundingBox() {
     return latLonBoundingBox;
   }
 
@@ -176,6 +174,7 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return projBoundingBox;
   }
 
+  @Override
   public CalendarDateRange getCalendarDateRange() {
     return calendarDateRange;
   }
@@ -222,7 +221,7 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return reader;
   }
 
-  // this is used in ncss form
+  // this is used in ncss thymeleaf form
   public CoverageCoordAxis1D getRuntimeCoordinateMax() {
     // runtimes - LOOK should combine
     CoverageCoordAxis max = null;
@@ -255,7 +254,6 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
 
     return f.toString(); */
   }
-
 
   @Override
   public String toString() {
@@ -321,4 +319,113 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return null;
   }
 
+  /////////////////////////////////////////////
+  // FeatureDataset
+
+  @Override
+  public FeatureType getFeatureType() {
+    switch (getCoverageType()) {
+      case Grid: return FeatureType.GRID;
+      case Fmrc: return FeatureType.FMRC;
+    }
+    return FeatureType.GRID; // ??
+  }
+
+  @Override
+  public String getTitle() {
+    return getName();
+  }
+
+  @Override
+  public String getDescription() {
+    return getName();
+  }
+
+  @Override
+  public String getLocation() {
+    return reader.getLocation();
+  }
+
+  @Override
+  public CalendarDate getCalendarDateStart() {
+    return calendarDateRange == null ? null : calendarDateRange.getStart();
+  }
+
+  @Override
+  public CalendarDate getCalendarDateEnd() {
+    return calendarDateRange == null ? null : calendarDateRange.getEnd();
+  }
+
+  @Override
+  public Attribute findGlobalAttributeIgnoreCase(String name) {
+    return findAttributeIgnoreCase(name);
+  }
+
+  @Override
+  public List<VariableSimpleIF> getDataVariables() {
+    List<VariableSimpleIF> result = new ArrayList<>();
+    for (Coverage cov : getCoverages())
+      result.add(cov);
+    return result;
+  }
+
+  @Override
+  public VariableSimpleIF getDataVariable(String shortName) {
+    return findCoverage(shortName);
+  }
+
+  @Nullable
+  @Override
+  public NetcdfFile getNetcdfFile() {
+    return null;
+  }
+
+  @Override
+  public void getDetailInfo(Formatter sf) {
+    toString(sf);
+  }
+
+  @Override
+  public String getImplementationName() {
+    return null;
+  }
+
+  @Override
+  public long getLastModified() {
+    return 0; // LOOK
+  }
+
+  private FileCacheIF fileCache; // LOOK mutable
+
+  @Override
+  public void setFileCache(FileCacheIF fileCache) {
+    this.fileCache = fileCache;
+  }
+
+  @Override
+  public void release() throws IOException {
+    // reader.release()
+  }
+
+  @Override
+  public void reacquire() throws IOException {
+    // reader.reacquire()
+  }
+
+  public synchronized void close() throws java.io.IOException {
+    if (fileCache != null) {
+      if (fileCache.release(this)) return;
+    }
+    reallyClose();
+  }
+
+  private void reallyClose() throws IOException {
+    try {
+      reader.close();
+    } catch (IOException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IOException(e);
+    }
+  }
 }

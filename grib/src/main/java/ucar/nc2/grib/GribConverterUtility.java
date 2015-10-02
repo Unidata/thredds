@@ -34,11 +34,7 @@
 package ucar.nc2.grib;
 
 /**
- * Created with IntelliJ IDEA.
- * User: madry
- * Date: 3/21/13
- * Time: 2:37 PM
- * To change this template use File | Settings | File Templates.
+ @deprecated
  */
 
 import ucar.nc2.dt.GridDataset;

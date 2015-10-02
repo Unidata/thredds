@@ -348,7 +348,7 @@ public class CoverageRenderer {
   private String makeXYZvalueStr(double value, HorizCoordSys.CoordReturn cr) {
     String val = lastGrid.isMissing(value) ? "missing value" : Format.d(value, 6);
     Formatter sbuff = new Formatter();
-    sbuff.format("%s %s", val, lastGrid.getUnits());
+    sbuff.format("%s %s", val, lastGrid.getUnitsString());
     sbuff.format(" @ (%f,%f)", cr.xcoord, cr.ycoord);
     sbuff.format("  [%d,%d]", cr.x, cr.y);
     return sbuff.toString();

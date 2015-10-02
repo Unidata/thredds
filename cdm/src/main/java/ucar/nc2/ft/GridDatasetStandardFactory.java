@@ -34,36 +34,50 @@ package ucar.nc2.ft;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.dt.grid.GridDataset;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.List;
 
 /**
- * FeatureDatasetFactory for Grids, using standard coord sys analysis and ucar.nc2.dt.grid.GridDataset
+ * FeatureDatasetFactory for Grids, using standard coord sys analysis and ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder
  * @author caron
  * @since Dec 30, 2008
  */
 public class GridDatasetStandardFactory implements FeatureDatasetFactory {
 
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
-    // If they ask for a grid, and there seems to be some grids, go for it
-    if (wantFeatureType == FeatureType.GRID || wantFeatureType == FeatureType.SWATH) {
-      ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset( ncd);
-      if (gds.getGrids().size() > 0) {
-        return gds;
-      }
-    }
-    return null;
+    DtCoverageCSBuilder dtCoverage = DtCoverageCSBuilder.classify(ncd, errlog);
+    if (dtCoverage == null || dtCoverage.getType() == null) return null;
+    if (!match(wantFeatureType, dtCoverage.getType())) return null;
+    return dtCoverage;
+  }
+
+  private boolean match(FeatureType wantFeatureType, CoverageCoordSys.Type covType) {
+    if (wantFeatureType == null || wantFeatureType == FeatureType.ANY) return true;
+    // LOOK ever have to return false?
+    return true;
   }
 
   public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog) throws IOException {
     // already been opened by isMine
-    return (GridDataset) analysis;
+    DtCoverageCSBuilder dtCoverage =  (DtCoverageCSBuilder) analysis;
+
+    DtCoverageDataset dt = DtCoverageDataset.open(ncd);
+    CoverageDatasetCollection covColl = DtCoverageAdapter.factory(dt);
+    List<CoverageDataset> covDatasets = covColl.getCoverageDatasets();
+    assert 1 == covDatasets.size(); // ??
+    return covDatasets.get(0);
   }
 
   public FeatureType[] getFeatureTypes() {
-    return new FeatureType[] {FeatureType.GRID, FeatureType.SWATH};
+    return new FeatureType[] {FeatureType.GRID, FeatureType.FMRC, FeatureType.SWATH};
   }
 }

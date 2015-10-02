@@ -1107,7 +1107,7 @@ public class CoverageViewer extends JPanel {
     addChoosers();
 
     fieldChooser.setToolTipText(gg.getName());
-    colorScalePanel.setUnitString(gg.getUnits());
+    colorScalePanel.setUnitString(gg.getUnitsString());
     return true;
   }
 

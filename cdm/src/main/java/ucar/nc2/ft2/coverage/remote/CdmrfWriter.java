@@ -103,8 +103,8 @@ public class CdmrfWriter {
     builder.setName(location);
     builder.setCoverageType(convertCoverageType(gridDataset.getCoverageType()));
     builder.setDateRange(encodeDateRange(gridDataset.getCalendarDateRange()));
-    if (gridDataset.getLatLonBoundingBox() != null)
-      builder.setLatlonRect(encodeRectangle(gridDataset.getLatLonBoundingBox()));
+    if (gridDataset.getBoundingBox() != null)
+      builder.setLatlonRect(encodeRectangle(gridDataset.getBoundingBox()));
     if (gridDataset.getProjBoundingBox() != null)
       builder.setProjRect(encodeRectangle(gridDataset.getProjBoundingBox()));
 
@@ -186,7 +186,7 @@ public class CdmrfWriter {
     for (Attribute att : grid.getAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
 
-    builder.setUnits(grid.getUnits());
+    builder.setUnits(grid.getUnitsString());
     builder.setDescription(grid.getDescription());
     builder.setCoordSys(grid.getCoordSysName());
 

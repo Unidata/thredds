@@ -1370,10 +1370,10 @@ public class ToolsUI extends JPanel {
     }
 
     if (threddsData.featureType == FeatureType.GRID) {
-      makeComponent(ftTabPane, "Grids");
-      gridPanel.setDataset((NetcdfDataset) threddsData.featureDataset.getNetcdfFile());
+      makeComponent(ftTabPane, "Coverage");
+      coveragePanel.setDataset(threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
-      ftTabPane.setSelectedComponent(gridPanel);
+      ftTabPane.setSelectedComponent(coveragePanel);
 
     } else if (threddsData.featureType == FeatureType.IMAGE) {
       makeComponent(ftTabPane, "Images");
@@ -4822,7 +4822,7 @@ public class ToolsUI extends JPanel {
     JSplitPane split;
     IndependentWindow viewerWindow;
 
-    CoverageDatasetCollection gcd = null;
+    CoverageDatasetCollection covDatasetCollection = null;
 
     CoveragePanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);
@@ -4877,15 +4877,15 @@ public class ToolsUI extends JPanel {
 
       // close previous file
       try {
-        if (gcd != null) gcd.close();
+        closeOpenFiles();
       } catch (IOException ioe) {
         System.out.printf("close failed %n");
       }
 
       try {
-        gcd = CoverageDatasetFactory.open(command);
-        if (gcd == null) return false;
-        dsTable.setCollection(gcd);
+        covDatasetCollection = CoverageDatasetFactory.open(command);
+        if (covDatasetCollection == null) return false;
+        dsTable.setCollection(covDatasetCollection);
         setSelectedItem(command);
 
       } catch (IOException e) {
@@ -4904,9 +4904,27 @@ public class ToolsUI extends JPanel {
       return !err;
     }
 
+    void setDataset(FeatureDataset gds) {
+      if (gds == null) return;
+      try {
+        closeOpenFiles();
+      } catch (IOException ioe) {
+        System.out.printf("close failed %n");
+      }
+
+      /* this.ds = (NetcdfDataset) gds.getNetcdfFile(); // ??
+      try {
+        dsTable.setDataset(gds);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return;
+      } */
+      setSelectedItem(gds.getLocation());
+    }
+
     void closeOpenFiles() throws IOException {
-      if (gcd != null) gcd.close();
-      gcd = null;
+      if (covDatasetCollection != null) covDatasetCollection.close();
+      covDatasetCollection = null;
       dsTable.clear();
     }
 

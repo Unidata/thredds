@@ -132,7 +132,7 @@ public class TestCoverageHorizSubset {
       Assert.assertNotNull("HorizCoordSys", hcs);
       // Assert.assertArrayEquals(new int[]{65, 361, 720}, cs.getShape());
 
-      LatLonRect llbb = gcs.getLatLonBoundingBox();
+      LatLonRect llbb = gcs.getBoundingBox();
       LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
 
       checkLatLonSubset(gcs, coverage, llbb_subset, new int[]{1, 35, 46});
@@ -195,7 +195,7 @@ public class TestCoverageHorizSubset {
   }
 
   private void checkLatLonSubset(CoverageDataset gcs, Coverage coverage, LatLonRect bbox, int[] expectedShape) throws Exception {
-    System.out.printf(" coverage llbb = %s width=%f%n", gcs.getLatLonBoundingBox().toString2(), gcs.getLatLonBoundingBox().getWidth());
+    System.out.printf(" coverage llbb = %s width=%f%n", gcs.getBoundingBox().toString2(), gcs.getBoundingBox().getWidth());
     System.out.printf(" constrain bbox= %s width=%f%n", bbox.toString2(), bbox.getWidth());
 
     SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox).set(SubsetParams.timePresent, true);

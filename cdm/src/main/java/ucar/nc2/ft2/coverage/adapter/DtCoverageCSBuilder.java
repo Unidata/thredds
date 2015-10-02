@@ -290,6 +290,10 @@ public class DtCoverageCSBuilder {
     return CoverageCoordSys.Type.General;
   }
 
+  public CoverageCoordSys.Type getType() {
+    return type;
+  }
+
   public DtCoverageCS makeCoordSys() {
     if (type == null) return null;
 

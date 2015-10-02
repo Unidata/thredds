@@ -33,7 +33,6 @@
 package thredds.server.wcs.v1_0_0_1;
 
 import ucar.nc2.ft2.coverage.CoverageCoordAxis;
-import ucar.nc2.ft2.coverage.TimeHelper;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDataset;
 import ucar.nc2.time.CalendarDateRange;
@@ -115,7 +114,7 @@ public abstract class WcsRequest {
     Element lonLatEnvelopeElem = new Element("lonLatEnvelope", wcsNS);
     lonLatEnvelopeElem.setAttribute("srsName", "urn:ogc:def:crs:OGC:1.3:CRS84");
 
-    LatLonRect llbb = gcd.getLatLonBoundingBox();
+    LatLonRect llbb = gcd.getBoundingBox();
     LatLonPoint llpt = llbb.getLowerLeftPoint();
     LatLonPoint urpt = llbb.getUpperRightPoint();
 

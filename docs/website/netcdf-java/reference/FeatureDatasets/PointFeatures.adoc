@@ -25,16 +25,16 @@ public interface DsgFeatureCollection {
 }
 ----
 
-We take the approach that all point feature types are arrangements of collections of _PointFeatures_
+We take the approach that all point feature types are arrangements of collections of _Point Features_
 (a set of measurements at the same point in space and time), distinguished by the geometry and topology of the collections.
 The *_Point Feature Types_* that we implement are:
 
 .  *Point feature* : one or more parameters measured at one point in time and space.
 .  *Station time series feature* : a time-series of data points all at the same location, with varying time.
 .  *Profile feature* : a set of data points along a vertical line.
-.  *Station Profile feature* : a time-series of profile ****features at a named location.
+.  *Station Profile feature* : a time-series of profile features at a named location.
 .  *Trajectory feature* : a set of data points along a 1D curve in time and space.
-.  *Section feature* : a collection of profile**** features which originate along a trajectory.
+.  *Trajectory Profile feature* : a collection of profile features which originate along a trajectory. Also known as a _Section_.
 
 Related documents:
 ^^^^^^^^^^^^^^^^^^

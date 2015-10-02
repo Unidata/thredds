@@ -183,6 +183,11 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     gribCollection.close();
   }
 
+  @Override
+  public String getLocation() {
+    return gribCollection.getLocation()+"#"+group.getId(); // ??
+  }
+
   /*
     SRC,               // GC: Single Runtime Collection                [ntimes]
     MRC,               // GC: Multiple Runtime Collection              [nruns, ntimes]

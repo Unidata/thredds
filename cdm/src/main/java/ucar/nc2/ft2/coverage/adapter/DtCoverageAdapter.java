@@ -302,6 +302,11 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   }
 
   @Override
+  public String getLocation() {
+    return proxy.getLocation();
+  }
+
+  @Override
   public GeoReferencedArray readData(Coverage coverage, SubsetParams params, boolean canonicalOrder) throws IOException, InvalidRangeException {
     DtCoverage grid = (DtCoverage) coverage.getUserObject();
     CoverageCoordSys orgCoordSys = coverage.getCoordSys();

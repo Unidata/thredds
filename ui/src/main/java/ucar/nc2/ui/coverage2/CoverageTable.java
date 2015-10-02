@@ -363,7 +363,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getLLBB() {
-      return cds.getLatLonBoundingBox() == null ? "null" : cds.getLatLonBoundingBox().toString();
+      return cds.getBoundingBox() == null ? "null" : cds.getBoundingBox().toString();
     }
 
     public int getNCoverages() {
@@ -399,7 +399,7 @@ public class CoverageTable extends JPanel {
       this.geogrid = geogrid;
       name = geogrid.getName();
       desc = (geogrid.getDescription());
-      units = (geogrid.getUnits());
+      units = (geogrid.getUnitsString());
       dataType = (geogrid.getDataType());
       coordSysName = (geogrid.getCoordSysName());
     }
