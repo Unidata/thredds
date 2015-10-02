@@ -1,0 +1,79 @@
+CDM/CF Differences
+==================
+
+= Differences between CDM and CF
+
+CF is a metadata standard for netCDF files. CDM is a data model for many
+differerent data formats, which generally conforms to CF whenever the
+two overlap. This documents the differences in metadata interpretation.
+
+== Coordinate Systems
+
+=== Units of _*false_easting*_ and _*false_northing*_
+
+* http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#appendix-grid-mappings[CF]:
+_*false_easting,*_ and _*false_northing*_ attribute values must be in
+the same units as the x and y projection coordinates.
+* CDM: the attribute ``units'' may be specified on the dummy Coordinate
+Transform Variable, which overrides the
+link:../reference/StandardCoordinateTransforms.html#false_easting[]x/y
+coordinate units. This is needed when the projection does not have
+access to the x/y coordinates.
+
+=== Required use of Lat/Lon Coordinates
+
+* http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#grid-mappings-and-projections[CF:]
+requires that all files include latitude and longitude coordinates.
+* CDM: When the data are on a projection, this requirement implies that
+2 dimension lat(y,x) and lon(y,x) must be included in the file. When the
+1D x(x) and y(y) coordinates are also included, along with a
+link:../reference/StandardCoordinateTransforms.html[standard
+grid_mapping] that specifies the projection, the CDM uses the projection
+for the Coordinate System layer, and not the lat, lon variables. In some
+circumstances, for example in extracting a single variable into a
+seperate file, including the 2D lat(y,x) and lon(y,x) variables can
+triple the size of the file. CDM therefore allows a user to create an
+``almost-CF compliant'' file without the 2D lat(y,x) and lon(y,x)
+variables. Generally the user also has an option to include these
+variables when strict compliance is needed.
+
+== Calendar Date Coordinates
+
+* http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#time-coordinate[CF]:
+_Variables representing time must always explicitly include
+the units attribute. The units attribute takes a string value formatted
+as per the recommendations in the Udunits package
+[http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#udunits[UDUNITS]]_
+This implies that a time coordinate always has a numeric data type, and
+uses udunits to transform _``value time_unit since reference''_ into a
+date.
+* CDM: Seelink:CalendarDateTime.html[CDM Calendar Dates] for details.
+** Also accepts time coordinates as ISO formatted Strings. The variable
+data type may be String or Char.
+** As of CDM 4.3, http://joda-time.sourceforge.net/[joda time] is used
+to parse time units, instead of udunits. This allows the CDM to process
+the
+http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#calendar[CF
+`calendar' attribute].
+** An extended date syntax is also supported : ``CALENDAR period SINCE
+reference_date''
+* Default calendar: for udunits, and therefore for CF, the default
+calendar is _gregorian_ (``Mixed Gregorian/Julian calendar''). For CDM,
+the default calendar is _proleptic_gregorian_ (ISO8601 standard). This
+only matters for dates before 1582.
+
+== Discrete Sampling Geometries
+
+* http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#discrete-sampling-geometries[CF]:
+Convention for Discrete Sampling Geometries (aka ``point data'') were
+added to CF version 1.6.
+* CDM: the implementation has some differences, described
+link:../reference/FeatureDatasets/CFpointImplement.html[here].
+
+ 
+
+'''''
+
+image:../nc.gif[image] This document is maintained by
+mailto:caron@unidata.ucar.edu[John Caron] and was last updated February
+2012

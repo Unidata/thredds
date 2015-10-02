@@ -1,0 +1,47 @@
+NetCDF-Java Reference
+=====================
+
+= Netcdf-Java Library Reference Documentation
+
+* link:faq.html[Frequently Asked Questions]
+* link:manPages.html[CDM utility programs]
+* link:Cookbook.html[Cookbook Examples]
+
+=== NetCDF-Java library
+
+* link:StructureData.html[ArrayStructures]
+* link:formats/BufrFiles.html[BUFR Files]
+* link:formats/BufrTables.html[BUFR Tables]
+* link:CoordinateAttributes.html[CDM Coordinate Attribute Convention]
+* link:DatasetUrls.html[Dataset URLs]
+* link:Caching.html[Disk Caching]
+* link:formats/FileTypes.html[File Types]
+* link:formats/GribFiles.html[GRIB Files]
+* link:formats/GribTables.html[GRIB Tables in CDM]
+* HTTP link:Auth.html[Authentication] and link:Session.html[Session]
+Control
+* link:HTTPservice.html[HTTP Server: remote files using HTTP]
+* link:BuildDependencies.html[Build Dependencies]
+* link:netcdf4Clibrary.html[NetCDF-4 file writing]
+* link:RuntimeLoading.html[Runtime Loading] (aka Plug-ins)
+* link:StandardCoordinateTransforms.html[Standard Horizontal Coordinate
+Transforms]
+* link:StandardCoordinateTransforms.html[Standard Vertical Coordinate
+Transforms]
+
+=== Common Data Model (link:../CDM/index.html[Overview])
+
+* link:../CDM/AttributeConventions.html[CDM Attributes]
+* link:../CDM/Identifiers.html[CDM Identifiers]
+* link:FeatureDatasets/CFpointImplement.html[CDM implementation of CF
+discrete sampling features]
+* link:stream/CdmRemote.html[CDM Remote]
+* link:../CDM/CFdiff.html[CF and CDM differences]
+* link:../CDM/CalendarDateTime.html[Calendar Dates]
+* link:../CDM/DataType.html[Data Types]
+* link:FeatureDatasets/Overview.html[Feature Types]
+* link:FeatureDatasets/GridCoverage.html[Grid Coverag]e
+
+'''''
+
+image:../nc.gif[image] This document was last updated May 2015

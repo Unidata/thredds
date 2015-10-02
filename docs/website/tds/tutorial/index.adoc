@@ -1,0 +1,100 @@
+THREDDS Data Server Administration Tutorial
+===========================================
+
+= THREDDS Data Server Administration Tutorial
+
+'''''
+
+This is the on-line, self-guided tutorial. Follow this link for the
+link:workshop2015.html[2015 TDS Workshop schedule]
+
+'''''
+
+=== TDS Overview (link:TDSOverview.pptx[ppt])
+(link:TDSOverview.pdf[pdf])
+
+=== 1.Tomcat Configuration
+
+* link:GettingStarted.html[Getting Started With the TDS: Local Test
+Server Setup]
+* link:Security.html[Security Overview]
+
+=== 2. TDS Configuration
+
+* link:CatalogPrimer.html[Client Catalog Primer]
+* link:BasicConfigCatalogs.html[Basic TDS Configuration Catalogs]
+* link:ConfigCatalogs.html[TDS Configuration Catalogs]
+* link:BasicThreddsConfig_xml.html[Basic threddsConfig.xml]
+* link:AddingServices.html[Adding OGC/ISO Services]
+* link:../reference/WMS.html[Detailed WMS Configuration]
+* Netcdf Subset Service:
+link:../reference/NetcdfSubsetServiceConfigure.html[configure],
+link:../reference/NetcdfSubsetServiceReference.html[reference]
+* threddsConfig.xml
+link:../reference/ThreddsConfigXMLFile.html[reference]
+
+=== 4. TDS Monitoring and Debugging
+
+* link:TDSMonitoringAndDebugging.html[TDS Monitoring and Debugging]
+* link:TomcatAndTDSLogs.html[Tomcat and TDS Logs]
+* link:tdsMonitor.html[Using the TdsMonitor tool]
+* There are also various free, 3rd-party monitoring and debugging tools:
+** http://www.google.com/search?btnG=1&pws=0&q=log+analyzers[Log
+analyzers]
+** http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html[Tomcat
+manager application]
+** Browser-based HTTP header viewers
+*** http://www.youtube.com/watch?v=tKD50_zvZoo[Live HTTP Headers]
+(Firefox Add-On)
+*** https://developers.google.com/chrome-developer-tools/docs/network#http_headers[DevTools]
+(Chrome)
+** JVM monitoring tools
+*** http://visualvm.java.net/api-quickstart.html[VisualVM]
+*** http://www.youtube.com/watch?v=Xy0tsT-GD68[JConsole]
+
+=== 5. Using NcML in TDS
+
+* link:../../netcdf-java/ncml/Tutorial.html[Basic NcML tutorial]
+* link:../../netcdf-java/ncml/Aggregation.html[NcML Aggregation]
+* link:NcML.htm[Using NcML in the TDS]
+* link:NcMLExamples.html[NcML Example Problems]
+* link:NcMLAggExamples.html[NcML Aggregation Example Problems]
+
+=== 6. Feature Collections
+
+* link:../reference/collections/FeatureCollections.html[Feature
+Collections]
+* link:../reference/collections/GribCollections.html[GRIB Feature
+Collections]
+* link:GRIBFeatureCollectionTutorial.html[GRIB Feature Collection
+Tutoria]l
+* link:../reference/collections/FmrcCollection.html[FMRC (Forecast Model
+Run Collections)]
+* link:FmrcFeatureCollectionsTutorial.html[FMRC Tutorial]
+* link:../../netcdf-java/reference/formats/GribFiles.html[GRIB Files in
+CDM]
+* link:../../netcdf-java/reference/formats/GribTables.html[GRIB Tables
+in CDM]
+
+=== 7. Other Advanced Features
+
+* link:../reference/RestrictedAccess.html[Restricting dataset access]
+* link:../reference/Viewers.html[Viewer Links]
+
+=== 8. Metadata
+
+* link:Metadata.html[THREDDS Metadata]
+* link:../reference/ncISO.html[ISO metadata generation: (ncIso)]
+
+=== 9. Production Servers
+
+* link:Checklist.html[Installation Checklist for Production]
+* link:TroubleShooting.html[TroubleShooting Problems]
+* link:../reference/Performance.html[Performance
+Tips]link:TroubleShooting.html[]
+* link:../UpgradingTo4.5.html[Upgrading to 4.5]
+
+=== Other Resources:
+
+* link:../reference/index.html[Reference documentation]
+* link:../faq.html[FAQ]

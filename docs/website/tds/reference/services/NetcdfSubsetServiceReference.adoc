@@ -1,8 +1,10 @@
-= NetCDF Subset Service (NCSS) Reference
+:source-highlighter: coderay
+:stylesheet: ../../tds_adoc.css
 :linkcss:
-:stylesheet: ../../tds.css
 :cdmDocs: ../../../netcdf-java/reference/
 :toc:
+
+= NetCDF Subset Service (NCSS) Reference
 
 == Overview
 

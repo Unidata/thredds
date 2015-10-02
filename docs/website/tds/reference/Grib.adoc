@@ -1,7 +1,8 @@
-= GRIB
 :source-highlighter: coderay
+:stylesheet: ../tds_adoc.css
 :linkcss:
-:stylesheet: ../tds.css
+
+= GRIB
 
 == 1 Standards ==
 

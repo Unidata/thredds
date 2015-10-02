@@ -1,7 +1,9 @@
-= Configuring TDS with the featureCollection element
+:source-highlighter: coderay
+:stylesheet: ../../tds_adoc.css
 :linkcss:
-:stylesheet: ../../cdm.css
 :toc:
+
+= Configuring TDS with the featureCollection element
 
 == Overview
 

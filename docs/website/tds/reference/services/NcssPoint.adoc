@@ -1,7 +1,9 @@
-= NCSS For Point Data
+:source-highlighter: coderay
+:stylesheet: ../../tds_adoc.css
 :linkcss:
-:stylesheet: ../../tds.css
 :toc:
+
+= NCSS For Point Data
 
 == Subsetting Parameters for NCSS Point
 

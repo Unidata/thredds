@@ -1,3 +1,7 @@
+:source-highlighter: coderay
+:stylesheet: ../tds_adoc.css
+:linkcss:
+
 TDS Configuration Catalogs
 --------------------------
 

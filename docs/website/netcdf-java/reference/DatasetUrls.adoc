@@ -1,0 +1,272 @@
+Dataset URLs
+============
+
+= Dataset URLs
+
+The netCDF-Java library can read _*datasets*_ from a variety of sources.
+The dataset is named using a Uniform Resource Location (__*URL*__). This
+page summarizes the netCDF-Java API use of URLs.
+
+== ucar.nc2.NetcdfFile.open(String location)
+
+=== 1. Local Files
+
+NetcdfFile can work with __*local files*__, e.g:
+
+* _*/usr/share/data/model.nc*_
+* _*file:/usr/share/data/model.nc*_
+* _*file:C:/share/data/model.nc*_ *(NOTE we advise using forward slashes
+everywhere, including Windows)*
+* _*data/model.nc*_ (relative to the current working directory)
+
+When using a file location that has an embedded `:' char, eg
+__*C:/share/data/model.nc*__, its a good idea to add the file: prefix,
+to prevent the `C:' from being misinterpreted as a URL schema.
+
+=== 2. HTTP Remote Files
+
+NetcdfFile can open __*HTTP remote files*__,
+link:HTTPservice.html[served over HTTP], for example:
+
+* _*http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc*_
+
+The HTTP server must implement the *getRange* header. Performance will
+be strongly affected by file format and the data access pattern.
+
+The local or remote file must be link:formats/FileTypes.html[one of the
+formats that the netCDF-Java library can read]. We call this set of
+files Common Data Model files, (or _*CDM files*_ for short), to make
+clear that the NetCDF-Java library is not limited to netCDF files.
+
+If the URL ends with a with ``.Z'', ``.zip'', ``.gzip'', ``.gz'', or
+``.bz2'', the file is assumed to be __*compressed*__. The netCDF-Java
+library will uncompress/unzip and write a new file without the suffix,
+then read from the uncompressed file. Generally it prefers to place the
+uncompressed file in the same directory as the original file. If it does
+not have write permission on that directory, it will use the
+link:Caching.html[cache directory] defined by *ucar.nc2.util.DiskCache.*
+
+ 
+
+== ucar.nc2.dataset.NetcdfDataset.openFile(String location)
+
+NetcdfDataset.openDataset() simply calls a NetcdfDataset.openFile(),
+then optionally enhances the dataset.
+
+NetcdfDataset.openFile can open the same URLs that NetcdfFile can open,
+plus the following:
+
+=== 1. OPeNDAP datasets
+
+NetcdfDataset can open _*OPeNDAP*_ datasets, which use a _dods:_ or
+_http:_ prefix, for example:
+
+* _*http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20070319_0600.grib1*_
+* _*dods://motherlode.ucar.edu:8080/thredds/models/NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20070313_1200.nc*_
+
+To avoid confusion with remote HTTP files, OPeNDAP URLs are often
+converted to use the __dods__: prefix. Also note that when passing an
+OPeNDAP dataset URL to the netCDF-Java library, do not include any of
+the access suffixes, e.g. __.dods, .ascii, .dds__, etc.
+
+Theres an ambiguity as to whether _*http://server/something*_ is an
+OPeNDAP or an HTTP remote file using range requests. There will be more
+ambiguities in the future, as other HTTP based protocols are added.
+Currently we do a HEAD request on __*http://server/something.dds*__, and
+if it succeeds, and returns a header  Content-Description=``dods-dds''
+or ``dods_dds'', then we open as OPeNDAP, and if it fails we try opening
+as an HTTP file.
+
+=== 2. NcML datasets
+
+NetcdfDataset can open _*NcML*_ datasets, which may be local or remote,
+and must end with a _.xml_ or _.ncml_ suffix, for example:
+
+* _*/usr/share/data/model.ncml*_
+* _*file:/usr/share/data/model.ncml*_
+* _*http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.xml*_
+
+Because xml is so widely used, we recommend using the _.ncml_ suffix
+when possible.
+
+=== 3. THREDDS Datasets
+
+NetcdfDataset can open _*THREDDS*_ datasets, which are contained in
+THREDDS Catalogs. The general form is
+**_thredds_**__:catalogURL#dataset_id ,__ where _catalogURL_ is the URL
+of a THREDDS catalog, and _dataset_id_ is the ID of a dataset inside of
+that catalog. The _thredds:_ prefix ensures that it is understood as a
+THREDDS dataset. Example:
+
+* _*thredds:http://localhost:8080/test/addeStationDataset.xml#surfaceHourly*_
+* _*thredds:file:c:/dev/netcdf-java-2.2/test/data/catalog/addeStationDataset.xml#AddeSurfaceData*_
+
+In the first case, _*http://localhost:8080/test/addeStationDataset.xml*_
+must be a catalog containing a dataset with ID __*surfaceHourly*__. The
+second case will open a catalog stored at
+_*c:/dev/netcdf-java-2.2/test/data/catalog/addeStationDataset.xml*_ and
+look for a dataset with ID __*AddeSurfaceData*__.
+
+NetcdfDataset will examine the dataset and extract the dataset URL and
+open it and return a NetcdfDataset. (If there are more than one
+**_dataset access URL_**, it will choose a service that it understands
+the best, like OPeNDAP). The dataset metadata in the THREDDS catalog may
+be used to augment the metadata of the NetcdfDataset.
+
+=== 4. THREDDS Resolver Datasets
+
+NetcdfDataset can open _*THREDDS*_ _*Resolver*_ datasets, which have the
+form **_thredds:resolve:resolverURL_**. In this case it expects that the
+*_resolverURL_* will return a catalog with a single top level dataset,
+which is the target dataset. Example:
+
+* _thredds:resolve:http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml_
+
+In this case,
+*_http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml_*
+returns a catalog contining the latest dataset in the
+*_NCEP/NAM/CONUS_12km_* collection. NetcdfDataset will read the catalog,
+extract the THREDDS dataset, and open it as in section 3 above.
+
+=== 5. CdmRemote Datasets
+
+NetcdfDataset can open _*link:stream/CdmRemote.html[CDM Remote]*_
+datasets, which have the form
+**_cdmremote:http://server:8080/thredds/cdmremote/data.nc_**. In this
+case it expects that the URL is an endpoint for a cdmremote web service,
+which provides index subsetting on remote CDM datasets. This is an
+experimental web service.
+
+=== 6. DAP4 datasets
+
+NetcdfDataset can open datasets through the _*DAP4*_ protocol. The url
+should either begin with _dap4:_ or _dap4:http(s):_ Example might
+include the following.
+
+* _*dap4:http://thredds.ucar.edu:8080/thredds/fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20070319_0600.grib1*_
+* _*dap4://thredds.ucar.edu:8080/thredds/models/NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20070313_1200.nc*_
+
+To avoid confusion with remote HTTP files, DAP4 URLs are often converted
+to use the __dap4__: prefix. Also note that when passing a DAP4 dataset
+URL to the netCDF-Java library, do not include any of the access
+suffixes, e.g. __.dmr, .dap, .dst__, etc.
+
+== ucar.nc2.ft.FeatureDatasetFactoryManager.open()
+
+A FeatureDatasetFactory creates
+link:FeatureDatasets/Overview.html[Scientific Feature Type
+Datasets]link:FeatureDatasets/Overview.html[] such as GridDatasets,
+PointFeatureDatasets, RadialDatasetSweep, etc. These may be based on
+local files, or they may use remote access protocols.
+
+_________________________________________________________________________________________________________________________________
+*ucar.nc2.ft.FeatureDatasetFactoryManager.open(FeatureType
+wantFeatureType, String location, CancelTask task, Formatter errlog) +
+*
+_________________________________________________________________________________________________________________________________
+
+FeatureDatasetFactoryManager.open() looks for a FeatureDatasetFactory
+that knows how to create a FeatureDataset from the named location. If
+the _wantFeatureType_ parameter is not null, it will only look for
+factories that return that type.
+
+_FeatureDatasetFactoryManager_ can open the same URLs that NetcdfDataset
+and NetcdfFile can open, plus the following:
+
+=== 1. *CdmRemote Feature Datasets*
+
+FeatureDatasetFactoryManager can open
+__**link:stream/CdmRemote.html[CdmRemote Feature
+Datase]**link:stream/CdmRemote.html[*ts*]__, which have the form
+**_cdmremote:http://server:8080/thredds/cdmremote/data.nc_**. In this
+case it expects that the URL is an endpoint for a cdmremote feature
+dataset web service, which provides coordinate subsetting on remote
+_*Feature Type*_ datasets. This is an experimental web service.
+
+=== 2. Collection Datasets
+
+FeatureDatasetFactoryManager can open collections of datasets specified
+with a
+link:../../tds/reference/collections/CollectionSpecification.html[collection
+specification string], which has the form __*collection:spec*__, and
+calls *CompositeDatasetFactory.factory(wantFeatureType, spec)* if found,
+which returns a FeatureDataset. Currently only a limited number of Point
+Feature tyeps are supported. This is an experimental feature.
+
+ 
+
+'''''
+
+== NcML referenced datasets
+
+NcML datasets typically reference other CDM datasets, using the
+_location_ attribute of the _netcdf_ element, for example:
+
+-----------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" 
+     location="file:/dev/netcdf-java-2.2/test/data/example1.nc">
+...
+-----------------------------------------------------------------------
+
+The location is passed to ucar.nc2.dataset.NetcdfDataset.openFile(), and
+so can be any valid CDM dataset location. In addition, an NcML
+referenced dataset location can be reletive to the NcML file or the
+working directory:
+
+* A relative URL resolved against the NcML location (eg
+**subdir/mydata.nc**). You must *not* use a _file:_ prefix in this case.
+* An absolute file URL with a relative path (eg **file:data/mine.nc**).
+The file will be opened relative to the working directory.
+
+There are a few subtle differences between using a location in NcML and
+passing a location to the NetcdfDataset.openFile() and related methods:
+
+1.  _*In NcML, you MUST always use forward slashes*_ in your paths, even
+when on a Windows machine. For example: *file:C:/data/mine.nc.*
+NetcdfFile.open() will accept backslashes on a Windows machine.
+2.  In NcML, a relative URL is resolved against the NcML location. In
+NetcdfFile.open(), it is interpreted as relative to the working
+directory.
+
+== NcML scan location
+
+NcML aggregation _*scan*_ elements use the location attribute to specify
+which directory to find files in, for example: +
+
+-----------------------------------------------------------------------
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <aggregation dimName="time" type="joinExisting">
+ <scan location="/data/model/" suffix=".nc" />
+  </aggregation>
+</netcdf>
+-----------------------------------------------------------------------
+
+Allowable forms of the location for the scan directory are:
+
+* _*/usr/share/data/*_
+* _*file:/usr/share/data/*_
+* _*file:C:/share/data/model.nc*_ *(NOTE we advise using forward slashes
+everywhere, including Windows)*
+* _*data/model.nc*_ (relative to the NcML directory)
+* _*file:data/model.nc*_ (relative to the current working directory)
+
+When using a directory location that has an embedded `:' char, eg
+__*C:/share/data/model.nc*__, its a really good idea to add the file:
+prefix, to prevent the `C:' from being misinterpreted as a URI schema.
+Future versions of NcML may use URIs for the location.
+
+Common mistakes:
+
+* <scan location="**D:\work\agg**" suffix=``.nc'' /> in a Windows
+machine will try to scan *D:/work/agg/D:/work/agg* . Use <scan
+location="**D:/work/agg**" suffix=``.nc'' />, or better <scan
+location="**file:D:/work/agg**" suffix=``.nc'' /> +
+
+==  
+
+'''''
+
+image:../nc.gif[image] This document is maintained by
+mailto:caron@unidata.ucar.edu[John Caron] and was last updated October
+2009
