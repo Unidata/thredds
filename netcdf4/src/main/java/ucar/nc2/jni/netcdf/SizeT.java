@@ -47,4 +47,5 @@ import com.sun.jna.Native;
 public class SizeT extends IntegerType {
   public SizeT() { this(0); }
   public SizeT(long value) { super(Native.SIZE_T_SIZE, value, true); }
+  public String toString() { return String.format("%ld",super.longValue());}
 }
