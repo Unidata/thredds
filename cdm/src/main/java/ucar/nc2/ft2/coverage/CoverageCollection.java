@@ -46,21 +46,23 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
 /**
- * A Coverage Dataset.
- * Must have a unique HorizCoordSys.
- * Must have a unique Calendar.
+ * A Collection of Coverages
+ * Tracks unique coordinate systems.
+ * Has a unique HorizCoordSys.
+ * Has a unique Calendar.
  *
  * @author caron
  * @since 7/11/2015
  */
 @Immutable
-public class CoverageDataset implements Closeable, CoordSysContainer {
+public class CoverageCollection implements Closeable, CoordSysContainer {
 
   private final String name;
   private final AttributeContainerHelper atts;
@@ -75,14 +77,14 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
   private final Map<String, Coverage> coverageMap = new HashMap<>();
   private final Map<String, CoverageCoordAxis> axisMap = new HashMap<>();
 
-  private final CoverageCoordSys.Type coverageType;
+  private final FeatureType coverageType;
   protected final CoverageReader reader;
   protected final HorizCoordSys hcs;
 
-  public CoverageDataset(String name, CoverageCoordSys.Type coverageType, AttributeContainerHelper atts,
-                         LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox, CalendarDateRange calendarDateRange,
-                         List<CoverageCoordSys> coordSys, List<CoverageTransform> coordTransforms, List<CoverageCoordAxis> coordAxes, List<Coverage> coverages,
-                         CoverageReader reader) {
+  public CoverageCollection(String name, FeatureType coverageType, AttributeContainerHelper atts,
+                            LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox, CalendarDateRange calendarDateRange,
+                            List<CoverageCoordSys> coordSys, List<CoverageTransform> coordTransforms, List<CoverageCoordAxis> coordAxes, List<Coverage> coverages,
+                            CoverageReader reader) {
     this.name = name;
     this.atts = atts;
     this.latLonBoundingBox = latLonBoundingBox; // LOOK better to calculate from hcs ??
@@ -137,15 +139,12 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return hcs;
   }
 
-  @Override
-  public void close() throws IOException {
-    try {
-      reader.close();
-    } catch (IOException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new IOException(e);
-    }
+  public String getName() {
+    return name;
+  }
+
+  public List<Attribute> getGlobalAttributes() {
+    return atts.getAttributes();
   }
 
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
@@ -160,15 +159,7 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return atts.findAttributeIgnoreCase(attName);
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public List<Attribute> getGlobalAttributes() {
-    return atts.getAttributes();
-  }
-
-  public LatLonRect getLatLonBoundingBox() {
+  public LatLonRect getBoundingBox() {
     return latLonBoundingBox;
   }
 
@@ -194,7 +185,7 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return coverageMap.values().size();
   }
 
-  public CoverageCoordSys.Type getCoverageType() {
+  public FeatureType getCoverageType() {
     return coverageType;
   }
 
@@ -222,7 +213,7 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return reader;
   }
 
-  // this is used in ncss form
+  // this is used in ncss thymeleaf form
   public CoverageCoordAxis1D getRuntimeCoordinateMax() {
     // runtimes - LOOK should combine
     CoverageCoordAxis max = null;
@@ -255,7 +246,6 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
 
     return f.toString(); */
   }
-
 
   @Override
   public String toString() {
@@ -321,4 +311,13 @@ public class CoverageDataset implements Closeable, CoordSysContainer {
     return null;
   }
 
+  public void close() throws IOException {
+    try {
+      reader.close();
+    } catch (IOException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IOException(e);
+    }
+  }
 }

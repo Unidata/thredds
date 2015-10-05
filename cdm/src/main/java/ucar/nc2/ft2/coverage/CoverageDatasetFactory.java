@@ -56,19 +56,21 @@ import java.lang.reflect.Method;
 public class CoverageDatasetFactory {
   static private final Logger logger = LoggerFactory.getLogger(CoverageDatasetFactory.class);
 
-  static public CoverageDatasetCollection open(String endpoint) throws IOException {
+  static public FeatureDatasetCoverage open(String endpoint) throws IOException {
 
     // remote CdmrFeatureDataset
     if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME)) {
 
       endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
       CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
-      return new CoverageDatasetCollection(reader.openCoverageDataset(), reader.openCoverageDataset());
+      CoverageCollection covColl = reader.openCoverageDataset();
+      return new FeatureDatasetCoverage(endpoint, covColl, covColl);
 
     } else if (endpoint.startsWith("http:")) {
       CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
       if (reader.isCmrfEndpoint()) {
-        return new CoverageDatasetCollection(reader.openCoverageDataset(), reader.openCoverageDataset());
+        CoverageCollection covColl = reader.openCoverageDataset();
+        return new FeatureDatasetCoverage(endpoint, covColl, covColl);
       } // otherwise let it fall through
 
     } else if (endpoint.startsWith("file:")) {
@@ -79,7 +81,7 @@ public class CoverageDatasetFactory {
     try {
       Class<?> c = CoverageDatasetFactory.class.getClassLoader().loadClass("ucar.nc2.grib.coverage.GribCoverageDataset");
       Method method = c.getMethod("open", String.class);
-      CoverageDatasetCollection result = (CoverageDatasetCollection) method.invoke(null, endpoint);
+      FeatureDatasetCoverage result = (FeatureDatasetCoverage) method.invoke(null, endpoint);
       if (result != null) return result;
     } catch (ClassNotFoundException e) {
       // ok, GRIB module not loaded, fall through

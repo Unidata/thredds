@@ -46,8 +46,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.time.CalendarDate;
@@ -408,15 +408,15 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     return top;
   }
 
-  public CoverageDataset getGridCoverage(String matchPath) throws IOException {
+  public CoverageCollection getGridCoverage(String matchPath) throws IOException {
     NetcdfDataset ncd = getNetcdfDataset(matchPath);
     if (ncd == null) return null;
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
-    CoverageDatasetCollection cc = DtCoverageAdapter.factory(gds);
+    FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds);
     if (cc == null) return null;
 
-    assert cc.getCoverageDatasets().size() == 1;  // LOOK probably want to use endpoint#datasetName ?
-    return cc.getCoverageDatasets().get(0);
+    assert cc.getCoverageCollections().size() == 1;  // LOOK probably want to use endpoint#datasetName ?
+    return cc.getCoverageCollections().get(0);
   }
 
   @Override

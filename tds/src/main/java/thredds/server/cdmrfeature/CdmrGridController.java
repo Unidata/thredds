@@ -109,7 +109,7 @@ public class CdmrGridController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
 
-    try (CoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return;
 
       response.setContentType(ContentType.binary.getContentHeader());
@@ -134,7 +134,7 @@ public class CdmrGridController implements LastModified {
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
     HttpHeaders responseHeaders;
 
-    try (CoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return null;
 
       String text = gridCoverageDataset.toString();
@@ -169,7 +169,7 @@ public class CdmrGridController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
 
-    try (CoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return;
 
       response.setContentType(ContentType.binary.getContentHeader());

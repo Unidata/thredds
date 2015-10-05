@@ -13,8 +13,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.writer.CFPointWriter;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.writer.CoverageAsPoint;
@@ -61,10 +61,10 @@ public class TestCoverageAsPointFileWriter {
       File tempFile = TestDir.getTempFile();
       System.out.printf(" write to %s%n", tempFile.getAbsolutePath());
 
-      try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+      try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
         Assert.assertNotNull(endpoint, cc);
-        Assert.assertEquals(1, cc.getCoverageDatasets().size());
-        CoverageDataset gds = cc.getCoverageDatasets().get(0);
+        Assert.assertEquals(1, cc.getCoverageCollections().size());
+        CoverageCollection gds = cc.getCoverageCollections().get(0);
 
         for (String covName : covList) {
           Assert.assertNotNull(covName, gds.findCoverage(covName));
@@ -84,7 +84,7 @@ public class TestCoverageAsPointFileWriter {
       }
 
       // open the new file as a Coverage
-      try (CoverageDatasetCollection gcs = CoverageDatasetFactory.open(tempFile.getPath())) {
+      try (FeatureDatasetCoverage gcs = CoverageDatasetFactory.open(tempFile.getPath())) {
         Assert.assertNull(tempFile.getPath(), gcs);
       }
 

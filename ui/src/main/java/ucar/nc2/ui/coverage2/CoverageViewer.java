@@ -108,7 +108,7 @@ public class CoverageViewer extends JPanel {
 
   // data components
   private DataState dataState;
-  private CoverageDataset coverageDataset;
+  private CoverageCollection coverageDataset;
   private Coverage currentField;
   private ProjectionImpl project;
 
@@ -994,7 +994,7 @@ public class CoverageViewer extends JPanel {
     //gridTable.setDataset(controller.getFields());
   }
 
-  public void setDataset(CoverageDataset gcd) {
+  public void setDataset(CoverageCollection gcd) {
     this.coverageDataset = gcd;
     setFields(gcd.getCoverages());
 
@@ -1107,7 +1107,7 @@ public class CoverageViewer extends JPanel {
     addChoosers();
 
     fieldChooser.setToolTipText(gg.getName());
-    colorScalePanel.setUnitString(gg.getUnits());
+    colorScalePanel.setUnitString(gg.getUnitsString());
     return true;
   }
 

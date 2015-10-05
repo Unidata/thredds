@@ -36,6 +36,8 @@ package ucar.nc2.ft2.coverage;
 import net.jcip.annotations.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainerHelper;
+import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.util.Indent;
 
@@ -51,10 +53,10 @@ import java.util.List;
  * @since 7/11/2015
  */
 @Immutable
-public class Coverage implements IsMissingEvaluator {
+public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   private final String name;
   private final DataType dataType;
-  private final List<Attribute> atts;
+  private final AttributeContainerHelper atts;
   private final String units, description;
   private final String coordSysName;
   protected final CoverageReader reader;
@@ -65,7 +67,7 @@ public class Coverage implements IsMissingEvaluator {
   public Coverage(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description, CoverageReader reader, Object user) {
     this.name = name;
     this.dataType = dataType;
-    this.atts = atts;
+    this.atts = new AttributeContainerHelper(name, atts);
     this.coordSysName = coordSysName;
     this.units = units;
     this.description = description;
@@ -77,8 +79,8 @@ public class Coverage implements IsMissingEvaluator {
   public Coverage(Coverage from, CoverageCoordSys coordSysSubset) {
     this.name = from.getName();
     this.dataType = from.getDataType();
-    this.atts = from.getAttributes();
-    this.units = from.getUnits();
+    this.atts = from.atts;
+    this.units = from.getUnitsString();
     this.description = from.getDescription();
     this.coordSysName = (coordSysSubset != null) ? coordSysSubset.getName() : from.coordSysName;
     this.reader = from.reader;
@@ -94,24 +96,34 @@ public class Coverage implements IsMissingEvaluator {
     return name;
   }
 
+
+  @Override
   public DataType getDataType() {
     return dataType;
   }
 
+  @Override
   public List<Attribute> getAttributes() {
-    return atts;
+    return atts.getAttributes();
+  }
+
+  @Override
+  public Attribute findAttributeIgnoreCase(String name) {
+    return atts.findAttributeIgnoreCase(name);
+  }
+
+  @Override
+  public String getUnitsString() {
+    return units;
+  }
+
+  @Override
+  public String getDescription() {
+    return description;
   }
 
   public String getCoordSysName() {
     return coordSysName;
-  }
-
-  public String getUnits() {
-    return units;
-  }
-
-  public String getDescription() {
-    return description;
   }
 
   public Object getUserObject() {
@@ -130,7 +142,7 @@ public class Coverage implements IsMissingEvaluator {
     indent.incr();
     f.format("%n%s  %s %s(%s) desc='%s' units='%s'%n", indent, dataType, name, coordSysName, description, units);
     f.format("%s    attributes:%n", indent);
-    for (Attribute att : atts)
+    for (Attribute att : atts.getAttributes())
       f.format("%s     %s%n", indent, att);
     indent.decr();
   }
@@ -180,5 +192,38 @@ public class Coverage implements IsMissingEvaluator {
 
   public GeoReferencedArray readData(SubsetParams subset) throws IOException, InvalidRangeException {
     return reader.readData(this, subset, false);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // implement VariableSimpleIF
+
+  @Override
+  public String getFullName() {
+    return getName();
+  }
+
+  @Override
+  public String getShortName() {
+    return getName();
+  }
+
+  @Override
+  public int getRank() {
+    return 0;
+  }
+
+  @Override
+  public int[] getShape() {
+    return new int[0];
+  }
+
+  @Override
+  public List<Dimension> getDimensions() {
+    return null;
+  }
+
+  @Override
+  public int compareTo(@Nonnull VariableSimpleIF o) {
+    return getFullName().compareTo(o.getFullName());
   }
 }

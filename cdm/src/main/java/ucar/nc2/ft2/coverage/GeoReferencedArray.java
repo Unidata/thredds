@@ -37,6 +37,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IsMissingEvaluator;
 import ucar.ma2.Section;
+import ucar.nc2.constants.FeatureType;
 
 import java.util.Formatter;
 import java.util.List;
@@ -57,7 +58,8 @@ public class GeoReferencedArray implements IsMissingEvaluator, CoordSysContainer
   private List<CoverageCoordAxis> axes;
   private List<CoverageTransform> transforms;
 
-  public GeoReferencedArray(String coverageName, DataType dataType, Array data, List<CoverageCoordAxis> axes, List<CoverageTransform> transforms, CoverageCoordSys.Type type) {
+  public GeoReferencedArray(String coverageName, DataType dataType, Array data, List<CoverageCoordAxis> axes,
+                            List<CoverageTransform> transforms, FeatureType type) {
     this.coverageName = coverageName;
     this.dataType = dataType;
     this.data = data;

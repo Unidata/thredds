@@ -1,0 +1,116 @@
+= Coverage Datasets
+:linkcss:
+:stylesheet: ../../cdm.css
+
+== Overview
+
+*_Coverage Datasets_* are collections of Coverage Features such as *Grid, Fmrc,* and *Swath*.
+*FeatureDatasetCoverage* are containers for *CoverageCollections*:
+
+[source,java]
+----
+public class ucar.nc2.ft.FeatureDatasetCoverage extends ucar.nc2.ft.FeatureDataset, Closeable {
+  public List<CoverageCollection> getCoverageCollections();
+  public CoverageCollection findCoverageDataset( FeatureType type);
+  public ucar.nc2.constants.FeatureType getFeatureType();
+}
+----
+
+*FeatureDatasetCoverage* extends *FeatureDataset*, and contains _discovery metadata_ for search and discovery.
+A *CoverageCollection* can only have a single *HorizCoordSys, Calendar*, and *FeatureType*.
+A single endpoint (eg GRIB collection) often has more than one HorizCoordSys or Type (eg Best and TwoD), and so has multiple collections.
+When there are multiple types, _getFeatureType()_ returns the generic *FeatureType.COVERAGE*. Otherwise it will return the specific type.
+
+. *Grid*: all coordinates are one dimensional, aka _seperable_.
+. *Fmrc*: Both a _runtime_ and _time_ coordinate exist. The time coordinate may be 2D, or it may be a 1D _time offset_ coordinate.
+. *Swath*: has 2D lat/lon & time exists but not independent
+. *Curvilinear:* has 2D lat/lon & time independent if it exists
+
+A Coverage Collection contains coverages, coordinate systems, coordinate axes, and coordinate transforms.
+All of the coverages in a collections are on the same horizontal grid, and have the same datetime Calendar.
+
+[source,java]
+----
+public class CoverageCollection implements Closeable {
+  public String getName();
+  public FeatureType getCoverageType();
+
+  public List<Attribute> getGlobalAttributes();
+  public String findAttValueIgnoreCase(String attName, String defaultValue);
+  public Attribute findAttribute(String attName);
+  public Attribute findAttributeIgnoreCase(String attName);
+
+  public LatLonRect getBoundingBox() ;
+  public ProjectionRect getProjBoundingBox();
+  public CalendarDateRange getCalendarDateRange();
+  public ucar.nc2.time.Calendar getCalendar();
+
+  public List<CoordSysSet> getCoverageSets();
+  public List<CoverageCoordSys> getCoordSys();
+  public List<CoverageTransform> getCoordTransforms();
+  public List<CoverageCoordAxis> getCoordAxes();
+  public CoverageCoordSys findCoordSys(String name);
+  public CoverageCoordAxis findCoordAxis(String name);
+  public CoverageTransform findCoordTransform(String name);
+  public HorizCoordSys getHorizCoordSys();
+
+  public Iterable<Coverage> getCoverages();
+  public int getCoverageCount();
+  public Coverage findCoverageByAttribute(String attName, String attValue);
+
+  public void close()
+}
+----
+
+=== CoordSysSet
+
+A *CoordSysSet* simple groups all of the *Coverages* that belong to the same *CoverageCoordSys*:
+
+[source,java]
+----
+public class CoordSysSet {
+  public CoverageCoordSys getCoordSys();
+  public List<Coverage> getCoverages();
+}
+----
+
+=== CoverageCoordSys
+
+=== CoverageCoordAxis
+
+=== CoverageTransform
+
+
+-----------------------------------------------------------------------------------------------------------------
+  public enum DependenceType {
+    independent,             // time(time)
+    dependent,               // reftime(time), lat(x,y)
+    scalar,                  // reftime
+    twoD }                   // time(reftime, time): must have reftime(reftime) - maybe this is a subclass (FMRC)
+-----------------------------------------------------------------------------------------------------------------
+
+stuff
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+  public enum Spacing {
+    regular,                 // regularly spaced points or intervals (start, end, npts), edges halfway between coords
+    irregularPoint,          // irregular spaced points (values, npts), edges halfway between coords
+    contiguousInterval,      // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
+    discontiguousInterval }  // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+== Classification
+
+* must have lat/lon or have x,y and projection
+* x and y both have rank <= 2
+* x and y both have size > 1; eliminates some miscoded point data
+* x and y have at least 2 dimensions between them (eliminates point data)
+* A runtime axis must be scalar or one-dimensional
+* Time may be 0, 1 or 2 dimensional
+* If time is 2D and runtime exists, first time dimension must agree with runtime
+* other coordinates, dependent or independent (ie has another dimension) are ok.
+
+ 
+'''''
+
+image:../../nc.gif[image] This document was last updated October 2015

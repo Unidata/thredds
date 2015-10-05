@@ -161,6 +161,8 @@ instead of the exact comparison done by `equals(Array, Array)`.
 === Point Feature Datasets (ucar.nc2.ft and ucar.nc2.ft.point)
 
 * *FeatureCollection* has been renamed to *ucar.nc2.ft.DsgFeatureCollection* for clarity.
+* *SectionFeature* and *SectionFeatureCollection* have been renamed to *TrajectoryProfileFeature* ,*TrajectoryProfileFeatureCollection* for clarity.
+* *FeatureType.SECTION* renamed to *FeatureType.TRAJECTORY_PROFILE* for clarity.
 * *NestedPointFeatureCollection* has been removed,  use *PointFeatureCC* and *PointFeatureCCC* instead when working with
     DsgFeatureCollection in a general way.
 * In all the Point Feature classes, *DateUnit, Date*, and *DateRange* have been replaced by
@@ -176,6 +178,13 @@ instead of the exact comparison done by `equals(Array, Array)`.
   from _PointFeature.getFeatureCollection()_
 * In *PointFeatureIterator* and subclasses, methods _setCalculateBounds(), getDateRange(), getCalendarDateRange(), getBoundingBox(),
   getSize()_ have been removed. That information is obtained from the DsgFeatureCollection.
+
+=== Coverage Feature Datasets (ucar.nc2.ft2.coverage)
+
+* Completely new package that replaces ucar.nc2.dt.grid. *FeatureDatasetCoverag*e replaces *GridDataset*.
+* *FeatureType.COVERAGE* is the general term for *GRID, FMRC, SWATH, CURVILINEAR* types.
+
+
 
 === Catalogs
 

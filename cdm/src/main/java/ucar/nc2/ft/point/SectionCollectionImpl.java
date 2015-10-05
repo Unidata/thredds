@@ -49,7 +49,7 @@ import java.io.IOException;
 public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implements TrajectoryProfileFeatureCollection {
 
   protected SectionCollectionImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
-    super(name, timeUnit, altUnits, FeatureType.SECTION);
+    super(name, timeUnit, altUnits, FeatureType.TRAJECTORY_PROFILE);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////

@@ -485,7 +485,7 @@ public class CFpointObs extends TableConfigurerImpl {
   protected TableConfig getSectionConfig(NetcdfDataset ds, EncodingInfo info, Formatter errlog) throws IOException {
     if (!identifyEncodingSection(ds, info, CF.FeatureType.trajectoryProfile, errlog)) return null;
 
-    TableConfig parentTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
+    TableConfig parentTable = makeStructTable(ds, FeatureType.TRAJECTORY_PROFILE, info, errlog);
     if (parentTable == null) return null;
     parentTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.trajectoryProfile);
     if (parentTable.feature_id == null) {
@@ -609,7 +609,7 @@ public class CFpointObs extends TableConfigurerImpl {
         profileDim = time.getDimension(0); // may be time(profile) or time(profile, z)
         Variable parentId = identifyParent(ds, CF.FeatureType.trajectoryProfile);
 
-        TableConfig profileTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
+        TableConfig profileTable = makeStructTable(ds, FeatureType.TRAJECTORY_PROFILE, info, errlog);
         profileTable.parentIndex = parentId.getName();
         profileTable.feature_id = identifyParentId(ds, CF.FeatureType.profile);
         parentTable.addChild(profileTable);

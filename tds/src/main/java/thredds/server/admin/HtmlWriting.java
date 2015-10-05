@@ -39,24 +39,17 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.coverity.security.Escape;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import thredds.server.config.HtmlConfigBean;
 import thredds.server.config.TdsContext;
 import thredds.util.ContentType;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
- * LOOK maybe can get rid of
+ * LOOK get rid of
  * @author edavis
  */
 
@@ -76,21 +69,6 @@ public class HtmlWriting {
             "        'http://www.w3.org/TR/html4/loose.dtd'>\n" + "<html>\n";
   }
 
-  public String getXHtmlDoctypeAndOpenTag() {
-    return "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n" +
-            "        'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n" +
-            "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>";
-  }
-
-  //  public static final String UNIDATA_CSS
-  public String getUserCSS() {
-    return new StringBuilder()
-            .append("<link rel='stylesheet' href='")
-            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getPageCssUrl()))
-            .append("' type='text/css' >").toString();
-  }
-  
-  
   public String getGoogleTrackingContent() {
       if (this.htmlConfig.getGoogleTrackingCode().isEmpty()){
           return "";
@@ -111,52 +89,7 @@ public class HtmlWriting {
 	        .append("</script>").toString();
       }
   }
-  
-  private String getCollapsableJs() {
-      return new StringBuilder()
-          .append("<script src=\"https://code.jquery.com/jquery-1.11.2.min.js\"></script>\n")
-          .append("<script type='text/javascript'>\n")
-          .append("  $(document).ready(function() {\n")
-          .append("    $('tr.header').on('click',function() {\n")
-          .append("      $(this).nextUntil('tr.header').slideToggle(0);\n")
-          .append("    });\n")
-          .append("    $('tr.header').click();\n")
-          .append("    $('tr').removeAttr(\"bgcolor\");\n")
-          .append("    $('table#datasets').addClass(\"hoverTable\");\n")
-          .append("  });\n")
-	      .append("</script>\n").toString();
-  }
-  
-  private String getCollapsableCss() {
-    return new StringBuilder()
-      .append("<style>\n")
-      .append("  .hoverTable tr.header {cursor:pointer;}\n")
-      .append("  .hoverTable{\n")
-      .append("    width:100%;\n")
-      .append("    cellspacing:0;\n")
-      .append("    cellpadding:5;\n")
-      .append("    align:center;\n")
-      .append("  }\n")
-      .append("  .hoverTable tr {\n")
-      .append("    background: #ffffff;\n")
-      .append("  }\n")
-      .append("  .hoverTable tr:hover {\n")
-      .append("    background-color: #eeeeee;\n")
-      .append("  }\n")
-      .append("</style>\n").toString();
-  }
 
-  public StringBuilder makeCollapsable(StringBuilder sb, int level) {
-	    if (level > 0) {
-	    String replaceThis = "<tr";
-        String withThis = "<tr class=\"header\"";
-        int strRepStart = sb.lastIndexOf(replaceThis);
-        if (strRepStart != -1) {
-          sb.replace(strRepStart, strRepStart + replaceThis.length(), withThis);
-        }
-	  }
-      return sb;
-  }
   
   public String getTdsCatalogCssLink() {
     return new StringBuilder()
@@ -233,86 +166,6 @@ public class HtmlWriting {
             .append("</table>\n");
   }
 
-  public void appendTableHeader(StringBuilder stringBuilder,
-                                boolean includeInstall,
-                                boolean includeWebapp,
-                                boolean includeLogos) {
-    // Table setup.
-    stringBuilder
-            .append("<table width='100%'>\n");
-
-    if (includeInstall) {
-      stringBuilder.append("<tr><td>\n");
-      appendInstallationInfo(stringBuilder, includeLogos);
-      stringBuilder.append("</td><td>\n");
-      appendHostInstInfo(stringBuilder, includeLogos);
-      stringBuilder.append("</td></tr>\n");
-    }
-
-    if (includeWebapp) {
-      stringBuilder
-              .append("<tr><td>\n");
-      appendWebappInfo(stringBuilder, includeLogos);
-      stringBuilder.append("</td></tr>\n");
-    }
-    stringBuilder.append("</table><hr>\n");
-  }
-
-  private void appendWebappInfo(StringBuilder stringBuilder, boolean includeLogo) {
-    // Include webapp info
-    String webappUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappUrl());
-    String webappLogoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappLogoUrl());
-    if (includeLogo && webappLogoUrl != null)
-      stringBuilder
-              .append("<img src='").append(webappLogoUrl)
-              .append("' alt='").append(this.htmlConfig.getWebappLogoAlt())
-              .append("'> ");
-    stringBuilder
-            .append("<a href='").append(webappUrl).append("'>")
-            .append(this.tdsContext.getWebappDisplayName())
-            .append("</a>");
-  }
-
-  private void appendHostInstInfo(StringBuilder stringBuilder, boolean includeLogo) {
-    // Include host institution information
-    if (this.htmlConfig.getHostInstName() != null) {
-      String hostInstUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstUrl());
-      String hostInstLogoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstLogoUrl());
-      if (includeLogo && hostInstLogoUrl != null)
-        stringBuilder
-                .append("<img src='").append(hostInstLogoUrl)
-                .append("' alt='").append(this.htmlConfig.getHostInstLogoAlt())
-                .append("'> ");
-      if (hostInstUrl != null)
-        stringBuilder.append("<a href='").append(hostInstUrl).append("'>");
-      stringBuilder.append(this.htmlConfig.getHostInstName());
-      if (hostInstUrl != null)
-        stringBuilder.append("</a>");
-    } else
-      stringBuilder.append("Unknown Host Institution");
-  }
-
-  private void appendInstallationInfo(StringBuilder stringBuilder, boolean includeLogo) {
-    // Include information on this intsallation.
-    if (this.htmlConfig.getInstallName() != null) {
-      String installUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallUrl());
-      String installLogoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallLogoUrl());
-      if (includeLogo && installLogoUrl != null)
-        stringBuilder
-                .append("<img src='").append(installLogoUrl)
-                .append("' alt='").append(this.htmlConfig.getInstallLogoAlt())
-                .append("'> ");
-      if (installUrl != null)
-        stringBuilder.append("<a href='").append(installUrl).append("'>");
-      stringBuilder.append(this.htmlConfig.getInstallName());
-      if (installUrl != null)
-        stringBuilder.append("</a>");
-    } else {
-      // This installation is not named.
-      stringBuilder.append("Unnamed TDS Installation");
-    }
-  }
-
   public void appendSimpleFooter(StringBuilder sb) {
     sb.append("<h3>");
     if (this.htmlConfig.getInstallName() != null) {
@@ -341,34 +194,7 @@ public class HtmlWriting {
             .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
             .append( "'> Documentation</a>" );
     sb.append( "</h3>\n" );
-    sb.append( this.getGoogleTrackingContent() );
-  }
-
-  private void appendWebappFooter( StringBuilder sb )
-  {
-    sb.append( "<h3>" )
-            .append( this.tdsContext.getWebappDisplayName() )
-            .append( " [Version " ).append( this.tdsContext.getVersionInfo() );
-    sb.append( "] <a href='" )
-            .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
-            .append( "'> Documentation</a>" );
-    sb.append( "</h3>\n" );
-  }
-
-  //  private static final String TOMCAT_CSS
-  private String getTomcatCSS() {
-    return new StringBuilder("<STYLE type='text/css'><!--")
-            .append("H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} ")
-            .append("H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} ")
-            .append("H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} ")
-            .append("BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} ")
-            .append("B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} ")
-            .append("P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}")
-            .append("A {color : black;}")
-            .append("A.name {color : black;}")
-            .append("HR {color : #525D76;}")
-            .append("--></STYLE>\r\n")
-            .toString();
+    sb.append(this.getGoogleTrackingContent());
   }
 
   /**
@@ -528,11 +354,184 @@ public class HtmlWriting {
     return ("" + leftSide + "." + rightSide + " kb");
   }
 
-  /**
+   /*
+  private void appendWebappFooter( StringBuilder sb )
+  {
+    sb.append( "<h3>" )
+            .append( this.tdsContext.getWebappDisplayName() )
+            .append( " [Version " ).append( this.tdsContext.getVersionInfo() );
+    sb.append( "] <a href='" )
+            .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
+            .append( "'> Documentation</a>" );
+    sb.append("</h3>\n");
+  }
+
+  //  private static final String TOMCAT_CSS
+  private String getTomcatCSS() {
+    return new StringBuilder("<STYLE type='text/css'><!--")
+            .append("H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} ")
+            .append("H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} ")
+            .append("H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} ")
+            .append("BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} ")
+            .append("B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} ")
+            .append("P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}")
+            .append("A {color : black;}")
+            .append("A.name {color : black;}")
+            .append("HR {color : #525D76;}")
+            .append("--></STYLE>\r\n")
+            .toString();
+  }
+
+  */
+
+  /*   public void appendTableHeader(StringBuilder stringBuilder,
+                                boolean includeInstall,
+                                boolean includeWebapp,
+                                boolean includeLogos) {
+    // Table setup.
+    stringBuilder
+            .append("<table width='100%'>\n");
+
+    if (includeInstall) {
+      stringBuilder.append("<tr><td>\n");
+      appendInstallationInfo(stringBuilder, includeLogos);
+      stringBuilder.append("</td><td>\n");
+      appendHostInstInfo(stringBuilder, includeLogos);
+      stringBuilder.append("</td></tr>\n");
+    }
+
+    if (includeWebapp) {
+      stringBuilder
+              .append("<tr><td>\n");
+      appendWebappInfo(stringBuilder, includeLogos);
+      stringBuilder.append("</td></tr>\n");
+    }
+    stringBuilder.append("</table><hr>\n");
+  }
+
+  private void appendWebappInfo(StringBuilder stringBuilder, boolean includeLogo) {
+    // Include webapp info
+    String webappUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappUrl());
+    String webappLogoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappLogoUrl());
+    if (includeLogo && webappLogoUrl != null)
+      stringBuilder
+              .append("<img src='").append(webappLogoUrl)
+              .append("' alt='").append(this.htmlConfig.getWebappLogoAlt())
+              .append("'> ");
+    stringBuilder
+            .append("<a href='").append(webappUrl).append("'>")
+            .append(this.tdsContext.getWebappDisplayName())
+            .append("</a>");
+  }
+
+  private void appendHostInstInfo(StringBuilder stringBuilder, boolean includeLogo) {
+    // Include host institution information
+    if (this.htmlConfig.getHostInstName() != null) {
+      String hostInstUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstUrl());
+      String hostInstLogoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstLogoUrl());
+      if (includeLogo && hostInstLogoUrl != null)
+        stringBuilder
+                .append("<img src='").append(hostInstLogoUrl)
+                .append("' alt='").append(this.htmlConfig.getHostInstLogoAlt())
+                .append("'> ");
+      if (hostInstUrl != null)
+        stringBuilder.append("<a href='").append(hostInstUrl).append("'>");
+      stringBuilder.append(this.htmlConfig.getHostInstName());
+      if (hostInstUrl != null)
+        stringBuilder.append("</a>");
+    } else
+      stringBuilder.append("Unknown Host Institution");
+  }
+
+  private void appendInstallationInfo(StringBuilder stringBuilder, boolean includeLogo) {
+    // Include information on this intsallation.
+    if (this.htmlConfig.getInstallName() != null) {
+      String installUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallUrl());
+      String installLogoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallLogoUrl());
+      if (includeLogo && installLogoUrl != null)
+        stringBuilder
+                .append("<img src='").append(installLogoUrl)
+                .append("' alt='").append(this.htmlConfig.getInstallLogoAlt())
+                .append("'> ");
+      if (installUrl != null)
+        stringBuilder.append("<a href='").append(installUrl).append("'>");
+      stringBuilder.append(this.htmlConfig.getInstallName());
+      if (installUrl != null)
+        stringBuilder.append("</a>");
+    } else {
+      // This installation is not named.
+      stringBuilder.append("Unnamed TDS Installation");
+    }
+  } */
+
+  /*
+    public String getXHtmlDoctypeAndOpenTag() {
+    return "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n" +
+            "        'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n" +
+            "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>";
+  }
+
+  //  public static final String UNIDATA_CSS
+  public String getUserCSS() {
+    return new StringBuilder()
+            .append("<link rel='stylesheet' href='")
+            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getPageCssUrl()))
+            .append("' type='text/css' >").toString();
+  }
+
+
+  private String getCollapsableJs() {
+      return new StringBuilder()
+          .append("<script src=\"https://code.jquery.com/jquery-1.11.2.min.js\"></script>\n")
+          .append("<script type='text/javascript'>\n")
+          .append("  $(document).ready(function() {\n")
+          .append("    $('tr.header').on('click',function() {\n")
+          .append("      $(this).nextUntil('tr.header').slideToggle(0);\n")
+          .append("    });\n")
+          .append("    $('tr.header').click();\n")
+          .append("    $('tr').removeAttr(\"bgcolor\");\n")
+          .append("    $('table#datasets').addClass(\"hoverTable\");\n")
+          .append("  });\n")
+	      .append("</script>\n").toString();
+  }
+
+  private String getCollapsableCss() {
+    return new StringBuilder()
+      .append("<style>\n")
+      .append("  .hoverTable tr.header {cursor:pointer;}\n")
+      .append("  .hoverTable{\n")
+      .append("    width:100%;\n")
+      .append("    cellspacing:0;\n")
+      .append("    cellpadding:5;\n")
+      .append("    align:center;\n")
+      .append("  }\n")
+      .append("  .hoverTable tr {\n")
+      .append("    background: #ffffff;\n")
+      .append("  }\n")
+      .append("  .hoverTable tr:hover {\n")
+      .append("    background-color: #eeeeee;\n")
+      .append("  }\n")
+      .append("</style>\n").toString();
+  }
+
+  public StringBuilder makeCollapsable(StringBuilder sb, int level) {
+	    if (level > 0) {
+	    String replaceThis = "<tr";
+        String withThis = "<tr class=\"header\"";
+        int strRepStart = sb.lastIndexOf(replaceThis);
+        if (strRepStart != -1) {
+          sb.replace(strRepStart, strRepStart + replaceThis.length(), withThis);
+        }
+	  }
+      return sb;
+  }
+   */
+
+  /*
    * Show CDM compliance (coordinate systems, etc) of a NetcdfDataset.
    *
    * @param ds dataset to write
-   */
+   *
   public void showCDM(HttpServletResponse res, NetcdfDataset ds)
           throws IOException {
     String cdmAsString = getCDM(ds);
@@ -590,7 +589,7 @@ public class HtmlWriting {
     ///////////// Grid
     GridDataset gds = new ucar.nc2.dt.grid.GridDataset(ds);
 
-    // look for projections
+    // find projections
     //List gridsets = gds.getGridsets();
 
     sb.append("<tr>\r\n");
@@ -690,6 +689,6 @@ public class HtmlWriting {
     sb.append("</tt></td>\r\n");
 
     sb.append("</tr>\r\n");
-  }
+  } */
 
 }

@@ -81,7 +81,7 @@ public class WcsRequestParser {
 
 
     TdsRequestedDataset trd = new TdsRequestedDataset(req, "/wcs");
-    CoverageDataset gridDataset = null;
+    CoverageCollection gridDataset = null;
     try {
       gridDataset = trd.openAsCoverageDataset(req, res);
       if (gridDataset == null)

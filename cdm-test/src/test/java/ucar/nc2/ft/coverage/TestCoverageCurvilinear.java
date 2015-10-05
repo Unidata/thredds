@@ -41,10 +41,11 @@ import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NCdumpW;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.HorizCoordSys;
@@ -69,12 +70,12 @@ public class TestCoverageCurvilinear {
     String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";  // GRIB Curvilinear
     System.out.printf("open %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(0);
       Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(FeatureType.CURVILINEAR, gds.getCoverageType());
       Assert.assertEquals(7, gds.getCoverageCount());
 
       HorizCoordSys hcs = gds.getHorizCoordSys();
@@ -97,12 +98,12 @@ public class TestCoverageCurvilinear {
     String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";  // GRIB Curvilinear
     System.out.printf("open %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(0);
       Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(FeatureType.CURVILINEAR, gds.getCoverageType());
       Assert.assertEquals(7, gds.getCoverageCount());
 
       HorizCoordSys hcs = gds.getHorizCoordSys();
@@ -135,12 +136,12 @@ public class TestCoverageCurvilinear {
     String endpoint = TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc";  // NetCDF has 2D and 1D
     System.out.printf("open %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(0);
       Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(FeatureType.CURVILINEAR, gds.getCoverageType());
       Assert.assertEquals(22, gds.getCoverageCount());
 
       String covName = "u";
@@ -166,12 +167,12 @@ public class TestCoverageCurvilinear {
     String endpoint = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";  // NetCDF Curvilinear 2D only
     System.out.printf("open %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(0);
       Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(FeatureType.CURVILINEAR, gds.getCoverageType());
       Assert.assertEquals(10, gds.getCoverageCount());
 
       String covName = "hs";
@@ -198,12 +199,12 @@ public class TestCoverageCurvilinear {
     String endpoint = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";  // NetCDF Curvilinear 2D only
     System.out.printf("open %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(0);
       Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(FeatureType.CURVILINEAR, gds.getCoverageType());
       Assert.assertEquals(10, gds.getCoverageCount());
 
       String covName = "hs";
@@ -244,9 +245,9 @@ public class TestCoverageCurvilinear {
     String filename = TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Curvilinear);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.CURVILINEAR);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "salt";
       Coverage coverage = gcs.findCoverage(gribId);

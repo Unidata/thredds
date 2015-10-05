@@ -43,6 +43,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.runners.Parameterized;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridDatatype;
@@ -73,20 +74,20 @@ public class TestGeoTiffWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", CoverageCoordSys.Type.Grid, "Temperature_sigma"});         // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3", CoverageCoordSys.Type.Fmrc, "Pressure_surface"});                                         // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Grid, "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc, "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", FeatureType.GRID, "Temperature_sigma"});         // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3", FeatureType.FMRC, "Pressure_surface"});                                         // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.GRID, "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC, "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", CoverageCoordSys.Type.Grid, "Temperature"});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, "Temperature"});
 
     return result;
   }
 
   String filename, field;
-  CoverageCoordSys.Type type;
+  FeatureType type;
 
-  public TestGeoTiffWriter(String filename, CoverageCoordSys.Type type, String field) {
+  public TestGeoTiffWriter(String filename, FeatureType type, String field) {
     this.filename = filename;
     this.type = type;
     this.field = field;
@@ -133,9 +134,9 @@ public class TestGeoTiffWriter {
       System.out.printf("geotiff2 read coverage %s write %s%n", filename, gridOut2);
 
       GeoReferencedArray covArray;
-      try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+      try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
         assert cc != null;
-        CoverageDataset gcd = cc.findCoverageDataset(type);
+        CoverageCollection gcd = cc.findCoverageDataset(type);
         Assert.assertNotNull(type.toString(), gcd);
 
         int pos = field.indexOf("/");

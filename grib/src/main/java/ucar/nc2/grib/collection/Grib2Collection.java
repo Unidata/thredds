@@ -35,17 +35,14 @@ package ucar.nc2.grib.collection;
 
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.ma2.Array;
-import ucar.nc2.AttributeContainer;
+import ucar.nc2.*;
 import ucar.nc2.constants.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -117,7 +114,7 @@ public class Grib2Collection extends GribCollectionImmutable {
   }
 
   @Override
-  public CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename,
+  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
                FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     if (filename == null) {
@@ -150,17 +147,17 @@ public class Grib2Collection extends GribCollectionImmutable {
   }
 
   @Override
-  public void addGlobalAttributes(List<Attribute> result) {
+  public void addGlobalAttributes(AttributeContainer result) {
     String val = cust.getGeneratingProcessTypeName(getGenProcessType());
     if (val != null)
-      result.add(new Attribute("Type_of_generating_process", val));
+      result.addAttribute(new Attribute("Type_of_generating_process", val));
     val = cust.getGeneratingProcessName(getGenProcessId());
     if (val != null)
-      result.add(new Attribute("Analysis_or_forecast_generating_process_identifier_defined_by_originating_centre", val));
+      result.addAttribute(new Attribute("Analysis_or_forecast_generating_process_identifier_defined_by_originating_centre", val));
     val = cust.getGeneratingProcessName(getBackProcessId());
     if (val != null)
-      result.add(new Attribute("Background_generating_process_identifier_defined_by_originating_centre", val));
-    result.add(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB2.getDescription()));
+      result.addAttribute(new Attribute("Background_generating_process_identifier_defined_by_originating_centre", val));
+    result.addAttribute(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB2.getDescription()));
   }
 
     /* http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB

@@ -84,7 +84,7 @@ public final class NcssRequestUtils implements ApplicationContextAware {
     }
   }
 
-  public static GridAsPointDataset buildGridAsPointDataset(CoverageDataset gcd, List<String> vars) {
+  public static GridAsPointDataset buildGridAsPointDataset(CoverageCollection gcd, List<String> vars) {
     return null;
   }
 
@@ -95,7 +95,7 @@ public final class NcssRequestUtils implements ApplicationContextAware {
   /**
    * Returns the actual vertical level if the grid has vertical transformation or -9999.9 otherwise
    */
-  public static double getActualVertLevel(CoverageDataset gcd, Coverage grid, CalendarDate date, LatLonPoint point, double targetLevel) { //} throws IOException, InvalidRangeException {
+  public static double getActualVertLevel(CoverageCollection gcd, Coverage grid, CalendarDate date, LatLonPoint point, double targetLevel) { //} throws IOException, InvalidRangeException {
 
     double actualLevel = -9999.9;
     return actualLevel;

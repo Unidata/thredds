@@ -78,7 +78,7 @@ public class ThreddsMetadataExtractor {
         return null;
       }
 
-      if (result.featureType.isGridFeatureType()) {
+      if (result.featureType.isCoverageFeatureType()) {
         GridDataset gridDataset = (GridDataset) result.featureDataset;
         flds.put(Dataset.GeospatialCoverage, extractGeospatial(gridDataset));
 

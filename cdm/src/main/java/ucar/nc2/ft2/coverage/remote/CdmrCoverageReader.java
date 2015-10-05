@@ -84,6 +84,11 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
   }
 
   @Override
+  public String getLocation() {
+    return endpoint;
+  }
+
+  @Override
   public GeoReferencedArray readData(Coverage coverage, SubsetParams subset, boolean canonicalOrder) throws IOException {
     if (httpClient == null)
       httpClient = HTTPFactory.newSession(endpoint);

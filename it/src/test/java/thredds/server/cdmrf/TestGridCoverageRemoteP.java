@@ -99,10 +99,10 @@ public class TestGridCoverageRemoteP {
   public void testReadGridCoverageSlice() throws IOException, InvalidRangeException {
     System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gcs = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gcs = cc.getCoverageCollections().get(0);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);

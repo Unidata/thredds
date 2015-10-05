@@ -7,13 +7,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.adapter.DtCoverage;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
@@ -54,10 +55,10 @@ public class TestDtWithCoverageBuilding {
       Assert.assertNotNull("runtime axis", runAxis);
       assert runAxis.isScalar();
 
-      try (CoverageDatasetCollection cc = DtCoverageAdapter.factory(gds)) {
+      try (FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds)) {
         Assert.assertNotNull(filename, cc);
-        Assert.assertEquals(1, cc.getCoverageDatasets().size());
-        CoverageDataset cd = cc.getCoverageDatasets().get(0);
+        Assert.assertEquals(1, cc.getCoverageCollections().size());
+        CoverageCollection cd = cc.getCoverageCollections().get(0);
         Coverage cov = cd.findCoverage(gridName);
         Assert.assertNotNull(gridName, cov);
 
@@ -94,10 +95,10 @@ public class TestDtWithCoverageBuilding {
       assert !timeAxis.isScalar();
       Assert.assertEquals(360, timeAxis.getSize());
 
-      try (CoverageDatasetCollection cc = DtCoverageAdapter.factory(gds)) {
+      try (FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds)) {
         Assert.assertNotNull(filename, cc);
-        Assert.assertEquals(1, cc.getCoverageDatasets().size());   // LOOK only get 2D
-        CoverageDataset cd = cc.getCoverageDatasets().get(0);
+        Assert.assertEquals(1, cc.getCoverageCollections().size());   // LOOK only get 2D
+        CoverageCollection cd = cc.getCoverageCollections().get(0);
         Coverage cov = cd.findCoverage(gridName);
         Assert.assertNotNull(gridName, cov);
 
@@ -140,11 +141,11 @@ public class TestDtWithCoverageBuilding {
       Assert.assertEquals(46, timeAxis.getSize());
       double[] timeValuesDt = timeAxis.getCoordValues();
 
-      try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+      try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
         Assert.assertNotNull(filename, cc);
-        Assert.assertEquals(2, cc.getCoverageDatasets().size());
-        CoverageDataset cd = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
-        Assert.assertNotNull(CoverageCoordSys.Type.Grid.toString(), cd);
+        Assert.assertEquals(2, cc.getCoverageCollections().size());
+        CoverageCollection cd = cc.findCoverageDataset(FeatureType.GRID);
+        Assert.assertNotNull(FeatureType.GRID.toString(), cd);
 
         String gridNameCov =  "Temperature_isobaric";
         Coverage cov = cd.findCoverage(gridNameCov);

@@ -1,18 +1,11 @@
-FMRC
-====
-
 = Forecast Model Run Collection (FMRC)
+:linkcss:
+:stylesheet: ../../cdm.css
 
-'''''
-
-A Forecast Model Run Collection (FMRC) is a collection of forecast model
-output. New to TDS / CDM versions 4.2+, the way to define these
-collections is with a **featureCollection**. This supersedes using
-NcMLlink:../../ncml/FmrcAggregation.html[FMRC Aggregation]. In the TDS,
-one uses a
-link:../../../tds/reference/collections/FeatureCollections.html[FMRC
-FeatureCollection] element. This document covers the CDM aspects of FMRC
-feature collections.
+A Forecast Model Run Collection (FMRC) is a collection of forecast model output.
+An FMRC *featureCollection* supersedes using NcML link:../../ncml/FmrcAggregation.html[FMRC Aggregation].
+In the TDS, one uses a link:../../../tds/reference/collections/FeatureCollections.html[FMRC FeatureCollection] element.
+This document covers the CDM aspects of FMRC feature collections.
 
 == Overview
 
@@ -22,12 +15,10 @@ cannot put output from multiple runs in the same file; that is, all the
 variables in a file are assumed to have a single run time.
 
 The file collections are managed with a
-link:../../../tds/reference/collections/FeatureCollections.html[CollectionManager].
-Datasets are opened as GridDatasets, so that the coordinate system
-information is available.
+link:../../../tds/reference/collections/FeatureCollections.adoc[CollectionManager].
+Datasets are opened as GridDatasets, so that the coordinate system information is available.
 
-The ToolsUI FMRC tab (4.2+) allows you to view internal structures of an
-FMRC.
+The ToolsUI FMRC tab allows you to view internal structures of an FMRC.
 
 === Run Date
 
@@ -65,8 +56,6 @@ specification] string
 2.  __catalog__:catalogURL
 3.  filename.ncml
 
- 
-
 === Regularize
 
 If true, then all runs for a given offset hour (from 0Z) are assumed to
@@ -93,18 +82,10 @@ elements.
 
 === Also see:
 
-* http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[FMRC
-Aggregation] and
+* http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[FMRC Aggregation] and
 http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[poster]
-* link:../../../tds/reference/collections/FeatureCollections.html[Configuring
-TDS with the FeatureCollection element]
+* link:../../../tds/reference/collections/FeatureCollections.html[Configuring TDS with the FeatureCollection element]
 
 '''''
 
-image:../../nc.gif[image] This document is maintained by
-mailto:caron@unidata.ucar.edu[John Caron] and was last updated December,
-2010
-
- 
-
-==
+image:../../nc.gif[image] This document was last updated December, 2010

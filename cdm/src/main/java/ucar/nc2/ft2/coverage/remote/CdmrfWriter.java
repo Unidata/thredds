@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
@@ -60,14 +61,14 @@ import java.util.List;
  * @since 5/1/2015
  */
 public class CdmrfWriter {
-  static private final Logger logger = LoggerFactory.getLogger(CdmrfWriter.class);
+  // static private final Logger logger = LoggerFactory.getLogger(CdmrfWriter.class);
 
   //  must start with this "CDFF"
   static public final byte[] MAGIC_START = new byte[]{0x43, 0x44, 0x46, 0x46};
   static public final int MAX_INLINE_NVALUES = 1000;
   private static final boolean show = false;
 
-  public long sendHeader(OutputStream out, CoverageDataset gridDataset, String location) throws IOException {
+  public long sendHeader(OutputStream out, CoverageCollection gridDataset, String location) throws IOException {
     long size = 0;
 
     CdmrFeatureProto.CoverageDataset.Builder headerBuilder = encodeHeader(gridDataset, location);
@@ -98,13 +99,13 @@ public class CdmrfWriter {
       repeated CoordAxis coordAxes = 8;
       repeated Coverage grids = 9;
     } */
-  CdmrFeatureProto.CoverageDataset.Builder encodeHeader(CoverageDataset gridDataset, String location) {
+  CdmrFeatureProto.CoverageDataset.Builder encodeHeader(CoverageCollection gridDataset, String location) {
     CdmrFeatureProto.CoverageDataset.Builder builder = CdmrFeatureProto.CoverageDataset.newBuilder();
     builder.setName(location);
     builder.setCoverageType(convertCoverageType(gridDataset.getCoverageType()));
     builder.setDateRange(encodeDateRange(gridDataset.getCalendarDateRange()));
-    if (gridDataset.getLatLonBoundingBox() != null)
-      builder.setLatlonRect(encodeRectangle(gridDataset.getLatLonBoundingBox()));
+    if (gridDataset.getBoundingBox() != null)
+      builder.setLatlonRect(encodeRectangle(gridDataset.getBoundingBox()));
     if (gridDataset.getProjBoundingBox() != null)
       builder.setProjRect(encodeRectangle(gridDataset.getProjBoundingBox()));
 
@@ -186,7 +187,7 @@ public class CdmrfWriter {
     for (Attribute att : grid.getAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
 
-    builder.setUnits(grid.getUnits());
+    builder.setUnits(grid.getUnitsString());
     builder.setDescription(grid.getDescription());
     builder.setCoordSys(grid.getCoordSysName());
 
@@ -203,7 +204,7 @@ public class CdmrfWriter {
   CdmrFeatureProto.CoordSys.Builder encodeCoordSys(CoverageCoordSys gcs) {
     CdmrFeatureProto.CoordSys.Builder builder = CdmrFeatureProto.CoordSys.newBuilder();
     builder.setName(gcs.getName());
-    builder.setCoverageType(convertCoverageType(gcs.getType()));
+    builder.setCoverageType(convertCoverageType(gcs.getCoverageType()));
 
     for (String axis : gcs.getAxisNames())
       builder.addAxisNames(axis);
@@ -336,17 +337,17 @@ public class CdmrfWriter {
 
     //   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
-  static public CdmrFeatureProto.CoverageType convertCoverageType(CoverageCoordSys.Type type) {
+  static public CdmrFeatureProto.CoverageType convertCoverageType(FeatureType type) {
     switch (type) {
-      case General:
+      case COVERAGE:
         return CdmrFeatureProto.CoverageType.General;
-      case Curvilinear:
+      case CURVILINEAR:
         return CdmrFeatureProto.CoverageType.Curvilinear;
-      case Grid:
+      case GRID:
         return CdmrFeatureProto.CoverageType.Grid;
-      case Swath:
+      case SWATH:
         return CdmrFeatureProto.CoverageType.Swath;
-      case Fmrc:
+      case FMRC:
         return CdmrFeatureProto.CoverageType.Fmrc;
     }
     throw new IllegalStateException("illegal CoverageType " + type);

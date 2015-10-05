@@ -145,9 +145,9 @@ public class TestWcsServer {
     // Open the binary response in memory
     try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
       DtCoverageDataset dt = new DtCoverageDataset(new NetcdfDataset(nf), null);
-      CoverageDatasetCollection cdc = DtCoverageAdapter.factory(dt);
-      Assert.assertEquals(1, cdc.getCoverageDatasets().size());
-      CoverageDataset cd = cdc.getCoverageDatasets().get(0);
+      FeatureDatasetCoverage cdc = DtCoverageAdapter.factory(dt);
+      Assert.assertEquals(1, cdc.getCoverageCollections().size());
+      CoverageCollection cd = cdc.getCoverageCollections().get(0);
       assertNotNull(cd);
 
       Coverage cov = cd.findCoverage("sst");
@@ -218,9 +218,9 @@ public class TestWcsServer {
     // Open the binary response in memory
     try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
       DtCoverageDataset dt = new DtCoverageDataset(new NetcdfDataset(nf), null);
-      CoverageDatasetCollection cdc = DtCoverageAdapter.factory(dt);
-      Assert.assertEquals(1, cdc.getCoverageDatasets().size());
-      CoverageDataset cd = cdc.getCoverageDatasets().get(0);
+      FeatureDatasetCoverage cdc = DtCoverageAdapter.factory(dt);
+      Assert.assertEquals(1, cdc.getCoverageCollections().size());
+      CoverageCollection cd = cdc.getCoverageCollections().get(0);
       assertNotNull(cd);
 
       Coverage cov = cd.findCoverage("Temperature");

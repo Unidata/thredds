@@ -47,8 +47,10 @@ import ucar.ma2.InvalidRangeException;
  */
 public interface CoverageReader extends Closeable {
 
-  // List<ArrayWithCoordinates> readData(List<Coverage> coverage, SubsetParams subset) throws IOException;
+  String getLocation();
 
   GeoReferencedArray readData(Coverage coverage, SubsetParams subset, boolean canonicalOrder) throws IOException, InvalidRangeException;
+
+  // List<ArrayWithCoordinates> readData(List<Coverage> coverage, SubsetParams subset) throws IOException;
 
 }

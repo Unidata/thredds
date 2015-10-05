@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
@@ -37,18 +38,18 @@ public class TestCoverageFileWriterP {
     List<Object[]> result = new ArrayList<>();
 
     // SRC
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1", CoverageCoordSys.Type.Grid, Lists.newArrayList("Temperature_isobaric"),
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1", FeatureType.GRID, Lists.newArrayList("Temperature_isobaric"),
             new SubsetParams().set(SubsetParams.timePresent, true), NetcdfFileWriter.Version.netcdf3});
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", CoverageCoordSys.Type.Grid, Lists.newArrayList("P_sfc", "P_trop"), null, NetcdfFileWriter.Version.netcdf3});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", CoverageCoordSys.Type.Grid, Lists.newArrayList("P_sfc", "P_trop"), null, NetcdfFileWriter.Version.netcdf4});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", CoverageCoordSys.Type.Grid, Lists.newArrayList("P_sfc", "P_trop", "T"), null, NetcdfFileWriter.Version.netcdf3});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", FeatureType.GRID, Lists.newArrayList("P_sfc", "P_trop"), null, NetcdfFileWriter.Version.netcdf3});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", FeatureType.GRID, Lists.newArrayList("P_sfc", "P_trop"), null, NetcdfFileWriter.Version.netcdf4});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", FeatureType.GRID, Lists.newArrayList("P_sfc", "P_trop", "T"), null, NetcdfFileWriter.Version.netcdf3});
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", CoverageCoordSys.Type.Grid, Lists.newArrayList("Surface_pressure_surface"), null, NetcdfFileWriter.Version.netcdf3});  // scalar runtime, ens coord
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", CoverageCoordSys.Type.Grid, Lists.newArrayList("PS", "Temperature"), null, NetcdfFileWriter.Version.netcdf3});  // both x,y and lat,lon
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", FeatureType.GRID, Lists.newArrayList("Surface_pressure_surface"), null, NetcdfFileWriter.Version.netcdf3});  // scalar runtime, ens coord
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, Lists.newArrayList("PS", "Temperature"), null, NetcdfFileWriter.Version.netcdf3});  // both x,y and lat,lon
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Grid, Lists.newArrayList("Soil_temperature_depth_below_surface_layer"), null, NetcdfFileWriter.Version.netcdf4});  // TwoD Best
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc, Lists.newArrayList("Soil_temperature_depth_below_surface_layer"), null, NetcdfFileWriter.Version.netcdf4 });  // TwoD
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.GRID, Lists.newArrayList("Soil_temperature_depth_below_surface_layer"), null, NetcdfFileWriter.Version.netcdf4});  // TwoD Best
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC, Lists.newArrayList("Soil_temperature_depth_below_surface_layer"), null, NetcdfFileWriter.Version.netcdf4 });  // TwoD
 // */
     return result;
   }
@@ -56,10 +57,10 @@ public class TestCoverageFileWriterP {
   String endpoint;
   List<String> covList;
   NetcdfFileWriter.Version version;
-  CoverageCoordSys.Type type;
+  FeatureType type;
   SubsetParams params;
 
-  public TestCoverageFileWriterP(String endpoint, CoverageCoordSys.Type type, List<String> covList, SubsetParams params, NetcdfFileWriter.Version version) {
+  public TestCoverageFileWriterP(String endpoint, FeatureType type, List<String> covList, SubsetParams params, NetcdfFileWriter.Version version) {
     this.endpoint = endpoint;
     this.type = type;
     this.covList = covList;
@@ -74,9 +75,9 @@ public class TestCoverageFileWriterP {
     System.out.printf(" write to %s%n", tempFile.getAbsolutePath());
 
     // write the file
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(type);
+      CoverageCollection gcs = cc.findCoverageDataset(type);
 
       for (String covName : covList)
         Assert.assertNotNull(covName, gcs.findCoverage(covName));
@@ -89,10 +90,10 @@ public class TestCoverageFileWriterP {
     }
 
     // open the new file as a Coverage. SInce its a netcdf file, it will open through the DtAdapter (!)
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(tempFile.getPath())) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(tempFile.getPath())) {
       Assert.assertNotNull(endpoint, cc);
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gcs = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gcs = cc.getCoverageCollections().get(0);
 
       for (String covName : covList) {
         Assert.assertNotNull(covName, gcs.findCoverage(covName));

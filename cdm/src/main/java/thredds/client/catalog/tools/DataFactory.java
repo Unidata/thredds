@@ -55,7 +55,7 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * DataFactory from THREDDS client catalogs
+ * DataFactory for THREDDS client catalogs
  *
  * @author caron
  * @since 1/8/2015

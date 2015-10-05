@@ -34,10 +34,10 @@
 package ucar.nc2.constants;
 
 /**
- * Type-safe enumeration of CDM Feature types, aka "Scientific Data Types".
+ * Enumeration of CDM Feature types, aka "Scientific Data Types".
  *
  * @author john caron
- * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Types</a>
+ * @see <a href="http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Types</a>
  */
 /*
 1) The CF discrete sampling proposal will be the recommended one for point data when thats finalized. Unfortunately, it will be somewhat different from whats gone before. The CF: prefix is dropped until the namespace proposal can be completed. So those feature types are now proposed to be:
@@ -70,67 +70,28 @@ maybe:
  */
 
 public enum FeatureType {
-  /**
-   * No specific type
-   */
-  ANY,
-  /**
-   * Gridded Data
-   */
-  GRID,
-  /**
-   * Radial data
-   */
-  RADIAL,
-  /**
-   * Swath Data
-   */
-  SWATH,
-  /**
-   * Image data
-   */
-  IMAGE,
+  ANY,        // No specific type
 
-  /**
-   * Any of the point types
-   */
-  ANY_POINT,
-  /**
-   * Point data
-   */
-  POINT,
-  /**
-   * Profile data
-   */
-  PROFILE,
-  /**
-   * Section data
-   */
-  SECTION,
-  /**
-   * Station data
-   */
-  STATION,
-  /**
-   * Stations of profiles
-   */
-  STATION_PROFILE,
-  /**
-   * Trajectory data
-   */
-  TRAJECTORY,
+  COVERAGE,   // any of the coverage types: GRID, FMRC, SWATH, CURVILINEAR
+  GRID,       // seperable coordinates
+  FMRC,       // two time dimensions, runtime and forecast time
+  SWATH,      // 2D latlon, dependent time, polar orbiting satellites
+  CURVILINEAR,// 2D latlon, independent time
 
-  /**
-   * experimental
-   */
-  STATION_RADIAL,
-  FMRC,
-  UGRID, // unstructured grids
+  ANY_POINT,  // Any of the point types
+  POINT,      // unconnected points
+  PROFILE,    // fixed x,y with data along z
+  STATION,    // timeseries at named location
+  STATION_PROFILE, // timeseries of profiles
+  TRAJECTORY, // connected points in space and time
+  TRAJECTORY_PROFILE, //  trajectory of profiles
 
-  /**
-   * deprecated - use ANY
-   */
-  NONE;
+  RADIAL,     // polar coordinates
+  STATION_RADIAL, // time series of radial data
+
+  // experimental
+  IMAGE,    // pixels, may not be geolocatable
+  UGRID;    // unstructured grids
 
   /**
    * Find the FeatureType that matches this name.
@@ -147,18 +108,14 @@ public enum FeatureType {
     }
   }
 
-  /**
-   * Is this a Point feature type?
-   *
-   * @return true if this is a Point feature type
-   */
   public boolean isPointFeatureType() {
     return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY) ||
-            (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.SECTION);
+            (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.TRAJECTORY_PROFILE);
   }
 
-  public boolean isGridFeatureType() {
-    return (this == FeatureType.GRID) || (this == FeatureType.FMRC);
+  public boolean isCoverageFeatureType() {
+    return (this == FeatureType.COVERAGE) ||
+            (this == FeatureType.GRID) || (this == FeatureType.FMRC) || (this == FeatureType.SWATH)|| (this == FeatureType.CURVILINEAR);
   }
 
   public boolean isUnstructuredGridFeatureType() {

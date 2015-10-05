@@ -34,6 +34,7 @@ package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +58,7 @@ public class Property {
   public String getName() {
     return name;
   }
+
   public String getValue() {
     return value;
   }
@@ -84,11 +86,10 @@ public class Property {
     return result;
   }
 
-  public static List<Property> convertToProperties(List<Attribute> from) {
-    List<Property> result = new ArrayList<>(from.size());
-    for (Attribute p : from) {
-        result.add(new Property(p.getShortName(), p.getStringValue()));
-    }
+  public static List<Property> convertToProperties(AttributeContainer from) {
+    List<Property> result = new ArrayList<>();
+    for (Attribute p : from.getAttributes())
+      result.add(new Property(p.getShortName(), p.getStringValue()));
     return result;
   }
 

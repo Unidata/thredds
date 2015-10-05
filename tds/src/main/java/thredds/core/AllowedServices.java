@@ -174,7 +174,7 @@ public class AllowedServices {
   }
 
   public Service getStandardServices(FeatureType featType) {
-    if (featType.isGridFeatureType()) {
+    if (featType.isCoverageFeatureType()) {
       return new Service("GridServices", "", ServiceType.Compound.toString(), null, null, allowedGridServices, null);
     }
 

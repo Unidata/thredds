@@ -2,6 +2,8 @@
 :linkcss:
 :stylesheet: ../../cdm.css
 
+== Overview
+
 *_Point Feature Datasets_* (also known as _Discrete Sampling Geometry (DSG) datasets_) are collections of Point Features.
 Point Feature Datasets contain one or more DsgFeatureCollections:
 
@@ -25,29 +27,25 @@ public interface DsgFeatureCollection {
 }
 ----
 
-We take the approach that all point feature types are arrangements of collections of _PointFeatures_
-(a set of measurements at the same point in space and time), distinguished by the geometry and topology of the collections.
-The *_Point Feature Types_* that we implement are:
+Point feature types are arrangements of collections of _Point Features_ (a set of measurements at the same point in space and time), distinguished by the geometry and topology of the collections.
+The *_Point Feature Types_* that are implemented are:
 
 .  *Point feature* : one or more parameters measured at one point in time and space.
 .  *Station time series feature* : a time-series of data points all at the same location, with varying time.
 .  *Profile feature* : a set of data points along a vertical line.
-.  *Station Profile feature* : a time-series of profile ****features at a named location.
+.  *Station Profile feature* : a time-series of profile features at a named location.
 .  *Trajectory feature* : a set of data points along a 1D curve in time and space.
-.  *Section feature* : a collection of profile**** features which originate along a trajectory.
+.  *Trajectory Profile feature* : a collection of profile features which originate along a trajectory. Also known as a _Section_.
 
-Related documents:
-^^^^^^^^^^^^^^^^^^
+=== Related documents:
 
 * CF 1.6 http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries[Discrete Sampling Geometries Conventions]
 * link:CFencodingTable.html[CDM Nested Table encoding]
 * Complete link:PointFeatureUML.svg[Point Feature UML]
 
-'''''
+== Point Features
 
 image:PointFeatureUML.svg[PointFeatureUML]
-
-== Point Features
 
 A *PointFeature* is a collection of data taken at a single time and a single place:
 
@@ -76,7 +74,7 @@ When the nominal time is not given in the data, it is usually set to the observa
 Conversion between time as a double and as a *CalendarDate* is done by _getFeatureCollection().getTimeUnits()_.
 
 When a PointFeature is  part of nested features, _getDataAll()_ will return the data with all of the parent data in
-as single StructureData object, while _getFeatureData()_ will return the data at just the innermost feature. See examples below.
+a single StructureData object, while _getFeatureData()_ will return the data at just the innermost feature. See examples below.
 
 The _location_ is returned as:
 

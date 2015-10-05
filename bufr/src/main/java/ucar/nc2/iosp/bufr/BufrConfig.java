@@ -264,7 +264,7 @@ public class BufrConfig {
   private FeatureType guessFeatureType(StandardFields.StandardFieldsFromMessage standardFields) {
     if (standardFields.hasStation()) return FeatureType.STATION;
     if (standardFields.hasTime()) return FeatureType.POINT;
-    return FeatureType.NONE;
+    return FeatureType.ANY;
   }
 
   private void setStandardActions(FieldConverter fld) {

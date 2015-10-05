@@ -7,17 +7,14 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
@@ -56,9 +53,9 @@ public class TestCurvilinearGridPointMapping {
     double lonVal = lonArray.getDouble(0);
     System.out.printf("%f,%f%n", latVal, lonVal);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(datasetLocation)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(datasetLocation)) {
       Assert.assertNotNull(datasetLocation, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Curvilinear);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.CURVILINEAR);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -84,7 +81,7 @@ public class TestCurvilinearGridPointMapping {
 
     try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(datasetLocation)) {
       Assert.assertNotNull(datasetLocation, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageDataset gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);

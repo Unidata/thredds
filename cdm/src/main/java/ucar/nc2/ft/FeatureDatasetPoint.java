@@ -35,7 +35,7 @@ package ucar.nc2.ft;
 import java.util.List;
 
 /**
- * A FeatureDataset, composed of one or more PointFeatureCollections.
+ * A FeatureDataset, composed of one or more DsgFeatureCollections.
  *
  * @author caron
  */

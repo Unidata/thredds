@@ -34,7 +34,7 @@ package thredds.server.wcs.v1_0_0_1;
 
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -46,10 +46,10 @@ import java.util.Map;
 public class WcsDataset {
   private String datasetPath;
   private String datasetName;
-  private CoverageDataset dataset;
+  private CoverageCollection dataset;
   private Map<String, WcsCoverage> availableCoverages;
 
-  public WcsDataset(CoverageDataset dataset, String datasetPath) {
+  public WcsDataset(CoverageCollection dataset, String datasetPath) {
     this.datasetPath = datasetPath;
     int pos = datasetPath.lastIndexOf("/");
     this.datasetName = (pos > 0) ? datasetPath.substring(pos + 1) : datasetPath;
@@ -84,7 +84,7 @@ public class WcsDataset {
     return datasetName;
   }
 
-  public CoverageDataset getDataset() {
+  public CoverageCollection getDataset() {
     return dataset;
   }
 

@@ -4,6 +4,7 @@ package ucar.nc2.ft.coverage;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.Misc;
@@ -20,9 +21,9 @@ public class TestCoverageHorizSubset {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "VAR_3-0-8";
       Coverage coverage = gcs.findCoverageByAttribute(GribIosp.VARIABLE_ID_ATTNAME, gribId); // "Pixel_scene_type");
@@ -63,9 +64,9 @@ public class TestCoverageHorizSubset {
     String filename = TestDir.cdmUnitTestDir + "conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "micron11";
       Coverage coverage = gcs.findCoverage(gribId);
@@ -93,9 +94,9 @@ public class TestCoverageHorizSubset {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "VAR_0-3-0_L1";
       Coverage coverage = gcs.findCoverageByAttribute(GribIosp.VARIABLE_ID_ATTNAME, gribId); // "Pressure_Surface");
@@ -118,9 +119,9 @@ public class TestCoverageHorizSubset {
     String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "Pressure_surface";
       Coverage coverage = gcs.findCoverage(gribId);
@@ -132,7 +133,7 @@ public class TestCoverageHorizSubset {
       Assert.assertNotNull("HorizCoordSys", hcs);
       // Assert.assertArrayEquals(new int[]{65, 361, 720}, cs.getShape());
 
-      LatLonRect llbb = gcs.getLatLonBoundingBox();
+      LatLonRect llbb = gcs.getBoundingBox();
       LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
 
       checkLatLonSubset(gcs, coverage, llbb_subset, new int[]{1, 35, 46});
@@ -145,9 +146,9 @@ public class TestCoverageHorizSubset {
     String filename = "cdmremote:http://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/NAM/CONUS_40km/conduit/best";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "Pressure_hybrid";
       Coverage coverage = gcs.findCoverage(gribId);
@@ -173,9 +174,9 @@ public class TestCoverageHorizSubset {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_0p5deg_20100913_0000.grib2";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "VAR_2-0-0_L1";
       Coverage coverage = gcs.findCoverageByAttribute(GribIosp.VARIABLE_ID_ATTNAME, gribId); // Land_cover_0__sea_1__land_surface
@@ -194,8 +195,8 @@ public class TestCoverageHorizSubset {
     }
   }
 
-  private void checkLatLonSubset(CoverageDataset gcs, Coverage coverage, LatLonRect bbox, int[] expectedShape) throws Exception {
-    System.out.printf(" coverage llbb = %s width=%f%n", gcs.getLatLonBoundingBox().toString2(), gcs.getLatLonBoundingBox().getWidth());
+  private void checkLatLonSubset(CoverageCollection gcs, Coverage coverage, LatLonRect bbox, int[] expectedShape) throws Exception {
+    System.out.printf(" coverage llbb = %s width=%f%n", gcs.getBoundingBox().toString2(), gcs.getBoundingBox().getWidth());
     System.out.printf(" constrain bbox= %s width=%f%n", bbox.toString2(), bbox.getWidth());
 
     SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox).set(SubsetParams.timePresent, true);

@@ -35,6 +35,7 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.*;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -52,7 +53,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CoverageCoordSys {
 
-  public enum Type {General, Curvilinear, Grid, Swath, Fmrc}
+  /* public enum Type {General, Curvilinear, Grid, Swath, Fmrc}
+
+  static public FeatureType getFeatureType(Type covType) {
+    switch (covType) {
+      case Grid: return FeatureType.GRID;
+      case Fmrc: return FeatureType.FMRC;
+      case Swath: return FeatureType.SWATH;
+    }
+    return FeatureType.COVERAGE;
+  } */
 
   public static String makeCoordSysName(List<String> axisName) {
     Formatter fname = new Formatter();
@@ -71,9 +81,9 @@ public class CoverageCoordSys {
   private final String name;
   private final List<String> axisNames;        // must be in order
   private final List<String> transformNames;
-  private final Type type;
+  private final FeatureType type;
 
-  public CoverageCoordSys(String name, List<String> axisNames, List<String> transformNames, Type type) {
+  public CoverageCoordSys(String name, List<String> axisNames, List<String> transformNames, FeatureType type) {
     this.name = name != null ? name : makeCoordSysName(axisNames);
     this.axisNames = axisNames;
     this.transformNames = transformNames;
@@ -85,7 +95,7 @@ public class CoverageCoordSys {
     this.name = from.getName();
     this.axisNames = from.getAxisNames();
     this.transformNames = from.getTransformNames();
-    this.type = from.getType();
+    this.type = from.getCoverageType();
   }
 
   public boolean isConstantForecast() {
@@ -203,7 +213,7 @@ public class CoverageCoordSys {
     return horizCoordSys;
   }
 
-  public Type getType() {
+  public FeatureType getCoverageType() {
     return type;
   }
 
@@ -435,7 +445,7 @@ public class CoverageCoordSys {
     for (CoverageCoordAxis axis : subsetAxes)
       names.add(axis.getName());
 
-    CoverageCoordSys resultCoordSys = new CoverageCoordSys(null, names, this.getTransformNames(), this.getType());
+    CoverageCoordSys resultCoordSys = new CoverageCoordSys(null, names, this.getTransformNames(), this.getCoverageType());
     MyCoordSysContainer fakeDataset = new MyCoordSysContainer(subsetAxes, getTransforms());
     resultCoordSys.setDataset(fakeDataset);
     resultCoordSys.setHorizCoordSys(resultCoordSys.makeHorizCoordSys());

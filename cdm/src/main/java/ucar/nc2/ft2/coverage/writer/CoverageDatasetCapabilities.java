@@ -51,7 +51,7 @@ import ucar.nc2.ft2.coverage.CoordSysSet;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageTransform;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDateRange;
@@ -66,12 +66,12 @@ import ucar.unidata.geoloc.ProjectionRect;
  * @since 5/7/2015
  */
 public class CoverageDatasetCapabilities {
-  private CoverageDataset gcd;
+  private CoverageCollection gcd;
   private String path;
 
   private final NcMLWriter ncmlWriter = new NcMLWriter();
 
-  public CoverageDatasetCapabilities(CoverageDataset gds, String path) {
+  public CoverageDatasetCapabilities(CoverageCollection gds, String path) {
     this.gcd = gds;
     this.path = path;
   }
@@ -134,7 +134,7 @@ public class CoverageDatasetCapabilities {
      } */
 
     // add lat/lon bounding box
-    LatLonRect bb = gcd.getLatLonBoundingBox();
+    LatLonRect bb = gcd.getBoundingBox();
     if (bb != null)
       rootElem.addContent(writeBoundingBox(bb));
 

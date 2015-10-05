@@ -101,7 +101,7 @@ public class TestMiscPointFeature {
   @Test
   public void testProblemSection() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.6.3.1.ncml";
-    Assert.assertEquals("npoints", 145, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.SECTION, true));
+    Assert.assertEquals("npoints", 145, TestPointDatasets.checkPointFeatureDataset(location, FeatureType.TRAJECTORY_PROFILE, true));
   }
 
   @Test

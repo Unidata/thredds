@@ -154,7 +154,7 @@ public class NestedTable {
 
     /* check for singleton
     if (((nlevels == 1) && (featureType == FeatureType.STATION) || (featureType == FeatureType.PROFILE) || (featureType == FeatureType.TRAJECTORY)) ||
-            ((nlevels == 2) && (featureType == FeatureType.STATION_PROFILE) || (featureType == FeatureType.SECTION))) {
+            ((nlevels == 2) && (featureType == FeatureType.STATION_PROFILE) || (featureType == FeatureType.TRAJECTORY_PROFILE))) {
 
       // singleton. use file name as feature name, so aggregation will work
       StructureData sdata = StructureDataFactory.make(featureVariableName, ds.getLocation());

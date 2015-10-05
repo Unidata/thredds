@@ -33,13 +33,13 @@
 package thredds.server.wcs.v1_0_0_1;
 
 import thredds.server.wcs.Request;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 
 public abstract class WcsRequestBuilder
 {
   public static WcsRequestBuilder newWcsRequestBuilder( String versionString,
                                                         Request.Operation operation,
-                                                        CoverageDataset dataset,
+                                                        CoverageCollection dataset,
                                                         String datasetPath )
   {
     if ( operation == null )
@@ -57,13 +57,13 @@ public abstract class WcsRequestBuilder
 
   private String versionString;
   private Request.Operation operation;
-  private CoverageDataset dataset;
+  private CoverageCollection dataset;
   private String datasetPath;
   private WcsDataset wcsDataset;
 
   WcsRequestBuilder( String versionString,
                      Request.Operation operation,
-                     CoverageDataset dataset,
+                     CoverageCollection dataset,
                      String datasetPath )
   {
     if ( versionString == null || versionString.length() == 0 )
@@ -88,7 +88,7 @@ public abstract class WcsRequestBuilder
   public boolean isGetCoverageOperation() { return this.operation.equals( Request.Operation.GetCoverage ); }
 
   public String getVersionString() { return versionString; }
-  public CoverageDataset getDataset() { return dataset; }
+  public CoverageCollection getDataset() { return dataset; }
   public String getDatasetPath() { return datasetPath; }
   public WcsDataset getWcsDataset() { return wcsDataset; }
 }

@@ -11,12 +11,13 @@ import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.SubsetParams;
@@ -50,9 +51,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("test1Runtime1TimeOffset Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -79,9 +80,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("test1Runtime1TimeOffset Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -109,9 +110,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("test1Runtime1TimeInterval Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -142,9 +143,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("test1Runtime1TimeInterval Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -174,9 +175,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("test1Runtime1Time Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -205,9 +206,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("testConstantRuntime Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -246,9 +247,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("testConstantOffset Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -294,9 +295,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("testConstantForecast Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -391,9 +392,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -422,9 +423,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -453,9 +454,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -487,9 +488,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("testSrcNoParams Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -511,9 +512,9 @@ public class TestCoverageSubsetTime {
 
     System.out.printf("testSrcTimePresent Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -542,7 +543,7 @@ public class TestCoverageSubsetTime {
   ///////////////////////////////////////////////////////////////////////////////////////////
   // ENsemble
 
-  //     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", CoverageCoordSys.Type.Fmrc, "geopotential"});
+  //     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC, "geopotential"});
 
 
 }

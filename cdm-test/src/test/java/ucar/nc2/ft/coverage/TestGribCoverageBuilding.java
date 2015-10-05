@@ -39,12 +39,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.TimeOffsetAxis;
 import ucar.nc2.time.CalendarDate;
@@ -67,10 +68,10 @@ public class TestGribCoverageBuilding {
     String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1.ncx3";
     String gridName = "Pressure_surface";
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset cd = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection cd = cc.getCoverageCollections().get(0);
       Coverage cov = cd.findCoverage(gridName);
       Assert.assertNotNull(gridName, cov);
       CoverageCoordSys csys = cov.getCoordSys();
@@ -90,11 +91,11 @@ public class TestGribCoverageBuilding {
       String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx3";
       String gridName = "Pressure_surface";
 
-      try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+      try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
         Assert.assertNotNull(filename, cc);
-        Assert.assertEquals(2, cc.getCoverageDatasets().size());
-        CoverageDataset cd = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
-        Assert.assertNotNull(CoverageCoordSys.Type.Fmrc.toString(), cd);
+        Assert.assertEquals(2, cc.getCoverageCollections().size());
+        CoverageCollection cd = cc.findCoverageDataset(FeatureType.FMRC);
+        Assert.assertNotNull(FeatureType.FMRC.toString(), cd);
 
         Coverage cov = cd.findCoverage(gridName);
         Assert.assertNotNull(gridName, cov);
@@ -125,11 +126,11 @@ public class TestGribCoverageBuilding {
     String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx3";
     String gridName = "Pressure_surface";
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      Assert.assertEquals(2, cc.getCoverageDatasets().size());
-      CoverageDataset cd = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
-      Assert.assertNotNull(CoverageCoordSys.Type.Grid.toString(), cd);
+      Assert.assertEquals(2, cc.getCoverageCollections().size());
+      CoverageCollection cd = cc.findCoverageDataset(FeatureType.GRID);
+      Assert.assertNotNull(FeatureType.GRID.toString(), cd);
 
       Coverage cov = cd.findCoverage(gridName);
       Assert.assertNotNull(gridName, cov);
@@ -160,10 +161,10 @@ public class TestGribCoverageBuilding {
     String gridName = "Temperature_isobaric";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset cd = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
-      Assert.assertNotNull(CoverageCoordSys.Type.Grid.toString(), cd);
+      CoverageCollection cd = cc.findCoverageDataset(FeatureType.GRID);
+      Assert.assertNotNull(FeatureType.GRID.toString(), cd);
 
       Coverage cov = cd.findCoverage(gridName);
       Assert.assertNotNull(gridName, cov);

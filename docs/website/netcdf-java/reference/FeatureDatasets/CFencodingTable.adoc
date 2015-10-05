@@ -5,10 +5,10 @@ CF encoding Table
 |============================================
 |Type |single |multidim |ragged |Nested Table
 |*point* |N/A a|
--------------------
+----
 data(obs)
 time,lat,lon,z(obs)
--------------------
+----
 
  a|
 N/A
@@ -31,7 +31,7 @@ scalar lat,lon,stn_alt,stn_id
  a|
 ---------------------------------------
 data(station,obs)
-time(station,obs) | time(time)         
+time(station,obs)\|time(time)
 lat,lon,stn_alt,stn_id(station) 
 ---------------------------------------
 
@@ -40,7 +40,7 @@ lat,lon,stn_alt,stn_id(station)
 data(obs)        
 time(obs)        
 lat,lon,stn_alt,stn_id(station)
-row_size(station) | stn_index(obs) 
+row_size(station) \| stn_index(obs)
 -----------------------------------
 
  a|
@@ -64,7 +64,7 @@ scalar traj_id
  a|
 ----------------------------------------
 data(traj,obs)
-      time,lat,lon,z(traj,obs)|time(obs)
+time,lat,lon,z(traj,obs)\|time(obs)
 traj_id(traj)     
 ----------------------------------------
 
@@ -72,7 +72,7 @@ traj_id(traj)
 --------------------------------
 data(obs)
 time,lat,lon,z(obs)
-row_size(traj) | traj_index(obs)
+row_size(traj) \| traj_index(obs)
 traj_id(traj)
 --------------------------------
 
@@ -90,29 +90,28 @@ Table {
 |*profile* a|
 --------------------
 data(z)
-      time(z) | time
-    scalar lat,lon
-      z(z)
-
+time(z) \| time
+scalar lat,lon
+z(z)
 scalar profile_id   
 --------------------
 
  a|
 -------------------------------
 data(profile,z)
-time(profile,z) | time(profile)
+time(profile,z) \| time(profile)
 lat,lon(profile)
-alt(profile,z) | z(z)
+alt(profile,z) \| z(z)
 profile_id(profile)     
 -------------------------------
 
  a|
 --------------------------------------
 data(obs)
-time(profile) | time(obs) 
-        lat,lon(profile)
+time(profile) \| time(obs)
+lat,lon(profile)
 z(obs)
-row_size(profile) | profile_index(obs)
+row_size(profile) \| profile_index(obs)
 
 profile_id(profile) 
 --------------------------------------
@@ -131,26 +130,26 @@ Table {
 |*seriesProfile* a|
 --------------------------------
 data(profile, z)
-time(profile, z)|time(profile)
+time(profile, z)\|time(profile)
 lat,lon,stn_alt,stn_id
-      alt(profile,z) | z(z)     
+alt(profile,z) \| z(z)
 --------------------------------
 
  a|
 ------------------------------------------
 data(station, profile, z)
-time(sta,prof,z)|time(sta,prof)|time(prof)
-        lat,lon,stn_alt,stn_id(station)
-alt(sta,prof,z)|alt(prof,z)|z(z)     
+time(sta,prof,z)\|time(sta,prof)\|time(prof)
+lat,lon,stn_alt,stn_id(station)
+alt(sta,prof,z)\|alt(prof,z)\|z(z)
 ------------------------------------------
 
  a|
 ----------------------------------------
 // contig z, profiles in any sequence
 data(obs)
-time(profile) | time(obs)
+time(profile) \| time(obs)
 lat,lon,stn_alt,stn_id(station)
-        z(obs)
+z(obs)
 station_index(profile),row_size(profile)
 ----------------------------------------
 
@@ -171,18 +170,18 @@ Table {
 |*trajProfile* a|
 ------------------------------------
 data(profile, z)
-      time(profile, z)|time(profile)
-      lat,lon(profile)
-alt( profile,z) | z(z)
+time(profile, z)\|time(profile)
+lat,lon(profile)
+alt( profile,z) \| z(z)
 scalar traj_id     
 ------------------------------------
 
  a|
 ---------------------------------
 data(traj, profile, z)
-time(traj,prof,z)|time(traj,prof)
+time(traj,prof,z)\|time(traj,prof)
 lat,lon(traj, profile)
-alt(traj,profile,z) | z(z)
+alt(traj,profile,z) \| z(z)
 traj_id(traj)     
 ---------------------------------
 
@@ -190,9 +189,9 @@ traj_id(traj)
 -------------------------------------
 // contig z, profiles in any sequence
 data(obs)
-time(profile) | time(obs)
-        lat,lon(profile)
-z(obs) | z(z)
+time(profile) \| time(obs)
+lat,lon(profile)
+z(obs) \| z(z)
 traj_index(profile),row_size(profile)
 traj_id(traj)
 -------------------------------------
