@@ -90,6 +90,12 @@ public class RadarServerConfig {
         // Otherwise, use the default.
         if(location.contains(":")) {
             URI uri = URI.create(location);
+
+            // Fix parsing of s3:// (note two '/') style paths
+            if (uri.getPath().isEmpty()) {
+                uri = URI.create(location.replace("//", "///"));
+            }
+
             location = uri.getPath();
             fs = getFS(uri);
         } else {
