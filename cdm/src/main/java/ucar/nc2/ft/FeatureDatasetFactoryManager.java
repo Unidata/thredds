@@ -291,7 +291,7 @@ public class FeatureDatasetFactoryManager {
     if (debug) System.out.println("wrap " + ncd.getLocation() + " want = " + wantFeatureType);
 
     // the case where we dont know what type it is
-    if ((wantFeatureType == null) || (wantFeatureType == FeatureType.NONE) || (wantFeatureType == FeatureType.ANY)) {
+    if ((wantFeatureType == null) || (wantFeatureType == FeatureType.ANY)) {
       return wrapUnknown(ncd, task, errlog);
     }
 
@@ -401,7 +401,7 @@ public class FeatureDatasetFactoryManager {
     }
 
     if (want == FeatureType.GRID) {
-      return facType.isGridFeatureType();
+      return facType.isCoverageFeatureType();
     }
 
     if (want == FeatureType.UGRID) {

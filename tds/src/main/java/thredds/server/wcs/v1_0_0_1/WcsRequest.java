@@ -34,7 +34,7 @@ package thredds.server.wcs.v1_0_0_1;
 
 import ucar.nc2.ft2.coverage.CoverageCoordAxis;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -109,7 +109,7 @@ public abstract class WcsRequest {
     return briefElem;
   }
 
-  protected Element genLonLatEnvelope(CoverageDataset gcd, CoverageCoordSys gcs) {
+  protected Element genLonLatEnvelope(CoverageCollection gcd, CoverageCoordSys gcs) {
     // <CoverageOfferingBrief>/lonLatEnvelope
     Element lonLatEnvelopeElem = new Element("lonLatEnvelope", wcsNS);
     lonLatEnvelopeElem.setAttribute("srsName", "urn:ogc:def:crs:OGC:1.3:CRS84");

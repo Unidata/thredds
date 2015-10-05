@@ -42,7 +42,7 @@ public class GetCapabilitiesBuilder extends WcsRequestBuilder {
 
   GetCapabilitiesBuilder(String versionString,
                          Request.Operation operation,
-                         CoverageDataset dataset,
+                         CoverageCollection dataset,
                          String datasetPath) {
     super(versionString, operation, dataset, datasetPath);
   }

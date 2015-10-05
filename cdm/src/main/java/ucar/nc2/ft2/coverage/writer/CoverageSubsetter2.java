@@ -51,7 +51,7 @@ import java.util.*;
  */
 public class CoverageSubsetter2 {
 
-  public static ucar.nc2.util.Optional<CoverageDataset> makeCoverageDatasetSubset(CoverageDataset org, List<String> gridsWanted, SubsetParams params) throws InvalidRangeException {
+  public static ucar.nc2.util.Optional<CoverageCollection> makeCoverageDatasetSubset(CoverageCollection org, List<String> gridsWanted, SubsetParams params) throws InvalidRangeException {
 
     // Get subset of original objects that are needed by the requested grids
     List<Coverage> orgCoverages = new ArrayList<>();
@@ -115,7 +115,7 @@ public class CoverageSubsetter2 {
     CalendarDateRange dateRange = null;
 
     // put it all together
-    return ucar.nc2.util.Optional.of(new CoverageDataset(org.getName(), org.getCoverageType(), new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()),
+    return ucar.nc2.util.Optional.of(new CoverageCollection(org.getName(), org.getCoverageType(), new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()),
             latLonBoundingBox, projBoundingBox, dateRange,
             coordSys, coordTransforms, coordAxes, coverages, org.getReader()));  // use org.reader -> subset always in coord space !
   }

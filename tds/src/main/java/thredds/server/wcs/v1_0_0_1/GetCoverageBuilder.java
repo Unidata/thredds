@@ -33,14 +33,14 @@
 package thredds.server.wcs.v1_0_0_1;
 
 import thredds.server.wcs.Request;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.time.CalendarDateRange;
 
 public class GetCoverageBuilder extends WcsRequestBuilder {
   private org.slf4j.Logger logger =
           org.slf4j.LoggerFactory.getLogger(GetCoverageBuilder.class);
 
-  GetCoverageBuilder(String versionString, Request.Operation operation, CoverageDataset dataset, String datasetPath) {
+  GetCoverageBuilder(String versionString, Request.Operation operation, CoverageCollection dataset, String datasetPath) {
     super(versionString, operation, dataset, datasetPath);
   }
 

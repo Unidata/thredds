@@ -144,14 +144,14 @@ public class TestCFPointDatasets {
   public static List<Object[]> getSectionDatasets() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{CFpointObs_topdir + "sectionSingle.ncml", FeatureType.SECTION, 50});
-    result.add(new Object[]{CFpointObs_topdir + "sectionMultidim.ncml", FeatureType.SECTION, 100});
-    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimJoinZ.ncml", FeatureType.SECTION, 100});
-    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimMissingId.ncml", FeatureType.SECTION, 100});
-    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimMissingIdString.ncml", FeatureType.SECTION, 100});
-    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimMissingTime.ncml", FeatureType.SECTION, 28});
-    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimMissingAlt.ncml", FeatureType.SECTION, 18});
-    result.add(new Object[]{CFpointObs_topdir + "sectionRagged.ncml", FeatureType.SECTION, 12});
+    result.add(new Object[]{CFpointObs_topdir + "sectionSingle.ncml", FeatureType.TRAJECTORY_PROFILE, 50});
+    result.add(new Object[]{CFpointObs_topdir + "sectionMultidim.ncml", FeatureType.TRAJECTORY_PROFILE, 100});
+    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimJoinZ.ncml", FeatureType.TRAJECTORY_PROFILE, 100});
+    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimMissingId.ncml", FeatureType.TRAJECTORY_PROFILE, 100});
+    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimMissingIdString.ncml", FeatureType.TRAJECTORY_PROFILE, 100});
+    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimMissingTime.ncml", FeatureType.TRAJECTORY_PROFILE, 28});
+    result.add(new Object[]{CFpointObs_topdir + "sectionMultidimMissingAlt.ncml", FeatureType.TRAJECTORY_PROFILE, 18});
+    result.add(new Object[]{CFpointObs_topdir + "sectionRagged.ncml", FeatureType.TRAJECTORY_PROFILE, 12});
     return result;
   }
 

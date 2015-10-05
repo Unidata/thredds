@@ -34,17 +34,14 @@
 package ucar.nc2.grib.collection;
 
 import ucar.coord.CoordinateTimeAbstract;
-import ucar.nc2.AttributeContainer;
+import ucar.nc2.*;
 import ucar.nc2.constants.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
@@ -114,7 +111,7 @@ public class Grib1Collection extends GribCollectionImmutable {
   }
 
   @Override
-  public CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
+  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
       //Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
@@ -144,11 +141,12 @@ public class Grib1Collection extends GribCollectionImmutable {
     }
   }
 
-  public void addGlobalAttributes(List<Attribute> result) {
+  @Override
+  public void addGlobalAttributes(AttributeContainer result) {
     String val = cust.getGeneratingProcessName(getGenProcessId());
     if (val != null)
-      result.add(new Attribute(GribUtils.GEN_PROCESS, val));
-    result.add(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB1.getDescription()));
+      result.addAttribute(new Attribute(GribUtils.GEN_PROCESS, val));
+    result.addAttribute(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB1.getDescription()));
   }
 
   @Override

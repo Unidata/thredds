@@ -59,7 +59,7 @@ import java.util.List;
 public class CoverageAsPoint {
   private static final boolean debug = true;
 
-  private CoverageDataset gcd;
+  private CoverageCollection gcd;
   private List<VarData> varData;
   private SubsetParams subset;
   private LatLonPointImpl latLonPoint;
@@ -81,7 +81,7 @@ public class CoverageAsPoint {
     }
   }
 
-  public CoverageAsPoint(CoverageDataset gcd, List<String> varNames, SubsetParams subset) throws IOException {
+  public CoverageAsPoint(CoverageCollection gcd, List<String> varNames, SubsetParams subset) throws IOException {
     this.gcd = gcd;
     this.subset = subset;
 

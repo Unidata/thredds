@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
@@ -85,9 +86,9 @@ public class TestGribCoverageSubsetP {
   @Test
   public void testGridCoverageDatasetFmrc() throws IOException, InvalidRangeException {
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       if (gcs == null) return;
       System.out.printf("testGridCoverageDatasetFmrc %s%n", endpoint);
 
@@ -102,9 +103,9 @@ public class TestGribCoverageSubsetP {
   public void testGridCoverageDatasetBest() throws IOException, InvalidRangeException {
     System.out.printf("testGridCoverageDatasetBest %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -117,9 +118,9 @@ public class TestGribCoverageSubsetP {
   @Test
   public void testFmrcStride() throws IOException, InvalidRangeException {
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Fmrc);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.FMRC);
       if (gcs == null) return; // not all datasets have an Fmrc
       System.out.printf("testFmrcStride %s%n", endpoint);
 
@@ -152,9 +153,9 @@ public class TestGribCoverageSubsetP {
   public void testBestStride() throws IOException, InvalidRangeException {
     System.out.printf("testBestStride %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);

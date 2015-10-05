@@ -86,9 +86,9 @@ public class TestCfDocDsgExamples {
     public static List<Object[]> getSectionDatasets() {
         List<Object[]> result = new ArrayList<>();
 
-        result.add(new Object[] { "H.6.1.1.ncml", FeatureType.SECTION, 120 });
-        result.add(new Object[] { "H.6.2.1.ncml", FeatureType.SECTION, 20  });
-        result.add(new Object[] { "H.6.3.1.ncml", FeatureType.SECTION, 145 });
+        result.add(new Object[] { "H.6.1.1.ncml", FeatureType.TRAJECTORY_PROFILE, 120 });
+        result.add(new Object[] { "H.6.2.1.ncml", FeatureType.TRAJECTORY_PROFILE, 20  });
+        result.add(new Object[] { "H.6.3.1.ncml", FeatureType.TRAJECTORY_PROFILE, 145 });
 
         return result;
     }

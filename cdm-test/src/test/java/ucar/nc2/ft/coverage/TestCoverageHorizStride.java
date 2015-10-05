@@ -8,10 +8,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.HorizCoordSys;
@@ -33,9 +34,9 @@ public class TestCoverageHorizStride {
     String covName = "Ozone_Mixing_Ratio_isobaric";
     System.out.printf("Test Dataset %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
@@ -67,12 +68,12 @@ public class TestCoverageHorizStride {
     String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";  // GRIB Curvilinear
     System.out.printf("open %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset gds = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(0);
       Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals(CoverageCoordSys.Type.Curvilinear, gds.getCoverageType());
+      Assert.assertEquals(FeatureType.CURVILINEAR, gds.getCoverageType());
 
       HorizCoordSys hcs = gds.getHorizCoordSys();
       Assert.assertNotNull(endpoint, hcs);

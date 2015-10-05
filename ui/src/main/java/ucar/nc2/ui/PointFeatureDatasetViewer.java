@@ -461,7 +461,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       setTrajectoryCollection(pfc);
       changingPane.add(stnTable, BorderLayout.CENTER);
 
-    } else if (ftype == FeatureType.SECTION) {
+    } else if (ftype == FeatureType.TRAJECTORY_PROFILE) {
       TrajectoryProfileFeatureCollection pfc = (TrajectoryProfileFeatureCollection) fcb.fc;
       setSectionCollection(pfc);
 
@@ -633,7 +633,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         sb.setNobs(npts);
       }
 
-    } else if (selectedType == FeatureType.SECTION) {
+    } else if (selectedType == FeatureType.TRAJECTORY_PROFILE) {
       SectionFeatureBean sectionBean = (SectionFeatureBean) sb;
       setSection(sectionBean);
 

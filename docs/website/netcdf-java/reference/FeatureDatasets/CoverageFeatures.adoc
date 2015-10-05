@@ -1,6 +1,86 @@
-= Grid Coverage Datasets
+= Coverage Datasets
 :linkcss:
 :stylesheet: ../../cdm.css
+
+== Overview
+
+*_Coverage Datasets_* are collections of Coverage Features such as *Grid, Fmrc,* and *Swath*.
+*FeatureDatasetCoverage* are containers for *CoverageCollections*:
+
+[source,java]
+----
+public class ucar.nc2.ft.FeatureDatasetCoverage extends ucar.nc2.ft.FeatureDataset, Closeable {
+  public List<CoverageCollection> getCoverageCollections();
+  public CoverageCollection findCoverageDataset( CoverageCoordSys.Type type);
+  public ucar.nc2.constants.FeatureType getFeatureType();
+}
+----
+
+*FeatureDatasetCoverage* extends *FeatureDataset*, and contains _discovery metadata_ for search and discovery.
+A *CoverageCollection* can only have a single *HorizCoordSys, Calendar*, and *CoverageCoordSys.Type*.
+A single endpoint (eg GRIB collection) often has more than one HorizCoordSys or Type (eg Best and TwoD), and so has multiple collections.
+When there are multiple types, _getFeatureType()_ returns the generic *FeatureType.COVERAGE*. Otherwise it will return the specific type.
+
+. *Grid*: all coordinates are one dimensional, aka _seperable_.
+. *Fmrc*: Both a _runtime_ and _time_ coordinate exist. The time coordinate may be 2D, or it may be a 1D _time offset_ coordinate.
+. *Swath*: isLatLon & x,y 2D & t exists but not independent
+. *Curvilinear:* isLatLon & x,y 2D & t independent if it exists
+
+A Coverage Collection contains coverages, coordinate systems, coordinate axes, and coordinate transforms.
+All of the coverages in a collections are on the same horizontal grid, and have the same datetime Calendar.
+
+[source,java]
+----
+public class CoverageCollection implements Closeable {
+  public String getName();
+  public CoverageCoordSys.Type getCoverageType();
+
+  public List<Attribute> getGlobalAttributes();
+  public String findAttValueIgnoreCase(String attName, String defaultValue);
+  public Attribute findAttribute(String attName);
+  public Attribute findAttributeIgnoreCase(String attName);
+
+  public LatLonRect getBoundingBox() ;
+  public ProjectionRect getProjBoundingBox();
+  public CalendarDateRange getCalendarDateRange();
+  public ucar.nc2.time.Calendar getCalendar();
+
+  public List<CoordSysSet> getCoverageSets();
+  public List<CoverageCoordSys> getCoordSys();
+  public List<CoverageTransform> getCoordTransforms();
+  public List<CoverageCoordAxis> getCoordAxes();
+  public CoverageCoordSys findCoordSys(String name);
+  public CoverageCoordAxis findCoordAxis(String name);
+  public CoverageTransform findCoordTransform(String name);
+  public HorizCoordSys getHorizCoordSys();
+
+  public Iterable<Coverage> getCoverages();
+  public int getCoverageCount();
+  public Coverage findCoverageByAttribute(String attName, String attValue);
+
+  public void close()
+}
+----
+
+=== CoordSysSet
+
+A *CoordSysSet* simple groups all of the *Coverages* that belong to the same *CoverageCoordSys*:
+
+[source,java]
+----
+public class CoordSysSet {
+  public CoverageCoordSys getCoordSys();
+  public List<Coverage> getCoverages();
+}
+----
+
+=== CoverageCoordSys
+
+=== CoverageCoordAxis
+
+=== CoverageTransform
+
+
 
 Redo Grid Dataset in coordinate space. *package ucar.nc2.ft2.coverage*
 

@@ -49,13 +49,13 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -105,7 +105,7 @@ public class DtCoverageDataset implements Closeable {
   ////////////////////////////////////////
 
   private NetcdfDataset ncd;
-  private CoverageCoordSys.Type coverageType;
+  private FeatureType coverageType;
 
   private ArrayList<DtCoverage> grids = new ArrayList<>();
   private Map<String, Gridset> gridsetHash = new HashMap<>();
@@ -207,7 +207,7 @@ public class DtCoverageDataset implements Closeable {
     }
   }
 
-  public CoverageCoordSys.Type getCoverageType() {
+  public FeatureType getCoverageType() {
     return coverageType;
   }
 

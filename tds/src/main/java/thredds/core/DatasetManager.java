@@ -54,8 +54,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ncml.NcMLReader;
@@ -311,7 +311,7 @@ public class DatasetManager implements InitializingBean {
   }
 
 
-  public CoverageDataset openCoverageDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+  public CoverageCollection openCoverageDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
@@ -319,7 +319,7 @@ public class DatasetManager implements InitializingBean {
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
 
       InvDatasetFeatureCollection fc = featureCollectionCache.get(featCollection);
-      CoverageDataset gds = fc.getGridCoverage(match.remaining);
+      CoverageCollection gds = fc.getGridCoverage(match.remaining);
       if (gds == null) throw new FileNotFoundException(reqPath);
       return gds;
     }
@@ -334,9 +334,9 @@ public class DatasetManager implements InitializingBean {
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
     if (gds.getGrids().size() > 0) {
-      CoverageDatasetCollection cc = DtCoverageAdapter.factory(gds);
-      if (cc == null || cc.getCoverageDatasets().size() != 1) throw new FileNotFoundException("Not a Grid Dataset " + gds.getName());
-      return cc.getCoverageDatasets().get(0);
+      FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds);
+      if (cc == null || cc.getCoverageCollections().size() != 1) throw new FileNotFoundException("Not a Grid Dataset " + gds.getName());
+      return cc.getCoverageCollections().get(0);
     }
 
     gds.close();

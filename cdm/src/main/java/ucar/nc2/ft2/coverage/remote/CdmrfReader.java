@@ -40,6 +40,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
@@ -89,7 +90,7 @@ public class CdmrfReader {
     }
   }
 
-  public CoverageDataset open() throws IOException {
+  public CoverageCollection open() throws IOException {
     long start = System.currentTimeMillis();
 
     HTTPSession httpClient = HTTPFactory.newSession(endpoint);
@@ -122,7 +123,7 @@ public class CdmrfReader {
       NcStream.readFully(is, m);
 
       CdmrFeatureProto.CoverageDataset proto = CdmrFeatureProto.CoverageDataset.parseFrom(m);
-      CoverageDataset gridDataset =  decodeHeader(proto, reader);
+      CoverageCollection gridDataset =  decodeHeader(proto, reader);
 
       long took = System.currentTimeMillis() - start;
       if (showRequest) System.out.printf(" took %d msecs %n", took);
@@ -157,9 +158,9 @@ public class CdmrfReader {
       repeated CoordAxis coordAxes = 8;
       repeated Coverage grids = 9;
     } */
-  CoverageDataset decodeHeader(CdmrFeatureProto.CoverageDataset proto, CdmrCoverageReader reader) {
+  CoverageCollection decodeHeader(CdmrFeatureProto.CoverageDataset proto, CdmrCoverageReader reader) {
     String name = endpoint;
-    CoverageCoordSys.Type csysType = proto.hasCoverageType() ? convertCoverageType(proto.getCoverageType()) : null;
+    FeatureType csysType = proto.hasCoverageType() ? convertCoverageType(proto.getCoverageType()) : null;
     LatLonRect latLonBoundingBox = decodeLatLonRectangle(proto.getLatlonRect());
     ProjectionRect projBoundingBox = decodeProjRectangle(proto.getProjRect());
     CalendarDateRange calendarDateRange = proto.hasDateRange() ? decodeDateRange(proto.getDateRange()) : null;
@@ -188,7 +189,7 @@ public class CdmrfReader {
     //                         CalendarDateRange calendarDateRange, List<CoverageCoordSys > coordSys, List< CoverageCoordTransform > coordTransforms,
     //                         List< CoverageCoordAxis > coordAxes, List< Coverage > coverages) {
 
-    return new CoverageDataset(name, csysType, gatts, latLonBoundingBox, projBoundingBox, calendarDateRange, coordSys, transforms, axes, coverages, reader);
+    return new CoverageCollection(name, csysType, gatts, latLonBoundingBox, projBoundingBox, calendarDateRange, coordSys, transforms, axes, coverages, reader);
   }
 
   /* message Rectangle {
@@ -403,18 +404,18 @@ message Coverage {
 
   //   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
 
-  static public CoverageCoordSys.Type convertCoverageType(CdmrFeatureProto.CoverageType type) {
+  static public FeatureType convertCoverageType(CdmrFeatureProto.CoverageType type) {
     switch (type) {
       case General:
-        return CoverageCoordSys.Type.General;
+        return FeatureType.COVERAGE;
       case Curvilinear:
-        return CoverageCoordSys.Type.Curvilinear;
+        return FeatureType.CURVILINEAR;
       case Grid:
-        return CoverageCoordSys.Type.Grid;
+        return FeatureType.GRID;
       case Swath:
-        return CoverageCoordSys.Type.Swath;
+        return FeatureType.SWATH;
       case Fmrc:
-        return CoverageCoordSys.Type.Fmrc;
+        return FeatureType.FMRC;
     }
     throw new IllegalStateException("illegal CoverageType " + type);
   }

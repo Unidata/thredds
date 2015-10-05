@@ -4822,7 +4822,7 @@ public class ToolsUI extends JPanel {
     JSplitPane split;
     IndependentWindow viewerWindow;
 
-    CoverageDatasetCollection covDatasetCollection = null;
+    FeatureDatasetCoverage covDatasetCollection = null;
 
     CoveragePanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);
@@ -4832,7 +4832,7 @@ public class ToolsUI extends JPanel {
       AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
       viewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          CoverageDataset gridDataset = dsTable.getCoverageDataset();
+          CoverageCollection gridDataset = dsTable.getCoverageDataset();
           if (gridDataset == null) return;
           if (display == null) makeDisplay();
           display.setDataset(dsTable);

@@ -3,6 +3,7 @@ package ucar.nc2.ui.coverage2;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -27,13 +28,13 @@ import java.util.List;
  */
 public class CoverageTable extends JPanel {
   private PreferencesExt prefs;
-  private CoverageDatasetCollection coverageCollection;
+  private FeatureDatasetCoverage coverageCollection;
 
   private BeanTable dsTable, covTable, csysTable, axisTable;
   private JSplitPane split, split2, split3;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
-  private CoverageDataset currDataset;
+  private CoverageCollection currDataset;
 
   public CoverageTable(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
@@ -281,20 +282,20 @@ public class CoverageTable extends JPanel {
 
   public void showInfo(Formatter result) {
     if (coverageCollection == null) return;
-    coverageCollection.showInfo(result);
+    coverageCollection.getDetailInfo(result);
   }
 
-  public void setCollection(CoverageDatasetCollection gds) {
+  public void setCollection(FeatureDatasetCoverage gds) {
     this.coverageCollection = gds;
     clear();
 
     List<DatasetBean> dsList = new ArrayList<>();
-    for (CoverageDataset ds : coverageCollection.getCoverageDatasets())
+    for (CoverageCollection ds : coverageCollection.getCoverageCollections())
       dsList.add(new DatasetBean(ds));
     dsTable.setBeans(dsList);
   }
 
-  public void setDataset(CoverageDataset coverageDataset) {
+  public void setDataset(CoverageCollection coverageDataset) {
 
     List<CoverageBean> beanList = new ArrayList<>();
     for (Coverage g : coverageDataset.getCoverages())
@@ -318,7 +319,7 @@ public class CoverageTable extends JPanel {
     return false;
   }
 
-  public CoverageDataset getCoverageDataset() {
+  public CoverageCollection getCoverageDataset() {
     return currDataset;
   }
 
@@ -337,12 +338,12 @@ public class CoverageTable extends JPanel {
   }
 
   public class DatasetBean {
-    CoverageDataset cds;
+    CoverageCollection cds;
 
     public DatasetBean() {
     }
 
-    public DatasetBean(CoverageDataset cds) {
+    public DatasetBean(CoverageCollection cds) {
       this.cds = cds;
     }
 
@@ -444,7 +445,7 @@ public class CoverageTable extends JPanel {
     public CoordSysBean() {
     }
 
-    public CoordSysBean(CoverageDataset coverageDataset, CoverageCoordSys gcs) {
+    public CoordSysBean(CoverageCollection coverageDataset, CoverageCoordSys gcs) {
       this.gcs = gcs;
 
       Formatter buff = new Formatter();
@@ -473,7 +474,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getType() {
-      CoverageCoordSys.Type type = gcs.getType();
+      FeatureType type = gcs.getCoverageType();
       return (type == null) ? "" : type.toString();
     }
 

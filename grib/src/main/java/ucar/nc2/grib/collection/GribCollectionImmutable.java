@@ -41,11 +41,12 @@ import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.CoordsSet;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -230,24 +231,24 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
    */
 
-  public List<Attribute> getGlobalAttributes() {
-    List<Attribute> result = new ArrayList<>();
+  public AttributeContainerHelper getGlobalAttributes() {
+    AttributeContainerHelper result = new AttributeContainerHelper(name);
     String val = CommonCodeTable.getCenterName(getCenter(), 2);
-    result.add(new Attribute(GribUtils.CENTER, val == null ? Integer.toString(getCenter()) : val));
+    result.addAttribute(new Attribute(GribUtils.CENTER, val == null ? Integer.toString(getCenter()) : val));
     val = cust.getSubCenterName(getCenter(), getSubcenter());
-    result.add(new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(getSubcenter()) : val));
-    result.add(new Attribute(GribUtils.TABLE_VERSION, getMaster() + "," + getLocal())); // LOOK
+    result.addAttribute(new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(getSubcenter()) : val));
+    result.addAttribute(new Attribute(GribUtils.TABLE_VERSION, getMaster() + "," + getLocal())); // LOOK
 
     addGlobalAttributes(result);  // add subclass atts
 
-    result.add(new Attribute(CDM.CONVENTIONS, "CF-1.6"));
-    result.add(new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
-    result.add(new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
+    result.addAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.6"));
+    result.addAttribute(new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
+    result.addAttribute(new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
 
     return result;
   }
 
-  public abstract void addGlobalAttributes(List<Attribute> result);
+  public abstract void addGlobalAttributes(AttributeContainer result);
   public abstract void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex);
   protected abstract String makeVariableId(VariableIndex v);
 
@@ -1080,7 +1081,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
                   FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
-  public abstract CoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename,
+  public abstract CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
                   FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
 

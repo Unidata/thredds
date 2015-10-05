@@ -56,20 +56,28 @@ A featureType is specified with one of the following enum values:
 [source,java]
 ----
 public enum ucar.nc2.constants.FeatureType {
-  ANY, // no specific type
+  ANY, // No specific type
 
-  GRID,
-  RADIAL,
-  SWATH,
-  IMAGE,
+  COVERAGE,   // any of the coverage types: GRID, FMRC, SWATH
+  GRID,       // seperable coordinates
+  FMRC,       // two time dimensions, runtime and forecast time
+  SWATH,      // 2D latlon, dependent time, polar orbiting satellites
+  CURVILINEAR,// 2D latlon, independent time
 
-  ANY_POINT, // any of the following
-  POINT,
-  PROFILE,
-  SECTION,
-  STATION,
-  STATION_PROFILE,
-  TRAJECTORY;
+  ANY_POINT, // Any of the point types
+  POINT, // unconnected points
+  PROFILE, // fixed x,y with data along z
+  STATION, // timeseries at named location
+  STATION_PROFILE, // timeseries of profiles
+  TRAJECTORY, // connected points in space and time
+  TRAJECTORY_PROFILE, //  trajectory of profiles
+
+  RADIAL, // polar coordinates
+  STATION_RADIAL, // time series of radial data
+
+  // experimental
+  IMAGE, // pixels, may not be geolocatable
+  UGRID; // unstructured grids
 }
 ----
 
@@ -83,7 +91,8 @@ FeatureDataset FeatureDatasetFactoryManager.open( FeatureType type, String locat
     ucar.nc2.util.CancelTask task, java.util.Formatter errlog);
 ----
 
-where _location_ is a URL (eg OPeNDAP or cdmremote) or a local file pathname (see link:../DatasetUrls.html#FeatureDataset[here] for details).
+where _location_ is a remote file represented as a URL (eg OPeNDAP or cdmremote) or a local file pathname
+(see link:../DatasetUrls.adoc#FeatureDataset[here] for details).
 
 or if you already have an opened NetcdfDataset:
 
@@ -113,19 +122,19 @@ To continue processing the *FeatureDataset*, you must cast it to its subclass, b
 
       FeatureType ftype = fdataset.getFeatureType();
 
-      if (ftype == FeatureType.GRID) {
-        GridDataset griddedDataset = (GridDataset) fdataset;
-        ...
-
-      } else if (ftype == FeatureType.RADIAL) {
-        RadialDatasetSweep radialDataset = (RadialDatasetSweep) fdataset;
+      if (ftype.isCoverageFeatureType()) {
+        FeatureDatasetCoverage covDataset = (FeatureDatasetCoverage) fdataset;
         ...
 
       } else if (ftype.isPointFeatureType()) {
         FeatureDatasetPoint pointDataset = (FeatureDatasetPoint) fdataset;
         ...
+
+      } else if (ftype == FeatureType.RADIAL) {
+        RadialDatasetSweep radialDataset = (RadialDatasetSweep) fdataset;
+        ...
       }
-    } 
+    }
 ----
 
 NOTE: The above code fragment uses the Java 7
@@ -174,14 +183,13 @@ ucar.nc2.ft.FeatureDataset getFeatureDataset( Dataset invDataset, CancelTask tas
 }
 ----
 
-NOTE: The catalog API is changed in version 5.0.
+NOTE: The catalog API is significantly changed in version 5.0.
 
 == Resources
 
 * link:PointFeatures.adoc[Point Dataset]: Discrete Sampling Geometry (DSG) datasets
-* link:../../tutorial/GridDatatype.html[Grid Dataset]: data is in a multidimensional grid with seperable coordinates, eg model output, geosynchronous
-satellite data.
-* link:../../tutorial/RadialDatatype.html[Radial Dataset]: uses polar coordinates (elevation, azimuth, distance), for example scanning radars,
+* link:CoverageFeatures.adoc[Coverage Dataset]: Data in a multidimensional grid, eg model output, satellite data.
+* link:../../tutorial/RadialDatatype.adoc[Radial Dataset]: uses polar coordinates (elevation, azimuth, distance), for example scanning radars,
 lidars. +
 
 '''''

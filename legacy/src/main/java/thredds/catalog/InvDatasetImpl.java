@@ -222,7 +222,7 @@ public class InvDatasetImpl extends InvDataset {
 
     if (authorityName == null)
       authorityName = tmd.getAuthority();
-    if (dataType == null || (dataType == FeatureType.ANY) || (dataType == FeatureType.NONE))
+    if (dataType == null || (dataType == FeatureType.ANY))
       dataType = tmd.getDataType();
     if (dataFormatType == null || dataFormatType == DataFormatType.NONE)
       dataFormatType = tmd.getDataFormatType();
@@ -1024,7 +1024,7 @@ public class InvDatasetImpl extends InvDataset {
     if ((ds.getDataSize() != 0.0) && !Double.isNaN(ds.getDataSize()))
       buff.append(" <li><em>Data size: </em>").append(Format.formatByteSize(ds.getDataSize())).append("</li>\n");
 
-    if ((ds.getDataType() != null) && (ds.getDataType() != FeatureType.ANY) && (ds.getDataType() != FeatureType.NONE))
+    if ((ds.getDataType() != null) && (ds.getDataType() != FeatureType.ANY))
       buff.append(" <li><em>Data type: </em>").append(StringUtil2.quoteHtmlContent(ds.getDataType().toString())).append("</li>\n");
 
     if ((ds.getCollectionType() != null) && (ds.getCollectionType() != CollectionType.NONE))

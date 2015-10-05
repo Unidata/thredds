@@ -34,7 +34,6 @@ package thredds.server.wcs.v1_0_0_1;
 
 import thredds.server.wcs.Request;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
@@ -59,7 +58,7 @@ public class WcsCoverage {
 
   // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
   private WcsDataset wcsDataset;
-  private CoverageDataset dataset;
+  private CoverageCollection dataset;
   private Coverage coverage;
   private CoverageCoordSys coordSys;
   private String nativeCRS;

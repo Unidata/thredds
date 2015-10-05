@@ -11,7 +11,7 @@ import ucar.nc2.ft2.coverage.*;
  * @since 7/21/2015
  */
 class DataState {
-  CoverageDataset coverageDataset;
+  CoverageCollection coverageDataset;
   Coverage grid;
   CoverageCoordSys geocs;
   CoverageCoordAxis1D zaxis;
@@ -20,7 +20,7 @@ class DataState {
   CoverageCoordAxis1D ensaxis;
   FmrcTimeAxis2D taxis2D;
 
-  public DataState(CoverageDataset coverageDataset, Coverage grid) {
+  public DataState(CoverageCollection coverageDataset, Coverage grid) {
     this.coverageDataset = coverageDataset;
     this.grid = grid;
     this.geocs = grid.getCoordSys();

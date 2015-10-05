@@ -176,7 +176,7 @@ public class CF {
           return CF.FeatureType.trajectory;
         case STATION_PROFILE:
           return CF.FeatureType.timeSeriesProfile;
-        case SECTION:
+        case TRAJECTORY_PROFILE:
           return CF.FeatureType.trajectoryProfile;
       }
       return null;
@@ -195,7 +195,7 @@ public class CF {
         case timeSeriesProfile:
           return ucar.nc2.constants.FeatureType.STATION_PROFILE;
         case trajectoryProfile:
-          return ucar.nc2.constants.FeatureType.SECTION;
+          return ucar.nc2.constants.FeatureType.TRAJECTORY_PROFILE;
       }
       return null;
     }

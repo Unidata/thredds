@@ -194,7 +194,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
     }
 
-    for (Attribute att : gribCollection.getGlobalAttributes())
+    for (Attribute att : gribCollection.getGlobalAttributes().getAttributes())
       ncfile.addAttribute(null, att);
   }
 

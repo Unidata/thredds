@@ -62,10 +62,7 @@ import ucar.ma2.RangeIterator;
 import ucar.ma2.SectionIterable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.CF;
-import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.*;
 import ucar.nc2.ft2.coverage.CoordAxisReader;
 import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.ft2.coverage.Coverage;
@@ -73,8 +70,8 @@ import ucar.nc2.ft2.coverage.CoverageCoordAxis;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.ft2.coverage.CoverageCoordAxisBuilder;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageReader;
 import ucar.nc2.ft2.coverage.CoverageTransform;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
@@ -98,7 +95,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 
 /**
- * Create a CoverageDataset from a GribCollection file
+ * Create a FeatureDatasetCoverage from a GribCollection file
  *
  * @author John
  * @since 8/1/2015
@@ -108,7 +105,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   static private final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
   static private final boolean show = false;
 
-  static public CoverageDatasetCollection open(String endpoint) throws IOException {
+  static public FeatureDatasetCoverage open(String endpoint) throws IOException {
     GribCollectionImmutable gc;
 
     // try to fail fast
@@ -133,14 +130,14 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       return null;
     }
 
-    List<CoverageDataset> datasets = new ArrayList<>();
+    List<CoverageCollection> datasets = new ArrayList<>();
     for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
       for (GribCollectionImmutable.GroupGC group : ds.getGroups()) {
         GribCoverageDataset gribCov = new GribCoverageDataset(gc, ds, group);
         datasets.add(gribCov.makeCoverageDataset());
       }
     }
-    return new CoverageDatasetCollection(gc, datasets);
+    return new FeatureDatasetCoverage(endpoint, gc.getGlobalAttributes(), gc, datasets);
   }
 
   //////////////////////////////////////////////////////////////////
@@ -148,7 +145,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   private final GribCollectionImmutable gribCollection;
   private final GribCollectionImmutable.Dataset ds;
   private final GribCollectionImmutable.GroupGC group;
-  private final CoverageCoordSys.Type coverageType;
+  private final FeatureType coverageType;
   private final boolean isGrib1, isLatLon, isCurvilinearOrthogonal;
 
   public GribCoverageDataset(GribCollectionImmutable gribCollection, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) {
@@ -162,19 +159,19 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     this.isCurvilinearOrthogonal = !isGrib1 && Grib2Utils.isCurvilinearOrthogonal(hcs.template, gribCollection.getCenter());
 
     // figure out coverageType
-    CoverageCoordSys.Type ct;
+    FeatureType ct;
     switch (this.ds.getType()) {
       case MRC:
       case MRSTC:
       case TP:
       case TwoD:
-        ct = CoverageCoordSys.Type.Fmrc;
+        ct = FeatureType.FMRC;
         break;
       default:
-        ct = CoverageCoordSys.Type.Grid;
+        ct = FeatureType.GRID;
     }
     if (isCurvilinearOrthogonal)
-      ct = CoverageCoordSys.Type.Curvilinear;
+      ct = FeatureType.CURVILINEAR;
     this.coverageType = ct;
   }
 
@@ -198,13 +195,12 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       -- LOOK must generate aux runtime
    */
 
-  public CoverageDataset makeCoverageDataset() {
+  public CoverageCollection makeCoverageDataset() {
     String name = gribCollection.getName() + "#" + ds.getType();
     if (ds.getGroupsSize() > 1)
       name += "-" + group.getId();
 
-    AttributeContainerHelper gatts = new AttributeContainerHelper(name);
-    gatts.addAll(gribCollection.getGlobalAttributes());
+    AttributeContainerHelper gatts = gribCollection.getGlobalAttributes();
 
     // make horiz transform if needed
     List<CoverageTransform> transforms = new ArrayList<>();
@@ -258,7 +254,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     // all vars that are left are coverages
     List<Coverage> pgrids = vars.stream().map(this::makeCoverage).collect(Collectors.toList());
     GdsHorizCoordSys hcs = group.getGdsHorizCoordSys();
-    return new CoverageDataset(name, coverageType, gatts, hcs.getLatLonBB(), hcs.getProjectionBB(), getCalendarDateRange(),
+    return new CoverageCollection(name, coverageType, gatts, hcs.getLatLonBB(), hcs.getProjectionBB(), getCalendarDateRange(),
             coordSys, transforms, axes, pgrids, this);
   }
 

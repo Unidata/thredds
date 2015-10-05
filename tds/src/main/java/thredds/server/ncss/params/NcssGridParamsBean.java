@@ -33,8 +33,9 @@
 package thredds.server.ncss.params;
 
 import thredds.server.ncss.validation.NcssGridRequestConstraint;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
@@ -208,9 +209,9 @@ public class NcssGridParamsBean extends NcssParamsBean {
 
   ///////////////////////////////
 
-  public SubsetParams makeSubset(CoverageDataset gcd) {
+  public SubsetParams makeSubset(CoverageCollection gcd) {
     Calendar cal = gcd.getCalendar();
-    boolean isFmrc = gcd.getCoverageType() == CoverageCoordSys.Type.Fmrc;
+    boolean isFmrc = gcd.getCoverageType() == FeatureType.FMRC;
 
     SubsetParams subset = new SubsetParams();
 

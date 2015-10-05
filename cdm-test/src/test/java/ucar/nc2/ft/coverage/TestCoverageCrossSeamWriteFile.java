@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
@@ -36,9 +37,9 @@ public class TestCoverageCrossSeamWriteFile {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/GFS_Global_onedeg_20081229_1800.grib2.nc";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String covName = "Pressure_surface";
       Coverage coverage = gcs.findCoverage(covName);
@@ -62,9 +63,9 @@ public class TestCoverageCrossSeamWriteFile {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/GFS_Global_onedeg_20081229_1800.grib2.nc";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String covName = "Pressure_surface";
       Coverage coverage = gcs.findCoverage(covName);
@@ -89,9 +90,9 @@ public class TestCoverageCrossSeamWriteFile {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_0p5deg_20100913_0000.grib2";
     System.out.printf("open %s%n", filename);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(filename)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(CoverageCoordSys.Type.Grid);
+      CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "VAR_2-0-0_L1";
       Coverage coverage = gcs.findCoverageByAttribute(GribIosp.VARIABLE_ID_ATTNAME, gribId); // Land_cover_0__sea_1__land_surface
@@ -110,7 +111,7 @@ public class TestCoverageCrossSeamWriteFile {
     }
   }
 
-  public void writeTestFile(CoverageDataset coverageDataset, Coverage coverage, LatLonRect bbox, int[] expectedShape) throws IOException, InvalidRangeException {
+  public void writeTestFile(CoverageCollection coverageDataset, Coverage coverage, LatLonRect bbox, int[] expectedShape) throws IOException, InvalidRangeException {
     String covName = coverage.getName();
     File tempFile = TestDir.getTempFile();
     System.out.printf(" write %s to %s%n", covName, tempFile.getAbsolutePath());
@@ -125,10 +126,10 @@ public class TestCoverageCrossSeamWriteFile {
       throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
 
     // open the new file as a Coverage
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(tempFile.getPath())) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(tempFile.getPath())) {
       Assert.assertNotNull(tempFile.getPath(), cc);
-      Assert.assertEquals(1, cc.getCoverageDatasets().size());
-      CoverageDataset cd2 = cc.getCoverageDatasets().get(0);
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection cd2 = cc.getCoverageCollections().get(0);
 
       Coverage coverage2 = cd2.findCoverage(covName);
       Assert.assertNotNull(covName, coverage2);

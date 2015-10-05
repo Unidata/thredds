@@ -86,7 +86,7 @@ public class CoverageRenderer {
   }
 
   /* set the Grid */
-  public DataState setCoverage(CoverageDataset coverageDataset, Coverage grid) {
+  public DataState setCoverage(CoverageCollection coverageDataset, Coverage grid) {
     this.dataState = new DataState(coverageDataset, grid);
     this.lastGrid = null;
     isNewField = true;

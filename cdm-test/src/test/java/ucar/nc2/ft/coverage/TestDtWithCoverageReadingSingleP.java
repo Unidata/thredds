@@ -6,6 +6,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateAxis2D;
@@ -51,30 +52,30 @@ public class TestDtWithCoverageReadingSingleP {
 
 
     // Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-01T06:00:00Z (2) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Grid,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.GRID,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T00:00:00Z", null, "2015-03-01T06:00:00Z ", null, null});
 
     // Slice Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T12:00:00Z (2) ens=0.000000 (-1) time=2015-03-04T19:30:00Z (26) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
             "2015-03-01T12:00:00Z", null, "2015-03-04T19:30:00Z", null, null});
 
     // Slice Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T12:00:00Z (2) ens=0.000000 (-1) time=2015-03-03T15:00:00Z (17) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T12:00:00Z", null, "2015-03-03T15:00:00Z", null, null});
     //
     //    Slice runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
             "2015-03-01T00:00:00Z", null, "2015-03-06T19:30:00Z", null, 46});
 
     // Test Dataset Q:/cdmUnitTest/gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3  Grid TwoD/Total_ozone_entire_atmosphere_single_layer
     //  Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T00:00:00Z (0) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T06:00:00Z", null, "2015-03-01T12:00:00Z", null, null});
     // Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T03:00:00Z (1) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T12:00:00Z", null, "2015-03-01T12:00:00Z", null, null});
     //    Slice runtime=2015-03-01T18:00:00Z (3) ens=0.000000 (-1) time=2015-03-17T18:00:00Z (92) vert=30000.000000 (9)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T18:00:00Z", null, "2015-03-17T18:00:00Z", null, null});
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc",  null, "RH_lpdg", null, null, "2003-06-12T19:00:00Z", 150.0, null});  // NUWG - has CoordinateAlias
@@ -87,7 +88,7 @@ public class TestDtWithCoverageReadingSingleP {
   }
 
   String endpoint;
-  CoverageCoordSys.Type type;
+  FeatureType type;
   String covName, gridName;
   CalendarDate rt_val;
   Double ens_val;
@@ -95,12 +96,12 @@ public class TestDtWithCoverageReadingSingleP {
   Double vert_val;
   Integer time_idx;
 
-  public TestDtWithCoverageReadingSingleP(String endpoint, CoverageCoordSys.Type type, String covName, String rt_val, Double ens_val,
+  public TestDtWithCoverageReadingSingleP(String endpoint, FeatureType type, String covName, String rt_val, Double ens_val,
                                           String time_val, Double vert_val, Integer time_idx) {
     this.endpoint = endpoint;
     this.type = type;
     this.covName = covName;
-    this.gridName = (type == CoverageCoordSys.Type.Fmrc) ? "TwoD/"+ covName : "Best/"+covName;
+    this.gridName = (type == FeatureType.FMRC) ? "TwoD/"+ covName : "Best/"+covName;
     this.rt_val = rt_val == null ? null : CalendarDate.parseISOformat(null, rt_val);
     this.ens_val = ens_val;
     this.time_val = time_val == null ? null : CalendarDate.parseISOformat(null, time_val);
@@ -112,9 +113,9 @@ public class TestDtWithCoverageReadingSingleP {
   public void testReadGridCoverageSlice() throws IOException, InvalidRangeException {    // read single slice
     System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = (type == null) ? cc.getCoverageDatasets().get(0) : cc.findCoverageDataset(type);
+      CoverageCollection gcs = (type == null) ? cc.getCoverageCollections().get(0) : cc.findCoverageDataset(type);
       Assert.assertNotNull("gcs", gcs);
       Coverage cover = gcs.findCoverage(covName);
       Assert.assertNotNull(covName, cover);

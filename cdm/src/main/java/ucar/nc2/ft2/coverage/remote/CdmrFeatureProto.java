@@ -353,7 +353,7 @@ public final class CdmrFeatureProto {
    * Protobuf enum {@code CoverageType}
    *
    * <pre>
-   * same as CoverageCoordSys.Type
+   * same as FeatureType
    * </pre>
    */
   public enum CoverageType

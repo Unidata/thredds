@@ -12,6 +12,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -52,26 +53,26 @@ public class TestDtWithCoverageReadingP {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", CoverageCoordSys.Type.Grid});  // NUWG - has CoordinateAlias
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", CoverageCoordSys.Type.Grid});  // scalar runtime
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", CoverageCoordSys.Type.Grid});  // both x,y and lat,lon
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", CoverageCoordSys.Type.Grid}); // SRC
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", FeatureType.GRID});  // NUWG - has CoordinateAlias
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", FeatureType.GRID});  // scalar runtime
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID});  // both x,y and lat,lon
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", FeatureType.GRID}); // SRC
 
     // not GRID
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", CoverageCoordSys.Type.Fmrc});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", CoverageCoordSys.Type.Fmrc}); // ensemble, time-offset
-    // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", CoverageCoordSys.Type.Fmrc});              // scalar vert LOOK change to TimeOffset ??
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", CoverageCoordSys.Type.Curvilinear});  // x,y axis but no projection
-    // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", CoverageCoordSys.Type.Curvilinear});  // GRIB Curvilinear
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC}); // ensemble, time-offset
+    // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", FeatureType.FMRC});              // scalar vert LOOK change to TimeOffset ??
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR});  // x,y axis but no projection
+    // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", FeatureType.CURVILINEAR});  // GRIB Curvilinear
 
     return result;
   }
 
   String endpoint;
-  CoverageCoordSys.Type expectType;
+  FeatureType expectType;
   //int domain, range, ncoverages;
 
-  public TestDtWithCoverageReadingP(String endpoint, CoverageCoordSys.Type expectType) {
+  public TestDtWithCoverageReadingP(String endpoint, FeatureType expectType) {
     this.endpoint = endpoint;
     this.expectType = expectType;
   }
@@ -80,16 +81,16 @@ public class TestDtWithCoverageReadingP {
   public void testGridCoverageDataset() throws IOException {
     System.out.printf("Test Dataset %s%n", endpoint);
 
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(endpoint)) {
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(expectType);
+      CoverageCollection gcs = cc.findCoverageDataset(expectType);
       Assert.assertNotNull(expectType.toString(), gcs);
 
       // check DtCoverageCS
       try (GridDataset ds = GridDataset.open(endpoint)) {
         for (GridDatatype dt : ds.getGrids()) {
-          if (expectType == CoverageCoordSys.Type.Fmrc && !dt.getFullName().startsWith("TwoD")) continue;
-          if (expectType == CoverageCoordSys.Type.Grid && dt.getFullName().startsWith("TwoD")) continue;
+          if (expectType == FeatureType.FMRC && !dt.getFullName().startsWith("TwoD")) continue;
+          if (expectType == FeatureType.GRID && dt.getFullName().startsWith("TwoD")) continue;
 
           GridCoordSystem csys = dt.getCoordinateSystem();
           CoordinateAxis1DTime rtAxis = csys.getRunTimeAxis();

@@ -35,8 +35,6 @@ package ucar.nc2.ft;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetCollection;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
@@ -44,7 +42,6 @@ import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * FeatureDatasetFactory for Grids, using standard coord sys analysis and ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder
@@ -55,12 +52,12 @@ public class GridDatasetStandardFactory implements FeatureDatasetFactory {
 
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
     DtCoverageCSBuilder dtCoverage = DtCoverageCSBuilder.classify(ncd, errlog);
-    if (dtCoverage == null || dtCoverage.getType() == null) return null;
-    if (!match(wantFeatureType, dtCoverage.getType())) return null;
+    if (dtCoverage == null || dtCoverage.getCoverageType() == null) return null;
+    if (!match(wantFeatureType, dtCoverage.getCoverageType())) return null;
     return dtCoverage;
   }
 
-  private boolean match(FeatureType wantFeatureType, CoverageCoordSys.Type covType) {
+  private boolean match(FeatureType wantFeatureType, FeatureType covType) {
     if (wantFeatureType == null || wantFeatureType == FeatureType.ANY) return true;
     // LOOK ever have to return false?
     return true;
@@ -71,10 +68,7 @@ public class GridDatasetStandardFactory implements FeatureDatasetFactory {
     DtCoverageCSBuilder dtCoverage =  (DtCoverageCSBuilder) analysis;
 
     DtCoverageDataset dt = DtCoverageDataset.open(ncd);
-    CoverageDatasetCollection covColl = DtCoverageAdapter.factory(dt);
-    List<CoverageDataset> covDatasets = covColl.getCoverageDatasets();
-    assert 1 == covDatasets.size(); // ??
-    return covDatasets.get(0);
+    return DtCoverageAdapter.factory(dt);
   }
 
   public FeatureType[] getFeatureTypes() {

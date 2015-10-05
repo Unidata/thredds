@@ -36,8 +36,8 @@ package ucar.nc2.ft2.coverage.adapter;
 import com.beust.jcommander.internal.Lists;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.RotatedPole;
@@ -81,7 +81,7 @@ public class DtCoverageCSBuilder {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
-  CoverageCoordSys.Type type;
+  FeatureType type;
 
   boolean isLatLon;
   CoordinateAxis xaxis, yaxis, timeAxis;
@@ -261,21 +261,21 @@ public class DtCoverageCSBuilder {
     this.orgProj = cs.getProjection();
   }
 
-  private CoverageCoordSys.Type classify () {
+  private FeatureType classify () {
 
     // now to classify
     boolean is2Dtime = (rtAxis != null) && (timeOffsetAxis != null || (timeAxis != null && timeAxis.getRank() == 2));
     if (is2Dtime) {
-      return CoverageCoordSys.Type.Fmrc;   // LOOK this would allow 2d horiz
+      return FeatureType.FMRC;   // LOOK this would allow 2d horiz
     }
 
     boolean is2Dhoriz = isLatLon && (xaxis.getRank() == 2) && (yaxis.getRank() == 2);
     if (is2Dhoriz) {
       Set<Dimension> xyDomain = CoordinateSystem.makeDomain(Lists.newArrayList(xaxis, yaxis));
       if (timeAxis != null && CoordinateSystem.isSubsetOf(timeAxis.getDimensionsAll(), xyDomain))
-        return CoverageCoordSys.Type.Swath;   // LOOK prob not exactly right
+        return FeatureType.SWATH;   // LOOK prob not exactly right
       else
-        return CoverageCoordSys.Type.Curvilinear;
+        return FeatureType.CURVILINEAR;
     }
 
     // what makes it a grid?
@@ -283,14 +283,14 @@ public class DtCoverageCSBuilder {
     Set<Dimension> indDimensions = CoordinateSystem.makeDomain(independentAxes);
     Set<Dimension> allDimensions = CoordinateSystem.makeDomain(allAxes);
     if (indDimensions.size() == allDimensions.size()) {
-      return CoverageCoordSys.Type.Grid;
+      return FeatureType.GRID;
     }
 
     // default
-    return CoverageCoordSys.Type.General;
+    return FeatureType.COVERAGE;
   }
 
-  public CoverageCoordSys.Type getType() {
+  public FeatureType getCoverageType() {
     return type;
   }
 
@@ -298,13 +298,13 @@ public class DtCoverageCSBuilder {
     if (type == null) return null;
 
     switch (type) {
-      case Grid:
+      case GRID:
         return new GridCS(this);
-      case Fmrc:
+      case FMRC:
         return new FmrcCS(this);
-      case Curvilinear:
+      case CURVILINEAR:
         return new CurvilinearCS(this);
-      case Swath:
+      case SWATH:
         return new SwathCS(this);
     }
     return new DtCoverageCS(this);

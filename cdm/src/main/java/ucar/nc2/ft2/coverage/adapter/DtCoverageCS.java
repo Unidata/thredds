@@ -36,6 +36,7 @@ package ucar.nc2.ft2.coverage.adapter;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.NCdumpW;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
@@ -292,7 +293,7 @@ public class DtCoverageCS {
     return name;
   }
 
-  public CoverageCoordSys.Type getCoverageType() {
+  public FeatureType getCoverageType() {
     return builder.type;
   }
 

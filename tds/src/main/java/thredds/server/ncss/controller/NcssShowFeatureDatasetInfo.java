@@ -35,8 +35,6 @@ package thredds.server.ncss.controller;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.xpath.XPath;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,7 +45,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
-import ucar.nc2.ft2.coverage.CoverageDataset;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.writer.CoverageDatasetCapabilities;
 
 import java.io.IOException;
@@ -96,7 +94,7 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  public ModelAndView showGridFormTh(CoverageDataset gcd, String datasetUrlPath, boolean wantXml) throws IOException {
+  public ModelAndView showGridFormTh(CoverageCollection gcd, String datasetUrlPath, boolean wantXml) throws IOException {
     if (wantXml) {
       CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
       Document doc = writer.makeDatasetDescription();
@@ -113,7 +111,7 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  public ModelAndView showGridForm(CoverageDataset gcd, String datasetUrlPath, boolean wantXml, boolean isPoint) throws IOException {
+  public ModelAndView showGridForm(CoverageCollection gcd, String datasetUrlPath, boolean wantXml, boolean isPoint) throws IOException {
     CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
 
     Document doc = writer.makeDatasetDescription();

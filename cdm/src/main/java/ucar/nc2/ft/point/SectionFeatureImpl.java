@@ -53,7 +53,7 @@ import java.util.Iterator;
 public abstract class SectionFeatureImpl extends PointFeatureCCImpl implements TrajectoryProfileFeature {
 
   protected SectionFeatureImpl(String name, CalendarDateUnit timeUnit, String altUnits) {
-    super(name, timeUnit, altUnits, FeatureType.SECTION);
+    super(name, timeUnit, altUnits, FeatureType.TRAJECTORY_PROFILE);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////

@@ -33,7 +33,6 @@
  */
 package ucar.nc2.ft2.coverage.adapter;
 
-import com.google.common.collect.Lists;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -56,7 +55,7 @@ import java.util.*;
  */
 public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
-  public static CoverageDatasetCollection factory(DtCoverageDataset proxy) {
+  public static FeatureDatasetCoverage factory(DtCoverageDataset proxy) {
     DtCoverageAdapter reader = new DtCoverageAdapter(proxy);
 
     AttributeContainerHelper atts = new AttributeContainerHelper(proxy.getName());
@@ -92,10 +91,10 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         }
     }
 
-    CoverageDataset cd = new CoverageDataset(proxy.getName(), proxy.getCoverageType(), atts,
+    CoverageCollection cd = new CoverageCollection(proxy.getName(), proxy.getCoverageType(), atts,
             proxy.getBoundingBox(), proxy.getProjBoundingBox(), proxy.getCalendarDateRange(),
             pcoordSys, transforms, axes, pgrids, reader);
-    return new CoverageDatasetCollection(reader, cd);
+    return new FeatureDatasetCoverage(reader.getLocation(), reader, cd);
   }
 
   private static Coverage makeCoverage(DtCoverage dt, DtCoverageAdapter reader) {
