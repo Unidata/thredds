@@ -45,7 +45,7 @@ COPY tomcat-files/bash_logout /usr/local/tomcat/.bash_logout
 #
 # Copy thredds.war
 #
-COPY thredds.war /usr/local/tomcat/webapps/thredds##04.06.03-SNAPSHOT.war
+COPY thredds.war /usr/local/tomcat/webapps/thredds##04.06.04-SNAPSHOT.war
 
 #
 # Change owner of tomcat directory to user and group tomcat
