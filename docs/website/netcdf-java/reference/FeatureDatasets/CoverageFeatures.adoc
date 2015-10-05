@@ -11,20 +11,20 @@
 ----
 public class ucar.nc2.ft.FeatureDatasetCoverage extends ucar.nc2.ft.FeatureDataset, Closeable {
   public List<CoverageCollection> getCoverageCollections();
-  public CoverageCollection findCoverageDataset( CoverageCoordSys.Type type);
+  public CoverageCollection findCoverageDataset( FeatureType type);
   public ucar.nc2.constants.FeatureType getFeatureType();
 }
 ----
 
 *FeatureDatasetCoverage* extends *FeatureDataset*, and contains _discovery metadata_ for search and discovery.
-A *CoverageCollection* can only have a single *HorizCoordSys, Calendar*, and *CoverageCoordSys.Type*.
+A *CoverageCollection* can only have a single *HorizCoordSys, Calendar*, and *FeatureType*.
 A single endpoint (eg GRIB collection) often has more than one HorizCoordSys or Type (eg Best and TwoD), and so has multiple collections.
 When there are multiple types, _getFeatureType()_ returns the generic *FeatureType.COVERAGE*. Otherwise it will return the specific type.
 
 . *Grid*: all coordinates are one dimensional, aka _seperable_.
 . *Fmrc*: Both a _runtime_ and _time_ coordinate exist. The time coordinate may be 2D, or it may be a 1D _time offset_ coordinate.
-. *Swath*: isLatLon & x,y 2D & t exists but not independent
-. *Curvilinear:* isLatLon & x,y 2D & t independent if it exists
+. *Swath*: has 2D lat/lon & time exists but not independent
+. *Curvilinear:* has 2D lat/lon & time independent if it exists
 
 A Coverage Collection contains coverages, coordinate systems, coordinate axes, and coordinate transforms.
 All of the coverages in a collections are on the same horizontal grid, and have the same datetime Calendar.
@@ -33,7 +33,7 @@ All of the coverages in a collections are on the same horizontal grid, and have 
 ----
 public class CoverageCollection implements Closeable {
   public String getName();
-  public CoverageCoordSys.Type getCoverageType();
+  public FeatureType getCoverageType();
 
   public List<Attribute> getGlobalAttributes();
   public String findAttValueIgnoreCase(String attName, String defaultValue);
@@ -81,154 +81,6 @@ public class CoordSysSet {
 === CoverageTransform
 
 
-
-Redo Grid Dataset in coordinate space. *package ucar.nc2.ft2.coverage*
-
-Coverage Types
-~~~~~~~~~~~~~~
-
-Definitions
-^^^^^^^^^^^
-
-_coordinate_ and _axis_ are the saame thing
-
-_coordinate system_ consists of a list of axes and transforms.
-
-_rank_ is the number of dimensions (abbreviated scalar, 1D, 2D etc) of an axis, grid, coordSys, etc
-
-_domain_ is the set of unique dimensions used by an axis, grid, coordSys, etc
-
-an axis is _independent_ if its a coordinate variable: 1D with dimension same as variable name
-
-* or may be a __coordinate variable alias__, if the name doesnt match, but otherwise acts as a coordinate variable
-
-For all Coverages:
-^^^^^^^^^^^^^^^^^^
-
-* must have lat/lon or have x,y and projection
-* x and y both have rank <= 2
-* x and y both have size > 1; eliminates some miscoded point data
-* x and y have at least 2 dimensions between them (eliminates point data)
-* A runtime axis must be scalar or one-dimensional
-* Time may be 0, 1 or 2 dimensional
-* If time is 2D and runtime exists, first time dimension must agree with runtime
-* other coordinates, dependent or independent (ie has another dimension) are ok.
-
-Subtypes:
-^^^^^^^^^
-
-* **Grid**: all dimensions have a 1D coordinate(?). rank(independent coords) == rank(coordsys)
-* **Fmrc**: rt exists and t is 2D
-* **Swath**: isLatLon & x,y 2D & t exists but not independent
-* *Curvilinear:* isLatLon & x,y 2D & t independent if it exists
-
-Unsolved problems
-^^^^^^^^^^^^^^^^^
-
-* time dependence of horizontal coordsys, eg moving grids.
-* problem z(x,y,z) +
- +
-
-*CdmrFeature Subsetting Parameters for Grid*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-[width="100%",cols="20%,20%,20%,20%,20%",options="header",]
-|=====================================================================================================================================================
-|Parameter Name |Required |Description / possible values |Constraints |default
-|grid (or var) |yes |Name of **grid**, separated by ',' (comma), or "all". string |Grid name must be in the dataset header. |
-
-|latitude, longitude |no |Point location. units of degrees_east, degrees_north. double |Must be within the dataset bounding box. |
-
-|north, south, east, west |no |Lat/lon bounding box, units of degrees_east, degrees_north. double |north > south,  if crossing 180 meridian, use east
-boundary > 180 |
-
-|minx, miny, maxx, maxy |no |Projection bounding box, in projection coordinate units. double |min < max |
-
-|horizStride |no |Take only every nth point (both x and y). integer |  |1
-
-|time |no |Time as a link:#W3Cdate[W3C date] or "present". The time slice closest to the requested time is returned. Or "all": all times are returned.
-|Must be a time within the dataset time range |_present_
-
-|time_start, time_end, time_duration |no |Used to specify a time range. Time as a link:#W3Cdate[W3C date] or "present".  Duration as
-a link:#W3Cduration[W3C time duration]. Two of these must be present. |The provided time range must intersect the dataset time range |
-
-|timeStride |no |Take only every nth time in the available series. integer |  |1
-
-|runtime |no |Restrict to specified runtime coordinate. link:#W3Cdate[W3C date] |Used only if Grid has a runtime coordinate. |All runtimes will be
-returned
-
-|offset |no |Restrict to specified time offset from runtime. double |Used only if Grid has a runtime coordinate. | 
-
-|_coordName_ |no a|
-coord value. closest
-
-coord range. min, max
-
-coord range with stride. min,max,stride
-
- |Used only if Grid has that coordinate. |All values will be returned
-|=====================================================================================================================================================
-
-*Variable subsetting:*
-++++++++++++++++++++++
-
-* You *must* specify a list of valid variable names, or "all".
-* variable names are case-sensitive and must be UTF8-escape encoded
-
-*Horizontal spatial subsetting:*
-++++++++++++++++++++++++++++++++
-
-* grids: you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire horizontal grid.
-* if you speccify a point location with the _latitude, longitude_ parameters, then its a _grid as point_ request.
-
-*Arbitrary coordinate subsetting (tentative):*
-++++++++++++++++++++++++++++++++++++++++++++++
-
-* point coordinate
-** single coord value: find closest.
-** coord range: min, max: all coordinates that intersect.
-** coord range with stride: min,max, integer stride, all coordinates that intersect.
-* interval coordinate
-** single coord value: find containing interval.
-** coord range: min, max: all intervals that intersect.
-** coord range with stride: min,max, integer stride, all intervals that intersect.
-
-*Temporal subsetting:*
-++++++++++++++++++++++
-
-* Time coordinate
-** You may specify a time range, or a time point (__time__). If both, only the time point is used. If neither, return the latest time.
-** A time range __(time_start, time_end, time_duration__) will request all times that intersect the range (__timeStride__ is used if present).
-** A time point will request the time that is closest to that time.
-** If you set __time__="all", then all times are returned (__timeStride__ is used if present). All other time parameters are ignored.
-** time duration: 1) udunit time unit string or 2) link:#W3Cduration[W3C time duration]
-** datetime: isoString or "present"
-** The dataset determines what Calendar is used, so you must use that calendar.
-* Runtime coordinate (tentative)
-** Restrict to specified runtime coordinate
-* Offset (tentative)
-** Restrict to specified offset reletive to runtime.
-
- 
-
-'''''
-
-GridCoverageDataset
-^^^^^^^^^^^^^^^^^^^
-
-* has a single calendar for the time coordinates (?)
-* all grids are subset by their independent axes
-
-GridCoordSys
-^^^^^^^^^^^^
-
-* has a single horiz coord system. maybe dataset has a single, seperable horiz coord system
-
- 
-
-GridCoordAxis
-^^^^^^^^^^^^^
-
 -----------------------------------------------------------------------------------------------------------------
   public enum DependenceType {
     independent,             // time(time)
@@ -247,11 +99,18 @@ stuff
     discontiguousInterval }  // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
- 
-^
+== Classification
+
+* must have lat/lon or have x,y and projection
+* x and y both have rank <= 2
+* x and y both have size > 1; eliminates some miscoded point data
+* x and y have at least 2 dimensions between them (eliminates point data)
+* A runtime axis must be scalar or one-dimensional
+* Time may be 0, 1 or 2 dimensional
+* If time is 2D and runtime exists, first time dimension must agree with runtime
+* other coordinates, dependent or independent (ie has another dimension) are ok.
 
  
-
 '''''
 
-image:../../nc.gif[image] This document is maintained by mailto:caron@unidata.ucar.edu[John Caron] and was last updated on March, 2013
+image:../../nc.gif[image] This document was last updated October 2015

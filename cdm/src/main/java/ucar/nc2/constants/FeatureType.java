@@ -70,28 +70,28 @@ maybe:
  */
 
 public enum FeatureType {
-  ANY, // No specific type
+  ANY,        // No specific type
 
-  COVERAGE,   // any of the coverage types: GRID, FMRC, SWATH
+  COVERAGE,   // any of the coverage types: GRID, FMRC, SWATH, CURVILINEAR
   GRID,       // seperable coordinates
   FMRC,       // two time dimensions, runtime and forecast time
   SWATH,      // 2D latlon, dependent time, polar orbiting satellites
   CURVILINEAR,// 2D latlon, independent time
 
-  ANY_POINT, // Any of the point types
-  POINT, // unconnected points
-  PROFILE, // fixed x,y with data along z
-  STATION, // timeseries at named location
+  ANY_POINT,  // Any of the point types
+  POINT,      // unconnected points
+  PROFILE,    // fixed x,y with data along z
+  STATION,    // timeseries at named location
   STATION_PROFILE, // timeseries of profiles
   TRAJECTORY, // connected points in space and time
   TRAJECTORY_PROFILE, //  trajectory of profiles
 
-  RADIAL, // polar coordinates
+  RADIAL,     // polar coordinates
   STATION_RADIAL, // time series of radial data
 
   // experimental
-  IMAGE, // pixels, may not be geolocatable
-  UGRID; // unstructured grids
+  IMAGE,    // pixels, may not be geolocatable
+  UGRID;    // unstructured grids
 
   /**
    * Find the FeatureType that matches this name.

@@ -1,6 +1,3 @@
-CF encoding
-===========
-
 = CF encoding of Point Observation Datasets
 
 === CDM table notation
@@ -278,19 +275,14 @@ various ways that the ragged arrays might be stored.
 
 SQL tables always have a variable length number of rows.
 
-====
-
-== Design Goals
+Design Goals
 
 * categorize point data into small number of types
-* accept current practices for storing point data (as much as possible
-without too much complication)
+* accept current practices for storing point data (as much as possible without too much complication)
 * allow storing multiple features in one file
 * allow variable length features
 * allow user to decide on how much data redundancy
 * enable generic software to read files
-
- 
 
 '''''
 
@@ -312,6 +304,4 @@ without too much complication)
 
 '''''
 
-image:../../nc.gif[image] This document is maintained by
-mailto:caron@unidata.ucar.edu[John Caron] and was last updated on Sep
-29, 2009
+image:../../nc.gif[image] This document was last updated on Sep 29, 2009

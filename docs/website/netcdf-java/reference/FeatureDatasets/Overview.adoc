@@ -56,28 +56,28 @@ A featureType is specified with one of the following enum values:
 [source,java]
 ----
 public enum ucar.nc2.constants.FeatureType {
-  ANY, // No specific type
+  ANY,        // No specific type
 
-  COVERAGE,   // any of the coverage types: GRID, FMRC, SWATH
+  COVERAGE,   // any of the coverage types: GRID, FMRC, SWATH, CURVILINEAR
   GRID,       // seperable coordinates
   FMRC,       // two time dimensions, runtime and forecast time
   SWATH,      // 2D latlon, dependent time, polar orbiting satellites
   CURVILINEAR,// 2D latlon, independent time
 
-  ANY_POINT, // Any of the point types
-  POINT, // unconnected points
-  PROFILE, // fixed x,y with data along z
-  STATION, // timeseries at named location
+  ANY_POINT,  // Any of the point types
+  POINT,      // unconnected points
+  PROFILE,    // fixed x,y with data along z
+  STATION,    // timeseries at named location
   STATION_PROFILE, // timeseries of profiles
   TRAJECTORY, // connected points in space and time
   TRAJECTORY_PROFILE, //  trajectory of profiles
 
-  RADIAL, // polar coordinates
+  RADIAL,     // polar coordinates
   STATION_RADIAL, // time series of radial data
 
   // experimental
-  IMAGE, // pixels, may not be geolocatable
-  UGRID; // unstructured grids
+  IMAGE,    // pixels, may not be geolocatable
+  UGRID;    // unstructured grids
 }
 ----
 
@@ -87,7 +87,7 @@ The general way to open a *FeatureDataset* from a file or remote file is by call
 
 [source,java]
 ----
-FeatureDataset FeatureDatasetFactoryManager.open( FeatureType type, String location,
+FeatureDataset FeatureDatasetFactoryManager.open( FeatureType want, String location,
     ucar.nc2.util.CancelTask task, java.util.Formatter errlog);
 ----
 
@@ -98,7 +98,7 @@ or if you already have an opened NetcdfDataset:
 
 [source,java]
 ----
-  FeatureDataset FeatureDatasetFactoryManager.wrap( FeatureType type, NetcdfDataset ncd, CancelTask task, Formatter errlog);
+  FeatureDataset FeatureDatasetFactoryManager.wrap( FeatureType want, NetcdfDataset ncd, CancelTask task, Formatter errlog);
 ----
 
 Specifying the FeatureType means that you only want a FeatureDataset of that FeatureType.
