@@ -1,11 +1,8 @@
-THREDDS Configuration Catalogs
-==============================
-
 = THREDDS Configuration Catalogs
 
 == TDS Content Directory
 
-==== Location of the TDS Configuration Directory
+=== Location of the TDS Configuration Directory
 
 If desired, the location can be set to a directory outside of the Tomcat
 install directory. See the link:../reference/DirectoryLocations.html[TDS
@@ -77,17 +74,17 @@ catalog:
     <!--service name="wms" serviceType="WMS" base="/thredds/wms/" /-->
     <!--service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/" /-->
   </service>
-  
+
   <service name="dap" base="" serviceType="compound">
     <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
     <service name="dap4" serviceType="DAP4" base="/thredds/dap4/" />
   </service>
-  
+
   <datasetRoot path="test" location="content/testdata/" />
-  
+
   <dataset name="Test Single Dataset" ID="testDataset"
       serviceName="dap"  urlPath="test/testData.nc" dataType="Grid"/>
-  
+
   <dataset name="Test Single Dataset 2" ID="testDataset2"
       serviceName="odap" urlPath="test/testData2.grib2" dataType="Grid"/>
 
@@ -97,13 +94,13 @@ catalog:
       <serviceName>all</serviceName>
       <dataType>Grid</dataType>
     </metadata>
-    
+
     <filter>
       <include wildcard="*eta_211.nc"/>
       <include wildcard="testgrid*.nc"/>
     </filter>
   </datasetScan>
-  
+
   <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
 </catalog>
 --------------------------------------------------------------------------------------------
@@ -126,7 +123,7 @@ The tree of configuration catalogs can be as deeply nested as desired.
 Additional root configuration catalogs can be defined in
 
 --------------------------------------------------
-<tds.content.root.path>/thredds/threddsConfig.xml 
+<tds.content.root.path>/thredds/threddsConfig.xml
 --------------------------------------------------
 
 file. For instance, to add a test catalog add the following line:
@@ -316,12 +313,11 @@ $ ./shutdown.sh
 $ ./startup.sh
 -----------------------
 5.  Test that the new `datasetScan` is working:
-1.  Bring the catalog up in a browser:
-`http://localhost:8080/thredds/catalog.html`
-2.  Click down to one of the NAM dataset pages.
-3.  Select the OPeNDAP link
+..  Bring the catalog up in a browser: `http://localhost:8080/thredds/catalog.html`
+..  Click down to one of the NAM dataset pages.
+..  Select the OPeNDAP link
 
-==== Not working?
+=== Not working?
 
 1.  Take a look at the catalogInit.log:
 +

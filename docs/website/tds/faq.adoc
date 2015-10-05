@@ -1,6 +1,3 @@
-TDS FAQ
-=======
-
 = image:unidataLogo.png[Unidata]THREDDS Data Server (TDS) FAQ
 
 '''''
@@ -114,15 +111,14 @@ A: Here is what we need from you in order to deal with hard problems:
 keep older versions running, so we need to deal with just the latest
 code.
 2.  Get a clean set of logs that capture the problem:
-1.  Stop the tomcat server.
-2.  Install the latest release if needed.
-3.  Remove all files from _\{tomcat}/logs_ and
+.. 1.  Stop the tomcat server.
+.. 2.  Install the latest release if needed.
+.. 3.  Remove all files from _\{tomcat}/logs_ and
 _\{tomcat}/content/thredds/logs_
-4.  Restart the server
-5.  Make the problem happen
-6.  Zip up everything in _\{tomcat}/logs_ and
-__\{tomcat}/content/thredds/logs__.
-7.  Send the logs and a detailed description of what you do to make the
+.. 4.  Restart the server
+.. 5.  Make the problem happen
+.. 6.  Zip up everything in _\{tomcat}/logs_ and __\{tomcat}/content/thredds/logs__.
+.. 7.  Send the logs and a detailed description of what you do to make the
 problem happen, and what the problem looks like. If it took a while to
 get the problem to happen, note what time it happened so that we can
 correlate with the logs.
@@ -134,16 +130,16 @@ changes.*
 down: +
 +
 ----------------------------------------------------
-java.net.BindException: Address already in use:8080 
+java.net.BindException: Address already in use:8080
 ----------------------------------------------------
 2.  make sure tomcat really gets stopped:
-1.  _ps -ef | grep java_ to find the process id
-2.  _kill <pid>_ or _kill -9 <pid>_
-3.  _ps -ef | grep java_ to verify that the process goes away.
+.. 1.  _ps -ef | grep java_ to find the process id
+.. 2.  _kill <pid>_ or _kill -9 <pid>_
+.. 3.  _ps -ef | grep java_ to verify that the process goes away.
 3.  Restart tomcat:
-1.  _sh ./startup.sh_
-2.  Check *catalina.out* that tomcat started correctly
-3.  _ps -ef | grep java_ to verify that theer is a new tomcat process.
+.. 1.  _sh ./startup.sh_
+.. 2.  Check *catalina.out* that tomcat started correctly
+.. 3.  _ps -ef | grep java_ to verify that theer is a new tomcat process.
 
 *Q: I’m building my own maven project and want to use your jar files.
 Where is the Unidata Repository?*
@@ -207,7 +203,7 @@ InvAccess.getUrlPath()
 
 '''''
 
-*Q: How do I eliminate the extra dataset when using a Catalog
+=== Q: How do I eliminate the extra dataset when using a Catalog
 Reference?*
 
 Make the name of the catalogRef the same as the ``top'' dataset in the
@@ -223,7 +219,7 @@ In the referencing catalog:
 In the referenced catalog:
 
 -----------------------------------------------------------------------------------------------------
-<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
  xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server - New Station Data"
  version="1.0.3">
 
@@ -236,7 +232,7 @@ In the referenced catalog:
 
 '''''
 
-*Q: How do I provide an external service, one that is not provided by
+=== Q: How do I provide an external service, one that is not provided by
 the TDS?*
 
 Make up your own service element, with an absolute URL for its base, in
@@ -244,7 +240,7 @@ the configuration catalog. For example, suppose you want to use the
 THREDDS OPeNDAP server, and an external WMS server:
 
 ------------------------------------------------------------------------------------------------------------
-<?xml version="1.0" ?>  
+<?xml version="1.0" ?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
   <service name="both" serviceType="compound" base="">
    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
@@ -262,7 +258,7 @@ server.
 
 == TDS
 
-==== Q: How do I keep client requests from overwhelming my server?
+=== Q: How do I keep client requests from overwhelming my server?
 
 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 There is currently no per-client resource throttle, unfortunately, but
@@ -275,7 +271,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: Can aggregations of many files cause ``too many files open''
+=== Q: Can aggregations of many files cause ``too many files open''
 problems?
 
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -300,7 +296,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: What do the non-HTTP status codes in the `threddsServlet.log`
+=== Q: What do the non-HTTP status codes in the `threddsServlet.log`
 files mean?
 
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -318,7 +314,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: I’m seeing the error "Inconsistent array length read: 538976288
+=== Q: I’m seeing the error "Inconsistent array length read: 538976288
 != 1668244581’ when I open the dataset in the IDV. Why?
 
 ___________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -330,7 +326,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: Why am I getting lots of `java.util.prefs.BackingStoreException`
+=== Q: Why am I getting lots of `java.util.prefs.BackingStoreException`
 warning messages?
 
 __________________________________________________________________________________________________________________________________________________________________
@@ -383,7 +379,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: My TDS server is behind a proxy server. Why do some TDS
+=== Q: My TDS server is behind a proxy server. Why do some TDS
 generated URLs point to my TDS server instead of my proxy server?
 
 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -404,7 +400,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: I have modified my configuration of a JoinExisting Aggregation
+=== Q: I have modified my configuration of a JoinExisting Aggregation
 dataset, but nothing has changed.
 
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -420,7 +416,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: What happened to the long list of CRSs in my WMS GetCapabilities
+=== Q: What happened to the long list of CRSs in my WMS GetCapabilities
 documents?
 
 __________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -611,7 +607,7 @@ Jun 17, 2009 3:44:11 PM org.apache.catalina.core.StandardContext start
 SEVERE: Error listenerStart
 Jun 17, 2009 3:44:11 PM org.apache.catalina.core.StandardContext start
 SEVERE: Context [/thredds] startup failed due to previous errors
-  
+
 ---------------------------------------------------------------------------------------------
 
 And there should be a message in the `localhost.*.log` file that looks
@@ -661,7 +657,7 @@ errors'', and TDS wont start.*
 
 log4j:WARN No appenders could be found for logger (org.apache.commons.digester.Digester.sax).
 log4j:WARN Please initialize the log4j system properly.
-     
+
 2)
 INFO: HTMLManager: start: Starting web application at '/thredds'
 TdsConfigContextListener.contextInitialized(): start.
@@ -671,7 +667,7 @@ TdsConfigContextListener.contextInitialized(): start.
 Jul 11, 2011 2:22:12 PM org.apache.catalina.core.StandardContext start SEVERE: Error listenerStart
 
 Jul 11, 2011 2:22:12 PM org.apache.catalina.core.StandardContext start SEVERE: Context [/thredds] startup failed due to previous errors
-    
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 _____________________________________________________________________________________________________________________________________________________________
@@ -715,7 +711,7 @@ vi web.xml
 change  <max-file-size> and  <max-request-size> to be larger than xxx.
 
 you must restart tomcat for this to take effect.
-  
+
 ----------------------------------------------------------------------
 ___________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -723,7 +719,7 @@ ________________________________________________________________________________
 
 == Tomcat
 
-==== Q: Im getting the error ``java.lang.OutOfMemoryError: Java heap
+=== Q: Im getting the error ``java.lang.OutOfMemoryError: Java heap
 space''. Whats up?
 
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -744,7 +740,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: Im getting the error ``java.lang.OutOfMemoryError: PermGen
+=== Q: Im getting the error ``java.lang.OutOfMemoryError: PermGen
 space''. Whats up?
 
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -783,7 +779,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: During shutdown I’m getting messages about threads (ThreadLocal)
+=== Q: During shutdown I’m getting messages about threads (ThreadLocal)
 having to be shut down to prevent memory leaks. Whats up?
 
 _________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -814,7 +810,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: Who is accessing my server?
+=== Q: Who is accessing my server?
 
 ________________________________________________________________________________________________________________________________________________
 When you examine the TDS access logs, you can see who is accessing the
@@ -824,7 +820,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: How can I control whether I want Web crawlers to access my
+=== Q: How can I control whether I want Web crawlers to access my
 server?
 
 ______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -836,7 +832,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: How can I prevent someone from accessing my server?
+=== Q: How can I prevent someone from accessing my server?
 
 ___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 --
@@ -853,7 +849,7 @@ ________________________________________________________________________________
   <Valve className="org.apache.catalina.valves.RemoteAddrValve" deny="18\.83\.0\.150" />
   ...
 </Host>
-  
+
 ----------------------------------------------------------------------------------------
 ________________________________________________________________________________________
 
@@ -864,7 +860,7 @@ IP addresses. For instance:
 ________________________________________________________
 --------------------------------------------------------
 deny="18\.83\.0\.150,128\.100\.34\.99,128\.117\.140\..*"
-  
+
 --------------------------------------------------------
 ________________________________________________________
 
@@ -875,7 +871,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: How do I remove Servlet Autodeploy?
+=== Q: How do I remove Servlet Autodeploy?
 
 ____________________________________________________________________________________________________________________________________________________________________________________
 Its recommended to remove autodetection of changes while Tomcat is
@@ -892,7 +888,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: How do I remove port 8009 when using tomcat in standalone mode?
+=== Q: How do I remove port 8009 when using tomcat in standalone mode?
 
 __________________________________________________________________________________________
 Unless you are using Tomcat with the Apache server, comment out this
@@ -901,13 +897,13 @@ line in *server.xml:*
 ----------------------------------------------------------------------------------------
   <Connector port="8009" enableLookups="false" redirectPort="8443" protocol="AJP/1.3" />
 
-    
+
 ----------------------------------------------------------------------------------------
 __________________________________________________________________________________________
 
 '''''
 
-==== Q: Manager fails to upload new thredds.war with
+=== Q: Manager fails to upload new thredds.war with
 SizeLimitExceededException
 
 ___________________________________________________________________________________________________________________________________________________
@@ -915,7 +911,7 @@ This happens when you are using the Tomcat manager app to upload a new
 war file that is too large. Message looks like:
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
-FAIL - Deploy Upload Failed, Exception: org.apache.tomcat.util.http.fileupload.FileUploadBase$SizeLimitExceededException: the request was rejected 
+FAIL - Deploy Upload Failed, Exception: org.apache.tomcat.util.http.fileupload.FileUploadBase$SizeLimitExceededException: the request was rejected
 because its size (57150447) exceeds the configured maximum (52428800)
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -930,7 +926,7 @@ ________________________________________________________________________________
 
 '''''
 
-==== Q: Logging is not working
+=== Q: Logging is not working
 
 ____________________________________________________________________________________________________________________
 You must use a version of Tomcat >= 7.0.43. See

@@ -1,6 +1,3 @@
-Production Server Overview
-==========================
-
 = Production Server Overview
 
 == What This Section Covers
@@ -117,7 +114,7 @@ as the root:
 -----------------------------------------
 * We also recommend restricting the permissions of the Tomcat user/group
 within `${tomcat_home}`.
-+
+
 ===== Restrict the permissions in `${tomcat_home}`
 
 1.  Change the user/group ownership `${tomcat_home}` to the `tomcat`
@@ -225,7 +222,7 @@ before it transmits it to the server).
 
 == Enabling TSL/SSL Encryption
 
-==== How TSL/SSL works
+=== How TSL/SSL works
 
 For more information on how SSL works, Wikipedia details the
 http://en.wikipedia.org/wiki/Transport_Layer_Security[steps involved]
@@ -296,14 +293,14 @@ your certificate into a keystore] file.
 * Tomcat uses the `keystore` file for TSL/SSL transactions. Example:
 
 -------------------------------------------------------------
- <Connector protocol="HTTP/1.1" port="8443" maxThreads="200" 
+ <Connector protocol="HTTP/1.1" port="8443" maxThreads="200"
     scheme="https" secure="true" SSLEnabled="true"
-    keystoreFile="${user.home}/.keystore" 
+    keystoreFile="${user.home}/.keystore"
     keystorePass="changeit"
     clientAuth="false" sslProtocol="TLS"/>
 -------------------------------------------------------------
 
-===== Enabling TSL/SSL in Tomcat
+==== Enabling TSL/SSL in Tomcat
 
 Modify the Tomcat configuration to enable TSL/SSL:
 
@@ -320,7 +317,7 @@ Locate the `Java HTTP/1.1 Connector` listening on port 8080 and verify
 it is redirecting TSL/SSL traffic to port 8443:
 
 ------------------------------------
-<Connector port="8080" 
+<Connector port="8080"
            protocol="HTTP/1.1"
            connectionTimeout="20000"
            redirectPort="8443" />
@@ -330,13 +327,13 @@ Find and uncomment the `SSL HTTP/1.1 Connector` listening on port 8443
 to activate this connector:
 
 -------------------------------
-<Connector port="8443" 
-           protocol="HTTP/1.1" 
+<Connector port="8443"
+           protocol="HTTP/1.1"
            SSLEnabled="true"
-           maxThreads="150" 
-           scheme="https" 
+           maxThreads="150"
+           scheme="https"
            secure="true"
-           clientAuth="false" 
+           clientAuth="false"
            sslProtocol="TLS" />
 -------------------------------
 
@@ -344,14 +341,14 @@ Add a `keystoreFile` attribute to the `SSL HTTP/1.1 Connector` to tell
 Tomcat where to find your keystore:
 
 -------------------------------------------------------------------------
-<Connector port="8443" 
-           protocol="HTTP/1.1" 
+<Connector port="8443"
+           protocol="HTTP/1.1"
            SSLEnabled="true"
-           maxThreads="150" 
-           scheme="https" 
+           maxThreads="150"
+           scheme="https"
            secure="true"
-           clientAuth="false" 
-           sslProtocol="TLS" 
+           clientAuth="false"
+           sslProtocol="TLS"
            keystoreFile="/home/tds/apache-tomcat-8.0.24/conf/keystore" />
 -------------------------------------------------------------------------
 
@@ -359,14 +356,14 @@ Since we opted to not use the default `keystore password`, we need to
 specify the new password so Tomcat can open the file:
 
 ----------------------------------------------------------------------
-<Connector port="8443" 
-           protocol="HTTP/1.1" 
+<Connector port="8443"
+           protocol="HTTP/1.1"
            SSLEnabled="true"
-           maxThreads="150" 
-           scheme="https" 
+           maxThreads="150"
+           scheme="https"
            secure="true"
-           clientAuth="false" 
-           sslProtocol="TLS" 
+           clientAuth="false"
+           sslProtocol="TLS"
            keystoreFile="/home/tds/apache-tomcat-8.0.24/conf/keystore"
            keystorePass="foobar" />
 ----------------------------------------------------------------------
@@ -512,8 +509,8 @@ and `tdsMonitor` roles. Add these roles to your list of roles:
     <role rolename="manager-gui"/>
     <role rolename="tdsConfig"/>
       <role rolename="tdsMonitor"/>
-    <user username="admin" 
-          password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" 
+    <user username="admin"
+          password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4"
           roles="manager-gui,tdsConfig, tdsMonitor"/>
 </tomcat-users>
 --------------------------------------------------------------
@@ -539,7 +536,7 @@ used in a production environment.
 
 == Securing the Tomcat `manager` Application
 
-==== Changes to the `manager` application
+=== Changes to the `manager` application
 
 The `manager` application URLs and roles has been re-structured. See the
 Tomcat http://tomcat.apache.org/migration.html[Migration guide] for more

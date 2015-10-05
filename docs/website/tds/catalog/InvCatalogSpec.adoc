@@ -1,6 +1,3 @@
-Client Catalog Spec 1.0.7
-=========================
-
 = THREDDS Client Catalog Specification
 
 '''''
@@ -14,7 +11,7 @@ further descriptive information can be placed.
 This document specifies the semantics of a THREDDS catalog, as well as
 its representation as an XML document.
 
-=== Contents:
+== Contents:
 
 link:#baseElements[Base Catalog Elements]
 
@@ -56,7 +53,7 @@ link:#index[Index]
 
 link:#changes[Change History]
 
-=== Related resources:
+== Related resources:
 
 Catalog Tutorial link:../tutorial/CatalogPrimer.html[Primer]
 
@@ -98,7 +95,7 @@ link:InvCatalogServerSpec.html[Server-side catalog specification]
 === _catalog_ element
 
 ------------------------------------------------------------------------
-<xsd:element name="catalog">  
+<xsd:element name="catalog">
   <xsd:complexType>
     <xsd:sequence>
       <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
@@ -108,9 +105,9 @@ link:InvCatalogServerSpec.html[Server-side catalog specification]
 
     <xsd:attribute name="base" type="xsd:anyURI"/>
     <xsd:attribute name="name" type="xsd:string" />
-    <xsd:attribute name="expires" type="dateType"/> 
-    <xsd:attribute name="version" type="xsd:token" default="1.0.7" /> 
-  </xsd:complexType> 
+    <xsd:attribute name="expires" type="dateType"/>
+    <xsd:attribute name="version" type="xsd:token" default="1.0.7" />
+  </xsd:complexType>
 </xsd:element>
 ------------------------------------------------------------------------
 
@@ -225,8 +222,8 @@ created):
   <xsd:attribute name="harvest" type="xsd:boolean"/>
   <xsd:attribute name="ID" type="xsd:token"/>
   <xsd:attribute name="restrictAccess" type="xsd:string"/>
-      
-  <xsd:attribute name="serviceName" type="xsd:string" /> <!-- deprecated : use element --> 
+
+  <xsd:attribute name="serviceName" type="xsd:string" /> <!-- deprecated : use element -->
   <xsd:attribute name="urlPath" type="xsd:token" />
 </xsd:complexType>
 -------------------------------------------------------------------------------------------
@@ -312,9 +309,9 @@ An example using an alias; in this case the dataset referred to
 logically replaces the alias dataset.
 
 -----------------------------------------------------------------------------------
-<dataset name="Station Data"> 
+<dataset name="Station Data">
   <dataset name="Metar data" urlPath="cgi-bin/MetarServer.pl?format=qc" />
-  <dataset name="Level 3 Radar data" urlPath="cgi-bin/RadarServer.pl?format=qc" /> 
+  <dataset name="Level 3 Radar data" urlPath="cgi-bin/RadarServer.pl?format=qc" />
   <dataset name="Alias to SOLVE dataset" alias="SOLVE_DC8_19991119"/>
 </dataset>
 -----------------------------------------------------------------------------------
@@ -442,7 +439,7 @@ discovery centers, and for annotation and documentation of datasets.
 
 --------------------------------------------------------------------
 <xsd:group name="threddsMetadataGroup">
-  <xsd:choice minOccurs="0" maxOccurs="unbounded"> 
+  <xsd:choice minOccurs="0" maxOccurs="unbounded">
     <xsd:element name="documentation" type="documentationType"/>
     <xsd:element ref="metadata"  />
     <xsd:element ref="property"  />
@@ -457,11 +454,11 @@ discovery centers, and for annotation and documentation of datasets.
     <xsd:element ref="geospatialCoverage"/>
     <xsd:element name="timeCoverage" type="timeCoverageType"/>
     <xsd:element ref="variables"/>
-    
+
     <xsd:element name="dataType" type="dataTypes"/>
     <xsd:element name="dataFormat" type="dataFormatTypes"/>
-    <xsd:element name="serviceName" type="xsd:string" />            
-    <xsd:element name="authority" type="xsd:string" />            
+    <xsd:element name="serviceName" type="xsd:string" />
+    <xsd:element name="authority" type="xsd:string" />
     <xsd:element ref="dataSize"/>
   </xsd:choice>
 </xsd:group>
@@ -539,16 +536,16 @@ there are on the dataset usage.
 Examples:
 
 -----------------------------------------------------------------------------------------
-<documentation type="summary"> The SAGE III Ozone Loss and Validation Experiment (SOLVE) 
- was a measurement campaign designed to examine the processes controlling ozone levels 
+<documentation type="summary"> The SAGE III Ozone Loss and Validation Experiment (SOLVE)
+ was a measurement campaign designed to examine the processes controlling ozone levels
  at mid- to high latitudes. Measurements were made in the Arctic high-latitude
- region in winter using the NASA DC-8 and ER-2 aircraft, 
- as well as balloon platforms and ground-based instruments. </documentation> 
+ region in winter using the NASA DC-8 and ER-2 aircraft,
+ as well as balloon platforms and ground-based instruments. </documentation>
 -----------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------------
-<documentation type="rights"> Users of these data files are expected  to follow the NASA 
-  ESPO Archive guidelines for use of the SOLVE data, including consulting with the PIs 
+<documentation type="rights"> Users of these data files are expected  to follow the NASA
+  ESPO Archive guidelines for use of the SOLVE data, including consulting with the PIs
   of the individual measurements  for interpretation and credit.
 </documentation>
 
@@ -562,10 +559,10 @@ Examples:
 ------------------------------------------------------------------------------------------
 <xsd:complexType name="documentationType" mixed="true">
   <xsd:sequence>
-    <xsd:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded" 
+    <xsd:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded"
          processContents="strict"/>
   </xsd:sequence>
-      
+
   <xsd:attribute name="type" type="documentationEnumTypes"/>
   <xsd:attributeGroup ref="XLink" />
 </xsd:complexType>
@@ -586,7 +583,7 @@ the link:#metadata[metadata] element instead.
 Examples:
 
 ---------------------------------------------------------------------------
-<documentation xlink:href="http://espoarchive.nasa.gov/archive/index.html" 
+<documentation xlink:href="http://espoarchive.nasa.gov/archive/index.html"
     xlink:title="Earth Science Project Office Archives"/>
 
 <documentation>Used in doubled CO2 scenario</documentation>
@@ -601,9 +598,9 @@ Examples:
       <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" />
       <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="strict"/>
     </xsd:choice>
-        
+
     <xsd:attribute name="inherited" type="xsd:boolean" default="false" />
-    <xsd:attribute name="metadataType" type="metadataTypeEnum"  /> 
+    <xsd:attribute name="metadataType" type="metadataTypeEnum"  />
     <xsd:attributeGroup ref="XLink" />
   </xsd:complexType>
 </xsd:element>
@@ -658,10 +655,10 @@ a metadata element, which declares the THREDDS namespace:
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0">
   <contributor role="Investigator">Mashor Mashnor</contributor>
-          
+
   <abstract>
    This project aims to determine the physiological adaptations of algae to the
-   extreme conditions of Antarctica. 
+   extreme conditions of Antarctica.
   </abstract>
 
   <publisher>
@@ -681,7 +678,7 @@ element:
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
   <dc:title>Goto considered harmful</dc:title >
   <dc:description>The unbridled use of the go to statement has an immediate consequence
-      that it becomes terribly 
+      that it becomes terribly
         hard to find a meaningful set of coordinates in which to describe the process progress.
   </dc:description>
   <dc:author>Edsger W. Dijkstra</dc:author>
@@ -702,11 +699,11 @@ still need to declare the THREDDS namespace):
 
 -----------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
-<metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+<metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
            xmlns:dc="http://purl.org/dc/elements/1.1/">
   <dc:title>Goto considered harmful</dc:title >
-  <dc:description>The unbridled use of the go to statement has an immediate consequence 
-      that it becomes terribly 
+  <dc:description>The unbridled use of the go to statement has an immediate consequence
+      that it becomes terribly
         hard to find a meaningful set of coordinates in which to describe the process progress.
   </dc:description>
   <dc:author>Edsger W. Dijkstra</dc:author>
@@ -718,15 +715,15 @@ namespace:
 
 -----------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
-<cat:metadata  xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+<cat:metadata  xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
                xmlns="http://purl.org/dc/elements/1.1/">
   <title>Goto considered harmful</title >
-  <description>The unbridled use of the go to statement has an immediate consequence 
-      that it becomes terribly 
+  <description>The unbridled use of the go to statement has an immediate consequence
+      that it becomes terribly
         hard to find a meaningful set of coordinates in which to describe the process progress.
   </description>
   <author>Edsger W. Dijkstra</author>
-</cat:metadata> 
+</cat:metadata>
 -----------------------------------------------------------------------------------------------
 
 === _property_ element
@@ -778,7 +775,7 @@ Example:
 
 ------------------------------------------------------------------------------------------------
 <publisher>
-  <name vocabulary="DIF">UCAR/NCAR/CDP > Community Data Portal, National Center for Atmospheric 
+  <name vocabulary="DIF">UCAR/NCAR/CDP > Community Data Portal, National Center for Atmospheric
     Research, University Corporation for Atmospheric Research</name>
   <contact url="http://dataportal.ucar.edu" email="cdp@ucar.edu"/>
 </publisher>
@@ -787,11 +784,11 @@ Example:
 === __contributor__ Element
 
 ----------------------------------------------------------------------
-<xsd:element name="contributor"> 
+<xsd:element name="contributor">
   <xsd:complexType>
     <xsd:simpleContent>
       <xsd:extension base="xsd:string">
-        <xsd:attribute name="role" type="xsd:string" use="required"/> 
+        <xsd:attribute name="role" type="xsd:string" use="required"/>
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -820,7 +817,7 @@ Example:
       <xsd:element name="updown" type="spatialRange" minOccurs="0" />
       <xsd:element name="name" type="controlledVocabulary" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-      
+
     <xsd:attribute name="zpositive" type="upOrDown" default="up"/>
    </xsd:complexType>
   </xsd:element>
@@ -833,7 +830,7 @@ Example:
      <xsd:element name="units" type="xsd:string" minOccurs="0" />
    </xsd:sequence>
   </xsd:complexType>
-  
+
   <xsd:simpleType name="upOrDown">
    <xsd:restriction base="xsd:token">
      <xsd:enumeration value="up"/>
@@ -918,7 +915,7 @@ Example:
   <end>present</end>
 </timeCoverage>
 
-<timeCoverage> 
+<timeCoverage>
   <start>1999-11-16T12:00:00</start>
   <duration>P3M</duration>  // 3 months
 </timeCoverage>
@@ -926,7 +923,7 @@ Example:
 <timeCoverage>   // 10 days before the present up to the present
   <end>present</end>
   <duration>10 days</duration>
-  <resolution>15 minutes</resolution> 
+  <resolution>15 minutes</resolution>
 </timeCoverage>
 ----------------------------------------------------------------
 
@@ -946,7 +943,7 @@ Example:
 <xsd:simpleType name="udunitDate">
   <xsd:restriction base="xsd:string">
     <xsd:annotation>
-      <xsd:documentation>Must conform to complete udunits date string, eg 
+      <xsd:documentation>Must conform to complete udunits date string, eg
           "20 days since 1991-01-01"</xsd:documentation>
     </xsd:annotation>
   </xsd:restriction>
@@ -976,7 +973,7 @@ Examples:
 <start>1999-11-16T12:00:00</start> // implied UTC
 <start>1999-11-16T12:00:00Z</start> // explicit UTC
 <start>1999-11-16T12:00:00-05:00</start> // EST time zone specified
-<start>20 days since 1991-01-01</start> 
+<start>20 days since 1991-01-01</start>
 <start>present</start>
 -------------------------------------------------------------------
 
@@ -987,7 +984,7 @@ Examples:
   <xsd:simpleContent>
     <xsd:extension base="dateType">
       <xsd:attribute name="format" type="xsd:string" /> // from java.text.SimpleDateFormat
-      <xsd:attribute name="type" type="dateEnumTypes" /> 
+      <xsd:attribute name="type" type="dateEnumTypes" />
     </xsd:extension>
   </xsd:simpleContent>
 </xsd:complexType>
@@ -1005,13 +1002,13 @@ Example:
 <start format="yyyy DDD" type="created">1999 189</start> <!-- year, day of year -->
 
 _Example_Format_String___________Example_Text___________________
-"yyyy.MM.dd G 'at' HH:mm:ss z"  2001.07.04 AD at 12:08:56 PDT  
-"EEE, MMM d, ''yy"              Wed, Jul 4, '01  
-"K:mm a, z"                     0:08 PM, PDT  
-"yyyyy.MMMMM.dd GGG hh:mm aaa"  02001.July.04 AD 12:08 PM  
-"EEE, d MMM yyyy HH:mm:ss Z"    Wed, 4 Jul 2001 12:08:56 -0700  
-"yyMMddHHmmssZ"                 010704120856-0700  
- 
+"yyyy.MM.dd G 'at' HH:mm:ss z"  2001.07.04 AD at 12:08:56 PDT
+"EEE, MMM d, ''yy"              Wed, Jul 4, '01
+"K:mm a, z"                     0:08 PM, PDT
+"yyyyy.MMMMM.dd GGG hh:mm aaa"  02001.July.04 AD 12:08 PM
+"EEE, d MMM yyyy HH:mm:ss Z"    Wed, 4 Jul 2001 12:08:56 -0700
+"yyMMddHHmmssZ"                 010704120856-0700
+
 -----------------------------------------------------------------------------------
 
 === __duration__ Type
@@ -1063,7 +1060,7 @@ Example:
   <xsd:complexType>
     <xsd:simpleContent>
     <xsd:extension base="xsd:string">
-      <xsd:attribute name="units" type="xsd:string" use="required"/> 
+      <xsd:attribute name="units" type="xsd:string" use="required"/>
     </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -1245,7 +1242,7 @@ future versions.
         <xsd:enumeration value="text/xml"/>
         <xsd:enumeration value="video/mpeg"/>
         <xsd:enumeration value="video/quicktime"/>
-        <xsd:enumeration value="video/realtime"/>   
+        <xsd:enumeration value="video/realtime"/>
       </xsd:restriction>
     </xsd:simpleType>
   </xsd:union>
@@ -1254,7 +1251,7 @@ future versions.
 <xsd:simpleType name="mimeType">
   <xsd:restriction base="xsd:token">
     <xsd:annotation>
-      <xsd:documentation>any valid mime type 
+      <xsd:documentation>any valid mime type
         (see http://www.iana.org/assignments/media-types/)
       </xsd:documentation>
     </xsd:annotation>
@@ -1405,7 +1402,7 @@ data type).
  <xsd:union memberTypes="xsd:token">
   <xsd:simpleType>
    <xsd:restriction base="xsd:token">
-   
+
     <!-- client/server -->
     <xsd:enumeration value="ADDE"/>
     <xsd:enumeration value="DAP4"/>
@@ -1417,13 +1414,13 @@ data type).
     <xsd:enumeration value="CdmFeature"/>
     <xsd:enumeration value="ncJSON"/>
     <xsd:enumeration value="H5Service"/>
-  
+
     <!-- bulk transport -->
     <xsd:enumeration value="HTTPServer"/>
     <xsd:enumeration value="FTP"/>
     <xsd:enumeration value="GridFTP"/>
     <xsd:enumeration value="File"/>
-  
+
     <!-- web services -->
     <xsd:enumeration value="ISO"/>
     <xsd:enumeration value="LAS"/>
@@ -1433,10 +1430,10 @@ data type).
     <xsd:enumeration value="WCS"/>
     <xsd:enumeration value="WMS"/>
     <xsd:enumeration value="WSDL"/>
-  
+
     <!--offline -->
     <xsd:enumeration value="WebForm"/>
-  
+
     <!-- THREDDS -->
     <xsd:enumeration value="Catalog"/>
     <xsd:enumeration value="Compound"/>
@@ -1542,16 +1539,12 @@ There are two ways a dataset’s access methods can be specified:
 the _urlPath_ attribute along with the _dataset_ element’s ``default''
 service (see link:#Precedence_for_a_Datasets_Default[below]) specify one
 or more [link:#note_compoundService[*]] access methods.
-2.  A _dataset_ element may include child _access_ elements. Each
-_access_ element defines one or more
-[link:#note_compoundService[*]]link:#Access_Methods_and_Compound_Services_[]
-access methods. The values of the _access_ element’s _urlPath_ and
-_serviceName_ attributes specify one or more access methods. If the
-_access_ element does not include a _serviceName_ attribute, the
-_dataset_ element’s ``default'' service (see
-link:#Precedence_for_a_Datasets_Default[below]) is used instead. +
+2.  A _dataset_ element may include child _access_ elements.
+Each _access_ element defines one or more [link:#note_compoundService[*]]link:#Access_Methods_and_Compound_Services_[access] methods.
+The values of the _access_ element’s _urlPath_ and _serviceName_ attributes specify one or more access methods.
+If the _access_ element does not include a _serviceName_ attribute, the _dataset_ element’s ``default'' service (see link:#Precedence_for_a_Datasets_Default[below]) is used instead.
 
-[*] Multiple access methods are defined whenever the service element
+[[note_compoundService]]* Multiple access methods are defined whenever the service element
 that is referenced is a compound service. More on this in the
 "link:#Access_Methods_and_Compound_Services_[Access Methods and Compound
 Services]" section below. +
