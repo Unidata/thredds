@@ -412,7 +412,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     NetcdfDataset ncd = getNetcdfDataset(matchPath);
     if (ncd == null) return null;
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
-    FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds);
+    FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, new Formatter());
     if (cc == null) return null;
 
     assert cc.getCoverageCollections().size() == 1;  // LOOK probably want to use endpoint#datasetName ?

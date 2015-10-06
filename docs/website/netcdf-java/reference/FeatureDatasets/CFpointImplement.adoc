@@ -1,7 +1,8 @@
 = CDM implementation of CF discrete sampling features
 
 These notes refer to the current release of CDM.
-Section headers reference the CF 1.6 doc at http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#discrete-sampling-geometries
+Section headers reference the
+http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#discrete-sampling-geometries[CF Convention document].
 
 == Short guide to writing files using CF-1.6 Discrete Sampling Features Conventions
 

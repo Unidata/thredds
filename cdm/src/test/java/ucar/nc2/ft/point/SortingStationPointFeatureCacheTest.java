@@ -14,6 +14,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureDataScalar;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.NoFactoryFoundException;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -65,7 +67,8 @@ public class SortingStationPointFeatureCacheTest {
         featureData.addMember("nomTime", "Nominal time", timeUnit.getUdUnit(), DataType.DOUBLE, nomTime);
         featureData.addMember("tasmax", "Max temperature", "Celsius", DataType.DOUBLE, tasmax);
 
-        return new SimpleStationPointFeature(stationFeat, obsTime, nomTime, timeUnit, featureData);
+        DsgFeatureCollection dsg = new SimpleDsgCollection("SimpleDsgCollection", timeUnit, null, FeatureType.STATION);
+        return new SimpleStationPointFeature(dsg, stationFeat, obsTime, nomTime, timeUnit, featureData);
     }
     
     @Test

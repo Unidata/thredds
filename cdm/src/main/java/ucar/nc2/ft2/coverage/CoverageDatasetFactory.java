@@ -41,6 +41,7 @@ import ucar.nc2.ft2.coverage.remote.CdmrFeatureDataset;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Formatter;
 
 /**
  * factory for CoverageDataset
@@ -93,7 +94,7 @@ public class CoverageDatasetFactory {
     // adapt a DtCoverageDataset (forked from ucar.nc2.dt.GridDataset), eg a local file
     DtCoverageDataset gds = DtCoverageDataset.open(endpoint);
     if (gds.getGrids().size() > 0)
-      return DtCoverageAdapter.factory(gds);
+      return DtCoverageAdapter.factory(gds, new Formatter());
 
     return null;
   }

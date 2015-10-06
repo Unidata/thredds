@@ -53,17 +53,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CoverageCoordSys {
 
-  /* public enum Type {General, Curvilinear, Grid, Swath, Fmrc}
-
-  static public FeatureType getFeatureType(Type covType) {
-    switch (covType) {
-      case Grid: return FeatureType.GRID;
-      case Fmrc: return FeatureType.FMRC;
-      case Swath: return FeatureType.SWATH;
-    }
-    return FeatureType.COVERAGE;
-  } */
-
   public static String makeCoordSysName(List<String> axisName) {
     Formatter fname = new Formatter();
     for (String axis : axisName)
@@ -112,8 +101,7 @@ public class CoverageCoordSys {
     this.immutable = true;
   }
 
-  public void setDataset(CoordSysContainer dataset) {
-    if (immutable)
+  public void setDataset(CoordSysContainer dataset) {if (immutable)
       throw new RuntimeException("Cant change CoverageCoordSys dataset once set immutable");
     this.dataset = dataset;
 

@@ -301,6 +301,14 @@ public class DtCoverageCS {
     return builder.allAxes;
   }
 
+  public CoordinateAxis findCoordAxis(String shortName) {
+    for  (CoordinateAxis axis : builder.allAxes) {
+      if (axis.getShortName().equals(shortName)) return axis;
+    }
+    return null;
+  }
+
+
   public List<CoordinateTransform> getCoordTransforms() {
     return builder.coordTransforms;
   }

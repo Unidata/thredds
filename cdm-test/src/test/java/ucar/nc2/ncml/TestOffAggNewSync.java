@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ncml;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
@@ -60,6 +61,7 @@ public class TestOffAggNewSync {
             "</netcdf>";
 
   @Test
+  @Ignore("file in use - testing artifact")
   public void testMove() throws IOException, InterruptedException {
     String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
     if (!TestOffAggUpdating.move(fname))
@@ -79,6 +81,7 @@ public class TestOffAggNewSync {
   }
 
   @Test
+  @Ignore("file in use - testing artifact")
   public void testRemove() throws IOException, InterruptedException {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, ntimes);
@@ -98,6 +101,7 @@ public class TestOffAggNewSync {
   }
 
   @Test
+  @Ignore("file in use - testing artifact")
   public void testSync() throws IOException, InterruptedException {
     String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
     if (!TestOffAggUpdating.move(fname))
@@ -118,6 +122,7 @@ public class TestOffAggNewSync {
   }
 
   @Test
+  @Ignore("file in use - testing artifact")
   public void testSyncRemove() throws IOException, InterruptedException {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, ntimes);

@@ -31,61 +31,30 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package thredds.featurecollection;
+package ucar.nc2.ft.point;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.nc2.time.CalendarDateUnit;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * Describe
  *
  * @author caron
- * @since 9/26/2015.
+ * @since 10/5/2015.
  */
-@RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
-public class TestFeatureDatasetFactory {
+public class SimpleDsgCollection extends DsgCollectionImpl {
+  FeatureType ftype;
 
-  @Parameterized.Parameters(name = "{0}")
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>();
-
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.ANY});
-    // result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.SWATH});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.CURVILINEAR});
-
-    return result;
+  protected SimpleDsgCollection(String name, CalendarDateUnit timeUnit, String altUnits, FeatureType ftype) {
+    super(name, timeUnit, altUnits);
+    this.ftype = ftype;
   }
 
-  String ds;
-  FeatureType what;
-
-  public TestFeatureDatasetFactory(String ds, FeatureType what) {
-    this.ds = ds;
-    this.what = what;
-  }
-
-  @Test
-  public void testOpen() throws IOException {
-    System.out.printf("FeatureDatasetFactoryManager.open %s%n", ds);
-    Formatter errlog = new Formatter();
-    try (FeatureDataset fd = FeatureDatasetFactoryManager.open(what, ds, null, errlog)) {
-      Assert.assertNotNull(errlog.toString()+" "+ds, fd);
-      if (what != FeatureType.ANY)
-        Assert.assertEquals(what, fd.getFeatureType());
-    }
+  @Nonnull
+  @Override
+  public FeatureType getCollectionFeatureType() {
+    return ftype;
   }
 }

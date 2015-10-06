@@ -2,6 +2,7 @@
 package ucar.nc2.ft.coverage;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,7 +56,8 @@ public class TestDtWithCoverageBuilding {
       Assert.assertNotNull("runtime axis", runAxis);
       assert runAxis.isScalar();
 
-      try (FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds)) {
+      Formatter errlog = new Formatter();
+      try (FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog)) {
         Assert.assertNotNull(filename, cc);
         Assert.assertEquals(1, cc.getCoverageCollections().size());
         CoverageCollection cd = cc.getCoverageCollections().get(0);
@@ -95,7 +97,8 @@ public class TestDtWithCoverageBuilding {
       assert !timeAxis.isScalar();
       Assert.assertEquals(360, timeAxis.getSize());
 
-      try (FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds)) {
+      Formatter errlog = new Formatter();
+      try (FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog)) {
         Assert.assertNotNull(filename, cc);
         Assert.assertEquals(1, cc.getCoverageCollections().size());   // LOOK only get 2D
         CoverageCollection cd = cc.getCoverageCollections().get(0);
