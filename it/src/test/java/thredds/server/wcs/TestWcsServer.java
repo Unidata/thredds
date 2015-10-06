@@ -60,6 +60,7 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -145,7 +146,9 @@ public class TestWcsServer {
     // Open the binary response in memory
     try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
       DtCoverageDataset dt = new DtCoverageDataset(new NetcdfDataset(nf), null);
-      FeatureDatasetCoverage cdc = DtCoverageAdapter.factory(dt);
+      Formatter errlog = new Formatter();
+      FeatureDatasetCoverage cdc = DtCoverageAdapter.factory(dt, errlog);
+      Assert.assertNotNull(errlog.toString(), cdc);
       Assert.assertEquals(1, cdc.getCoverageCollections().size());
       CoverageCollection cd = cdc.getCoverageCollections().get(0);
       assertNotNull(cd);
@@ -218,7 +221,9 @@ public class TestWcsServer {
     // Open the binary response in memory
     try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
       DtCoverageDataset dt = new DtCoverageDataset(new NetcdfDataset(nf), null);
-      FeatureDatasetCoverage cdc = DtCoverageAdapter.factory(dt);
+      Formatter errlog = new Formatter();
+      FeatureDatasetCoverage cdc = DtCoverageAdapter.factory(dt, errlog);
+      Assert.assertNotNull(errlog.toString(), cdc);
       Assert.assertEquals(1, cdc.getCoverageCollections().size());
       CoverageCollection cd = cdc.getCoverageCollections().get(0);
       assertNotNull(cd);

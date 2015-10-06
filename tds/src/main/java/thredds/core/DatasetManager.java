@@ -334,8 +334,10 @@ public class DatasetManager implements InitializingBean {
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
     if (gds.getGrids().size() > 0) {
-      FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds);
-      if (cc == null || cc.getCoverageCollections().size() != 1) throw new FileNotFoundException("Not a Grid Dataset " + gds.getName());
+      Formatter errlog = new Formatter();
+      FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog);
+      if (cc == null || cc.getCoverageCollections().size() != 1)
+        throw new FileNotFoundException("Not a Grid Dataset " + gds.getName()+" err="+errlog);
       return cc.getCoverageCollections().get(0);
     }
 
