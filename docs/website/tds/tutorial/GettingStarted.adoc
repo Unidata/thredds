@@ -1,12 +1,10 @@
-Getting Started With the TDS: Local Test Server Setup
-=====================================================
+:coderays:
 
 = Getting Started With the TDS: Local Test Server Setup
 
 == What This Section Covers
 
-This section covers basic installation and configuration of Tomcat, Java
-JDK and the TDS for a local test server:
+This section covers basic installation and configuration of Tomcat, Java JDK and the TDS for a local test server:
 
 image:images/gettingStartedContext.png[Getting Started Context]
 
@@ -21,47 +19,35 @@ image:images/gettingStartedContext.png[Getting Started Context]
 
 No prior knowledge of Tomcat, Java, or the TDS needed.
 
+[[install]]
 == Installing Java and Tomcat
 
 === System requirements
 
 ==== JDK installation help
 
-Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may
-want to reference the
-http://www.unidata.ucar.edu/mailing_lists/archives/thredds/[THREDDS
-mailing list] for installation help.
+Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to reference the http://www.unidata.ucar.edu/mailing_lists/archives/thredds/[THREDDS mailing list] for installation help.
 
 * Oracle Java 8 (latest version)
 * Apache Tomcat 8.x
 
-While there are different distributors of Java and servlet containers,
-Unidata develops, uses and tests the THREDDS Data Server using _Oracle
-Java_ and the _Apache Tomcat_ servlet container.
+While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using _Oracle Java_ and the _Apache Tomcat_ servlet container.
 
 === Installing Java
 
-1.  http://www.oracle.com/technetwork/java/javase/downloads/[Download]
-current Java SE Developer Kit (JDK) from Oracle. Use the latest 1.8
-version of the JDK.
-2.  Install the JDK as per the Oracle
-http://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html[installation
-instructions].
+1.  http://www.oracle.com/technetwork/java/javase/downloads/[Download] current Java SE Developer Kit (JDK) from Oracle. Use the latest 1.8 version of the JDK.
+2.  Install the JDK as per the Oracle http://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html[installation instructions].
 
 === Installing Tomcat
 
 ==== Tomcat on Windows
 
-For more information about installing Tomcat on Windows OS, see the
-http://tomcat.apache.org/tomcat-8.0-doc/setup.html#Windows[Tomcat setup
-guide] for installation on different platforms.
+For more information about installing Tomcat on Windows OS, see the http://tomcat.apache.org/tomcat-8.0-doc/setup.html#Windows[Tomcat setup guide] for installation on different platforms.
 
-1.  http://tomcat.apache.org/download-80.cgi[Download] current version
-of the Tomcat 8 servlet container.
-2.  Install Tomcat as per the Apache Tomcat
-http://tomcat.apache.org/tomcat-8.0-doc/setup.html[installation
-instructions].
+1.  http://tomcat.apache.org/download-80.cgi[Download] current version of the Tomcat 8 servlet container.
+2.  Install Tomcat as per the Apache Tomcat http://tomcat.apache.org/tomcat-8.0-doc/setup.html[installation instructions].
 
+[[tour]]
 == Tomcat Directory Structure: Quick Tour
 
 === Exploring the Tomcat directory structure
@@ -70,6 +56,7 @@ Examine the Tomcat directory structure, aka `${tomcat_home}`.
 
 Move into `${tomcat_home}` and do a long listing:
 
+[source,bash]
 ----------------------------------------------------------
 $ cd apache-tomcat-8.0.24
 $ ls -l
@@ -122,6 +109,7 @@ of your system.
 `catalina.out`, `catalina.yyyy-mm-dd.log` and
 `localhost_access_log.yyyy-mm-dd.log` files by the end of this workshop.
 
+[[running]]
 == Running Tomcat
 
 === Starting & stopping Tomcat
@@ -163,6 +151,7 @@ Create the `setenv.sh` file.
 Using your favorite text editor (gedit, vi, emacs, etc.), create a new
 file called `setenv.sh` in the Tomcat `bin/` directory:
 
+[source,bash]
 -----------------------------------
 $ pwd
 /usr/local/tds/apache-tomcat-8.0.24
@@ -173,6 +162,7 @@ $ vi setenv.sh
 
 Add the following information and save your `setenv.sh` file:
 
+[source,bash]
 ---------------------------------------------------------------------------------------------
 #!/bin/sh
 #
@@ -236,28 +226,28 @@ Implement your changes by restarting Tomcat.
 
 Restart Tomcat and examine the output generated to the terminal window
 by the startup script:
-
-------------------------------------------------------------------------------------------------------------------------------------
+[source,bash]
+------
 $ ./startup.sh
 Using CATALINA_BASE:   /usr/local/tds/apache-tomcat-8.0.24
 Using CATALINA_HOME:   /usr/local/tds/apache-tomcat-8.0.24
 Using CATALINA_TMPDIR: /usr/local/tds/apache-tomcat-8.0.24/temp
 Using JRE_HOME: /usr/local/tds/jdk1.8u51
 Using CLASSPATH:       /usr/local/tds/apache-tomcat-8.0.24/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-8.0.24/bin/tomcat-juli.jar
-------------------------------------------------------------------------------------------------------------------------------------
-
+------
 Did you notice any difference in the what is being reported to `STDOUT`
 during startup?
 
 Take a look at the running Tomcat process to see the new `$JAVA_OPTS`
 settings:
 
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[source,bash]
+------
 $ ps -ef | grep tomcat
 tds      22007     1  9 09:44 pts/1    00:00:02 /usr/local/tds/jdk1.8u51/bin/java -Djava.util.logging.config.file=/usr/local/tds/apache-tomcat-8.0.24/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Xmx4096m
   -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/usr/local/tds/apache-tomcat-8.0.24/content/thredds/javaUtilPrefs -Djava.endorsed.dirs=/usr/local/tds/apache-tomcat-8.0.24/endorsed -classpath /usr/local/tds/apache-tomcat-8.0.24/bin/bootstrap.jar:/usr/local/tds/apache-tomcat-8.0.24/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/apache-tomcat-8.0.24 -Dcatalina.home=/usr/local/tds/apache-tomcat-8.0.24 -Djava.io.tmpdir=/usr/local/tds/apache-tomcat-8.0.24/temp org.apache.catalina.startup.Bootstrap start
 tds      22030 21675  0 09:44 pts/1    00:00:00 grep tomcat
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------
 
 ==== Environment Variables
 
@@ -280,6 +270,7 @@ in the `setenv.sh` file, it will be reported to `catalina.out`:
 * If you intend to use WMS and see something like the following in
 reported in `catalina.out`:
 
+[[logs]]
 == Tomcat Log Files
 
 === Tomcat `logs/`
@@ -310,6 +301,7 @@ other log files out of the Tomcat `logs/` on a regular basis.
 Instead only the `catalina.yyyy-mm-dd.log` files are used. These have
 equivalent content.
 
+[[files]]
 == Tomcat (Server-Level) Configuration Files
 
 === About `server.xml`
@@ -340,6 +332,7 @@ restarted.
 
 1.  Examine the Elements in `tomcat-users.xml`.
 
+[[deploying]]
 == Deploying the TDS
 
 === About WAR files
@@ -372,6 +365,7 @@ Deploy the TDS in Tomcat.
 
 Put `thredds.war` in the Tomcat `webapps/` directory:
 
+[source,bash]
 -------------------------------------------------------------
 $ pwd
 /usr/local/tds/apache-tomcat-8.0.24/bin
@@ -393,6 +387,7 @@ If Tomcat is already running, wait a couple of seconds after placing the
 WAR file in the Tomcat `webapps/` and then verify the `thredds.war` file
 was unpacked:
 
+[source,bash]
 -------------------------------------------------------------
 $ ls -l
 drwxr-xr-x 13 tds workshop     4096 Jul 15 09:37 docs
@@ -412,12 +407,11 @@ image:images/tds.png[THREDDS Distribution Catalog]
 Confirm the creation of the TDS `content/` directory.
 
 Move into `${tomcat_home}` and do a long listing:
-
+[source,bash]
 ----------------------------------------------------------
 $ pwd
 /usr/local/tds/apache-tomcat-8.0.24/webapps
 $ cd ..
-
 $ ls -l
 drwxr-xr-x 2 tds workshop  4096 Jul 15 09:51 bin
 drwxr-xr-x 3 tds workshop  4096 Jul 15 09:55 conf
@@ -441,6 +435,7 @@ file of the Tomcat `logs/` directory.
 TDS (version 4.3.18 snapshot for this workshop). The TDS version number
 will appear in the blue bar at the bottom of TDS catalog pages.
 
+[[manager]]
 == Tomcat `manager` Application
 
 === About the `manager` application
@@ -490,6 +485,7 @@ Modify `tomcat-users.xml` to add `role` and `user` elements.
 
 Using your favorite editor, open `${tomcat_home}/conf/tomcat-users.xml`:
 
+[source,bash]
 ---------------------
 $ vi tomcat-users.xml
 ---------------------
@@ -497,6 +493,7 @@ $ vi tomcat-users.xml
 Between the `<tomcat-users>` tags, add a `role` element and specify the
 `rolename` attribute as `manager`:
 
+[source,xml]
 ----------------------------------
 <tomcat-users>
     <role rolename="manager-gui"/>
@@ -508,10 +505,11 @@ Now add a new user by adding a `user` element. Create a `username` and
 `roles` (in this example we are creating a user called `admin' with a
 corresponding password of `secret'):
 
+[source,xml]
 ---------------------------------------------------------------------
 <tomcat-users>
     <role rolename="manager-gui"/>
-    <user username="admin" password="secret" roles="manager-gui"/>   
+    <user username="admin" password="secret" roles="manager-gui"/>
 </tomcat-users>
 ---------------------------------------------------------------------
 
@@ -543,6 +541,7 @@ well-formed and without error.
 1.  Use the `manager` application to undeploy the TDS.
 2.  Deploy the TDS using the `manager` application.
 
+[[next]]
 == Next Steps: Where To Go From Here
 
 === You’re not finished yet

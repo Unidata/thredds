@@ -1,11 +1,8 @@
-Client Catalog Primer
-=====================
-
 = THREDDS Client Catalog Primer
 
 == What this tutorial covers
 
-==== Reference documentation
+=== Reference documentation
 
 The link:../catalog/InvCatalogSpec.html[catalog specification] is the
 best complete description of THREDDS catalogs.
@@ -40,7 +37,7 @@ added.
 Here’s an example of a very simple catalog:
 
 --------------------------------------------------------------------------------------------------------------
-1 <?xml version="1.0" ?>  
+1 <?xml version="1.0" ?>
 2 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
 3   <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
 4   <dataset name="SAGE III Ozone 2006-10-31" serviceName="odap" urlPath="sage/20061031.nc" ID="20061031.nc"/>
@@ -112,11 +109,11 @@ nested datasets:
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
   <service name="odap" serviceType="OpenDAP"  base="/thredds/dodsC/" />
 
-1  <dataset name="SAGE III Ozone Loss Experiment" ID="Sage III">   
-2    <dataset name="January Averages" serviceName="odap" urlPath="sage/avg/jan.nc" ID="jan.nc"/>    
-2    <dataset name="February Averages" serviceName="odap" urlPath="sage/avg/feb.nc" ID="feb.nc"/>    
-2    <dataset name="March Averages" serviceName="odap" urlPath="sage/avg/mar.nc" ID="mar.nc"/>    
-3  </dataset>    
+1  <dataset name="SAGE III Ozone Loss Experiment" ID="Sage III">
+2    <dataset name="January Averages" serviceName="odap" urlPath="sage/avg/jan.nc" ID="jan.nc"/>
+2    <dataset name="February Averages" serviceName="odap" urlPath="sage/avg/feb.nc" ID="feb.nc"/>
+2    <dataset name="March Averages" serviceName="odap" urlPath="sage/avg/mar.nc" ID="mar.nc"/>
+3  </dataset>
 </catalog>
 -----------------------------------------------------------------------------------------------------
 
@@ -153,7 +150,7 @@ You can add any level of nesting you want, e.g.:
 
 == Describing datasets
 
-==== Reference documentation
+=== Reference documentation
 
 A complete listing of available properties can be found in the
 link:../catalog/InvCatalogSpec.html#dataset[catalog specification].
@@ -187,7 +184,7 @@ is especially important to add the `ID` attribute to your datasets.
 </dataset>
 -----------------------------------------------------------------------------------------
 
-==== Reference documentation
+=== Reference documentation
 
 A complete listing of necessary attributes can be found
 link:../reference/DLexport.html[here].
@@ -232,15 +229,15 @@ the _metadata_ element to factor out common information:
 <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
 
 <dataset name="SAGE III Ozone Loss Experiment" ID="Sage III">
-1  <metadata inherited="true">    
-2    <serviceName>odap</serviceName>    
-2    <authority>unidata.ucar.edu</authority>    
-2    <dataFormatType>NetCDF</dataFormatType>    
+1  <metadata inherited="true">
+2    <serviceName>odap</serviceName>
+2    <authority>unidata.ucar.edu</authority>
+2    <dataFormatType>NetCDF</dataFormatType>
   </metadata>
 
-3  <dataset name="January Averages" urlPath="sage/avg/jan.nc" ID="jan.nc"/>    
-3  <dataset name="February Averages" urlPath="sage/avg/feb.nc" ID="feb.nc"/>    
-4  <dataset name="Global Averages" urlPath="sage/global.nc" ID="global.nc" authority="fluffycats.com"/>    
+3  <dataset name="January Averages" urlPath="sage/avg/jan.nc" ID="jan.nc"/>
+3  <dataset name="February Averages" urlPath="sage/avg/feb.nc" ID="feb.nc"/>
+4  <dataset name="Global Averages" urlPath="sage/global.nc" ID="global.nc" authority="fluffycats.com"/>
 </dataset>
 -----------------------------------------------------------------------------------------------------------
 
@@ -272,9 +269,9 @@ using __catalog references__:
 ---------------------------------------------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="Top Catalog"
-1    xmlns:xlink="http://www.w3.org/1999/xlink">   
-2  <dataset name="Realtime data from IDD" ID="IDD">    
-3    <catalogRef xlink:href="idd/models.xml" xlink:title="NCEP Model Data" name="" />    
+1    xmlns:xlink="http://www.w3.org/1999/xlink">
+2  <dataset name="Realtime data from IDD" ID="IDD">
+3    <catalogRef xlink:href="idd/models.xml" xlink:title="NCEP Model Data" name="" />
 3    <catalogRef xlink:href="idd/radars.xml" xlink:title="NEXRAD Radar" name="" />
 3    <catalogRef xlink:href="idd/obsData.xml" xlink:title="Station Data" name="" />
 3    <catalogRef xlink:href="idd/satellite.xml" xlink:title="Satellite Data" name="" />
@@ -309,7 +306,7 @@ stand-alone in that sense.
 
 == Compound `service` elements
 
-==== Reference documentation
+=== Reference documentation
 
 A complete listing of recognized service types can be found in the
 link:../catalog/InvCatalogSpec.html#serviceTypes[catalog specification].
@@ -382,7 +379,7 @@ location like so:
 </catalog>
 -------------------------------------------------------------------------------------------------
 
-==== Reference documentation
+=== Reference documentation
 
 The schema referenced in the example can be found
 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd[here].
