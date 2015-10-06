@@ -43,6 +43,9 @@ import java.util.List;
 public class ImprovedFileChooser extends JFileChooser {
     private static final Logger logger = LoggerFactory.getLogger(ImprovedFileChooser.class);
 
+    private static String osName = System.getProperty("os.name").toLowerCase();
+    public static boolean isMacOs = osName.startsWith("mac os x");
+
     static {
         // Disable editable "Name" column in JFileChooser details table.
         // This setting is honored by sun.swing.FilePane.DetailsTableModel.
@@ -66,7 +69,13 @@ public class ImprovedFileChooser extends JFileChooser {
 
         AbstractButton detailsViewButton = getDetailsViewButton(this);
         if (detailsViewButton == null) {
-            logger.warn("Couldn't find Details button!");
+            // mac osx does not have a details button. It is recommended to use
+            // a java.awt.FileDialog box on MacOSX for the proper look and feel.
+            // so, don't warn if on a mac.
+            // https://developer.apple.com/library/mac/documentation/Java/Conceptual/Java14Development/07-NativePlatformIntegration/NativePlatformIntegration.html
+            if (!isMacOs) {
+                logger.warn("Couldn't find Details button!");
+            }
             return;
         }
 
@@ -183,13 +192,16 @@ public class ImprovedFileChooser extends JFileChooser {
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException,
             InstantiationException, IllegalAccessException {
         // Switch to Nimbus Look and Feel, if it's available.
-        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                UIManager.setLookAndFeel(info.getClassName());
-                break;
+        if (isMacOs) {
+            System.setProperty ("apple.laf.useScreenMenuBar", "true");
+        } else {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
         }
-
         ImprovedFileChooser fileChooser = new ImprovedFileChooser();
         fileChooser.setPreferredSize(new Dimension(1000, 750));
         fileChooser.showDialog(null, "Choose");
