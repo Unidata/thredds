@@ -266,13 +266,24 @@ The XML Schema definition for the <em>protoDataset</em> element:
 <ol>
   <li><strong>startup</strong>: [<em>never</em> | <em>nocheck</em> | <em>testIndexOnly</em> | <em>test</em> | <em>always</em>] The collection is always read in on server startup. This attribute controls whether the collection index is tested and rebuilt.
     <ul>
-      <li>If &quot;<em>never</em>&quot;, the collection index is always used and must exist. Use this for very large collections that you dont want to inadvertently scan.</li>
-      <li>If &quot;<em>nocheck</em>&quot;, the collection index is  used if it exists, without checking whether its up-to-date. <strong>This is the default.</strong></li>
-      <li>If
-      &quot;<em>testIndexOnly</em>&quot;, the collection index is  used if it exists and it is newer than all of its immediate children. (<strong>experimental</strong>)</li>
-      <li>If
-      &quot;<em>test</em>&quot; or &quot;<em>true</em>&quot;, the collection is scanned and the new collection of children is compared to the old collection. If there are any changes the index is rebuilt.</li>
-      <li>If &quot;<em>always</em>&quot;, the collection is always rescanned and the indices are rebuilt. </li>
+      <li>For GRIB:
+        <ul>
+        <li>If &quot;<em>never</em>&quot;, the collection index is always used and must exist. Use this for very large collections that you dont want to inadvertently scan.</li>
+        <li>If &quot;<em>nocheck</em>&quot;, the collection index is  used if it exists, without checking whether its up-to-date. <strong>This is the default.</strong></li>
+        <li>If
+        &quot;<em>testIndexOnly</em>&quot;, the collection index is  used if it exists and it is newer than all of its immediate children. (<strong>experimental</strong>)</li>
+        <li>If
+        &quot;<em>test</em>&quot; or &quot;<em>true</em>&quot;, the collection is scanned and the new collection of children is compared to the old collection. If there are any changes the index is rebuilt.</li>
+        <li>If &quot;<em>always</em>&quot;, the collection is always rescanned and the indices are rebuilt. </li>
+        </ul>
+      </li>
+      <li>For FMRC:
+      <ul>
+        <li>If
+          &quot;<em>test</em>&quot; or &quot;<em>true</em>&quot;, the collection is scanned and the new collection of children is compared to the old collection. If there are any changes the index is rebuilt.</li>
+        <li>If &quot;<em>nocheck</em>&quot;, the collection index is  used if it exists, without checking whether its up-to-date. <strong>This is the default.</strong></li>
+      </ul>
+      </li>
     </ul>
   </li>
 
@@ -307,8 +318,9 @@ The XML Schema definition for the <em>protoDataset</em> element:
 <ol>
   <li>You must give the role &quot;tdsTrigger&quot; to any user who you want to have the right to send a trigger.</li>
   <li>You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page <strong>https://server:port/thredds/admin/debug?Collections/showCollection</strong></li>
-  <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;</strong>, where <em>name</em> is the collection name. This does a rescan, and updates if anything has changed. </li>
-  <li>The TDM uses the trigger <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;&amp;nocheck</strong> . This
+  <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection/trigger?collection=<em>name</em>&amp;trigger=<em>type</em></strong>,
+    where <em>name</em> is the collection name, and <em>type</em> is a collectionUpdateType (see update element above). This does a rescan, and updates if anything has changed. </li>
+  <li>The TDM uses the trigger <strong>https://server:port/thredds/admin/collection/trigger?collection=<em>name</em>&amp;trigger=nocheck</strong>. This
     does not rescan the directory, it simply recreates the dataset using the current index. </li>
   <li>Also see <a href="../RemoteManagement.html">enabling Remote Management</a></li>
 </ol>
