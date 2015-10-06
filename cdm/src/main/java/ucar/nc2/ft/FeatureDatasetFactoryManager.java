@@ -76,9 +76,13 @@ public class FeatureDatasetFactoryManager {
     }
 
     registerFactory(FeatureType.ANY_POINT, PointDatasetStandardFactory.class);
-    registerFactory(FeatureType.SWATH, GridDatasetStandardFactory.class); // LOOK - why not use FeatureType[] getFeatureType(
+
+    registerFactory(FeatureType.COVERAGE, GridDatasetStandardFactory.class); // LOOK - why not use FeatureType[] getFeatureType(
+    registerFactory(FeatureType.SWATH, GridDatasetStandardFactory.class);
     registerFactory(FeatureType.GRID, GridDatasetStandardFactory.class);
     registerFactory(FeatureType.FMRC, GridDatasetStandardFactory.class);
+    registerFactory(FeatureType.CURVILINEAR, GridDatasetStandardFactory.class);
+
     registerFactory(FeatureType.RADIAL, RadialDatasetStandardFactory.class);
     registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
 
@@ -219,6 +223,7 @@ public class FeatureDatasetFactoryManager {
    */
   public static FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task)
           throws IOException, NoFactoryFoundException {
+
     Formatter errlog = new Formatter();
     FeatureDataset fd = FeatureDatasetFactoryManager.open(wantFeatureType, location, task, errlog);
 
@@ -247,6 +252,7 @@ public class FeatureDatasetFactoryManager {
    * @throws java.io.IOException on io error
    */
   static public FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+
     // special processing for thredds: datasets
     if (location.startsWith(DataFactory.SCHEME)) {
       DataFactory.Result result = new DataFactory().openFeatureDataset(wantFeatureType, location, task);

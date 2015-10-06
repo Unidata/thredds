@@ -469,7 +469,7 @@ public class DataFactory {
     else if(serviceType == ServiceType.DAP4)
         prefix = "dap4:";
 
-    boolean enhanceMode = false;
+    boolean enhanceMode = true;
     if (prefix != null) {
       String curl = datasetLocation;
       if (curl.startsWith("http:")) {

@@ -31,61 +31,59 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package thredds.featurecollection;
+package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import thredds.client.catalog.tools.DataFactory;
+import ucar.ma2.Section;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
+import ucar.nc2.ft2.coverage.*;
+import ucar.unidata.test.util.ExternalServer;
 
 /**
  * Describe
  *
  * @author caron
- * @since 9/26/2015.
+ * @since 10/5/2015.
  */
-@RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
-public class TestFeatureDatasetFactory {
-
-  @Parameterized.Parameters(name = "{0}")
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>();
-
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.ANY});
-    // result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.SWATH});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf", FeatureType.CURVILINEAR});
-
-    return result;
-  }
-
-  String ds;
-  FeatureType what;
-
-  public TestFeatureDatasetFactory(String ds, FeatureType what) {
-    this.ds = ds;
-    this.what = what;
-  }
+public class TestRemoteCoverage {
 
   @Test
-  public void testOpen() throws IOException {
-    System.out.printf("FeatureDatasetFactoryManager.open %s%n", ds);
-    Formatter errlog = new Formatter();
-    try (FeatureDataset fd = FeatureDatasetFactoryManager.open(what, ds, null, errlog)) {
-      Assert.assertNotNull(errlog.toString()+" "+ds, fd);
-      if (what != FeatureType.ANY)
-        Assert.assertEquals(what, fd.getFeatureType());
+  public void testCdmRemoteCoverage() throws Exception {
+    ExternalServer.LIVE.assumeIsAvailable();
+    String ds = "http://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
+
+    try (DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null)) {
+      System.out.println("result errlog= " + result.errLog);
+      assert !result.fatalError;
+      assert result.featureType == FeatureType.GRID;
+      assert result.featureDataset != null;
+
+      String gridName = "Temperature_isobaric";
+      FeatureDatasetCoverage dataset = (FeatureDatasetCoverage) result.featureDataset;
+      Assert.assertNotNull(gridName, dataset.getDataVariable(gridName));
+      Assert.assertEquals(1, dataset.getCoverageCollections().size());
+
+      CoverageCollection cc = dataset.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
+
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull("CoverageCoordSys", gcs);
+      Assert.assertEquals("CoverageCoordSys rank", 5, gcs.getAxes().size());
+
+      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.horizStride, 3);
+
+      GeoReferencedArray geo = grid.readData(params);
+      CoverageCoordSys geoCoordsys = geo.getCoordSysForData();
+      Assert.assertNotNull("geoCoordsys", geoCoordsys);
+
+      int[] shape = geoCoordsys.getShape();
+      System.out.println("grid_section.getShape= " + new Section(shape));
+      int[] expectShape = new int[] {1, 3, 101, 164};
+      Assert.assertArrayEquals("subset shape", expectShape, shape);
     }
   }
+
 }

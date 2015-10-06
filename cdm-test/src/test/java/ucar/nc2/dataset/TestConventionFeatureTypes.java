@@ -65,7 +65,10 @@ public class TestConventionFeatureTypes {
       System.out.printf("Open FeatureDataset %s%n", f.getPath());
       try (FeatureDataset fd = FeatureDatasetFactoryManager.open(type, f.getPath(), null, new Formatter())) {
         Assert.assertNotNull(f.getPath(), fd);
-        Assert.assertEquals(f.getPath(), type, fd.getFeatureType());
+        if (type == FeatureType.GRID)
+          Assert.assertTrue(f.getPath(), fd.getFeatureType().isCoverageFeatureType());
+        else if (type == FeatureType.POINT)
+          Assert.assertTrue(f.getPath(), fd.getFeatureType().isPointFeatureType());
       }
 
     }

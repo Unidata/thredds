@@ -45,6 +45,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
@@ -191,42 +192,6 @@ public class TestGridSubset {
       assert shape[0] == 1 : shape[0] + " should be 1";
       assert shape[1] == 363 : shape[1] + " should be 363";
       assert shape[2] == 479 : shape[2] + " should be 479";
-    }
-  }
-
-  @Test
-  public void testDODS() throws Exception {
-    ExternalServer.LIVE.assumeIsAvailable();
-    String ds = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
-    GridDataset dataset = null;
-
-    try {
-      DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null);
-      System.out.println("result errlog= " + result.errLog);
-      assert !result.fatalError;
-      assert result.featureType == FeatureType.GRID;
-      assert result.featureDataset != null;
-
-      dataset = (GridDataset) result.featureDataset;
-
-      GeoGrid grid = dataset.findGridByName("Temperature_isobaric");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-      assert grid.getRank() == 4;
-
-      GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
-      int[] shape = grid_section.getShape();
-      System.out.println("grid_section.getShape= " + new Section(shape));
-
-      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-      assert data.getShape()[0] == shape[0] : data.getShape()[0];
-      assert data.getShape()[1] == shape[1] : data.getShape()[1];
-      assert data.getShape()[2] == 101 : data.getShape()[2];
-      assert data.getShape()[3] == 164 : data.getShape()[3];
-
-    } finally {
-      if (dataset != null) dataset.close();
     }
   }
 

@@ -2,6 +2,10 @@
 :linkcss:
 :stylesheet: ../../cdm.css
 
+[[img-CoverageDataset]]
+.Coverage Dataset UML
+image::CoverageDataset.svg[CoverageDataset diagram]
+
 == Overview
 
 *_Coverage Datasets_* are collections of Coverage Features such as *Grid, Fmrc,* and *Swath*.
@@ -64,7 +68,7 @@ public class CoverageCollection implements Closeable {
 
 === CoordSysSet
 
-A *CoordSysSet* simple groups all of the *Coverages* that belong to the same *CoverageCoordSys*:
+A *CoordSysSet* simply groups all of the *Coverages* that belong to the same *CoverageCoordSys*:
 
 [source,java]
 ----
@@ -76,28 +80,101 @@ public class CoordSysSet {
 
 === CoverageCoordSys
 
+[[img-CoverageCoordSys]]
+.Coverage Coordinate System UML
+image::CoverageCoordSys.svg[Coverage Coordinate System diagram]
+
+A CoverageCoordSys represents the _Coordinate System_ for Coverages.
+
+[source,java]
+----
+public class CoverageCoordSys {
+  public String getName();
+  public FeatureType getCoverageType();
+
+  public List<String> getAxisNames();
+  public List<CoverageCoordAxis> getAxes();
+  public CoverageCoordAxis getAxis(String axisName);
+  public CoverageCoordAxis getAxis(AxisType type);
+  public CoverageCoordAxis getXAxis();
+  public CoverageCoordAxis getYAxis() ;
+  public CoverageCoordAxis getZAxis();
+  public CoverageCoordAxis getTimeAxis();
+
+  public List<String> getTransformNames();
+  public List<CoverageTransform> getTransforms();
+  public CoverageTransform getHorizTransform();
+  public HorizCoordSys getHorizCoordSys();
+
+  public boolean isRegularSpatial();
+  public ProjectionImpl getProjection();
+}
+----
+
 === CoverageCoordAxis
+
+[source,java]
+----
+public class CoverageCoordAxis {
+  public String getName();
+  public DataType getDataType();
+  public AxisType getAxisType();
+  public List<Attribute> getAttributes();
+  public String getUnits();
+  public String getDescription();
+
+  public int getNcoords();
+  public DependenceType getDependenceType();
+  public Spacing getSpacing();
+  public double getResolution();
+  public double getStartValue();
+  public double getEndValue();
+
+  public boolean isRegular();
+  public boolean isScalar();
+}
+----
+
+[source,java]
+----
+public enum DependenceType {
+  independent,             // has its own dimension, is a coordinate variable, eg x(x)
+  dependent,               // aux coordinate, eg reftime(time) or time_bounds(time);
+  scalar,                  // eg reftime
+  twoD                     // eg time(reftime, time), lat(x,y)
+}
+----
+
+[source,java]
+----
+public enum Spacing {
+  regular,           // regularly spaced points or intervals (start, end, npts),
+                     // edges halfway between coords
+  irregularPoint,    // irregular spaced points (values, npts), edges halfway between coords
+  contiguousInterval,// irregular contiguous spaced intervals (values, npts),
+                     // values are the edges, and there are npts+1, coord halfway between edges
+  discontiguousInterval // irregular discontiguous spaced intervals (values, npts),
+                     // values are the edges, and there are 2*npts: low0, high0, low1, high1..
+}
+----
 
 === CoverageTransform
 
+A *CoverageTransform* contains parameters for horizontal or vertical transforms.
 
------------------------------------------------------------------------------------------------------------------
-  public enum DependenceType {
-    independent,             // time(time)
-    dependent,               // reftime(time), lat(x,y)
-    scalar,                  // reftime
-    twoD }                   // time(reftime, time): must have reftime(reftime) - maybe this is a subclass (FMRC)
------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
+public class CoverageTransform  {
+  public String getName();
+  public boolean isHoriz();
+  public ProjectionImpl getProjection();
 
-stuff
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  public enum Spacing {
-    regular,                 // regularly spaced points or intervals (start, end, npts), edges halfway between coords
-    irregularPoint,          // irregular spaced points (values, npts), edges halfway between coords
-    contiguousInterval,      // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
-    discontiguousInterval }  // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+  public java.util.List<Attribute> getAttributes();
+  public Attribute findAttribute(String name);
+  public Attribute findAttributeIgnoreCase(String name);
+  public String findAttValueIgnoreCase(String attName, String defaultValue);
+}
+----
 
 == Classification
 
