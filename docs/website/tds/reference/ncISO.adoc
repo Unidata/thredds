@@ -1,6 +1,3 @@
-TDS and ncISO: Metadata Services
-================================
-
 = TDS and ncISO: Metadata Services
 
 '''''

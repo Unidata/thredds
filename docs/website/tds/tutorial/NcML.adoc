@@ -1,11 +1,8 @@
-Using NcML in TDS
-=================
-
 = Using NcML in TDS
 
 == NCML and the TDS
 
-==== For more information
+=== For more information
 
 * http://www.unidata.ucar.edu/software/netcdf/ncml/[NetCDF Markup
 Language]
@@ -50,7 +47,7 @@ You can use use NcML to modify an existing CDM dataset:
 
 2)  <dataset name="Example NcML Modified" ID="ExampleNcML-Modified" urlPath="ExampleNcML/Modified.nc">
       <serviceName>ncdods</serviceName>
-3)    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" 
+3)    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
               location="/machine/tds/workshop/ncml/example1.nc">
 4)      <variable name="Temperature" orgName="T"/>
 5)      <variable name="ReletiveHumidity" orgName="rh">
@@ -104,7 +101,7 @@ Lets look at serving a file directly vs serving it through NcML:
     </dataset>
 3)  <dataset name="Example NcML Modified" ID="Modified" urlPath="ExampleNcML/Modified.nc">
       <serviceName>ncdods</serviceName>
-4)    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" 
+4)    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
               location="/machine/tds/workshop/ncml/example1.nc">
           <variable name="Temperature" orgName="T"/>
       </netcdf>
@@ -142,10 +139,10 @@ Here is an example that defines a dataset using NcML aggregation.
 3)    <serviceName>ncdods</serviceName>
 4)    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 5)      <aggregation dimName="time" type="joinExisting">
-6)        <scan location="/machine/tds/workshop/ncml/cg/" dateFormatMark="CG#yyyyDDD_HHmmss" 
+6)        <scan location="/machine/tds/workshop/ncml/cg/" dateFormatMark="CG#yyyyDDD_HHmmss"
                 suffix=".nc" subdirs="false"/>
         </aggregation>
-      </netcdf>  
+      </netcdf>
     </dataset>
   </catalog>
 ---------------------------------------------------------------------------------------------
@@ -180,7 +177,7 @@ dynamically scanned.
 
 --------------------------------------------------------------------------------------------------------------------------
 1)  <datasetScan name="Ocean Satellite Data" ID="ocean/sat" path="ocean/sat" location="/machine/tds/workshop/ncml/ocean/">
-      <filter> 
+      <filter>
         <include wildcard="*.nc" />
       </filter>
 2)    <metadata inherited="true">
@@ -193,7 +190,7 @@ dynamically scanned.
      </datasetScan>
 --------------------------------------------------------------------------------------------------------------------------
 
-==== Notes:
+=== Notes:
 
 1.  A `datasetScan` element is created whose contained datasets start
 with URL path `ocean/sat`, and whose contents are all the files in the
@@ -231,7 +228,7 @@ from your main catalog.
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
      xmlns:xlink="http://www.w3.org/1999/xlink"
      name="TDS workshop test 4" version="1.0.2">
-     
+
    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
 1) <dataset name="Example NcML Agg" ID="ExampleNcML-Agg" urlPath="ExampleNcML/Agg.nc">
      <serviceName>ncdods</serviceName>
@@ -299,19 +296,19 @@ from your main catalog:
        <attribute name="History" value="Processed by Kraft"/>
      </netcdf>
    </protoDataset>
- 
+
 2) <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
     <variable name="time">
       <attribute name="units" value="days since 2006-11-01 00:00 UTC"/>
     </variable>
     <attribute name="Conventions" value="CF-1.0"/>
    </netcdf>
-    
+
   </featureCollection>
 </catalog>
 -------------------------------------------------------------------------------------------------
 
-==== Notes:
+=== Notes:
 
 1.  The `protoDataset` is modified by adding a global attribute
 `History="Processed by Kraft"`.
@@ -334,11 +331,11 @@ the TDS:
 1.  Go to the TDS catalog and find the problem dataset. Inside the
 `<dataset>` element will be a `<netcdf>` element, that is the NcML
 aggregation. Extract it out and put it in a file called "`test.ncml`".
-1.  Add the XML header to the top of it:
+.. 1.  Add the XML header to the top of it:
 `<?xml version="1.0"encoding="UTF-8"?>`
-2.  Remove the `recheckEvery` attribute if present on the `<scan>`
+.. 2.  Remove the `recheckEvery` attribute if present on the `<scan>`
 element.
-3.  Make sure that the `<scan>` location is available on the machine you
+.. 3.  Make sure that the `<scan>` location is available on the machine you
 are running ToolsUI
 +
 Now start up

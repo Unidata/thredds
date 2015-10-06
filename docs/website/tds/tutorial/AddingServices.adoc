@@ -1,6 +1,3 @@
-OGC/ISO Services (WCS, WMS, and ncISO)
-======================================
-
 = OGC/ISO Services (WCS, WMS, and ncISO)
 
 == Setting up WCS, WMS, and ncISO
@@ -134,12 +131,12 @@ $ ./shutdown.sh
 $ ./startup.sh
 -----------------------
 4.  Test that WCS and WMS are working:
-1.  Bring the catalog up in a browser:
+.. 1.  Bring the catalog up in a browser:
 `http://localhost:8080/thredds/catalog.html`
-2.  Click down to one of the NAM dataset pages.
-3.  Select the WCS Access link
-4.  Go back, select the WMS Access link
-5.  Check Dataset Viewer Links for Godiva2 (ToolsUI and Godiva2 are
+.. 2.  Click down to one of the NAM dataset pages.
+.. 3.  Select the WCS Access link
+.. 4.  Go back, select the WMS Access link
+.. 5.  Check Dataset Viewer Links for Godiva2 (ToolsUI and Godiva2 are
 there but IDV is not).
 
 === Adding ``Grid'' DataType to Datasets
@@ -198,7 +195,7 @@ time intervals with the addition of an `intervalTime` element in the
 
 ---------------------------------
 <intervalTime>true</intervalTime>
-     
+
 ---------------------------------
 
 Unfortunately, though time intervals are part of the WMS specification,

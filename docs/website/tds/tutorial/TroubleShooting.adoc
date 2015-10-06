@@ -1,6 +1,3 @@
-Troubleshooting Configuration Catalogs
-======================================
-
 = Troubleshooting Configuration Catalogs
 
 == Check log files for errors
@@ -52,7 +49,7 @@ If you use the same path in more than one data root:
 
 ----------------------------------------------------------------------------------
 <datasetRoot path="testdup" location="C:/data/" />
-<datasetScan name="duplicate path" path="testdup" location="/home/workshop/data/" 
+<datasetScan name="duplicate path" path="testdup" location="/home/workshop/data/"
              serviceName="dodsServer" />
 ----------------------------------------------------------------------------------
 
@@ -68,9 +65,9 @@ Error: already have dataRoot =<testdup> mapped to directory= <C:/data/> wanted t
 If you use the same id in more than one dataset:
 
 ---------------------------------------------------------------------------
-<dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" 
+<dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap"
          urlPath="test/testData2.grib2" dataType="Grid" />
-<dataset name="Test Single Dataset 3" ID="testDataset2" serviceName="odap" 
+<dataset name="Test Single Dataset 3" ID="testDataset2" serviceName="odap"
          urlPath="test/testData3.grib3" dataType="Grid" />
 ---------------------------------------------------------------------------
 
@@ -162,17 +159,17 @@ No warning - you simply wont see any datasets in that DatasetScan.
 No warning - but when you try to access the dataset, client gets:
 
 --------------------------------------------------------------------------------------------------------------------------------------------
-Error {     
-  code = 500;      
-  message = "There are no datasets in the aggregation DatasetCollectionManager { 
-  collectionName='/data/goes/**/.gini' recheck=15.0 min    dir=/data/goes/ filter=WildcardMatchOnPath{wildcard=*.gini$ regexp=.*\.gini$}";  
+Error {
+  code = 500;
+  message = "There are no datasets in the aggregation DatasetCollectionManager {
+  collectionName='/data/goes/**/.gini' recheck=15.0 min    dir=/data/goes/ filter=WildcardMatchOnPath{wildcard=*.gini$ regexp=.*\.gini$}";
 };
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 and the `threddsServlet.log` has:
 
 ----------------------------------------------------------------------------------------------------------------------------------------
-SEVERE: path= /ncmlTest.html 
-   java.lang.IllegalStateException: There are no datasets in the aggregation DatasetCollectionManager{   
+SEVERE: path= /ncmlTest.html
+   java.lang.IllegalStateException: There are no datasets in the aggregation DatasetCollectionManager{
    collectionName='/data/goes/**/.gini' recheck=15.0 min dir=/data/goes/ filter=WildcardMatchOnPath{wildcard=*.gini$   regexp=.*\.gini$}
 ----------------------------------------------------------------------------------------------------------------------------------------

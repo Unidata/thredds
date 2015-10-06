@@ -1,6 +1,3 @@
-NcML Aggregation Examples
-=========================
-
 = NcML Aggregation Examples
 
 Our goal in this section is to aggregate datafiles using NcML.
@@ -29,7 +26,7 @@ enter the following
     <scan location="data/" suffix=".nc" subdirs="false"/>
   </aggregation>
 </netcdf>
-        
+
 -----------------------------------------------------------------------
 6.  Save the file as
 `/machine/tds/data/ncmlExamples/aggAdvancedNcmlOne/joinExisting.ncml`
@@ -58,7 +55,7 @@ section of the xml:
 <variable name="u">
     <attribute name="coordinates" value="MT Depth Latitude Longitude"/>
 </variable>
-        
+
 -----------------------------------------------------------------------
 16. Save the NcML edits and return to the CoordSys tab. What happens? Is
 this what we want?
@@ -97,7 +94,7 @@ enter the following:
     <scan dateFormatMark="umwmout_#yyyy-MM-dd_HH-mm-ss" location="data/" suffix=".nc" subdirs="false" />
   </aggregation>
 </netcdf>
-          
+
 --------------------------------------------------------------------------------------------------------
 7.  Save the file as
 `/machine/tds/data/ncmlExamples/aggAdvancedNcmlTwo/joinNew.ncml`
@@ -153,7 +150,7 @@ file inside the aggregation tag:
 <variableAgg name="dwp" />
 <variableAgg name="dwl" />
 <variableAgg name="dwd" />
-          
+
 ----------------------------------
 11. Open the NcML file in FeatureTypes → Grids, click on a variable (say
 ``seamask''), and click the Red Alien to visualize the data.

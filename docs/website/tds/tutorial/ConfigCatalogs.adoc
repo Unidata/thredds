@@ -1,6 +1,3 @@
-TDS Configuration Catalogs
-==========================
-
 = TDS Configuration Catalogs
 
 == The `service` Element
@@ -451,10 +448,10 @@ $ ./shutdown.sh
 $ ./startup.sh
 -----------------------
 6.  Test that the new `datasetScan` elements are working:
-1.  Bring the catalog up in a browser:
+.. 1.  Bring the catalog up in a browser:
 `http://localhost:8080/thredds/catalog.html`
-2.  Browse into the new dataset collections.
-3.  Try an OPeNDAP access method link
+.. 2.  Browse into the new dataset collections.
+.. 3.  Try an OPeNDAP access method link
 
 Now that we have multiple dataset roots …
 
@@ -488,14 +485,14 @@ $ ./shutdown.sh
 $ ./startup.sh
 -----------------------
 3.  What happens with duplicate data roots:
-1.  Browse into the GFS dataset
+.. 1.  Browse into the GFS dataset
 [http://localhost:8080/thredds/catalog.html]
-2.  Check the list of dataset roots
+.. 2.  Check the list of dataset roots
 [http://localhost:8080/thredds/admin/debug - click on ``Check data
 roots'']
-3.  Check the catalogInit.log [http://localhost:8080/thredds/admin/debug
+.. 3.  Check the catalogInit.log [http://localhost:8080/thredds/admin/debug
 - click on ``Show TDS Logs'']
-4.  Now fix the GFS datasetScan element.
+.. 4.  Now fix the GFS datasetScan element.
 
 == More `datasetScan` Element
 

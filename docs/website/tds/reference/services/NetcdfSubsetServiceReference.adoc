@@ -92,8 +92,7 @@ Output Format (__accept__ parameter)::
 
 == Use cases
 
-*Spatial and coordinate subsetting*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== *Spatial and coordinate subsetting*
 
 NCSS provides two types of bounding boxes to subset the data:
 
@@ -146,8 +145,7 @@ Example request:
 By default, if no spatial subsetting is specified, the service returns all the features in the dataset.
 
 
-*Single-point requests*
-^^^^^^^^^^^^^^^^^^^^^^^
+=== *Single-point requests*
 
 The NetCDF Subset Service allows the user to extract data for a point of interest by specifying its latitude and longitude. The result differs
 depending on the underlying dataset.
@@ -166,8 +164,7 @@ For example:
 
 This finds the station nearest to (lat=40.2, lon=61.8) and returns its temperature data.
 
-*Temporal subsetting and valid time ranges*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== *Temporal subsetting and valid time ranges*
 
 There are several ways to do temporal subsetting requests:
 
@@ -189,15 +186,14 @@ Examples of time query strings with valid temporal ranges:
 * *time=present*
 * *time=all*
 
-*Vertical coordinate subsetting*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== *Vertical coordinate subsetting*
+
 
 Subsetting on the vertical axis of a variable or variables with the same vertical levels may be done with the vertCoord parameter.
 
 By default, all vertical levels are returned.
 
-*Single Variable requests*
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== *Single Variable requests*
 
 Note that these single variable requests can be easily extended to multivariable request by simply passing a comma separated list of variables in the
 var= parameter. Please note that for grid datasets, each variable in the request must have the same vertical levels.

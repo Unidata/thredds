@@ -1,6 +1,3 @@
-THREDDS and Metadata
-====================
-
 = THREDDS and Metadata
 
 The term **metadata** refers to ``data about data''. The term is
@@ -64,8 +61,8 @@ The example enhanced catalog lives at
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
-    xmlns:xlink="http://www.w3.org/1999/xlink" 
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
 (1) name="Unidata THREDDS/IDD Data Server" version="1.0.1">
 
 (2) <service name="latest" serviceType="Resolver" base="" />
@@ -98,13 +95,13 @@ The example enhanced catalog lives at
     </metadata>
 
 (6) <datasetScan name="ETA Model/CONUS 80 km" ID="NCEP-ETA"
-                       path="testEnhanced" location="content/dodsC/data/"> 
+                       path="testEnhanced" location="content/dodsC/data/">
 
 (7)  <metadata inherited="true">
 (8)  <documentation
-  type="summary">NCEP North American Model : AWIPS 211 (Q) Regional - CONUS (Lambert Conformal). 
- Model runs are made at 12Z and 00Z, with analysis and forecasts every 6 hours out to 60 hours. 
- Horizontal = 93 by 65 points, resolution 81.27 km, LambertConformal projection. 
+  type="summary">NCEP North American Model : AWIPS 211 (Q) Regional - CONUS (Lambert Conformal).
+ Model runs are made at 12Z and 00Z, with analysis and forecasts every 6 hours out to 60 hours.
+ Horizontal = 93 by 65 points, resolution 81.27 km, LambertConformal projection.
  Vertical = 1000 to 100 hPa pressure levels.</documentation>
 
 (9)   <geospatialCoverage>
@@ -155,20 +152,20 @@ Because it has **inherited=``true''**, everything in it will apply to
 the collection’s nested datasets. The specific fields are ones that
 often can be factored out in this way, but your catalog may be
 different.
-1.  *serviceName* indicates that all the nested datasets will use the
+.. 1.  *serviceName* indicates that all the nested datasets will use the
 compound service named __both__.
-2.  *authority* is used to create globally unique dataset IDs. Note the
+.. 2.  *authority* is used to create globally unique dataset IDs. Note the
 use of *reverse* *DNS* *naming,* which guarentees global uniqueness.
-3.  **dataType**: all datasets are of type __Grid__.
-4.  **dataFormat**: all datasets have file type __NetCDF__.
-5.  *rights:* a documentation element indicating who is allowed to use
+.. 3.  **dataType**: all datasets are of type __Grid__.
+.. 4.  **dataFormat**: all datasets have file type __NetCDF__.
+.. 5.  *rights:* a documentation element indicating who is allowed to use
 the data.
-6.  **documentation**: an example of how to embed links to web pages.
-7.  **creator**: who created the dataset. Note that we used standard
+.. 6.  **documentation**: an example of how to embed links to web pages.
+.. 7.  **creator**: who created the dataset. Note that we used standard
 names from http://gcmd.nasa.gov/User/difguide/difman.html[GCMD DIF
 vocabulary].
-8.  **publisher**: who is serving the dataset
-9.  **timeCoverage**: the time range that the collection of data covers.
+.. 8.  **publisher**: who is serving the dataset
+.. 9.  **timeCoverage**: the time range that the collection of data covers.
 In this example, there are 14 days of data available in the collection,
 ending with the present time.
 6.  The *datasetScan* element dynamically creates a subcatalog by

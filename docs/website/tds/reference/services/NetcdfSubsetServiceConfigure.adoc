@@ -1,6 +1,3 @@
-Configuring the NetCDF Subset Service
-=====================================
-
 = Configuring the NetCDF Subset Service
 
 '''''
@@ -42,9 +39,9 @@ In your configuration catalogs, you must define the service like this:
 Then as usual, add the service to any datasets that you want served, eg:
 
 ------------------------------------------------------------------
-<dataset name="datasetName" ID="datasetID" urlPath="/my/urlPath"> 
-   <serviceName>subsetServer</serviceName> 
-</dataset> 
+<dataset name="datasetName" ID="datasetID" urlPath="/my/urlPath">
+   <serviceName>subsetServer</serviceName>
+</dataset>
 ------------------------------------------------------------------
 
 Note that the name of the service ( _subsetServer_ in this example) is

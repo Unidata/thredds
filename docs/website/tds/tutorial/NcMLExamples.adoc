@@ -1,6 +1,3 @@
-NcML Examples
-=============
-
 = NcML Examples
 
 Our goal in this section is to enhance two sample datasets using NcML.
@@ -22,7 +19,7 @@ IDV).
 1.  First, shutdown Tomcat and add the following to your `catalog.xml`:
 +
 ----------------------------------------------------------------------------------------------
-<datasetRoot path="workshop_ncml" location="/machine/tds/data/ncmlExamples/simpleNcmlTwo/" /> 
+<datasetRoot path="workshop_ncml" location="/machine/tds/data/ncmlExamples/simpleNcmlTwo/" />
 
 <dataset name="ncml examples" ID="testNcmlDataset" serviceName="odap"
          urlPath="workshop_ncml/hwave_4D.nc"/>

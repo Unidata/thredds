@@ -1,6 +1,3 @@
-TDS Dataset Viewer Links
-========================
-
 = TDS Dataset Viewer Links
 
 '''''
@@ -10,7 +7,7 @@ HTML web page, for example:
 
 image:images/StandardViewers.png[Viewers]
 
-=== Standard Viewer Links
+== Standard Viewer Links
 
 Currently, the TDS automatically adds the following:
 
@@ -20,7 +17,7 @@ service
 * an *IDV* link to any dataset that has an OPeNDAP service and has a
 DataType of GRID.
 
-=== Adding Viewer Links
+== Adding Viewer Links
 
 The TDS also supports several ways to configure other viewer links and
 their results:
@@ -51,7 +48,7 @@ following example:
 
 -------------------------------------------------------------------------------------------------------------------
 <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="test/testData.nc" dataType="Grid">
-  
+
   <property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/>
   <property name="viewer2" value="http://www.unidata.ucar.edu/,MyOtherViewer"/>
 </dataset>
@@ -392,7 +389,7 @@ return this JNLP file:
 -----------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/current/webstart">
-    
+
    <information>
      <title>NetCDF Tools UI</title>
      <vendor>Unidata</vendor>
@@ -401,17 +398,17 @@ return this JNLP file:
      <icon href="nc.gif"/>
      <offline-allowed/>
    </information>
-    
+
    <security>
      <all-permissions/>
    </security>
-   
+
    <resources>
      <j2se version="1.6+" max-heap-size="1024m"/>
      <jar href="netcdfUI.jar"/>
      <extension name="netcdfUI Extra" href="netCDFtoolsExtraJars.jnlp"/>
    </resources>
-   
+
    <application-desc main-class="ucar.nc2.ui.ToolsUI">
      <argument>{catalog}#{dataset}</argument>
    </application-desc>
@@ -427,7 +424,7 @@ to view.
 for example:
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- 
+
   <application-desc main-class="ucar.nc2.ui.ToolsUI">
       <argument>http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/GFS/CONUS_95km/files/catalog.xml#fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20120414_0000.grib1</argument>
  </application-desc>
