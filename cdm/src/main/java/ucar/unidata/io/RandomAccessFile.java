@@ -371,8 +371,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       maxOpenFiles.set(max);
       count_openFiles.getAndIncrement();
       if (showOpen) System.out.println("  open " + location);
-      if (openFiles.size() > 1000)
-        System.out.println("RandomAccessFile debugLeaks");
+      //if (openFiles.size() > 1000)
+      //  System.out.println("RandomAccessFile debugLeaks");
     }
   }
 

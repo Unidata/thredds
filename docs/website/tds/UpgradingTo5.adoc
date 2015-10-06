@@ -6,7 +6,7 @@
 :last-update-label!:
 [[tdsDocs]]
 
-= Upgrading to TDS version 5
+= Upgrading to CDM / TDS version 5
 
 == Requirements
 
@@ -181,9 +181,10 @@ instead of the exact comparison done by `equals(Array, Array)`.
 
 === Coverage Feature Datasets (ucar.nc2.ft2.coverage)
 
-* Completely new package that replaces ucar.nc2.dt.grid. *FeatureDatasetCoverag*e replaces *GridDataset*.
+* Completely new package that replaces ucar.nc2.dt.grid. *FeatureDatasetCoverage* replaces *GridDataset*.
 * *FeatureType.COVERAGE* is the general term for *GRID, FMRC, SWATH, CURVILINEAR* types.
-
+* For new API see link:../netcdf-java/reference/FeatureDatasets/CoverageFeatures.adoc[CoverageFeatures]
+* Uses of classes in *ucar.nc2.dt.grid* are deprecated, though the code is still in the core jar file for now.
 
 
 === Catalogs
