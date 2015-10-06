@@ -1,6 +1,3 @@
-threddsConfig.xml
-=================
-
 = TDS Configuration file
 
 '''''
@@ -141,7 +138,7 @@ here:
 ------------------------------------------------------------
 <htmlSetup>
 1)  <standardCssUrl>tds.css</standardCssUrl>
-2)  <catalogCssUrl>tdsCat.css</catalogCssUrl>    
+2)  <catalogCssUrl>tdsCat.css</catalogCssUrl>
 3)  <openDapCssUrl>tdsDap.css</openDapCssUrl>
 4)  <googleTrackingCode>239487348739933</googleTrackingCode>
 </htmlSetup>

@@ -1,6 +1,3 @@
-GRIB Feature Collections
-========================
-
 = GRIB Feature Collections
 
 '''''
@@ -19,7 +16,7 @@ datasets.
 groups.
 * Interval time coordinates are fully supported.
 
-=== Version 4.5
+== Version 4.5
 
 The GRIB Collections framework has been rewritten in CDM version 4.5, in
 order to handle large collections efficiently. Version 4.5 requires Java
@@ -67,7 +64,7 @@ configure the TDS to only read and never write the indexes.
 * Collections in the millions of records are now feasible. Java 7 NIO2
 package is used to efficiently scan directories.
 
-=== Version 4.6
+== Version 4.6
 
 The GRIB Collections framework has been rewritten in CDM version 4.6, in
 order to handle very large collections efficiently. Oh wait we already
@@ -115,11 +112,11 @@ Collection Processing]
     <dataType>Grid</dataType>
    </metadata>
 
-4) <collection name="ds083.2-none" 
-5)      spec="Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/PofP/**/.*grib1" 
+4) <collection name="ds083.2-none"
+5)      spec="Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/PofP/**/.*grib1"
 6)      timePartition="none"/>
 
-7)   <update startup="never" trigger="allow"/> 
+7)   <update startup="never" trigger="allow"/>
 8)   <tdm rewrite="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
 9)   <gribConfig datasetTypes="TwoD Latest Best" />
 </featureCollection>
@@ -231,7 +228,7 @@ A time partition generates one collection dataset, one dataset for each
 partition, and one dataset for each individual file in the collection:
 
 -----------------------------------------------------------------------------------------------------------------------------------------
-<dataset name="NAM-Polar90" ID="grib/NCEP/NAM/Polar90">    
+<dataset name="NAM-Polar90" ID="grib/NCEP/NAM/Polar90">
   <catalogRef xlink:href="/thredds/catalog/grib/NCEP/NAM/Polar90/collection/catalog.xml" xlink:title="collection"/>
   <catalogRef xlink:href="/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/catalog.xml" xlink:title="NAM-Polar90_20110301">
     <catalogRef xlink:href="/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/files/catalog.xml" xlink:title="files" />
@@ -247,19 +244,19 @@ de-referencing the catalogRefs, and simplifying:
 
 -------------------------------------------------------------------------------------------------------------------------------------
 <dataset name="NAM-Polar90" ID="grib/NCEP/NAM/Polar90">
-1)<dataset name="NAM-Polar90-collection" urlPath="grib/NCEP/NAM/Polar90/collection"> 
-2)<dataset name="NAM-Polar90_20110301" urlPath="grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/collection">    
-3)  <dataset name="NAM_Polar_90km_20110301_0000.grib2" urlPath="grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110301_0000.grib2"/>    
+1)<dataset name="NAM-Polar90-collection" urlPath="grib/NCEP/NAM/Polar90/collection">
+2)<dataset name="NAM-Polar90_20110301" urlPath="grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/collection">
+3)  <dataset name="NAM_Polar_90km_20110301_0000.grib2" urlPath="grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110301_0000.grib2"/>
 
     <dataset name="NAM_Polar_90km_20110301_0600.grib2" urlPath="grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110301_0600.grib2"/>
     ...
-  </dataset>    
+  </dataset>
 4)<dataset name="NAM-Polar90_20110302-collection" urlPath="grib/NCEP/NAM/Polar90/NAM-Polar90_20110302/collection">
-    <dataset name="NAM_Polar_90km_20110302_0000.grib2" urlPath="grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110302_0000.grib2"/>    
+    <dataset name="NAM_Polar_90km_20110302_0000.grib2" urlPath="grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110302_0000.grib2"/>
 
     <dataset name="NAM_Polar_90km_20110302_0600.grib2" urlPath="grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110302_0600.grib2"/>
     ...
-  </dataset>    
+  </dataset>
   ...
 </dataset>
 -------------------------------------------------------------------------------------------------------------------------------------
@@ -346,7 +343,7 @@ for each individual file in the group:
     <catalogRef xlink:href="/thredds/catalog/grib/NPVU/RFC/KFWR-West-Gulf-RFC/files/catalog.xml" xlink:title="files" name="" />
   </dataset>
   ...
-</catalog> 
+</catalog>
 -------------------------------------------------------------------------------------------------------------------------------
 
 Note that the groups are sorted by name, and that there is no overall
@@ -354,7 +351,7 @@ collection for the dataset. Simplifying:
 
 ---------------------------------------------------------------------------------------------------------------------
 <catalog>
-1)<dataset name="KALR:Southeast RFC" urlPath="grib/NPVU/RFC/KALR-Southeast-RFC/collection"> 
+1)<dataset name="KALR:Southeast RFC" urlPath="grib/NPVU/RFC/KALR-Southeast-RFC/collection">
 2)  <dataset name="ZETA_KALR_NWS_152_20120111.grib1" urlPath="grib/NPVU/RFC/files/ZETA_KALR_NWS_152_20120111.grib1"/>
     <dataset name="ZETA_KALR_NWS_160_20120111.grib1" urlPath="grib/NPVU/RFC/files/ZETA_KALR_NWS_160_20120111.grib1"/>
     ...
@@ -427,7 +424,7 @@ dataset_ for each group, a collection dataset for each group in each
 partition, and a dataset for each individual file:
 
 ----------------------------------------------------------------------------------------------------------------------
-<dataset name="NCDC-CFSR" ID="grib/NCDC/CFSR"> 
+<dataset name="NCDC-CFSR" ID="grib/NCDC/CFSR">
 1) <catalogRef xlink:href="/thredds/catalog/grib/NCDC/CFSR/collection/catalog.xml" xlink:title="collection" name="" />
 4) <catalogRef xlink:href="/thredds/catalog/grib/NCDC/CFSR/200808/catalog.xml" xlink:title="200808" name="" />
 8) <catalogRef xlink:href="/thredds/catalog/grib/NCDC/CFSR/200809/catalog.xml" xlink:title="200809" name="" />
@@ -440,24 +437,24 @@ de-referencing the catalogRefs, and simplifying:
 --------------------------------------------------------------------------------------------------------------------------------------------
 <dataset name="NCDC-CFSR" ID="grib/NCDC/CFSR">
 
-1)<dataset name="NCDC-CFSR"> 
+1)<dataset name="NCDC-CFSR">
 2)  <dataset name="FLX GaussianT382" urlPath="grib/NCDC/CFSR/NCDC-CFSR/FLX-GaussianT382"/>
 3)  <dataset name="FLX GaussianT62" urlPath="grib/NCDC/CFSR/NCDC-CFSR/FLX-GaussianT62">
     ...
-  </dataset> 
+  </dataset>
 
 4)<dataset name="200808" >
 5)  <dataset name="FLX GaussianT382" urlPath="grib/NCDC/CFSR/200808/FLX-GaussianT382">
-6)     <catalogRef xlink:href="/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT382/files/catalog.xml" xlink:title="files" name="" />    
+6)     <catalogRef xlink:href="/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT382/files/catalog.xml" xlink:title="files" name="" />
 
     </dataset>
-7)  <dataset name="FLX GaussianT62" urlPath="grib/NCDC/CFSR/200808/FLX-GaussianT62"> 
-         <catalogRef xlink:href="/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT62/files/catalog.xml" xlink:title="files" name="" /> 
+7)  <dataset name="FLX GaussianT62" urlPath="grib/NCDC/CFSR/200808/FLX-GaussianT62">
+         <catalogRef xlink:href="/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT62/files/catalog.xml" xlink:title="files" name="" />
     </dataset>
-    ... 
+    ...
   </dataset>
 8)<dataset name="200809" >
-  ... 
+  ...
 
 </dataset>
 --------------------------------------------------------------------------------------------------------------------------------------------

@@ -549,7 +549,7 @@ NcML is no longer used to define the collection, but it may still be used to mod
       </variable>
      </netcdf>
   </protoDataset>
-   
+
 </featureCollection>
 ----
 
@@ -561,7 +561,6 @@ individual files would not get recognized as Grid datasets, and the feature coll
 global attribute named _speech_ and 2 attributes on the variable named __mixed_layer_depth__.
 
 Also see:
-^^^^^^^^^
 
 * link:FCvsAgg.html[Feature Collections vs Aggregations]
 

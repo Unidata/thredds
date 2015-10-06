@@ -1,6 +1,3 @@
-GRIB Collection Examples
-========================
-
 = Grib Collections
 
 A GRIB Collection is a collection of files that have GRIB records in
@@ -10,7 +7,7 @@ Once generated, gbx9 files never have to be redone.
 Each logical collection has a CDM index (__ncx2__) file. All the records
 for a single runtime comprise a logical collection, called a RC.
 
-=== case 1. \{collection} has single runtime
+== case 1. \{collection} has single runtime
 
 ----------------------------------------------------------------------------------------------------
 <dataset name="GRIB Collection Example for tutorial (single runtime)" serviceName="gribServices" >
@@ -24,7 +21,7 @@ for a single runtime comprise a logical collection, called a RC.
 Single RC dataset, single CDM index file. One time dimension. May have
 multiple groups (horizontal domains).
 
-=== case 2. \{collection} has multiple runtimes
+== case 2. \{collection} has multiple runtimes
 
 ----------------------------------------------------------------------------------------------------
 <dataset name="GRIB Collection Example for tutorial (multiple runtimes)" serviceName="gribServices">
@@ -38,7 +35,7 @@ multiple groups (horizontal domains).
 One RC dataset for each runtime, plus PofGC ``collection dataset'' with
 both runtime and time dimensions.
 
-=== case 3. \{collection} has multiple runtimes, one per file: use
+== case 3. \{collection} has multiple runtimes, one per file: use
 _file_ partition
 
 -------------------------------------------------------------------------------------------------
@@ -53,7 +50,7 @@ _file_ partition
 One RC dataset for each runtime, plus PofGC ``collection dataset'' with
 both runtime and time dimensions. More efficient indexing.
 
-=== case 4. \{collection} has multiple runtimes, time partitioned by
+== case 4. \{collection} has multiple runtimes, time partitioned by
 directory: use _directory_ partition
 
 -------------------------------------------------------------------------------------------------------
@@ -68,7 +65,7 @@ directory: use _directory_ partition
 One RC dataset for each runtime, plus PofGC or PofP ``collection
 dataset'' for each directory in the tree. Scales to large collections.
 
-=== case 5. \{collection} has multiple runtimes, one per file, time
+== case 5. \{collection} has multiple runtimes, one per file, time
 partitioned by directory: use _file_ partition
 
 One RC dataset for each runtime, plus PofGC or PofP ``collection

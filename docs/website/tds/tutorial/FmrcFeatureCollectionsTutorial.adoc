@@ -1,11 +1,8 @@
-FMRC Feature Collection
-=======================
-
 = FMRC Feature Collection
 
 == FMRC Feature Collection
 
-==== For more information
+=== For more information
 
 * link:../reference/collections/CollectionSpecification.html[Collection
 specification]
@@ -48,7 +45,7 @@ from your main catalog:
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
         xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.3">
-        
+
 1)<service name="fmrcServices" serviceType="Compound" base="">
    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
@@ -60,7 +57,7 @@ from your main catalog:
    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
   </service>
-   
+
   <dataset name="FMRC Example for tutorial">
 2) <featureCollection name="BOM" featureType="FMRC" harvest="true" path="BOM/model">
 3)   <metadata inherited="true">
@@ -68,7 +65,7 @@ from your main catalog:
        <dataFormat>netCDF</dataFormat>
        <documentation type="summary">Example BOM</documentation>
      </metadata>
- 
+
 4)   <collection spec="/machine/tds/workshop/bom/**/ocean_fc_#yyyyMMdd#.*\.nc$" />
    </featureCollection>
   </dataset>
@@ -143,12 +140,12 @@ inside each file of the collection, with name *_CoordinateModelRunDate*
 whose value is the run time as an ISO date string. For example:
 
 ------------------------------------------------------------------------
- 
+
     :Conventions = "CF-1.4";
     :Originating_center = "US National Weather Service - NCEP(WMC) (7)";
     :Generating_Model = "Analysis from Global Data Assimilation System";
     :_CoordinateModelRunDate = "2010-11-05T00:00:00Z";
-   
+
 ------------------------------------------------------------------------
 
 == Feature Collections that change
@@ -160,19 +157,19 @@ dataset, with additional elements and attributes to handle this case:
 
 ------------------------------------------------------------------------------------------
   <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-           xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" 
-           version="1.0.3"> 
+           xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server"
+           version="1.0.3">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
-       
-    <featureCollection featureType="FMRC" name="NCEP-GFS_Global_2p5deg"  
+
+    <featureCollection featureType="FMRC" name="NCEP-GFS_Global_2p5deg"
                        path="fmrc/NCEP/GFS/GFS_Global_2p5deg">
       <metadata inherited="true">
         <serviceName>ncdods</serviceName>
         <dataFormat>netCDF-4</dataFormat>
         <documentation type="summary">Specially good GFS_Global_2p5deg</documentation>
       </metadata>
-   
-      <collection spec="/machine/tds/workshop/gfs/GFS_Global_2p5deg.*\.nc4$" 
+
+      <collection spec="/machine/tds/workshop/gfs/GFS_Global_2p5deg.*\.nc4$"
                   name="GFS_Global_2p5deg"
 1)                recheckAfter="15 min"
 2)                olderThan="5 min"/>
@@ -184,7 +181,7 @@ dataset, with additional elements and attributes to handle this case:
   </catalog>
 ------------------------------------------------------------------------------------------
 
-==== Notes:
+=== Notes:
 
 1.  `recheckAfter`: When a request comes in, if the collection hasn’t
 been checked for 15 minutes,check to see if it has changed. The request

@@ -1,6 +1,3 @@
-Server Performance
-==================
-
 = Server Performance
 
 '''''
@@ -45,7 +42,7 @@ The OS typically limits the number of open file handles per process. To
 check this value on Unix, use:
 
 -----------
- ulimit -n 
+ ulimit -n
 -----------
 
 If you are using the default

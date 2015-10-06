@@ -1,11 +1,8 @@
-GRIB Feature Collection
-=======================
-
 = GRIB Feature Collection Tutorial
 
 == GRIB Feature Collection
 
-==== For more information
+=== For more information
 
 * link:../reference/collections/CollectionSpecification.html[Collection
 specification]
@@ -115,7 +112,7 @@ and this is the result:
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="ds083.2-2010.01-20100101-000000" 
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="ds083.2-2010.01-20100101-000000"
         version="1.0.1">
   <service name="VirtualServices" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
@@ -128,7 +125,7 @@ and this is the result:
     <service name="iso" serviceType="ISO" base="/thredds/iso/" />
   </service>
 
-  <dataset name="ds083.2-2010.01-20100101-000000" ID="gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/GC" 
+  <dataset name="ds083.2-2010.01-20100101-000000" ID="gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/GC"
         urlPath="gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/GC">
     <documentation type="summary">Single reference time Grib Collection</documentation>
     <metadata inherited="true">
@@ -155,7 +152,7 @@ and this is the result:
         <start>2010-01-01T00:00:00Z</start>
         <end>2010-01-01T00:00:00Z</end>
       </timeCoverage>
-      <variableMap xlink:href="/thredds/metadata/gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/GC?metadata=variableMap" 
+      <variableMap xlink:href="/thredds/metadata/gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/GC?metadata=variableMap"
             xlink:title="variables" />
     </metadata>
   </dataset>

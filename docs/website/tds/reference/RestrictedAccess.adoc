@@ -1,6 +1,3 @@
-TDS Restricting Access
-======================
-
 = Restricting Access to Datasets in the TDS
 
 '''''
@@ -17,12 +14,12 @@ following fragment will force all URL accesses that have the
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>restrict by URL</web-resource-name>
-      
+
   <url-pattern>urlPattern</url-pattern>
       <http-method>GET</http-method>
     </web-resource-collection>
     <auth-constraint>
-      
+
   <role-name>roleName</role-name>
     </auth-constraint>
     <user-data-constraint>
@@ -118,7 +115,7 @@ along with the *restrictedDatasetUser* role:****
 ------------------------------------------
   <role rolename="restrictedDatasetUser"/>
   <role rolename="ccsmData"/>
-  <role rolename="fieldProject"/>   
+  <role rolename="fieldProject"/>
   <role rolename="tiggeData"/>
 ------------------------------------------
 
@@ -159,7 +156,7 @@ of those dataset. Example:
 
   <service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" />
   <datasetRoot path="test" location="/data/testdata/"/>
- 
+
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="thisDODS"
       urlPath="test/testData.nc" restrictAccess="tiggeData">
 
@@ -168,11 +165,11 @@ of those dataset. Example:
 
   <datasetScan name="Test all files in a directory" ID="testDatasetScan"
       path="testAll" location="/data/testdata" restrictAccess="ccsmData" >
-    
+
     <metadata inherited="true">
       <serviceName>thisDODS</serviceName>
-    </metadata> 
- 
+    </metadata>
+
   </datasetScan>
 </catalog>
 ---------------------------------------------------------------------------------------------------
@@ -246,7 +243,7 @@ Add the following to it:
     <auth-constraint>
       <role-name>restrictedDatasetUser</role-name>
     </auth-constraint>
-    
+
   <user-data-constraint>
  <transport-guarantee>CONFIDENTIAL</transport-guarantee>
  </user-data-constraint>

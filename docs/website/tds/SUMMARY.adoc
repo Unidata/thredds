@@ -2,6 +2,16 @@
 
 Documentation for the THREDDS Data Server.
 
+//
+// Each line must follow the following format:
+// <indentation with .'s> link:<url>[text]
+// No text may be outside of the square brackets.
+//
+// Getting Started (tutorial)
+// (note that the blank space between these comments and the top level
+//   of the ToC is needed!)
+//
+
 . Getting Started
 .. Tomcat Configuration
 ... link:tutorial/GettingStarted.adoc[Getting Started With the TDS: Local Test Server Setup]
@@ -9,53 +19,54 @@ Documentation for the THREDDS Data Server.
 .. TDS Configuration
 ... link:tutorial/CatalogPrimer.adoc[Client Catalog Primer]
 ... link:tutorial/BasicConfigCatalogs.adoc[Basic TDS Configuration Catalogs]
-... TDS Configuration Catalogs
-... Basic threddsConfig.xml
-... Adding OGC/ISO Services
-... Detailed WMS Configuration
-.. Netcdf Subset Service:
-... configure]
-... reference]
-... threddsConfig.xml ../reference/ThreddsConfigXMLFile.html
-.. TDS Monitoring and Debugging
-... TDS Monitoring and Debugging]
-... Tomcat and TDS Logs]
-... Using the TdsMonitor tool]
+... link:tutorial/ConfigCatalogs.adoc[TDS Configuration Catalogs]
+... link:tutorial/BasicThreddsConfig_xml.adoc[Basic threddsConfig.xml]
+... link:tutorial/AddingServices.adoc[Adding OGC/ISO Services]
+... link:reference/WMS.adoc[Detailed WMS Configuration]
+... Netcdf Subset Service:
+.... link:reference/services/NetcdfSubsetServiceConfigure.adoc[configure]
+.... link:reference/services/NetcdfSubsetServiceReference.adoc[reference]
+... link:reference/ThreddsConfigXMLFile.adoc[threddsConfig.xml reference]
+.. link:tutorial/TDSMonitoringAndDebugging.adoc[TDS Monitoring and Debugging]
+... link:tutorial/TomcatAndTDSLogs.adoc[Tomcat and TDS Logs]
+... link:tutorial/tdsMonitor.adoc[Using the TdsMonitor tool]
 ... There are also various free, 3rd-party monitoring and debugging tools:
 .... http://www.google.com/search?btnG=1&pws=0&q=log+analyzers[Log analyzers]
 .... http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html[Tomcat manager application]
 .... Browser-based HTTP header viewers
 ..... http://www.youtube.com/watch?v=tKD50_zvZoo[Live HTTP Headers] (Firefox Add-On)
-..... https://developers.google.com/chrome-developer-tools/docs/network#http_header [DevTools] (Chrome)
+..... https://developers.google.com/chrome-developer-tools/docs/network#http_header [DevTools (Chrome)]
 .... JVM monitoring tools
 ..... http://visualvm.java.net/api-quickstart.html[VisualVM]
 ..... http://www.youtube.com/watch?v=Xy0tsT-GD68[JConsole]
 .. Using NcML in TDS
-... Basic NcML tutorial
-... NcML Aggregation
-... Using NcML in the TDS
-... NcML Example Problems
-... NcML Aggregation Example Problems
-.. Feature Collections
-... Feature Collections
-... GRIB Feature Collections
-... GRIB Feature Collection Tutorial
-... FMRC (Forecast Model Run Collections)
-... FMRC Tutorial
-... GRIB Files in CDM
-... GRIB Tables in CDM
+// Can't seem to link to files above the base dir of SUMMARY and README.adoc
+// ... link:./../netcdf-java/ncml/Tutorial.adoc[Basic NcML tutorial]
+// ... link:./../netcdf-java/ncml/Aggregation.adoc[NcML Aggregation]
+... link:tutorial/NcML.adoc[Using NcML in the TDS]
+... link:tutorial/NcMLExamples.adoc[NcML Example Problems]
+... link:tutorial/NcMLAggExamples.adoc[NcML Aggregation Example Problems]
+.. link:reference/collections/FeatureCollections.adoc[Feature Collections]
+... link:reference/collections/GribCollections.adoc[GRIB Feature Collections]
+... link:tutorial/GRIBFeatureCollectionTutorial.adoc[GRIB Feature Collection Tutorial]
+... link:reference/collections/FmrcCollection.adoc[FMRC (Forecast Model Run Collections)]
+... link:tutorial/FmrcFeatureCollectionsTutorial.adoc[FMRC Tutorial]
+// ... link:../../netcdf-java/reference/formats/GribFiles.adoc[GRIB Files in CDM]
+// ... link:../../netcdf-java/reference/formats/GribTables.adoc[GRIB Tables in CDM]
 .. Other Advanced Features
-... Restricting dataset access
-... Viewer Links
-... Metadata
-.... THREDDS Metadata
-.... ISO metadata generation: (ncIso)
+... link:reference/RestrictedAccess.adoc[Restricting dataset access]
+... link:reference/Viewers.adoc[Viewer Links]
+.. Metadata
+... link:tutorial/Metadata.adoc[THREDDS Metadata]
+... link:reference/ncISO.adoc[ISO metadata generation (ncIso)]
 .. Production Servers
-... Installation Checklist for Production
-... TroubleShooting Problems
-... Performance Tips
-... TroubleShooting
+... link:tutorial/Checklist.adoc[Installation Checklist for Production]
+... link:tutorial/TroubleShooting.adoc[TroubleShooting Problems]
+... link:reference/Performance.adoc[Performance Tips]
 ... link:UpgradingTo5.0.adoc[Upgrading to 5]
+//
+// User Documentation (reference)
+//
 . User Documentation
 .. THREDDS Catalogs
 ... link:tutorial/CatalogPrimer.adoc[Primer]
@@ -84,9 +95,10 @@ Documentation for the THREDDS Data Server.
 .... Data Access Services
 ..... OPeNDAP
 ..... NetCDF Subset Service:
-...... NetcdfSubsetServiceConfigure
-....... configure
-....... reference
+...... link:reference/services/NetcdfSubsetServiceConfigure.adoc[configure]
+...... link:reference/services/NetcdfSubsetServiceReference.adoc[reference]
+...... link:reference/services/NcssGrid.adoc[Grid datasets]
+...... link:reference/services/NcssPoint.adoc[Point and Station (Discrete Sampling Geometry) datasets]
 ..... CdmRemote
 ..... CdmrFeature
 ..... WCS 1.0 Service
@@ -118,4 +130,7 @@ Documentation for the THREDDS Data Server.
 ... http://www.coreservlets.com/Apache-Tomcat-Tutorial/[coreservlets.com tutorial]
 ... http://www.ntu.edu.sg/home/ehchua/programming/howto/Tomcat_More.html[Advanced Tutorial on Tomcat]
 ... http://tomcat.apache.org/tomcat-7.0-doc/security-howto.html[Tomcat Security]
+//
+// FAQ
+//
 . link:faq.adoc[FAQ]

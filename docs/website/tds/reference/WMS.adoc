@@ -1,6 +1,3 @@
-TDS Web Map Service (WMS)
-=========================
-
 = TDS Web Map Service (WMS)
 
 '''''
