@@ -44,7 +44,6 @@ import ucar.nc2.grib.coverage.GribCoverageDataset;
 
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * PartitionCollection for Grib1.
@@ -82,7 +81,7 @@ public class Grib1Partition extends PartitionCollectionImmutable {
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
-    return gribCov.makeCoverageDataset();
+    return gribCov.makeCoverageCollection();
   }
 
   @Override

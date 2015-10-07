@@ -109,14 +109,10 @@ public class CoverageSubsetter2 {
         coordTransforms.add(t);
     }
 
-    // LOOK TODO
-    LatLonRect latLonBoundingBox = null;
-    ProjectionRect projBoundingBox = null;
-    CalendarDateRange dateRange = null;
-
     // put it all together
-    return ucar.nc2.util.Optional.of(new CoverageCollection(org.getName(), org.getCoverageType(), new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()),
-            latLonBoundingBox, projBoundingBox, dateRange,
+    return ucar.nc2.util.Optional.of(new CoverageCollection(org.getName(), org.getCoverageType(),
+            new AttributeContainerHelper(org.getName(), org.getGlobalAttributes()),
+            null, null, null,
             coordSys, coordTransforms, coordAxes, coverages, org.getReader()));  // use org.reader -> subset always in coord space !
   }
 

@@ -160,6 +160,7 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
       CoverageCoordAxis axis = coordSys.getAxis(axisName);
       if (axis == null)
         throw new IllegalStateException("Cant find axis with name "+axisName);
+      if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.independent) continue;
       total *= axis.getNcoords();
     }
     total *= getDataType().getSize();

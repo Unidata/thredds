@@ -134,7 +134,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
       for (GribCollectionImmutable.GroupGC group : ds.getGroups()) {
         GribCoverageDataset gribCov = new GribCoverageDataset(gc, ds, group);
-        datasets.add(gribCov.makeCoverageDataset());
+        datasets.add(gribCov.makeCoverageCollection());
       }
     }
     return new FeatureDatasetCoverage(endpoint, gc.getGlobalAttributes(), gc, datasets);
@@ -195,7 +195,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       -- LOOK must generate aux runtime
    */
 
-  public CoverageCollection makeCoverageDataset() {
+  public CoverageCollection makeCoverageCollection() {
     String name = gribCollection.getName() + "#" + ds.getType();
     if (ds.getGroupsSize() > 1)
       name += "-" + group.getId();
@@ -253,9 +253,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     // all vars that are left are coverages
     List<Coverage> pgrids = vars.stream().map(this::makeCoverage).collect(Collectors.toList());
-    GdsHorizCoordSys hcs = group.getGdsHorizCoordSys();
-    return new CoverageCollection(name, coverageType, gatts, hcs.getLatLonBB(), hcs.getProjectionBB(), getCalendarDateRange(),
-            coordSys, transforms, axes, pgrids, this);
+    return new CoverageCollection(name, coverageType, gatts, null, null, // let cc calculate bbox
+            getCalendarDateRange(), coordSys, transforms, axes, pgrids, this);
   }
 
   CalendarDateRange dateRange;

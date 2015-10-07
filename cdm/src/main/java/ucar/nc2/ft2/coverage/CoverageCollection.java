@@ -50,6 +50,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 
 /**
@@ -81,14 +82,26 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
   protected final CoverageReader reader;
   protected final HorizCoordSys hcs;
 
+  /**
+   *
+   * @param name
+   * @param coverageType
+   * @param atts
+   * @param latLonBoundingBox if null, calculate
+   * @param projBoundingBox   if null, calculate
+   * @param calendarDateRange need this to get the Calendar
+   * @param coordSys
+   * @param coordTransforms
+   * @param coordAxes
+   * @param coverages
+   * @param reader
+   */
   public CoverageCollection(String name, FeatureType coverageType, AttributeContainerHelper atts,
                             LatLonRect latLonBoundingBox, ProjectionRect projBoundingBox, CalendarDateRange calendarDateRange,
                             List<CoverageCoordSys> coordSys, List<CoverageTransform> coordTransforms, List<CoverageCoordAxis> coordAxes, List<Coverage> coverages,
                             CoverageReader reader) {
     this.name = name;
     this.atts = atts;
-    this.latLonBoundingBox = latLonBoundingBox; // LOOK better to calculate from hcs ??
-    this.projBoundingBox = projBoundingBox;
     this.calendarDateRange = calendarDateRange;
     this.coverageType = coverageType;
 
@@ -99,6 +112,25 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
     this.coverageSets = wireObjectsTogether(coverages);
     this.hcs = wireHorizCoordSys();
     this.reader = reader;
+
+    if (hcs.getIsProjection()) {
+      if (projBoundingBox != null)
+        this.projBoundingBox = projBoundingBox;
+      else
+        this.projBoundingBox = hcs.makeProjectionBB();
+      this.latLonBoundingBox = hcs.makeLatlonBB(this.projBoundingBox);
+
+    } else {
+      if (latLonBoundingBox != null)
+        this.latLonBoundingBox = latLonBoundingBox;
+      else
+        this.latLonBoundingBox = hcs.makeLatlonBB(null);
+
+      // ?? not sure if this is needed
+      this.projBoundingBox = new ProjectionRect(
+              new ProjectionPointImpl(this.latLonBoundingBox.getLonMin(), this.latLonBoundingBox.getLatMin()),
+              this.latLonBoundingBox.getWidth(), this.latLonBoundingBox.getHeight());
+    }
   }
 
   private List<CoordSysSet> wireObjectsTogether(List<Coverage> coverages) {
@@ -159,7 +191,7 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
     return atts.findAttributeIgnoreCase(attName);
   }
 
-  public LatLonRect getBoundingBox() {
+  public LatLonRect getLatlonBoundingBox() {
     return latLonBoundingBox;
   }
 

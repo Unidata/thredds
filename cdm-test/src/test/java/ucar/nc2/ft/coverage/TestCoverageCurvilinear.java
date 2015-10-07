@@ -158,7 +158,6 @@ public class TestCoverageCurvilinear {
       // NCdumpW.printArray(data);
       Assert.assertEquals(0.0036624447, data.getDouble(ima.set(0, 0, 0, 0)), Misc.maxReletiveError);
       Assert.assertEquals(0.20564626, data.getDouble(ima.set(0, 0, 21, 11)), Misc.maxReletiveError);
-
     }
   }
 

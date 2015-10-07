@@ -50,7 +50,6 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * Grib1 specific part of GribCollection
@@ -116,7 +115,7 @@ public class Grib1Collection extends GribCollectionImmutable {
     if (filename == null) {
       //Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
       GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
-      return gribCov.makeCoverageDataset();
+      return gribCov.makeCoverageCollection();
 
       /* NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation()+"#"+group.getId(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
@@ -130,7 +129,7 @@ public class Grib1Collection extends GribCollectionImmutable {
         if (gc == null) return null;
        // Grib1Iosp iosp = new Grib1Iosp(gc);
         GribCoverageDataset gribCov = new GribCoverageDataset(gc, null, null);
-        return gribCov.makeCoverageDataset();
+        return gribCov.makeCoverageCollection();
 
         /* NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
         NetcdfDataset ncd = new NetcdfDataset(ncfile);

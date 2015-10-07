@@ -97,7 +97,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     }
 
     CoverageCollection cd = new CoverageCollection(proxy.getName(), proxy.getCoverageType(), atts,
-            proxy.getBoundingBox(), proxy.getProjBoundingBox(), proxy.getCalendarDateRange(),
+            null, null, proxy.getCalendarDateRange(),
             pcoordSys, transforms, axes, pgrids, reader);
 
     return new FeatureDatasetCoverage(reader.getLocation(), reader, cd);
