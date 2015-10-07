@@ -182,6 +182,11 @@ public class DatasetScan extends CatalogRef {
     top.transferMetadata(this, true);
     top.setName(name);
     top.put(Dataset.Id, null); // no id for top
+
+    // move service name to inherited
+    String serviceName = getServiceNameDefault();
+    top.put(ServiceName, null);
+    top.putInheritedField(ServiceName, serviceName);
     catBuilder.addDataset(top);
 
     Path p = Paths.get(dataDirComplete);
