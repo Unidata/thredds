@@ -327,6 +327,10 @@ public class FileWriter2 {
       Variable v;
       if (newType == DataType.STRUCTURE) {
         v = writer.addStructure(newGroup, (Structure) oldVar, oldVar.getShortName(), dims);
+      } else if(newType.isEnum()) {
+        EnumTypedef en = oldVar.getEnumTypedef();
+        v = writer.addVariable(newGroup, oldVar.getShortName(), newType, dims);
+        v.setEnumTypedef(en);
       } else {
         v = writer.addVariable(newGroup, oldVar.getShortName(), newType, dims);
       }

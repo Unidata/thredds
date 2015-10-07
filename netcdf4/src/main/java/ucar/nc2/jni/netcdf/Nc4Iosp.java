@@ -33,14 +33,45 @@
 
 package ucar.nc2.jni.netcdf;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import ucar.nc2.constants.DataFormatType;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.ArrayStructureBB;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataDeep;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.EnumTypedef;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
@@ -52,15 +83,24 @@ import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.util.*;
-
-import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_BYTE;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_CHAR;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_CLASSIC_MODEL;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_CLOBBER;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_COMPOUND;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_ENUM;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_INT;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_MAX_ATOMIC_TYPE;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_NAT;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_NETCDF4;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_NOWRITE;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_OPAQUE;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_SHORT;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_UBYTE;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_UINT;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_USHORT;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_VLEN;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_WRITE;
 
 /**
  * IOSP for reading netcdf files through jni interface to netcdf4 library
@@ -1167,7 +1207,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             isunsigned = true;
              //coverity[MISSING_BREAK]
           case NC_SHORT:
-            cdmtype = DataType.ENUM1;
+            cdmtype = DataType.ENUM2;
             break;
           case NC_UINT:
             isunsigned = true;
@@ -2334,6 +2374,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
     }
 
+    // enums
+    for(EnumTypedef en : g4.g.getEnumTypedefs()) {
+        createEnumType(g4, en);
+    }
+
     // a type must be created for each structure.
     // LOOK we should look for variables with the same structure type.
     for (Variable v : g4.g.getVariables()) {
@@ -2381,6 +2426,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (v instanceof Structure) { // g4 and typid was stored in vinfo in createCompoundType
       vinfo = (Vinfo) v.getSPobject();
       typid = vinfo.typeid;
+
+    } else if(v.getDataType().isEnum()) {
+        EnumTypedef en = v.getEnumTypedef();
+        UserType ut = (UserType) en.getAnnotation("UserType");
+        typid = ut.typeid;
+        vinfo = new Vinfo(g4, -1, typid);
 
     } else {
       typid = convertDataType(v.getDataType(), v.isUnsigned());
@@ -2438,6 +2489,49 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   }
 
+
+    /////////////////////////////////////
+    // Enum types
+
+    /*
+    Enum data types can be defined for netCDF-4/HDF5 format files.
+    As with CDM, they are a set of (id,int) values.
+
+    Create an enum type. Provide an ncid, a name, and base type
+    (some sort of int type).
+    After calling this function, fill out the type with repeated calls to nc_insert_enum.
+    Call nc_insert_enum once for each (id,int) you wish to insert into the enum.
+     */
+    private void createEnumType(Group4 g4, EnumTypedef en)
+            throws IOException
+    {
+        IntByReference typeidp = new IntByReference();
+        String name = en.getShortName();
+        DataType enumbase = en.getBaseType();
+        int basetype = NC_NAT;
+        if(enumbase == DataType.ENUM1) basetype = Nc4prototypes.NC_BYTE;
+        else if(enumbase == DataType.ENUM2) basetype = Nc4prototypes.NC_SHORT;
+        else if(enumbase == DataType.ENUM4) basetype = Nc4prototypes.NC_INT;
+        int ret = nc4.nc_def_enum(g4.grpid, basetype, name, typeidp);
+        if(ret != 0)
+            throw new IOException(nc4.nc_strerror(ret) + " on\n" + en);
+        int typeid = typeidp.getValue();
+        if(DEBUG) System.out.printf("added enum type %s (typeid %d)%n", name, typeid);
+        Map<Integer, String> emap = en.getMap();
+        for(Map.Entry<Integer, String> entry : emap.entrySet()) {
+            IntByReference val = new IntByReference(entry.getKey());
+            ret = nc4.nc_insert_enum(g4.grpid, typeid, (String) entry.getValue(), val);
+            if(ret != 0)
+                throw new IOException(nc4.nc_strerror(ret) + " on\n" + entry.getValue());
+            if(DEBUG) System.out.printf(" added enum type member %s: %d%n",
+                    entry.getValue(), entry.getKey());
+        }
+        // keep track of the User Defined types
+        UserType ut = new UserType(
+                g4.grpid, typeid, name, en.getBaseType().getSize(), basetype, (long) emap.size(), NC_ENUM);
+        userTypes.put(typeid, ut);
+        en.annotate("UserType", ut);  // dont know the varid yet
+    }
 
   /////////////////////////////////////
   // compound types
@@ -2830,29 +2924,62 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       default:
-        UserType userType = userTypes.get(typeid);
-        if (userType == null) {
-          throw new IOException("Unknown userType == " + typeid);
+            UserType userType = userTypes.get(typeid);
+            if(userType == null)
+                throw new IOException("Unknown userType == " + typeid);
+            switch (userType.typeClass) {
+            case NC_ENUM:
+                ret = writeEnumData(v, userType, grpid, varid, typeid, section, values);
+                if(ret != 0) {
+                    //log.error("{} on var {}", nc4.nc_strerror(ret), v);
+                    //return;
+                    throw new IOException(nc4.nc_strerror(ret));
+                }
+                break;
+            case NC_COMPOUND:
+                writeCompoundData((Structure) v, userType, grpid, varid, typeid, section, (ArrayStructure) values);
+                return;
+            case NC_VLEN:
+            case NC_OPAQUE:
+            default:
+                throw new IOException("Unsupported writing of userType= " + userType);
+            }
+        }
+        if (debugWrite) System.out.printf("OK writing var %s%n", v);
+  }
 
-        } else if (userType.typeClass == Nc4prototypes.NC_ENUM) {
-          //return readDataSection(grpid, varid, userType.baseTypeid, section);
+    private int
+    writeEnumData(Variable v, UserType userType, int grpid, int varid, int typeid, Section section, Array values)
+            throws IOException, InvalidRangeException
+    {
+        int ret = 0;
+        SizeT[] origin = convertSizeT(section.getOrigin());
+        SizeT[] shape = convertSizeT(section.getShape());
+        boolean isUnsigned = isUnsigned(typeid);
+        int sectionLen = (int) section.computeSize();
+        SizeT[] stride = convertSizeT(section.getStride());
 
-        } else if (userType.typeClass == Nc4prototypes.NC_VLEN) { // cannot subset
-          //return readVlen(grpid, varid, len, userType);
+        assert values.getSize() == sectionLen;
 
-        } else if (userType.typeClass == Nc4prototypes.NC_OPAQUE) {
-          //return readOpaque(grpid, varid, section, userType.size);
 
-        } else if (userType.typeClass == Nc4prototypes.NC_COMPOUND) {
-          writeCompoundData((Structure) v, userType, grpid, varid, typeid, section, (ArrayStructure) values);
-          return;
+        boolean stride1 = true;
+        for(int i = 0; i < stride.length; i++) {
+            if(stride[i].longValue() != 1) {
+                stride1 = false;
+                break;
+            }
         }
 
-        throw new IOException("Unsupported writing of userType= " + userType);
+        ByteBuffer bb = values.getDataAsByteBuffer(ByteOrder.nativeOrder());
+        byte[] data = bb.array();
+        if(stride1) {
+            ret = nc4.nc_put_vara(grpid, varid, origin, shape, data);
+        } else {
+            ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, data);
+        }
+        return ret;
     }
-    if (debugWrite) System.out.printf("OK writing var %s%n", v);
 
-  }
 
   /*
   Here is an example of using nc_put_vars_float to write – from an internal array – every other point of a netCDF variable named rh which is described by the C declaration float rh[4][6] (note the size of the dimensions):

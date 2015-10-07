@@ -224,7 +224,7 @@ public class UnitTestCommon
         System.out.println(sep.toString());
     }
 
-    public String compare(String tag, String baseline, String s)
+    static public String compare(String tag, String baseline, String s)
     {
         try {
             // Diff the two print results
