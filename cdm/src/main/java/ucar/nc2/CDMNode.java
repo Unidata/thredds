@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
  *
- *   Portions of this software were developed by the Unidata Program at the
- *   University Corporation for Atmospheric Research.
+ *  Portions of this software were developed by the Unidata Program at the
+ *  University Corporation for Atmospheric Research.
  *
- *   Access and use of this software shall impose the following obligations
- *   and understandings on the user. The user is granted the right, without
- *   any fee or cost, to use, copy, modify, alter, enhance and distribute
- *   this software, and any derivative works thereof, and its supporting
- *   documentation for any purpose whatsoever, provided that this entire
- *   notice appears in all copies of the software, derivative works and
- *   supporting documentation.  Further, UCAR requests that the user credit
- *   UCAR/Unidata in any publications that result from the use of this
- *   software or in any product that includes this software. The names UCAR
- *   and/or Unidata, however, may not be used in any advertising or publicity
- *   to endorse or promote any products or commercial entity unless specific
- *   written permission is obtained from UCAR/Unidata. The user also
- *   understands that UCAR/Unidata is not obligated to provide the user with
- *   any support, consulting, training or assistance of any kind with regard
- *   to the use, operation and performance of this software nor to provide
- *   the user with any updates, revisions, new versions or "bug fixes."
+ *  Access and use of this software shall impose the following obligations
+ *  and understandings on the user. The user is granted the right, without
+ *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  this software, and any derivative works thereof, and its supporting
+ *  documentation for any purpose whatsoever, provided that this entire
+ *  notice appears in all copies of the software, derivative works and
+ *  supporting documentation.  Further, UCAR requests that the user credit
+ *  UCAR/Unidata in any publications that result from the use of this
+ *  software or in any product that includes this software. The names UCAR
+ *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  to endorse or promote any products or commercial entity unless specific
+ *  written permission is obtained from UCAR/Unidata. The user also
+ *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  any support, consulting, training or assistance of any kind with regard
+ *  to the use, operation and performance of this software nor to provide
+ *  the user with any updates, revisions, new versions or "bug fixes."
  *
- *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2;
 
@@ -36,13 +36,16 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Indent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Define a superclass for all the CDM node classes: Group, Dimension, etc.
  * Define the sort of the node {@link CDMSort} so that we can
  * 1. do true switching on node type
  * 2. avoid use of instanceof
  * 3. Use container classes that have more than one kind of node
- * <p/>
+ * <p>
  * Also move various common fields and methods to here.
  *
  * @author Heimbigner
@@ -51,11 +54,14 @@ import ucar.nc2.util.Indent;
 public abstract class CDMNode
 {
 
-    CDMSort sort = null;
-    Group group = null;
-    Structure parentstruct = null;
-    boolean immutable = false;
-    String shortName = null;
+    protected CDMSort sort = null;
+    protected Group group = null;
+    protected Structure parentstruct = null;
+    protected boolean immutable = false;
+    protected String shortName = null;
+
+    protected Map<String, Object> annotations = new HashMap<>();
+
     //String fullName = null; // uses backslash escaping
 
     // HACK: sadly, because of the existing class structure,
@@ -66,7 +72,7 @@ public abstract class CDMNode
     // may contain group information separated
     // by forward slash.
 
-    String dodsname = null;
+    protected String dodsname = null;
 
     //////////////////////////////////////////////////
     // Constructors
@@ -313,11 +319,11 @@ public abstract class CDMNode
         if(!(node instanceof Variable))
             return node;
         Variable inner = (Variable) node;
-        for(;;) {
+        for(; ; ) {
             if(inner instanceof VariableDS) {
                 VariableDS vds = (VariableDS) inner;
                 inner = vds.getOriginalVariable();
-                if(inner == null)  {
+                if(inner == null) {
                     inner = vds;
                     break;
                 }
@@ -331,6 +337,24 @@ public abstract class CDMNode
             } else break; // base case we have straight Variable or Stucture
         }
         return inner;
+    }
+
+    public Map<String, Object> getAnnotations()
+    {
+        return annotations;
+    }
+
+    public Object getAnnotation(String key)
+    {
+        return annotations.get(key);
+    }
+
+    public Object annotate(String key, Object value)
+    {
+        Object old = annotations.get(key);
+        if(key != null && value != null)
+            annotations.put(key,value);
+        return old;
     }
 
 }

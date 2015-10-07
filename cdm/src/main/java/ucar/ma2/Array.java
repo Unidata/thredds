@@ -745,6 +745,17 @@ public abstract class Array {
     throw new UnsupportedOperationException();
   }
 
+  public ByteBuffer getDataAsByteBuffer(ByteOrder order) {
+    throw new UnsupportedOperationException();
+  }
+
+  public ByteBuffer getDataAsByteBuffer(int capacity, ByteOrder order) {
+    ByteBuffer bb = ByteBuffer.allocate(capacity);
+    if(order != null) bb.order(order);
+    return bb;
+  }
+
+
   /**
    * Create an Array from a ByteBuffer
    *

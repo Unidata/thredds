@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.LongBuffer;
 
 /**
@@ -122,11 +123,13 @@ public class ArrayLong extends Array {
       ja[i] = iter.getLongNext();
   }
 
-  public ByteBuffer getDataAsByteBuffer() {
-    ByteBuffer bb = ByteBuffer.allocate((int)(8*getSize()));
-    LongBuffer ib = bb.asLongBuffer();
-    ib.put( (long[]) get1DJavaArray(long.class)); // make sure its in canonical order
-    return bb;
+    public ByteBuffer getDataAsByteBuffer() {return getDataAsByteBuffer(null);}
+
+    public ByteBuffer getDataAsByteBuffer(ByteOrder order) {
+        ByteBuffer bb = super.getDataAsByteBuffer((int) (8 * getSize()),order);
+        LongBuffer ib = bb.asLongBuffer();
+        ib.put( (long[]) get1DJavaArray(long.class)); // make sure its in canonical order
+        return bb;
   }
 
  /** Return the element class type */

@@ -213,7 +213,7 @@ public interface Netcd4Clibrary extends Library {
 
   /* Insert a named value into an enum type. The value must fit within
    * the size of the enum type, the name size must be <= NC_MAX_NAME. */
-  int nc_insert_enum(int ncid, int xtype, String name, void*value);
+  int nc_insert_enum(int ncid, int xtype, String name, IntByReference valuep);
 
   /* Get information about an enum type: it's name, base type and the
    * number of members defined. */

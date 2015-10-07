@@ -63,6 +63,7 @@ public interface Nc4prototypes extends Library {
   static public final int NC_NOWRITE = 0;
   static public final int NC_WRITE = 1;
 
+  static public final int NC_NAT = 0;	/* Not-A-Type */
   static public final int NC_BYTE = 1;	/* signed 1 byte integer */
   static public final int NC_CHAR =	2;	/* ISO/ASCII character */
   static public final int NC_SHORT =	3;	/* signed 2 byte integer */
@@ -272,6 +273,13 @@ public interface Nc4prototypes extends Library {
   int nc_def_compound(int ncid, SizeT size, String name, IntByReference typeidp);
   int nc_insert_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid);
   int nc_insert_array_compound(int ncid, int typeid, String name, SizeT offset, int field_typeid, int ndims, int[] dim_sizes);
+
+ /* Create an enum type. Provide a base type and a name. At the moment
+  * only ints are accepted as base types. */
+ int nc_def_enum(int ncid, int base_typeid, String name, IntByReference typeidp);
+ /* Insert a named value into an enum type. The value must fit within
+  * the size of the enum type, the name size must be <= NC_MAX_NAME. */
+ int nc_insert_enum(int ncid, int enumid, String name, IntByReference value);
 
   /* Rename a group */
   int nc_rename_grp(int grpid, String name);

@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 /**
@@ -139,8 +140,10 @@ public class ArrayInt extends Array {
       ja[i] = iter.getIntNext();
   }
 
-  public ByteBuffer getDataAsByteBuffer() {
-    ByteBuffer bb = ByteBuffer.allocate((int) (4 * getSize())); // default big-endian
+  public ByteBuffer getDataAsByteBuffer() {return getDataAsByteBuffer(null);}
+
+  public ByteBuffer getDataAsByteBuffer(ByteOrder order) {
+    ByteBuffer bb = super.getDataAsByteBuffer((int) (4 * getSize()),order);
     IntBuffer ib = bb.asIntBuffer();
     ib.put((int[]) get1DJavaArray(int.class)); // make sure its in canonical order
     return bb;
