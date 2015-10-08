@@ -135,14 +135,15 @@ public class SubsetParams {
   }
 
   public LatLonRect getLatLonBoundingBox() { return (LatLonRect) get(latlonBB);}
+  public SubsetParams setLatLonBoundingBox(LatLonRect llbb) {  set(latlonBB, llbb); return this; }
 
   public LatLonPointImpl getLatLonPoint() { return (LatLonPointImpl) get(latlonPoint);}
-  public void setLatLonPoint(LatLonPointImpl pt) { set(latlonPoint, pt);}
+  public SubsetParams setLatLonPoint(LatLonPointImpl pt) { set(latlonPoint, pt); return this; }
 
   public List<String> getStns() { return (List<String>) get(stns);}
 
   public List<String> getVariables() { return (List<String>) get(variables);}
-  public void setVariables(List<String> vars) { set(variables, vars);}
+  public SubsetParams setVariables(List<String> vars) { set(variables, vars); return this; }
 
   public CalendarDate getTime() { return (CalendarDate) get(time);}
 

@@ -62,7 +62,7 @@ import java.util.Map;
 public class CFGridCoverageWriter2 {
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CFGridCoverageWriter2.class);
-  static private final boolean show = true;
+  static private final boolean show = false;
 
   static private final String BOUNDS = "_bounds";
   static private final String BOUNDS_DIM = "bounds_dim"; // dimension of length 2, can be used by any bounds coordinate
@@ -75,7 +75,7 @@ public class CFGridCoverageWriter2 {
    * @param subset       defines the requested subset
    * @param addLatLon    add 2D lat/lon coordinates if needed
    * @param testSizeOnly dont write, just return expected size
-   * @param writer       this does the actual writing
+   * @param writer       this does the actual writing, may be null if testSizeOnly=true
    * @return total bytes written
    * @throws IOException
    * @throws InvalidRangeException
@@ -243,7 +243,7 @@ public class CFGridCoverageWriter2 {
                     "Original Dataset = " + gds.getName() + "; Translation Date = " + CalendarDate.present()));
 
 
-    LatLonRect llbb = gds.getBoundingBox();
+    LatLonRect llbb = gds.getLatlonBoundingBox();
     if (llbb != null) {
       // this will replace any existing
       writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));

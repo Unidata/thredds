@@ -114,7 +114,7 @@ public abstract class WcsRequest {
     Element lonLatEnvelopeElem = new Element("lonLatEnvelope", wcsNS);
     lonLatEnvelopeElem.setAttribute("srsName", "urn:ogc:def:crs:OGC:1.3:CRS84");
 
-    LatLonRect llbb = gcd.getBoundingBox();
+    LatLonRect llbb = gcd.getLatlonBoundingBox();
     LatLonPoint llpt = llbb.getLowerLeftPoint();
     LatLonPoint urpt = llbb.getUpperRightPoint();
 

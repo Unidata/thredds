@@ -36,7 +36,6 @@ package ucar.nc2.grib.collection;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.Attribute;
@@ -85,7 +84,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
-    return gribCov.makeCoverageDataset();
+    return gribCov.makeCoverageCollection();
   }
 
   @Override

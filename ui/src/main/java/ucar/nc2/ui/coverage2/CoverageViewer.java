@@ -14,6 +14,7 @@ import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
@@ -103,7 +104,7 @@ public class CoverageViewer extends JPanel {
   private AbstractAction fieldLoopAction, levelLoopAction, timeLoopAction, runtimeLoopAction;
   private AbstractAction chooseProjectionAction, saveCurrentProjectionAction;
 
-  private AbstractAction dataProjectionAction, exitAction, helpAction, showGridAction, showContoursAction, showContourLabelsAction, showWindsAction;
+  private AbstractAction dataProjectionAction, drawBBAction, helpAction, showGridAction, showContoursAction, showContourLabelsAction, showWindsAction;
   private AbstractAction drawHorizAction, drawVertAction;
 
   // data components
@@ -253,8 +254,8 @@ public class CoverageViewer extends JPanel {
       BAMutil.addActionToContainer(toolPanel, navPanel.setReferenceAction);
       BAMutil.addActionToContainer(toolPanel, dataProjectionAction);
       BAMutil.addActionToContainer(toolPanel, showGridAction);
-      BAMutil.addActionToContainer(toolPanel, showContoursAction);
-      BAMutil.addActionToContainer(toolPanel, showContourLabelsAction);
+      BAMutil.addActionToContainer(toolPanel, drawBBAction);
+      // BAMutil.addActionToContainer(toolPanel, showContourLabelsAction);
       BAMutil.addActionToContainer(toolPanel, redrawAction);
 
       //  vertical split
@@ -563,18 +564,34 @@ public class CoverageViewer extends JPanel {
 
     dataProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ProjectionImpl dataProjection = coverageRenderer.getDataProjection();
-        if (null != dataProjection)
-          setProjection(dataProjection);
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        if (state) {
+          ProjectionImpl dataProjection = coverageRenderer.getDataProjection();
+          if (null != dataProjection)
+            setProjection(dataProjection);
+        } else {
+          setProjection(new LatLonProjection());
+        }
       }
     };
-    BAMutil.setActionProperties(dataProjectionAction, "DataProjection", "use Data Projection", false, 'D', 0);
+    BAMutil.setActionProperties(dataProjectionAction, "DataProjection", "use Data Projection", true, 'D', 0);
+    dataProjectionAction.putValue(BAMutil.STATE, true);
+
+    // contouring
+    drawBBAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        coverageRenderer.setDrawBB(state.booleanValue());
+        draw(false);
+      }
+    };
+    BAMutil.setActionProperties(drawBBAction, "Contours", "draw bounding box", true, 'B', 0);
+    drawBBAction.putValue(BAMutil.STATE, false);
 
     // draw horiz
     drawHorizAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        // System.out.println("showGridAction state "+state);
         drawHorizOn = state.booleanValue();
         setDrawHorizAndVert(drawHorizOn, drawVertOn);
         draw(false);
@@ -589,7 +606,6 @@ public class CoverageViewer extends JPanel {
     drawVertAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        // System.out.println("showGridAction state "+state);
         drawVertOn = state.booleanValue();
         setDrawHorizAndVert(drawHorizOn, drawVertOn);
         draw(false);
@@ -604,7 +620,6 @@ public class CoverageViewer extends JPanel {
     showGridAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        // System.out.println("showGridAction state "+state);
         coverageRenderer.setDrawGridLines(state.booleanValue());
         draw(false);
       }

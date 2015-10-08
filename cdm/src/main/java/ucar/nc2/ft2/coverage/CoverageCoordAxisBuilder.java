@@ -83,7 +83,7 @@ public class CoverageCoordAxisBuilder {
 
   //int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
   //public int stride = 1;
-  public boolean isTime2D;
+  // public boolean isTime2D;
 
   // 2d only
   public int[] shape;
@@ -114,7 +114,7 @@ public class CoverageCoordAxisBuilder {
 
     //this.minIndex = 0;
     //this.maxIndex = ncoords-1;
-    this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
+    // this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
   }
 
   CoverageCoordAxisBuilder(CoverageCoordAxis from) {
@@ -139,7 +139,7 @@ public class CoverageCoordAxisBuilder {
 
     //this.minIndex = 0;
     //this.maxIndex = ncoords-1;
-    this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
+    // this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
 
     if (from instanceof LatLonAxis2D) {
       LatLonAxis2D latlon = (LatLonAxis2D) from;

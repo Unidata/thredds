@@ -91,14 +91,13 @@
                         var headTag = document.getElementsByTagName("head")[0];
                         var jQueryfile = document.createElement('script');
                         jQueryfile.setAttribute("type", "text/javascript");
-                        jQueryfile.setAttribute("src", context+"/js/lib/jquery-1.7.2.min.js");
+                        jQueryfile.setAttribute("src", "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js");
                         headTag.appendChild(jQueryfile);
 
                         //OpenLayers.js
                         var olfile = document.createElement('script');
                         olfile.setAttribute("type", "text/javascript");
-                        olfile.setAttribute("src",
-                        context+"/js/lib/OpenLayers-2.12/OpenLayers.js");
+                        olfile.setAttribute("src", "https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js");
                         headTag.appendChild(olfile);
 
                         //ncssApp.js

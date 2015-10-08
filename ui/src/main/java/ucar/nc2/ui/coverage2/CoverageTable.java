@@ -137,10 +137,12 @@ public class CoverageTable extends JPanel {
         CoordSysBean bean = (CoordSysBean) csysTable.getSelectedBean();
         infoTA.clear();
         for (CoverageTransform ct : bean.gcs.getTransforms())
-          infoTA.appendLine(ct.toString());
+          if (!ct.isHoriz()) infoTA.appendLine(ct.toString());
+
         HorizCoordSys hcs = bean.gcs.getHorizCoordSys();
         if (hcs.getTransform() != null)
           infoTA.appendLine(hcs.getTransform().toString());
+
         infoTA.gotoTop();
         infoWindow.show();
       }
@@ -364,7 +366,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getLLBB() {
-      return cds.getBoundingBox() == null ? "null" : cds.getBoundingBox().toString();
+      return cds.getLatlonBoundingBox() == null ? "null" : cds.getLatlonBoundingBox().toString();
     }
 
     public int getNCoverages() {

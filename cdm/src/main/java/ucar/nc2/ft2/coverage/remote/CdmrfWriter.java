@@ -34,8 +34,6 @@
 package ucar.nc2.ft2.coverage.remote;
 
 import com.google.protobuf.ByteString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
@@ -104,8 +102,8 @@ public class CdmrfWriter {
     builder.setName(location);
     builder.setCoverageType(convertCoverageType(gridDataset.getCoverageType()));
     builder.setDateRange(encodeDateRange(gridDataset.getCalendarDateRange()));
-    if (gridDataset.getBoundingBox() != null)
-      builder.setLatlonRect(encodeRectangle(gridDataset.getBoundingBox()));
+    if (gridDataset.getLatlonBoundingBox() != null)
+      builder.setLatlonRect(encodeRectangle(gridDataset.getLatlonBoundingBox()));
     if (gridDataset.getProjBoundingBox() != null)
       builder.setProjRect(encodeRectangle(gridDataset.getProjBoundingBox()));
 

@@ -79,7 +79,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
       this.range = Range.make(rangeName, getNcoords());
     }
     this.crange = builder.crange;
-    this.isTime2D = builder.isTime2D;
+
+    this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
   }
 
   @Override

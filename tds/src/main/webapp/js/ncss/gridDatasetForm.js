@@ -84,17 +84,16 @@ Ncss.initGridDatasetForm = function () {
 };
 
 Ncss.toogleLLSubsetting = function () {
-    Ncss.log("Will disable/enable spatial subsetting...");
 
     if (this.checked) {
-        Ncss.log("disabling bounding params...");
+        Ncss.log("disabling LLSubsetting...");
         var inputs = $(':input[type=text]', $('#latlonSubset'));
 
         for (var i = 0; i < inputs.length; i++) {
             $(inputs[i]).attr("disabled", "disabled");
         }
     } else {
-        Ncss.log("enabling bounding params...");
+        Ncss.log("enabling LLSubsetting...");
         var inputs = $(':input[type=text]', $('#latlonSubset'));
 
         for (var i = 0; i < inputs.length; i++) {
@@ -104,17 +103,16 @@ Ncss.toogleLLSubsetting = function () {
 };
 
 Ncss.toogleProjSubsetting = function () {
-    Ncss.log("Will disable/enable spatial subsetting...");
 
     if (this.checked) {
-        Ncss.log("disabling bounding params...");
+        Ncss.log("disabling ProjSubsetting...");
         var inputs = $(':input[type=text]', $('#coordinateSubset'));
 
         for (var i = 0; i < inputs.length; i++) {
             $(inputs[i]).attr("disabled", "disabled");
         }
     } else {
-        Ncss.log("enabling bounding params...");
+        Ncss.log("enabling ProjSubsetting...");
         var inputs = $(':input[type=text]', $('#coordinateSubset'));
 
         for (var i = 0; i < inputs.length; i++) {

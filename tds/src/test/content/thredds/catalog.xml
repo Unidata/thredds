@@ -216,6 +216,7 @@
   <catalogRef xlink:title="update JoinExisting Agg" xlink:href="catalogUpdateAgg.xml" name=""/>
   <catalogRef xlink:title="Radar Collections" xlink:href="radar/radarCollections.xml" name=""/>
   <catalogRef xlink:title="HIOOS" xlink:href="wav_mod.xml" name=""/>
+  <catalogRef xlink:title="ESGF" xlink:href="testEsgfProblems.xml" name=""/>
 
   <catalogScan location="catalogs5" path="catalogs5" name="catalog scan with version 5 features"/>
 

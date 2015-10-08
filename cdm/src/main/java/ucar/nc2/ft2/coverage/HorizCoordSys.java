@@ -225,27 +225,30 @@ public class HorizCoordSys {
         } */
 
       } else if (llbb != null) {
+        LatLonRect full = makeLatlonBB(null);
+        if (!llbb.containedIn(full)) {
 
-        if (isProjection) {
-          // we have to transform latlon to projection coordinates
-          ProjectionImpl proj = transform.getProjection();
-          ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
-          opt = xaxis.subset(prect.getMinX(), prect.getMaxX(), horizStride);
-          if (opt.isPresent()) xaxisSubset = (CoverageCoordAxis1D) opt.get();
-          else errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
+          if (isProjection) {
+            // we have to transform latlon to projection coordinates
+            ProjectionImpl proj = transform.getProjection();
+            ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
+            opt = xaxis.subset(prect.getMinX(), prect.getMaxX(), horizStride);
+            if (opt.isPresent()) xaxisSubset = (CoverageCoordAxis1D) opt.get();
+            else errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
 
-          opt = yaxis.subset(prect.getMinY(), prect.getMaxY(), horizStride);
-          if (opt.isPresent()) yaxisSubset = (CoverageCoordAxis1D) opt.get();
-          else errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
+            opt = yaxis.subset(prect.getMinY(), prect.getMaxY(), horizStride);
+            if (opt.isPresent()) yaxisSubset = (CoverageCoordAxis1D) opt.get();
+            else errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
 
-        } else {
-          opt = subsetLon(llbb, horizStride);
-          if (opt.isPresent()) lonaxisSubset = opt.get();
-          else errMessages.format("lonaxis: %s;%n", opt.getErrorMessage());
+          } else {
+            opt = subsetLon(llbb, horizStride);
+            if (opt.isPresent()) lonaxisSubset = opt.get();
+            else errMessages.format("lonaxis: %s;%n", opt.getErrorMessage());
 
-          opt = lataxis.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride);
-          if (opt.isPresent()) lataxisSubset = opt.get();
-          else errMessages.format("lataxis: %s;%n", opt.getErrorMessage());
+            opt = lataxis.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride);
+            if (opt.isPresent()) lataxisSubset = opt.get();
+            else errMessages.format("lataxis: %s;%n", opt.getErrorMessage());
+          }
         }
 
       } else if (horizStride > 1) { // no bounding box, just horiz stride
@@ -388,89 +391,29 @@ public class HorizCoordSys {
     return Collections.EMPTY_LIST;
   }
 
-  ///////////////////////////
+  public ProjectionRect makeProjectionBB() {
+    if (!isProjection) return null;
+    double minX = Math.min(xaxis.getCoordEdge1(0), xaxis.getCoordEdgeLast());
+    double minY = Math.min(yaxis.getCoordEdge1(0), yaxis.getCoordEdgeLast());
+    double width = Math.abs(xaxis.getCoordEdgeLast() - xaxis.getCoordEdge1(0));
+    double height = Math.abs(yaxis.getCoordEdgeLast() - yaxis.getCoordEdge1(0));
+    return new ProjectionRect( new ProjectionPointImpl(minX,minY), width, height);
+  }
 
-  /* heres where to deal with crossing seam ??
-  private Optional<RangeIterator> subsetLonRanges(LatLonRect llbb, int stride) throws InvalidRangeException {
-    double wantMin = LatLonPointImpl.lonNormalFrom(llbb.getLonMin(), lonaxis.getStartValue());
-    double wantMax = LatLonPointImpl.lonNormalFrom(llbb.getLonMax(), lonaxis.getStartValue());
-
-    double start = lonaxis.getStartValue();
-    double end  = lonaxis.getEndValue();
-
-    if (wantMin <= wantMax) {
-      if (wantMin > end && wantMax > end)
-        return Optional.empty(String.format("longitude wantMin %f > haveMax %f", wantMin, end));
-
-      if (wantMin < end && wantMax < end)
-        return xhelper.makeRange(wantMin, wantMax, stride);
-
-      if (wantMin < end && wantMax > end)
-        return xhelper.makeRange(wantMin, end, stride);
+  // LOOK may need to override in HorizCoordsys2D ?
+  public LatLonRect makeLatlonBB(ProjectionRect projBB) {
+    if (isProjection) {
+      if (projBB == null) projBB = makeProjectionBB();
+      return transform.getProjection().projToLatLonBB(projBB);
 
     } else {
-      if (wantMin > end && wantMax > end)
-        return Optional.of(lonaxis.getRange());
-
-      if (wantMin < end && wantMax < end) {
-        Optional<RangeIterator> opt1 = xhelper.makeRange(wantMin, end, stride);
-        Optional<RangeIterator> opt2 = xhelper.makeRange(start, wantMax, stride);
-        RangeComposite r = new RangeComposite("subsetLon", opt1.get(), opt2.get());
-        return Optional.of(r);
-      }
-      if (wantMin < end && wantMax > end)
-        return xhelper.makeRange(wantMin, end, stride);
+      double minLon = Math.min(lonaxis.getCoordEdge1(0), lonaxis.getCoordEdgeLast());
+      double minLat = Math.min(lataxis.getCoordEdge1(0), lataxis.getCoordEdgeLast());
+      double deltaLon = Math.abs(lonaxis.getCoordEdgeLast() - lonaxis.getCoordEdge1(0));
+      double deltaLat = Math.abs(lataxis.getCoordEdgeLast() - lataxis.getCoordEdge1(0));
+      return new LatLonRect(new LatLonPointImpl(minLat, minLon), deltaLat, deltaLon);
     }
-
-    // otherwise shouldnt get to this
-    return Optional.empty(String.format("longitude want [%f,%f] does not intersect have [%f,%f]", wantMin, wantMax, start, end));
   }
-
-
-
-  // heres where to deal with crossing seam ??
-  private Optional<CoverageCoordAxis> subsetLonOld(LatLonRect llbb, int stride) throws InvalidRangeException {
-    double wantMin = llbb.getLonMin();
-    double wantMax = llbb.getLonMax();
-    double wantMin360 = LatLonPointImpl.lonNormal360(wantMin);
-    double wantMax360 = wantMin360 + llbb.getWidth();
-
-    double axisMin = lonaxis.getStartValue();
-    double axisMax = lonaxis.getEndValue();
-    double axisMin360 = LatLonPointImpl.lonNormal360(lonaxis.getStartValue());
-    double diff = axisMin360 - lonaxis.getStartValue();
-    double axisMax360 = lonaxis.getEndValue() + diff;
-
-    if (wantMin360 > axisMax360)
-      return Optional.empty(String.format("longitude wantMin %f > haveMax %f", wantMin360, axisMax360));
-    if (wantMax360 < axisMin360)
-      return Optional.empty(String.format("longitude wantMax %f < haveMin %f", wantMin360, axisMin360));
-
-    // if org intersects, use it
-    if (intersect(wantMin, wantMax, axisMin, axisMax))
-      return lonaxis.subset(wantMin, wantMax, stride);
-
-    // if shifted intersects, use it
-    if (intersect(wantMin360, wantMax360, axisMin, axisMax))
-      return lonaxis.subset(wantMin360, wantMax360, stride);
-
-    // otherwise not sure what cases are left
-    return Optional.empty(String.format("longitude want [%f,%f] does not intersect have [%f,%f]", wantMin, axisMax, axisMin, axisMax));
-  }
-
-  private boolean intersect(double wantMin, double wantMax, double axisMin, double axisMax) {
-    if (wantMin >= axisMin && wantMin <= axisMax)
-      return true;
-    if (wantMax >= axisMin && wantMax <= axisMax)
-      return true;
-
-    if (axisMin >= wantMin && axisMin <= wantMax)
-      return true;
-    if (axisMax >= wantMin && axisMax <= wantMax)
-      return true;
-
-    return false;
-  } */
 
   // return y, x range
   public List<RangeIterator> getRanges() {

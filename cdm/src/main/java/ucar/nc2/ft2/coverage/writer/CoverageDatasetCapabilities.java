@@ -134,7 +134,7 @@ public class CoverageDatasetCapabilities {
      } */
 
     // add lat/lon bounding box
-    LatLonRect bb = gcd.getBoundingBox();
+    LatLonRect bb = gcd.getLatlonBoundingBox();
     if (bb != null)
       rootElem.addContent(writeBoundingBox(bb));
 

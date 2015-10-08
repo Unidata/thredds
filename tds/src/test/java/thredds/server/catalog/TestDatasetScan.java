@@ -217,7 +217,42 @@ public class TestDatasetScan {
       if (s.equals(latestService)) latestDataset = nds;
     }
     assert latestDataset != null;
-
   }
+
+  @Test
+  public void testEsgfProblems() throws IOException, ParseException {
+    String filePath = "../tds/src/test/content/thredds/testEsgfProblems.xml";
+    ConfigCatalog cat = TestConfigCatalogBuilder.open("file:" + filePath);
+    assert cat != null;
+
+    Dataset ds = cat.findDatasetByID("gass-ytoc-mip");
+    assert ds != null;
+    assert (ds instanceof DatasetScan);
+    DatasetScan dss = (DatasetScan) ds;
+    String serviceName = dss.getServiceNameDefault();
+    assert serviceName.equals("fileservice");
+
+    DatasetScanConfig config = dss.getConfig();
+    System.out.printf("%s%n", config);
+
+    Catalog scanCat = dss.makeCatalogForDirectory("gass-ytoc-mip", cat.getBaseURI()).makeCatalog();
+    assert scanCat != null;
+
+    CatalogXmlWriter writer = new CatalogXmlWriter();
+    if (showCats) System.out.printf("%n%s%n", writer.writeXML(scanCat));
+    assert scanCat.getDatasets().size() == 1;
+    Dataset root = scanCat.getDatasets().get(0);
+    String sn = root.getServiceNameDefault();
+    assert sn != null;
+    assert sn.equals("fileservice");
+
+    for (Dataset nds : root.getDatasets()) {
+      if (nds.getName().equals("latest.xml")) continue;
+      Service s = nds.getServiceDefault();
+      assert s != null;
+      assert s.getName().equals("fileservice");
+    }
+  }
+
 
 }
