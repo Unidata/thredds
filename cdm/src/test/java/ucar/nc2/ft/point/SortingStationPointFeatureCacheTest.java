@@ -35,12 +35,13 @@ public class SortingStationPointFeatureCacheTest {
         StationFeature stationFeat = new StationFeatureImpl("Foo", "Bar", "123", 30, 60, 5000, 4, stationData);
 
         CalendarDateUnit timeUnit = CalendarDateUnit.of(null, "days since 1970-01-01");
+        DsgFeatureCollection dummyDsg = new SimplePointFeatureCC("dummy", timeUnit, "m", FeatureType.STATION);
 
         List<StationPointFeature> spfList = new ArrayList<>();
-        spfList.add(makeStationPointFeature(stationFeat, timeUnit, 10, 10, 103));
-        spfList.add(makeStationPointFeature(stationFeat, timeUnit, 20, 20, 96));
-        spfList.add(makeStationPointFeature(stationFeat, timeUnit, 30, 30, 118));
-        spfList.add(makeStationPointFeature(stationFeat, timeUnit, 40, 40, 110));
+        spfList.add(makeStationPointFeature(dummyDsg, stationFeat, timeUnit, 10, 10, 103));
+        spfList.add(makeStationPointFeature(dummyDsg, stationFeat, timeUnit, 20, 20, 96));
+        spfList.add(makeStationPointFeature(dummyDsg, stationFeat, timeUnit, 30, 30, 118));
+        spfList.add(makeStationPointFeature(dummyDsg, stationFeat, timeUnit, 40, 40, 110));
 
         Comparator<StationPointFeature> revObsTimeComp = new Comparator<StationPointFeature>() {
             @Override
@@ -60,14 +61,13 @@ public class SortingStationPointFeatureCacheTest {
                 PointTestUtil.equals(new PointIteratorAdapter(spfList.iterator()), cache.getPointFeatureIterator()));
     }
 
-    private static StationPointFeature makeStationPointFeature(
+    private static StationPointFeature makeStationPointFeature(DsgFeatureCollection dsg,
             StationFeature stationFeat, CalendarDateUnit timeUnit, double obsTime, double nomTime, double tasmax) {
         StructureDataScalar featureData = new StructureDataScalar("StationPointFeature");
         featureData.addMember("obsTime", "Observation time", timeUnit.getUdUnit(), DataType.DOUBLE, obsTime);
         featureData.addMember("nomTime", "Nominal time", timeUnit.getUdUnit(), DataType.DOUBLE, nomTime);
         featureData.addMember("tasmax", "Max temperature", "Celsius", DataType.DOUBLE, tasmax);
 
-        DsgFeatureCollection dsg = new SimpleDsgCollection("SimpleDsgCollection", timeUnit, null, FeatureType.STATION);
         return new SimpleStationPointFeature(dsg, stationFeat, obsTime, nomTime, timeUnit, featureData);
     }
     
@@ -108,11 +108,10 @@ public class SortingStationPointFeatureCacheTest {
                 FeatureDatasetPoint fdExpected = PointTestUtil.openPointDataset("cacheTestExpected1.ncml")) {
             cache.addAll(fdInput);
 
-//            PointFeatureIterator pointIterExpected =
-//                    new FlattenedDatasetPointCollection(fdExpected).getPointFeatureIterator(-1);
-//            PointFeatureIterator pointIterActual = cache.getPointFeatureIterator();
-//            Assert.assertTrue(PointTestUtil.equals(pointIterExpected, pointIterActual));
-            Assert.fail("Need to fix FlattenedDatastPointCollection");
+            PointFeatureIterator pointIterExpected =
+                    new FlattenedDatasetPointCollection(fdExpected).getPointFeatureIterator(-1);
+            PointFeatureIterator pointIterActual = cache.getPointFeatureIterator();
+            Assert.assertTrue(PointTestUtil.equals(pointIterExpected, pointIterActual));
         }
     }
 }

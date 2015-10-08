@@ -51,7 +51,11 @@ import java.util.Iterator;
 public interface PointFeatureIterator extends Closeable, Iterator<PointFeature> {
 
   /**
-   * Check if another PointFeature is available
+   * Check if another PointFeature is available.
+   * <p>
+   * Since this iterator may be used in a for-each statement, implementations should {@link #close close} it the first
+   * time this method returns {@code false}, as it may not get closed otherwise.
+   *
    * @return true if another PointFeature is available
    * @throws RuntimeException on i/o error
    */
@@ -68,7 +72,7 @@ public interface PointFeatureIterator extends Closeable, Iterator<PointFeature> 
   /**
    * Make sure that the iterator is complete, and recover resources.
    * You must complete the iteration (until hasNext() returns false) or call close().
-   * may be called more than once.
+   * It may be called more than once (idempotent).
    */
   void close();
   

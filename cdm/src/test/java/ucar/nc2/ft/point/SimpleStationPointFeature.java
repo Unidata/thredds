@@ -11,8 +11,8 @@ import ucar.nc2.time.CalendarDateUnit;
 public class SimpleStationPointFeature extends SimplePointFeature implements StationPointFeature {
     private final StationFeature stationFeat;
 
-    public SimpleStationPointFeature(DsgFeatureCollection dsg, StationFeature stationFeat, double obsTime, double nomTime,
-            CalendarDateUnit timeUnit, StructureData featureData) {
+    public SimpleStationPointFeature(DsgFeatureCollection dsg, StationFeature stationFeat, double obsTime,
+            double nomTime, CalendarDateUnit timeUnit, StructureData featureData) {
         super(dsg, stationFeat, obsTime, nomTime, timeUnit, featureData);
         this.stationFeat = stationFeat;
     }

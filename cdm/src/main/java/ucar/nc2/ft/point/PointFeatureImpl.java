@@ -54,12 +54,13 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   protected double obsTime, nomTime;
   protected CalendarDateUnit timeUnit;
 
-  protected PointFeatureImpl( CalendarDateUnit timeUnit) {
+  protected PointFeatureImpl(DsgFeatureCollection dsg, CalendarDateUnit timeUnit) {
+    this.dsg = Preconditions.checkNotNull(dsg, "dgs == null");
     this.timeUnit = timeUnit;
   }
 
-  public PointFeatureImpl( DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime, CalendarDateUnit timeUnit) {
-    this.dsg = dsg;
+  public PointFeatureImpl(DsgFeatureCollection dsg, EarthLocation location, double obsTime, double nomTime, CalendarDateUnit timeUnit) {
+    this.dsg = Preconditions.checkNotNull(dsg, "dgs == null");
     this.location = Preconditions.checkNotNull(location, "location == null");
     this.obsTime = obsTime;
     this.nomTime = (nomTime == 0) ? obsTime : nomTime; // LOOK temp kludge until protobuf accepts NaN as defaults

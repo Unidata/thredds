@@ -33,14 +33,19 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.ft.point.*;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.ma2.StructureData;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
+import javax.annotation.Nonnull;
+import ucar.ma2.StructureData;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.point.CollectionInfo;
+import ucar.nc2.ft.point.PointCollectionImpl;
+import ucar.nc2.ft.point.PointFeatureImpl;
+import ucar.nc2.ft.point.PointIteratorFromStructureData;
+import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.ft.point.StationFeatureHas;
+import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.time.CalendarDateUnit;
 
 /**
  * A PointFeatureIterator which uses a NestedTable to implement makeFeature().
@@ -85,7 +90,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     protected Cursor cursor;
 
     StandardPointFeature(Cursor cursor, CalendarDateUnit timeUnit, double obsTime) {
-      super( timeUnit);
+      super(collectionDsg, timeUnit);
       this.cursor = cursor;
       cursor.currentIndex = 1; // LOOK ????
 
