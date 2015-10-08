@@ -91,6 +91,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
   }
 
   @Override
+  // y, x
   public int[] getShape() {
     return shape;
   }

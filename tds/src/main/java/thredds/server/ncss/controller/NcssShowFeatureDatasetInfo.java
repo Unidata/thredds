@@ -46,10 +46,13 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.writer.CoverageBoundariesExtractor;
 import ucar.nc2.ft2.coverage.writer.CoverageDatasetCapabilities;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -81,7 +84,7 @@ public class NcssShowFeatureDatasetInfo {
     Document doc = xmlWriter.getCapabilitiesDocument();
     Element root = doc.getRootElement();
     root.setAttribute("location", datasetUrlPath);
-    root.addContent(makeAcceptList(ops)); // must add the accept elements
+    root.addContent(makeAcceptXML(ops)); // must add the accept elements
 
     if (wantXml) {
       return new ModelAndView("threddsXmlView", "Document", doc);
@@ -94,19 +97,22 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
+  // the NCSS grid from using thymeleaf template, called from NcssGridController
   public ModelAndView showGridFormTh(CoverageCollection gcd, String datasetUrlPath, boolean wantXml) throws IOException {
     if (wantXml) {
       CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
       Document doc = writer.makeDatasetDescription();
       Element root = doc.getRootElement();
       root.setAttribute("location", datasetUrlPath);
-      root.addContent(makeAcceptList(SupportedOperation.GRID_REQUEST));
+      root.addContent( makeAcceptXML(SupportedOperation.GRID_REQUEST));
       return new ModelAndView("threddsXmlView", "Document", doc);
 
     } else {
       Map<String, Object> model = new HashMap<>();
       model.put("gcd", gcd);
       model.put("datasetPath", datasetUrlPath);
+      model.put("gridWKT", CoverageBoundariesExtractor.getDatasetBoundariesWKT(gcd));
+      model.put("accept", makeAcceptList(SupportedOperation.GRID_REQUEST));
       return new ModelAndView("templates/ncssGridth", model);
     }
   }
@@ -117,7 +123,7 @@ public class NcssShowFeatureDatasetInfo {
     Document doc = writer.makeDatasetDescription();
     Element root = doc.getRootElement();
     root.setAttribute("location", datasetUrlPath);
-    root.addContent(makeAcceptList(SupportedOperation.GRID_REQUEST));
+    root.addContent(makeAcceptXML(SupportedOperation.GRID_REQUEST));
 
     if (wantXml) {
       return new ModelAndView("threddsXmlView", "Document", doc);
@@ -131,7 +137,7 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  private Element makeAcceptList(SupportedOperation ops) {
+  private Element makeAcceptXML(SupportedOperation ops) {
 
     Element acceptList = new Element("AcceptList");
     for (SupportedFormat sf : ops.getSupportedFormats()) {
@@ -140,6 +146,16 @@ public class NcssShowFeatureDatasetInfo {
     }
 
     return acceptList;
+  }
+
+  private List<String> makeAcceptList(SupportedOperation ops) {
+
+    List<String> result = new ArrayList<>();
+    for (SupportedFormat sf : ops.getSupportedFormats()) {
+      result.add(sf.getFormatName());
+    }
+
+    return result;
   }
 
 }

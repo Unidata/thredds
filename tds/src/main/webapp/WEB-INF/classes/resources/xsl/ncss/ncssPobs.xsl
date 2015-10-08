@@ -68,8 +68,7 @@
                         var headTag = document.getElementsByTagName("head")[0];
                         var jQueryfile = document.createElement('script');
                         jQueryfile.setAttribute("type", "text/javascript");
-                        jQueryfile.setAttribute("src",
-                        context+"/js/lib/jquery-1.7.2.min.js");
+                        jQueryfile.setAttribute("src", "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js");
                         headTag.appendChild(jQueryfile);
 
                         //ncssApp.js

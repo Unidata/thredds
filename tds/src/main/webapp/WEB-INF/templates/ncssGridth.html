@@ -8,9 +8,10 @@
   <link rel="StyleSheet" type="text/css" href="/thredds/style/ncss/layout.css"/>
   <link rel="StyleSheet" type="text/css" href="/thredds/style/ncss/form.css"/>
   <link rel="StyleSheet" type="text/css" href="/thredds/js/lib/OpenLayers-2.12/theme/default/style.css"/>
-  <script type="text/javascript">
+  <script type="text/javascript" th:inline="javascript">
     var context = '/thredds';
-    var gridWKT = 'POLYGON((0.0 -90.0,360.0 -90.0,360.0 90.0,0.0 90.0,0.0 -90.0))';
+    //var gridWKT = 'POLYGON((0.0 -90.0,360.0 -90.0,360.0 90.0,0.0 90.0,0.0 -90.0))';
+    var gridWKT = [[${gridWKT}]];
     var Ncss = {};
 
     Ncss.debug = true;
@@ -27,13 +28,13 @@
       var headTag = document.getElementsByTagName("head")[0];
       var jQueryfile = document.createElement('script');
       jQueryfile.setAttribute("type", "text/javascript");
-      jQueryfile.setAttribute("src", context + "/js/lib/jquery-1.7.2.min.js");
+      jQueryfile.setAttribute("src", "https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js");
       headTag.appendChild(jQueryfile);
 
-      //OpenLayers.js
+      // OpenLayers.js
       var olfile = document.createElement('script');
       olfile.setAttribute("type", "text/javascript");
-      olfile.setAttribute("src", context + "/js/lib/OpenLayers-2.12/OpenLayers.js");
+      olfile.setAttribute("src", "https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js");
       headTag.appendChild(olfile);
 
       //ncssApp.js
@@ -81,7 +82,6 @@
       <span id="datasetPath" class="black" th:text="${datasetPath}">datasetPath</span>
     </h2>
     <h4> <a href="pointDataset.html">(Click for Grid as Point form)</a></h4>
-
   </div>
 
   <form id="form" method="GET" action="datasetPath" th:attr="action=${datasetPath}">
@@ -91,9 +91,10 @@
           <div th:if="${gcd.runtimeCoordinateMax} != null">
             <span class="bold">Runtimes: </span>
             <span class="bold" th:text="${gcd.runtimeCoordinateMax.summary}">Runtime coords</span>
+            <br clear="all"/>
           </div>
-          <h3>Select Variable(s):</h3>
 
+          <h3>Select Variable(s):</h3>
           <div th:each="covSet : ${gcd.coverageSets}">
             <div th:if="${covSet.coordSys.timeAxis}">
               <em>Time: <span th:text="*{covSet.coordSys.timeAxis.summary}">time coords</span></em>
@@ -110,6 +111,7 @@
             </blockquote>
           </div>
         </td>
+
         <td class="rightCol">
           <h3>Choose Spatial Subset:</h3>
           <div id="gridPreviewFrame">
@@ -132,20 +134,28 @@
                 <div class="top">
                   <span>north</span>
                   <br/>
-                  <input onchange="Ncss.buildAccessUrl()" type="text" name="north" size="8" value="90.0000" th:attr="value=${gcd.latLonBoundingBox.latMax}"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_north" size="8" value="90.0000" th:attr="value=${gcd.latLonBoundingBox.latMax}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="north" size="6" value="90.0000"
+                         th:attr="value=${#numbers.formatDecimal(gcd.latlonBoundingBox.latMax, 0, 3)}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_north" size="6" value="90.0000"
+                         th:attr="value=${#numbers.formatDecimal(gcd.latlonBoundingBox.latMax, 0, 3)}"/>
                 </div>
                 <div>
                   west
-                  <input onchange="Ncss.buildAccessUrl()" type="text" name="west" size="8" value="0.0000" th:attr="value=${gcd.latLonBoundingBox.lonMin}"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_west" size="8" value="0.0000" th:attr="value=${gcd.latLonBoundingBox.lonMin}"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="text" name="east" size="8" value="360.000" th:attr="value=${gcd.latLonBoundingBox.lonMax}"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_east" size="8" value="360.0000" th:attr="value=${gcd.latLonBoundingBox.lonMax}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="west" size="6" value="0.0000"
+                         th:attr="value=${#numbers.formatDecimal(gcd.latlonBoundingBox.lonMin, 0, 3)}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_west" size="6" value="0.0000"
+                         th:attr="value=${#numbers.formatDecimal(gcd.latlonBoundingBox.lonMin, 0, 3)}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="east" size="6" value="360.000"
+                         th:attr="value=${#numbers.formatDecimal(gcd.latlonBoundingBox.lonMax, 0, 3)}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_east" size="6" value="360.0000"
+                         th:attr="value=${#numbers.formatDecimal(gcd.latlonBoundingBox.lonMin, 0, 3)}"/>
                   east
                 </div>
                 <div class="top">
-                  <input onchange="Ncss.buildAccessUrl()" type="text" name="south" size="8" value="-90.0000" th:attr="value=${gcd.latLonBoundingBox.latMin}"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_south" size="8" value="-90.0000" th:attr="value=${gcd.latLonBoundingBox.latMin}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" name="south" size="6" value="-90.0000"
+                         th:attr="value=${#numbers.formatDecimal(gcd.latlonBoundingBox.latMin, 0, 3)}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_south" size="6" value="-90.0000"
+                         th:attr="value=${#numbers.formatDecimal(gcd.latlonBoundingBox.latMin, 0, 3)}"/>
                   <br/>
                   <span>south</span>
                 </div>
@@ -162,20 +172,28 @@
                 <div class="top">
                   <span>maxy</span>
                   <br/>
-                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxy" size="8" value="maxy" th:attr="value=${gcd.projBoundingBox.maxY}" />
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxy" size="8" value="maxy" th:attr="value=${gcd.projBoundingBox.maxY}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxy" size="6" value="maxy"
+                         th:attr="value=${#numbers.formatDecimal(gcd.projBoundingBox.maxY, 0, 0)}" />
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxy" size="6" value="maxy"
+                         th:attr="value=${#numbers.formatDecimal(gcd.projBoundingBox.maxY, 0, 0)}" />
                 </div>
                 <div>
                   minx
-                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="minx" size="8" value="minx" th:attr="value=${gcd.projBoundingBox.minX}"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_minx" size="8" value="minx" th:attr="value=${gcd.projBoundingBox.minX}"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxx" size="8" value="maxx" th:attr="value=${gcd.projBoundingBox.maxX}"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxx" size="8" value="maxx" th:attr="value=${gcd.projBoundingBox.maxX}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="minx" size="6" value="minx"
+                         th:attr="value=${#numbers.formatDecimal(gcd.projBoundingBox.minX, 0, 0)}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_minx" size="6" value="minx"
+                         th:attr="value=${#numbers.formatDecimal(gcd.projBoundingBox.minX, 0, 0)}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="maxx" size="6" value="maxx"
+                         th:attr="value=${#numbers.formatDecimal(gcd.projBoundingBox.maxX, 0, 0)}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_maxx" size="6" value="maxx"
+                         th:attr="value=${#numbers.formatDecimal(gcd.projBoundingBox.maxX, 0, 0)}"/>
                   maxx
                 </div>
                 <div class="top">
-                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="miny" size="8" value="miny" th:attr="value=${gcd.projBoundingBox.minY}"/>
-                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_miny" size="8" value="miny" th:attr="value=${gcd.projBoundingBox.minY}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="text" disabled="disabled" name="miny" size="6" value="miny"
+                         th:attr="value=${#numbers.formatDecimal(gcd.projBoundingBox.minY, 0, 0)}"/>
+                  <input onchange="Ncss.buildAccessUrl()" type="hidden" disabled="disabled" name="dis_miny" size="6" value="miny"
+                         th:attr="value=${#numbers.formatDecimal(gcd.projBoundingBox.minY, 0, 0)}"/>
                   <br/>
                   <span>miny</span>
                 </div>
@@ -187,15 +205,13 @@
               </div>
             </div>
           </div>
-
           <br clear="all"/>
-          <br clear="all"/>
-
           <div class="borderLightGrey">
             <span class="bold">Horizontal Stride:</span>
             <input onchange="Ncss.buildAccessUrl()" type="text" name="horizStride" size="5" value="1"/>
           </div>
 
+          <br clear="all"/>
           <h3>Choose Time Subset:</h3>
           <div id="inputTimeRange" class="selected">
             <span class="bold">Time range</span>
@@ -258,8 +274,13 @@
           <div class="borderLightGrey">
             <label class="sized">Format:</label>
             <select onchange="Ncss.buildAccessUrl()" name="accept" size="1">
-              <option value="netcdf">netcdf</option>
-              <option value="netcdf4">netcdf4</option>
+              <div th:each="opt : ${accept}">
+                <option value="format" th:value="${opt}">
+                  <span id="format" class="black" th:text="${opt}">format</span>
+                </option>
+              </div>
+              <!-- option value="netcdf">netcdf</option>
+              <option value="netcdf4">netcdf4</option -->
             </select>
           </div>
 
@@ -282,7 +303,7 @@
 </div>
 
 <hr/>
-<h3><a href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service Documentation</a></h3>
+<h3><a href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/services/NetcdfSubsetServiceReference.html">NetCDF Subset Service Documentation</a></h3>
 
 </body>
 

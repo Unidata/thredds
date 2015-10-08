@@ -267,7 +267,7 @@ public class DescribeCoverage extends WcsRequest {
     // spatialDomain/Envelope@srsName [0..1] (URI)
     envelopeElem.setAttribute("srsName", "urn:ogc:def:crs:OGC:1.3:CRS84");
 
-    LatLonRect llbb = wcsDataset.getDataset().getBoundingBox();
+    LatLonRect llbb = wcsDataset.getDataset().getLatlonBoundingBox();
     LatLonPoint llpt = llbb.getLowerLeftPoint();
     LatLonPoint urpt = llbb.getUpperRightPoint();
 

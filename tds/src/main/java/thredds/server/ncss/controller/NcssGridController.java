@@ -75,7 +75,7 @@ import java.util.Random;
 
 /**
  * Handles NCSS Grid Requests
- * Validation done here, not in Responders
+ * Validation done here.
  *
  * @author caron
  * @since 4/29/2015
@@ -83,7 +83,7 @@ import java.util.Random;
 @Controller
 @RequestMapping("/ncss/grid")
 public class NcssGridController extends AbstractNcssController {
-  static private final short ESTIMATED_COMPRESION_RATE = 5;  // Compression rate used to estimate the filesize of netcdf4 compressed files
+  static private final short ESTIMATED_COMPRESION_RATE = 4;  // Compression rate used to estimate the filesize of netcdf4 compressed files
 
   @Autowired
   private AllowedServices allowedServices;
