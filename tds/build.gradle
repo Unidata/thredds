@@ -58,10 +58,16 @@ dependencies {
     // runtime libraries["threddsIso"]
     // compile libraries["ncwms"]
     // compile libraries["geoapi-pending"]
-    // compile libraries["oro"]
+    compile libraries["oro"]
 
     // Needed for XPath operations in mock tests
     testCompile libraries["jaxen"]
+    // edal ncwms related libs
+    compile libraries["edal-common"]
+    compile libraries["edal-cdm"]
+    compile libraries["edal-graphics"]
+    compile libraries["edal-wms"]
+    compile libraries["saxon-he"]
 
     // JSR 303 with Hibernate Validator, which is dragging in jboss logging
     compile libraries["validation-api"]

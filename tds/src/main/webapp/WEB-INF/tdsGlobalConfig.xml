@@ -17,7 +17,7 @@
         <entry key="netcdfSubsetPoint" value="true"/>
         <entry key="opendap" value="true"/>
         <entry key="wcs" value="true"/>
-        <entry key="wms" value="false"/>
+        <entry key="wms" value="true"/>
         <entry key="iso" value="true"/>
         <entry key="iso_ncml" value="true"/>
         <entry key="uddc" value="true"/>
