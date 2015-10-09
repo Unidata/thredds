@@ -38,17 +38,13 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.TimeOffsetAxis;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -186,6 +182,47 @@ public class TestGribCoverageBuilding {
       Assert.assertEquals(CoverageCoordAxis.Spacing.regular, runtime.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.scalar, runtime.getDependenceType());
       Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(0));
+    }
+  }
+
+  @Test
+  public void testNonOrthogonalTime2D() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/NDFD-CONUS-5km.ncx3";
+    String gridName = "Maximum_temperature_height_above_ground_12_Hour_Maximum";
+    System.out.printf("file %s coverage %s%n", filename, gridName);
+
+    try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(filename)) {
+      Assert.assertNotNull(filename, fdc);
+
+      VariableSimpleIF vs = fdc.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
+
+      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.FMRC);
+      Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
+
+      Coverage cov = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, cov);
+
+      int[] expectShape = new int[] {4,4,1,689,1073};
+      Assert.assertArrayEquals(expectShape, cov.getShape());
+
+      CoverageCoordSys gcs = cov.getCoordSys();
+      Assert.assertNotNull(gcs);
+
+      CoverageCoordAxis reftime = gcs.getAxis(AxisType.RunTime);
+      Assert.assertNotNull(reftime);
+      Assert.assertEquals(4, reftime.getNcoords());
+      double[] want = new double[]{0., 12., 24., 36.};
+      CompareNetcdf2 cn = new CompareNetcdf2();
+      assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
+
+      CoverageCoordAxis time = gcs.getTimeAxis();
+      Assert.assertNotNull(time);
+      Assert.assertTrue(time instanceof FmrcTimeAxis2D);
+      Assert.assertEquals(16, time.getNcoords());
+
+      //double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
+      //assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
     }
   }
 }

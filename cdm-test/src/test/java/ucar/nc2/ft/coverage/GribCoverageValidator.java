@@ -21,9 +21,6 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * Created by snake on 9/3/2015.
- */
 public class GribCoverageValidator implements GribDataValidator {
 
   @Override

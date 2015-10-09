@@ -388,134 +388,132 @@ public class ToolsUI extends JPanel {
       case "Aggregation":
         aggPanel = new AggPanel((PreferencesExt) mainPrefs.node("NcMLAggregation"));
         c = aggPanel;
-
         break;
+
       case "BUFR":
         bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
         c = bufrPanel;
-
         break;
+
       case "BUFRTableB":
         bufrTableBPanel = new BufrTableBPanel((PreferencesExt) mainPrefs.node("bufr2"));
         c = bufrTableBPanel;
-
         break;
+
       case "BUFRTableD":
         bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
         c = bufrTableDPanel;
-
         break;
+
       case "BufrReports": {
         PreferencesExt prefs = (PreferencesExt) mainPrefs.node("bufrReports");
         ReportPanel rp = new BufrReportPanel(prefs);
         bufrReportPanel = new ReportOpPanel(prefs, rp);
         c = bufrReportPanel;
-
         break;
       }
       case "BUFR-CODES":
         bufrCodePanel = new BufrCodePanel((PreferencesExt) mainPrefs.node("bufr-codes"));
         c = bufrCodePanel;
-
         break;
+
       case "CdmrFeature":
         cdmremotePanel = new CdmrFeature((PreferencesExt) mainPrefs.node("CdmrFeature"));
         c = cdmremotePanel;
-
         break;
+
       case "CollectionSpec":
         fcPanel = new CollectionSpecPanel((PreferencesExt) mainPrefs.node("collSpec"));
         c = fcPanel;
-
         break;
+
       case "DirectoryPartition":
         dirPartPanel = new DirectoryPartitionPanel((PreferencesExt) mainPrefs.node("dirPartition"));
         c = dirPartPanel;
-
         break;
+
       case "NcStream":
         ncStreamPanel = new NcStreamPanel((PreferencesExt) mainPrefs.node("NcStream"));
         c = ncStreamPanel;
-
         break;
+
       case "GRIB1collection":
         grib1CollectionPanel = new Grib1CollectionPanel((PreferencesExt) mainPrefs.node("grib1raw"));
         c = grib1CollectionPanel;
-
         break;
+
       case "GRIB1data":
         grib1DataPanel = new Grib1DataPanel((PreferencesExt) mainPrefs.node("grib1Data"));
         c = grib1DataPanel;
-
         break;
+
       case "GRIB-FILES":
         gribFilesPanel = new GribFilesPanel((PreferencesExt) mainPrefs.node("gribFiles"));
         c = gribFilesPanel;
-
         break;
+
       case "GRIB2collection":
         grib2CollectionPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
         c = grib2CollectionPanel;
-
         break;
+
       case "GRIB2data":
         grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
         c = grib2DataPanel;
-
         break;
+
       case "BufrCdmIndex":
         bufrCdmIndexPanel = new BufrCdmIndexPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
         c = bufrCdmIndexPanel;
-
     /* } else if (title.equals("CdmIndex")) {
       gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
       c = gribCdmIndexPanel; */
-
         break;
+
       case "CdmIndex3":
         cdmIndex2Panel = new CdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx3"));
         c = cdmIndex2Panel;
-
         break;
+
       case "CdmIndexReport": {
         PreferencesExt prefs = (PreferencesExt) mainPrefs.node("CdmIndexReport");
         ReportPanel rp = new CdmIndexReportPanel(prefs);
         cdmIndexReportPanel = new ReportOpPanel(prefs, rp);
         c = cdmIndexReportPanel;
-
         break;
       }
+
       case "GribIndex":
         gribIdxPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
         c = gribIdxPanel;
-
         break;
+
       case "GRIB1-REPORT": {
         PreferencesExt prefs = (PreferencesExt) mainPrefs.node("grib1Report");
         ReportPanel rp = new Grib1ReportPanel(prefs);
         grib1ReportPanel = new ReportOpPanel(prefs, rp);
         c = grib1ReportPanel;
-
         break;
       }
+
       case "GRIB2-REPORT": {
         PreferencesExt prefs = (PreferencesExt) mainPrefs.node("gribReport");
         ReportPanel rp = new Grib2ReportPanel(prefs);
         grib2ReportPanel = new ReportOpPanel(prefs, rp);
         c = grib2ReportPanel;
-
         break;
       }
+
       case "WMO-COMMON":
         wmoCommonCodePanel = new WmoCCPanel((PreferencesExt) mainPrefs.node("wmo-common"));
         c = wmoCommonCodePanel;
-
         break;
+
       case "WMO-CODES":
         gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("wmo-codes"));
         c = gribCodePanel;
-
         break;
+
       case "WMO-TEMPLATES":
         gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("wmo-templates"));
         c = gribTemplatePanel;
@@ -524,108 +522,108 @@ public class ToolsUI extends JPanel {
       case "GRIB1-TABLES":
         grib1TablePanel = new Grib1TablePanel((PreferencesExt) mainPrefs.node("grib1-tables"));
         c = grib1TablePanel;
-
         break;
+
       case "GRIB2-TABLES":
         grib2TablePanel = new Grib2TablePanel((PreferencesExt) mainPrefs.node("grib2-tables"));
         c = grib2TablePanel;
-
         break;
+
       case "GRIB-Rename":
         gribVariableRenamePanel = new GribRenamePanel((PreferencesExt) mainPrefs.node("grib-rename"));
         c = gribVariableRenamePanel;
-
         break;
+
       case "GRIB-Rewrite":
         gribRewritePanel = new GribRewritePanel((PreferencesExt) mainPrefs.node("grib-rewrite"));
         c = gribRewritePanel;
-
         break;
+
       case "CoordSys":
         coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
         c = coordSysPanel;
-
         break;
+
       case "FeatureScan":
         ftPanel = new FeatureScanPanel((PreferencesExt) mainPrefs.node("ftPanel"));
         c = ftPanel;
-
         break;
+
       case "GeoTiff":
         geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
         c = geotiffPanel;
-
         break;
+
       case "Grids":
         gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
         c = gridPanel;
-
         break;
+
       case "Coverages":
         coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage2"));
         c = coveragePanel;
-
         break;
+
       case "HDF5-Objects":
         hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"));
         c = hdf5ObjectPanel;
-
         break;
+
       case "HDF5-Data":
         hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"));
         c = hdf5DataPanel;
-
         break;
+
       case "Netcdf4-JNI":
         nc4viewer = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("nc4viewer"), true);
         c = nc4viewer;
-
         break;
+
       case "HDF4":
         hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"));
         c = hdf4Panel;
-
         break;
+
       case "Images":
         imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
         c = imagePanel;
-
         break;
+
       case "Fmrc":
         fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
         c = fmrcPanel;
-
         break;
+
       case "Collections":
         fmrcCollectionPanel = new FmrcCollectionPanel((PreferencesExt) mainPrefs.node("collections"));
         c = fmrcCollectionPanel;
-
         break;
+
       case "NCDump":
         ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
         c = ncdumpPanel;
-
         break;
+
       case "NcmlEditor":
         ncmlEditorPanel = new NcmlEditorPanel((PreferencesExt) mainPrefs.node("NcmlEditor"));
         c = ncmlEditorPanel;
-
         break;
+
       case "PointFeature":
         pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
         c = pointFeaturePanel;
-
         break;
+
       case "Radial":
         radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
         c = radialPanel;
-
         break;
+
       case "StationRadial":
         stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
         c = stationRadialPanel;
-
         break;
+
       case "THREDDS":
         threddsUI = new ThreddsUI(ToolsUI.this.parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
         threddsUI.addPropertyChangeListener(new PropertyChangeListener() {
@@ -642,32 +640,32 @@ public class ToolsUI extends JPanel {
         });
 
         c = threddsUI;
-
         break;
+
       case "Units":
         unitsPanel = new UnitsPanel((PreferencesExt) mainPrefs.node("units"));
         c = unitsPanel;
-
         break;
+
       case "URLdump":
         urlPanel = new URLDumpPane((PreferencesExt) mainPrefs.node("urlDump"));
         c = urlPanel;
-
         break;
+
       case "Viewer":
         c = viewerPanel;
-
         break;
+
       case "Writer":
         writerPanel = new DatasetWriterPanel((PreferencesExt) mainPrefs.node("writer"));
         c = writerPanel;
-
         break;
+
       case "WMS":
         wmsPanel = new WmsPanel((PreferencesExt) mainPrefs.node("wms"));
         c = wmsPanel;
-
         break;
+
       default:
         System.out.println("tabbedPane unknown component " + title);
         return;
@@ -1294,8 +1292,8 @@ public class ToolsUI extends JPanel {
 
       // otherwise do the datatype thing
       DataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invDataset, null);
-      if (threddsData == null) {
-        JOptionPane.showMessageDialog(null, "Unknown datatype");
+      if (threddsData.fatalError) {
+        JOptionPane.showMessageDialog(null, "Failed to open err="+threddsData.errLog);
         return;
       }
       jumptoThreddsDatatype(threddsData);
@@ -1341,6 +1339,10 @@ public class ToolsUI extends JPanel {
     DataFactory.Result threddsData = null;
     try {
       threddsData = threddsDataFactory.openFeatureDataset(invAccess, null);
+      if (threddsData.fatalError) {
+        JOptionPane.showMessageDialog(null, "Failed to open err="+threddsData.errLog);
+        return;
+      }
       jumptoThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
@@ -1369,8 +1371,8 @@ public class ToolsUI extends JPanel {
       return;
     }
 
-    if (threddsData.featureType == FeatureType.GRID) {
-      makeComponent(ftTabPane, "Coverage");
+    if (threddsData.featureType.isCoverageFeatureType()) {
+      makeComponent(ftTabPane, "Coverages");
       coveragePanel.setDataset(threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(coveragePanel);
@@ -4904,22 +4906,17 @@ public class ToolsUI extends JPanel {
       return !err;
     }
 
-    void setDataset(FeatureDataset gds) {
-      if (gds == null) return;
+    void setDataset(FeatureDataset fd) {
+      if (fd == null) return;
+      if (!(fd instanceof FeatureDatasetCoverage)) return;
+
       try {
         closeOpenFiles();
       } catch (IOException ioe) {
         System.out.printf("close failed %n");
       }
 
-      /* this.ds = (NetcdfDataset) gds.getNetcdfFile(); // ??
-      try {
-        dsTable.setDataset(gds);
-      } catch (IOException e) {
-        e.printStackTrace();
-        return;
-      } */
-      setSelectedItem(gds.getLocation());
+      dsTable.setCollection( (FeatureDatasetCoverage) fd);
     }
 
     void closeOpenFiles() throws IOException {
@@ -5637,6 +5634,7 @@ public class ToolsUI extends JPanel {
           try {
             result.close();
           } catch (IOException ioe2) {
+            JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + ioe2.getMessage());
           }
         }
         return false;
@@ -5865,7 +5863,7 @@ public class ToolsUI extends JPanel {
   }
 
   private interface GetDataRunnable {
-    public void run(Object o) throws IOException;
+    void run(Object o) throws IOException;
   }
 
   private static class GetDataTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {

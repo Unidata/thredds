@@ -226,7 +226,7 @@ public class HorizCoordSys {
 
       } else if (llbb != null) {
         LatLonRect full = makeLatlonBB(null);
-        if (!llbb.containedIn(full)) {
+        if (!full.containedIn(llbb)) { // if request contains entire bb, then no subsetting needed
 
           if (isProjection) {
             // we have to transform latlon to projection coordinates

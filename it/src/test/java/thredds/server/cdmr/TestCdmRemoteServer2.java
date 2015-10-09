@@ -32,6 +32,7 @@
  */
 package thredds.server.cdmr;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.client.catalog.*;
@@ -40,11 +41,13 @@ import thredds.client.catalog.tools.DataFactory;
 import thredds.server.catalog.TdsLocalCatalog;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -63,37 +66,37 @@ public class TestCdmRemoteServer2 {
     assert ds.getFeatureType() == FeatureType.GRID;
 
     DataFactory fac = new DataFactory();
+    try (DataFactory.Result dataResult = fac.openFeatureDataset( ds, null)) {
+      if (dataResult.fatalError) {
+        System.out.printf("fatalError= %s%n", dataResult.errLog);
+        assert false;
+      }
+      assert dataResult.featureDataset != null;
 
-    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      String gridName = "sst";
+      VariableSimpleIF vs = gds.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
 
-    assert dataResult != null;
-    if (dataResult.fatalError) {
-      System.out.printf("fatalError= %s%n", dataResult.errLog);
-      assert false;
+      Assert.assertEquals(1, gds.getCoverageCollections().size());
+      CoverageCollection cc = gds.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
+
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull(gcs);
+      assert null == gcs.getZAxis();
+
+      CoverageCoordAxis time = gcs.getTimeAxis();
+      Assert.assertNotNull("time axis", time);
+      Assert.assertEquals(12, time.getNcoords());
+
+      double[] expect = new double[]{366.0, 1096.485, 1826.97, 2557.455, 3287.94, 4018.425, 4748.91, 5479.395, 6209.88, 6940.365, 7670.85, 8401.335};
+      Array data = time.getCoordsAsArray();
+      for (int i = 0; i < expect.length; i++)
+        assert Misc.closeEnough(expect[i], data.getDouble(i));
+
     }
-    assert dataResult.featureDataset != null;
-
-    GridDataset gds = (GridDataset) dataResult.featureDataset;
-    NetcdfFile nc = gds.getNetcdfFile();
-    if (nc != null)  
-      System.out.printf(" NetcdfFile location = %s%n", nc.getLocation());
-
-    GridDatatype grid = gds.findGridDatatype("sst");
-    assert grid != null;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert gcs != null;
-    assert null == gcs.getVerticalAxis();
-
-    CoordinateAxis1D time = gcs.getTimeAxis1D();
-    assert time != null;
-    assert time.getSize() == 12 : time.getSize();
-
-    double[] expect = new double[] {366.0, 1096.485, 1826.97, 2557.455, 3287.94, 4018.425, 4748.91, 5479.395, 6209.88, 6940.365, 7670.85, 8401.335};
-    Array data = time.read();
-    for (int i=0; i<expect.length; i++)
-      assert Misc.closeEnough(expect[i], data.getDouble(i));
-
-    dataResult.featureDataset.close();
   }
 
   @Test
