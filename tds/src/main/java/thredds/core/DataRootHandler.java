@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
 
 import thredds.client.catalog.*;
 import thredds.filesystem.MFileOS7;
+import thredds.inventory.CollectionUpdater;
 import thredds.inventory.MFile;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.*;
@@ -217,6 +218,8 @@ public final class DataRootHandler implements InitializingBean {
     //idHash = new HashSet<>();
 
     DatasetHandler.reinit(); // NcML datasets
+	// Shutdown and start the collection schedule
+    CollectionUpdater.INSTANCE.reinit();
     ccManager = new ConfigCatalogManager();
     ccManager.initCatalogs();
 

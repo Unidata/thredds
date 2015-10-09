@@ -74,15 +74,19 @@ public enum CollectionUpdater {
   }
 
   private CollectionUpdater() {
-    try {
-      scheduler = StdSchedulerFactory.getDefaultScheduler();
-      scheduler.start();
-      // scheduler.getListenerManager().addSchedulerListener(new MySchedListener());
-    } catch (Throwable e) {
-      failed = true;
-      throw new RuntimeException("quartz scheduler failed to initialize", e);
-    }
+	  start();
   }
+  
+  private void start() {
+	    try {
+	        scheduler = StdSchedulerFactory.getDefaultScheduler();
+	        scheduler.start();
+	        // scheduler.getListenerManager().addSchedulerListener(new MySchedListener());
+	      } catch (Throwable e) {
+	        failed = true;
+	        throw new RuntimeException("quartz scheduler failed to initialize", e);
+	      }
+	  }
 
   public org.quartz.Scheduler getScheduler() {
     return scheduler;
@@ -192,6 +196,11 @@ public enum CollectionUpdater {
       }
     }
 
+  }
+  
+  public void reinit() {
+	  shutdown();
+	  start();
   }
 
   public void shutdown() {

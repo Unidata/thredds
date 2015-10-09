@@ -67,6 +67,7 @@ import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.crawlabledataset.CrawlableDatasetFile;
+import thredds.inventory.CollectionUpdater;
 import thredds.server.admin.DebugController;
 import thredds.server.config.AllowableService;
 import thredds.server.config.TdsContext;
@@ -260,6 +261,8 @@ public final class DataRootHandler implements InitializingBean {
     idHash = new HashSet<>();
 
     DatasetHandler.reinit(); // NcML datasets
+	// Shutdown and start the collection schedule
+    CollectionUpdater.INSTANCE.reinit();
     initCatalogs();
 
     isReinit = false;
