@@ -79,6 +79,10 @@ public class BAMutil {
 
   static private String defaultResourcePath = "/resources/nj22/ui/icons/";
 
+  // Check if on a mac
+  static private final String osName = System.getProperty("os.name").toLowerCase();
+  static private final boolean isMacOs = osName.startsWith("mac os x");
+
   /**
    * Set the resource path for icons, images, cursors.
    * @param path reletive to the classpath
@@ -86,7 +90,8 @@ public class BAMutil {
   static public void setResourcePath( String path) { defaultResourcePath = path; }
   static public String getResourcePath( ) { return defaultResourcePath; }
 
-  static final private int META_KEY = java.awt.Event.CTRL_MASK;        // ??
+  static final private int META_KEY = (isMacOs) ? java.awt.Event.META_MASK
+                                                    : java.awt.Event.CTRL_MASK;
 
   static private boolean debug = false, debugToggle = false;
 
