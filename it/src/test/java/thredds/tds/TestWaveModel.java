@@ -1,6 +1,7 @@
 package thredds.tds;
 
 import junit.framework.TestCase;
+import org.junit.Assert;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
@@ -10,15 +11,19 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -46,26 +51,31 @@ public class TestWaveModel extends TestCase {
     assert ds.getFeatureType() == FeatureType.GRID;
 
     DataFactory fac = new DataFactory();
+    try (DataFactory.Result dataResult = fac.openFeatureDataset( ds, null)) {
+      assert !dataResult.fatalError;
+      assert dataResult.featureDataset != null;
 
-    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      String gridName = "salt";
+      VariableSimpleIF vs = gds.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
 
-    assert dataResult != null;
-    assert !dataResult.fatalError;
-    assert dataResult.featureDataset != null;
+      Assert.assertEquals(1, gds.getCoverageCollections().size());
+      CoverageCollection cc = gds.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
 
-    GridDataset gds = (GridDataset) dataResult.featureDataset;
-    GridDatatype grid = gds.findGridDatatype("salt");
-    assert grid != null;
-    Section haveShape = new Section(grid.getShape());
-    Section wantShape = new Section(new int[] {65,30, 194, 294});
-    assert haveShape.equals(wantShape) : wantShape + " != " + haveShape;
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull(gcs);
 
-    Attribute att = grid.findAttributeIgnoreCase("_FillValue");
-    assert att != null;
-    assert att.getDataType() == DataType.FLOAT;
-    assert Float.isNaN((Float)att.getNumericValue());
+      int[] expectShape = new int[] {65, 30, 194, 294};
+      Assert.assertArrayEquals(expectShape, grid.getShape());
 
-    gds.close();
+      Attribute att = grid.findAttributeIgnoreCase("_FillValue");
+      assert att != null;
+      assert att.getDataType() == DataType.FLOAT;
+      assert Float.isNaN((Float) att.getNumericValue());
+    }
   }
 
   public void testOffset() throws IOException, InvalidRangeException, ParseException {
@@ -84,38 +94,44 @@ public class TestWaveModel extends TestCase {
     assert dr.getDuration().equals(new TimeDuration("24 hours")) : dr.getDuration();
 
     DataFactory fac = new DataFactory();
+    try (DataFactory.Result dataResult = fac.openFeatureDataset( ds, null)) {
+      assert !dataResult.fatalError;
+      assert dataResult.featureDataset != null;
 
-    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      String gridName = "salt";
+      VariableSimpleIF vs = gds.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
 
-    assert dataResult != null;
-    assert !dataResult.fatalError;
-    assert dataResult.featureDataset != null;
+      Assert.assertEquals(1, gds.getCoverageCollections().size());
+      CoverageCollection cc = gds.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
 
-    GridDataset gds = (GridDataset) dataResult.featureDataset;
-    GridDatatype grid = gds.findGridDatatype("salt");
-    assert grid != null;
-    Section haveShape = new Section(grid.getShape());
-    Section wantShape = new Section(new int[] {2, 30, 194, 294});
-    assert haveShape.equals(wantShape) : wantShape + " != " + haveShape;
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull(gcs);
 
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert gcs != null;
+      int[] expectShape = new int[]{2, 30, 194, 294};
+      Assert.assertArrayEquals(expectShape, grid.getShape());
 
-    CoordinateAxis1D time = gcs.getTimeAxis1D();
-    assert time != null;
-    assert time.getSize() == 2;
-    double[] want = new double[] {21, 45};
-    CompareNetcdf2 cn = new CompareNetcdf2();
-    assert cn.compareData("time", time.read(), Array.makeFromJavaArray(want), false);
+      CoverageCoordAxis time = gcs.getTimeAxis();
+      Assert.assertNotNull("time axis", time);
+      Assert.assertEquals(2, time.getNcoords());
 
-    CoordinateAxis1D runtime = gcs.getRunTimeAxis();
-    assert runtime != null;
-    assert runtime.getSize() == 2;
-    want = new double[] {0, 24};
-    cn = new CompareNetcdf2();
-    assert cn.compareData("runtime", runtime.read(), Array.makeFromJavaArray(want), false);
+      double[] expect = new double[]{21., 45.};
+      Array data = time.getCoordsAsArray();
+      for (int i = 0; i < expect.length; i++)
+        assert Misc.closeEnough(expect[i], data.getDouble(i));
 
-    gds.close();
+      CoverageCoordAxis runtime = gcs.getAxis(AxisType.RunTime);
+      Assert.assertNotNull("runtime axis", runtime);
+      Assert.assertEquals(2, runtime.getNcoords());
+
+      expect = new double[]{0, 24};
+      data = runtime.getCoordsAsArray();
+      for (int i = 0; i < expect.length; i++)
+        assert Misc.closeEnough(expect[i], data.getDouble(i));
+    }
   }
 
 }

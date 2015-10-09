@@ -44,6 +44,7 @@ import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -51,7 +52,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
@@ -119,26 +122,31 @@ public class TestTdsDodsServer {
     assert ds.getFeatureType() == FeatureType.GRID;
 
     DataFactory fac = new DataFactory();
+    try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
 
-    DataFactory.Result dataResult = fac.openFeatureDataset(ds, null);
+      assert dataResult != null;
+      assert !dataResult.fatalError;
+      assert dataResult.featureDataset != null;
 
-    assert dataResult != null;
-    assert !dataResult.fatalError;
-    assert dataResult.featureDataset != null;
+      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      String gridName = "Z_sfc";
+      VariableSimpleIF vs = gds.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
 
-    GridDataset gds = (GridDataset) dataResult.featureDataset;
-    GridDatatype grid = gds.findGridDatatype("Z_sfc");
-    assert grid != null;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert gcs != null;
-    assert null == gcs.getVerticalAxis();
+      Assert.assertEquals(1, gds.getCoverageCollections().size());
+      CoverageCollection cc = gds.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
 
-    CoordinateAxis1D time = gcs.getTimeAxis1D();
-    assert time != null;
-    assert time.getSize() == 1;
-    assert 102840.0 == time.readScalarDouble();
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull(gcs);
+      assert null == gcs.getZAxis();
 
-    dataResult.featureDataset.close();
+      CoverageCoordAxis time = gcs.getTimeAxis();
+      Assert.assertNotNull("time axis", time);
+      Assert.assertEquals(1, time.getNcoords());
+      Assert.assertEquals(102840.0,time.getStartValue(), Misc.maxReletiveError);
+    }
   }
 
   private void doOne(String urlString) throws IOException {

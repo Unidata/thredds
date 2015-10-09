@@ -10,24 +10,24 @@ import thredds.client.catalog.tools.DataFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.ma2.Array;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.units.DateType;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.IO;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Describe
+ * it tests for GRIB data served through TDS
  *
  * @author caron
  * @since 4/20/2015
@@ -52,18 +52,36 @@ public class TestTdsGrib {
       assert !dataResult.fatalError : dataResult.errLog;
       assert dataResult.featureDataset != null;
 
-      GridDataset gds = (GridDataset) dataResult.featureDataset;
-      GridDatatype grid = gds.findGridDatatype("Maximum_temperature_Forecast_height_above_ground_12_Hour_Maximum");
-      assert grid != null;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert gcs != null;
+      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      String gridName = "Maximum_temperature_Forecast_height_above_ground_12_Hour_Maximum";
+      VariableSimpleIF vs = gds.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
 
-      CoordinateAxis1D time = gcs.getTimeAxis1D();
-      assert time != null;
-      assert time.getSize() == 4;
-      double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
+      Assert.assertEquals(1, gds.getCoverageCollections().size());
+      CoverageCollection cc = gds.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
+
+      int[] expectShape = new int[] {4,4,1,689,1073};
+      Assert.assertArrayEquals(expectShape, grid.getShape());
+
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull(gcs);
+
+      CoverageCoordAxis reftime = gcs.getAxis(AxisType.RunTime);
+      Assert.assertNotNull(reftime);
+      Assert.assertEquals(4, reftime.getNcoords());
+      double[] want = new double[]{0., 12., 24., 36.};
       CompareNetcdf2 cn = new CompareNetcdf2();
-      assert cn.compareData("time", time.read(), Array.makeFromJavaArray(want), false);
+      assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
+
+      CoverageCoordAxis time = gcs.getTimeAxis();
+      Assert.assertNotNull(time);
+      Assert.assertTrue(time instanceof FmrcTimeAxis2D);
+      Assert.assertEquals(16, time.getNcoords());
+
+      //double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
+      //assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
     }
   }
 
@@ -83,18 +101,33 @@ public class TestTdsGrib {
       assert !dataResult.fatalError : dataResult.errLog;
       assert dataResult.featureDataset != null;
 
-      GridDataset gds = (GridDataset) dataResult.featureDataset;
-      GridDatatype grid = gds.findGridDatatype("Maximum_temperature_Forecast_height_above_ground_12_Hour_Maximum");
-      assert grid != null;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert gcs != null;
+      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      String gridName = "Maximum_temperature_Forecast_height_above_ground_12_Hour_Maximum";
+      VariableSimpleIF vs = gds.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
 
-      CoordinateAxis1D time = gcs.getTimeAxis1D();
-      assert time != null;
-      assert time.getSize() == 4;
-      double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
+      Assert.assertEquals(1, gds.getCoverageCollections().size());
+      CoverageCollection cc = gds.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
+
+      int[] expectShape = new int[] {4,4,1,689,1073};
+      Assert.assertArrayEquals(expectShape, grid.getShape());
+
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull(gcs);
+
+      CoverageCoordAxis reftime = gcs.getAxis(AxisType.RunTime);
+      Assert.assertNotNull(reftime);
+      Assert.assertEquals(4, reftime.getNcoords());
+      double[] want = new double[]{0., 12., 24., 36.};
       CompareNetcdf2 cn = new CompareNetcdf2();
-      assert cn.compareData("time", time.read(), Array.makeFromJavaArray(want), false);
+      assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
+
+      CoverageCoordAxis time = gcs.getTimeAxis();
+      Assert.assertNotNull(time);
+      Assert.assertTrue(time instanceof FmrcTimeAxis2D);
+      Assert.assertEquals(16, time.getNcoords());
     }
   }
 

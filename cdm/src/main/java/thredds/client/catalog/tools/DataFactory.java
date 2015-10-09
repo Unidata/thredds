@@ -54,6 +54,8 @@ import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.stream.CdmRemote;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.Nonnull;
+
 /**
  * DataFactory for THREDDS client catalogs
  *
@@ -215,10 +217,12 @@ public class DataFactory {
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws IOException on read error
    */
+  @Nonnull
   public DataFactory.Result openFeatureDataset(Dataset Dataset, ucar.nc2.util.CancelTask task) throws IOException {
     return openFeatureDataset(null, Dataset, task, new Result());
   }
 
+  @Nonnull
   public DataFactory.Result openFeatureDataset(FeatureType wantFeatureType, Dataset ds, ucar.nc2.util.CancelTask task, Result result)
           throws IOException {
 

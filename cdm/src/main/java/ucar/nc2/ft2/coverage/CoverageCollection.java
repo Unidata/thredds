@@ -127,9 +127,12 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
         this.latLonBoundingBox = hcs.makeLatlonBB(null);
 
       // ?? not sure if this is needed
-      this.projBoundingBox = new ProjectionRect(
+      if (this.latLonBoundingBox != null)
+        this.projBoundingBox = new ProjectionRect(
               new ProjectionPointImpl(this.latLonBoundingBox.getLonMin(), this.latLonBoundingBox.getLatMin()),
               this.latLonBoundingBox.getWidth(), this.latLonBoundingBox.getHeight());
+      else
+        this.projBoundingBox = null;
     }
   }
 

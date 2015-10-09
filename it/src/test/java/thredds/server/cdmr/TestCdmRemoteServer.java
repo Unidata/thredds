@@ -38,12 +38,15 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.server.catalog.TdsLocalCatalog;
+import ucar.ma2.DataType;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
@@ -61,28 +64,31 @@ public class TestCdmRemoteServer {
 
     DataFactory fac = new DataFactory();
     try (DataFactory.Result dataResult = fac.openFeatureDataset( ds, null)) {
-      assert dataResult != null;
       if (dataResult.fatalError) {
         System.out.printf("fatalError= %s%n", dataResult.errLog);
         assert false;
       }
       assert dataResult.featureDataset != null;
 
-      GridDataset gds = (GridDataset) dataResult.featureDataset;
-      NetcdfFile nc = gds.getNetcdfFile();
-      if (nc != null)
-        System.out.printf(" NetcdfFile location = %s%n", nc.getLocation());
+      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      String gridName = "Pressure_reduced_to_MSL";
+      VariableSimpleIF vs = gds.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
 
-      GridDatatype grid = gds.findGridDatatype("Pressure_reduced_to_MSL");
-      assert grid != null;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert gcs != null;
-      assert null == gcs.getVerticalAxis();
+      Assert.assertEquals(1, gds.getCoverageCollections().size());
+      CoverageCollection cc = gds.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
 
-      CoordinateAxis1D time = gcs.getTimeAxis1D();
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull(gcs);
+
+      assert null == gcs.getZAxis();
+
+      CoverageCoordAxis time = gcs.getTimeAxis();
       Assert.assertNotNull("time axis", time);
       double[] expect = new double[]{0., 6.0, 12.0, 18.0};
-      double[] have = time.getCoordValues();
+      double[] have = (double []) time.getCoordsAsArray().get1DJavaArray(DataType.DOUBLE);
       Assert.assertArrayEquals(expect, have, Misc.maxReletiveError);
     }
   }

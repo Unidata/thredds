@@ -210,15 +210,15 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
 
   @Override
   public int getRank() {
-    return 0;
+    return getShape().length;
   }
 
   @Override
   public int[] getShape() {
-    return new int[0];
+    return coordSys.getShape();
   }
 
-  @Override
+ // @Override
   public List<Dimension> getDimensions() {
     return null;
   }

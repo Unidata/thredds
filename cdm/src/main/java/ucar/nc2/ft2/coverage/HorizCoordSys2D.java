@@ -38,6 +38,7 @@ import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -69,6 +70,11 @@ public class HorizCoordSys2D extends HorizCoordSys {
   }
 
   @Override
+  public LatLonRect makeLatlonBB(ProjectionRect projBB) {
+    return null; // look
+  }
+
+    @Override
   public Optional<HorizCoordSys> subset(SubsetParams params) {
 
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
