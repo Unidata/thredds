@@ -33,20 +33,21 @@
 
 package opendap.test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.DDS;
 import opendap.dap.parsers.ParseException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.unidata.test.Diff;
-
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 // Test that the dap2.y parsing is correct
 
@@ -83,6 +84,13 @@ abstract public class TestDapParser extends TestFiles
     testDapParser() throws Exception
     {
         runDapParser();
+    }
+
+    @Test
+    @Category(NeedsExternalResource.class)
+    public void
+    testDapParserSpecial() throws Exception {
+        runDapParserSpecial();
     }
 
     protected void
@@ -135,11 +143,14 @@ abstract public class TestDapParser extends TestFiles
             }
             Test1(test, testdir, resultsdir, baselinedir, extension, baseextension, true);
         }
+    }
 
+    protected void
+    runDapParserSpecial() throws Exception {
         // Test special cases
-        for(int i = 0; i < specialtests.length; i++) {
+        for (int i = 0; i < specialtests.length; i++) {
             String thisext = specialtests[i][0];
-            if(!extension.equals(thisext)) continue;
+            if (!extension.equals(thisext)) continue;
             String url = specialtests[i][1];
             String test = specialtests[i][2];
             System.out.flush();
