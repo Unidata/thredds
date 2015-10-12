@@ -86,7 +86,6 @@ task testJar(type: Jar, dependsOn: testClasses,
         include 'ucar/unidata/test/util/CompareNetcdf.class'
         include 'ucar/unidata/test/util/TestDir*.class'
         include 'ucar/unidata/test/util/TestFileDirUtils.class'
-        include 'ucar/unidata/test/util/ExternalServer.class'
         include 'ucar/unidata/test/util/UtilsMa2Test.class'
         include 'ucar/unidata/test/util/UtilsTestStructureArray.class'
 

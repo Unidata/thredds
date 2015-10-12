@@ -34,9 +34,10 @@ package opendap.test;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.ExternalServer;
+import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
 /**
@@ -74,11 +75,10 @@ public class TestGrid1 extends UnitTestCommon
     }
 
     @Test
+    @Category(NeedsExternalResource.class)
     public void testGrid1()
             throws Exception
     {
-        ExternalServer.REMOTETEST.assumeIsAvailable();
-
         System.out.println("TestGrid1:");
         String url = null;
         boolean pass = true;

@@ -33,24 +33,30 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.junit.Assume;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import ucar.httpservices.*;
-import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.ExternalServer;
-import ucar.unidata.test.util.TestDir;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.httpservices.HTTPAuthSchemes;
+import ucar.httpservices.HTTPAuthStore;
+import ucar.httpservices.HTTPCachingProvider;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
+import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
+
+@Category(NeedsExternalResource.class)
 public class TestAuth extends UnitTestCommon
 {
     static final String BADPASSWORD = "bad";
@@ -211,12 +217,6 @@ public class TestAuth extends UnitTestCommon
         temppath = getThreddsroot() + "/" + MODULE + "/" + TEMPROOT;
         new File(temppath).mkdirs();
         //HTTPSession.debugHeaders(true);
-    }
-
-    @Before
-    public void setUp()
-    {
-        ExternalServer.REMOTETEST.assumeIsAvailable();
     }
 
     @Test

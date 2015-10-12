@@ -32,23 +32,27 @@
 
 package ucar.nc2.util.net;
 
-import org.junit.Assert;
-import org.junit.Before;
-import ucar.httpservices.*;
-
-import org.apache.http.*;
-import org.junit.Test;
-
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.message.AbstractHttpMessage;
-import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ExternalServer;
-
 import java.util.List;
 
-import static ucar.httpservices.HTTPSession.*;
+import org.apache.http.Header;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.message.AbstractHttpMessage;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.httpservices.HTTPBasicProvider;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
+import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
+import static ucar.httpservices.HTTPSession.CONN_TIMEOUT;
+import static ucar.httpservices.HTTPSession.MAX_REDIRECTS;
+import static ucar.httpservices.HTTPSession.SO_TIMEOUT;
+
+@Category(NeedsExternalResource.class)
 public class TestHTTPSession extends UnitTestCommon
 {
     //////////////////////////////////////////////////
@@ -75,11 +79,6 @@ public class TestHTTPSession extends UnitTestCommon
         super();
         setTitle("HTTP Session tests");
         HTTPSession.TESTING = true;
-    }
-
-    @Before
-    public void setUp() {
-        ExternalServer.REMOTETEST.assumeIsAvailable();
     }
 
     @Test
