@@ -2,13 +2,8 @@ package ucar.nc2.ft.point;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
+
 import com.google.common.base.Preconditions;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -67,7 +62,7 @@ public class SortingStationPointFeatureCache {
 
     public void addAll(File datasetFile) throws NoFactoryFoundException, IOException {
         try (FeatureDatasetPoint fdPoint = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-                FeatureType.STATION, datasetFile.getAbsolutePath(), null)) {
+                FeatureType.STATION, datasetFile.getAbsolutePath(), null, new Formatter())) {
             addAll(fdPoint);
         }
     }

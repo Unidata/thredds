@@ -87,11 +87,11 @@ The general way to open a *FeatureDataset* from a file or remote file is by call
 
 [source,java]
 ----
-FeatureDataset FeatureDatasetFactoryManager.open( FeatureType want, String location,
+FeatureDataset FeatureDatasetFactoryManager.open( FeatureType want, String endpoint,
     ucar.nc2.util.CancelTask task, java.util.Formatter errlog);
 ----
 
-where _location_ is a remote file represented as a URL (eg OPeNDAP or cdmremote) or a local file pathname
+where _endpoint_ is a remote dataset represented as a URL (eg using *_cdmrFeature_*, *_cdmremote_*, or *_OPeNDAP_* protocols) or a local file pathname
 (see link:../DatasetUrls.adoc#FeatureDataset[here] for details).
 
 or if you already have an opened NetcdfDataset:
@@ -102,9 +102,10 @@ or if you already have an opened NetcdfDataset:
 ----
 
 Specifying the FeatureType means that you only want a FeatureDataset of that FeatureType.
-If you want the dataset opened as any FeatureType, leave the type null or set to FeatureType.**ANY**.
-You may specify that you want one of the point types with FeatureType.**ANY_POINT**.
-The CancelTask allows the open task to be cleanly cancelled, eg in a user interface, and may be null.
+If you dont know the feature type, leave the parameter _null_ or set to _FeatureType.ANY_.
+You may specify that you want one of the point types with _FeatureType.ANY_POINT_ or one of the coverage types (swath, grid, etc)
+with _FeatureType.COVERAGE_.
+The CancelTask allows the opener task to be cleanly cancelled, eg in a user interface, and may be null.
 The errlog is an instance of *java.util.Formatter*, and must not be null. If the open() or wrap() is
 not successful, a null *FeatureDataset* will be returned, and the errlog will usually have an explanatory message.
 

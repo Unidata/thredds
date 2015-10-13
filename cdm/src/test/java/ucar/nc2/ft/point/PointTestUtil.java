@@ -3,6 +3,7 @@ package ucar.nc2.ft.point;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Formatter;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -30,8 +31,7 @@ public class PointTestUtil {
     public static FeatureDatasetPoint openPointDataset(String resource)
             throws IOException, NoFactoryFoundException, URISyntaxException {
         File file = new File(PointTestUtil.class.getResource(resource).toURI());
-        return (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
-                FeatureType.ANY_POINT, file.getAbsolutePath(), null);
+        return (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, file.getAbsolutePath(), null, new Formatter());
     }
 
     public static void writeFeatureCollection(PointFeatureCollection pointFeatColl) throws IOException {

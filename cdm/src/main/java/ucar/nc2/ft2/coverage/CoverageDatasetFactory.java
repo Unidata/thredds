@@ -35,9 +35,11 @@ package ucar.nc2.ft2.coverage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
-import ucar.nc2.ft2.coverage.remote.CdmrFeatureDataset;
+import ucar.nc2.util.Optional;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -45,11 +47,11 @@ import java.util.Formatter;
 
 /**
  * factory for CoverageDataset
- *  1) Remote CdmrFeatureDataset
- *  2) GRIB collections
- *  3) DtCoverageDataset (forked from ucar.nc2.dt.grid), the cdm IOSP / CoordSys stack
- *
- *  Would like to add a seperate implementation for FMRC collections
+ * 1) Remote CdmrFeatureDataset: cdmremote:url or http:url
+ * 2) GRIB collections: must be a grib file, or grib index file
+ * 3) DtCoverageDataset (forked from ucar.nc2.dt.grid), the cdm IOSP / CoordSys stack
+ * <p>
+ * Would like to add a seperate implementation for FMRC collections
  *
  * @author caron
  * @since 5/26/2015
@@ -57,88 +59,50 @@ import java.util.Formatter;
 public class CoverageDatasetFactory {
   static private final Logger logger = LoggerFactory.getLogger(CoverageDatasetFactory.class);
 
-  static public FeatureDatasetCoverage open(String endpoint) throws IOException {
+  static public Optional<FeatureDatasetCoverage> openCoverageDataset(String endpoint) throws IOException {
 
-    // remote CdmrFeatureDataset
+    // remote cdmrFeature datasets
     if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME)) {
-
-      endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
-      CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
-      CoverageCollection covColl = reader.openCoverageDataset();
-      return new FeatureDatasetCoverage(endpoint, covColl, covColl);
-
-    } else if (endpoint.startsWith("http:")) {
-      CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
-      if (reader.isCmrfEndpoint()) {
-        CoverageCollection covColl = reader.openCoverageDataset();
-        return new FeatureDatasetCoverage(endpoint, covColl, covColl);
-      } // otherwise let it fall through
-
-    } else if (endpoint.startsWith("file:")) {
-      endpoint = endpoint.substring("file:".length());
+      Optional<FeatureDataset> opt = ucar.nc2.ft.remote.CdmrFeatureDataset.factory(FeatureType.COVERAGE, endpoint);
+      return opt.isPresent() ? Optional.of( (FeatureDatasetCoverage) opt.get()) : Optional.empty(opt.getErrorMessage());
     }
+
+    if (endpoint.startsWith("file:"))
+      endpoint = endpoint.substring("file:".length());
 
     // check if its GRIB collection
-    try {
-      Class<?> c = CoverageDatasetFactory.class.getClassLoader().loadClass("ucar.nc2.grib.coverage.GribCoverageDataset");
-      Method method = c.getMethod("open", String.class);
-      FeatureDatasetCoverage result = (FeatureDatasetCoverage) method.invoke(null, endpoint);
-      if (result != null) return result;
-    } catch (ClassNotFoundException e) {
-      // ok, GRIB module not loaded, fall through
-    } catch (Throwable e) {
-      logger.error("Error GribCoverageDataset: ", e);
-      // fall through
-    }
+    FeatureDatasetCoverage gribDataset = openGrib(endpoint);
+    if (gribDataset != null) return Optional.of(gribDataset);
 
     // adapt a DtCoverageDataset (forked from ucar.nc2.dt.GridDataset), eg a local file
     DtCoverageDataset gds = DtCoverageDataset.open(endpoint);
-    if (gds.getGrids().size() > 0)
-      return DtCoverageAdapter.factory(gds, new Formatter());
+    if (gds.getGrids().size() > 0) {
+      Formatter errlog = new Formatter();
+      FeatureDatasetCoverage result = DtCoverageAdapter.factory(gds, errlog);
+      if (result != null)
+        return Optional.of(result);
+      else
+        return Optional.empty(errlog.toString());
+    }
 
-    return null;
+    return Optional.empty("Could not open as Coverage: " + endpoint);
+  }
+
+  static public FeatureDatasetCoverage open(String endpoint) throws IOException {
+    Optional<FeatureDatasetCoverage> opt = openCoverageDataset(endpoint);
+    return opt.get();
+  }
+
+  static public FeatureDatasetCoverage openGrib(String endpoint) throws IOException {
+    try {
+      Class<?> c = CoverageDatasetFactory.class.getClassLoader().loadClass("ucar.nc2.grib.coverage.GribCoverageDataset");
+      Method method = c.getMethod("open", String.class);
+      return (FeatureDatasetCoverage) method.invoke(null, endpoint);
+
+    } catch (Throwable e) {
+      return null;
+    }
+
   }
 
 }
-
-/*
-
-  static public List<CoverageDataset> openCoverage(String endpoint) throws IOException {
-
-    // remote CdmrFeatureDataset
-    if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME)) {
-
-      endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
-      CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
-      return Lists.newArrayList(reader.openCoverageDataset());
-
-    } else if (endpoint.startsWith("http:")) {
-      CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
-      if (reader.isCmrfEndpoint()) {
-        return Lists.newArrayList(reader.openCoverageDataset());
-      } // otherwise let it fall through to DtCoverageDataset.open(endpoint)
-
-    } else if (endpoint.startsWith("file:")) {
-      endpoint = endpoint.substring("file:".length());
-    }
-
-    boolean hasGribLoaded =
-
-    // see if its grib
-    if (endpoint.endsWith(".ncx3"))  {
-
-    }
-
-     // see if its grib 2
-    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, endpoint, null, -1, null, null);
-    if (ds.getFileTypeId().contains("GRIB")) {
-    }
-
-    // adapt a DtCoverageDataset (forked from ucar.nc2.dt.GridDataset), eg a local file
-    DtCoverageDataset gds = new DtCoverageDataset(ds);
-    if (gds.getGrids().size() > 0)
-      return Lists.newArrayList(DtCoverageAdapter.factory(gds));
-
-    return null;
-  }
- */

@@ -361,6 +361,8 @@ public class CdmrfWriter {
         return CdmrFeatureProto.DependenceType.scalar;
       case twoD:
         return CdmrFeatureProto.DependenceType.twoD;
+      //case fmrcReg:
+      //  return CdmrFeatureProto.DependenceType.fmrcReg;
     }
     throw new IllegalStateException("illegal data type " + type);
   }

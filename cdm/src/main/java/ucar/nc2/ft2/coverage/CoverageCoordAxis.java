@@ -75,7 +75,8 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     independent,             // has its own dimension, is a coordinate variable, eg x(x)
     dependent,               // aux coordinate, eg reftime(time) or time_bounds(time);
     scalar,                  // eg reftime
-    twoD                     // eg time(reftime, time), lat(x,y)
+    twoD,                    // lat(x,y)
+    fmrcReg                  // time(reftime, hourOfDay)
   }
 
   protected final String name;
