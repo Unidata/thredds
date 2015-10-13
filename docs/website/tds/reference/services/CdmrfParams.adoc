@@ -15,7 +15,7 @@
 |*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present). Times may be a link:#W3Cdate[W3C date] or _present_. Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
 |*timeStride*|no |Take only every nth time in the available series |Used with time_range or _all_ | 1
 |*runtime*   |no |Time as a link:{w3cDate}[W3C date] or _latest_ (restrict to that runtime) or _all_. |Used only if there is an independent runtime coordinate. | _latest_
-|*timeOffset*|no |Restrict to an offset from the runtime coordinate (timeOffset units same as the dataset), or _first_ or _all_ |Used for 2D time coordinate, or 1D timeOffset independent coord | all
+|*timeOffset*|no |Restrict to an offset from the runtime coordinate (timeOffset units same as the dataset), or _first_ or _all_ |Used for 2D time coordinate | all
 |*vertCoord* |no |Restrict to specified vertical level coordinate value. |Used only if there is a vertical coordinate. |all
 |*ensCoord*  |no |Restrict to specified ensemble coordinate. |Used only if there is an ensemble coordinate. |all
 |=====================================================================================================================================================
@@ -56,13 +56,14 @@ Temporal subsetting::
 * A 2D time dataset will have CoverageType set to _FMRC_.
 * You may specify a runtime with a date, _latest_ or _all_; specify a timeOffset with a numeric value, _first_, or _all_.
  If only one is set, use the default for the other. If neither is set, then return all times for latest runtime.
-* Time parameters are only used if explicitly set and timeOffset is not set. There are only 2 cases where time can be used:
-. Set runtime to a specific value or _latest_ (not _all_). Time parameters (point or range) can be used.
-. Set runtime to _all_. Time point (date, or _present_) can be used.
+* TimeOffset units must be the same as the dataset.
+* Time parameters are only used if timeOffset is not set. It must be explicitly set (ie no default is used). There are 2 cases:
+. Runtime is set to a specific value or _latest_ (not _all_). Time parameters (point or range) can then be used.
+. Runtime to set to _all_. Time point (date, or _present_) only can then be used.
 * Special cases:
-. set specific runtime = constant runtime dataset
-. set specific timeOffset, set runTime to _all_ = constant offset dataset
-. set specific time, set runTime to _all_ = constant forecast dataset
+. Set specific runtime = constant runtime dataset
+. Set specific timeOffset, set runTime to _all_ = constant offset dataset
+. Set specific time, set runTime to _all_ = constant forecast dataset
 
 Interval coordinate::
 

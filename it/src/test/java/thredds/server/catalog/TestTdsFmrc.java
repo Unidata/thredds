@@ -41,8 +41,6 @@ public class TestTdsFmrc {
 
     DataFactory fac = new DataFactory();
     try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
-
-      assert dataResult != null;
       assert !dataResult.fatalError;
       assert dataResult.featureDataset != null;
 
@@ -55,6 +53,7 @@ public class TestTdsFmrc {
       CoverageCollection cc = gds.getCoverageCollections().get(0);
       Coverage grid = cc.findCoverage(gridName);
       Assert.assertNotNull(gridName, grid);
+      Assert.assertArrayEquals(new int[]{8, 103, 108}, grid.getShape());
 
       CoverageCoordSys gcs = grid.getCoordSys();
       Assert.assertNotNull(gcs);
@@ -83,6 +82,45 @@ public class TestTdsFmrc {
       assert att != null;
       assert att.isString();
       assert att.getStringValue().equals("innerTruth");
+    }
+  }
+  @Test
+  public void testFmrcTwoD() throws IOException {
+    String catalog = "/catalog/testNAMfmrc/catalog.xml";
+    Catalog cat = TdsLocalCatalog.open(catalog);
+
+    Dataset ds = cat.findDatasetByID("testNAMfmrc/NAM_FMRC_fmrc.ncd");
+    assert (ds != null) : "cant find dataset 'testNAMfmrc/NAM_FMRC_best.ncd'";
+    assert ds.getFeatureType() == FeatureType.GRID;
+
+    DataFactory fac = new DataFactory();
+    try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
+      assert !dataResult.fatalError;
+      assert dataResult.featureDataset != null;
+
+      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      String gridName = "Total_cloud_cover";
+      VariableSimpleIF vs = gds.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
+
+      Assert.assertEquals(1, gds.getCoverageCollections().size());
+      CoverageCollection cc = gds.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
+
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull(gcs);
+      assert null == gcs.getZAxis();
+
+      CoverageCoordAxis time = gcs.getTimeAxis();
+      assert time != null;
+      Assert.assertNotNull("time axis", time);
+      Assert.assertEquals(8, time.getNcoords());
+      double[] want = new double[]{3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0};
+      CompareNetcdf2 cn = new CompareNetcdf2();
+      assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
+
+      Assert.assertArrayEquals(new int[]{4, 2, 103, 108}, grid.getShape());
     }
   }
 

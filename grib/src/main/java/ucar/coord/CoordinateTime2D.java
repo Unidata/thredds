@@ -62,8 +62,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   private final SortedMap<Integer,CoordinateTimeAbstract> regTimes; // only when isRegular: <hour of day, time coordinate>
   private final int[] offset;          // the offset of each CoordinateTime from the base/first runtime, length nruns  (LOOK can we use SmartArrayInt ?)
 
-  private final boolean isRegular;
-  private final boolean isOrthogonal;
+  private final boolean isRegular;     // all offsets are the same for each "runtime hour of day"
+  private final boolean isOrthogonal;  // all offsets are the same for all runtimes, so 2d time array is (runtime X otime)
   private final boolean isTimeInterval;
   private final int nruns;
   private final int ntimes;

@@ -316,8 +316,8 @@ message CoordAxis {
     builder.isSubset = false;
 
 
-    if (dependenceType == CoverageCoordAxis.DependenceType.twoD && axisType == AxisType.Time) {
-      return new FmrcTimeAxis2D(builder);
+    if (dependenceType == CoverageCoordAxis.DependenceType.fmrcReg) {
+      return new FmrcTimeAxisReg2D(builder);
     } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
       return new LatLonAxis2D(builder);
     } else if (axisType == AxisType.TimeOffset) {
@@ -430,6 +430,8 @@ message Coverage {
         return CoverageCoordAxis.DependenceType.scalar;
       case twoD:
         return CoverageCoordAxis.DependenceType.twoD;
+      //case fmrcReg:
+      //  return CoverageCoordAxis.DependenceType.fmrcReg;
     }
     throw new IllegalStateException("illegal data type " + type);
   }

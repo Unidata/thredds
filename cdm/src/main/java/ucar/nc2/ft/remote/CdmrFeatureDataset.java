@@ -33,16 +33,21 @@
 
 package ucar.nc2.ft.remote;
 
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
 import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.ft2.coverage.remote.CdmrfReader;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -55,7 +60,7 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.input.SAXBuilder;
 
 /**
- * Factory for FeatureDataset using CdmrRemote protocol. GRID, POINT, STATION so far
+ * Factory for FeatureDataset using cdmrFeature protocol.
  * this object represents the client, connecting to a remote dataset.
  *
  * @author caron
@@ -68,33 +73,64 @@ public class CdmrFeatureDataset {
   static private boolean debug = false;
   static private boolean showXML = false;
 
-  static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
+  // all CdmrFeatureDataset must return their featureType - use as a fail-fast test of the endpoint
+  public static FeatureType isCdmrfEndpoint(String endpoint) throws IOException {
+
+    HTTPSession httpClient = HTTPFactory.newSession(endpoint);
+    String url = endpoint + "?req=featureType";
+
+    // get the header
+    try (HTTPMethod method = HTTPFactory.Head(httpClient, url)) {
+      method.setFollowRedirects(true);
+      int statusCode = method.execute();
+      if (statusCode != 200) return null;
+      String content = method.getResponseAsString();
+      return FeatureType.getType(content);
+    }
+  }
+
+  static public Optional<FeatureDataset> factory(FeatureType wantFeatureType, String endpoint) throws IOException {
     if (endpoint.startsWith(SCHEME))
       endpoint = endpoint.substring(SCHEME.length());
 
-    if (wantFeatureType == FeatureType.GRID) {
-      //old way to get a grid - wrap a CdmRemote
-      CdmRemote ncremote = new CdmRemote(endpoint);
-      NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
-      return new GridDataset(ncd);
+    FeatureType featureType;
+    try {
+      featureType = isCdmrfEndpoint(endpoint);
+      if (featureType == null) return Optional.empty("Not a valid CdmrFeatureDataset endpoint="+endpoint);
+
+    } catch (IOException ioe) {
+      return Optional.empty(String.format("Error opening CdmrFeatureDataset endpoint=%s err=%s", endpoint, ioe.getMessage()));
     }
 
-    Document doc = getCapabilities(endpoint);
-    Element root = doc.getRootElement();
-    Element elem = root.getChild("featureDataset");
-    String fType = elem.getAttribute("type").getValue();  // LOOK, may be multiple types
+    if (!FeatureDatasetFactoryManager.featureTypeOk(wantFeatureType, featureType))
+      return Optional.empty(String.format("Not a compatible featureType=%s, want=%s, endpoint=%s", featureType, wantFeatureType, endpoint));
 
-    endpoint = elem.getAttribute("url").getValue();
-    wantFeatureType = FeatureType.getType(fType);
-    if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= '%s' url=%s%n", endpoint, fType, endpoint);
+    if (featureType.isCoverageFeatureType()) {
+      CdmrfReader reader = new CdmrfReader(endpoint);
+      CoverageCollection covColl = reader.open();
+      return Optional.of(new FeatureDatasetCoverage(endpoint, covColl, covColl));
+    }
 
-    List<VariableSimpleIF> dataVars = FeatureDatasetCapabilitiesWriter.getDataVariables(doc);
-    LatLonRect bb = FeatureDatasetCapabilitiesWriter.getSpatialExtent(doc);
-    CalendarDateRange dr = FeatureDatasetCapabilitiesWriter.getTimeSpan(doc);
-    CalendarDateUnit timeUnit = FeatureDatasetCapabilitiesWriter.getTimeUnit(doc);
-    String altUnits = FeatureDatasetCapabilitiesWriter.getAltUnits(doc);
+    if (featureType.isPointFeatureType()) {
+      Document doc = getCapabilities(endpoint);
+      Element root = doc.getRootElement();
+      Element elem = root.getChild("featureDataset");
+      String fType = elem.getAttribute("type").getValue();  // LOOK, may be multiple types
 
-    return new PointDatasetRemote(wantFeatureType, endpoint, timeUnit, altUnits, dataVars, bb, dr);
+      endpoint = elem.getAttribute("url").getValue();
+      wantFeatureType = FeatureType.getType(fType);
+      if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= '%s' url=%s%n", endpoint, fType, endpoint);
+
+      List<VariableSimpleIF> dataVars = FeatureDatasetCapabilitiesWriter.getDataVariables(doc);
+      LatLonRect bb = FeatureDatasetCapabilitiesWriter.getSpatialExtent(doc);
+      CalendarDateRange dr = FeatureDatasetCapabilitiesWriter.getTimeSpan(doc);
+      CalendarDateUnit timeUnit = FeatureDatasetCapabilitiesWriter.getTimeUnit(doc);
+      String altUnits = FeatureDatasetCapabilitiesWriter.getAltUnits(doc);
+
+      return Optional.of(new PointDatasetRemote(wantFeatureType, endpoint, timeUnit, altUnits, dataVars, bb, dr));
+    }
+
+    return Optional.empty(String.format("Unimplemented featureType=%s, want=%s, endpoint=%s", featureType, wantFeatureType, endpoint));
   }
 
   static private org.jdom2.Document getCapabilities(String endpoint) throws IOException {
@@ -120,24 +156,6 @@ public class CdmrFeatureDataset {
     }
 
     return doc;
-  }
-
-  public static void main(String args[]) throws IOException {
-    String endpoint = "http://localhost:8080/thredds/cdmrfeature/idd/metar/ncdecodedLocalHome";
-    FeatureDatasetPoint fd = (FeatureDatasetPoint) CdmrFeatureDataset.factory(FeatureType.ANY, endpoint);
-    DsgFeatureCollection fc = fd.getPointFeatureCollectionList().get(0);
-    System.out.printf("Result= %s %n %s %n", fd, fc);
-
-    /* StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) fc;
-    PointFeatureIterator pfIter = sfc.get(-1);
-    try {
-      while (pfIter.hasNext()) {
-        PointFeature pf = pfIter.next();
-        System.out.println("pf= " + pf);
-      }
-    } finally {
-      pfIter.finish();
-    } */
   }
 
 

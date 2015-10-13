@@ -48,7 +48,8 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Adapt ucar.nc2.dt.GeoGridDataset to ucar.nc2.ft2.coverage.CoverageDataset
+ * Adapt a DtCoverageDataset to a ucar.nc2.ft2.coverage.CoverageCollection
+ * Forked from ucar.nc2.dt.GeoGridDataset
  *
  * @author caron
  * @since 5/1/2015

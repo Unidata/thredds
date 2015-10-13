@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * A TimeOffsetAxis and its associated runtime axis.
  * These have to be subset together.
- * Each CoordSys has 0 or 1 Time2DCoordSys, but there may be many in a Dataset.
+ * A CoordSys has 0 or 1 Time2DCoordSys, but there may be several in a Dataset.
  *
  * @author John
  * @since 8/14/2015
@@ -75,6 +75,8 @@ public class Time2DCoordSys {
   }
 
 /*
+  (from CdmrfParams.adoc) :
+
   2D Time subsetting
   A 2D time dataset will have CoverageType set to FMRC.
   You may specify a runtime with a date, latest or all; specify a timeOffset with a numeric value, first, or all.

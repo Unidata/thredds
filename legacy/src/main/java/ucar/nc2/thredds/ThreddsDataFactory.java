@@ -43,6 +43,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 
 import thredds.catalog.*;
+import ucar.nc2.util.Optional;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.List;
@@ -321,7 +322,11 @@ public class ThreddsDataFactory {
     }
 
     if (access.getService().getServiceType() == ServiceType.CdmrFeature) {
-      result.featureDataset = CdmrFeatureDataset.factory(wantFeatureType, access.getStandardUrlName());
+      Optional<FeatureDataset> opt = CdmrFeatureDataset.factory(wantFeatureType, access.getStandardUrlName());
+      if (opt.isPresent())
+        result.featureDataset = opt.get();
+      else
+        result.errLog.format("%s", opt.getErrorMessage());
 
     } else {
 
@@ -336,8 +341,7 @@ public class ThreddsDataFactory {
       result.fatalError = true;
     else {
       result.location = result.featureDataset.getLocation();
-      if ((result.featureType == null) && (result.featureDataset != null))
-        result.featureType = result.featureDataset.getFeatureType();
+      result.featureType = result.featureDataset.getFeatureType();
     }
 
     return result;
