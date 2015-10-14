@@ -32,15 +32,11 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.http.HttpEntity;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import ucar.httpservices.*;
-import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.ExternalServer;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,10 +44,22 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.HttpEntity;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPFormBuilder;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPUtil;
+import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.NeedsExternalResource;
+
 /**
  * Test HttpFormBuilder
  */
-
+@Category(NeedsExternalResource.class)
 public class TestFormBuilder extends UnitTestCommon
 {
 
@@ -104,12 +112,6 @@ public class TestFormBuilder extends UnitTestCommon
         setTitle("HTTPFormBuilder test(s)");
         setSystemProperties();
         prop_visual = true; // force
-    }
-
-    @Before
-    public void setUp()
-    {
-        ExternalServer.HTTPKIT.assumeIsAvailable();
     }
 
     @Test

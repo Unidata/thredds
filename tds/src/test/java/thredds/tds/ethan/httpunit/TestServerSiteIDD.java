@@ -33,11 +33,12 @@
 // $Id: TestServerSiteIDD.java 51 2006-07-12 17:13:13Z caron $
 package thredds.tds.ethan.httpunit;
 
+import java.util.Properties;
+
 import com.meterware.httpunit.WebConversation;
 import junit.framework.TestCase;
-import ucar.unidata.test.util.ExternalServer;
-
-import java.util.Properties;
+import org.junit.experimental.categories.Category;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 /**
  * A description
@@ -45,6 +46,7 @@ import java.util.Properties;
  * @author edavis
  * @since 15 July 2005 15:50:59 -0600
  */
+@Category(NeedsExternalResource.class)
 public class TestServerSiteIDD extends TestCase
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestServerSiteIDD.class );
@@ -64,7 +66,6 @@ public class TestServerSiteIDD extends TestCase
   @Override
   protected void setUp()
   {
-    ExternalServer.LIVE.assumeIsAvailable();
     wc = new WebConversation();
 
     Properties env = System.getProperties();

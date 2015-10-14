@@ -124,6 +124,7 @@ configure(javaProjects) {
 
             if (isTravis) {
                 excludeCategories 'ucar.unidata.test.util.NotTravis'
+                excludeCategories 'ucar.unidata.test.util.NeedsExternalResource'
             }
 
             if (!isContentRootAvailable && !isJenkins) {     // Don't skip tests on Jenkins, except NotJenkins ones.

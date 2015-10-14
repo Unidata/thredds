@@ -1,16 +1,18 @@
 package dap4.test;
 
-import dap4.core.util.DapUtil;
-import dap4.dap4shared.D4DSP;
-import dap4.dap4shared.DataCompiler;
-import dap4.dap4shared.HttpDSP;
-import dap4.servlet.DapCache;
-import ucar.httpservices.*;
-import ucar.nc2.dataset.NetcdfDataset;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import dap4.core.util.DapUtil;
+import dap4.dap4shared.D4DSP;
+import dap4.servlet.DapCache;
+import org.junit.experimental.categories.Category;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 /**
  * Test at the NetcdfDataset level
@@ -222,7 +224,7 @@ public class TestCDMClient extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Junit test method
-
+    @Category(NeedsExternalResource.class)
     public void testCDMClient()
             throws Exception
     {

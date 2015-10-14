@@ -32,18 +32,26 @@
 
 package opendap.test;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.test.Diff;
+import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ExternalServer;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestGroups extends UnitTestCommon
 {
@@ -116,10 +124,9 @@ public class TestGroups extends UnitTestCommon
     }
 
     @Test
-    public void
-    testGroup() throws Exception
+    @Category(NeedsExternalResource.class)
+    public void testGroup() throws Exception
     {
-        ExternalServer.REMOTETEST.assumeIsAvailable();
         // Run  with usegroups == true
         if(!usegroups)
             Assert.assertTrue("TestGroups: Group Support not enabled", false);

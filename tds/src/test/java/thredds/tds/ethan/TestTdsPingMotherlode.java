@@ -32,12 +32,13 @@
  */
 package thredds.tds.ethan;
 
-import junit.framework.TestCase;
-import thredds.client.catalog.Catalog;
-import ucar.unidata.test.util.ExternalServer;
-
 import java.io.IOException;
 import java.util.Properties;
+
+import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
+import thredds.client.catalog.Catalog;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 /**
  * _more_
@@ -45,6 +46,7 @@ import java.util.Properties;
  * @author edavis
  * @since Nov 30, 2006 11:13:36 AM
  */
+@Category(NeedsExternalResource.class)
 public class TestTdsPingMotherlode extends TestCase
 {
 
@@ -60,7 +62,6 @@ public class TestTdsPingMotherlode extends TestCase
   @Override
   protected void setUp()
   {
-    ExternalServer.LIVE.assumeIsAvailable();
     Properties env = System.getProperties();
     host = env.getProperty( "thredds.tds.test.server", host );
 

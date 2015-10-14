@@ -32,19 +32,20 @@
 
 package ucar.nc2.util.net;
 
+import java.io.InputStream;
+
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ExternalServer;
 
-import java.io.InputStream;
-
+@Category(NeedsExternalResource.class)
 public class TestHTTPMethod extends UnitTestCommon
 {
 
@@ -77,11 +78,6 @@ public class TestHTTPMethod extends UnitTestCommon
     {
         super();
         setTitle("HTTP Method tests");
-    }
-
-    @Before
-    public void setUp() {
-        ExternalServer.REMOTETEST.assumeIsAvailable();
     }
 
     @Test
