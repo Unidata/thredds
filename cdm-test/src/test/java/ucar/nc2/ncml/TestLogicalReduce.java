@@ -1,14 +1,21 @@
 package ucar.nc2.ncml;
 
-import org.junit.Test;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
-import ucar.unidata.test.util.TestDir;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.Formatter;
-import java.util.List;
+
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.NestedPointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.StationProfileFeatureCollection;
+import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Use Ncml logicalReduce to fix datasets with extraneous length 1 dimensions
@@ -19,6 +26,8 @@ import java.util.List;
 public class TestLogicalReduce {
 
   @Test
+  // NcML references "dods://geoport.whoi.edu/thredds/dodsC/ECOHAB_I/4151-a1h.cdf".
+  @Category(NeedsExternalResource.class)
   public void testStation() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "ncml/logicalReduce/4151-a1h.ncml";
     Formatter errlog = new Formatter();
@@ -35,6 +44,8 @@ public class TestLogicalReduce {
   }
 
   @Test
+  // NcML references "dods://geoport.whoi.edu/thredds/dodsC/WFAL/8602wh-a.nc"
+  @Category(NeedsExternalResource.class)
   public void testStationProfile() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "ncml/logicalReduce/8602wh-a.ncml";
     Formatter errlog = new Formatter();

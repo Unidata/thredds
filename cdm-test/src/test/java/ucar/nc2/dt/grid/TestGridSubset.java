@@ -242,6 +242,7 @@ public class TestGridSubset {
 
   @Test
   @Ignore("Bad URL, as of 2015/03/11.")
+  @Category(NeedsExternalResource.class)
   public void testDODS2() throws Exception {
     String threddsURL = "http://lead.unidata.ucar.edu:8080/thredds/dqcServlet/latestOUADAS?adas";
     GridDataset dataset = null;
@@ -859,6 +860,7 @@ public class TestGridSubset {
   }
 
   @Test
+  @Category(NeedsExternalResource.class)
   public void testScaleOffset() throws Exception {
     try (GridDataset dataset = GridDataset.open("http://esrl.noaa.gov/psd/thredds/dodsC/Datasets/noaa.oisst.v2/sst.wkmean.1990-present.nc")) {
       GeoGrid grid = dataset.findGridByName("sst");
@@ -895,6 +897,7 @@ public class TestGridSubset {
 
   @Test
   @Ignore("Keeps failing on nomads URL.")
+  @Category(NeedsExternalResource.class)
   public void testScaleOffset2() throws Exception {
     try (GridDataset dataset = GridDataset.open("dods://nomads.ncdc.noaa.gov/thredds/dodsC/cr20sixhr/air.1936.nc")) {
       GeoGrid grid = dataset.findGridByName("air");

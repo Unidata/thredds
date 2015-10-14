@@ -5,9 +5,25 @@
 
 package dap4.test;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.EnumSet;
+import java.util.Set;
+
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -16,21 +32,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import thredds.server.dap4.Dap4Controller;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
-
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.EnumSet;
-import java.util.Set;
 
 @ContextConfiguration
 @WebAppConfiguration("file:src/test/data")
 public class DapTestCommon extends TestCase
 {
+    private final static Logger logger = LoggerFactory.getLogger(DapTestCommon.class);
+
     //////////////////////////////////////////////////
     // Constants
 
@@ -384,7 +394,7 @@ public class DapTestCommon extends TestCase
         } else {
             String svc = "http://" + d4tsServer + "/d4ts";
             if(!checkServer(svc))
-                throw new DapException("D4TS Server not reachable: " + svc);
+                logger.warn("D4TS Server not reachable: " + svc);
             // Since we will be accessing it thru NetcdfDataset, we need to change the schema.
             d4tsServer = "dap4://" + d4tsServer + "/d4ts";
         }

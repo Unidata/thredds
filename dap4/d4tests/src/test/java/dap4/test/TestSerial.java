@@ -1,13 +1,13 @@
 package dap4.test;
 
-import   dap4.cdm.DapNetcdfFile;
-import dap4.dap4shared.HttpDSP;
-import org.junit.Test;
-import ucar.nc2.dataset.NetcdfDataset;
-
-import java.io.*;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.experimental.categories.Category;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 /**
  * Test at the NetcdfDataset level; access .ser files on server.
@@ -160,7 +160,7 @@ public class TestSerial extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test method
 
-    @Test
+    @Category(NeedsExternalResource.class)
     public void testSerial()
         throws Exception
     {

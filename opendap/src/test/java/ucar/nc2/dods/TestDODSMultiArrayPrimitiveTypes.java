@@ -32,16 +32,27 @@
  */
 package ucar.nc2.dods;
 
-import org.junit.Test;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import java.io.IOException;
 
-import java.io.*;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayFloat;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.ArrayShort;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Variable;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 import static org.junit.Assert.assertEquals;
 
 /** Test nc2 dods in the JUnit framework. */
-
+@Category(NeedsExternalResource.class)
 public class TestDODSMultiArrayPrimitiveTypes {
 
   @org.junit.Test
