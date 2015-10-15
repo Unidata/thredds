@@ -222,7 +222,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         }
 
         @Override
-        public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+        public PointFeatureIterator getPointFeatureIterator() throws IOException {
           return new BufrStationIterator(obs.getStructureIterator(), null);
         }
 
@@ -279,6 +279,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
 
       // flatten into a PointFeatureCollection
       // if empty, may return null
+      @Override
       public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
         return new BufrPointFeatureCollection(boundingBox, dateRange);
       }
@@ -300,7 +301,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
         }
 
         @Override
-        public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+        public PointFeatureIterator getPointFeatureIterator() throws IOException {
           return new BufrRecordIterator(obs.getStructureIterator(), filter);
         }
 

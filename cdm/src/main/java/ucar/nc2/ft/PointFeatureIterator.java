@@ -75,15 +75,6 @@ public interface PointFeatureIterator extends Closeable, Iterator<PointFeature> 
    * It may be called more than once (idempotent).
    */
   void close();
-  
-  /**
-   * Hint to use this much memory in buffering the iteration.
-   * No guarentee that it will be used by the implementation.
-   * @param bytes amount of memory in bytes
-   */
-  default void setBufferSize( int bytes) {
-    // nothing
-  }
 
   /**
    * A filter on PointFeatures

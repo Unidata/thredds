@@ -33,13 +33,13 @@
 
 package ucar.nc2.ft.point.standard;
 
+import java.io.IOException;
+
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
-
-import java.io.IOException;
 
 /**
  * Join data from a row of a Structure, whose index is passed in as the value of a member variable of the
@@ -69,16 +69,19 @@ public class JoinParentIndex implements Join {
     }
   }
 
+  @Override
   public StructureData getJoinData(Cursor cursor) {
     StructureData sdata = cursor.tableData[0]; // LOOK ??
     int index = sdata.getScalarInt(parentIndex);
     return parentData.getStructureData(index);
   }
 
+  @Override
   public VariableDS findVariable(String axisName) {
     return (VariableDS) parentStructure.findVariable(axisName);
   }
 
+  @Override
   public Variable getExtraVariable() {
     return null;
   }

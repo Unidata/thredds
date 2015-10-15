@@ -48,18 +48,22 @@ import ucar.nc2.constants.CF;
  */
 public abstract class TableConfigurerImpl implements TableConfigurer {
 
+  @Override
   public String getConvName() {
     return convName;
   }
 
+  @Override
   public void setConvName(String convName) {
     this.convName = convName;
   }
 
+  @Override
   public String getConvUsed() {
     return convUsed;
   }
 
+  @Override
   public void setConvUsed(String convUsed) {
     this.convUsed = convUsed;
   }
@@ -91,6 +95,7 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
 
   protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer, final Dimension inner) {
     Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
+      @Override
       public boolean match(CoordinateAxis axis) {
         return ((axis.getRank() == 2) && outer.equals(axis.getDimension(0)) && inner.equals(axis.getDimension(1)));
       }
@@ -101,6 +106,7 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
 
   protected String matchAxisTypeAndDimension(NetcdfDataset ds, AxisType type, final Dimension outer, final Dimension middle, final Dimension inner) {
     Variable var = CoordSysEvaluator.findCoordByType(ds, type, new CoordSysEvaluator.Predicate() {
+      @Override
       public boolean match(CoordinateAxis axis) {
         return ((axis.getRank() == 3) && outer.equals(axis.getDimension(0)) && middle.equals(axis.getDimension(1)) && inner.equals(axis.getDimension(2)));
       }

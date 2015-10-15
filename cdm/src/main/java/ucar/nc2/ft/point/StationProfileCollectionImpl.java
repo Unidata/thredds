@@ -32,18 +32,21 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.PointFeatureCC;
+import ucar.nc2.ft.PointFeatureCCIterator;
+import ucar.nc2.ft.StationProfileFeature;
+import ucar.nc2.ft.StationProfileFeatureCollection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.io.IOException;
 
 /**
  * Abstract superclass for StationProfileFeatureCollection
@@ -157,17 +160,19 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
       this.stations = stations;
     }
 
+    @Override
     protected StationHelper createStationHelper() throws IOException {
       return from.getStationHelper().subset(stations);
     }
 
-    public PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointFeatureCCIteratorFiltered( from.getNestedPointFeatureCollectionIterator(bufferSize), new Filter());
+    @Override
+    public PointFeatureCCIterator getNestedPointFeatureCollectionIterator() throws IOException {
+      return new PointFeatureCCIteratorFiltered( from.getNestedPointFeatureCollectionIterator(), new Filter());
     }
 
     @Override
-    public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
-      return new NestedCollectionIOIteratorAdapter<>(getNestedPointFeatureCollectionIterator(-1));
+    public IOIterator<PointFeatureCC> getCollectionIterator() throws IOException {
+      return new NestedCollectionIOIteratorAdapter<>(getNestedPointFeatureCollectionIterator());
     }
 
     private class Filter implements PointFeatureCCIterator.Filter {
@@ -211,7 +216,7 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   @Override
   public Iterator<StationProfileFeature> iterator() {
     try {
-      PointFeatureCCIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
+      PointFeatureCCIterator pfIterator = getNestedPointFeatureCollectionIterator();
       return new NestedCollectionIteratorAdapter<>(pfIterator);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -222,17 +227,20 @@ public abstract class StationProfileCollectionImpl extends PointFeatureCCCImpl i
   // deprecated
   protected PointFeatureCCIterator localIterator;
 
+  @Override
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();
     return localIterator.hasNext();
   }
 
+  @Override
   public StationProfileFeature next() throws IOException {
     return (StationProfileFeature) localIterator.next();
   }
 
+  @Override
   public void resetIteration() throws IOException {
-    localIterator = getNestedPointFeatureCollectionIterator(-1);
+    localIterator = getNestedPointFeatureCollectionIterator();
   }
 
 }

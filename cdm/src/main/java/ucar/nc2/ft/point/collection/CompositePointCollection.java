@@ -32,22 +32,27 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import java.io.IOException;
+import java.util.Formatter;
+import java.util.Iterator;
+import java.util.List;
+import javax.annotation.Nonnull;
+
 import thredds.inventory.TimedCollection;
 import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorAbstract;
-import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Formatter;
 
 /**
  * PointCollection composed of other PointCollections
@@ -105,7 +110,8 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     }
   }
 
-  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+  @Override
+  public PointFeatureIterator getPointFeatureIterator() throws IOException {
     return new CompositePointFeatureIterator();
   }
 
@@ -116,7 +122,6 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
 
   private class CompositePointFeatureIterator extends PointIteratorAbstract {
     private boolean finished = false;
-    private int bufferSize = -1;
     private Iterator<TimedCollection.Dataset> iter;
     private FeatureDatasetPoint currentDataset;
     private PointFeatureIterator pfIter = null;
@@ -138,9 +143,10 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
 
       List<DsgFeatureCollection> fcList = currentDataset.getPointFeatureCollectionList();
       PointFeatureCollection pc = (PointFeatureCollection) fcList.get(0);
-      return pc.getPointFeatureIterator(bufferSize);
+      return pc.getPointFeatureIterator();
     }
 
+    @Override
     public boolean hasNext() {
       try {
         if (pfIter == null) {
@@ -167,10 +173,12 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
       }
     }
 
+    @Override
     public PointFeature next() {
       return pfIter.next();
     }
 
+    @Override
     public void close() {
       if (finished) return;
 
@@ -186,10 +194,6 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
         }
 
       finished = true;
-    }
-
-    public void setBufferSize(int bytes) {
-      bufferSize = bytes;
     }
   }
 

@@ -32,16 +32,17 @@
  */
 package ucar.nc2.ft.point;
 
-import com.beust.jcommander.internal.Lists;
-import ucar.nc2.Variable;
-import ucar.nc2.ft.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.constants.FeatureType;
-import ucar.unidata.geoloc.LatLonRect;
-
 import java.io.IOException;
 import java.util.List;
+
+import com.beust.jcommander.internal.Lists;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDatasetImpl;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * Implementation of PointFeatureDataset.
@@ -124,6 +125,7 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     }
   }
 
+  @Override
   public void calcBounds(java.util.Formatter sf) {
     for (DsgFeatureCollection pfc : collectionList) {
       try {

@@ -28,7 +28,7 @@ public class SimplePointFeatureCCC extends PointFeatureCCCImpl {
     }
 
     @Override
-    public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
+    public IOIterator<PointFeatureCC> getCollectionIterator() throws IOException {
         return new IOIterator<PointFeatureCC>() {
             private final Iterator<PointFeatureCC> pfccIter = pointFeatCCs.iterator();
 

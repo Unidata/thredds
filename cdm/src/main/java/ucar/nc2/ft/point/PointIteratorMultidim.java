@@ -32,13 +32,18 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.Variable;
-import ucar.ma2.*;
-
 import java.io.IOException;
 import java.util.List;
+
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataW;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.Variable;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureIterator;
 
 /**
  * A PointFeatureIterator using the "multidimensional representation".
@@ -78,6 +83,7 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     }
   }
 
+  @Override
   public boolean hasNext() {
     while (count < npts) {
       StructureData sdata = nextStructureData();
@@ -90,6 +96,7 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     return false;
   }
 
+  @Override
   public PointFeature next() {
     return feature;
   }

@@ -43,14 +43,17 @@ import ucar.nc2.ft.PointFeature;
  */
 public class PointIteratorEmpty extends PointIteratorAbstract {
 
+  @Override
   public boolean hasNext() {
     return false;
   }
 
+  @Override
   public PointFeature next() {
     return null;
   }
 
+  @Override
   public void close() {
   }
 }

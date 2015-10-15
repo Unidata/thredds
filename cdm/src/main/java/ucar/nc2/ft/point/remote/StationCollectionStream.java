@@ -37,13 +37,17 @@ import java.io.InputStream;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import ucar.ma2.StructureData;
-import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
-import ucar.nc2.ft.point.*;
+import ucar.nc2.ft.point.PointIteratorEmpty;
+import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.ft.point.StationHelper;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDateRange;
@@ -217,7 +221,7 @@ public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
 
     // an iterator over the observations for this station
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
       String query = PointDatasetRemote.makeQuery("stn=" + s.getName(), null, getInfo().getCalendarDateRange(this.getTimeUnit()));
 
       InputStream in = null;

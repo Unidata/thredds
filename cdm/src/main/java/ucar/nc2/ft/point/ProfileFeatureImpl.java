@@ -32,13 +32,13 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.ProfileFeature;
+import javax.annotation.Nonnull;
+
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
-
-import javax.annotation.Nonnull;
 
 /**
  * Abstract superclass for implementations of ProfileFeature.
@@ -60,6 +60,7 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
     }
   }
 
+  @Override
   @Nonnull
   public LatLonPoint getLatLon() {
     return latlonPoint;

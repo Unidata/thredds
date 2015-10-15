@@ -33,24 +33,31 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.*;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.ft.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
+
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataFactory;
+import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureDataIteratorLimited;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationFeatureImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
-import ucar.ma2.*;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
-
-import java.util.*;
-import java.io.IOException;
 
 /**
  * Implements "nested table" views of point feature datasets.
@@ -255,6 +262,7 @@ public class NestedTable {
       this.coordVar = v;
     }
 
+    @Override
     public String getCoordValueString(StructureData sdata) {
       if (coordVar.getDataType().isString())
         return sdata.getScalarString(memberName);
@@ -264,10 +272,12 @@ public class NestedTable {
         return Double.toString(sdata.convertScalarDouble(memberName));
     }
 
+    @Override
     public String getUnitsString() {
       return coordVar.getUnitsString();
     }
 
+    @Override
     public boolean isString() {
       return coordVar.getDataType().isString();
     }
@@ -284,14 +294,17 @@ public class NestedTable {
       }
     }
 
+    @Override
     public double getCoordValue(StructureData sdata) {
       return sdata.convertScalarDouble(memberName);
     }
 
+    @Override
     public boolean isInt() {
       return coordVar.getDataType().isIntegral();
     }
 
+    @Override
     public long getCoordValueLong(StructureData sdata) {
       return sdata.convertScalarLong(memberName);
     }
@@ -307,6 +320,7 @@ public class NestedTable {
       this.varTop = v;
     }
 
+    @Override
     public double getCoordValue(StructureData sdata) {
       try {
         return varTop.readScalarDouble();
@@ -315,18 +329,22 @@ public class NestedTable {
       }
     }
 
+    @Override
     public String getUnitsString() {
       return varTop.getUnitsString();
     }
 
+    @Override
     public boolean isString() {
       return varTop.getDataType().isString();
     }
 
+    @Override
     public boolean isInt() {
       return varTop.getDataType().isIntegral();
     }
 
+    @Override
     public long getCoordValueLong(StructureData sdata) {
       try {
         return varTop.readScalarLong();
@@ -335,6 +353,7 @@ public class NestedTable {
       }
     }
 
+    @Override
     public String getCoordValueString(StructureData sdata) {
       try {
         return varTop.readScalarString();
@@ -343,6 +362,7 @@ public class NestedTable {
       }
     }
 
+    @Override
     public boolean isMissing(StructureData sdata) {
       if (isString()) return false;
       double val = getCoordValue(sdata);
@@ -360,33 +380,40 @@ public class NestedTable {
       this.sdata = sdata;
     }
 
+    @Override
     public double getCoordValue(StructureData ignore) {
       return sdata.convertScalarDouble(memberName);
     }
 
+    @Override
     public String getCoordValueString(StructureData ignore) {
       return sdata.getScalarString(memberName);
     }
 
+    @Override
     public String getUnitsString() {
       StructureMembers.Member m = sdata.findMember(memberName);
       return m.getUnitsString();
     }
 
+    @Override
     public boolean isString() {
       StructureMembers.Member m = sdata.findMember(memberName);
       return m.getDataType().isString();
     }
 
+    @Override
     public boolean isInt() {
       StructureMembers.Member m = sdata.findMember(memberName);
       return m.getDataType().isIntegral();
     }
 
+    @Override
     public long getCoordValueLong(StructureData sdata) {
       return sdata.convertScalarLong(memberName);
     }
 
+    @Override
     public boolean isMissing(StructureData sdata) {
       return false;
     }
@@ -404,30 +431,37 @@ public class NestedTable {
       this.value = value;
     }
 
+    @Override
     public double getCoordValue(StructureData sdata) {
       return Double.parseDouble(value);
     }
 
+    @Override
     public long getCoordValueLong(StructureData sdata) {
       return Long.parseLong(value);
     }
 
+    @Override
     public String getCoordValueString(StructureData sdata) {
       return value;
     }
 
+    @Override
     public String getUnitsString() {
       return units;
     }
 
+    @Override
     public boolean isString() {
       return true;
     }
 
+    @Override
     public boolean isInt() {
       return false;
     }
 
+    @Override
     public boolean isMissing(StructureData sdata) {
       return false;
     }
@@ -648,14 +682,14 @@ public class NestedTable {
 
   //// Point
 
-  public StructureDataIterator getObsDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    return root.getStructureDataIterator(cursor, bufferSize);
+  public StructureDataIterator getObsDataIterator(Cursor cursor) throws IOException {
+    return root.getStructureDataIterator(cursor);
   }
 
   //// Station or Station_Profile
-  public StructureDataIterator getStationDataIterator(int bufferSize) throws IOException {
+  public StructureDataIterator getStationDataIterator() throws IOException {
     Table stationTable = root;
-    StructureDataIterator siter = stationTable.getStructureDataIterator(null, bufferSize);
+    StructureDataIterator siter = stationTable.getStructureDataIterator(null);
 
     if (stationTable.limit != null) {
       Variable limitV = ds.findVariable(stationTable.limit);
@@ -667,16 +701,16 @@ public class NestedTable {
   }
 
   //// Trajectory, Profile, Section
-  public StructureDataIterator getRootFeatureDataIterator(int bufferSize) throws IOException {
-    return root.getStructureDataIterator(null, bufferSize);
+  public StructureDataIterator getRootFeatureDataIterator() throws IOException {
+    return root.getStructureDataIterator(null);
   }
 
-  public StructureDataIterator getLeafFeatureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    return leaf.getStructureDataIterator(cursor, bufferSize);
+  public StructureDataIterator getLeafFeatureDataIterator(Cursor cursor) throws IOException {
+    return leaf.getStructureDataIterator(cursor);
   }
 
-  public StructureDataIterator getMiddleFeatureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-    return leaf.parent.getStructureDataIterator(cursor, bufferSize);  // the middle table
+  public StructureDataIterator getMiddleFeatureDataIterator(Cursor cursor) throws IOException {
+    return leaf.parent.getStructureDataIterator(cursor);  // the middle table
   }
 
   // also called from StandardPointFeatureIterator

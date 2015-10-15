@@ -33,13 +33,11 @@
 
 package ucar.nc2.ft.point;
 
-import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.PointFeatureCollection;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
+import javax.annotation.Nonnull;
+
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.time.CalendarDateRange;
 
 /**
  * A flattened StationTimeSeriesCollection.
@@ -61,8 +59,8 @@ public class StationTimeSeriesCollectionFlattened extends PointCollectionImpl {
 
   @Override
   @Nonnull
-  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    return new PointIteratorFlatten( from.getPointFeatureCollectionIterator(bufferSize), null, this.getCalendarDateRange());
+  public PointFeatureIterator getPointFeatureIterator() throws IOException {
+    return new PointIteratorFlatten( from.getPointFeatureCollectionIterator(), null, this.getCalendarDateRange());
   }
 
 }

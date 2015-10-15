@@ -69,6 +69,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     if (!info.isComplete()) setCalculateBounds(info);
   }
 
+  @Override
   protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
     cursor.recnum[0] = recnum;
     cursor.tableData[0] = sdata; // always in the first position

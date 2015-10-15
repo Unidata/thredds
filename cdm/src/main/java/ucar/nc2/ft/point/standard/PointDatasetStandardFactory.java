@@ -33,18 +33,20 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.time.CalendarDateUnit;
-
-import java.util.List;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.io.IOException;
+import java.util.List;
+
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactory;
+import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.time.CalendarDateUnit;
 
 /**
  * Standard handler for Point obs dataset based on a NetcdfDataset object.
@@ -77,6 +79,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
    * @return if successful, return non-null. This object is then passed back into open(), so analysis can be reused.
    * @throws IOException
    */
+  @Override
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     if (wantFeatureType == null) wantFeatureType = FeatureType.ANY_POINT;
     if (wantFeatureType != FeatureType.ANY_POINT) {
@@ -121,6 +124,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     return analyser;
   }
 
+  @Override
   public FeatureDataset open(FeatureType wantFeatureType, NetcdfDataset ncd, Object analyser, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     if (analyser == null)
       analyser = TableAnalyzer.factory(null, wantFeatureType, ncd);
@@ -128,6 +132,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     return new PointDatasetStandard(wantFeatureType, (TableAnalyzer) analyser, ncd, errlog);
   }
 
+  @Override
   public FeatureType[] getFeatureTypes() {
     return new FeatureType[]{FeatureType.ANY_POINT};
   }

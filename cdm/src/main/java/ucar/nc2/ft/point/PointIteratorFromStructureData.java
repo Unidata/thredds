@@ -32,11 +32,12 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.*;
+import java.io.IOException;
+
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
-
-import java.io.IOException;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureIterator;
 
 /**
  * A PointFeatureIterator which uses a StructureDataIterator to iterate over members of a Structure,
@@ -69,6 +70,7 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
     this.filter = filter;
   }
 
+  @Override
   public boolean hasNext() {
     try {
       while (true) {
@@ -93,16 +95,14 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
     }
   }
 
+  @Override
   public PointFeature next() {
     if (feature == null) return null;
     calcBounds(feature);
     return feature;
   }
 
-  public void setBufferSize(int bytes) {
-    structIter.setBufferSize(bytes);
-  }
-
+  @Override
   public void close() {
     if (finished) return;
     finishCalcBounds();
@@ -113,5 +113,4 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
   private StructureData nextStructureData() throws IOException {
     return structIter.hasNext() ? structIter.next() : null;
   }
-
 }

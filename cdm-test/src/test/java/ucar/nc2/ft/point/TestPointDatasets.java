@@ -33,6 +33,19 @@
 
 package ucar.nc2.ft.point;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -44,7 +57,22 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCC;
+import ucar.nc2.ft.PointFeatureCCC;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.ProfileFeature;
+import ucar.nc2.ft.ProfileFeatureCollection;
+import ucar.nc2.ft.StationProfileFeature;
+import ucar.nc2.ft.StationProfileFeatureCollection;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.TrajectoryProfileFeature;
+import ucar.nc2.ft.TrajectoryProfileFeatureCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
@@ -55,11 +83,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
 
 /**
  * Test PointFeatureTypes.
@@ -602,11 +625,11 @@ public class TestPointDatasets {
   static void showStructureData(PointFeatureCCC ccc) throws IOException {
     PrintWriter pw = new PrintWriter(System.out);
 
-    IOIterator<PointFeatureCC> iter = ccc.getCollectionIterator(-1);
+    IOIterator<PointFeatureCC> iter = ccc.getCollectionIterator();
     while (iter.hasNext()) {
       PointFeatureCC cc = iter.next();
       System.out.printf(" 1.hashCode=%d %n", cc.hashCode());
-      IOIterator<PointFeatureCollection> iter2 = cc.getCollectionIterator(-1);
+      IOIterator<PointFeatureCollection> iter2 = cc.getCollectionIterator();
       while (iter2.hasNext()) {
         PointFeatureCollection pfc = iter2.next();
         System.out.printf("  2.hashcode%d %n", pfc.hashCode());

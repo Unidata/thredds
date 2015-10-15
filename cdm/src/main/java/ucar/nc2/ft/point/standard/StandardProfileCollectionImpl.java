@@ -33,20 +33,29 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.*;
-import ucar.nc2.ft.*;
+import java.io.IOException;
+import java.util.Iterator;
+import javax.annotation.Nonnull;
+
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.ProfileFeature;
+import ucar.nc2.ft.ProfileFeatureCollection;
+import ucar.nc2.ft.point.CollectionInfo;
+import ucar.nc2.ft.point.CollectionIteratorAdapter;
+import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
+import ucar.nc2.ft.point.PointFeatureCCImpl;
+import ucar.nc2.ft.point.ProfileFeatureImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.constants.FeatureType;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * Nested Table implementation of ProfileCollection
@@ -67,10 +76,12 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
     this.extras = ft.getExtras();
   }
 
+  @Override
   public ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException {
     return new StandardProfileCollectionSubset(this, boundingBox);
   }
 
+  @Override
   public ProfileFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     return new StandardProfileCollectionSubset(this, boundingBox); // LOOK ignoring dateRange
   }
@@ -91,7 +102,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time
         try {
-          PointFeatureIterator iter = getPointFeatureIterator(-1);
+          PointFeatureIterator iter = getPointFeatureIterator();
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
@@ -112,9 +123,10 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
       return profileData;
     }
 
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    @Override
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
       Cursor cursorIter = cursor.copy();
-      StructureDataIterator siter = ft.getLeafFeatureDataIterator(cursorIter, bufferSize);
+      StructureDataIterator siter = ft.getLeafFeatureDataIterator(cursorIter);
       return new StandardProfileFeatureIterator(ft, timeUnit, siter, cursorIter);
     }
 
@@ -151,12 +163,14 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
       this.boundingBox = boundingBox;
     }
 
-    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(bufferSize), new Filter());
+    @Override
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
+      return new PointCollectionIteratorFiltered(from.getPointFeatureCollectionIterator(), new Filter());
     }
 
     private class Filter implements PointFeatureCollectionIterator.Filter {
 
+      @Override
       public boolean filter(PointFeatureCollection pointFeatureCollection) {
         ProfileFeature profileFeature = (ProfileFeature) pointFeatureCollection;
         return boundingBox.contains(profileFeature.getLatLon());
@@ -169,7 +183,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
   @Override
   public Iterator<ProfileFeature> iterator() {
     try {
-      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator(-1);
+      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator();
       return new CollectionIteratorAdapter<>(pfIterator);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -177,13 +191,13 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
   }
 
   @Override
-  public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
-    return new ProfileIterator(ft.getRootFeatureDataIterator(bufferSize));
+  public IOIterator<PointFeatureCollection> getCollectionIterator() throws IOException {
+    return new ProfileIterator(ft.getRootFeatureDataIterator());
   }
 
   @Override
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new ProfileIterator(ft.getRootFeatureDataIterator(bufferSize));
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
+    return new ProfileIterator(ft.getRootFeatureDataIterator());
   }
 
   private class ProfileIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
@@ -199,6 +213,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
         calcInfo = info;
     }
 
+    @Override
     public boolean hasNext() throws IOException {
       while (true) {
         if (prev != null && calcInfo != null)
@@ -215,6 +230,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
       return true;
     }
 
+    @Override
     public ProfileFeature next() throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.tableData[1] = nextProfileData;
@@ -225,6 +241,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
       return prev;
     }
 
+    @Override
     public void close() {
       structIter.close();
     }
@@ -271,18 +288,21 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
 
   private ProfileIterator localIterator = null;
 
+  @Override
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();
     return localIterator.hasNext();
   }
 
   // need covariant return to allow superclass to implement
+  @Override
   public ProfileFeature next() throws IOException {
     return localIterator.next();
   }
 
+  @Override
   public void resetIteration() throws IOException {
-    localIterator = (ProfileIterator) getPointFeatureCollectionIterator(-1);
+    localIterator = (ProfileIterator) getPointFeatureCollectionIterator();
   }
 
 }

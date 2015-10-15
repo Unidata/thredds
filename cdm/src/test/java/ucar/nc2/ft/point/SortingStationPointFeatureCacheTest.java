@@ -109,7 +109,7 @@ public class SortingStationPointFeatureCacheTest {
             cache.addAll(fdInput);
 
             PointFeatureIterator pointIterExpected =
-                    new FlattenedDatasetPointCollection(fdExpected).getPointFeatureIterator(-1);
+                    new FlattenedDatasetPointCollection(fdExpected).getPointFeatureIterator();
             PointFeatureIterator pointIterActual = cache.getPointFeatureIterator();
             Assert.assertTrue(PointTestUtil.equals(pointIterExpected, pointIterActual));
         }

@@ -33,14 +33,18 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.*;
+import java.io.IOException;
+import javax.annotation.Nonnull;
+
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCC;
+import ucar.nc2.ft.PointFeatureCCC;
+import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * Helper class for DsgFeatureCollection
@@ -102,7 +106,7 @@ public class DsgCollectionHelper {
   private CollectionInfo calcBounds(PointFeatureCC pfcc) throws IOException {
 
     CollectionInfo result = null;
-    IOIterator<PointFeatureCollection> iter = pfcc.getCollectionIterator(-1);
+    IOIterator<PointFeatureCollection> iter = pfcc.getCollectionIterator();
 
     while (iter.hasNext()) {
       PointFeatureCollection pfc = iter.next();
@@ -119,7 +123,7 @@ public class DsgCollectionHelper {
   private CollectionInfo calcBounds(PointFeatureCCC pfccc) throws IOException {
 
     CollectionInfo result = null;
-    IOIterator<PointFeatureCC> iter = pfccc.getCollectionIterator(-1);
+    IOIterator<PointFeatureCC> iter = pfccc.getCollectionIterator();
 
     while (iter.hasNext()) {
       PointFeatureCC pfcc = iter.next();

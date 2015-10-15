@@ -32,25 +32,37 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import java.io.IOException;
+import java.util.Formatter;
+import java.util.Iterator;
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.google.common.base.Preconditions;
 import thredds.inventory.TimedCollection;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.*;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.point.PointIteratorAbstract;
+import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.ft.point.StationHelper;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.util.Formatter;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * StationTimeSeries composed of a collection of individual StationTimeSeries. "Composite" pattern.
@@ -192,7 +204,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   // betterto use the flatten() method, then reconstitute the station with getStation(pointFeature)
 
   @Override
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
 
     // an anonymous class iterating over the stations
     return new PointFeatureCollectionIterator() {
@@ -206,10 +218,6 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       @Override
       public PointFeatureCollection next() throws IOException {
         return (PointFeatureCollection) stationIter.next();
-      }
-
-      @Override
-      public void setBufferSize(int bytes) {
       }
 
       @Override
@@ -238,7 +246,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     // an iterator over the observations for this station
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
       return new CompositeStationFeatureIterator();
     }
 
@@ -302,7 +310,6 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     // the iterator over PointFeature - an iterator over iterators, one for each dataset
 
     private class CompositeStationFeatureIterator extends PointIteratorAbstract {
-      private int bufferSize = -1;
       private Iterator<TimedCollection.Dataset> iter;
       private FeatureDatasetPoint currentDataset;
       private PointFeatureIterator pfIter = null;
@@ -332,9 +339,10 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         StationTimeSeriesFeature stnFeature = stnCollection.getStationTimeSeriesFeature(s);
         if (CompositeDatasetFactory.debug)
           System.out.printf("CompositeStationFeatureIterator open dataset: %s for %s%n", td.getLocation(), s.getName());
-        return stnFeature.getPointFeatureIterator(bufferSize);
+        return stnFeature.getPointFeatureIterator();
       }
 
+      @Override
       public boolean hasNext() {
         try {
           if (pfIter == null) {
@@ -360,12 +368,14 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         }
       }
 
+      @Override
       public PointFeature next() {
         PointFeature pf =  pfIter.next();
         calcBounds(pf);
         return pf;
       }
 
+      @Override
       public void close() {
         if (finished) return;
 
@@ -384,11 +394,6 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         finishCalcBounds();
         finished = true;
       }
-
-      public void setBufferSize(int bytes) {
-        bufferSize = bytes;
-      }
     }
   }
-
 }

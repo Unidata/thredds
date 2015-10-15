@@ -33,13 +33,13 @@
 
 package ucar.nc2.ft.point.standard;
 
+import java.io.IOException;
+
+import ucar.ma2.Array;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataFactory;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.VariableDS;
-import ucar.ma2.StructureData;
-import ucar.ma2.Array;
-import ucar.ma2.StructureDataFactory;
-
-import java.io.IOException;
 
 /**
  * Join data from an element of an Array, whose index is passed in as cursor.recnum[0].
@@ -78,11 +78,13 @@ public class JoinArray implements Join {
     }
   }
 
+  @Override
   public Variable getExtraVariable() {
     return v;
   }
 
 
+  @Override
   public StructureData getJoinData(Cursor cursor) {
     int recnum = -1;
     switch (type) {
@@ -105,6 +107,7 @@ public class JoinArray implements Join {
     return StructureDataFactory.make(v.getShortName(), data.getObject(recnum));
   }
 
+  @Override
   public VariableDS findVariable(String varName) {
     return (varName.equals(v.getFullName())) ? v : null;
   }

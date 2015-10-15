@@ -122,7 +122,8 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     return new StationFeatureSubset(this, dateRange);
   }
 
-  public int compareTo(Station so) {
+  @Override
+  public int compareTo(@Nonnull Station so) {
     return name.compareTo(so.getName());
   }
 
@@ -155,8 +156,8 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     }
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), null, filter_date);
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
+      return new PointIteratorFiltered(from.getPointFeatureIterator(), null, filter_date);
     }
 
     @Nonnull

@@ -75,7 +75,7 @@ public class SortingStationPointFeatureCache {
     // fdPoint remains open.
     public void addAll(FeatureDatasetPoint fdPoint) throws IOException {
         try (PointFeatureIterator pointFeatIter =
-                new FlattenedDatasetPointCollection(fdPoint).getPointFeatureIterator(-1)) {
+                new FlattenedDatasetPointCollection(fdPoint).getPointFeatureIterator()) {
             while (pointFeatIter.hasNext()) {
                 StationPointFeature pointFeat = (StationPointFeature) pointFeatIter.next();
                 add(pointFeat);

@@ -32,10 +32,14 @@
  */
 package thredds.server.ncss.view.dsg.station;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
+
 import thredds.server.ncss.exception.FeaturesNotFoundException;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.view.dsg.DsgSubsetWriter;
-import ucar.nc2.ft.point.PointIteratorFiltered;
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -43,9 +47,10 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.point.PointIteratorFiltered;
 import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -53,11 +58,6 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by cwardgar on 2014/05/20.
@@ -189,12 +189,12 @@ public abstract class AbstractStationSubsetWriter extends DsgSubsetWriter {
     }
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
       if (closestTime == null) {
-        return stationFeat.getPointFeatureIterator(bufferSize);
+        return stationFeat.getPointFeatureIterator();
       } else {
         return new PointIteratorFiltered(
-                stationFeat.getPointFeatureIterator(bufferSize), new TimeFilter(closestTime));
+                stationFeat.getPointFeatureIterator(), new TimeFilter(closestTime));
       }
     }
   }
