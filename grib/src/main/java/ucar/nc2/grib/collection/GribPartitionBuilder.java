@@ -623,17 +623,13 @@ abstract class GribPartitionBuilder  {
         indexBuilder.addDataset(writeDatasetProto(pc, ds));
 
       // extensions
-      List<Integer> run2partList = new ArrayList<>();
       if (pc.run2part != null) {
-        for (int part : pc.run2part) run2partList.add(part);
-        indexBuilder.setExtension(PartitionCollectionProto.run2Part, run2partList);
+        for (int part : pc.run2part)
+          indexBuilder.addRun2Part(part);
       }
-
-      List<PartitionCollectionProto.Partition> partProtoList = new ArrayList<>();
       for (PartitionCollectionMutable.Partition part : pc.partitions)
-        partProtoList.add(writePartitionProto(pc, part));
-      indexBuilder.setExtension(PartitionCollectionProto.partitions, partProtoList);
-      indexBuilder.setExtension(PartitionCollectionProto.isPartitionOfPartitions, pc.isPartitionOfPartitions);
+        indexBuilder.addPartitions(writePartitionProto(pc, part));
+      indexBuilder.setIsPartitionOfPartitions(pc.isPartitionOfPartitions);
 
       // write it out
       GribCollectionProto.GribCollection index = indexBuilder.build();
@@ -785,10 +781,8 @@ abstract class GribPartitionBuilder  {
 
     // extensions
     if (vp.nparts > 0 && vp.partnoSA != null) {
-      List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
       for (int i = 0; i < vp.nparts; i++) // PartitionCollection.PartitionForVariable2D pvar : vp.getPartitionForVariable2D())
-        pvarList.add(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i), vp.nrecords, vp.ndups, vp.nmissing));  // LOOK was it finished ??
-      b.setExtension(PartitionCollectionProto.partition, pvarList);
+        b.addPartVariable(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i), vp.nrecords, vp.ndups, vp.nmissing));  // LOOK was it finished ??
     }
 
     return b.build();
@@ -808,8 +802,8 @@ abstract class GribPartitionBuilder  {
     optional uint32 missing = 10;
   }
    */
-  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(int partno, int groupno, int varno, int nrecords, int ndups, int nmissing) throws IOException {
-    PartitionCollectionProto.PartitionVariable.Builder pb = PartitionCollectionProto.PartitionVariable.newBuilder();
+  private GribCollectionProto.PartitionVariable writePartitionVariableProto(int partno, int groupno, int varno, int nrecords, int ndups, int nmissing) throws IOException {
+    GribCollectionProto.PartitionVariable.Builder pb = GribCollectionProto.PartitionVariable.newBuilder();
     pb.setPartno(partno);
     pb.setGroupno(groupno);
     pb.setVarno(varno);
@@ -832,8 +826,8 @@ message Partition {
 }
   }
    */
-  private PartitionCollectionProto.Partition writePartitionProto(PartitionCollectionMutable pc, PartitionCollectionMutable.Partition p) throws IOException {
-    PartitionCollectionProto.Partition.Builder b = PartitionCollectionProto.Partition.newBuilder();
+  private GribCollectionProto.Partition writePartitionProto(PartitionCollectionMutable pc, PartitionCollectionMutable.Partition p) throws IOException {
+    GribCollectionProto.Partition.Builder b = GribCollectionProto.Partition.newBuilder();
     String pathRS = makeReletiveFilename(pc, p); // reletive to pc.directory
     b.setFilename(pathRS);
     b.setName(p.name);

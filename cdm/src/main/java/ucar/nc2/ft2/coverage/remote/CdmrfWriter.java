@@ -49,6 +49,7 @@ import ucar.unidata.geoloc.ProjectionRect;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.util.List;
 
@@ -361,8 +362,8 @@ public class CdmrfWriter {
         return CdmrFeatureProto.DependenceType.scalar;
       case twoD:
         return CdmrFeatureProto.DependenceType.twoD;
-      //case fmrcReg:
-      //  return CdmrFeatureProto.DependenceType.fmrcReg;
+      case fmrcReg:
+        return CdmrFeatureProto.DependenceType.fmrcReg;
     }
     throw new IllegalStateException("illegal data type " + type);
   }
@@ -425,8 +426,9 @@ public class CdmrfWriter {
   public CdmrFeatureProto.GeoReferencedArray.Builder encodeGeoReferencedArray(GeoReferencedArray geoArray, boolean deflate) {
     CdmrFeatureProto.GeoReferencedArray.Builder builder = CdmrFeatureProto.GeoReferencedArray.newBuilder();
     builder.setCoverageName(geoArray.getCoverageName());
-    builder.setDataType(NcStream.convertDataType( geoArray.getDataType()));
+    builder.setDataType(NcStream.convertDataType(geoArray.getDataType()));
     builder.setVersion(1);
+    builder.setBigend(ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN); // LOOK ??
 
     if (deflate) {
       builder.setCompress(NcStreamProto.Compress.DEFLATE);

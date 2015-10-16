@@ -221,8 +221,7 @@ class GribCollectionWriter {
         GribCollectionProto.IntvFilter.Builder bIntv = GribCollectionProto.IntvFilter.newBuilder();
         bIntv.setVariableId(intvFilter.id);
         bIntv.setIntvLength(intvFilter.intvLength);
-        if (intvFilter.prob != Integer.MIN_VALUE)
-          bIntv.setIntvProb(intvFilter.prob);
+        bIntv.setIntvProb(intvFilter.prob);
         b.addIntvFilter(bIntv);
       }
     }
@@ -251,7 +250,7 @@ class GribCollectionWriter {
     config.type = isGrib1 ? FeatureCollectionType.GRIB1 : FeatureCollectionType.GRIB2;
     config.spec = pconfig.getCollectionSpec();
     config.ptype = FeatureCollectionConfig.PartitionType.valueOf(pconfig.getPartitionType());
-    if (pconfig.hasDateFormatMark())
+    if (pconfig.getDateFormatMark().length() > 0)
       config.dateFormatMark = pconfig.getDateFormatMark();
 
     if ( pconfig.getGdsConvertCount() > 0) {
@@ -272,7 +271,7 @@ class GribCollectionWriter {
       config.gribConfig.intvFilter.isZeroExcluded = isZeroExcluded;
       config.gribConfig.intvFilter.filter = new ArrayList<>();
       for (GribCollectionProto.IntvFilter pi :  pconfig.getIntvFilterList()) {
-        int prob =  pi.hasIntvProb() ? pi.getIntvProb() : Integer.MIN_VALUE;
+        int prob =  pi.getIntvProb();
         config.gribConfig.intvFilter.filter.add(new FeatureCollectionConfig.GribIntvFilterParam(pi.getVariableId(), pi.getIntvLength(), prob));
       }
     }
@@ -284,8 +283,8 @@ class GribCollectionWriter {
       }
     }
 
-    if (pconfig.hasUserTimeUnit())
-      config.gribConfig.setUserTimeUnit(pconfig.getUserTimeUnit());
+    if (pconfig.getDateFormatMark().length() > 0)
+      config.gribConfig.setUserTimeUnit(pconfig.getDateFormatMark());
 
     return config;
   }

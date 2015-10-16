@@ -1,64 +1,66 @@
 // Grib2 Index version 9 (gbx9)
+syntax = "proto3";
 
 option java_package = "ucar.nc2.grib.grib2";
 option java_outer_classname = "Grib2IndexProto";
 
 message GribIdSection {
-  required uint32 center_id = 1;
-  required uint32 subcenter_id = 2;
-  required uint32 master_table_version = 3;
-  required uint32 local_table_version = 4;
-  required uint32 significanceOfRT = 5;
+  uint32 center_id = 1;
+  uint32 subcenter_id = 2;
+  uint32 master_table_version = 3;
+  uint32 local_table_version = 4;
+  uint32 significanceOfRT = 5;
   repeated uint32 refDate = 6 [packed=true]; // year, month, day, hour, minute, second;
-  required uint32 productionStatus = 7;
-  required uint32 processedDataType = 8;
+  uint32 productionStatus = 7;
+  uint32 processedDataType = 8;
 }
 
 message GribGdsSection {
-  required bytes gds = 2;
+  bytes gds = 2;
 }
 
 // we have the info in Grib2Record to reconstruct the indicator, id, gds, pds, drs, bms sections
 // we need to read from original raf to get bitmap, Grib2Drs, and data
-
 message Grib2Record {
-  required bytes header = 1;
+  bytes header = 1;
 
   // indicator section
-  optional uint64 gribMessageStart = 15;
-  required uint64 gribMessageLength = 2;
-  required uint32 discipline = 3;
+  uint64 gribMessageStart = 15;
+  uint64 gribMessageLength = 2;
+  uint32 discipline = 3;
 
   // id section
-  required GribIdSection ids = 4;
+  GribIdSection ids = 4;
 
   // other sections
-  optional bytes lus = 5;
-  required uint32 gdsIdx = 6;  // index into gdsList
-  required bytes pds = 7;
+  bytes lus = 5;
+  uint32 gdsIdx = 6;  // index into gdsList
+  bytes pds = 7;
 
   // drs section
-  required uint64 drsPos = 8;
-  required uint32 drsTemplate = 9;
-  required uint32 drsNpoints = 10;
+  uint64 drsPos = 8;
+  uint32 drsTemplate = 9;
+  uint32 drsNpoints = 10;
 
 // bms section
-  required uint64 bmsPos = 11;   // if original is 254, replace with previously defined (starting with version 6)
-  required uint32 bmsIndicator = 12;
-  optional bool bmsReplaced = 16 [default = false];
+  uint64 bmsPos = 11;   // if original is 254, replace with previously defined (starting with version 6)
+  uint32 bmsIndicator = 12;
+  bool bmsReplaced = 16;
 
   // data section
-  required uint64 dataPos = 13;
-  required uint32 dataLen = 14;
+  uint64 dataPos = 13;
+  uint32 dataLen = 14;
 
-  optional uint32 scanMode = 17  [default = 9999];  // scanMode from gds added in version 4.5
+  oneof scanMode_present {
+    uint32 scanMode = 17; // scanMode from gds added in version 4.5; proto2 has [default = 9999]
+  }
 }
 
-
 message Grib2Index {
-  required string filename = 1;
+  string filename = 1;
   repeated GribGdsSection gdsList = 2;  // GDS factored out
   repeated Grib2Record records = 3;
+  uint32 proto_version = 4; // added for proto3 in 5.0, to deal with scanMode default (set to 3).
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java

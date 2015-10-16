@@ -38,14 +38,14 @@ test {
 javadoc {
     title = 'Public javadoc for netcdf-java version ' + version
     source = fileTree(dir: 'src/main/java').matching {
-        include 'thredds/catalog/*.java'
+        include 'thredds/client/catalog/*.java'
         include 'ucar/ma2/*.java'
         include 'ucar/nc2/*.java'
         include 'ucar/nc2/constants/*.java'
         include 'ucar/nc2/dataset/**/*.java'
-        include 'ucar/nc2/dt/*.java'
-        include 'ucar/nc2/dt/grid/*.java'
+        include 'ucar/nc2/dt/radial/*.java'
         include 'ucar/nc2/ft/*.java'
+        include 'ucar/nc2/ft2/*.java'
         include 'ucar/nc2/ncml/*.java'
         include 'ucar/nc2/time/*.java'
         include 'ucar/nc2/units/*.java'

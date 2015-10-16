@@ -1,31 +1,31 @@
 // Grib1 Index version 9 (gbx9)
-
+syntax = "proto3";
 option java_package = "ucar.nc2.grib.grib1";
 option java_outer_classname = "Grib1IndexProto";
 
 message Grib1GdsSection {
-  required bytes gds = 2;
+  bytes gds = 2;
 }
 
 message Grib1Record {
-  required bytes header = 1;
+  bytes header = 1;
 
   // indicator section
-  optional uint64 gribMessageStart = 15;
-  required uint64 gribMessageLength = 2;
+  uint64 gribMessageStart = 15;
+  uint64 gribMessageLength = 2;
 
   // other sections
-  required uint32 gdsIdx = 6;  // index into gdsList
-  required bytes pds = 7;
+  uint32 gdsIdx = 6;  // index into gdsList
+  bytes pds = 7;
 
-  optional uint64 bmsPos = 11;
+  uint64 bmsPos = 11;
 
-  required uint64 dataPos = 13;
-  required uint32 dataLen = 14;
+  uint64 dataPos = 13;
+  uint32 dataLen = 14;
 }
 
 message Grib1Index {
-  required string filename = 1;
+  string filename = 1;
   repeated Grib1GdsSection gdsList = 2;  // GDS factored out
   repeated Grib1Record records = 3;
 }

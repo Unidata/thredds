@@ -65,9 +65,9 @@ Ncstream implements the full link:../../CDM/CDM-UML.png[CDM data model.]
 
 See also:
 
-* link:CdmRemote.html[CdmRemote] service
-* link:CdmrFeature.html[CdmrFeature] service
-* link:NcStreamGrammer.html[ncstream grammer]
+* link:CdmRemote.adoc[CdmRemote] service
+* link:CdmrFeature.adoc[CdmrFeature] service
+* link:NcStreamGrammer.adoc[ncstream grammer]
 
 '''''
 

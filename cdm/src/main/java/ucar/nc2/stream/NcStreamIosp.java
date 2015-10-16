@@ -108,7 +108,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       this.filePos = filePos;
       section = NcStream.decodeSection(dproto.getSection());
       nelems = (int) section.computeSize();
-      bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+      bo = NcStream.decodeDataByteOrder(dproto);
       isVlen = dproto.getVdata();
       isDeflate = dproto.getCompress() == NcStreamProto.Compress.DEFLATE;
       if (isDeflate)
@@ -150,9 +150,11 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
           byte[] resultb = bout.toByteArray();
           result = ByteBuffer.wrap(resultb); // look - an extra copy !! override ByteArrayOutputStream to fix
           if (debug) System.out.printf(" uncompressedLen header=%d actual=%d%n", dataStorage.uncompressedLen , resultb.length);
-          //result.order(ByteOrder.LITTLE_ENDIAN); // LOOK
+          result.order(dataStorage.bo);
+
         } else {
           result = ByteBuffer.wrap(data);
+          result.order(dataStorage.bo);
         }
       }
     }
@@ -284,6 +286,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       byte[] dp = new byte[psize];
       raf.readFully(dp);
       NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
+      ByteOrder bo = NcStream.decodeDataByteOrder(dproto); // LOOK not using bo !!
+
       Variable v = ncfile.findVariable(dproto.getVarName());
       if (v == null) {
         System.out.printf(" ERR cant find var %s%n%s%n", dproto.getVarName(), dproto);
@@ -292,7 +296,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       if (ncm != null) ncm.add(new NcsMess(pos, psize, dproto));
       List<DataStorage> storage;
       if (v != null) {
-        storage = (List<DataStorage>) v.getSPobject(); // LOOK should be an in memory Rtree using section
+        storage = (List<DataStorage>) v.getSPobject(); // LOOK could be an in memory Rtree using section
         if (storage == null) {
           storage = new ArrayList<>();
           v.setSPobject(storage);

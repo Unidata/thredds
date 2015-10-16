@@ -1,17 +1,20 @@
+syntax = "proto3";
+
 option java_package = "ucar.nc2.ft.point.bufr";
 option java_outer_classname = "BufrCdmIndexProto";
 
 message Station {
-  required string id = 1;
-  required double lat = 2;
-  required double lon = 3;
-  optional double alt = 4;
-  optional string desc = 5;
-  optional string wmoId = 6;
-  required int32 count = 7;
+  string id = 1;
+  double lat = 2;
+  double lon = 3;
+  double alt = 4;
+  string desc = 5;
+  string wmoId = 6;
+  int32 count = 7;
 }
 
 enum FldAction {
+  defa = 0;
   none = 1;
   remove = 2;
   asMissing = 3;
@@ -20,6 +23,7 @@ enum FldAction {
 }
 
 enum FldType {
+  def = 0;
   lat=1;
   lon=2;
   height=3;
@@ -41,27 +45,27 @@ enum FldType {
 }
 
 message Field {
-  required uint32 fxy = 1;
-  optional string name = 2;
+  uint32 fxy = 1;
+  string name = 2;
   repeated Field flds = 3;
-  optional FldAction action = 4;
-  optional FldType type = 5;
-  optional uint32 min = 6;
-  optional uint32 max = 7;
-  optional string desc = 8;
-  optional string units = 9;
-  required int32 scale = 10;     // bufr scale and offset
-  required int32 reference = 11;
-  required int32 bitWidth = 12;
+  FldAction action = 4;
+  FldType type = 5;
+  uint32 min = 6;
+  uint32 max = 7;
+  string desc = 8;
+  string units = 9;
+  int32 scale = 10;     // bufr scale and offset
+  int32 reference = 11;
+  int32 bitWidth = 12;
 }
 
 message BufrIndex {
-  required string filename = 1;
+  string filename = 1;
   repeated Station stations = 2;
-  required Field root = 3;
-  required uint64 start = 4;   // msecs since epoch
-  required uint64 end = 5;
-  required uint64 nobs = 6;
+  Field root = 3;
+  uint64 start = 4;   // msecs since epoch
+  uint64 end = 5;
+  uint64 nobs = 6;
 }
 
 //  cd c:/dev/github/thredds/bufr/src/main/java

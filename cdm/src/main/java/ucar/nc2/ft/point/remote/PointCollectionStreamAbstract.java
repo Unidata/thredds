@@ -72,7 +72,7 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
 
                 if (needUnits) {
                     try {
-                        this.altUnits = pfc.hasAltUnit() ? pfc.getAltUnit() : null;
+                        this.altUnits = pfc.getAltUnit().length() > 0 ? pfc.getAltUnit() : null;
                         this.timeUnit = CalendarDateUnit.of(null, pfc.getTimeUnit());
                     } catch (IllegalArgumentException e) {
                         String message = String.format("Invalid time unit found in stream (%s). Using default (%s).",

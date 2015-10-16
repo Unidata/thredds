@@ -82,12 +82,12 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       this.nparts = nparts;
     }
 
-    public void setPartitions(List<PartitionCollectionProto.PartitionVariable> pvList) {
+    public void setPartitions(List<GribCollectionProto.PartitionVariable> pvList) {
       int[] partno = new int[nparts];
       int[] groupno = new int[nparts];
       int[] varno = new int[nparts];
       int count = 0;
-      for (PartitionCollectionProto.PartitionVariable part : pvList) {
+      for (GribCollectionProto.PartitionVariable part : pvList) {
         partno[count] = part.getPartno();
         groupno[count] = part.getGroupno();
         varno[count] = part.getVarno();

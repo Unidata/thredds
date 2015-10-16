@@ -717,7 +717,7 @@ public class CdmIndex3Panel extends JPanel {
     this.config = config;
     gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, false, logger);
     if (gc == null)
-      throw new IOException("Not a grib collection index file");
+      throw new IOException("File not a grib collection index file");
 
     List<GroupBean> groups = new ArrayList<>();
 

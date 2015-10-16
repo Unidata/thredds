@@ -156,14 +156,12 @@ public class PointStream {
   static public PointStreamProto.PointFeature encodePointFeature(PointFeature pf) throws IOException {
     PointStreamProto.Location.Builder locBuilder = PointStreamProto.Location.newBuilder();
     locBuilder.setTime(pf.getObservationTime());
-    if (!Double.isNaN(pf.getNominalTime()) && (pf.getNominalTime() != pf.getObservationTime()))
-      locBuilder.setNomTime(pf.getNominalTime());
+    locBuilder.setNomTime(pf.getNominalTime());
 
     EarthLocation loc = pf.getLocation();
     locBuilder.setLat(loc.getLatitude());
     locBuilder.setLon(loc.getLongitude());
-    if (!Double.isNaN(loc.getAltitude()))
-      locBuilder.setAlt(loc.getAltitude());
+    locBuilder.setAlt(loc.getAltitude());
 
     PointStreamProto.PointFeature.Builder builder = PointStreamProto.PointFeature.newBuilder();
     builder.setLoc(locBuilder);
@@ -199,8 +197,7 @@ public class PointStream {
       locBuilder.setId(loc.getName());
       locBuilder.setLat(loc.getLatitude());
       locBuilder.setLon(loc.getLongitude());
-      if (!Double.isNaN(loc.getAltitude()))
-        locBuilder.setAlt(loc.getAltitude());
+      locBuilder.setAlt(loc.getAltitude());
       if (loc.getDescription() != null)
         locBuilder.setDesc(loc.getDescription());
       if (loc.getWmoId() != null)
@@ -231,10 +228,10 @@ public class PointStream {
 
       sm = new StructureMembers(pfc.getName());
       for (PointStreamProto.Member m : pfc.getMembersList()) {
-        String name = m.hasName() ? m.getName() : null;
-        String desc = m.hasDesc() ? m.getDesc() : null;
-        String units = m.hasUnits() ? m.getUnits() : null;
-        DataType dtype = m.hasDataType() ? NcStream.convertDataType(m.getDataType()) : null;
+        String name = m.getName();
+        String desc = m.getDesc().length() > 0 ? m.getDesc() : null;
+        String units = m.getUnits().length() > 0 ? m.getUnits() : null;
+        DataType dtype = NcStream.convertDataType(m.getDataType());
         int[] shape = NcStream.decodeSection(m.getSection()).getShape();
 
         sm.addMember(name, desc, units, dtype, shape);
@@ -245,8 +242,7 @@ public class PointStream {
     public PointFeature make(DsgFeatureCollection dsg, byte[] rawBytes) throws InvalidProtocolBufferException {
       PointStreamProto.PointFeature pfp = PointStreamProto.PointFeature.parseFrom(rawBytes);
       PointStreamProto.Location locp = pfp.getLoc();
-      EarthLocationImpl location =
-              new EarthLocationImpl(locp.getLat(), locp.getLon(), locp.hasAlt() ? locp.getAlt() : Double.NaN);
+      EarthLocationImpl location = new EarthLocationImpl(locp.getLat(), locp.getLon(), locp.getAlt());
       return new MyPointFeature(dsg, location, locp.getTime(), locp.getNomTime(), dateUnit, pfp);
     }
 

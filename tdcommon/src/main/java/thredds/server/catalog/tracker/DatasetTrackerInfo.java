@@ -80,9 +80,9 @@ public class DatasetTrackerInfo implements Externalizable {
 
     ConfigCatalogExtProto.Dataset pDataset = ConfigCatalogExtProto.Dataset.parseFrom(b);
     this.catId = pDataset.getCatId(); // LOOK not used
-    if (pDataset.hasRestrict())
+    if (pDataset.getRestrict().length() > 0)
       restrictedAccess = pDataset.getRestrict();
-    if (pDataset.hasNcml())
+    if (pDataset.getNcml().length() > 0)
       ncml = pDataset.getNcml();
   }
 

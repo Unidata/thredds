@@ -59,8 +59,8 @@ import java.util.Set;
 class Grib1CollectionWriter extends GribCollectionWriter {
 
   public static final String MAGIC_START = "Grib1Collectio2Index";  // was Grib1CollectionIndex
-  protected static final int minVersion = 1;
-  protected static final int version = 2;
+  protected static final int minVersion = 1; // if less than this, force rewrite or at least do not read
+  protected static final int version = 3;    // increment this as needed, must be backwards compatible through minVersion
 
   protected final MCollection dcm; // may be null, when read in from index
   protected final org.slf4j.Logger logger;
@@ -255,7 +255,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       Grib1SectionIndicator is = gr.getIs();
       br.setPos(is.getStartPos()); // start of entire message
 
-      // br.setScanMode(gr.getScanMode()); // added 2/6/2014  LOOK dont need scan for GRIB1 I think ??
+      br.setScanMode(gr.getGDS().getScanMode()); // added 10/16/2015
       b.addRecords(br);
     }
 

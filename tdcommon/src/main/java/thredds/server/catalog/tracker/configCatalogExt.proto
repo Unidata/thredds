@@ -1,13 +1,16 @@
+syntax = "proto3";
+
 option java_package = "thredds.server.catalog.tracker";
 option java_outer_classname = "ConfigCatalogExtProto";
 
 message Catalog {
-  required uint64 catId = 1;    // sequence no
-  required string catLocation = 2;
-  optional bool isRoot = 3 [default = false];
+  uint64 catId = 1;    // sequence no
+  string catLocation = 2;
+  bool isRoot = 3;
 }
 
 enum DataRootType {  // same as DataRoot.Type
+  defo=0;
   datasetRoot=1;
   datasetScan=2;
   catalogScan=3;
@@ -15,35 +18,35 @@ enum DataRootType {  // same as DataRoot.Type
 }
 
 message DataRoot {
-  required string urlPath = 1;
-  required string dirLocation = 2;
-  required DataRootType type = 3;
-  optional string catLocation = 4;    // omit for simple dataset root
-  optional string name = 5;           //omit for simple dataset root
+  string urlPath = 1;
+  string dirLocation = 2;
+  DataRootType type = 3;
+  string catLocation = 4;    // omit for simple dataset root
+  string name = 5;           //omit for simple dataset root
 }
 
 message Dataset {
-  required uint64 catId = 1;    // ??
-  required string name = 2;
-  optional string path = 3;
-  optional string id = 4;
-  optional string restrict = 5;
-  optional string ncml = 6;
+  uint64 catId = 1;    // ??
+  string name = 2;
+  string path = 3;
+  string id = 4;
+  string restrict = 5;
+  string ncml = 6;
 
   repeated Access access = 10;
   repeated Property property = 11;
 }
 
 message Access {
-  required string serviceName = 1;
-  required string urlPath = 2;
-  optional string dataFormatS = 3;
-  optional uint64 dataSize = 4;
+  string serviceName = 1;
+  string urlPath = 2;
+  string dataFormatS = 3;
+  uint64 dataSize = 4;
 }
 
 message Property {
-  required string name = 1;
-  required string value = 2;
+  string name = 1;
+  string value = 2;
 }
 
 // cd c:/dev/github/thredds/tdcommon/src/main/java
