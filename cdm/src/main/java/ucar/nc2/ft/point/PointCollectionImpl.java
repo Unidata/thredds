@@ -70,7 +70,7 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
   @Override
   public Iterator<PointFeature> iterator() {
     try {
-      return getPointFeatureIterator(-1);
+      return getPointFeatureIterator();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -91,8 +91,8 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
     }
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), filter_bb, filter_date);
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
+      return new PointIteratorFiltered(from.getPointFeatureIterator(), filter_bb, filter_date);
     }
   }
 
@@ -101,21 +101,25 @@ public abstract class PointCollectionImpl extends DsgCollectionImpl implements P
 
   protected PointFeatureIterator localIterator;
 
+  @Override
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();
     return localIterator.hasNext();
   }
 
+  @Override
   public void finish() {
     if (localIterator != null)
       localIterator.close();
   }
 
+  @Override
   public PointFeature next() throws IOException {
     return localIterator.next();
   }
 
+  @Override
   public void resetIteration() throws IOException {
-    localIterator = getPointFeatureIterator(-1);
+    localIterator = getPointFeatureIterator();
   }
 }

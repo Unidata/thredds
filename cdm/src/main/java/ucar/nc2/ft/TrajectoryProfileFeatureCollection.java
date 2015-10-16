@@ -72,6 +72,6 @@ public interface TrajectoryProfileFeatureCollection extends PointFeatureCCC, Ite
   /**
    * @deprecated use foreach
    */
-  PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+  PointFeatureCCIterator getNestedPointFeatureCollectionIterator() throws java.io.IOException;
 
 }

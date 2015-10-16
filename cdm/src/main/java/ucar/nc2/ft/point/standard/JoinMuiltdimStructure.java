@@ -33,13 +33,13 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.Variable;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.StructureDS;
+import java.io.IOException;
+
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
-
-import java.io.IOException;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.StructureDS;
+import ucar.nc2.dataset.VariableDS;
 
 /**
  * Join data from a row of a Structure, whose index is passed in as recnum[0] / dimLen
@@ -68,15 +68,18 @@ public class JoinMuiltdimStructure implements Join {
     }
   }
 
+  @Override
   public StructureData getJoinData(Cursor cursor) {
     int recnum = cursor.recnum[0] / dimLength;
     return parentData.getStructureData(recnum);
   }
 
+  @Override
   public VariableDS findVariable(String axisName) {
     return (VariableDS) parentStructure.findVariable(axisName);
   }
 
+  @Override
   public Variable getExtraVariable() {
     return null;
   }

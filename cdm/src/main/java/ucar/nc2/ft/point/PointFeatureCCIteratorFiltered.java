@@ -32,11 +32,11 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.PointFeatureCCIterator;
-import ucar.nc2.ft.PointFeatureCC;
-import ucar.nc2.util.IOIterator;
-
 import java.io.IOException;
+
+import ucar.nc2.ft.PointFeatureCC;
+import ucar.nc2.ft.PointFeatureCCIterator;
+import ucar.nc2.util.IOIterator;
 
 /**
  * Implement NestedPointFeatureCollectionIterator interface
@@ -56,16 +56,14 @@ public class PointFeatureCCIteratorFiltered implements PointFeatureCCIterator, I
     this.filter = filter;
   }
 
-  public void setBufferSize(int bytes) {
-    npfciter.setBufferSize(bytes);
-  }
-
+  @Override
   public boolean hasNext() throws IOException {
     if (done) return false;
     pointFeatureCollection = nextFilteredPointFeatureCollection();
     return (pointFeatureCollection != null);
   }
 
+  @Override
   public PointFeatureCC next() throws IOException {
     return done ? null : pointFeatureCollection;
   }

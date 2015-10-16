@@ -33,10 +33,10 @@
 
 package ucar.nc2.ft;
 
+import java.io.IOException;
+
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
-
-import java.io.IOException;
 
 /**
  * A collection of ProfileFeature.
@@ -85,6 +85,6 @@ public interface ProfileFeatureCollection extends PointFeatureCC, Iterable<Profi
   /**
    * @deprecated use foreach
    */
-  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws java.io.IOException;
 
 }

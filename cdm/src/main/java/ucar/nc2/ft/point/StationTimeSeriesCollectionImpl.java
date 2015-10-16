@@ -32,18 +32,22 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.*;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time.CalendarDateRange;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of StationFeatureCollection.
@@ -207,7 +211,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   @Override
   public Iterator<StationTimeSeriesFeature> iterator() {
     try {
-      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator(-1);
+      PointFeatureCollectionIterator pfIterator = getPointFeatureCollectionIterator();
       return new CollectionIteratorAdapter<>(pfIterator);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -215,12 +219,12 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
   }
 
   @Override
-  public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+  public IOIterator<PointFeatureCollection> getCollectionIterator() throws IOException {
     return new StationIterator();
   }
 
   @Override
-  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
     return new StationIterator();
   }
 
@@ -281,6 +285,6 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
 
   @Override
   public void resetIteration() throws IOException {
-    localIterator = getPointFeatureCollectionIterator(-1);
+    localIterator = getPointFeatureCollectionIterator();
   }
 }

@@ -33,17 +33,28 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.*;
-import ucar.nc2.ft.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
-import ucar.nc2.util.IOIterator;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Iterator;
+import javax.annotation.Nonnull;
+
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCC;
+import ucar.nc2.ft.PointFeatureCCIterator;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.TrajectoryProfileFeature;
+import ucar.nc2.ft.point.CollectionInfo;
+import ucar.nc2.ft.point.DsgCollectionImpl;
+import ucar.nc2.ft.point.NestedCollectionIteratorAdapter;
+import ucar.nc2.ft.point.ProfileFeatureImpl;
+import ucar.nc2.ft.point.SectionCollectionImpl;
+import ucar.nc2.ft.point.SectionFeatureImpl;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.util.IOIterator;
 
 /**
  * Nested Table implementation of SectionCollection.
@@ -66,7 +77,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   @Override
   public Iterator<TrajectoryProfileFeature> iterator() {
     try {
-      PointFeatureCCIterator pfIterator = getNestedPointFeatureCollectionIterator(-1);
+      PointFeatureCCIterator pfIterator = getNestedPointFeatureCollectionIterator();
       return new NestedCollectionIteratorAdapter<>(pfIterator);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -74,28 +85,29 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
   }
 
   @Override // new way
-  public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
+  public IOIterator<PointFeatureCC> getCollectionIterator() throws IOException {
     return new SectionIterator();
   }
 
   @Override // old way
-  public PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
+  public PointFeatureCCIterator getNestedPointFeatureCollectionIterator() throws IOException {
     return new SectionIterator();
   }
 
   private class SectionIterator implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
-    private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
+    private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator();
     private StructureData sectionData;
     DsgCollectionImpl prev;
     CollectionInfo calcInfo;
 
     SectionIterator() throws IOException {
-      sdataIter = ft.getRootFeatureDataIterator(-1);
+      sdataIter = ft.getRootFeatureDataIterator();
       CollectionInfo info = getInfo();
       if (!info.isComplete())
         calcInfo = info;
     }
 
+    @Override
     public boolean hasNext() throws IOException {
       while (true) {
         if (prev != null && calcInfo != null)
@@ -112,6 +124,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       return true;
     }
 
+    @Override
     public TrajectoryProfileFeature next() throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = sdataIter.getCurrentRecno();
@@ -142,7 +155,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     }
 
     @Override
-    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
       return new ProfileIterator(cursor.copy());
     }
 
@@ -153,7 +166,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     }
 
     @Override
-    public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+    public IOIterator<PointFeatureCollection> getCollectionIterator() throws IOException {
       return new ProfileIterator(cursor.copy());
     }
   }
@@ -167,12 +180,13 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
     ProfileIterator(Cursor cursor) throws IOException {
       this.cursor = cursor;
-      sdataIter = ft.getMiddleFeatureDataIterator(cursor, -1);
+      sdataIter = ft.getMiddleFeatureDataIterator(cursor);
       CollectionInfo info = getInfo();
       if (!info.isComplete())
         calcInfo = info;
     }
 
+    @Override
     public boolean hasNext() throws IOException {
       if (prev != null && calcInfo != null)
         calcInfo.extend(prev.getInfo());
@@ -185,6 +199,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       return more;
     }
 
+    @Override
     public PointFeatureCollection next() throws IOException {
       Cursor cursorIter = cursor.copy();
       profileData = sdataIter.next();
@@ -197,10 +212,6 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       PointFeatureCollection result = new StandardSectionProfileFeature(cursorIter, ft.getObsTime(cursor), profileData);
       prev = (DsgCollectionImpl) result; // common for Station and StationProfile
       return result;
-    }
-
-    public void setBufferSize(int bytes) {
-      sdataIter.setBufferSize(bytes);
     }
 
     @Override
@@ -223,7 +234,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time
         try {
-          PointFeatureIterator iter = getPointFeatureIterator(-1);
+          PointFeatureIterator iter = getPointFeatureIterator();
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
@@ -237,9 +248,10 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       }
     }
 
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    @Override
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
       Cursor cursorIter = cursor.copy();
-      StructureDataIterator siter = ft.getLeafFeatureDataIterator(cursorIter, bufferSize);
+      StructureDataIterator siter = ft.getLeafFeatureDataIterator(cursorIter);
       return new PointIterator(ft, timeUnit, siter, cursorIter);
     }
 

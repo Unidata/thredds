@@ -25,7 +25,7 @@ public class SimplePointFeatureCollection extends PointCollectionImpl {
     }
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
         return new PointIteratorAdapter(pointFeats.iterator());
     }
 }

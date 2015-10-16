@@ -32,20 +32,25 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Formatter;
+import java.util.List;
+
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.TimedCollection;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeatureCC;
+import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Formatter;
-import java.util.List;
 
 /**
  * Factory for point feature dataset collections (CompositePointDataset).
@@ -139,6 +144,7 @@ public class CompositeDatasetFactory {
     return dataVariables;
   }
 
+    @Override
     public List<Attribute> getGlobalAttributes() {
       if (globalAttributes == null) {
         if (pfc instanceof CompositePointCollection)

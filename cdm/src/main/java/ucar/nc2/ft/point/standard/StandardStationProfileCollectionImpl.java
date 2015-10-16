@@ -33,19 +33,32 @@
 
 package ucar.nc2.ft.point.standard;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
+
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.*;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCC;
+import ucar.nc2.ft.PointFeatureCCIterator;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.ProfileFeature;
+import ucar.nc2.ft.StationProfileFeature;
+import ucar.nc2.ft.point.CollectionInfo;
+import ucar.nc2.ft.point.DsgCollectionImpl;
+import ucar.nc2.ft.point.ProfileFeatureImpl;
+import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.ft.point.StationHelper;
+import ucar.nc2.ft.point.StationProfileCollectionImpl;
+import ucar.nc2.ft.point.StationProfileFeatureImpl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IOIterator;
 import ucar.unidata.geoloc.Station;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Netsed Table implementat ion of StationProfileCollection
@@ -78,28 +91,29 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   }
 
   @Override // new way
-  public IOIterator<PointFeatureCC> getCollectionIterator(int bufferSize) throws IOException {
+  public IOIterator<PointFeatureCC> getCollectionIterator() throws IOException {
     return new StationProfileIterator();
   }
 
   @Override // old way
-  public PointFeatureCCIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
+  public PointFeatureCCIterator getNestedPointFeatureCollectionIterator() throws IOException {
     return new StationProfileIterator();
   }
 
   private class StationProfileIterator implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
-    private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator(-1);
+    private StructureDataIterator sdataIter = ft.getRootFeatureDataIterator();
     private StructureData stationProfileData;
     private DsgCollectionImpl prev;
     private CollectionInfo calcInfo;
 
     StationProfileIterator() throws IOException {
-      sdataIter = ft.getRootFeatureDataIterator(-1);
+      sdataIter = ft.getRootFeatureDataIterator();
       CollectionInfo info = getInfo();
       if (!info.isComplete())
         calcInfo = info;
     }
 
+    @Override
     public boolean hasNext() throws IOException {
       while (true) {
         if (prev != null && calcInfo != null)
@@ -120,6 +134,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       return true;
     }
 
+    @Override
     public StationProfileFeature next() throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = sdataIter.getCurrentRecno();
@@ -180,12 +195,13 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       return ((StationFeature) station).getFeatureData();
     }
 
-    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    @Override
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
       return new ProfileFeatureIterator(cursor.copy());
     }
 
     @Override
-    public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
+    public IOIterator<PointFeatureCollection> getCollectionIterator() throws IOException {
       return new ProfileFeatureIterator(cursor.copy());
     }
 
@@ -200,12 +216,13 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       ProfileFeatureIterator(Cursor cursor) throws IOException {
         this.cursor = cursor;
-        sdataIter = ft.getMiddleFeatureDataIterator(cursor, -1);
+        sdataIter = ft.getMiddleFeatureDataIterator(cursor);
         CollectionInfo info = getInfo();
         if (!info.isComplete())
           calcInfo = info;
       }
 
+      @Override
       public boolean hasNext() throws IOException {
         while (true) {
           if (prev != null && calcInfo != null)
@@ -229,6 +246,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         return true;
       }
 
+      @Override
       public PointFeatureCollection next() throws IOException {
         count++;
         PointFeatureCollection result = new StandardProfileFeature(station, getTimeUnit(), getAltUnits(), ft.getObsTime(cursor), cursor.copy(), profileData);
@@ -236,10 +254,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         return result;
       }
 
-      public void setBufferSize(int bytes) {
-        sdataIter.setBufferSize(bytes);
-      }
-
+      @Override
       public void close() {
         sdataIter.close();
       }
@@ -259,7 +274,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time
         try {
-          PointFeatureIterator iter = getPointFeatureIterator(-1);
+          PointFeatureIterator iter = getPointFeatureIterator();
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
@@ -274,9 +289,10 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     // iterate over obs in the profile
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    @Override
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
       Cursor cursorIter = cursor.copy();
-      StructureDataIterator structIter = ft.getLeafFeatureDataIterator(cursorIter, bufferSize);
+      StructureDataIterator structIter = ft.getLeafFeatureDataIterator(cursorIter);
       return new StandardProfileFeatureIterator(ft, timeUnit, structIter, cursorIter);
     }
 

@@ -33,6 +33,18 @@
 
 package ucar.nc2.ft.point.standard;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -47,11 +59,24 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.point.standard.plug.*;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.*;
+import ucar.nc2.ft.point.standard.plug.BuoyShipSynop;
+import ucar.nc2.ft.point.standard.plug.CFpointObs;
+import ucar.nc2.ft.point.standard.plug.CFpointObsExt;
+import ucar.nc2.ft.point.standard.plug.CdmDirect;
+import ucar.nc2.ft.point.standard.plug.Cosmic;
+import ucar.nc2.ft.point.standard.plug.FslRaob;
+import ucar.nc2.ft.point.standard.plug.FslWindProfiler;
+import ucar.nc2.ft.point.standard.plug.GempakCdm;
+import ucar.nc2.ft.point.standard.plug.Iridl;
+import ucar.nc2.ft.point.standard.plug.Jason;
+import ucar.nc2.ft.point.standard.plug.Madis;
+import ucar.nc2.ft.point.standard.plug.MadisAcars;
+import ucar.nc2.ft.point.standard.plug.NdbcCoards;
+import ucar.nc2.ft.point.standard.plug.Nldn;
+import ucar.nc2.ft.point.standard.plug.RafNimbus;
+import ucar.nc2.ft.point.standard.plug.SimpleTrajectory;
+import ucar.nc2.ft.point.standard.plug.Suomi;
+import ucar.nc2.ft.point.standard.plug.UnidataPointObs;
 
 /**
  * Analyzes the coordinate systems of a dataset to try to identify the Feature Type and the
@@ -75,6 +100,7 @@ public class TableAnalyzer {
     registerAnalyzer(CDM.CF_EXTENDED, CFpointObsExt.class, null);
 
     registerAnalyzer("CF-1.", CFpointObs.class, new ConventionNameOk() {
+      @Override
       public boolean isMatch(String convName, String wantName) {
         return convName.startsWith(wantName); //  && !convName.equals("CF-1.0"); // throw 1.0 to default analyser
       }

@@ -32,10 +32,10 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.PointFeatureCollectionIterator;
-import ucar.nc2.ft.PointFeatureCollection;
-
 import java.io.IOException;
+
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
 
 /**
  * Filter a PointFeatureCollectionIterator
@@ -55,10 +55,7 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
     this.filter = filter;
   }
 
-  public void setBufferSize(int bytes) {
-    pfciter.setBufferSize(bytes);
-  }
-
+  @Override
   public boolean hasNext() throws IOException {
     if (done) return false;
 
@@ -66,10 +63,12 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
     return (pointFeatureCollection != null);
   }
 
+  @Override
   public PointFeatureCollection next() throws IOException {
     return done ? null : pointFeatureCollection;
   }
 
+  @Override
   public void close() {
     pfciter.close();
   }

@@ -33,11 +33,11 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.PointCollectionImpl;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.time.CalendarDateUnit;
-
 import java.io.IOException;
+
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.point.PointCollectionImpl;
+import ucar.nc2.time.CalendarDateUnit;
 
 /**
  * Implementation of PointFeatureCollection using a NestedTable
@@ -53,11 +53,12 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
     this.extras = ft.getExtras();
   }
 
-  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+  @Override
+  public PointFeatureIterator getPointFeatureIterator() throws IOException {
     // only one Cursor object needed - it will be used for each iteration with different structData's
     Cursor tableData = new Cursor(ft.getNumberOfLevels());
 
-    return new StandardPointFeatureIterator(this, ft, timeUnit, ft.getObsDataIterator(tableData, bufferSize), tableData);
+    return new StandardPointFeatureIterator(this, ft, timeUnit, ft.getObsDataIterator(tableData), tableData);
   }
 
 }

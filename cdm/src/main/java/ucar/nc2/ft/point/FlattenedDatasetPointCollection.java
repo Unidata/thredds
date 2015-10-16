@@ -53,10 +53,8 @@ public class FlattenedDatasetPointCollection extends PointCollectionImpl {
     }
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-        PointFeatureIterator iter = new FlattenedDatasetPointIterator(fdPoint);
-        iter.setBufferSize(bufferSize);
-        return iter;
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
+        return new FlattenedDatasetPointIterator(fdPoint);
     }
 
 
@@ -115,7 +113,7 @@ public class FlattenedDatasetPointCollection extends PointCollectionImpl {
             }
 
             while (pfcIterHasNext()) {
-                this.pfIter = pfcIter.next().getPointFeatureIterator(-1);
+                this.pfIter = pfcIter.next().getPointFeatureIterator();
                 if (pfIter.hasNext()) {
                     return true;
                 }
@@ -143,7 +141,7 @@ public class FlattenedDatasetPointCollection extends PointCollectionImpl {
             }
 
             while (pfccIter != null && pfccIter.hasNext()) {
-                pfcIter = pfccIter.next().getCollectionIterator(-1);
+                pfcIter = pfccIter.next().getCollectionIterator();
                 if (pfcIter.hasNext()) {
                     return true;
                 }
@@ -179,11 +177,11 @@ public class FlattenedDatasetPointCollection extends PointCollectionImpl {
 
             DsgFeatureCollection dsgFeatCol = dsgFeatColIter.next();
             if (dsgFeatCol instanceof PointFeatureCollection) {
-                pfIter = ((PointFeatureCollection) dsgFeatCol).getPointFeatureIterator(-1);
+                pfIter = ((PointFeatureCollection) dsgFeatCol).getPointFeatureIterator();
             } else if (dsgFeatCol instanceof PointFeatureCC) {
-                pfcIter = ((PointFeatureCC) dsgFeatCol).getCollectionIterator(-1);
+                pfcIter = ((PointFeatureCC) dsgFeatCol).getCollectionIterator();
             } else if (dsgFeatCol instanceof PointFeatureCCC) {
-                pfccIter = ((PointFeatureCCC) dsgFeatCol).getCollectionIterator(-1);
+                pfccIter = ((PointFeatureCCC) dsgFeatCol).getCollectionIterator();
             } else {
                 throw new AssertionError("CAN'T HAPPEN: FeatureDatasetPoint.getPointFeatureCollectionList() " +
                         "only contains PointFeatureCollection, PointFeatureCC, or PointFeatureCCC.");

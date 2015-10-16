@@ -502,7 +502,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     List<PointObsBean> pointBeans = new ArrayList<>();
     int count = 0;
 
-    try (PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1)) {
+    try (PointFeatureIterator iter = pointCollection.getPointFeatureIterator()) {
       while (iter.hasNext() && (count++ < maxCount)) {
         PointFeature pob = iter.next();
         pointBeans.add(new PointObsBean(count++, pob));

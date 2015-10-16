@@ -33,15 +33,46 @@
 
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.*;
-import ucar.nc2.ft.point.StructureDataIteratorLinked;
-import ucar.nc2.ft.point.StructureDataIteratorIndexed;
-import ucar.nc2.dataset.*;
-import ucar.nc2.constants.FeatureType;
-import ucar.ma2.*;
-
-import java.util.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArraySequence;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.ArrayStructureMA;
+import ucar.ma2.ArrayStructureW;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.ma2.StructureDataIteratorMediated;
+import ucar.ma2.StructureDataMediator;
+import ucar.ma2.StructureDataProxy;
+import ucar.ma2.StructureDataW;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.Dimension;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleAdapter;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.VariableSimpleImpl;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.StructureDS;
+import ucar.nc2.dataset.StructurePseudo2Dim;
+import ucar.nc2.dataset.StructurePseudoDS;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.ft.point.StructureDataIteratorIndexed;
+import ucar.nc2.ft.point.StructureDataIteratorLinked;
 
 /**
  * A generalization of a Structure. Main function is to return a StructureDataIterator,
@@ -195,11 +226,10 @@ public abstract class Table {
    * Iterate over the rows of this table. Subclasses must implement this.
    *
    * @param cursor     state of comlpete iteration. Table implementations may not modify.
-   * @param bufferSize hit on how much memory (in bytes) can be used to buffer.
    * @return iterater over the rows of this table.
    * @throws IOException on read error
    */
-  abstract public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException;
+  abstract public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException;
 
   String findCoordinateVariableName(CoordName coordName) {
     switch (coordName) {
@@ -321,8 +351,8 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
-      return new StructureDataIteratorMediated(struct.getStructureIterator(bufferSize), new RestrictToColumns());
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
+      return new StructureDataIteratorMediated(struct.getStructureIterator(), new RestrictToColumns());
     }
 
     @Override
@@ -382,7 +412,8 @@ public abstract class Table {
       return dim.getShortName();
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       return as.getStructureDataIterator();
     }
 
@@ -414,7 +445,7 @@ public abstract class Table {
     }
 
     @Override
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       return as.getStructureDataIterator();
     }
 
@@ -481,7 +512,8 @@ public abstract class Table {
       f.format("%sstart=%s, numRecords=%s%n", indent, startVarName, numRecordsVarName);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       if (!isInit) init();
 
       int firstRecno, numrecs;
@@ -551,7 +583,8 @@ public abstract class Table {
       f.format("%sparentIndexName=%s, indexMap.size=%d%n", indent, parentIndexName, indexMap.size());
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       int parentIndex = cursor.getParentRecnum();
       List<Integer> index = indexMap.get(parentIndex);
       if (index == null) index = new ArrayList<>();
@@ -656,7 +689,8 @@ public abstract class Table {
       f.format("%sparentIdName=%s, indexMap.size=%d%n", indent, parentIdName, indexMap.length);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       int parentIndex = cursor.getParentRecnum();
       ParentInfo info = indexMap[parentIndex];
       List<Integer> index = (info == null) ? new ArrayList<>() : info.recnumList;
@@ -691,7 +725,8 @@ public abstract class Table {
       addNonDataVariable(config.next);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       StructureData parentStruct = cursor.getParentStructure();
       int firstRecno = parentStruct.getScalarInt(start);
       return new StructureDataIteratorLinked(struct, firstRecno, -1, next);
@@ -766,7 +801,8 @@ public abstract class Table {
       return (VariableDS) ds.findVariable(axisName);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       StructureData parentStruct = cursor.getParentStructure();
       if (parentStruct instanceof StructureDataProxy)
         parentStruct = ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
@@ -845,7 +881,8 @@ public abstract class Table {
       return (VariableDS) ds.findVariable(axisName);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       StructureData parentStruct = cursor.tableData[2];
       if (parentStruct instanceof StructureDataProxy)
         parentStruct = ((StructureDataProxy) parentStruct).getOriginalStructureData(); // tricky dicky
@@ -897,7 +934,8 @@ public abstract class Table {
       replaceDataVars(sm);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       int recnum = cursor.recnum[ cursor.currentIndex]; // LOOK
       try {
         StructureData parentStruct = struct.readStructure(recnum);
@@ -946,7 +984,8 @@ public abstract class Table {
       replaceDataVars(sm);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       int outerIndex = cursor.recnum[2];
       int middleIndex = cursor.recnum[1];
       try {
@@ -990,7 +1029,8 @@ public abstract class Table {
       super(ds, config);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       int recnum = cursor.getParentRecnum();
       try {
         Section section = new Section().appendRange(recnum, recnum);
@@ -1042,11 +1082,13 @@ public abstract class Table {
       f.format("%sstruct=%s, nestedTableName=%s%n", indent, struct.getNameAndDimensions(), nestedTableName);
     }
 
+    @Override
     public VariableDS findVariable(String axisName) {
       return (VariableDS) struct.findVariable(axisName);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       StructureData parentStruct = cursor.getParentStructure();
 
       StructureMembers members = parentStruct.getStructureMembers();
@@ -1095,7 +1137,8 @@ public abstract class Table {
       f.format("%sStructureData=%s%n", indent, sdata);
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       return new SingletonStructureDataIterator(sdata);
     }
 
@@ -1131,7 +1174,8 @@ public abstract class Table {
     protected void showTableExtraInfo(String indent, Formatter f) {
     }
 
-    public StructureDataIterator getStructureDataIterator(Cursor cursor, int bufferSize) throws IOException {
+    @Override
+    public StructureDataIterator getStructureDataIterator(Cursor cursor) throws IOException {
       // grab scalars, make sdata
       if (sdata == null) {
         sdata = new StructureDataTop();

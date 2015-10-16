@@ -70,11 +70,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
       this.filter = new PointIteratorFiltered.SpaceAndTimeFilter(filter_bb, filter_date);
   }
 
-  // LOOK
-  public void setBufferSize(int bytes) {
-    //collectionIter.setBufferSize(bytes);
-  }
-
+  @Override
   public void close() {
     if (finished) return;
     if (pfiter != null) pfiter.close();
@@ -83,6 +79,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
     finished = true;
   }
 
+  @Override
   public boolean hasNext() {
     try {
       pointFeature = nextFilteredDataPoint();
@@ -95,7 +92,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
       }
 
       currCollection = feature;
-      pfiter = feature.getPointFeatureIterator(-1);
+      pfiter = feature.getPointFeatureIterator();
       return hasNext();
 
     } catch (IOException ioe) {
@@ -103,6 +100,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
     }
   }
 
+  @Override
   public PointFeature next() {
     if (pointFeature == null) return null;
     calcBounds(pointFeature);

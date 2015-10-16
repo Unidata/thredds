@@ -32,23 +32,26 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.ma2.StructureData;
-import ucar.nc2.ft.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.util.IOIterator;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.StationImpl;
-import ucar.unidata.geoloc.Station;
-import ucar.unidata.geoloc.LatLonRect;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
+
+import ucar.ma2.StructureData;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.ft.ProfileFeature;
+import ucar.nc2.ft.StationProfileFeature;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.util.IOIterator;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.StationImpl;
 
 /**
  * Abstract superclass for implementations of StationProfileFeature.
@@ -126,7 +129,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
   }
 
   @Override
-  public int compareTo(Station so) {
+  public int compareTo(@Nonnull Station so) {
     return station.getName().compareTo(so.getName());
   }
 
@@ -156,6 +159,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
       return from.getFeatureData();
     }
 
+    @Override
     public List<CalendarDate> getTimes() throws IOException {
       List<CalendarDate> result = new ArrayList<>();
       for (ProfileFeature pf : this) {
@@ -171,16 +175,17 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
     }
 
     @Override // new way
-    public IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws IOException {
-      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new DateFilter());
+    public IOIterator<PointFeatureCollection> getCollectionIterator() throws IOException {
+      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(), new DateFilter());
     }
 
     @Override // old way
-    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new DateFilter());
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws IOException {
+      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(), new DateFilter());
     }
 
     private class DateFilter implements PointFeatureCollectionIterator.Filter {
+      @Override
       public boolean filter(PointFeatureCollection pointFeatureCollection) {
         ProfileFeature profileFeature = (ProfileFeature) pointFeatureCollection;
         return dateRange.includes(profileFeature.getTime());
@@ -190,6 +195,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
 
   /////////////////////////////////////////////////////////////////////////////////////
 
+  @Override
   public Iterator<ProfileFeature> iterator() {
     return new ProfileFeatureIterator();
   }
@@ -199,7 +205,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
 
     public ProfileFeatureIterator() {
       try {
-        this.pfIterator = getPointFeatureCollectionIterator(-1);
+        this.pfIterator = getPointFeatureCollectionIterator();
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -242,7 +248,7 @@ public abstract class StationProfileFeatureImpl extends PointFeatureCCImpl imple
 
   @Override
   public void resetIteration() throws IOException {
-    localIterator = getPointFeatureCollectionIterator(-1);
+    localIterator = getPointFeatureCollectionIterator();
   }
 
 }

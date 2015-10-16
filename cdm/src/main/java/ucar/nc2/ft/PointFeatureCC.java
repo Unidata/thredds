@@ -46,9 +46,8 @@ public interface PointFeatureCC extends DsgFeatureCollection {
   /**
    * General way to handle iterations on all classes that implement this interface.
    * Generally, one uses class specific foreach
-   * @param bufferSize hint on how much memory to use, -1 for default
    * @return Iterator over PointFeatureCollection which may throw an IOException
    * @throws java.io.IOException
    */
-  IOIterator<PointFeatureCollection> getCollectionIterator(int bufferSize) throws java.io.IOException;
+  IOIterator<PointFeatureCollection> getCollectionIterator() throws java.io.IOException;
 }

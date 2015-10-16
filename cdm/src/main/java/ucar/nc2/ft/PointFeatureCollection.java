@@ -32,12 +32,10 @@
  */
 package ucar.nc2.ft;
 
-import ucar.ma2.StructureData;
-import ucar.nc2.time.CalendarDateRange;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
+import javax.annotation.Nullable;
+
+import ucar.nc2.time.CalendarDateRange;
 
 /**
  * A collection of PointFeatures.
@@ -96,11 +94,10 @@ public interface PointFeatureCollection extends DsgFeatureCollection, Iterable<P
 
   /**
     * Get an iterator over the PointFeatures of this collection. call PointFeatureIterator.finish() when done
-    * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
     * @return iterator over the PointFeatures of this collection
     * @throws IOException on read error
     * @deprecated use foreach
     */
-   PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
+   PointFeatureIterator getPointFeatureIterator() throws java.io.IOException;
 
 }

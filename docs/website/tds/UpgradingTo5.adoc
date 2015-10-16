@@ -178,6 +178,8 @@ instead of the exact comparison done by `equals(Array, Array)`.
   from _PointFeature.getFeatureCollection()_
 * In *PointFeatureIterator* and subclasses, methods _setCalculateBounds(), getDateRange(), getCalendarDateRange(), getBoundingBox(),
   getSize()_ have been removed. That information is obtained from the DsgFeatureCollection.
+* In `PointFeatureIterator` and subclasses, `setBufferSize()` bas been removed.
+* In `PointFeatureCollection` and subclasses, `getPointFeatureIterator()` no longer accepts a `bufferSize` argument.
 
 === Coverage Feature Datasets (ucar.nc2.ft2.coverage)
 

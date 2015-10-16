@@ -77,14 +77,4 @@ public class PointIteratorAdapter extends PointIteratorAbstract {
     public void close() {
         finishCalcBounds();  // Method is idempotent.
     }
-
-    /**
-     * Does nothing in this implementation.
-     *
-     * @param bytes amount of memory in bytes
-     */
-    @Override
-    public void setBufferSize(int bytes) {
-        // No-op
-    }
 }

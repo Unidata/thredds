@@ -33,10 +33,9 @@
 
 package ucar.nc2.ft;
 
-import ucar.unidata.geoloc.LatLonRect;
-
 import java.io.IOException;
-import java.util.Iterator;
+
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * A collection of TrajectoryFeatures
@@ -77,7 +76,7 @@ public interface TrajectoryFeatureCollection extends PointFeatureCC, Iterable<Tr
   /**
    * @deprecated use foreach
    */
-  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws java.io.IOException;
 
 
 }

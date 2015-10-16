@@ -242,6 +242,7 @@ public class PointStream {
       ArrayStructureBB.setOffsets(sm);
     }
 
+    @Override
     public PointFeature make(DsgFeatureCollection dsg, byte[] rawBytes) throws InvalidProtocolBufferException {
       PointStreamProto.PointFeature pfp = PointStreamProto.PointFeature.parseFrom(rawBytes);
       PointStreamProto.Location locp = pfp.getLoc();
@@ -285,7 +286,7 @@ public class PointStream {
     String name = outFile.getCanonicalPath();
     String timeUnitString = pointFeatCol.getTimeUnit().getUdUnit();
     String altUnits = pointFeatCol.getAltUnits();
-    PointFeatureIterator pointFeatIter = pointFeatCol.getPointFeatureIterator(-1);
+    PointFeatureIterator pointFeatIter = pointFeatCol.getPointFeatureIterator();
 
     try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outFile))) {
       return write(out, pointFeatIter, name, timeUnitString, altUnits);

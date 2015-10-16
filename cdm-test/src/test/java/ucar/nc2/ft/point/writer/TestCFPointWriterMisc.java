@@ -33,6 +33,11 @@
 
 package ucar.nc2.ft.point.writer;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Formatter;
+import java.util.List;
+
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -41,17 +46,21 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCC;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.ProfileFeature;
+import ucar.nc2.ft.ProfileFeatureCollection;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Formatter;
-import java.util.List;
 
 /**
  * misc tests involving CFPointWriter
@@ -94,13 +103,13 @@ public class TestCFPointWriterMisc {
        assert fc1 instanceof ProfileFeatureCollection;
 
        ProfileFeatureCollection profileCollection = (ProfileFeatureCollection) fc1;
-       PointFeatureCollectionIterator iter = profileCollection.getPointFeatureCollectionIterator(-1);
+       PointFeatureCollectionIterator iter = profileCollection.getPointFeatureCollectionIterator();
         while (iter.hasNext()) {
           PointFeatureCollection pfc = iter.next();
           assert pfc instanceof ProfileFeature : pfc.getClass().getName();
           ProfileFeature profile = (ProfileFeature) pfc;
 
-          PointFeatureIterator inner = profile.getPointFeatureIterator(-1);
+          PointFeatureIterator inner = profile.getPointFeatureIterator();
           while (inner.hasNext()) {
             PointFeature pf = inner.next();
             StructureData sdata = pf.getFeatureData();
@@ -118,13 +127,13 @@ public class TestCFPointWriterMisc {
          assert fc2 instanceof ProfileFeatureCollection;
          ProfileFeatureCollection profileCollection2 = (ProfileFeatureCollection) fc2;
 
-         PointFeatureCollectionIterator iter2 = profileCollection2.getPointFeatureCollectionIterator(-1);
+         PointFeatureCollectionIterator iter2 = profileCollection2.getPointFeatureCollectionIterator();
          while (iter2.hasNext()) {
            PointFeatureCollection pfc = iter2.next();
            assert pfc instanceof ProfileFeature : pfc.getClass().getName();
            ProfileFeature profile = (ProfileFeature) pfc;
 
-           PointFeatureIterator inner = profile.getPointFeatureIterator(-1);
+           PointFeatureIterator inner = profile.getPointFeatureIterator();
            while (inner.hasNext()) {
              PointFeature pf = inner.next();
              StructureData sdata = pf.getFeatureData();

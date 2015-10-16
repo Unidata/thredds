@@ -33,22 +33,40 @@
  */
 package ucar.nc2.ft2.coverage.writer;
 
-import ucar.ma2.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nonnull;
+
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataScalar;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.VariableSimpleImpl;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.*;
-import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.point.PointFeatureImpl;
+import ucar.nc2.ft.point.PointIteratorAbstract;
+import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.ft.point.StationHelper;
+import ucar.nc2.ft.point.StationPointFeature;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
+import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.GeoReferencedArray;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.StringUtil2;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Write DSG CF-1.6 file from a Coverage Dataset
@@ -155,7 +173,7 @@ public class CoverageAsPoint {
     }
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
       return new TimeseriesIterator();
     }
 

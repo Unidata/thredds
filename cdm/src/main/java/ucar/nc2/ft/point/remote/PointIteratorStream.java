@@ -65,6 +65,7 @@ public class PointIteratorStream extends PointIteratorAbstract {
     if (!info.isComplete()) setCalculateBounds(info);
   }
 
+  @Override
   public void close() {
     if (finished) return;
     if (in != null)
@@ -78,6 +79,7 @@ public class PointIteratorStream extends PointIteratorAbstract {
     finished = true;
   }
 
+  @Override
   public boolean hasNext() {
     if (finished) return false;
 
@@ -119,14 +121,11 @@ public class PointIteratorStream extends PointIteratorAbstract {
     }
   }
 
+  @Override
   public PointFeature next() {
     if (null == pf) return null;
     calcBounds(pf);
     return pf;
   }
-
-  public void setBufferSize(int bytes) {
-  }
-
 }
 

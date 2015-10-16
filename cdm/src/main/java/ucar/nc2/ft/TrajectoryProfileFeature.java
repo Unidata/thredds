@@ -33,10 +33,10 @@
 
 package ucar.nc2.ft;
 
-import ucar.ma2.StructureData;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
+import javax.annotation.Nonnull;
+
+import ucar.ma2.StructureData;
 
 /**
  * A collection of profiles which originate along a trajectory.
@@ -90,7 +90,7 @@ public interface TrajectoryProfileFeature extends PointFeatureCC, Iterable<Profi
   /**
    * @deprecated use foreach
    */
-  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws java.io.IOException;
 
 
 }

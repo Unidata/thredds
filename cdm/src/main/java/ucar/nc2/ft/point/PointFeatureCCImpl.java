@@ -32,14 +32,15 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.*;
-import ucar.nc2.time.CalendarDateRange;
+import java.io.IOException;
+import javax.annotation.Nonnull;
+
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.PointFeatureCC;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * Abstract superclass for singly nested NestedPointFeatureCollection, such as Station, Profile, and Trajectory.
@@ -83,8 +84,8 @@ public abstract class PointFeatureCCImpl extends DsgCollectionImpl implements Po
     }
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointIteratorFlatten( from.getCollectionIterator(bufferSize), filter_bb, filter_date);
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
+      return new PointIteratorFlatten( from.getCollectionIterator(), filter_bb, filter_date);
     }
   }
 }

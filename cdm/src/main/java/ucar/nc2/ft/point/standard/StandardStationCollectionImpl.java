@@ -33,17 +33,18 @@
 
 package ucar.nc2.ft.point.standard;
 
+import java.io.IOException;
+import javax.annotation.Nonnull;
+
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.ft.point.StationHelper;
 import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
-import ucar.nc2.ft.point.StationHelper;
-import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * Object Heirarchy for StationFeatureCollection:
@@ -82,7 +83,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   protected StationHelper createStationHelper() throws IOException {
     StationHelper stationHelper = new StationHelper();
 
-    try (StructureDataIterator siter = ft.getStationDataIterator(-1)) {
+    try (StructureDataIterator siter = ft.getStationDataIterator()) {
       while (siter.hasNext()) {
         StructureData stationData = siter.next();
         StationTimeSeriesFeature stfs = makeStation(stationData, siter.getCurrentRecno());
@@ -108,14 +109,14 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     // an iterator over the observations for this station
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[1] = recnum;
       cursor.tableData[1] = stationData;
       cursor.currentIndex = 1;
       ft.addParentJoin(cursor); // there may be parent joins
 
-      StructureDataIterator obsIter = ft.getLeafFeatureDataIterator(cursor, bufferSize);
+      StructureDataIterator obsIter = ft.getLeafFeatureDataIterator(cursor);
       return new StandardPointFeatureIterator(this, ft, timeUnit, obsIter, cursor);
     }
 

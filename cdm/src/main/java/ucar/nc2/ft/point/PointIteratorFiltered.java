@@ -112,11 +112,6 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
         finishCalcBounds();
     }
 
-    @Override
-    public void setBufferSize(int bufferSize) {
-        origIter.setBufferSize(bufferSize);
-    }
-
     /**
      * Returns the next point that satisfies the filter, or {@code null} if no such point exists.
      *

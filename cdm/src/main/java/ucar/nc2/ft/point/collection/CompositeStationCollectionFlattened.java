@@ -32,23 +32,28 @@
  */
 package ucar.nc2.ft.point.collection;
 
-import thredds.inventory.TimedCollection;
-import ucar.nc2.ft.point.PointCollectionImpl;
-import ucar.nc2.ft.point.PointIteratorAbstract;
-import ucar.nc2.ft.*;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.Station;
-
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Formatter;
 import java.util.Iterator;
-import java.io.IOException;
+import java.util.List;
+
+import thredds.inventory.TimedCollection;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.DsgFeatureCollection;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.point.PointCollectionImpl;
+import ucar.nc2.ft.point.PointIteratorAbstract;
+import ucar.nc2.ft.point.StationFeature;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * CompositeStationCollection that has been flattened into a PointCollection
@@ -85,13 +90,13 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
     this.stnCollections = stnCollections;
   }
 
-  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+  @Override
+  public PointFeatureIterator getPointFeatureIterator() throws IOException {
     return new PointIterator();
   }
 
   private class PointIterator extends PointIteratorAbstract {
     private boolean finished = false;
-    private int bufferSize = -1;
     private Iterator<TimedCollection.Dataset> iter;
     private FeatureDatasetPoint currentDataset;
     private PointFeatureIterator pfIter = null;
@@ -132,9 +137,10 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
         pc = stnCollection.flatten(names, dateRange, null);
       }
 
-      return pc.getPointFeatureIterator(bufferSize);
+      return pc.getPointFeatureIterator();
     }
 
+    @Override
     public boolean hasNext() {
       try {
         if (pfIter == null) {
@@ -160,12 +166,14 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       }
     }
 
+    @Override
     public PointFeature next() {
       PointFeature pf =  pfIter.next();
       calcBounds(pf);
       return pf;
     }
 
+    @Override
     public void close() {
       if (finished) return;
 
@@ -183,10 +191,6 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
         }
 
       finished = true;
-    }
-
-    public void setBufferSize(int bytes) {
-      bufferSize = bytes;
     }
   }
 

@@ -82,15 +82,6 @@ public interface PointFeatureCollectionIterator extends Closeable, IOIterator<Po
   }
 
   /**
-   * Hint to use this much memory in buffering the iteration.
-   * No guarantee that it will be used by the implementation.
-   * @param bytes amount of memory in bytes
-   */
-  default void setBufferSize(int bytes)  {
-    // doan do nuthin
-  }
-
-  /**
    * A filter on PointFeatureCollection.
    */
   interface Filter {

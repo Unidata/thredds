@@ -124,7 +124,7 @@ public class TestMiscPointFeature {
         System.out.printf("stnInfo=%s%n", sdata.getScalarString(m));
       }
 
-      PointFeatureCollectionIterator iter = sc.getPointFeatureCollectionIterator(-1);
+      PointFeatureCollectionIterator iter = sc.getPointFeatureCollectionIterator();
       while (iter.hasNext()) {
         PointFeatureCollection pfc = iter.next();
         assert pfc instanceof StationTimeSeriesFeatureImpl : pfc.getClass().getName();
@@ -137,7 +137,7 @@ public class TestMiscPointFeature {
       }
 
       PointFeatureCollection pfc = sc.flatten(null, (CalendarDateRange) null, null);
-      PointFeatureIterator iter2 = pfc.getPointFeatureIterator(-1);
+      PointFeatureIterator iter2 = pfc.getPointFeatureIterator();
       while (iter2.hasNext()) {
         PointFeature pf = iter2.next();
         assert pf instanceof StationPointFeature;

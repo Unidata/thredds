@@ -59,7 +59,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
         flattenedDatasetCol.altUnits == null
 
         when: "get empty collection's iterator"
-        def flattenedDatasetIter = flattenedDatasetCol.getPointFeatureIterator(-1)
+        def flattenedDatasetIter = flattenedDatasetCol.getPointFeatureIterator()
 
         then: "iterator is empty"
         !flattenedDatasetIter.hasNext()
@@ -169,7 +169,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
         flattenedDatasetCol.calendarDateRange == null
 
         when: "get the iterator and enable bounds calculation"
-        PointIteratorAbstract flattenedPointIter = flattenedDatasetCol.getPointFeatureIterator(-1) as PointIteratorAbstract
+        PointIteratorAbstract flattenedPointIter = flattenedDatasetCol.getPointFeatureIterator() as PointIteratorAbstract
         flattenedPointIter.calculateBounds = flattenedDatasetCol.info
 
         and: "iterate over the collection"

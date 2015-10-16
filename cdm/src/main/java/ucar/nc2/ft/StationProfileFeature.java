@@ -32,14 +32,14 @@
  */
 package ucar.nc2.ft;
 
+import java.io.IOException;
+import java.util.List;
+import javax.annotation.Nonnull;
+
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Time series of ProfileFeature at named locations.
@@ -115,7 +115,7 @@ public interface StationProfileFeature extends StationFeature, PointFeatureCC, I
   /**
    * @deprecated use foreach
    */
-  PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+  PointFeatureCollectionIterator getPointFeatureCollectionIterator() throws java.io.IOException;
 
 
 }

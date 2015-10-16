@@ -56,7 +56,7 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
     public abstract InputStream getInputStream() throws IOException;
 
     @Override
-    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    public PointFeatureIterator getPointFeatureIterator() throws IOException {
         InputStream in = getInputStream();
         boolean leaveStreamOpen = false;
 

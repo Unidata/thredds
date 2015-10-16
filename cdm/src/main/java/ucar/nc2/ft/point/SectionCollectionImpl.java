@@ -32,11 +32,13 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.*;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time.CalendarDateUnit;
-
 import java.io.IOException;
+
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.PointFeatureCCIterator;
+import ucar.nc2.ft.TrajectoryProfileFeature;
+import ucar.nc2.ft.TrajectoryProfileFeatureCollection;
+import ucar.nc2.time.CalendarDateUnit;
 
 /**
  * Superclass for implementations of SectionFeatureCollection: series of profiles along a trajectory
@@ -56,17 +58,20 @@ public abstract class SectionCollectionImpl extends PointFeatureCCCImpl implemen
   // deprecated
   protected PointFeatureCCIterator localIterator;
 
+  @Override
   public boolean hasNext() throws IOException {
      if (localIterator == null) resetIteration();
      return localIterator.hasNext();
    }
 
+   @Override
    public TrajectoryProfileFeature next() throws IOException {
      return (TrajectoryProfileFeature) localIterator.next();
    }
 
+   @Override
    public void resetIteration() throws IOException {
-     localIterator = getNestedPointFeatureCollectionIterator(-1);
+     localIterator = getNestedPointFeatureCollectionIterator();
    }
 
 

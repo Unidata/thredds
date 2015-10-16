@@ -67,15 +67,6 @@ public interface PointFeatureCCIterator extends Closeable, IOIterator<PointFeatu
   PointFeatureCC next() throws java.io.IOException;
 
   /**
-   * Hint to use this much memory in buffering the iteration.
-   * No guarentee that it will be used by the implementation.
-   * @param bytes amount of memory in bytes
-   */
-  default void setBufferSize( int bytes) {
-    //do nothing
-  }
-
-  /**
    * Make sure that the iterator is complete, and recover resources.
    * You must complete the iteration (until hasNext() returns false) or call close().
    * may be called more than once.

@@ -40,7 +40,7 @@ class PointIteratorFilteredSpec extends Specification {
 
         and: "filtered point iterator"
         PointFeatureCollection flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
-        PointFeatureIterator pointIterOrig = flattenedDatasetCol.getPointFeatureIterator(-1);
+        PointFeatureIterator pointIterOrig = flattenedDatasetCol.getPointFeatureIterator();
         PointFeatureIterator pointIterFiltered = new PointIteratorFiltered(pointIterOrig, filter_bb, filter_date);
 
         expect:

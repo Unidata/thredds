@@ -35,7 +35,7 @@ public class PointTestUtil {
     }
 
     public static void writeFeatureCollection(PointFeatureCollection pointFeatColl) throws IOException {
-        PointFeatureIterator iter = pointFeatColl.getPointFeatureIterator(-1);
+        PointFeatureIterator iter = pointFeatColl.getPointFeatureIterator();
         while (iter.hasNext()) {
             PointFeature pointFeat = iter.next();
             StructureData data = pointFeat.getFeatureData();
@@ -59,7 +59,7 @@ public class PointTestUtil {
         // We must do this comparison first because some PointFeatureCollection implementations, e.g.
         // PointCollectionStreamAbstract, won't have final values for getTimeUnit() and getAltUnits() until
         // getPointFeatureIterator() is called.
-        if (!equals(featCol1.getPointFeatureIterator(-1), featCol2.getPointFeatureIterator(-1))) {
+        if (!equals(featCol1.getPointFeatureIterator(), featCol2.getPointFeatureIterator())) {
             return false;
         }
 
