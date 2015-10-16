@@ -71,6 +71,7 @@ public class TestMiscPointFeature {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testProblem3() throws IOException {
     String location =  TestDir.cdmUnitTestDir + "ft/stationProfile/PROFILER_RASS_01hr_20091027_1500.nc";
     assert 198 == TestPointDatasets.checkPointDataset(location, FeatureType.STATION_PROFILE, true);
