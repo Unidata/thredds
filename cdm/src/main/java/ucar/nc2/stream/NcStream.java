@@ -89,6 +89,8 @@ public class NcStream {
   static public final byte[] MAGIC_ERR = new byte[]{(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
   static public final byte[] MAGIC_END = new byte[]{(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};
 
+  static public final int ncstream_data_version = 3;
+
   static NcStreamProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
     NcStreamProto.Group.Builder groupBuilder = NcStreamProto.Group.newBuilder();
     groupBuilder.setName(g.getShortName());
@@ -143,11 +145,9 @@ public class NcStream {
     if (dim.getShortName() != null)
       dimBuilder.setName(dim.getShortName());
     dimBuilder.setLength(dim.getLength());
-    if (!dim.isShared())
-      dimBuilder.setIsPrivate(true);
-    if (dim.isVariableLength())
-      dimBuilder.setIsVlen(true);
-    if (dim.isUnlimited()) dimBuilder.setIsUnlimited(true);
+    dimBuilder.setIsPrivate(!dim.isShared());
+    dimBuilder.setIsVlen(dim.isVariableLength());
+    dimBuilder.setIsUnlimited(dim.isUnlimited());
     return dimBuilder;
   }
 
@@ -233,9 +233,9 @@ public class NcStream {
     if (compressionType != NcStreamProto.Compress.NONE) {
       builder.setUncompressedSize(uncompressedLength);
     }
-    if (var.isVariableLength()) builder.setVdata(true);
+    builder.setVdata(var.isVariableLength());
     builder.setBigend(bo == ByteOrder.BIG_ENDIAN);
-    builder.setVersion(2);
+    builder.setVersion(ncstream_data_version);
     return builder.build();
   }
 
@@ -248,7 +248,7 @@ public class NcStream {
       builder.setCompress(NcStreamProto.Compress.DEFLATE);
       builder.setUncompressedSize(uncompressedLength);
     }
-    builder.setVersion(2);
+    builder.setVersion(ncstream_data_version);
     return builder.build();
   }
 
@@ -256,9 +256,9 @@ public class NcStream {
     NcStreamProto.Section.Builder sbuilder = NcStreamProto.Section.newBuilder();
     for (Range r : section.getRanges()) {
       NcStreamProto.Range.Builder rbuilder = NcStreamProto.Range.newBuilder();
-      if (r.first() != 0) rbuilder.setStart(r.first());
+      rbuilder.setStart(r.first());
       rbuilder.setSize(r.length());
-      if (r.stride() != 1) rbuilder.setStride(r.stride());
+      rbuilder.setStride(r.stride());
       sbuilder.addRange(rbuilder);
     }
     return sbuilder.build();
@@ -534,7 +534,7 @@ public class NcStream {
   }
 
   static Dimension decodeDim(NcStreamProto.Dimension dim) {
-    String name = (!dim.hasName() || dim.getName().length() == 0 ? null : dim.getName());
+    String name = (dim.getName().length() == 0 ? null : dim.getName());
     return new Dimension(name, (int) dim.getLength(), !dim.getIsPrivate(), dim.getIsUnlimited(), dim.getIsVlen());
   }
 
@@ -635,7 +635,7 @@ public class NcStream {
     for (ucar.nc2.stream.NcStreamProto.Attribute att : var.getAttsList())
       ncvar.addAttribute(decodeAtt(att));
 
-    if (var.hasData()) {
+    if (!var.getData().isEmpty()) {
       // LOOK may mess with ability to change var size later.
       ByteBuffer bb = ByteBuffer.wrap(var.getData().toByteArray());
       Array data = Array.factory(varType, ncvar.getShape(), bb);
@@ -683,12 +683,56 @@ public class NcStream {
 
     for (ucar.nc2.stream.NcStreamProto.Range pr : proto.getRangeList()) {
       try {
-        section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1));
+        long stride = pr.getStride();
+        if (stride == 0) stride = 1; // default in protobuf2 was 1, but protobuf3 is 0, luckily 0 is illegal
+        section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1), (int) stride);
       } catch (InvalidRangeException e) {
         throw new RuntimeException("Bad Section in ncstream", e);
       }
     }
     return section;
+  }
+
+  /* decodeDataByteOrder
+
+    proto2:
+    message Data {
+      required string varName = 1;          // full escaped name.
+      required DataType dataType = 2;
+      optional Section section = 3;         // not required for SEQUENCE
+      optional bool bigend = 4 [default = true];
+      optional uint32 version = 5 [default = 0];
+      optional Compress compress = 6 [default = NONE];
+      optional bool vdata = 7 [default = false];
+      optional uint32 uncompressedSize = 8;
+    }
+
+    problem is that bigend default is true, but in proto3 it must be false. so we need to detect if the value is set or not.
+    thanks to Simon (Vsevolod) Ilyushchenko <simonf@google.com>, workaround is:
+
+    proto3:
+    message Data {
+      string varName = 1;          // full escaped name.
+      DataType dataType = 2;
+      Section section = 3;         // not required for SEQUENCE
+      oneof bigend_present {
+        bool bigend = 4;           // [default=true] in proto2
+      }
+      uint32 version = 5;          // < 3 for proto2, = 3 for proto3 (v5.0+)
+      Compress compress = 6;
+      bool vdata = 7;
+      uint32 uncompressedSize = 8;
+    }
+
+    which is wire-compatible and allows us to detect if value is set or not.
+  */
+  static ByteOrder decodeDataByteOrder(NcStreamProto.Data pData) {
+    boolean isMissing = pData.getBigendPresentCase() == NcStreamProto.Data.BigendPresentCase.BIGENDPRESENT_NOT_SET;
+    if (isMissing) {
+      int version = pData.getVersion();
+      return (version < 3) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+    }
+    return pData.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
   }
 
   ////////////////////////////////////////////////////////////////

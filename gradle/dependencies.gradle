@@ -172,7 +172,7 @@ libraries["jsoup"] = "org.jsoup:jsoup:1.7.2"
 // Nonnull annotation
 libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.0"
 
-libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:2.6.1"
+libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.0.0-beta-1"
 
 libraries["visad"] = "edu.wisc.ssec:visad:2.0-20130124"
 

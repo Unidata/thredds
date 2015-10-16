@@ -113,9 +113,9 @@ public class DataRootExt implements Comparable<DataRootExt> {
     this.path = dsp.getUrlPath();
     this.dirLocation = dsp.getDirLocation();
     this.type = convertDataRootType( dsp.getType());
-    if (dsp.hasCatLocation())
+    if (dsp.getCatLocation().length() > 0)
       catLocation = dsp.getCatLocation();
-    if (dsp.hasName())
+    if (dsp.getName().length() > 0)
       name = dsp.getName();
   }
 

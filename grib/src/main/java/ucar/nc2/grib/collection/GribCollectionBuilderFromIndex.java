@@ -34,7 +34,6 @@
 package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ExtensionRegistry;
-import sun.security.ssl.Debug;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.constants.CDM;
@@ -92,7 +91,7 @@ abstract class GribCollectionBuilderFromIndex {
 
       gc.version = raf.readInt();
       if (gc.version < getVersion()) {
-        logger.warn("GribCollectionBuilderFromIndex {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
+        logger.debug("GribCollectionBuilderFromIndex {}: index found version={}, current version= {} on file {}", gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
         // throw new IllegalStateException();   // temp debug
         if (gc.version < getMinVersion()) return false;
       }
@@ -138,9 +137,9 @@ abstract class GribCollectionBuilderFromIndex {
        */
 
       // see https://developers.google.com/protocol-buffers/docs/reference/java-generated#extension */
-      ExtensionRegistry registry = ExtensionRegistry.newInstance();
-      PartitionCollectionProto.registerAllExtensions(registry);
-      GribCollectionProto.GribCollection proto = GribCollectionProto.GribCollection.parseFrom(m, registry);
+      //ExtensionRegistry registry = ExtensionRegistry.newInstance();
+      //PartitionCollectionProto.registerAllExtensions(registry);
+      GribCollectionProto.GribCollection proto = GribCollectionProto.GribCollection.parseFrom(m);
 
       // need to read this first to get this.tables initialized
       gc.center = proto.getCenter();
@@ -358,7 +357,8 @@ message Coord {
   private Coordinate readCoord(GribCollectionProto.Coord pc) {
     int typei = pc.getType();
     int code = pc.getCode();
-    String unit = pc.hasUnit() ? pc.getUnit() : null;  // LOOK may be null
+    String unit = pc.getUnit();
+    if (unit.length() == 0) unit = null; // LOOK may be null
     Coordinate.Type type = Coordinate.Type.values()[typei];
 
     switch (type) {
@@ -400,8 +400,8 @@ message Coord {
         List<Coordinate> times = new ArrayList<>(pc.getTimesCount());
         for (GribCollectionProto.Coord coordp : pc.getTimesList())
           times.add(readCoord(coordp));
-        boolean isOrthogonal = pc.hasIsOrthogonal() && pc.getIsOrthogonal();
-        boolean isRegular = pc.hasIsRegular() && pc.getIsRegular();
+        boolean isOrthogonal = pc.getIsOrthogonal();
+        boolean isRegular = pc.getIsRegular();
         if (isOrthogonal)
           return new CoordinateTime2D(code, timeUnit3, null, runtime, (CoordinateTimeAbstract) times.get(0), null);
         else if (isRegular)

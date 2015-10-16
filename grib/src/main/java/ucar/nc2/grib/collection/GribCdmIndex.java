@@ -56,6 +56,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -180,13 +181,13 @@ public class GribCdmIndex implements IndexReader {
     return GribCollectionType.none;
   }
 
-  // open GribCollection from an existing index file. return null on failure
+  /* open GribCollection from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, Logger logger) {
     return openCdmIndex(indexFilename, config, true, logger);
-  }
+  } */
 
   // open GribCollectionImmutable from an existing index file. return null on failure
-  static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean useCache, Logger logger) {
+  static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean useCache, Logger logger) throws IOException {
     File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
     if (indexFileInCache == null)
       return null;
@@ -213,6 +214,8 @@ public class GribCdmIndex implements IndexReader {
         default:
           logger.warn("GribCdmIndex.openCdmIndex failed on {} type={}", indexFilenameInCache, type);
       }
+    } catch (FileNotFoundException ioe) {
+      throw ioe;
 
     } catch (Throwable t) {
       logger.warn("GribCdmIndex.openCdmIndex failed on " + indexFilenameInCache, t);

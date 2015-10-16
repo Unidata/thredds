@@ -45,7 +45,8 @@ import java.util.*;
 
 /**
  * Manage cdm index (ncx) for Bufr files.
- * Covers BufrCdmIndexProto.
+ * Covers BufrCdmIndexProto
+ * Never completes or in operational use, could redo as needed
  *
  * @author caron
  * @since 8/14/13
@@ -287,7 +288,7 @@ public class BufrCdmIndex {
   }
 
   static void showProtoRoot(BufrCdmIndexProto.Field fld) {
-    String act = fld.hasAction() ? fld.getAction().toString() : "-";
+    String act = (fld.getAction() != BufrCdmIndexProto.FldAction.defa) ? fld.getAction().toString() : "-";
     System.out.printf("%10s %s%n", act, fld.getName());
     for (BufrCdmIndexProto.Field child : fld.getFldsList())
       showProtoRoot(child);

@@ -122,7 +122,7 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     byte[] rawGds = null;
     Grib1Gds gds;
     int predefined = -1;
-    if (p.hasPredefinedGridDefinition()) {
+    if (p.getPredefinedGridDefinition() > 0) {
       predefined = p.getPredefinedGridDefinition();
       gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(gc.center, predefined);
     } else {

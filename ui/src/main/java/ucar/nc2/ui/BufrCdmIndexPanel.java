@@ -32,13 +32,11 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.BufrField;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
@@ -326,13 +324,13 @@ public class BufrCdmIndexPanel extends JPanel {
     @Override
     public BufrCdmIndexProto.FldAction getAction() {
       if (act != null) return act;
-      return child.hasAction() ? child.getAction() : null;
+      return child.getAction();
     }
 
     @Override
     public BufrCdmIndexProto.FldType getType() {
       if (type != null) return type;
-      return child.hasType() ? child.getType() : null;
+      return child.getType();
     }
 
     public void setType(BufrCdmIndexProto.FldType type) {
@@ -341,7 +339,8 @@ public class BufrCdmIndexPanel extends JPanel {
 
     public String getActionS() {
       if (act != null) return act.toString();
-      return child.hasAction() ? child.getAction().toString() : "";
+      BufrCdmIndexProto.FldAction fact = getAction();
+      return fact != null ? fact.toString() : "";
     }
 
     public void setActionS(String actS) {
@@ -354,17 +353,17 @@ public class BufrCdmIndexPanel extends JPanel {
 
     @Override
     public boolean isSeq() {
-      return child.hasMax();
+      return child.getMax() > 0;
     }
 
     @Override
     public int getMin() {
-      return child.hasMin() ? child.getMin() : -1;
+      return child.getMin();
     }
 
     @Override
     public int getMax() {
-      return child.hasMax() ? child.getMax() : -1;
+      return child.getMax();
     }
 
     @Override

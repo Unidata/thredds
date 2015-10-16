@@ -128,11 +128,10 @@ public class NcStreamReader {
     byte[] dp = new byte[psize];
     NcStream.readFully(is, dp);
     NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-    // if (debug) System.out.println(" readData proto = " + dproto);
+    ByteOrder bo = NcStream.decodeDataByteOrder(dproto); // LOOK not using bo !!
 
     DataType dataType = NcStream.convertDataType(dproto.getDataType());
     Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
-    assert (section != null);
 
     // special cases
     if (dataType == DataType.STRING) {
@@ -200,7 +199,6 @@ public class NcStreamReader {
       data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(datab));
     }
 
-
     return new DataResult(dproto.getVarName(), data);
   }
 
@@ -219,7 +217,8 @@ public class NcStreamReader {
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureBB.setOffsets(members);
 
-    return new StreamDataIterator(is, members, dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+    ByteOrder bo = NcStream.decodeDataByteOrder(dproto);
+    return new StreamDataIterator(is, members, bo);
   }
 
   private static class StreamDataIterator implements StructureDataIterator {
@@ -299,8 +298,8 @@ public class NcStreamReader {
     if (ncfile == null)
       ncfile = new NetcdfFileSubclass(); // not used i think
     ncfile.setLocation(proto.getLocation());
-    if (proto.hasId()) ncfile.setId(proto.getId());
-    if (proto.hasTitle()) ncfile.setTitle(proto.getTitle());
+    if (proto.getId().length() > 0) ncfile.setId(proto.getId());
+    if (proto.getTitle().length() > 0) ncfile.setTitle(proto.getTitle());
 
     NcStreamProto.Group root = proto.getRoot();
     NcStream.readGroup(root, ncfile, ncfile.getRootGroup());
