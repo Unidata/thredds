@@ -63,7 +63,6 @@ public class TestDtWithCoverageReadingP {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC}); // ensemble, time-offset
     // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", FeatureType.FMRC});              // scalar vert LOOK change to TimeOffset ??
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR});  // x,y axis but no projection
-    // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", FeatureType.CURVILINEAR});  // GRIB Curvilinear
 
     return result;
   }

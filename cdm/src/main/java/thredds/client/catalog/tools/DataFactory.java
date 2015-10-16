@@ -52,6 +52,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.util.Optional;
 import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Nonnull;
@@ -230,16 +231,14 @@ public class DataFactory {
     if (result.featureType == null)
       result.featureType = wantFeatureType;
 
-    // look for remote FeatureDataset
-    if ((result.featureType != null) && result.featureType.isPointFeatureType()) {
-      Access access = findAccessByServiceType(ds.getAccess(), ServiceType.CdmrFeature);
-      if (access != null)
-        return openFeatureDataset(result.featureType, access, task, result);
-    }
+    // first choice would be remote FeatureDataset
+    Access access = findAccessByServiceType(ds.getAccess(), ServiceType.CdmrFeature);
+    if (access != null)
+      return openFeatureDataset(result.featureType, access, task, result);
 
     // special handling for images
     if (result.featureType == FeatureType.IMAGE) {
-      Access access = getImageAccess(ds, task, result);
+      access = getImageAccess(ds, task, result);
       if (access != null) {
         return openFeatureDataset(result.featureType, access, task, result);
       } else
@@ -247,6 +246,7 @@ public class DataFactory {
       return result;
     }
 
+    // otherwise, open as a remote NetcdfDataset (cdmremote or opendap)
     NetcdfDataset ncd = openDataset(ds, true, task, result);
     if (null != ncd)
       result.featureDataset = FeatureDatasetFactoryManager.wrap(result.featureType, ncd, task, result.errLog);
@@ -295,7 +295,11 @@ public class DataFactory {
     }
 
     if (access.getService().getType() == ServiceType.CdmrFeature) {
-      result.featureDataset = CdmrFeatureDataset.factory(wantFeatureType, access.getStandardUrlName());
+      Optional<FeatureDataset> opt = CdmrFeatureDataset.factory(wantFeatureType, access.getStandardUrlName());
+      if (opt.isPresent())
+        result.featureDataset = opt.get();
+      else
+        result.errLog.format("%s", opt.getErrorMessage());
 
     } else {
 
@@ -310,8 +314,7 @@ public class DataFactory {
       result.fatalError = true;
     else {
       result.location = result.featureDataset.getLocation();
-      if (result.featureType == null)
-        result.featureType = result.featureDataset.getFeatureType();
+      result.featureType = result.featureDataset.getFeatureType();
     }
 
     return result;

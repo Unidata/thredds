@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Read Grib2Partition From ncx2 Index,
+ * Read Grib2Partition From ncx3 Index,
  * Data file never opened.
  *
  * @author John
@@ -99,16 +99,16 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
    */
   @Override
   protected boolean readExtensions(GribCollectionProto.GribCollection proto) {
-    pc.isPartitionOfPartitions = proto.getExtension(PartitionCollectionProto.isPartitionOfPartitions);
+    pc.isPartitionOfPartitions = proto.getIsPartitionOfPartitions();
 
-    List<Integer> list = proto.getExtension(PartitionCollectionProto.run2Part);
+    List<Integer> list = proto.getRun2PartList();
     pc.run2part = new int[list.size()];
     int count = 0;
     for (int partno : list)
       pc.run2part[count++] = partno;
 
-    List<ucar.nc2.grib.collection.PartitionCollectionProto.Partition> partList = proto.getExtension(PartitionCollectionProto.partitions);
-    for (ucar.nc2.grib.collection.PartitionCollectionProto.Partition partProto : partList)
+    List<ucar.nc2.grib.collection.GribCollectionProto.Partition> partList = proto.getPartitionsList();
+    for (ucar.nc2.grib.collection.GribCollectionProto.Partition partProto : partList)
       makePartition(partProto);
 
     return partList.size() > 0;
@@ -123,7 +123,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
 
   @Override
   protected GribCollectionMutable.VariableIndex readVariableExtensions(GribCollectionMutable.GroupGC group, GribCollectionProto.Variable proto, GribCollectionMutable.VariableIndex vi) {
-    List<PartitionCollectionProto.PartitionVariable> pvList = proto.getExtension(PartitionCollectionProto.partition);
+    List<GribCollectionProto.PartitionVariable> pvList = proto.getPartVariableList();
     PartitionCollectionMutable.VariableIndexPartitioned vip = pc.makeVariableIndexPartitioned(group, vi, pvList.size());
     vip.setPartitions(pvList);
 
@@ -142,8 +142,9 @@ message Partition {
   optional uint64 lastModified = 4;
 }
    */
-  private PartitionCollectionMutable.Partition makePartition(PartitionCollectionProto.Partition proto) {
-    CalendarDate partitionDate =  proto.hasPartitionDate() ? CalendarDate.of(proto.getPartitionDate()) : null;
+  private PartitionCollectionMutable.Partition makePartition(GribCollectionProto.Partition proto) {
+    long partitionDateMillisecs =  proto.getPartitionDate();
+    CalendarDate partitionDate =  partitionDateMillisecs > 0 ? CalendarDate.of(partitionDateMillisecs) : null;
     return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(), proto.getDirectory(), partitionDate);
   }
 

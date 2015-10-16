@@ -160,7 +160,7 @@ public class CdmrfReader {
     } */
   CoverageCollection decodeHeader(CdmrFeatureProto.CoverageDataset proto, CdmrCoverageReader reader) {
     String name = endpoint;
-    FeatureType csysType = proto.hasCoverageType() ? convertCoverageType(proto.getCoverageType()) : null;
+    FeatureType csysType = convertCoverageType(proto.getCoverageType());
     LatLonRect latLonBoundingBox = decodeLatLonRectangle(proto.getLatlonRect());
     ProjectionRect projBoundingBox = decodeProjRectangle(proto.getProjRect());
     CalendarDateRange calendarDateRange = proto.hasDateRange() ? decodeDateRange(proto.getDateRange()) : null;
@@ -284,7 +284,7 @@ message CoordAxis {
 
     int ncoords = (int) proto.getNvalues();
     double[] values = null;
-    if (proto.hasValues()) {
+    if (!proto.getValues().isEmpty()) {
       // LOOK may mess with ability to change var size later.
       ByteBuffer bb = ByteBuffer.wrap(proto.getValues().toByteArray());
       DoubleBuffer db = bb.asDoubleBuffer();
@@ -314,10 +314,10 @@ message CoordAxis {
     builder.values = values;
     builder.reader = reader;
     builder.isSubset = false;
+    builder.shape = shape.length > 0 ? shape : null;
 
-
-    if (dependenceType == CoverageCoordAxis.DependenceType.twoD && axisType == AxisType.Time) {
-      return new FmrcTimeAxis2D(builder);
+    if (dependenceType == CoverageCoordAxis.DependenceType.fmrcReg) {
+      return new FmrcTimeAxisReg2D(builder);
     } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
       return new LatLonAxis2D(builder);
     } else if (axisType == AxisType.TimeOffset) {
@@ -430,6 +430,8 @@ message Coverage {
         return CoverageCoordAxis.DependenceType.scalar;
       case twoD:
         return CoverageCoordAxis.DependenceType.twoD;
+      case fmrcReg:
+        return CoverageCoordAxis.DependenceType.fmrcReg;
     }
     throw new IllegalStateException("illegal data type " + type);
   }
@@ -492,8 +494,6 @@ message Coverage {
     repeated string axisName = 8;         // each dimension corresponds to this axis
     required string coordSysName = 9;     // must have coordAxis corresponding to shape
   }
-
-
    */
 
   public GeoArrayResponse decodeGeoReferencedArray(CdmrFeatureProto.GeoReferencedArray parray) {
@@ -504,7 +504,7 @@ message Coverage {
 
     result.bigend = parray.getBigend();
     result.deflate = parray.getCompress() == NcStreamProto.Compress.DEFLATE;
-    result.uncompressedSize = (parray.hasUncompressedSize()) ? parray.getUncompressedSize() : 0;
+    result.uncompressedSize = parray.getUncompressedSize();
 
     int[] shape = new int[parray.getShapeCount()];
     for (int i=0; i< parray.getShapeCount(); i++)

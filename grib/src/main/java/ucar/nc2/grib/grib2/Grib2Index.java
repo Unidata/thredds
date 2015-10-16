@@ -89,7 +89,8 @@ public class Grib2Index extends GribIndex {
   public static final int ScanModeMissing = 9999;
 
   private static final boolean debug = false;
-  private static final int version = 6;
+  private static final int version = 6; // index must be this version, or else rewrite.
+  static public final int grib2index_proto_version = 3;
 
   /*
     9/12/2012 version 6: replace bms indicator = 254 with previously defined.
@@ -98,6 +99,7 @@ public class Grib2Index extends GribIndex {
 
   private List<Grib2SectionGridDefinition> gdsList;
   private List<Grib2Record> records;
+  private boolean isProto3;
 
   public List<Grib2SectionGridDefinition> getGds() {
     return gdsList;
@@ -132,7 +134,7 @@ public class Grib2Index extends GribIndex {
         }
 
       int v = NcStream.readVInt(fin);
-      if (v != version) {
+      if (v != version) { // here we insist that the version match. so cant use it to detect proto3 without forcing a rewrite.
         if ((v == 0) || (v > version))
           throw new IOException("GribIndex found version "+v+", want version " + version+ " on " +filename);
         if (logger.isDebugEnabled()) logger.debug("Grib2Index found version "+v+", want version " + version+ " on " +filename);
@@ -150,6 +152,8 @@ public class Grib2Index extends GribIndex {
 
       Grib2IndexProto.Grib2Index proto = Grib2IndexProto.Grib2Index.parseFrom(m);
       if (debug) System.out.printf("%s for %s%n", proto.getFilename(), filename);
+      int version = proto.getProtoVersion();
+      isProto3 = version >= 3;
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib2IndexProto.GribGdsSection pgds : proto.getGdsListList()) {
@@ -182,7 +186,7 @@ public class Grib2Index extends GribIndex {
     Grib2SectionIdentification ids = readIdMessage(p.getIds());
 
     Grib2SectionLocalUse lus = null;
-    if (p.hasLus()) {
+    if (!p.getLus().isEmpty()) {
       lus = new Grib2SectionLocalUse(p.getLus().toByteArray());
     }
 
@@ -195,6 +199,10 @@ public class Grib2Index extends GribIndex {
     boolean bmsReplaced = p.getBmsReplaced();
 
     int scanMode = p.getScanMode();
+    boolean isMissing = p.getScanModePresentCase() == Grib2IndexProto.Grib2Record.ScanModePresentCase.SCANMODEPRESENT_NOT_SET;
+    if (isMissing) {
+      scanMode = (isProto3) ? 0 : 9999;
+    }
 
     return new Grib2Record(p.getHeader().toByteArray(), is, ids, lus, gds, pds, drs, bms, data, bmsReplaced, scanMode);
   }
@@ -236,6 +244,7 @@ public class Grib2Index extends GribIndex {
 
       Grib2IndexProto.Grib2Index.Builder rootBuilder = Grib2IndexProto.Grib2Index.newBuilder();
       rootBuilder.setFilename(filename);
+      rootBuilder.setProtoVersion(grib2index_proto_version);
 
       if (dataRaf == null)  {
         raf = RandomAccessFile.acquire(filename);

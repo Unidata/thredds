@@ -48,7 +48,6 @@ import java.util.Formatter;
 
 /**
  * FmrcTimeAxis2D: time(runtime, time)
- * LOOK not up to date
  *
  * @author caron
  * @since 7/15/2015

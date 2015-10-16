@@ -31,39 +31,23 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package ucar.nc2.ft2.coverage.remote;
-
-import ucar.nc2.ft2.coverage.CoverageCollection;
-
-import java.io.IOException;
+package ucar.nc2.ft2.coverage;
 
 /**
- * Remote GridCoverageDataset using cdmrFeature protocol.
- * May not be needed.
+ * Describe
  *
  * @author caron
- * @since 5/2/2015
+ * @since 10/13/2015.
  */
-public class CdmrFeatureDataset {
+public class FmrcTimeAxisReg2D extends FmrcTimeAxis2D{
 
-  String endpoint;
-
-  public CdmrFeatureDataset(String endpoint) {
-    if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME)) {
-      endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
-    }
-
-    this.endpoint = endpoint;
+  public FmrcTimeAxisReg2D(CoverageCoordAxisBuilder builder) {
+    super(builder);
   }
 
-  public boolean isCmrfEndpoint() throws IOException {
-    CdmrfReader reader = new CdmrfReader(endpoint);
-    return reader.isCmrfEndpoint();
-  }
-
-  public CoverageCollection openCoverageDataset() throws IOException {
-    CdmrfReader reader = new CdmrfReader(endpoint);
-    return reader.open();
+  @Override
+  public CoverageCoordAxis copy() {
+    return new FmrcTimeAxisReg2D(new CoverageCoordAxisBuilder(this));
   }
 
 }

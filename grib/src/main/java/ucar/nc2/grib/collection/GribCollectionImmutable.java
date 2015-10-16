@@ -381,6 +381,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return horizCoordSys.getDescription();
     }
 
+    public GribHorizCoordSystem getGribHorizCoordSys() {
+      return horizCoordSys;
+    }
+
     public GdsHorizCoordSys getGdsHorizCoordSys() {
       return horizCoordSys.getHcs();
     }
@@ -521,9 +525,18 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         List<Record> records = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
           GribCollectionProto.Record pr = proto.getRecords(i);
-          records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), pr.getScanMode()));
+
+          // must account for change of default value in proto3
+          int scanMode = pr.getScanMode();
+          boolean isMissing = pr.getScanModePresentCase() == GribCollectionProto.Record.ScanModePresentCase.SCANMODEPRESENT_NOT_SET;
+          if (isMissing) {
+            boolean isProto3 = GribCollectionImmutable.this.info.version >= 3;
+            scanMode = (isProto3) ? 0 : 9999;
+          }
+
+          records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), scanMode));
         }
-        int ndups = proto.hasNdups() ? proto.getNdups() : -1;
+        int ndups = proto.getNdups();
         this.sa = new SparseArray<>(size, track, records, ndups);
 
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -551,7 +564,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         switch (coord.getType()) {
           case runtime:
             coordVal = coords.get(CoordsSet.runDate);  // CalendarDate or Long
-            idx = coord.getIndex( (CalendarDate) coordVal);
+            idx = coord.getIndex( coordVal);
             break;
 
           case timeIntv:
