@@ -32,10 +32,19 @@
  */
 package ucar.nc2.dods;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
+import java.io.IOException;
 
-import java.io.*;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 /** Test nc2 dods in the JUnit framework.
  *
@@ -84,7 +93,7 @@ person1.age, person1.foo
 368
 384
  */
-
+@Category(NeedsExternalResource.class)
 public class TestDODSnestedSequence {
 
   @org.junit.Test

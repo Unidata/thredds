@@ -86,7 +86,6 @@ task testJar(type: Jar, dependsOn: testClasses,
         include 'ucar/unidata/test/util/CompareNetcdf.class'
         include 'ucar/unidata/test/util/TestDir*.class'
         include 'ucar/unidata/test/util/TestFileDirUtils.class'
-        include 'ucar/unidata/test/util/ExternalServer.class'
         include 'ucar/unidata/test/util/UtilsMa2Test.class'
         include 'ucar/unidata/test/util/UtilsTestStructureArray.class'
 
@@ -99,6 +98,7 @@ task testJar(type: Jar, dependsOn: testClasses,
         // JUnit categories
         include 'ucar/unidata/test/util/NeedsCdmUnitTest.class'
         include 'ucar/unidata/test/util/NeedsContentRoot.class'
+        include 'ucar/unidata/test/util/NeedsExternalResource.class'
         include 'ucar/unidata/test/util/NotJenkins.class'
         include 'ucar/unidata/test/util/NotTravis.class'
     }

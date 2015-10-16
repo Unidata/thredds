@@ -32,4 +32,5 @@ test {
     include 'dap4/test/TestConstraints.class'
     include 'dap4/test/TestDSR.class'
     // include 'dap4/test/TestH5Iosp.class'
+    // include 'dap4/test/TestSerial.class'
 }

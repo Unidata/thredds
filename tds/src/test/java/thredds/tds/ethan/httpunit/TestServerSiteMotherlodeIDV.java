@@ -32,18 +32,19 @@
  */
 package thredds.tds.ethan.httpunit;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import ucar.unidata.test.util.ExternalServer;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 /**
  * A description
@@ -51,6 +52,7 @@ import java.util.Properties;
  * @author edavis
  * @since 15 July 2005 15:50:59 -0600
  */
+@Category(NeedsExternalResource.class)
 public class TestServerSiteMotherlodeIDV extends TestCase
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestServerSiteMotherlodeIDV.class );
@@ -77,7 +79,6 @@ public class TestServerSiteMotherlodeIDV extends TestCase
   @Override
   protected void setUp()
   {
-    ExternalServer.LIVE.assumeIsAvailable();
     wc = new WebConversation();
 
     Properties env = System.getProperties();

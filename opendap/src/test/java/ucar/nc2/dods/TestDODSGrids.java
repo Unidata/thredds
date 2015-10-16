@@ -32,15 +32,20 @@
  */
 package ucar.nc2.dods;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
+import java.io.IOException;
 
-import java.io.*;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.nc2.Variable;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 import static org.junit.Assert.assertEquals;
 
 /** Test nc2 dods in the JUnit framework. */
-
+@Category(NeedsExternalResource.class)
 public class TestDODSGrids {
 
   @org.junit.Test

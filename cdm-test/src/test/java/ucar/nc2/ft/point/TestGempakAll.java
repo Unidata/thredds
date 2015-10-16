@@ -33,9 +33,31 @@
 
 package ucar.nc2.ft.point;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.List;
+
+import org.junit.experimental.categories.Category;
 import ucar.ma2.StructureData;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.*;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.NestedPointFeatureCollection;
+import ucar.nc2.ft.PointFeature;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.StationProfileFeature;
+import ucar.nc2.ft.StationProfileFeatureCollection;
+import ucar.nc2.ft.StationTimeSeriesFeature;
+import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.TrajectoryFeature;
+import ucar.nc2.ft.TrajectoryFeatureCollection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
@@ -44,15 +66,8 @@ import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.ExternalServer;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.Date;
-import java.util.Formatter;
-import java.util.List;
 
 /**
  * currenty all cruft
@@ -105,14 +120,14 @@ public class TestGempakAll {
     //testPointDataset("collection:D:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
   }
 
+  @Category(NeedsExternalResource.class)
   public void utestCdmRemote() throws IOException {
-    ExternalServer.LIVE.assumeIsAvailable();
     TestPointDatasets.checkPointDataset("cdmremote:http://thredds.ucar.edu/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
     //checkPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal", FeatureType.STATION, true);
   }
 
+  @Category(NeedsExternalResource.class)
   public void utestCdmRemoteCollection() throws Exception {
-    ExternalServer.LIVE.assumeIsAvailable();
     //testDon3("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
     while (true) {
       // testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);

@@ -33,18 +33,18 @@
 
 package ucar.nc2;
 
-import org.junit.Before;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.unidata.test.util.ExternalServer;
+import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Describe
@@ -53,6 +53,7 @@ import java.util.Collection;
  * @since 6/19/2014
  */
 @RunWith(Parameterized.class)
+@Category(NeedsExternalResource.class)
 public class TestHttpOpen {
 
   @Parameterized.Parameters(name="{0}")
@@ -69,11 +70,6 @@ public class TestHttpOpen {
   private final String url;
   public TestHttpOpen(String url) {
       this.url = url;
-  }
-
-  @Before
-  public void setUp() {
-    ExternalServer.REMOTETEST.assumeIsAvailable();
   }
 
   // HTTP = 4300 HTTP2 = 5500 msec 20-25% slower
