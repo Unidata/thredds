@@ -32,16 +32,14 @@
  */
 package ucar.unidata.geoloc;
 
-import junit.framework.*;
-
-import ucar.nc2.util.Misc;
+import org.junit.Assert;
+import org.junit.Test;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 import ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse;
-import ucar.nc2.TestAll;
 
 /**
  * test methods projections have in common
@@ -49,15 +47,10 @@ import ucar.nc2.TestAll;
  * @author John Caron
  */
 
-public class TestProjections extends TestCase {
+public class TestProjections {
   boolean show = false;
   int NTRIALS = 10000;
-  double TOLERENCE = 1.0e-6;
-  int count = 10;
-
-  public TestProjections(String name) {
-    super(name);
-  }
+  double tolerence = 5.0e-4;
 
   private void doOne(ProjectionImpl proj, double lat, double lon) {
     LatLonPointImpl startL = new LatLonPointImpl(lat, lon);
@@ -87,10 +80,8 @@ public class TestProjections extends TestCase {
               Double.isNaN(endL.getLongitude()) ||
               endL.equals(LatLonPointImmutable.INVALID)) continue;
 
-      assert (Misc.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-3)) :
-          proj.getClass().getName() + " failed start= " + startL + " end = " + endL + " diff = "+ Misc.howClose(startL.getLatitude(), endL.getLatitude());
-      assert (Misc.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.0e-3)) :
-          proj.getClass().getName() + " failed start= " + startL + " end = " + endL + " diff = "+ Misc.howClose(startL.getLongitude(), endL.getLongitude());
+      Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), 1.0e-3);
+      Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), 1.0e-3);
       countT1++;
     }
 
@@ -105,8 +96,8 @@ public class TestProjections extends TestCase {
       ProjectionPoint endP = proj.latLonToProj(ll);
       if (Double.isNaN(endP.getX()) || Double.isNaN(endP.getY())) continue;
 
-      assert (Misc.closeEnough(startP.getX(), endP.getX()));
-      assert (Misc.closeEnough(startP.getY(), endP.getY()));
+      Assert.assertEquals(startP.toString(), startP.getX(), endP.getX(), tolerence);
+      Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
       countT2++;
     }
     if (show)
@@ -136,9 +127,8 @@ public class TestProjections extends TestCase {
         System.out.println("endL  = " + endL);
       }
 
-      double tolerence = 5.0e-4;
-      assert (Misc.closeEnough(startL.getLatitude(), endL.getLatitude(), tolerence)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
-      assert (Misc.closeEnough(startL.getLongitude(), endL.getLongitude(), tolerence)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+      Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), tolerence);
+      Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), tolerence);
 
       minx = Math.min(minx, p.getX());
       maxx = Math.max(maxx, p.getX());
@@ -174,8 +164,8 @@ public class TestProjections extends TestCase {
           System.out.println("end  = " + endP);
         }
 
-        assert Misc.closeEnough(startP.getX(), endP.getX(), 5.0e-4) : " failed start= " + startP.getX() + " end = " + endP.getX() + "; x,y=" + startP;
-        assert Misc.closeEnough(startP.getY(), endP.getY(), 5.0e-4) : " failed start= " + startP.getY() + " end = " + endP.getY() + "; x,y=" + startP;
+        Assert.assertEquals(startP.toString(), startP.getX(), endP.getX(), tolerence);
+        Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
       } catch (IllegalArgumentException e) {
         System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
         continue;
@@ -204,22 +194,18 @@ public class TestProjections extends TestCase {
                   System.out.println("interL  = " + ll);
                   System.out.println("end  = " + endP);
               }
-              assert Misc.closeEnough(startP.getX(), endP.getX(),
-                      5.0e-4) : " failed start= " + startP.getX() + " end = "
-                      + endP.getX() + "; x,y=" + startP;
-              assert Misc.closeEnough(startP.getY(), endP.getY(),
-                      5.0e-4) : " failed start= " + startP.getY() + " end = "
-                      + endP.getY() + "; x,y=" + startP;
+
+            Assert.assertEquals(startP.toString(), startP.getX(), endP.getX(), tolerence);
+            Assert.assertEquals(startP.toString(), startP.getY(), endP.getY(), tolerence);
           } catch (IllegalArgumentException e) {
               System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
               continue;
           }
       }
-      if (show)
-          System.out.println("Tested " + NTRIALS + " pts for projection " + proj
-                  .getClassName());
+      if (show) System.out.println("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
   }
 
+  @Test
   public void testLC() {
     testProjection(new LambertConformal());
     LambertConformal lc = new LambertConformal();
@@ -227,6 +213,7 @@ public class TestProjections extends TestCase {
     assert lc.equals(lc2);
   }
 
+  @Test
   public void testLCseam() {
     // test seam crossing
     LambertConformal lc = new LambertConformal(40.0, 180.0, 20.0, 60.0);
@@ -239,6 +226,7 @@ public class TestProjections extends TestCase {
     assert lc.crossSeam(p1, p2);
   }
 
+  @Test
   public void testTM() {
     testProjection(new TransverseMercator());
 
@@ -247,6 +235,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  @Test
   public void testStereo() {
     testProjection(new Stereographic());
     Stereographic p = new Stereographic();
@@ -254,6 +243,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  @Test
   public void testLA() {
     testProjection(new LambertAzimuthalEqualArea());
     LambertAzimuthalEqualArea p = new LambertAzimuthalEqualArea();
@@ -261,6 +251,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  @Test
   public void testOrtho() {
     testProjectionLonMax(new Orthographic(), 10, 10);
     Orthographic p = new Orthographic();
@@ -268,6 +259,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  @Test
   public void testAEA() {
     testProjection(new AlbersEqualArea());
     AlbersEqualArea p = new AlbersEqualArea();
@@ -275,6 +267,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  @Test
   public void testCEA() {
     testProjection(new CylindricalEqualAreaProjection());
     CylindricalEqualAreaProjection p = new CylindricalEqualAreaProjection();
@@ -282,6 +275,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  @Test
   public void testEAP() {
     testProjection(new EquidistantAzimuthalProjection());
     EquidistantAzimuthalProjection p = new EquidistantAzimuthalProjection();
@@ -303,6 +297,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  @Test
   public void testFlatEarth() {
     testProjectionProjMax(new FlatEarth(), 5000, 5000);
     FlatEarth p = new FlatEarth();
@@ -310,6 +305,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  @Test
   public void testMercator() {
     testProjection(new Mercator());
     Mercator p = new Mercator();
@@ -325,6 +321,7 @@ public class TestProjections extends TestCase {
                p.getX(), p.getY());
   }
 
+  @Test
   public void testMSG() {
     doOne(new MSGnavigation(), 60, 60);
     testProjection(new MSGnavigation());
@@ -337,6 +334,7 @@ public class TestProjections extends TestCase {
     showProjVal(m, 0, -60);
    }
 
+  @Test
   public void testRotatedPole() {
     testProjectionLonMax(new RotatedPole(37, 177), 360, 88);
     RotatedPole p = new RotatedPole();
@@ -348,6 +346,7 @@ public class TestProjections extends TestCase {
      grid_south_pole_latitude = -30.000001907348633
     grid_south_pole_longitude = -15.000000953674316
     grid_south_pole_angle = 0.0 */
+  @Test
   public void testRotatedLatLon() {
     //   public RotatedLatLon(double southPoleLat, double southPoleLon, double southPoleAngle) {
 
@@ -357,6 +356,7 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  @Test
   public void testSinusoidal() {
     doOne(new Sinusoidal(0, 0, 0, 6371.007), 20, 40);
     testProjection(new Sinusoidal(0, 0, 0, 6371.007));
@@ -366,6 +366,7 @@ public class TestProjections extends TestCase {
   }
 
   // UTM failing - no not use
+  @Test
   public void testUTM() {
     // The central meridian = (zone * 6 - 183) degrees, where zone in [1,60].
     // zone = (lon + 183)/6
@@ -397,8 +398,8 @@ public class TestProjections extends TestCase {
       System.out.println("endL  = " + endL);
     }
 
-    assert (Misc.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.3e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
-    assert (Misc.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.3e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+    Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), 1.3e-4);
+    Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), 1.3e-4);
   }
 
 
@@ -424,10 +425,8 @@ public class TestProjections extends TestCase {
         System.out.println("endL  = " + endL);
       }
 
-      double late = endL.getLatitude();
-      double lone = endL.getLongitude();
-      assert (Misc.closeEnough(lat, late, 1.0e-4)) : proj.getClass().getName() + " lat failed start= " + startL + " end = " + endL + " diff = " + Misc.howClose(lat, late);
-      assert (Misc.closeEnough(lon, lone, .02)) : proj.getClass().getName() + " lon failed start= " + startL + " end = " + endL + " diff = " + Misc.howClose(lon, lone);
+      Assert.assertEquals(startL.toString(8), startL.getLatitude(), endL.getLatitude(), 1.0e-4);
+      Assert.assertEquals(startL.toString(8), startL.getLongitude(), endL.getLongitude(), .02);
     }
 
     /* ProjectionPointImpl startP = new ProjectionPointImpl();
