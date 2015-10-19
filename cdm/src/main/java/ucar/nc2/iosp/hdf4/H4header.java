@@ -61,9 +61,9 @@ public class    H4header {
     long size = raf.length();
 
     // search forward for the header
-    while ((pos < size) && (pos < maxHeaderPos)) {
+    while ((pos < (size - head.length)) && (pos < maxHeaderPos)) {
       raf.seek(pos);
-      String magic = raf.readString(4);
+      String magic = raf.readString(head.length);
       if (magic.equals(shead))
         return true;
       pos = (pos == 0) ? 512 : 2 * pos;
