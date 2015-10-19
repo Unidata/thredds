@@ -35,6 +35,7 @@ package ucar.nc2.ft2.coverage.remote;
 
 import ucar.ma2.DataType;
 
+import java.nio.ByteOrder;
 import java.util.List;
 
 /**
@@ -48,7 +49,7 @@ class GeoArrayResponse {
   String coverageName;
   DataType dataType;
 
-  public boolean bigend;
+  public ByteOrder byteOrder;
   public boolean deflate;
   public long uncompressedSize;
   public int[] shape;

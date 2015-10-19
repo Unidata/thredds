@@ -53,6 +53,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -502,7 +503,7 @@ message Coverage {
     result.coverageName = parray.getCoverageName();
     result.dataType = NcStream.convertDataType(parray.getDataType());
 
-    result.bigend = parray.getBigend();
+    result.byteOrder = decodeDataByteOrder(parray);
     result.deflate = parray.getCompress() == NcStreamProto.Compress.DEFLATE;
     result.uncompressedSize = parray.getUncompressedSize();
 
@@ -515,6 +516,15 @@ message Coverage {
     result.coordSysName = parray.getCoordSysName();
 
     return result;
+  }
+
+  private ByteOrder decodeDataByteOrder(CdmrFeatureProto.GeoReferencedArray parray) {
+    boolean isMissing = parray.getBigendPresentCase() == CdmrFeatureProto.GeoReferencedArray.BigendPresentCase.BIGENDPRESENT_NOT_SET;
+    if (isMissing) {
+      int version = parray.getVersion();
+      return (version < 3) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+    }
+    return parray.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
   }
 
 }

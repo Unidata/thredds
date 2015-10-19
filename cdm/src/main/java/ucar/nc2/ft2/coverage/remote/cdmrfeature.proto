@@ -130,14 +130,16 @@ message CoverageDataset {
 message GeoReferencedArray {
   string coverageName = 1;          // full escaped name.
   DataType dataType = 2;
-  bool bigend = 3; // LOOK [default = true];
-  uint32 version = 4;
+  oneof bigend_present {
+    bool bigend = 3;                // proto2 [default = true];
+  }
+  uint32 version = 4;               // set to >= 3 for proto3
   Compress compress = 5;
   uint64 uncompressedSize = 6;
 
   repeated uint32 shape = 7;            // the shape of the returned array
   repeated string axisName = 8;         // each dimension corresponds to this axis
-  string coordSysName = 9;     // must have coordAxes corresponding to shape
+  string coordSysName = 9;              // must have coordAxes corresponding to shape
 }
 
 message DataResponse {
