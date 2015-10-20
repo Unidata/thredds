@@ -1,5 +1,8 @@
 package dap4.test;
 
+
+import org.junit.Assert;
+
 /**
  * TestFrontPage verifies the front page
  * generation code
@@ -68,7 +71,7 @@ public class TestDSR extends DapTestCommon
             byteresult = mocker.execute();
         } catch (Throwable t) {
             t.printStackTrace();
-            assertTrue(false);
+            throw t;
         }
 
         // Convert the raw output to a string
@@ -90,7 +93,7 @@ public class TestDSR extends DapTestCommon
             pass = compare(baselinecontent, dsr);
             System.out.println(pass ? "Pass" : "Fail");
         }
-        assertTrue(pass);
+        Assert.assertTrue(pass);
     }
 
     //////////////////////////////////////////////////

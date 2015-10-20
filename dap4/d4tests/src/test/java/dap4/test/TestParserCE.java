@@ -11,6 +11,7 @@ import dap4.ce.parser.CEParser;
 import dap4.core.dmr.DapDataset;
 import dap4.core.dmr.DapFactoryDMR;
 import dap4.core.dmr.parser.Dap4Parser;
+import org.junit.Assert;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -145,7 +146,7 @@ public class TestParserCE extends DapTestCommon
     {
         for(TestSet testset : chosentests) {
             if(!doOneTest(testset)) {
-                assertTrue(false);
+                Assert.assertTrue(false);
                 System.exit(1);
             }
         }

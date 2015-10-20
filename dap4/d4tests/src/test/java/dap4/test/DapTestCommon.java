@@ -37,7 +37,7 @@ import ucar.unidata.test.util.TestDir;
 
 @ContextConfiguration
 @WebAppConfiguration("file:src/test/data")
-public class DapTestCommon extends TestCase
+public class DapTestCommon
 {
     private final static Logger logger = LoggerFactory.getLogger(DapTestCommon.class);
 
@@ -268,14 +268,10 @@ public class DapTestCommon extends TestCase
 
     protected String title = "Testing";
 
-    public DapTestCommon()
-    {
-        this("dapTest");
-    }
+    public DapTestCommon() {this("DapTest");}
 
     public DapTestCommon(String name)
     {
-        super(name);
         this.title = name;
         setSystemProperties();
         initPaths();
@@ -364,7 +360,7 @@ public class DapTestCommon extends TestCase
         if(!captured.endsWith("\n"))
             captured = captured + "\n";
         // Dump the output for visual comparison
-        System.out.println("Testing " + getName() + ": " + header + ":");
+        System.out.println("Testing " + title + ": " + header + ":");
         System.out.println("---------------");
         System.out.print(captured);
         System.out.println("---------------");

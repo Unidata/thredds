@@ -2,6 +2,7 @@ package dap4.test;
 
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -80,7 +81,7 @@ TestSerial.java
                 System.out.println("***Pass: " + getTitle());
             }
         }
-        assertTrue(nfailures + " Tests Failed", pass);
+        Assert.assertTrue(nfailures + " Tests Failed", pass);
     }
 }
 

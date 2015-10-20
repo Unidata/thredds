@@ -10,6 +10,7 @@ import java.util.List;
 import dap4.core.util.DapUtil;
 import dap4.dap4shared.D4DSP;
 import dap4.servlet.DapCache;
+import org.junit.Assert;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.NeedsExternalResource;
@@ -236,7 +237,7 @@ public class TestCDMClient extends DapTestCommon
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) pass = false;
         }
-        assertTrue("*** Fail: TestCDMClient", pass);
+        Assert.assertTrue("*** Fail: TestCDMClient", pass);
     }
 
     //////////////////////////////////////////////////
