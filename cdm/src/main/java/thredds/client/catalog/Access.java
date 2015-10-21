@@ -56,7 +56,7 @@ public class Access {                 // (5)
 
   public Access(Dataset dataset, String urlPath, Service service, String dataFormatS, long dataSize) {
     this.dataset = dataset;
-    this.urlPath = urlPath.startsWith("/") ? urlPath.substring(1) : urlPath;
+    this.urlPath = urlPath; // urlPath.startsWith("/") ? urlPath.substring(1) : urlPath;
     this.service = service;
     this.dataFormatS = dataFormatS;
     this.dataSize = dataSize;
