@@ -1,5 +1,6 @@
 package dap4.test;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -76,7 +77,7 @@ public class TestFrontPage extends DapTestCommon
             byteresult = mocker.execute();
         } catch (Throwable t) {
             t.printStackTrace();
-            assertTrue(false);
+            Assert.assertTrue(false);
         }
 
         // Convert the raw output to a string
@@ -97,7 +98,7 @@ public class TestFrontPage extends DapTestCommon
             pass = compare(baselinecontent, html);
             System.out.println(pass ? "Pass" : "Fail");
         }
-        assertTrue(pass);
+        Assert.assertTrue(pass);
     }
 
     //////////////////////////////////////////////////

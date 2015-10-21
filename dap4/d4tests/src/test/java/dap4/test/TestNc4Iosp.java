@@ -2,6 +2,7 @@ package dap4.test;
 
 import dap4.core.util.DapException;
 import dap4.servlet.CDMDSP;
+import org.junit.Assert;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
@@ -166,7 +167,7 @@ public class TestNc4Iosp extends DapTestCommon
                 if(!ok)
                     allpass = false;
             }
-            assertTrue("At least one test failed", allpass);
+            Assert.assertTrue("At least one test failed", allpass);
     }
 
     //////////////////////////////////////////////////

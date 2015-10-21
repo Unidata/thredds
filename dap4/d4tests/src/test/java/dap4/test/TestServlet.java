@@ -12,6 +12,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -99,7 +100,7 @@ public class TestServlet extends DapTestCommon
 
         String makeurl(RequestMode ext)
         {
-            return canonjoin(FAKEURLPREFIX,canonjoin(TESTINPUTDIR,dataset)) + "." + ext.toString();
+            return canonjoin(FAKEURLPREFIX, canonjoin(TESTINPUTDIR, dataset)) + "." + ext.toString();
         }
 
         public String toString()
@@ -151,17 +152,7 @@ public class TestServlet extends DapTestCommon
 
     public TestServlet()
     {
-        this("TestServlet");
-    }
-
-    public TestServlet(String name)
-    {
-        this(name, null);
-    }
-
-    public TestServlet(String name, String[] argv)
-    {
-        super(name);
+        super("TestServlet");
         if(prop_ascii)
             Generator.setASCII(true);
         ServletTest.setRoots(canonjoin(getResourceDir(), TESTINPUTDIR),
@@ -699,7 +690,7 @@ public class TestServlet extends DapTestCommon
     {
         DapCache.flush();
         for(ServletTest testcase : chosentests) {
-            assertTrue(doOneTest(testcase));
+            Assert.assertTrue(doOneTest(testcase));
         }
     }
 

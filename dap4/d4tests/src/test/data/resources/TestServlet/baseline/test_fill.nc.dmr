@@ -7,7 +7,7 @@
     <UInt8 name="uv8"/>
     <Int16 name="v16"/>
     <UInt32 name="uv32">
-        <Attribute name="_FillValue" type="Int32">
+        <Attribute name="_FillValue" type="UInt32">
             <Value value="17"/>
         </Attribute>
     </UInt32>

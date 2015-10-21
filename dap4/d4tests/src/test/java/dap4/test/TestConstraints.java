@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.NeedsExternalResource;
@@ -162,7 +163,7 @@ public class TestConstraints extends DapTestCommon
     {
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) {
-                assertTrue(false);
+                Assert.assertTrue(false);
             }
         }
     }

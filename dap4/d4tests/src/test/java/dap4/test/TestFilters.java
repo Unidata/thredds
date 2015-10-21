@@ -4,6 +4,7 @@ import dap4.dap4shared.ChunkInputStream;
 import dap4.core.util.*;
 import dap4.dap4shared.RequestMode;
 import dap4.servlet.Generator;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -221,7 +222,7 @@ public class TestFilters extends DapTestCommon
             if(!doOneTest(testcase))
                 pass = false;
         }
-        assertTrue("***Fail: TestServletConstraints", pass);
+        Assert.assertTrue("***Fail: TestServletConstraints", pass);
     }
 
     //////////////////////////////////////////////////
