@@ -12,7 +12,7 @@
 
 * Java 8 is now required
 * Tomcat 8 (servlet 3.1)
-* On the command line when starting up Tomcat, you must specify *-Dtds.content.root.path=<content root>* where <content root> points to the top of the
+* On the command line when starting up Tomcat/TDS, you must specify *-Dtds.content.root.path=<content root>* where <content root> points to the top of the
 content directory. Note that this is **$\{tomcat}/content/**, not **$\{tomcat}/content/thredds/**. Dont forget the trailing slash. For example:
 +
 -------------------------------------------------
@@ -26,11 +26,11 @@ internal objects without excessive use of memory. A running TDS can be triggered
 can be configured to reread only changed catalogs, for fast incremental updates. Other features have been added to make writing configuration catalogs
 more maintainable, including the _catalogScan_ element, and default and standard services.
 
-The other major enhancement is that _GridDataset_ is replaced by __GridCoverage__, to better support very large feature collections. The
-GridCoverage API works only with _coordinate values_ (not array indices), which solves various intractable problems that arise when using aray index
+The other major enhancement is that _GridDataset_ is replaced by _FeatureDatasetCoverage_, to better support very large feature collections.
+The Coverage API works with _coordinate values_ (not array indices), which solves various intractable problems that arise when using aray index
 subsetting on large collections.
 
-A number of API enhancements have been made to take advantages of evolution is the Java language, for example _try-with-resource_ and _foreach_ constructs.
+A number of API enhancements have been made to take advantage of evolution in the Java language, for example _try-with-resource_ and _foreach_ constructs.
 The use of these make code simpler and more reliable.
 
 Deprecated classes and methods have been removed, and the module structure and third-party jar use has been improved.
@@ -109,7 +109,7 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 ** _Range.copy(String name)_ replaced by _Range.setName(String name)_
 ** _Range.getIterator()_ deprecated, use _Range.iterator()_
 ** Currently a Range is specified by _start:end:stride_
-** In the future, will be extended with subclasses *RangeScatter* and *RangeComposite*
+** In the future, may be extended with subclasses *RangeScatter* and *RangeComposite*
 ** You should use the iterator now to ensure correct functionality. To iterate over the values of the Range:
 
 [source,java]
@@ -183,10 +183,13 @@ instead of the exact comparison done by `equals(Array, Array)`.
 
 === Coverage Feature Datasets (ucar.nc2.ft2.coverage)
 
-* Completely new package that replaces ucar.nc2.dt.grid. *FeatureDatasetCoverage* replaces *GridDataset*.
-* *FeatureType.COVERAGE* is the general term for *GRID, FMRC, SWATH, CURVILINEAR* types.
-* For new API see link:../netcdf-java/reference/FeatureDatasets/CoverageFeatures.adoc[CoverageFeatures]
+* Completely new package *ucar.nc2.ft2.coverage* that replaces *ucar.nc2.dt.grid*.
+The class *FeatureDatasetCoverage* replaces *GridDataset*.
 * Uses of classes in *ucar.nc2.dt.grid* are deprecated, though the code is still in the core jar file for now.
+* For new API see link:../netcdf-java/reference/FeatureDatasets/CoverageFeatures.adoc[CoverageFeatures]
+* *FeatureType.COVERAGE* is the general term for *GRID, FMRC, SWATH, CURVILINEAR* types.
+Previously, GRID was used as the general type, now it referes to a specific type of Coverage.
+Affects FeatureDatasetFactoryManager.open(FeatureType wantFeatureType, ...)
 
 
 === Catalogs
@@ -225,11 +228,11 @@ Schema version is now 1.2.
 * With **addLatest**, the *service* name is no longer used, it is always __Resolver__, and the correct service is automatically added. Use *addLatest*
 attribute for simple case.
 * *fileSort:* by default, datasets at each collection level are listed in increasing order by filename. To change to decreasing order, use the
-_link:reference/DatasetScan.html#filesSort[filesSort]_ element.
+_link:reference/DatasetScan.adoc#filesSort[filesSort]_ element.
 * *sort:* deprecated in favor of *filesSort*
 * *User pluggable classes implementing UserImplType* (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl,
 crawlableDatasetSorterImpl) are no longer supported. (This was never officially released or documented).
-* DatasetScan details are link:catalog/InvCatalogServerSpec.html[here]
+* DatasetScan details are link:catalog/InvCatalogServerSpec.adoc[here]
 
 ==== Standard Services
 
@@ -238,13 +241,13 @@ crawlableDatasetSorterImpl) are no longer supported. (This was never officially 
 * User defined services in non-root catalogs are local to that catalog and override (by name) any global services.
 * All services are enabled unless explicitly disabled
 ** Except for remote catalog services
-* Standard service details are link:reference/Services.html[here]
+* Standard service details are link:reference/Services.adoc[here]
 
 ==== FeatureCollections
 
-* The *link:reference/collections/FeatureCollections.html#update[update]* element default is now __startup="never"__, meaning do not update collection
+* The *link:reference/collections/FeatureCollections.adoc#update[update]* element default is now __startup="never"__, meaning do not update collection
 on startup, and use existing indices when the collection is accessed.
-* The *link:reference/collections/FeatureCollections.html#filesSort[fileSort]* element is now inside the *featureCollection* itself, so it can be
+* The *link:reference/collections/FeatureCollections.adoc#filesSort[fileSort]* element is now inside the *featureCollection* itself, so it can be
 processed uniformly for all types of feature collections. When a collection shows a list of files, the files will be sorted by increasing name. To use
 a decreasing sort, use the element *<filesSort increasing="false" />* inside the *featureCollection* element. This supercedes the old way of placing
 that element in the *<gribConfig>* element, or the older verbose *lexigraphicByName* element:
@@ -255,7 +258,7 @@ that element in the *<gribConfig>* element, or the older verbose *lexigraphicByN
     <lexigraphicByName increasing="false" />  // deprecated
   </filesSort>
 -----------------------------------------------------------
-* Feature Collection details are link:reference/collections/FeatureCollections.html[here]
+* Feature Collection details are link:reference/collections/FeatureCollections.adoc[here]
 
 ==== Recommendations for 5.0 catalogs
 
@@ -291,7 +294,7 @@ A new TDS service has been added for remote access to CDM Feature Datasets.
 === ThreddsConfig.xml
 
 * You no longer turn catalog caching on or off, but you can control how many catalogs are cached (see
-link:reference/ThreddsConfigXMLFile.html#CatalogCaching[here] for the new syntax). So the following is no longer used:
+link:reference/ThreddsConfigXMLFile.adoc#CatalogCaching[here] for the new syntax). So the following is no longer used:
 
 [source,xml]
 ----------------------
@@ -304,10 +307,10 @@ link:reference/ThreddsConfigXMLFile.html#CatalogCaching[here] for the new syntax
 == Recommendations for ESGF
 
 You must determine the number of datasets that are contained in all of your catalogs. To get a report, enable
-link:reference/RemoteManagement.html[Remote Management], and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__. This may
+link:reference/RemoteManagement.adoc[Remote Management], and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__. This may
 take 5-20 minutes, depending on the numbers of catalogs.
 
-Add the link:reference/ThreddsConfigXMLFile.html#CatalogCaching[ConfigCatalog] element to threddsConfig.xml:
+Add the link:reference/ThreddsConfigXMLFile.adoc#CatalogCaching[ConfigCatalog] element to threddsConfig.xml:
 
 [source,xml]
 --------------------------------------------------------
@@ -332,7 +335,7 @@ Here are some additional, optional changes you can make to increase maintainabil
 1.  Place all *datasetRoot* elements in the top catalog
 2.  Place all *service* elements in the root catalog (__catalog.xml__). These can be referencced from any catalog.
 3.  Remove *service* selements from non-root catalogs.
-4.  Add a *link:catalog/InvCatalogServerSpec.html#catalogScan[catalogScan]* element to the root catalog, replacing the list of catalogRefs listing all
+4.  Add a *link:catalog/InvCatalogServerSpec.adoc#catalogScan[catalogScan]* element to the root catalog, replacing the list of catalogRefs listing all
 the other catalogs.
 * This assumes that other catalogs live in a subdirectory under the root, for example **$\{tds.content.root.path}/thredds/esgcet/**.
 
@@ -379,4 +382,5 @@ For example:
 
 '''''
 
-image:http://www.unidata.ucar.edu/images/logos/thredds_tds-75x75.png[TDS]This document was last updated August 2015. Send comments to the mailto:thredds@unidata.ucar.edu[THREDDS list].
+image:http://www.unidata.ucar.edu/images/logos/thredds_tds-75x75.png[TDS]This document was last updated October 2015.
+Send comments to the mailto:thredds@unidata.ucar.edu[THREDDS list].

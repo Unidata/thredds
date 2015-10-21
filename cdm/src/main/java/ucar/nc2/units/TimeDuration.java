@@ -39,6 +39,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -135,9 +136,8 @@ public class TimeDuration {
     try {
       timeUnit = new TimeUnit(text);
       if (debug) System.out.println(" set time unit= " + timeUnit);
-    }
 
-    catch (Exception e) {
+    } catch (Exception e) {
       // see if its a xsd:duration
       try {
         DatatypeFactory factory = DatatypeFactory.newInstance();
@@ -146,8 +146,8 @@ public class TimeDuration {
         Calendar c  = Calendar.getInstance();
         c.set(1900, 0, 1, 0, 0, 0);
         long secs =d.getTimeInMillis( c.getTime() ) / 1000;
-    	  
         timeUnit = new TimeUnit(secs + " secs");
+
       } catch (Exception e1) {
         throw new java.text.ParseException(e.getMessage(), 0);
       }

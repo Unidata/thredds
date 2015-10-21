@@ -33,10 +33,8 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import com.beust.jcommander.internal.Lists;
-import net.jcip.annotations.Immutable;
+import com.google.common.collect.Lists;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
@@ -50,48 +48,39 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Time2DCoordSys with run and 2D time coordinate axes.
- * A CoordSys has 0 or 1 Time2DCoordSys, but there may be several in a Dataset.
+ * Time2DCoordSys with run and timeOffset coordinate axes.
  *
- * @author John
- * @since 8/14/2015
+ * @author caron
+ * @since 10/20/2015.
  */
-@Immutable
-public class Time2DCoordSys {
-  public final CoverageCoordAxis1D runAxis;
-  public final FmrcTimeAxis2D timeAxis2D;
+public class Time2DOffsetCoordSys extends Time2DCoordSys{
+  public final TimeOffsetAxis timeOffset;
 
-  public Time2DCoordSys(CoverageCoordAxis1D runAxis, FmrcTimeAxis2D timeAxis) {
-    this.runAxis = runAxis;
-    this.timeAxis2D = timeAxis;
+  public Time2DOffsetCoordSys(CoverageCoordAxis1D runAxis, TimeOffsetAxis timeOffset) {
+    super(runAxis, null);
+    this.timeOffset = timeOffset;
   }
 
-  public List<CoverageCoordAxis> getCoordAxes() throws InvalidRangeException {
-    List<CoverageCoordAxis> result = new ArrayList<>();
-    result.add(runAxis);
-    result.add(timeAxis2D);
-    return result;
-  }
-
+  @Override
   public int[] getShape() {
-    return timeAxis2D.getShape();
+    return new int[] {runAxis.getNcoords(), timeOffset.getNcoords()};
   }
 
-/*
-  (from CdmrfParams.adoc) :
+  /*
+    (from CdmrfParams.adoc) :
 
-  You may specify a runtime with a date, latest or all. Default is latest.
-  You may specify a timeOffset with a numeric value, first, or all. A timeOffset value is a duration of time,
-    it is added to the runtime to give the requested time. Its units must be the same as the dataset. Default is all.
-  Time parameters may be used only used if timeOffset is not. There are 2 cases:
-   - Runtime is set to a specific value or latest (not all). Time parameters (point or range) can then be used.
-   - Runtime to set to all. Time point (date, or present) only can then be used.
-  If no runtime, timeOffset, or time parameters are set, then return all times for latest runtime.
-  Special cases:
-   - Set specific runtime = constant runtime dataset
-   - Set specific timeOffset, set runTime to all = constant offset dataset
-   - Set specific time, set runTime to all = constant forecast dataset
- */
+    2D Time subsetting
+    A 2D time dataset will have CoverageType set to FMRC.
+    You may specify a runtime with a date, latest or all; specify a timeOffset with a numeric value, first, or all.
+      If only one is set, use the default for the other. If neither is set, then return all times for latest runtime.
+    Time parameters are only used if explicitly set and timeOffset is not set. There are only 2 cases where time can be used:
+    Set runtime to a specific value or latest (not all). Time parameters (point or range) can be used.
+    Set runtime to all. Time point (date, or present) can be used.
+    Special cases:
+      set specific runtime = constant runtime dataset
+      set specific timeOffset, set runTime to all = constant offset dataset
+      set specific time, set runTime to all = constant forecast dataset
+   */
   /*
   1) single runtime
      1a timeOffset
@@ -102,8 +91,6 @@ public class Time2DCoordSys {
      2b time (not range) = constant forecast dataset
    */
   public Optional<List<CoverageCoordAxis>> subset(SubsetParams params, AtomicBoolean isConstantForcast, boolean makeCFcompliant) {
-    return null;
-    /*
     List<CoverageCoordAxis> result = new ArrayList<>();
 
     Optional<CoverageCoordAxis> axiso = runAxis.subset(params);
@@ -114,13 +101,13 @@ public class Time2DCoordSys {
 
     // subset on timeOffset (1a, 1c, 2a)
     if (params.hasTimeOffsetParam() || !params.hasTimeParam()) {
-      axiso = timeAxis2D.subset(params);
+      axiso = timeOffset.subset(params);
       if (!axiso.isPresent())
         return Optional.empty(axiso.getErrorMessage());
       CoverageCoordAxis timeOffsetSubset = axiso.get();
       result.add(timeOffsetSubset);
 
-      if (makeCFcompliant)
+      if (makeCFcompliant) // add a time cordinate
         result.add(makeCFTimeCoord(runAxisSubset, (CoverageCoordAxis1D) timeOffsetSubset)); // possible the twoD time case, if nruns > 1
       return Optional.of(result);
     }
@@ -129,7 +116,7 @@ public class Time2DCoordSys {
     if (runAxisSubset.getNcoords() == 1) {
       double val = runAxisSubset.getCoord(0);   // not sure runAxis is needed. maybe use runtimeSubset
       CalendarDate runDate = runAxisSubset.makeDate(val);
-      Optional<TimeOffsetAxis> too = timeAxis2D.subsetFromTime(params, runDate);
+      Optional<TimeOffsetAxis> too = timeOffset.subsetFromTime(params, runDate);
       if (!too.isPresent())
         return Optional.empty(too.getErrorMessage());
       TimeOffsetAxis timeOffsetSubset =  too.get();
@@ -156,8 +143,8 @@ public class Time2DCoordSys {
       throw new IllegalStateException("Must have time parameter");
 
     double wantOffset = runAxisSubset.convert(dateWanted); // forecastDate offset from refdate
-    double start = timeAxis.getStartValue();
-    double end = timeAxis.getEndValue();
+    double start = timeOffset.getStartValue();
+    double end = timeOffset.getEndValue();
     CoordAxisHelper helper = new CoordAxisHelper(timeOffset);
 
     // brute force search LOOK specialize for regular ?
@@ -198,7 +185,7 @@ public class Time2DCoordSys {
     CoverageCoordAxis scalarTimeCoord = makeScalarTimeCoord(wantOffset, runAxisSubset);
 
     // nothing needed for CF, the run coordinate acts as the CF time independent coord. timeOffset is aux, forecastTime is scalar
-    return Optional.of(Lists.newArrayList(runAxisSubset2, timeOffsetSubset, scalarTimeCoord)); */
+    return Optional.of(Lists.newArrayList(runAxisSubset2, timeOffsetSubset, scalarTimeCoord));
   }
 
   private CoverageCoordAxis makeScalarTimeCoord(double val, CoverageCoordAxis1D runAxisSubset) {
@@ -263,6 +250,4 @@ public class Time2DCoordSys {
 
     return null;
   }
-
-
 }

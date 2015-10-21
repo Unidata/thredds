@@ -73,19 +73,23 @@ public class CdmrFeatureDataset {
   static private boolean debug = false;
   static private boolean showXML = false;
 
-  // all CdmrFeatureDataset must return their featureType - use as a fail-fast test of the endpoint
+  // all CdmrFeatureDatasets must return their featureType - use as a fail-fast test of the endpoint
   public static FeatureType isCdmrfEndpoint(String endpoint) throws IOException {
 
     HTTPSession httpClient = HTTPFactory.newSession(endpoint);
     String url = endpoint + "?req=featureType";
 
     // get the header
-    try (HTTPMethod method = HTTPFactory.Head(httpClient, url)) {
+    try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
       method.setFollowRedirects(true);
       int statusCode = method.execute();
       if (statusCode != 200) return null;
       String content = method.getResponseAsString();
       return FeatureType.getType(content);
+
+    } catch (Throwable t) {
+      t.printStackTrace();
+      return null;
     }
   }
 
@@ -108,7 +112,7 @@ public class CdmrFeatureDataset {
     if (featureType.isCoverageFeatureType()) {
       CdmrfReader reader = new CdmrfReader(endpoint);
       CoverageCollection covColl = reader.open();
-      return Optional.of(new FeatureDatasetCoverage(endpoint, covColl, covColl));
+      return Optional.of( new FeatureDatasetCoverage(endpoint, covColl, covColl));
     }
 
     if (featureType.isPointFeatureType()) {

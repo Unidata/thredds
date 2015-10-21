@@ -42,6 +42,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.LastModified;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
@@ -54,6 +55,8 @@ import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.remote.CdmrFeatureProto;
 import ucar.nc2.ft2.coverage.remote.CdmrfWriter;
@@ -99,6 +102,29 @@ public class CdmrGridController implements LastModified {
 
   ////////////////////////////////////////////////////////////////////
 
+  @RequestMapping(value = "/**",  method = RequestMethod.GET, params = "req=featureType")
+  public ResponseEntity<String> handleFeatureTypeRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    if (!allowedServices.isAllowed(StandardService.cdmrFeatureGrid))
+      throw new ServiceNotAllowed(StandardService.cdmrFeatureGrid.toString());
+
+    String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
+
+    try (CoverageCollection cc = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+      if (cc == null) {
+        return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
+      }
+      HttpHeaders responseHeaders = new HttpHeaders();
+      responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
+      return new ResponseEntity<>(cc.getCoverageType().toString(), responseHeaders, HttpStatus.OK);
+
+    } /* catch (Throwable t) {
+      HttpHeaders responseHeaders = new HttpHeaders();
+      responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
+      return new ResponseEntity<>(t.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    } */
+
+  }
+
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=header")
   public void handleHeaderRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
     if (showReq)
@@ -124,7 +150,7 @@ public class CdmrGridController implements LastModified {
   }
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=form")
-  public ResponseEntity<String> handleFormRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
+  public ResponseEntity<String> handleFormRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
     if (showReq)
       System.out.printf("CdmrGridController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
 

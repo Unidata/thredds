@@ -126,11 +126,18 @@ public class TestMisc extends TestCase {
     }
   }
 
-  public static void main(String[] args) {
-    String s1 = "CoastWatch/MODSCW/closest_chlora/Mean/CB05/P2009190";
-    String s2 = "CoastWatch/MODSCW/closest_chlora/Mean/SE05/P2009190";
-    System.out.printf("s1 = %d s2 = %d%n", s1.hashCode(), s2.hashCode());
 
+  public Array concatArray(Array array1, Array array2) {
+    float[] data1 = (float[]) array1.copyTo1DJavaArray();
+    float[] data2 = (float[]) array2.copyTo1DJavaArray();
+    float[] result = new float[data1.length + data2.length];
+
+    System.arraycopy(data1, 0, result, 0, data1.length);
+    System.arraycopy(data2, 0, result, data1.length, data2.length);
+
+    // now put it back into an ucar.ma2.Array
+    int[] resultShape = new int[] {result.length};
+    return Array.factory(DataType.FLOAT, resultShape, result);
   }
 
 }

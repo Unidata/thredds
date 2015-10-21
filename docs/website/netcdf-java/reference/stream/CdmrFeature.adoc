@@ -1,7 +1,5 @@
-= CDM Remote Feature For Grid (Coverage)
-:linkcss:
-:stylesheet: ../../cdm.css
-:tdsDocs: ../../../tds/reference/services/
+= CdmrFeature Web Service
+:tdsDocs: ../../../tds/reference/services
 :w3cDate: http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate
 :w3cDuration: http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cduration
 
@@ -9,30 +7,34 @@ CDM Remote is a web service implemented in the CDM library (client) and TDS (ser
 link:NcStream.html[ncstream] as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
 two levels of services:
 
-1.  *link:CdmRemote.html[CdmRemote]* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
+1.  *link:CdmRemote.adoc[CdmRemote]* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
 CDM local datasets and *DODSNetcdfFile* provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.
 2.  *CdmrFeature* provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and
-Unidata's link:../../../tds/reference/services/NetcdfSubsetServiceReference.html[_NetCDF Subset Service_] __(NCSS)__. This API and protocol is redone
+Unidata's link:{tdsDocs}/NetcdfSubsetServiceReference.html[NetCDF Subset Service] (NCSS). This API and protocol is redone
 in version 5.0.
 
 The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.
 
 '''''
 
-The client creates requests of the form **endpoint?query**, where _endpoint_ is the URL of a CdmrFeature service, and _query_ is one or more *_key=value_* parameters, as described below.
+== CDM Remote Feature
+
+This web service is available from THREDDS Data Servers for *Coverage feature Types* (_GRID, SWATH, FMRC_) and *Point Feature Types*
+(_Point, Station, Trajectory, etc).
+
+The client creates requests of the form *endpoint?query*, where _endpoint_ is the URL of a CdmrFeature service, and _query_ is one or more *_key=value_* parameters, as described below.
 
 Example request:
 
----------------------------
+----
 http://thredds-dev.unidata.ucar.edu/thredds/cdmrfeature/grid/grib/NCEP/GFS/Global_0p5deg/Best?req=data&var=Albedo_surface_Mixed_intervals_Average
----------------------------
+----
 
 See link:CdmrfGrammer.adoc[CdmrFeature Grammer] for a description of the on-the-wire protocol.
 
-{% include "../../../tds/reference/services/CdmrfParams.adoc" %}
+include::{tdsDocs}/CdmrfParams.adoc[]
 
 '''''
-
-image:../../nc.gif[image] This document was last updated August 2015
+image:../../nc.gif[image] This document was last updated October 2015
 
  

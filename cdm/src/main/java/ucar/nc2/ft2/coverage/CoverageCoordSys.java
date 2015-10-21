@@ -126,7 +126,8 @@ public class CoverageCoordSys {
       }
     }
 
-    // see if theres a Time2DCoordSys
+    // see if we need a Time2DCoordSys
+    FmrcTimeAxis2D time2DAxis = null;
     TimeOffsetAxis timeOffsetAxis = null;
     CoverageCoordAxis1D runtimeAxis = null;
 
@@ -143,16 +144,27 @@ public class CoverageCoordSys {
           throw new RuntimeException("Cant have multiple RunTime axes in a CoverageCoordSys");
         runtimeAxis = (CoverageCoordAxis1D) axis;
       }
+      if (axis.getAxisType() == AxisType.Time && axis instanceof FmrcTimeAxis2D) {
+        if (time2DAxis != null)
+          throw new RuntimeException("Cant have multiple TimeAxis2D axes in a CoverageCoordSys");
+        time2DAxis = (FmrcTimeAxis2D) axis;
+      }
     }
 
-    if (runtimeAxis == null && timeOffsetAxis != null) {
-      throw new RuntimeException("TimeOffset Axis must have a RunTime axis in a CoverageCoordSys");
-    }
-
-    if (runtimeAxis != null && timeOffsetAxis != null) {
+    if (timeOffsetAxis != null) {
+      if (runtimeAxis == null)
+        throw new RuntimeException("TimeOffset Axis must have a RunTime axis in a CoverageCoordSys");
       if (immutable && this.time2DCoordSys != null)
         throw new RuntimeException("Cant have multiple Time2DCoordSys in a CoverageCoordSys");
-      time2DCoordSys = new Time2DCoordSys(runtimeAxis, timeOffsetAxis);
+      time2DCoordSys = new Time2DOffsetCoordSys(runtimeAxis, timeOffsetAxis);
+    }
+
+    if (time2DAxis != null) {
+      if (runtimeAxis == null)
+        throw new RuntimeException("TimeAxis2D Axis must have a RunTime axis in a CoverageCoordSys");
+      if (immutable && this.time2DCoordSys != null)
+        throw new RuntimeException("Cant have multiple Time2DCoordSys in a CoverageCoordSys");
+      time2DCoordSys = new Time2DCoordSys(runtimeAxis, time2DAxis);
     }
   }
 
@@ -298,19 +310,30 @@ public class CoverageCoordSys {
   }
 
   /**
-   * Using independent axes only
+   * Using independent axes only.
+   * Note this depends on order of axes.
    */
   public int[] getShape() {
     int rank = 2; // always 2 horiz
+    if (time2DCoordSys != null) rank += 2; // time 2D
+
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getAxisType().isHoriz()) continue;
+      if (axis.isTime2D()) continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) rank++;
     }
 
     int[] result = new int[rank];
     int count = 0;
+    if (time2DCoordSys != null) {
+      int[] timeShape = time2DCoordSys.getShape();
+      result[count++] = timeShape[0];
+      result[count++] = timeShape[1];
+    }
+
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getAxisType().isHoriz()) continue;
+      if (axis.isTime2D()) continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
         result[count++] = axis.getNcoords();
     }
