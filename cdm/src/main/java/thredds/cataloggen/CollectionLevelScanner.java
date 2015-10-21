@@ -36,6 +36,7 @@ package thredds.cataloggen;
 import thredds.catalog.*;
 import thredds.crawlabledataset.*;
 
+import static ucar.nc2.util.URLnaming.escapePathForURL;
 import java.util.*;
 import java.io.IOException;
 
@@ -900,8 +901,7 @@ public class CollectionLevelScanner
       path += "catalog.xml";
     else
       path += "/catalog.xml";
-
-    return path;
+    return escapePathForURL(path);
 //    }
 //    else
 //    {

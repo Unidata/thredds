@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static ucar.nc2.util.URLnaming.escapePathForURL;
+
 import thredds.catalog.util.DeepCopyUtils;
 import thredds.cataloggen.CatalogBuilder;
 import thredds.cataloggen.CatalogRefExpander;
@@ -85,7 +87,7 @@ public class InvDatasetScan extends InvCatalogRef {
   static public void setCatalogServletName( String catServletName ) { catalogServletName = catServletName; }
   static private String makeHref(String path)
   {
-    return context+( catalogServletName == null ? "" : catalogServletName )+"/"+path+"/catalog.xml";
+    return context + (catalogServletName == null ? "" : catalogServletName) + "/" + escapePathForURL(path) + "/catalog.xml";
   }
 
   ////////////////////////////////////////////////

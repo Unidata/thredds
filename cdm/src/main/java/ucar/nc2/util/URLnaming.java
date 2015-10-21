@@ -149,6 +149,14 @@ public class URLnaming {
     return "file:" + location;
   }
 
+  // Escape the characters necessary for a path to be valid for a URL
+  static public String escapePathForURL(String path) {
+    try {
+      return new URI(null, null, path, null).toString();
+    } catch (URISyntaxException e) {
+      return path;
+    }
+  }
   /**
    * This augments URI.resolve(), by also dealing with file: URIs.
    * If baseURi is not a file: scheme, then URI.resolve is called.
