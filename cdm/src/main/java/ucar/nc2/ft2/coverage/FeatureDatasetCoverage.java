@@ -207,7 +207,7 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
   private FileCacheIF fileCache; // LOOK mutable
 
   @Override
-  public void setFileCache(FileCacheIF fileCache) {
+  public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
 

@@ -127,7 +127,7 @@ public class ConfigCatalogInitialization {
   public ConfigCatalogInitialization() {
   }
 
-  public void setTrackerDir(String trackerDir) {
+  public synchronized void setTrackerDir(String trackerDir) {
     this.trackerDir = trackerDir;
   }
 
@@ -157,7 +157,7 @@ public class ConfigCatalogInitialization {
   }
 
   // called from TdsInit
-  public void init(ReadMode readMode, PreferencesExt prefs) {
+  public synchronized void init(ReadMode readMode, PreferencesExt prefs) {
     if (readMode == null)
       readMode = defaultReadMode;
     this.prefs = prefs;

@@ -65,7 +65,7 @@ public class GridDatasetStandardFactory implements FeatureDatasetFactory {
 
   public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog) throws IOException {
     // already been opened by isMine
-    DtCoverageCSBuilder dtCoverage =  (DtCoverageCSBuilder) analysis;
+    // DtCoverageCSBuilder dtCoverage =  (DtCoverageCSBuilder) analysis;
 
     DtCoverageDataset dt = DtCoverageDataset.open(ncd);
     return DtCoverageAdapter.factory(dt, errlog);
