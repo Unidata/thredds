@@ -32,18 +32,18 @@
 
 package ucar.nc2.util.net;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
-
+import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.ExternalServer;
-
-import java.util.List;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 public class TestMisc extends UnitTestCommon
 {
@@ -99,11 +99,9 @@ public class TestMisc extends UnitTestCommon
     }
 
     @Test
-    public void
-    testUTF8Stream()
-        throws Exception
+    @Category(NeedsExternalResource.class)
+    public void testUTF8Stream() throws Exception
     {
-        ExternalServer.LIVE.assumeIsAvailable();
         pass = true;
 
         String catalogName = "http://thredds-test.unidata.ucar.edu/thredds/catalog.xml";

@@ -34,15 +34,15 @@ package ucar.nc2.util.net;
 
 import org.apache.http.HttpEntity;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.httpservices.*;
+import ucar.nc2.util.net.EchoService;
 import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.ExternalServer;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
 /**
  * Test HttpFormBuilder
  */
-
+@Category(NeedsExternalResource.class)
 public class TestFormBuilder extends UnitTestCommon
 {
 
@@ -60,9 +60,8 @@ public class TestFormBuilder extends UnitTestCommon
 
     static final boolean DEBUG = false;
 
-    static protected final String TESTURL = "http://echo.httpkit.com";
-
-    static protected final String FAKEBOUNDARY = "XXXXXXXXXXXXXXXXXXXX";
+    static final int ECHOPORT = 4444;
+    static final String ECHOURL = "http://localhost:" + ECHOPORT;
 
     // Field values to use
     static final String DESCRIPTIONENTRY = "TestFormBuilder";
@@ -78,10 +77,11 @@ public class TestFormBuilder extends UnitTestCommon
     static final String BUNDLETEXT = "bundle";
     static final String ATTACHTEXT = "arbitrary data\n";
 
+    static protected final String FAKEBOUNDARY = "XXXXXXXXXXXXXXXXXXXX";
+    static protected final String FAKEATTACH3 = "attach3XXXXXXXXXXXXXXXXXXXX.txt";
+
     static final char QUOTE = '"';
     static final char COLON = ':';
-
-    // Regex patterns
 
     //////////////////////////////////////////////////
     // Instance Variables
@@ -103,13 +103,6 @@ public class TestFormBuilder extends UnitTestCommon
     {
         setTitle("HTTPFormBuilder test(s)");
         setSystemProperties();
-        prop_visual = true; // force
-    }
-
-    @Before
-    public void setUp()
-    {
-        ExternalServer.HTTPKIT.assumeIsAvailable();
     }
 
     @Test
@@ -121,28 +114,27 @@ public class TestFormBuilder extends UnitTestCommon
         try {
             HTTPFormBuilder builder = buildForm(false);
             HttpEntity content = builder.build();
-            try (HTTPMethod postMethod = HTTPFactory.Post(TESTURL)) {
+            String body = null;
+            try (
+                    EchoService echo = new EchoService(ECHOPORT).startecho();
+                    HTTPMethod postMethod = HTTPFactory.Post(ECHOURL)
+            ) {
                 postMethod.setRequestContent(content);
                 postMethod.execute();
                 int code = postMethod.getStatusCode();
-                String body = postMethod.getResponseAsString();
-                if(code != 200) {
-                    System.err.println("Bad return code: " + code);
-                    pass = false;
-                }
-                if(pass) {
-                    Object json = Json.parse(body);
-                    json = cleanup(json, false);
-                    String text = Json.toString(json);
-                    text = localize(text, OSTEXT);
-                    if(prop_visual)
-                        visual(TESTURL, text);
-                    String diffs = compare("TestSimple", expectedSimple, text);
-                    if(diffs != null) {
-                        System.err.println(diffs);
-                        pass = false;
-                    }
-                }
+                if(code != 200)
+                    throw new IOException("Bad return code: " + code);
+                body = postMethod.getResponseAsString();
+            }
+            if(DEBUG || prop_visual)
+                visual("TestFormBuilder.testsimple.RAW", body);
+            body = genericize(body, OSTEXT, null, null);
+            if(DEBUG)
+                visual("TestFormBuilder.testsimple.LOCALIZED", body);
+            String diffs = UnitTestCommon.compare("TestFormBuilder.testSimpl", simplebaseline, body);
+            if(diffs != null) {
+                System.err.println("TestFormBuilder.testsimple.diffs:\n" + diffs);
+                Assert.assertTrue("TestFormBuilder.testSimple: ***FAIL", false);
             }
         } catch (Exception exc) {
             exc.printStackTrace();
@@ -157,38 +149,38 @@ public class TestFormBuilder extends UnitTestCommon
             throws Exception
     {
         // Try to create a tmp file
-	attach3file = HTTPUtil.fillTempFile("attach3.txt", ATTACHTEXT);
+        attach3file = HTTPUtil.fillTempFile("attach3.txt", ATTACHTEXT);
         attach3file.deleteOnExit();
 
         pass = true;
         try {
             HTTPFormBuilder builder = buildForm(true);
             HttpEntity content = builder.build();
-            try (HTTPMethod postMethod = HTTPFactory.Post(TESTURL)) {
+            String body = null;
+            try (
+                    EchoService echo = new EchoService(ECHOPORT).startecho();
+                    HTTPMethod postMethod = HTTPFactory.Post(ECHOURL)
+            ) {
                 postMethod.setRequestContent(content);
                 postMethod.execute();
                 int code = postMethod.getStatusCode();
-                String body = postMethod.getResponseAsString();
-                if(code != 200) {
-                    System.err.println("Bad return code: " + code);
-                    pass = false;
-                }
-                if(pass) {
-                    if(DEBUG)
-                       visual("RAW",body);
-                    Object json = Json.parse(body);
-                    json = cleanup(json, true);
-                    String text = Json.toString(json);
-                    text = localize(text, OSTEXT);
-                    body = text;
-                    if(prop_visual)
-                        visual(TESTURL, body);
-                    String diffs = compare("TestMultipart", expectedMultipart, text);
-                    if(diffs != null) {
-                        System.err.println(diffs);
-                        pass = false;
-                    }
-                }
+                if(code != 200)
+                    throw new IOException("Bad return code: " + code);
+                body = postMethod.getResponseAsString();
+            }
+            if(DEBUG || prop_visual)
+                visual("TestFormBuilder.testmultipart.RAW", body);
+            String boundary = getboundary(body);
+            Assert.assertTrue("Missing boundary info", boundary != null);
+            String attach3 = getattach(body, "attach3");
+            Assert.assertTrue("Missing attach3 info", attach3 != null);
+            body = genericize(body, OSTEXT, boundary, attach3);
+            if(DEBUG)
+                visual("TestFormBuilder.testmultipart.LOCALIZED", body);
+            String diffs = UnitTestCommon.compare("TestFormBuilder.testMultiPart", multipartbaseline, body);
+            if(diffs != null) {
+                System.err.println("TestFormBuilder.testmultipart.diffs:\n" + diffs);
+                Assert.assertTrue("TestFormBuilder.testmultipart: ***FAIL", false);
             }
         } catch (Exception exc) {
             exc.printStackTrace();
@@ -233,85 +225,123 @@ public class TestFormBuilder extends UnitTestCommon
         return builder;
     }
 
-    protected String localize(String text, String os)
+    protected String getboundary(String text)
             throws HTTPException
     {
-	// Handle case with and without blank/+
+        // Ignore all the headers except the content-type for
+        // the multipart part.
+        String[] lines = text.split("[\n]");
+        int pos = -1;
+        String boundary = null;
+        for(int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            line = line.replace("\r", "");
+            if(line.length() == 0)
+                break;
+            Map<String, String> map = parseheaderline(line);
+            if(map == null) continue;
+            if(map.get("PREFIX").equals("content-type")) {
+                boundary = map.get("boundary");
+                Assert.assertTrue("Missing boundary", boundary != null);
+            }
+        }
+        return boundary;
+    }
+
+    protected String getattach(String text, String attachfile)
+            throws HTTPException
+    {
+        String attach3 = null;
+        String[] lines = text.split("[\n]");
+        int pos = -1;
+        String boundary = null;
+        for(int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            line = line.replace("\r", "");
+            Map<String, String> map = parseheaderline(line);
+            if(map == null) continue;
+            String prefix = map.get("PREFIX");
+            if(prefix.equals("content-disposition")) {
+                if(map.get("name").equals("attachmentThree")) {
+                    attach3 = map.get("filename");
+                    Assert.assertTrue("Missing attach3 filename", attach3 != null);
+                }
+            }
+        }
+        return attach3;
+    }
+
+    protected String genericize(String text, String os, String boundary, String attach3name)
+            throws HTTPException
+    {
+        text = text.replace("\r", "");
+        // Ignore all the headers
+        String[] lines = text.split("[\n]");
+        int pos = -1;
+        for(int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            if(line.length() == 0) {
+                pos = i;
+                break;
+            }
+        }
+        if(pos < 0) return null;
+        StringBuilder newtext = new StringBuilder();
+        for(int i = pos + 1; i < lines.length; i++) {
+            String line = lines[i];
+            newtext.append(line);
+            newtext.append("\n");
+        }
+        text = newtext.toString();
+        // Generic os: Handle case with and without blank
         text = text.replace(os, "<OSNAME>");
         os = os.replace(' ', '+');
         text = text.replace(os, "<OSNAME>");
+        if(boundary != null) {
+            // Convert to generic 
+            text = text.replace(boundary, FAKEBOUNDARY);
+        }
+        if(attach3name != null) {
+            // Convert to generic 
+            text = text.replace(attach3name, FAKEATTACH3);
+        }
         return text;
     }
 
-    protected Map<String, Object> cleanup(Object o, boolean multipart)
-            throws IOException
+    protected Map<String, String>
+    parseheaderline(String line)
     {
-        Map<String, Object> map = (Map<String, Object>) o;
-        map = (Map<String, Object>) sort(map);
-        Object oh = map.get("headers");
-        String boundary = null;
-        if(oh != null) {
-            Map<String, Object> headers = (Map<String, Object>) oh;
-            String formdata = (String) headers.get("content-type");
-            if(oh != null) {
-                String[] pieces = formdata.split("[ \t]*[;][ \t]*");
-                for(String p : pieces) {
-                    if(p.startsWith("boundary=")) {
-                        boundary = p.substring("boundary=".length(), p.length());
-                        break;
-                    }
-                }
-            }
-            // Remove headers
-            map.remove("headers");
-        }
-        // Now parse and change the body
-        String body = (String) map.get("body");
-        if(body != null) {
-            if(multipart && boundary != null) {
-                Map<String, String> bodymap = parsemultipartbody(body);
-                map.put("body", mapjoin(bodymap, "\n", ": "));
-            } else {
-                Map<String, String> bodymap = parsesimplebody(body);
-                map.put("body", mapjoin(bodymap, "&", "="));
-            }
-        }
-        return map;
-    }
-
-    protected Object sort(Object o)
-    {
-        if(o instanceof Map) {
-            Map<String, Object> map = (Map<String, Object>) o;
-            map = new TreeMap(map); // Convert the map to sorted order
-            for(Map.Entry<String, Object> entry : map.entrySet()) {
-                map.put(entry.getKey(), sort(entry.getValue()));
-            }
+        Map<String, String> map = new HashMap<>();
+        map.put("PREFIX",""); // default
+        if(line == null || line.length() == 0)
             return map;
-        } else if(o instanceof List) {
-            List<Object> list = (List) o;
-            List<Object> out = new ArrayList<>();
-            for(int i = 0; i < list.size(); i++) {
-                out.add(sort(list.get(i)));
-            }
-            return out;
-        } else
-            return o;
-    }
-
-    protected Map<String, String> parsesimplebody(String body)
-            throws HTTPException
-    {
-        Map<String, String> map = new TreeMap<>();
-        String[] pieces = body.split("[&]");
+        int i = line.indexOf(":");
+        if(i < 0) {
+            map.put("PREFIX", line);
+            return map;
+        }
+        map.put("PREFIX", line.substring(0, i).trim().toLowerCase());
+        line = line.substring(i + 1).trim();
+        String[] pieces = line.split("[ \t]*[;][ \t]*");
+        if(pieces.length == 1) {
+            map.put(pieces[0], "");
+            return map;
+        }
         for(String piece : pieces) {
             String[] pair = piece.split("[=]");
-            if(pair.length == 1) {
-                pair = new String[]{pair[0], ""};
+            String value = "";
+            String key = pair[0];
+            switch (pair.length) {
+            case 1:
+                break;
+            case 2:
+            default:
+                value = pair[1].trim();
+                if(value.charAt(0) == '"')
+                    value = value.substring(1, value.length() - 1);
+                break;
             }
-            if(pair[0] == null || pair[0].length() == 0)
-                throw new HTTPException("Illegal body : " + body);
-            map.put(pair[0], pair[1]);
+            map.put(key, value);
         }
         return map;
     }
@@ -354,7 +384,7 @@ public class TestFormBuilder extends UnitTestCommon
                     if(!mcd.lookingAt())
                         throw new HTTPException("Malformed Content-Disposition marker : " + line);
                     name = mcd.group(1);
-                }  else {
+                } else {
                     name = mcd.group(1);
                     filename = mcd.group(2);
                 }
@@ -383,11 +413,13 @@ public class TestFormBuilder extends UnitTestCommon
         return map;
     }
 
-    static protected String join(String[] pieces, String sep)
+    static protected String join(String[] pieces, int offset, String sep)
     {
         StringBuilder buf = new StringBuilder();
-        for(int i = 0; i < pieces.length; i++) {
-            if(i > 0) buf.append(sep);
+        boolean first = true;
+        for(int i = offset; i < pieces.length; i++) {
+            if(first) buf.append(sep);
+            first = false;
             buf.append(pieces[i]);
         }
         return buf.toString();
@@ -407,45 +439,10 @@ public class TestFormBuilder extends UnitTestCommon
         return buf.toString();
     }
 
-    static final String expectedSimple =
-            "{\n"
-                    + "  \"body\" : \"description=TestFormBuilder&emailAddress=idv%40ucar.edu&fullName=Mr.+Jones&hardware=x86&organization=UCAR&os=<OSNAME>&packageVersion=1.0.1&softwarePackage=IDV&subject=hello\",\n"
-                    + "  \"docs\" : \"http://httpkit.com/echo\",\n"
-                    + "  \"ip\" : \"127.0.0.1\",\n"
-                    + "  \"method\" : \"POST\",\n"
-                    + "  \"path\" : {\n"
-                    + "    \"name\" : \"/\",\n"
-                    + "    \"params\" : {},\n"
-                    + "    \"query\" : \"\"\n"
-                    + "  },\n"
-                    + "  \"powered-by\" : \"http://httpkit.com\",\n"
-                    + "  \"uri\" : \"/\"\n"
-                    + "}\n";
+    static final String simplebaseline =
+            "softwarePackage=IDV&emailAddress=idv%40ucar.edu&os=<OSNAME>&subject=hello&organization=UCAR&fullName=Mr.+Jones&description=TestFormBuilder&packageVersion=1.0.1&hardware=x86";
 
-    static final String expectedMultipart =
-            "{\n"
-                    + "  \"body\" : \"attachmentOne: extra\n"
-                    + "attachmentThree: arbitrary data\n"
-                    + "attachmentTwo: bundle\n"
-                    + "description: TestFormBuilder\n"
-                    + "emailAddress: idv@ucar.edu\n"
-                    + "fullName: Mr. Jones\n"
-                    + "hardware: x86\n"
-                    + "organization: UCAR\n"
-                    + "os: <OSNAME>\n"
-                    + "packageVersion: 1.0.1\n"
-                    + "softwarePackage: IDV\n"
-                    + "subject: hello\n"
-                    + "\",\n"
-                    + "  \"docs\" : \"http://httpkit.com/echo\",\n"
-                    + "  \"ip\" : \"127.0.0.1\",\n"
-                    + "  \"method\" : \"POST\",\n"
-                    + "  \"path\" : {\n"
-                    + "    \"name\" : \"/\",\n"
-                    + "    \"params\" : {},\n"
-                    + "    \"query\" : \"\"\n"
-                    + "  },\n"
-                    + "  \"powered-by\" : \"http://httpkit.com\",\n"
-                    + "  \"uri\" : \"/\"\n"
-                    + "}\n";
+    static final String multipartbaseline =
+            "--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"softwarePackage\"\n\nIDV\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"emailAddress\"\n\nidv@ucar.edu\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"os\"\n\n<OSNAME>\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"subject\"\n\nhello\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"attachmentTwo\"; filename=\"bundle.xidv\"\nContent-Type: application/octet-stream\n\nbundle\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"organization\"\n\nUCAR\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"fullName\"\n\nMr. Jones\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"description\"\n\nTestFormBuilder\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"attachmentThree\"; filename=\"attach3XXXXXXXXXXXXXXXXXXXX.txt\"\nContent-Type: application/octet-stream; charset=US-ASCII\n\narbitrary data\n\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"packageVersion\"\n\n1.0.1\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"attachmentOne\"; filename=\"extra.html\"\nContent-Type: application/octet-stream\n\nextra\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"hardware\"\n\nx86\n--XXXXXXXXXXXXXXXXXXXX--\n";
+
 }

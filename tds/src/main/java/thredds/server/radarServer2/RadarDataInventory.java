@@ -40,7 +40,6 @@ import ucar.nc2.time.*;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.EarthLocation;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -65,23 +64,23 @@ public class RadarDataInventory {
     private EnumMap<DirType, Set<String>> items;
     private Path collectionDir;
     private DirectoryStructure structure;
-    private String fileTimeRegex, fileTimeFmt, dataFormat;
+    private String fileTimeFmt, dataFormat;
+    private java.util.regex.Pattern fileTimeRegex;
     private boolean dirty;
     private CalendarDate lastUpdate;
-    private int maxCrawlItems, maxCrawlDepth;
+    private int maxCrawlItems;
     private StationList stations;
     private CalendarPeriod nearestWindow, rangeAdjustment;
     private String name, description;
     private DateRange timeCoverage;
     private RadarServerConfig.RadarConfigEntry.GeoInfo geoCoverage;
 
-    public RadarDataInventory(Path datasetRoot) {
+    public RadarDataInventory(Path datasetRoot, int numCrawl) {
         items = new EnumMap<>(DirType.class);
         collectionDir = datasetRoot;
         structure = new DirectoryStructure(collectionDir);
         dirty = true;
-        maxCrawlItems = 5;
-        maxCrawlDepth = 3;
+        maxCrawlItems = numCrawl;
         stations = new StationList();
         nearestWindow = CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
     }
@@ -157,6 +156,7 @@ public class RadarDataInventory {
     }
 
     public static class DirectoryStructure {
+        int maxCrawlDepth = 1;
         private static class DirEntry {
             public DirType type;
             public String fmt;
@@ -189,10 +189,9 @@ public class RadarDataInventory {
 
             public Date getDate(Path path) {
                 Path relPath = base.relativize(path);
-                String[] parts = relPath.toString().split(sep);
                 StringBuilder sb = new StringBuilder("");
                 for (Integer l: levels) {
-                    sb.append(parts[l]);
+                    sb.append(relPath.getName(l));
                 }
                 try {
                     SimpleDateFormat fmt = getFormat();
@@ -204,20 +203,19 @@ public class RadarDataInventory {
         }
 
         private Path base;
-        private String sep;
 
         private List<DirEntry> order;
         private List<Integer> keyIndices;
 
         public DirectoryStructure(Path dir) {
             base = dir;
-            sep = System.getProperty("file.separator");
             order = new ArrayList<>();
             keyIndices = new ArrayList<>();
         }
 
         public void addSubDir(DirType type, String fmt) {
             if (type == DirType.Station || type == DirType.Variable) {
+                maxCrawlDepth = order.size() + 1;
                 keyIndices.add(order.size());
             }
             order.add(new DirEntry(type, fmt));
@@ -226,10 +224,9 @@ public class RadarDataInventory {
         // Get a key for a path based on station/var
         public String getKey(Path path) {
             Path relPath = base.relativize(path);
-            String[] parts = relPath.toString().split(sep);
             StringBuilder sb = new StringBuilder("");
             for (int ind: keyIndices) {
-                sb.append(parts[ind]);
+                sb.append(relPath.getName(ind));
             }
             return sb.toString();
         }
@@ -276,14 +273,14 @@ public class RadarDataInventory {
     }
 
     public void addFileTime(String regex, String fmt) {
-        fileTimeRegex = regex;
+        fileTimeRegex = java.util.regex.Pattern.compile(regex);
         fileTimeFmt = fmt;
     }
 
     private void findItems(Path start, int level) {
         // Add each entry from this level to the appropriate item box
         // and recurse
-        if (level >= structure.order.size() || level >= maxCrawlDepth)
+        if (level >= structure.order.size() || level >= structure.maxCrawlDepth)
             return;
 
         DirectoryStructure.DirEntry entry = structure.order.get(level);
@@ -299,7 +296,7 @@ public class RadarDataInventory {
         int crawled = 0;
         try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(start)) {
             for (Path p : dirStream) {
-                if (p.toFile().isDirectory()) {
+                if (Files.isDirectory(p)) {
                     String item = p.getFileName().toString();
                     values.add(item);
                     // Try to grab station info from some file
@@ -480,7 +477,7 @@ public class RadarDataInventory {
                         for (Object next: queryItem) {
                             for (Path p : results) {
                                 Path nextPath = p.resolve(next.toString());
-                                if (nextPath.toFile().exists())
+                                if (Files.exists(nextPath))
                                     newResults.add(nextPath);
                             }
                         }
@@ -519,8 +516,7 @@ public class RadarDataInventory {
             for(Path p : filteredResults) {
                 try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
                     for (Path f: dirStream) {
-                        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(fileTimeRegex);
-                        java.util.regex.Matcher regexMatcher = pattern.matcher(f.toString());
+                        java.util.regex.Matcher regexMatcher = fileTimeRegex.matcher(f.toString());
                         if (!regexMatcher.find()) continue;
 
                         try {
@@ -565,41 +561,6 @@ public class RadarDataInventory {
             }
 
             return filteredFiles;
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
-        for (String name : args) {
-            File baseDir = new File(name);
-            if (baseDir.isDirectory()) {
-                RadarDataInventory dw = new RadarDataInventory(baseDir.toPath());
-                dw.addVariableDir();
-                dw.addStationDir();
-                dw.addDateDir("yyyyMMdd");
-
-                System.out.println("Stations:");
-                for (Object res : dw.listItems(DirType.Station))
-                    System.out.println("\t" + res);
-
-                System.out.println("Variables:");
-                for (Object res : dw.listItems(DirType.Variable))
-                    System.out.println("\t" + res);
-
-                System.out.println("Dates:");
-                for (Object res : dw.listItems(DirType.Date))
-                    System.out.println("\t" + res);
-
-                Query q = dw.newQuery();
-                q.addVariable("N0Q");
-                q.addStation("TLX");
-                q.addDateRange(CalendarDateRange.of(CalendarDate.of(null, 2014,
-                                6, 24, 0, 0, 0),
-                        CalendarDate.of(null, 2014, 6, 25, 0, 0, 0)));
-
-                System.out.println("Results of query:");
-                for (Query.QueryResultItem i : q.results())
-                    System.out.println("File: " + i.file.toString());
-            }
         }
     }
 }

@@ -35,19 +35,8 @@ package opendap.test;
 
 // Test that the DDS parsing is correct
 
-import org.junit.Test;
-
 public class TestDDS extends TestDapParser {
-  final static String TITLE = "DAP DDS Parser Tests";
-
   public TestDDS() {
     setExtensions(".dds",".dds");
   }
-
-  @Test
-  public void testDDS() throws Exception {
-    runDapParser();
-  }
-
 }
-

@@ -32,8 +32,15 @@
  */
 package thredds.motherlode;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Formatter;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.client.catalog.CatalogRef;
@@ -49,18 +56,13 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.test.util.ExternalServer;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Formatter;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 /**
  * Run through the named catalogs, open a random dataset from each collection
  */
 @RunWith(Parameterized.class)
+@Category(NeedsExternalResource.class)
 public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   public static String server = "http://thredds-test.unidata.ucar.edu/thredds";
 
@@ -89,7 +91,6 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
 
   @Before
   public void init() throws IOException {
-      ExternalServer.TEST.assumeIsAvailable();
       DataFactory.setPreferCdm(true);
       HTTPSession.setGlobalUserAgent("TestMotherlodeDatasets");
   }

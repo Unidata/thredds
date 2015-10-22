@@ -32,21 +32,20 @@
 
 package thredds.tds.idd;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import ucar.unidata.test.util.ExternalServer;
-import ucar.unidata.test.util.NotTravis;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import ucar.unidata.test.util.NeedsExternalResource;
 
-@Category(NotTravis.class)
+
 @RunWith(Parameterized.class)
+@Category(NeedsExternalResource.class)
 public class CrawlRandomDatasetsOnMotherlodeTds
 {
     private String datasetUrl;
@@ -86,7 +85,6 @@ public class CrawlRandomDatasetsOnMotherlodeTds
     @Test
     public void crawlDataset()
     {
-        ExternalServer.LIVE.assumeIsAvailable();
         CatalogDatasetTestUtils.assertDatasetIsAccessible( this.datasetUrl);
     }
 }

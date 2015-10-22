@@ -1,5 +1,6 @@
 package dap4.test;
 
+import org.junit.Assert;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.NotJenkins;
@@ -149,7 +150,7 @@ public class TestH5Iosp extends DapTestCommon
     {
             for(H5IospTest testcase : chosentests) {
                 if(!doOneTest(testcase)) {
-                    assertTrue(false);
+                    Assert.assertTrue(false);
                 }
             }
     }

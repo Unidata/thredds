@@ -32,13 +32,15 @@
  */
 package thredds.motherlode;
 
-import thredds.util.HttpUriResolver;
-import thredds.util.HttpUriResolverFactory;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.junit.experimental.categories.Category;
+import thredds.util.HttpUriResolver;
+import thredds.util.HttpUriResolverFactory;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -49,6 +51,7 @@ import static org.junit.Assert.fail;
  * @author edavis
  * @since 4.0
  */
+@Category(NeedsExternalResource.class)
 public class TestUriResolver { //} extends TestCase {
 
   @org.junit.Test

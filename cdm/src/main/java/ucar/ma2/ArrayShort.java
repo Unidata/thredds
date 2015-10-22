@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 /**
@@ -126,10 +127,13 @@ public class ArrayShort extends Array {
       ja[i] = iter.getShortNext();
   }
 
-  public ByteBuffer getDataAsByteBuffer() {
-    ByteBuffer bb = ByteBuffer.allocate((int) (2 * getSize()));
-    ShortBuffer ib = bb.asShortBuffer();
-    ib.put((short[]) get1DJavaArray(getDataType())); // make sure its in canonical order
+  public ByteBuffer getDataAsByteBuffer() {return getDataAsByteBuffer(null);}
+
+    public ByteBuffer getDataAsByteBuffer(ByteOrder order)
+    {
+      ByteBuffer bb = super.getDataAsByteBuffer((int) (2 * getSize()), order);
+      ShortBuffer ib = bb.asShortBuffer();
+      ib.put((short[]) get1DJavaArray(getDataType())); // make sure its in canonical order
     return bb;
   }
 

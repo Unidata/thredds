@@ -46,7 +46,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.*;
 import java.lang.UnsupportedOperationException;
 import java.text.ParseException;
 import java.util.*;
@@ -161,7 +160,8 @@ public class RadarServerController {
         String contentPath = tdsContext.getThreddsDirectory().getPath();
         List<RadarServerConfig.RadarConfigEntry> configs = RadarServerConfig.readXML(contentPath + "/radar/radarCollections.xml");
         for (RadarServerConfig.RadarConfigEntry conf : configs) {
-            RadarDataInventory di = new RadarDataInventory(Paths.get(conf.diskPath));
+            RadarDataInventory di = new RadarDataInventory(conf.dataPath,
+                    conf.crawlItems);
             di.setName(conf.name);
             di.setDescription(conf.doc);
 

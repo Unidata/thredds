@@ -198,6 +198,9 @@ public class ToolsUI extends JPanel {
   private DebugFlags debugFlags;
   private boolean debug = false, debugTab = false, debugCB = false;
 
+  // Check if on a mac
+  static private final String osName = System.getProperty("os.name").toLowerCase();
+  static private final boolean isMacOs = osName.startsWith("mac os x");
 
   public ToolsUI(PreferencesExt prefs, JFrame parentFrame) {
     this.mainPrefs = prefs;
@@ -5528,6 +5531,11 @@ public class ToolsUI extends JPanel {
 
   //////////////////////////////////////////////////////////////////////////
   static private void exit() {
+    doSavePrefsAndUI();
+    System.exit(0);
+  }
+
+  static private void doSavePrefsAndUI()  {
     ui.save();
     Rectangle bounds = frame.getBounds();
     prefs.putBeanObject(FRAME_SIZE, bounds);
@@ -5544,8 +5552,6 @@ public class ToolsUI extends JPanel {
     FileCache.shutdown(); // shutdown threads
     DiskCache2.exit(); // shutdown threads
     MetadataManager.closeAll(); // shutdown bdb
-
-    System.exit(0);
   }
 
   // handle messages
@@ -5582,17 +5588,30 @@ public class ToolsUI extends JPanel {
 
   // run this on the event thread
   private static void createGui() {
-    try {
-      // Switch to Nimbus Look and Feel, if it's available.
-      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
+
+    if (isMacOs) {
+      System.setProperty("apple.laf.useScreenMenuBar", "true");
+      // fixes the case where users on a mac use the system bar to quit rather than
+      // closing a window using the 'x' button.
+      Runtime.getRuntime().addShutdownHook(new Thread() {
+        @Override
+        public void run() {
+          doSavePrefsAndUI();
         }
+      });
+    } else {
+      try {
+        // Switch to Nimbus Look and Feel, if it's available.
+        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+          if ("Nimbus".equals(info.getName())) {
+            UIManager.setLookAndFeel(info.getClassName());
+            break;
+          }
+        }
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+              UnsupportedLookAndFeelException e) {
+        log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
       }
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-            UnsupportedLookAndFeelException e) {
-      log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
     }
 
     // get a splash screen up right away

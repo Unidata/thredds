@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Concrete implementation of Array specialized for bytes.
@@ -123,7 +124,9 @@ public class ArrayByte extends Array {
   }
 
   @Override
-  public ByteBuffer getDataAsByteBuffer() {
+  public ByteBuffer getDataAsByteBuffer() {return getDataAsByteBuffer(null);}
+
+  public ByteBuffer getDataAsByteBuffer(ByteOrder order) {// order irrelevant here
     return ByteBuffer.wrap((byte[]) get1DJavaArray(getDataType()));
   }
 

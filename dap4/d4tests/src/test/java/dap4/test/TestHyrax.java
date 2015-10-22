@@ -1,5 +1,6 @@
 package dap4.test;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -285,7 +286,7 @@ public class TestHyrax extends DapTestCommon
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) pass = false;
         }
-        assertTrue("*** Fail: TestHyrax", pass);
+        Assert.assertTrue("*** Fail: TestHyrax", pass);
     }
 
     //////////////////////////////////////////////////

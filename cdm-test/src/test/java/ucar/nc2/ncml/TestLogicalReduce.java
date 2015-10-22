@@ -1,10 +1,13 @@
 package ucar.nc2.ncml;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.NeedsExternalResource;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -18,6 +21,8 @@ import java.util.Formatter;
 public class TestLogicalReduce {
 
   @Test
+  // NcML references "dods://geoport.whoi.edu/thredds/dodsC/ECOHAB_I/4151-a1h.cdf".
+  @Category(NeedsExternalResource.class)
   public void testStation() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "ncml/logicalReduce/4151-a1h.ncml";
     Formatter errlog = new Formatter();
@@ -34,6 +39,8 @@ public class TestLogicalReduce {
   }
 
   @Test
+  // NcML references "dods://geoport.whoi.edu/thredds/dodsC/WFAL/8602wh-a.nc"
+  @Category(NeedsExternalResource.class)
   public void testStationProfile() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "ncml/logicalReduce/8602wh-a.ncml";
     Formatter errlog = new Formatter();

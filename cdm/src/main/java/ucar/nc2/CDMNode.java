@@ -36,13 +36,16 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Indent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Define a superclass for all the CDM node classes: Group, Dimension, etc.
  * Define the sort of the node {@link CDMSort} so that we can
  * 1. do true switching on node type
  * 2. avoid use of instanceof
  * 3. Use container classes that have more than one kind of node
- * <p/>
+ * <p>
  * Also move various common fields and methods to here.
  *
  * @author Heimbigner
@@ -51,11 +54,14 @@ import ucar.nc2.util.Indent;
 public abstract class CDMNode
 {
 
-    CDMSort sort = null;
-    Group group = null;
-    Structure parentstruct = null;
-    boolean immutable = false;
-    String shortName = null;
+    protected CDMSort sort = null;
+    protected Group group = null;
+    protected Structure parentstruct = null;
+    protected boolean immutable = false;
+    protected String shortName = null;
+
+    protected Map<String, Object> annotations = new HashMap<>();
+
     //String fullName = null; // uses backslash escaping
 
     // HACK: sadly, because of the existing class structure,
@@ -66,7 +72,7 @@ public abstract class CDMNode
     // may contain group information separated
     // by forward slash.
 
-    String dodsname = null;
+    protected String dodsname = null;
 
     //////////////////////////////////////////////////
     // Constructors
@@ -313,11 +319,11 @@ public abstract class CDMNode
         if(!(node instanceof Variable))
             return node;
         Variable inner = (Variable) node;
-        for(;;) {
+        for(; ; ) {
             if(inner instanceof VariableDS) {
                 VariableDS vds = (VariableDS) inner;
                 inner = vds.getOriginalVariable();
-                if(inner == null)  {
+                if(inner == null) {
                     inner = vds;
                     break;
                 }
@@ -331,6 +337,24 @@ public abstract class CDMNode
             } else break; // base case we have straight Variable or Stucture
         }
         return inner;
+    }
+
+    public Map<String, Object> getAnnotations()
+    {
+        return annotations;
+    }
+
+    public Object getAnnotation(String key)
+    {
+        return annotations.get(key);
+    }
+
+    public Object annotate(String key, Object value)
+    {
+        Object old = annotations.get(key);
+        if(key != null && value != null)
+            annotations.put(key,value);
+        return old;
     }
 
 }

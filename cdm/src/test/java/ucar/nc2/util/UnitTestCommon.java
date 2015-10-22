@@ -12,6 +12,9 @@ import ucar.unidata.test.Diff;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.Set;
@@ -21,9 +24,9 @@ public class UnitTestCommon
     //////////////////////////////////////////////////
     // Static Constants
 
-    static final boolean DEBUG = false;
+    static public final boolean DEBUG = false;
 
-    static protected final Charset UTF8 = Charset.forName("UTF-8");
+    static public final Charset UTF8 = Charset.forName("UTF-8");
 
     // Look for these to verify we have found the thredds root
     static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
@@ -197,7 +200,8 @@ public class UnitTestCommon
         return this.threddsroot;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return this.name;
     }
 
@@ -207,7 +211,7 @@ public class UnitTestCommon
     public void
     visual(String header, String captured)
     {
-       visual(header,captured,'-');
+        visual(header, captured, '-');
     }
 
     public void
@@ -218,13 +222,15 @@ public class UnitTestCommon
         // Dump the output for visual comparison
         System.out.println("Testing " + getName() + ": " + header + ":");
         StringBuilder sep = new StringBuilder();
-        for(int i=0;i<10;i++) sep.append(marker);
+        for(int i = 0; i < 10; i++) {
+            sep.append(marker);
+        }
         System.out.println(sep.toString());
         System.out.print(captured);
         System.out.println(sep.toString());
     }
 
-    public String compare(String tag, String baseline, String s)
+    static public String compare(String tag, String baseline, String s)
     {
         try {
             // Diff the two print results
@@ -410,5 +416,6 @@ public class UnitTestCommon
         sw.close();
         return sw.toString();
     }
+
 }
 

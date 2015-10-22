@@ -3,6 +3,7 @@ package dap4.test;
 import dap4.dap4shared.ChunkInputStream;
 import dap4.core.util.*;
 import dap4.dap4shared.RequestMode;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -106,7 +107,7 @@ public class TestServletConstraints extends DapTestCommon
 
         String makeurl(RequestMode ext)
         {
-            String url = canonjoin(FAKEURLPREFIX,canonjoin(TESTINPUTDIR,dataset));
+            String url = canonjoin(FAKEURLPREFIX, canonjoin(TESTINPUTDIR, dataset));
             if(ext != null) url += "." + ext.toString();
             if(constraint != null) {
                 url += "?" + CONSTRAINTTAG + "=";
@@ -141,20 +142,10 @@ public class TestServletConstraints extends DapTestCommon
 
     public TestServletConstraints()
     {
-        this("TestServletConstraints");
-    }
-
-    public TestServletConstraints(String name)
-    {
-        this(name, null);
-    }
-
-    public TestServletConstraints(String name, String[] argv)
-    {
-        super(name);
-        ConstraintTest.setRoots(canonjoin(getResourceDir(),TESTINPUTDIR),
-                canonjoin(getResourceDir(),BASELINEDIR),
-                canonjoin(getResourceDir(),GENERATEDIR));
+        super("TestServletConstraints");
+        ConstraintTest.setRoots(canonjoin(getResourceDir(), TESTINPUTDIR),
+                canonjoin(getResourceDir(), BASELINEDIR),
+                canonjoin(getResourceDir(), GENERATEDIR));
         defineAllTestcases();
         chooseTestcases();
     }
@@ -314,7 +305,7 @@ public class TestServletConstraints extends DapTestCommon
             if(!doOneTest(testcase))
                 pass = false;
         }
-        assertTrue("***Fail: TestServletConstraints", pass);
+        Assert.assertTrue("***Fail: TestServletConstraints", pass);
     }
 
     //////////////////////////////////////////////////

@@ -35,11 +35,13 @@ package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Section;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.unidata.test.util.ExternalServer;
+import ucar.unidata.test.util.NeedsExternalResource;
+
 
 /**
  * Describe
@@ -50,8 +52,8 @@ import ucar.unidata.test.util.ExternalServer;
 public class TestRemoteCoverage {
 
   @Test
+  @Category(NeedsExternalResource.class)
   public void testCdmRemoteCoverage() throws Exception {
-    ExternalServer.LIVE.assumeIsAvailable();
     String ds = "http://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
 
     try (DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null)) {

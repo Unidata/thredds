@@ -84,7 +84,7 @@ public class LambertConformal extends ProjectionImpl {
    * @param lon0 lon origin of the coord. system on the projection plane
    * @param par1 standard parallel 1
    * @param par2 standard parallel 2
-   * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
+   * @throws IllegalArgumentException if lat0 > +/-90 or if par1, par2 >= +/-90 deg
    */
   public LambertConformal(double lat0, double lon0, double par1, double par2) {
     this(lat0, lon0, par1, par2, 0.0, 0.0, EARTH_RADIUS);
@@ -100,7 +100,7 @@ public class LambertConformal extends ProjectionImpl {
    * @param par2           standard parallel 2
    * @param false_easting  natural_x_coordinate + false_easting = x coordinate in km
    * @param false_northing natural_y_coordinate + false_northing = y coordinate  in km
-   * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
+   * @throws IllegalArgumentException if lat0 > +/-90 or if par1, par2 >= +/-90 deg
    */
   public LambertConformal(double lat0, double lon0, double par1,
                           double par2, double false_easting,
@@ -120,7 +120,7 @@ public class LambertConformal extends ProjectionImpl {
    * @param false_easting  natural_x_coordinate + false_easting = x coordinate in km
    * @param false_northing natural_y_coordinate + false_northing = y coordinate  in km
    * @param earth_radius   radius of the earth in km
-   * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
+   * @throws IllegalArgumentException if lat0 > +/-90 or if par1, par2 >= +/-90 deg
    */
   public LambertConformal(double lat0, double lon0, double par1,
                           double par2, double false_easting,
@@ -163,12 +163,16 @@ public class LambertConformal extends ProjectionImpl {
    * Precalculate some stuff
    */
   private void precalculate() {
-    if (Math.abs(lat0 - PI_OVER_2) < TOLERANCE) {
-      throw new IllegalArgumentException("LambertConformal lat0 = 90");
+    if (Math.abs(lat0) > PI_OVER_2) {
+      throw new IllegalArgumentException("LambertConformal lat0 outside range (-90,90)");
     }
-    if (Math.abs(lat0 + PI_OVER_2) < TOLERANCE) {
-      throw new IllegalArgumentException("LambertConformal lat0 = -90");
+    if (Math.abs(par1) >= 90.0) {
+      throw new IllegalArgumentException("LambertConformal abs(par1) >= 90");
     }
+    if (Math.abs(par2) >= 90.0) {
+      throw new IllegalArgumentException("LambertConformal abs(par2) >= 90");
+    }
+
     if (Math.abs(par1 - 90.0) < TOLERANCE) {
       throw new IllegalArgumentException("LambertConformal par1 = 90");
     }
