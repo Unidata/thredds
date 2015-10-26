@@ -385,10 +385,14 @@ public class RadarServerController {
         }
 
         RadarDataInventory.Query q = di.newQuery();
-        if (!setTimeLimits(q, time, start, end, period, temporal))
-            throw new UnsupportedOperationException("Either a single time " +
-                    "argument, temporal=all, or a combination of time_start, " +
-                    "time_end, and time_duration must be provided.");
+        try {
+            if (!setTimeLimits(q, time, start, end, period, temporal))
+                throw new UnsupportedOperationException("Either a single time " +
+                        "argument, temporal=all, or a combination of time_start, " +
+                        "time_end, and time_duration must be provided.");
+        } catch (ParseException e) {
+            throw new UnsupportedOperationException("Invalid time string passed: " + e.getMessage());
+        }
         StringBuilder queryString = new StringBuilder();
         addQueryElement(queryString, "time", time);
         addQueryElement(queryString, "time_start", start);
