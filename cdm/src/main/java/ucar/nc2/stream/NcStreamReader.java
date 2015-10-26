@@ -176,10 +176,10 @@ public class NcStreamReader {
         ArrayStructureBB data = new ArrayStructureBB(members, section.getShape(), ByteBuffer.wrap(datab), 0);
         return new DataResult(dproto.getVarName(), data);
 
-      } else { // version > 0 uses a NcStreamProto.StructureData message
+      } /* else { // version > 0 uses a NcStreamProto.StructureData message
         ArrayStructureBB data = NcStream.decodeArrayStructure(members, section.getShape(), datab);
         return new DataResult(dproto.getVarName(), data);
-      }
+      } */
     }
 
     // otherwise its a multidim array
@@ -260,7 +260,7 @@ public class NcStreamReader {
         int dsize = NcStream.readVInt(is);
         byte[] datab = new byte[dsize];
         NcStream.readFully(is, datab);
-        curr = NcStream.decodeStructureData(members, bo, datab);
+        // curr = NcStream.decodeStructureData(members, bo, datab);
         // System.out.printf("StreamDataIterator read sdata size= %d%n", dsize);
 
       } else if (NcStream.test(b, NcStream.MAGIC_VEND)) {
