@@ -309,6 +309,7 @@ public class CompareNetcdf2 {
         StringWriter sw = new StringWriter(5000);
         e.printStackTrace(new PrintWriter(sw));
         f.format("%s", sw.toString());
+        ok = false;
       }
     }
 

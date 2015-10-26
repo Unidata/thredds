@@ -2,13 +2,13 @@
 :tdsDocs: ../../../tds/reference/services
 
 CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using
-link:NcStream.html[ncstream] as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
+link:NcStream.adoc[ncstream] as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
 two levels of services:
 
 1.  *CdmRemote* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
 CDM local datasets and *DODSNetcdfFile* provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.
 2.  *link:CdmrFeature.adoc[CdmrFeature]* provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and
-Unidata's link:{tdsDocs}/NetcdfSubsetServiceReference.html[NetCDF Subset Service] (NCSS). This API and protocol is redone
+Unidata's link:{tdsDocs}/NetcdfSubsetServiceReference.adoc[NetCDF Subset Service] (NCSS). This API and protocol is redone
 in version 5.0.
 
 The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.
@@ -38,7 +38,7 @@ where:
 
 * Request parameter values are case-insensitive
 * The var parameter is only used for data requests (req=data)
-* The variable names are case-sensitive and must be link:../../CDM/Identifiers.html#cdmremote[backslash-escaped]
+* The variable names are case-sensitive and must be link:../../CDM/Identifiers.adoc#cdmremote[backslash-escaped]
 * Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
 * Optional components are enclosed between square braces '[' and ']'.
 
@@ -47,31 +47,31 @@ Example service requests are:
 [width="100%",cols="50%,50%",options="header",]
 |======================================================================================================================
 |Request |Response
-|http://server:8080/thredds/cdmremote/data.nc?**req=CDL** |dataset CDL
-|http://server:8080/thredds/cdmremote/data.nc?**req=NcML** |dataset NcML
-|http://server:8080/thredds/cdmremote/data.nc?**req=capabilities** |capabilities XML
-|http://server:8080/thredds/cdmremote/data.nc?**req=header** |header ncstream message, contains the structural metadata
-|http://server:8080/thredds/cdmremote/data.nc?**req=data&var=Temp(0:99:10,0:127,:);lat;lon** |ncstream data message
+|\http://server:8080/thredds/cdmremote/data.nc?**req=CDL** |dataset CDL
+|\http://server:8080/thredds/cdmremote/data.nc?**req=NcML** |dataset NcML
+|\http://server:8080/thredds/cdmremote/data.nc?**req=capabilities** |capabilities XML
+|\http://server:8080/thredds/cdmremote/data.nc?**req=header** |header ncstream message
+|\http://server:8080/thredds/cdmremote/data.nc?**req=data&var=Temp(0:99:10,0:127,:);lat;lon** |ncstream data message
 |======================================================================================================================
 
 * Data request uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.
-* Variable names are case-sensitive and must be link:../../CDM/Identifiers.html#cdmremote[backslash-escaped]
+* Variable names are case-sensitive and must be link:../../CDM/Identifiers.adoc#cdmremote[backslash-escaped]
 
 === Capabilities
 
 [source,xml]
------------------------------------------------------------------------------------------------------------------
+----
 <cdmRemoteCapabilities location="http://localhost:8080/thredds/cdmremote/testAll/testdata/2004050300_eta_211.nc">
   <featureDataset url="http://localhost:8080/thredds/cdmremote/testAll/testdata/2004050300_eta_211.nc" />
 </cdmRemoteCapabilities>
------------------------------------------------------------------------------------------------------------------
+----
 
 === Responses
 
 * CDL and NcML responses show the structural metadata of the dataset in CDL and NcML
 * Capabilities response indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. The Capabilities
 response is a simple ad-hoc XML format. Not sure if we need this.
-* The header and data reponses are described by the link:NcStreamGrammer.html[ncstream Grammer.] You need a client library that can parse protobuf
+* The header and data reponses are described by the link:NcStreamGrammer.adoc[ncstream Grammer.] You need a client library that can parse protobuf
 messages.
 
 == Client libraries

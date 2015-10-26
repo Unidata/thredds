@@ -97,6 +97,8 @@ public class NcStreamWriter {
 
     // length of data uncompressed
     long uncompressedLength = section.computeSize();
+    //if (uncompressedLength == 0)
+    //  System.out.printf("HEY%n");
     if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
       uncompressedLength *= v.getElementSize(); // nelems for vdata, else nbytes
 
@@ -111,7 +113,7 @@ public class NcStreamWriter {
     if (v.getDataType() == DataType.SEQUENCE) {
       int count = 0;
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
-       //coverity[FB.BC_UNCONFIRMED_CAST]
+      //coverity[FB.BC_UNCONFIRMED_CAST]
       try (StructureDataIterator iter = seq.getStructureIterator(-1)) {
         while (iter.hasNext()) {
           size += writeBytes(out, NcStream.MAGIC_VDATA); // magic
@@ -128,14 +130,14 @@ public class NcStreamWriter {
 
     if (v.getDataType() == DataType.STRUCTURE) {
       ArrayStructure abb = (ArrayStructure) v.read();   // read all - LOOK break this up into chunks if needed
-       //coverity[FB.BC_UNCONFIRMED_CAST]
+      //coverity[FB.BC_UNCONFIRMED_CAST]
       size += NcStream.encodeArrayStructure(abb, bo, out);
-     if (show) System.out.printf(" NcStreamWriter sent ArrayStructure bytes = %d%n", size);
-     return size;
+      if (show) System.out.printf(" NcStreamWriter sent ArrayStructure bytes = %d%n", size);
+      return size;
     }
 
     // Writing the size of the block is handled for us.
-    DataOutputStream dos = compress.setupStream(out, (int)uncompressedLength);
+    DataOutputStream dos = compress.setupStream(out, (int) uncompressedLength);
     v.readToStream(section, dos);
     dos.flush();
     size += dos.size();
@@ -168,7 +170,7 @@ public class NcStreamWriter {
       if (compressAtt != null && compressAtt.isString()) {
         String compType = compressAtt.getStringValue();
         if (compType.equalsIgnoreCase(CDM.COMPRESS_DEFLATE)) {
-        compress = NcStreamCompression.deflate();
+          compress = NcStreamCompression.deflate();
         } else {
           if (show) System.out.printf(" Unknown compression type %s. Defaulting to none.%n", compType);
           compress = NcStreamCompression.none();

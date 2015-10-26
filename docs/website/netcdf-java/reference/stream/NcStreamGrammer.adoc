@@ -1,12 +1,10 @@
-Ncstream Grammar
-----------------
+= Ncstream Grammar
 
-Version 2 (DRAFT)
-~~~~~~~~~~~~~~~~~
+== Version 2 (DRAFT)
 
 An __ncstream__ is an ordered sequence of one or more messages:
 
--------------------------------------------------------------------------------------------------
+----
    ncstream := MAGIC_START, {message}*, MAGIC_END
    message := headerMessage | dataMessage | errorMessage
    headerMessage := MAGIC_HEADER, vlenb, NcStreamProto.Header
@@ -33,7 +31,7 @@ primitives:
    MAGIC_VEND  := 0xed, 0xef, 0xfe, 0xda
    MAGIC_ERR   := 0xab, 0xad, 0xba, 0xda
    MAGIC_END   := 0xed, 0xed, 0xde, 0xde
--------------------------------------------------------------------------------------------------
+----
 
 The protobuf messages are defined by
 
@@ -52,67 +50,82 @@ taken from the variable's __FillValue_ attribute if it exists, else the default 
 * Primitive types are fixed length, following Java; StructureData has no padding.
 * If StructureData member list is empty, then all members are present.
 
-Data message
-^^^^^^^^^^^^
+== Data message
 
----------------------------------------------------------------------------------------------
+----
+message Range {
+  uint64 start = 1;
+  uint64 size = 2;   // 0 = empty, -1 = vlen (maybe leave off vlens)
+  uint64 stride = 3;
+}
+message Section {
+  repeated Range range = 1;
+}
 enum Compress {
   NONE = 0;
   DEFLATE = 1;
 }
 message Data {
-  required string varName = 1; // full escaped name. change to hash or index to save space ??
-  required DataType dataType = 2;
-  optional Section section = 3; // not required for Sequence
-  optional bool bigend = 4 [default = true];
-  optional uint32 version = 5 [default = 0];
-  optional Compress compress = 6 [default = NONE];
-  optional fixed32 crc32 = 7;
-  optional uint32 uncompressedSize = 8;
+  string varName = 1; # <1>
+  DataType dataType = 2; # <2>
+  Section section = 3; # <3>
+  oneof bigend_present { # <4>
+    bool bigend = 4;  // [default=true] in proto2
+  }
+  uint32 version = 5; // version=2 for proto2, =3 for proto3 (v5.0+) # <5>
+  Compress compress = 6; # <6>
+  bool vdata = 7; # <7>
+  uint32 uncompressedSize = 8; # <8>
 }
----------------------------------------------------------------------------------------------
+----
 
-1.  full name of Variable
-2.  _ucar.nc2.DataType_ for the returned array.
-3.  Section of the full variable's shape.
-4.  stored in big or small endian (reader makes right).
-5.  version of the data storage format.
-6.  compression algorithm.
-7.  crc32 (not used yet)
-8.  uncompressed size of the returned data, in bytes.
+<1>  full name of Variable
+<2>  _DataType_ for the returned array (corresponds to _ucar.nc2.DataType_)
+<3>  Section of the full variable's shape.
+<4>  Stored in big or small endian (reader makes right). One must test if version >= 3 to deal with missing values.
+http://stackoverflow.com/questions/33204321/upgrading-protobuf-from-version-2-to-3-incompatible-with-protobuf-default-valu[Details]
+<5>  version of the data storage format.
+<6>  compression algorithm.
+<7>  if the Variable is variable-length
+<8>  uncompressed size of the returned data, in bytes.
 
 **Primitive types**: arrays of primitives are stored in row-major order.
 
 * *char* is a legacy data type contains uninterpreted characters, one character per byte. Typically these contain 7-bit ASCII characters.
 * *byte, short, int, long* (signed) and *ubyte, ushort, uint, ulong* (unsigned), or **float**, *double* specified by the __dataType__.
 
-*Variable length types (String, Opaque):* First the number of objects is written, then each object, preceded by its length in bytes as a vlen. Strings
+*Variable length types (String, Opaque):* The number of objects is written, then each object, preceded by its length in bytes as a vlen. Strings
 are encoded as UTF-8 bytes. Opaque is just a bag of bytes.
 
 *Variable length arrays:* First the number of objects is written, then each object, preceded by its length in bytes as a vlen.
 
 *Structure types (Structure, Sequence):* An array of StructureData. _Can be encoded in row or col (?)._
 
-Data Encoding
-~~~~~~~~~~~~~
+== Data Encoding
 
-Vlen data example
-^^^^^^^^^^^^^^^^^
+=== String array example
 
---------------------------------------
+----
+String desc(5);
+----
+.  5 (as vlen)
+.  then 5 String objects, for each:
+..  length in bytes (as vlen)
+..  UTF-8 bytes
+
+=== Vlen data example
+
+----
 int levels(ninst= 23, acqtime=100, *);
---------------------------------------
+----
 
-encoded as
-
-.  2300 as a vlen
+.  2300 (as vlen)
 .  then 2300 objects, for each:
-.  length in bytes
-.  nelems
-.  nelems integers
+..  length in bytes (as vlen)
+..  nelems (as vlen)
+..  nelems integers
 
-Compound Type
-^^^^^^^^^^^^^
+=== Compound Type
 
 Should be able to pop this in and out of a ByteBuffer (java) or void * (C), then use pointer manipulation to decode on the fly. Maybe good candidate
 for encodeing with protobuf
@@ -141,12 +154,11 @@ in this case, you have to read everything. if buffer has no vlens or strings, co
 
 this indicates maybe we should rewrite ArrayStructureBB to have seperate heaps for each struct.
 
-Nested Vlen
-^^^^^^^^^^^
+=== Nested Vlen
 
 A nested variable length field, goes on the heap
 
-------------------------------------------------------------------
+----
 netcdf Q:/cdmUnitTest/formats/netcdf4/vlen/cdm_sea_soundings.nc4 {
  dimensions:
    Sounding = 3;
@@ -158,10 +170,9 @@ netcdf Q:/cdmUnitTest/formats/netcdf4/vlen/cdm_sea_soundings.nc4 {
     float temp_vl(*);
   } fun_soundings(Sounding=3);
 }
-------------------------------------------------------------------
+----
 
-Notes and Questions
-~~~~~~~~~~~~~~~~~~~
+== Notes and Questions
 
 Should have a way to efficiently encode sparse data.
 
@@ -203,9 +214,8 @@ Extending the array model to very large datasets may not be appropriate. Row vs 
 
 What about a transform language on the netcdf4 / CDM data model, to allow efficient rewriting of data ? Then it also becomes an extraction language ??
 
-
 '''''
 
-image:../../nc.gif[image] This document was last updated August 2015
+image:../../nc.gif[image] This document was last updated October 2015
 
  

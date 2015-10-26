@@ -135,7 +135,9 @@ public class NcStreamReader {
 
     // special cases
     if (dataType == DataType.STRING) {
+      int nobjs = NcStream.readVInt(is);
       Array data = Array.factory(dataType, section.getShape());
+      assert nobjs == section.computeSize();
       IndexIterator ii = data.getIndexIterator();
       while (ii.hasNext()) {
         int slen = NcStream.readVInt(is);
@@ -146,7 +148,9 @@ public class NcStreamReader {
       return new DataResult(dproto.getVarName(), data);
 
     } else if (dataType == DataType.OPAQUE) {
+      int nobjs = NcStream.readVInt(is);
       Array data = Array.factory(dataType, section.getShape());
+      assert nobjs == section.computeSize();
       IndexIterator ii = data.getIndexIterator();
       while (ii.hasNext()) {
         int slen = NcStream.readVInt(is);

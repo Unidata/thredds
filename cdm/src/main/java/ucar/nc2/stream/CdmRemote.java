@@ -152,7 +152,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     Formatter f = new Formatter();
     f.format("%s?req=data&var=%s", remoteURI, v.getFullNameEscaped());
-    if (section != null && v.getDataType() != DataType.SEQUENCE) {
+    if ((section != null) && (section.computeSize() != v.getSize()) && (v.getDataType() != DataType.SEQUENCE)) {
       f.format("(%s)", section.toString());
     }
     // sbuff.append( URLEncoder.encode(f.toString(), "UTF-8")); // LOOK dont % escape query; entire thing varname and section

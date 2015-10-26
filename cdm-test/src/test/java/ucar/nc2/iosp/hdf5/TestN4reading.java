@@ -159,7 +159,7 @@ public class TestN4reading {
     //String filename = "C:/data/work/bruno/fpsc_d1wave_24-11.nc";
     String filename = testDir+"vlen/fpcs_1dwave_2.nc";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
-      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+      System.out.println("\n**** testVlen open\n\n" + ncfile);
       Variable v = ncfile.findVariable("levels");
       Array data = v.read();
       NCdumpW.printArray(data, "read()", new PrintWriter(System.out), null);
@@ -201,6 +201,50 @@ public class TestN4reading {
         System.out.println(as);
       }
     }
+  }
+
+  @Test
+  public void testVlen2() throws IOException, InvalidRangeException {
+    String filename = testDir+"vlen/tst_vlen_data.nc4";
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      System.out.println("\n**** testVlen2 open\n\n" + ncfile);
+      Variable v = ncfile.findVariable("ragged_array");
+      Array data = v.read();
+      NCdumpW.printArray(data, "read()", new PrintWriter(System.out), null);
+
+      assert data instanceof ArrayObject;
+      int row = 0;
+      while (data.hasNext()) {
+        Object vdata = data.next();
+        assert vdata instanceof Array;
+        assert vdata instanceof ArrayFloat;
+        assert vdata instanceof ArrayFloat.D1;
+        System.out.printf("%d len %d%n", row++, ((Array) vdata).getSize());
+      }
+
+      // try subset
+      data = v.read("0:4:2,:");
+      NCdumpW.printArray(data, "read(0:4:2,:)", new PrintWriter(System.out), null);
+      assert data instanceof ArrayObject;
+      row = 0;
+      while (data.hasNext()) {
+        Object vdata = data.next();
+        assert vdata instanceof Array;
+        assert vdata instanceof ArrayFloat;
+        assert vdata instanceof ArrayFloat.D1;
+        System.out.printf("%d len %d%n", row++, ((Array) vdata).getSize());
+      }
+
+      try {
+        // should fail
+        data = v.read(":,0");
+        assert false;
+      } catch (InvalidRangeException e) {
+        assert true;
+      }
+
+    }
+
   }
 
   /*

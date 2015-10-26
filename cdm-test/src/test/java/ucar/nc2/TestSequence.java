@@ -105,11 +105,21 @@ public class TestSequence {
       assert v instanceof Sequence;
       Sequence record = (Sequence) v;
 
-      System.out.printf("Sequence.getVariables%n");
+      System.out.printf("Sequence.getVariables %s%n", ncfile.getLocation());
       for (Variable vv : record.getVariables()) {
         System.out.printf(" %s == %s%n", vv.getShortName(), vv.getFullName());
       }
       System.out.printf("%n");
+
+      int nr = 0;
+      StructureDataIterator iter2 = record.getStructureIterator();
+      while (iter2.hasNext()) { // loop over all StructureData
+        StructureData sdata = iter2.next();
+        ArraySequence nested = sdata.getArraySequence("seq1");
+        System.out.printf("count nested=%d%n", nested.getStructureDataCount());
+        nr++;
+      }
+      System.out.printf("count %s = %d%n", record.getFullName(), nr);
 
       Array data = v.read();
       assert data instanceof ArraySequence;
@@ -131,8 +141,8 @@ public class TestSequence {
           try (StructureDataIterator nestedIter = nested.getStructureDataIterator()) {
             while (nestedIter.hasNext()) {
               StructureData nestedData = nestedIter.next();
-              // NCdumpW.printStructureData(pw, nestedData);
               assert nestedData != null;
+              int fld1Value = nestedData.getScalarShort("Virtual_temperature");
             }
           }
         }

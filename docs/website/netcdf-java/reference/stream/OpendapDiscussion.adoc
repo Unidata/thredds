@@ -1,4 +1,4 @@
-== ``Datasets that change'' email discussion on dods-tech (Dec 2005)
+== Datasets that change email discussion on dods-tech (Dec 2005)
 
 John wrote:
 
@@ -17,9 +17,9 @@ be a hard thing to do. Otherwise it must give an error back to the
 application, which will have to re-fetch the metadata, rebuild its GUI,
 notify the user, etc. Thats a lot of burden on the application, and not
 the best user experience. So how can we minimize when that has to
-happen? +
- +
- Suppose we implement a ``Last-Modified'' or a DDX checksum, or some way
+happen?
+
+Suppose we implement a ``Last-Modified'' or a DDX checksum, or some way
 to indicate that the dataset has changed. In my aggregation server
 scenario, this would happen every 15 minutes. In fact, we have datasets
 that change even more often. So this would be happening all the time.
@@ -44,17 +44,17 @@ constantly.
 So when I look at the specifics of this, I see that I can mitigate the
 problem completely if im willing to work hard enough on the server. But
 it seems that I do need to keep track of users, i.e sessions. The
-principle would be:  __*``If the dataset can change, the server must set
+principle would be:  _If the dataset can change, the server must set
 a session cookie. If the client establishes a session by returning the
 cookie, the server must keep the client’s view of the dataset from
-changing during the lifetime of the session''*__ +
- +
- Adding Last-Modified or DDX checksum seems like also a good idea, so
+changing during the lifetime of the session._
+
+Adding Last-Modified or DDX checksum seems like also a good idea, so
 that clients that are smart enough can deal with changed datasets, eg
-discover recently arrived data, etc. Here the principle might be: _*``If
+discover recently arrived data, etc. Here the principle might be: _If
 the dataset can change, the server must set the Last-Modified/DDX
 checksum header, and update it whenever the dataset changes. Its up to
-the client whether to refetch the DDX or not.''*_
+the client whether to refetch the DDX or not._
 
 So, what are the consequences of this proposal?
 
@@ -96,88 +96,68 @@ OpenDap netCDF library could use the same semantics.
 
 '''''
 
- +
- Dialogue with Joe Sirott: +
+Dialogue with Joe Sirott: +
 
-____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 This would seem to be (at least to me) pretty difficult to manage in
 practice. What happens if a client accesses the server with a cookie
 that is, say, 2 days old? Will the server have to fix up the data to be
 compatible with the 2 day old DDX?
-____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
- +
- My thought is to not leave any persistent cookies, i.e. none that
+My thought is to not leave any persistent cookies, i.e. none that
 outlive the session. The server would time out the sessions after some
 reasonable amount of time - say no activity for 30 minutes. The server
 will have to decide how long it can maintain the DDX state, its really a
-``best effort'' rather than a guarantee. +
- +
- +
+best effort rather than a guarantee.
 
-_____________________________________________________________________________________________________________________________________________________________________________________________________________________________
 How exactly would that work? This would be especially troublesome with
 deleted data – the server can’t be prevented from deleting data until
 the client is done because it has no way of knowing _/when/_ the client
 is done.
-_____________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
- +
- Yes, deleted data is the hardest to deal with. I think my initial
+Yes, deleted data is the hardest to deal with. I think my initial
 implementation would probably just break the session when data gets
 deleted. This would only happen once a day. Eventually I might try to do
 something better. Note that I still need a session to know whether I
 should return an error or not. In a stateless situation, I would just
-happily return incorrect data. +
- +
- When is the session done? In the netcdf world, the user makes an
+happily return incorrect data.
+
+When is the session done? In the netcdf world, the user makes an
 explicit ``close'' call. Ideally we could communicate that back to the
 server. Otherwise, we will rely on session timeout to say the client is
-done. +
- +
+done.
 
-________________________________________________________________________________________________________________________
 And what about aggregations of other OPeNDAP servers? Will those servers
 also have to support session cookies as well? +
-________________________________________________________________________________________________________________________
 
 Id say that a server should support sessions if their data can change. +
 
-_____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 At some point, the server has to give up and tell the client that the
 DDX is stale and the client will have to handle that. Since the client
 has to handle this anyway, why not avoid all the complexity and cookies
 and just use the Last-Modified header? +
-_____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
- +
- Yes, the client will have to handle that situation. Most likely it will
+Yes, the client will have to handle that situation. Most likely it will
 pass an error to the application. The question is does that have to
 happen all the time, or just occasionally? +
 
-______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
- +
- How does the C or Java netCDF library handle the case where process A
+How does the C or Java netCDF library handle the case where process A
 reads the header from a netCDF file, process B modifies the file (for
 example, removes a variable) and then process A attempts to read the
 removed variable? This seems (somewhat) similar to me and perhaps the
 OpenDap netCDF library could use the same semantics. +
-______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
- +
- In principle you could write readers that could handle netcdf files
+In principle you could write readers that could handle netcdf files
 being simultaneously modified in arbitrary ways. In practice it doesn’t
 happen, and I would say it would be a mistake, that you would be adding
 too much complexity, and you should use a database or something else for
 that case. +
- +
- There is one case where this makes sense, which is when new records are
+
+There is one case where this makes sense, which is when new records are
 being appended along the unlimited dimension. In that case, the reader
 can do a synch() call (in Java, I think C is similar) to discover what
 the values of the unlimited dimension is. +
- +
- +
- Ok, let me think through again the possibility of just using the
+
+Ok, let me think through again the possibility of just using the
 Last-Modified header. Suppose that the client sees  that the
 Last-Modified changed, and gets a new DDX. It checks for my common case
 that the file has merely been appended to. This is a non-trivial check,
@@ -185,16 +165,17 @@ but doable. If thats the case, it just keep track of that in case the
 client calls synch(). If the DDX has changed in an incompatible way, it
 has to send an error to the application. In my scenario below, this
 would only happen once a day (file deletion) and if files arrive out of
-order. +
- So maybe this could work. The biggest fly in the ointment is that its
+order.
+
+So maybe this could work. The biggest fly in the ointment is that its
 not sufficient to just test the DDX, you also have to check the
 coordinate data in order to detect if files arrive out of order. You
 might consider these two tests to be specific to my server, should they
 become part of the client libraries? If not, then each application has
 to implement them. Are there other ways that a file might commonly
 change? +
- +
- In a sense, the question is do you put the burden on the client or the
+
+In a sense, the question is do you put the burden on the client or the
 server to deal with changing datasets? You will probably be influenced
 by whether you write clients or servers, and whether your client is
 stateless or stateful (eg netCDF).
@@ -383,8 +364,3 @@ cookie.
 client if needed.
 5.  On a ``close'' message, close the session and release the dataset.
 6.  Timeout any session that hasnt been used for 30 minutes. +
-
- +
- +
-
- +

@@ -499,9 +499,9 @@ public class Range implements RangeIterator  {
 
   public String toString() {
     if (this.length == 0)
-      return "EMPTY";
+      return ":";  // EMPTY
     else if (this.length < 0)
-      return "VLEN";
+      return ":";  // VLEN
     else
       return first + ":" + last() + (stride > 1 ? ":" + stride : "");
   }
