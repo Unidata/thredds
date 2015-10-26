@@ -82,7 +82,7 @@ public class InvCatalogRef extends InvDatasetImpl {
    */
   public InvCatalogRef(InvDatasetImpl parent, String name, String href) {
     super(parent, name);
-    this.href = href.trim();
+    setXlinkHref(href);
   }
 
   /**
@@ -94,8 +94,7 @@ public class InvCatalogRef extends InvDatasetImpl {
    * @param useRemoteCatalogService : force catalogRef to go through the remoteCatalogService
    */
   public InvCatalogRef(InvDatasetImpl parent, String name, String href, Boolean useRemoteCatalogService) {
-    super(parent, name);
-    this.href = href.trim();
+    this(parent, name, href);
     this.useRemoteCatalogService = useRemoteCatalogService;
   }
 
@@ -109,7 +108,7 @@ public class InvCatalogRef extends InvDatasetImpl {
   }
 
   public void setXlinkHref(String href) {
-    this.href = href;
+    this.href = href.trim();
     this.uri = null;
   }
 
@@ -119,7 +118,7 @@ public class InvCatalogRef extends InvDatasetImpl {
   public URI getURI() {
     if (uri != null) return uri;
 
-    // may be reletive
+    // may be relative
     try {
       return getParentCatalog().resolveUri(href);
     }
