@@ -416,24 +416,45 @@ public class RadarDataInventory {
             List<Path> results = new ArrayList<>();
             DirectoryStructure.DirectoryDateMatcher matcher = structure.matcher();
             results.add(structure.base);
-            boolean needDateFilter = false;
+
+            // Grab the range of dates up front
+            List<Object> dates = q.get(DirType.Date);
+            CalendarDateRange range = (CalendarDateRange) dates.get(0);
+
+            // If we're given a single point for time, signifying we are looking
+            // for the file nearest, turn it into a window for query purposes.
+            if (range != null && range.isPoint()) {
+                range = CalendarDateRange.of(
+                        range.getStart().subtract(nearestWindow),
+                        range.getEnd().add(nearestWindow));
+            }
+
+            // Loop over each entry in the directory structure and handle
+            // as appropriate. For stn/var we check if the desired item
+            // exists. For dates, add the items that are within the filter
             for (int i = 0; i < structure.order.size(); ++i) {
                 DirectoryStructure.DirEntry entry = structure.order.get(i);
                 List<Path> newResults = new ArrayList<>();
                 List<Object> queryItem = q.get(entry.type);
                 switch (entry.type) {
-                    // Loop over results and add subdirs
-                    // Add date format to matcher string
+                    // Loop over results and add subdirs that are within the
+                    // appropriate range, which is found by successively adding
+                    // the date format to a matcher string
                     case Date:
-                        needDateFilter = queryItem.get(0) != null;
+                        matcher.add(i, entry.fmt);
+                        SimpleDateFormat fmt = matcher.getFormat();
+                        CalendarDateRange dirRange = rangeFromFormat(fmt, range);
+
                         for (Path p : results)
                             try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
-                                for (Path sub : dirStream)
-                                    newResults.add(sub);
+                                for (Path sub : dirStream) {
+                                    Date d = matcher.getDate(sub);
+                                    if (d != null && checkDate(dirRange, CalendarDate.of(d)))
+                                        newResults.add(sub);
+                                }
                             } catch (IOException e) {
                                 System.out.println("results(): Error reading dir: " + p.toString());
                             }
-                        matcher.add(i, entry.fmt);
                         break;
 
                     // Add to results and prune non-existent
@@ -452,35 +473,9 @@ public class RadarDataInventory {
                 results = newResults;
             }
 
-            List<Object> dates = q.get(DirType.Date);
-            CalendarDateRange range = (CalendarDateRange) dates.get(0);
-
-            // If we're given a single point for time, signifying we are looking
-            // for the file nearest, turn it into a window for query purposes.
-            if (range != null && range.isPoint()) {
-                range = CalendarDateRange.of(
-                        range.getStart().subtract(nearestWindow),
-                        range.getEnd().add(nearestWindow));
-            }
-
-            List<Path> filteredResults = new ArrayList<>();
-            if (needDateFilter) {
-                // Apply filtering of Date to results
-                SimpleDateFormat fmt = matcher.getFormat();
-                CalendarDateRange dirRange = rangeFromFormat(fmt, range);
-
-                for (Path p : results) {
-                    Date d = matcher.getDate(p);
-                    if (d != null && checkDate(dirRange, CalendarDate.of(d)))
-                        filteredResults.add(p);
-                }
-            } else {
-                filteredResults = results;
-            }
-
             // Now get the contents of the remaining directories
             Collection<QueryResultItem> filteredFiles = new ArrayList<>();
-            for(Path p : filteredResults) {
+            for(Path p : results) {
                 try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
                     for (Path f: dirStream) {
                         java.util.regex.Matcher regexMatcher = fileTimeRegex.matcher(f.toString());
