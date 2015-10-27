@@ -191,7 +191,7 @@ message Data {
 into
 
 ----
-message Data {
+message Data2 {
   string fullName = 1;
   DataType dataType = 2;
   Section section = 3;
@@ -209,16 +209,16 @@ message Data {
 }
 ----
 
-<1> *primarray* has nelems * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
-<2> *stringdata* has nelems strings, turn into multidim array of String with section info
-<3> *structdata* has nelems StructureData objects, turn into multidim array of StructureData with section info and bigend
-<4> *vlens* has section.size array lengths; section does not include the last (vlen) dimension
-<5> *opaquedata* has nelems opaque objects, turn into multidim array of Opaque with section info
+<1> *primarray* has _nelems_ * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
+<2> *stringdata* has _nelems_ strings, turn into multidim array of String with section info
+<3> *structdata* has _nelems_ StructureData objects, turn into multidim array of StructureData with section info and bigend
+<4> *vlens* has _section.size_ array lengths; section does not include the last (vlen) dimension; data in primarray
+<5> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with section info
 
 Issues
 
 . Cant use _oneof_ because it doesnt allow repeated
-. not trying to be backwards compatible - not sure if its possible
+. backwards compatible - not sure if its possible
 
 === Vlen
 
@@ -236,34 +236,19 @@ Possible protobuf encoding:
 
 ----
 message ArrayStructureDataCol {
-  repeated MemberData memberData = 1;
-  repeated uint32 shape = 3; // shape vs section
-}
-
-message MemberData {
-  string shortName = 1;
-  DataType type = 2;
-  repeated uint32 shape = 3; // shape vs section
-  bool isVlen = 7;
-
-  // oneof following
-  bytes primarray = 10;        // rectangular, primitive array # <1>
-  repeated string stringdata = 11;  // string dataType # <2>
-  ArrayStructureDataCol structdata = 12;  // structure/seq dataType # <3>
-  repeated uint32 vlens = 13;  // isVlen true # <4>
-  repeated bytes opaquedata = 14;  // opaque dataType # <4>
+  repeated Data2 memberData = 1;
+  repeated uint32 shape = 3; // needed?
 }
 ----
 
-. almost identical with Data, perhaps can use Data instead of MmberData?
-. could get rid of ArrayStructureDataCol and use repeated MemberData memberData in Data ??
+. this is column oriented data storage (see below)
 
 === Sequence
 
 Sequence can use same as Structure, with these considerations:
 
 . section is not used
-. nelems is used to specify how many StructureData objects are in the Data message. This is (*)
+. nelems is used to specify how many StructureData objects are in the Data message. This is the value of (*)
 . There may be multiple Data messages
 .. Anticipate buffering, say, 1000 StructureData objects into a Data message, and send a sequence of messages until done
 . Nested Sequences must be complete (?)
@@ -273,6 +258,7 @@ Sequence can use same as Structure, with these considerations:
 === Issues
 
 . Backwards compatibility with versions < 5 ?
+. Difficulty of parsing in python client
 
 === Column oriented storage for Nested Structures
 
@@ -296,11 +282,9 @@ can be encoded like:
   long s.inner.fld4(123,99,2,3);
 ----
 
-I think of this as column oriented.
-
 * The shape of member data includes the outer structure(s).
 * All of the data resides at the innermost Structure.
-* Or one could flatten the structure members to eliminate nesting.
+* Or one could flatten the structure members to eliminate nesting, rely on parsing the name to reconstruct nested structures
 
 === Vlen Structures
 
@@ -330,7 +314,7 @@ makes a vlen in the outer dimension:
 ** VLEN_START, row, row, row... VLEN_END
 ** repeated bytes
 
-Now
+Also
 
 ----
 Structure {
@@ -354,18 +338,17 @@ might make a vlen in a middle dimension:
 
 * Could require that Structures can only use vlen if 1D, eliminating Structure s(123,*)
 * Then a vlen Structure must be a Sequence
-* Then we code Sequences in a special way
+* Then we code Sequences in a special way?
 
-* Making up a seperate Data message for each StructureData is too much overhead
+* Making up a seperate Data message for each StructureData is too much overhead?
 * Could create a general encoding for vlens of arbitrary placement
-** Clen is a List, non-vlen is an array
+** Vlen is a List, non-vlen is an array
 * Would like protobuf to reflect this
-
 
 
 === Vlens inside of structures
 
-These can only make other vlens (last dimension may be a vlen)
+These can only make other vlens (last dimension a vlen)
 
 ----
 Structure {
@@ -373,38 +356,18 @@ Structure {
   string fld2(*);
   Structure {
     float fld3;
-    long fld4(2,3);
-  } inner(99)
-} s(*)
-----
-
-makes:
-
-----
-  int s.fld1(*)
-  string s.fld2(*, *);
-  float s.inner.fld3(*,99);
-  long s.inner.fld4(*,99,2,3);
-----
-
-----
-Structure {
-  int fld1
-  string fld2(12);
-  Structure {
-    float fld3;
     long fld4(2,*);
   } inner(99)
-} s(*)
+} s(33)
 ----
 
 makes:
 
 ----
-  int s.fld1(*)
-  string s.fld2(*, 12);
-  float s.inner.fld3(*,99);
-  long s.inner.fld4(*,99,2,*);
+  int s.fld1(33)
+  string s.fld2(33, *);
+  float s.inner.fld3(33,99);
+  long s.inner.fld4(33,99,2,*);
 ----
 
-so i think not a problem
+so i think not a problem; just have to deal with sequences

@@ -267,10 +267,6 @@ public class NcStream {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
   static void show(NcStreamProto.Header proto) throws InvalidProtocolBufferException {
     NcStreamProto.Group root = proto.getRoot();
 
@@ -753,6 +749,106 @@ public class NcStream {
         return DataType.DOUBLE;
     }
     throw new IllegalStateException("illegal att type " + dtype);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  public static long encodeArrayStructure(ArrayStructure as, ByteOrder bo, OutputStream os) throws java.io.IOException {
+    long size = 0;
+
+    ArrayStructureBB dataBB = StructureDataDeep.copyToArrayBB(as, bo, true);  // force canonical packing
+    List<String> ss = new ArrayList<>();
+    List<Object> heap = dataBB.getHeap();
+    List<Integer> count = new ArrayList<>();
+    if (heap != null) {
+      for (Object ho : heap) {
+        if (ho instanceof String) {
+          count.add(1);
+          ss.add((String) ho);
+        } else if (ho instanceof String[]) {
+          String[] hos = (String[]) ho;
+          count.add(hos.length);
+          for (String s : hos)
+            ss.add(s);
+        }
+      }
+    }
+
+    // LOOK optionally compress
+    StructureMembers sm = dataBB.getStructureMembers();
+    ByteBuffer bb = dataBB.getByteBuffer();
+    NcStreamProto.StructureData proto = NcStream.encodeStructureDataProto(bb.array(), count, ss, (int) as.getSize(), sm.getStructureSize());
+    byte[] datab = proto.toByteArray();
+    size += NcStream.writeVInt(os, datab.length); // proto len
+    os.write(datab); // proto
+    size += datab.length;
+    // System.out.printf("encodeArrayStructure write sdata size= %d%n", datab.length);
+
+    return size;
+  }
+
+  static NcStreamProto.StructureData encodeStructureDataProto(byte[] fixed, List<Integer> count, List<String> ss, int nrows, int rowLength) {
+    NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
+    builder.setData(ByteString.copyFrom(fixed));
+    builder.setNrows(nrows);
+    builder.setRowLength(rowLength);
+    for (Integer c : count)
+      builder.addHeapCount(c);
+    for (String s : ss)
+      builder.addSdata(s);
+    return builder.build();
+  }
+
+  public static ArrayStructureBB decodeArrayStructure(StructureMembers sm, int shape[], byte[] proto) throws java.io.IOException {
+    NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
+    builder.mergeFrom(proto);
+    long size = 0;
+
+    ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
+    ArrayStructureBB dataBB = new ArrayStructureBB(sm, shape, bb, 0);
+
+    List<String> ss = builder.getSdataList();
+    List<Integer> count = builder.getHeapCountList();
+
+    int scount = 0;
+    for (Integer c : count) {
+      if (c == 1) {
+        dataBB.addObjectToHeap(ss.get(scount++));
+      } else {
+        String[] hos = new String[c];
+        for (int i = 0; i < c; i++)
+          hos[i] = ss.get(scount++);
+        dataBB.addObjectToHeap(hos);
+      }
+    }
+
+    return dataBB;
+  }
+
+  public static StructureData decodeStructureData(StructureMembers sm, ByteOrder bo, byte[] proto) throws java.io.IOException {
+    NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
+    builder.mergeFrom(proto);
+
+    ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
+    bb.order(bo);
+    ArrayStructureBB dataBB = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
+
+    List<String> ss = builder.getSdataList();
+    List<Integer> count = builder.getHeapCountList();
+
+    int scount = 0;
+    for (Integer c : count) {
+      if (c == 1) {
+        dataBB.addObjectToHeap(ss.get(scount++));
+      } else {
+        String[] hos = new String[c];
+        for (int i = 0; i < c; i++)
+          hos[i] = ss.get(scount++);
+        dataBB.addObjectToHeap(hos);
+      }
+    }
+
+    return dataBB.getStructureData(0);
   }
 
 }

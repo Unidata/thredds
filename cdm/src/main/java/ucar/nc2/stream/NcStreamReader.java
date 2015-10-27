@@ -176,10 +176,10 @@ public class NcStreamReader {
         ArrayStructureBB data = new ArrayStructureBB(members, section.getShape(), ByteBuffer.wrap(datab), 0);
         return new DataResult(dproto.getVarName(), data);
 
-      } /* else { // version > 0 uses a NcStreamProto.StructureData message
+      } else { // version > 0 and < 3 uses a NcStreamProto.StructureData message
         ArrayStructureBB data = NcStream.decodeArrayStructure(members, section.getShape(), datab);
         return new DataResult(dproto.getVarName(), data);
-      } */
+      }
     }
 
     // otherwise its a multidim array
@@ -194,9 +194,6 @@ public class NcStreamReader {
       byte[] resultb = new byte[uncompressedSize];
       NcStream.readFully(in, resultb);
 
-      /* ByteArrayOutputStream bout = new ByteArrayOutputStream(uncompressedSize);
-      IO.copy(in, bout);  // decompress
-      byte[] resultb = bout.toByteArray();  // another fucking copy - should overrride ByteArrayOutputStream(byte[] myown);  */
       data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(resultb)); // another copy, not sure can do anything
 
     } else {

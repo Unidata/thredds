@@ -110,7 +110,8 @@ public class NcStreamWriter {
     size += NcStream.writeVInt(out, datab.length); // dataProto len
     size += writeBytes(out, datab); // dataProto
 
-    /* if (v.getDataType() == DataType.SEQUENCE) {
+    // version < 3
+    if (v.getDataType() == DataType.SEQUENCE) {
       int count = 0;
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
       //coverity[FB.BC_UNCONFIRMED_CAST]
@@ -128,13 +129,14 @@ public class NcStreamWriter {
       return size;
     }
 
+    // version < 3
     if (v.getDataType() == DataType.STRUCTURE) {
       ArrayStructure abb = (ArrayStructure) v.read();   // read all - LOOK break this up into chunks if needed
       //coverity[FB.BC_UNCONFIRMED_CAST]
       size += NcStream.encodeArrayStructure(abb, bo, out);
       if (show) System.out.printf(" NcStreamWriter sent ArrayStructure bytes = %d%n", size);
       return size;
-    } */
+    }
 
     // Writing the size of the block is handled for us.
     DataOutputStream dos = compress.setupStream(out, (int) uncompressedLength);

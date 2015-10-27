@@ -128,6 +128,14 @@ message Section {
   repeated Range range = 1;
 }
 
+message StructureData {
+  repeated uint32 member = 1; // list of members present, if none then all, these are the index in Structure
+  bytes data = 2; // fixed length data
+  repeated uint32 heapCount = 3; // heap String count
+  repeated string sdata = 4; // Strings
+  uint64 nrows = 5; // [default = 1] number of rows in this message
+  uint32 rowLength = 6;  // length in bytes of each row
+}
 
 //////////////////////////////////
 
@@ -141,11 +149,11 @@ message Data2 {
   uint32 nelems = 9;
 
   // oneof
-  bytes primarray = 10;        // rectangular, primitive array # <1>
-  repeated string stringdata = 11;  // string dataType # <2>
-  ArrayStructureDataCol structdata = 12;  // structure/seq dataType # <3>
-  repeated uint32 vlens = 13;  // isVlen true # <4>
-  repeated bytes opaquedata = 14;  // opaque dataType # <5>
+  bytes primarray = 10;            // rectangular, primitive array
+  repeated string stringdata = 11;  // string dataType
+  ArrayStructureDataCol structdata = 12;  // structure/seq dataType
+  repeated uint32 vlens = 13;      // isVlen true
+  repeated bytes opaquedata = 14;  // opaque dataType
 }
 
 message ArrayStructureDataCol {
