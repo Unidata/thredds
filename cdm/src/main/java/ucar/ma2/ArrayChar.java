@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 
 /**
  * Concrete implementation of Array specialized for chars.
@@ -43,7 +44,7 @@ import java.nio.ByteBuffer;
  * @author caron
  * @see Array
  */
-public class ArrayChar extends Array {
+public class ArrayChar extends Array implements Iterable<String> {
 
   /**
    * package private. use Array.factory()
@@ -805,10 +806,15 @@ public class ArrayChar extends Array {
     return new StringIterator();
   }
 
+  @Override
+  public Iterator<String> iterator() {
+    return new StringIterator();
+  }
+
   /**
    * rank must be > 0
    */
-  public class StringIterator {
+  public class StringIterator implements Iterator<String> {
     private IndexIterator ii = getIndexIterator();
     private int strLen;
     private char[] carray;

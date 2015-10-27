@@ -51,7 +51,7 @@ public class TestSpecialChars {
   String filename = TestLocal.temporaryDataDir +"testSpecialChars.nc";
   String trouble = "here is a &, <, >, \', \", \n, \r, \t, to handle";
 
-  @Test
+  //@Test
   public void testWriteAndRead() throws IOException, InvalidRangeException {
     NetcdfFileWriter ncfilew = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
     ncfilew.addGlobalAttribute("omy", trouble);

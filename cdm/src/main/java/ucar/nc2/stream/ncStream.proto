@@ -149,22 +149,8 @@ message Data2 {
 }
 
 message ArrayStructureDataCol {
-  repeated MemberData memberData = 1;
+  repeated Data2 memberData = 1;
   repeated uint32 shape = 3; // shape vs section
-}
-
-message MemberData {
-  string shortName = 1;
-  DataType type = 2;
-  repeated uint32 shape = 3; // shape vs section
-  bool isVlen = 7;
-
-  // oneof following
-  bytes primarray = 10;        // rectangular, primitive array # <1>
-  repeated string stringdata = 11;  // string dataType # <2>
-  ArrayStructureDataCol structdata = 12;  // structure/seq dataType # <3>
-  repeated uint32 vlens = 13;  // isVlen true # <4>
-  repeated bytes opaquedata = 14;  // opaque dataType # <4>
 }
 
 //////////////////////////////////

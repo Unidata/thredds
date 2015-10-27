@@ -212,7 +212,7 @@ message Data {
 <1> *primarray* has nelems * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
 <2> *stringdata* has nelems strings, turn into multidim array of String with section info
 <3> *structdata* has nelems StructureData objects, turn into multidim array of StructureData with section info and bigend
-<4> *vlens* has section.size array lengths
+<4> *vlens* has section.size array lengths; section does not include the last (vlen) dimension
 <5> *opaquedata* has nelems opaque objects, turn into multidim array of Opaque with section info
 
 Issues
@@ -255,7 +255,7 @@ message MemberData {
 }
 ----
 
-. almost identical with Data, perhaps can use instead
+. almost identical with Data, perhaps can use Data instead of MmberData?
 . could get rid of ArrayStructureDataCol and use repeated MemberData memberData in Data ??
 
 === Sequence
@@ -263,7 +263,7 @@ message MemberData {
 Sequence can use same as Structure, with these considerations:
 
 . section is not used
-. nelems is used to specify how many StructureData objects are in the Data message.
+. nelems is used to specify how many StructureData objects are in the Data message. This is (*)
 . There may be multiple Data messages
 .. Anticipate buffering, say, 1000 StructureData objects into a Data message, and send a sequence of messages until done
 . Nested Sequences must be complete (?)
@@ -274,7 +274,7 @@ Sequence can use same as Structure, with these considerations:
 
 . Backwards compatibility with versions < 5 ?
 
-=== Alternative: Column oriented
+=== Column oriented storage for Nested Structures
 
 ----
 Structure {
@@ -296,8 +296,115 @@ can be encoded like:
   long s.inner.fld4(123,99,2,3);
 ----
 
-I think of this as column oriented. Potentially more efficient. (ArrayStructureMA instead of ArrayStructureW)
+I think of this as column oriented.
+
+* The shape of member data includes the outer structure(s).
+* All of the data resides at the innermost Structure.
+* Or one could flatten the structure members to eliminate nesting.
+
+=== Vlen Structures
+
+----
+Structure {
+  int fld1
+  string fld2(12);
+  Structure {
+    float fld3;
+    long fld4(2,3);
+  } inner(99)
+} s(*)
+----
+
+makes a vlen in the outer dimension:
+
+----
+  int s.fld1(*)
+  string s.fld2(*, 12);
+  float s.inner.fld3(*,99);
+  long s.inner.fld4(*,99,2,3);
+----
+
+* not actually a problem because at encoding time we know what * is.
+* still, some inefficiency in processing, have to read all into memory first
+* would be better to go back to row oriented, like:
+** VLEN_START, row, row, row... VLEN_END
+** repeated bytes
+
+Now
+
+----
+Structure {
+  int fld1
+  string fld2(12);
+  Structure {
+    float fld3;
+    long fld4(2,3);
+  } inner(*)
+} s(123)
+----
+
+might make a vlen in a middle dimension:
+
+----
+  int s.fld1(123)
+  string s.fld2(123, 12);
+  float s.inner.fld3(123,*);
+  long s.inner.fld4(123,*,2,3);
+----
+
+* Could require that Structures can only use vlen if 1D, eliminating Structure s(123,*)
+* Then a vlen Structure must be a Sequence
+* Then we code Sequences in a special way
+
+* Making up a seperate Data message for each StructureData is too much overhead
+* Could create a general encoding for vlens of arbitrary placement
+** Clen is a List, non-vlen is an array
+* Would like protobuf to reflect this
 
 
 
+=== Vlens inside of structures
 
+These can only make other vlens (last dimension may be a vlen)
+
+----
+Structure {
+  int fld1
+  string fld2(*);
+  Structure {
+    float fld3;
+    long fld4(2,3);
+  } inner(99)
+} s(*)
+----
+
+makes:
+
+----
+  int s.fld1(*)
+  string s.fld2(*, *);
+  float s.inner.fld3(*,99);
+  long s.inner.fld4(*,99,2,3);
+----
+
+----
+Structure {
+  int fld1
+  string fld2(12);
+  Structure {
+    float fld3;
+    long fld4(2,*);
+  } inner(99)
+} s(*)
+----
+
+makes:
+
+----
+  int s.fld1(*)
+  string s.fld2(*, 12);
+  float s.inner.fld3(*,99);
+  long s.inner.fld4(*,99,2,*);
+----
+
+so i think not a problem
