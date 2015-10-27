@@ -45,7 +45,7 @@ public class TimeJdomReading {
     long start = System.currentTimeMillis();
     int count = 0;
 
-    org.jdom.Document doc;
+    org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(filename);

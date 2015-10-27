@@ -34,8 +34,6 @@
 
 package timing;
 
-import timing.Stat;
-
 import java.util.ArrayList;
 
 /**

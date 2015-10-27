@@ -34,9 +34,6 @@
 package ucar.nc2.dataset;
 
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.*;
-import ucar.nc2.TestAll;
-import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
 
@@ -92,7 +89,7 @@ public class TimeOpen extends TestCase {
         NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
         File fileout = new File(filename+".ncml");
         if (fileout.exists()) fileout.delete();
-        writer.writeXMLexplicit( ncfile, new FileOutputStream(fileout), null);
+        ncfile.writeNcML(new FileOutputStream(fileout), filename);
         System.out.println(" wrote ncml file  ="+fileout);
       }
     });

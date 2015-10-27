@@ -219,6 +219,11 @@ Issues
 
 . Cant use _oneof_ because it doesnt allow repeated
 . backwards compatible - not sure if its possible
+. using *bytes primarray* forces us to copy data twice, 1 from the primitive array to a ByteBuffer, then to a ByteString
+.. lame that ByteString doesnt have a byte[] constructor, but they need immutability
+.. could use different field for each primitive type (there are 7 plus 3 unsigned) for only one copy
+.. we already have string and opaque, add 10 more ?
+.. this would obviate bigend i think
 
 === Vlen
 
@@ -254,11 +259,6 @@ Sequence can use same as Structure, with these considerations:
 . Nested Sequences must be complete (?)
 .. Allow user to request nested Sequence, which then could be sent in multiple messages
 .. Allow user to select what members are sent, to skip nested sequences if they are too large
-
-=== Issues
-
-. Backwards compatibility with versions < 5 ?
-. Difficulty of parsing in python client
 
 === Column oriented storage for Nested Structures
 
@@ -371,3 +371,11 @@ makes:
 ----
 
 so i think not a problem; just have to deal with sequences
+
+
+=== Issues
+
+. Backwards compatibility with versions < 5 ?
+. Difficulty of parsing in python client
+. should data be in protobuf? not sure of overhead
+.. ok as streaming protocol, less so as file format

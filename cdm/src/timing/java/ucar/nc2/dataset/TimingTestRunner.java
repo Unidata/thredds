@@ -120,7 +120,7 @@ public class TimingTestRunner {
         NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
         File fileout = new File(filename + ".ncml");
         if (fileout.exists()) fileout.delete();
-        writer.writeXMLexplicit(ncfile, new FileOutputStream(fileout), null);
+        ncfile.writeNcML(new FileOutputStream(fileout), filename);
         System.out.println(" wrote ncml file  =" + fileout);
 
       }
