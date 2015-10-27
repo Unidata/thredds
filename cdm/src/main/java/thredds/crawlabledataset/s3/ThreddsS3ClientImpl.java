@@ -89,6 +89,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         try {
             s3Client.getObject(new GetObjectRequest(s3uri.getBucket(), s3uri.getKey()), file);
             logger.info(String.format("Downloaded S3 object '%s' to '%s'", s3uri, file));
+            file.deleteOnExit();
             return file;
         } catch (IllegalArgumentException e) {  // Thrown by getObject() when key == null.
             logger.debug(e.getMessage());
