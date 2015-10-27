@@ -90,13 +90,13 @@ public class TestTdsFmrc {
     Catalog cat = TdsLocalCatalog.open(catalog);
 
     Dataset ds = cat.findDatasetByID("testNAMfmrc/NAM_FMRC_fmrc.ncd");
-    assert (ds != null) : "cant find dataset 'testNAMfmrc/NAM_FMRC_best.ncd'";
+    assert (ds != null) : "cant find dataset 'testNAMfmrc/NAM_FMRC_fmrc.ncd'";
     assert ds.getFeatureType() == FeatureType.GRID;
 
     DataFactory fac = new DataFactory();
     try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
-      assert !dataResult.fatalError;
-      assert dataResult.featureDataset != null;
+      Assert.assertTrue(dataResult.errLog.toString(), !dataResult.fatalError);
+      Assert.assertNotNull(dataResult.featureDataset);
 
       FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
       String gridName = "Total_cloud_cover";
@@ -110,10 +110,10 @@ public class TestTdsFmrc {
 
       CoverageCoordSys gcs = grid.getCoordSys();
       Assert.assertNotNull(gcs);
-      assert null == gcs.getZAxis();
+      Assert.assertNull(gcs.getZAxis());
 
       CoverageCoordAxis time = gcs.getTimeAxis();
-      assert time != null;
+      Assert.assertNotNull(time);
       Assert.assertNotNull("time axis", time);
       Assert.assertEquals(8, time.getNcoords());
       double[] want = new double[]{3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0};

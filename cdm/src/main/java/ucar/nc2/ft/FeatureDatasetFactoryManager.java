@@ -272,9 +272,15 @@ public class FeatureDatasetFactoryManager {
     }
 
     // check if its GRIB, may not have to go through NetcdfDataset
-    FeatureDatasetCoverage gribDataset = CoverageDatasetFactory.openGrib(location);
-    if (gribDataset != null)
-      return gribDataset;
+    Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openGrib(location);
+    if (opt.isPresent()) { // its a GRIB file
+      return opt.get();
+
+    } else if (!opt.getErrorMessage().startsWith(CoverageDatasetFactory.NOT_GRIB_FILE) &&
+              !opt.getErrorMessage().startsWith(CoverageDatasetFactory.NO_GRIB_CLASS)) {
+      errlog.format("%s%n", opt.getErrorMessage()); // its a GRIB file with an error
+      return null;
+    }
 
     // otherwise open as NetcdfDataset and run it through the FeatureDatasetFactories
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(location, task);
@@ -408,7 +414,11 @@ public class FeatureDatasetFactoryManager {
       return want.isPointFeatureType();
     }
 
-    if (want == FeatureType.GRID) {
+    if (want == FeatureType.COVERAGE) {
+      return facType.isCoverageFeatureType();
+    }
+
+    if (want == FeatureType.GRID) { // for backwards compatibility
       return facType.isCoverageFeatureType();
     }
 

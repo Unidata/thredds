@@ -42,12 +42,15 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -62,7 +65,6 @@ public class TestStreamWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    // Grib files, one from each model
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc"});
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/grid/RUC2_CONUS_40km_20070709_1800.nc"});
 
@@ -87,7 +89,7 @@ public class TestStreamWriter {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, true);
 
     fileIn.close();
     file2.close();
@@ -106,7 +108,7 @@ public class TestStreamWriter {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, true);
 
     fileIn.close();
     file2.close();
@@ -128,7 +130,7 @@ public class TestStreamWriter {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, true);
 
     fileIn.close();
     file2.close();

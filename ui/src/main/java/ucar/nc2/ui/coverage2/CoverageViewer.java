@@ -741,7 +741,7 @@ public class CoverageViewer extends JPanel {
       // heres what to do when the runtime changes
     ActionSourceListener runtimeSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        Object dataValue = e.getValue();
+        // Object dataValue = e.getValue();
         int runtime = findIndexFromName( runtimeNames, e.getValue().toString());
         if ((runtime != -1) && (runtime != currentRunTime)) {
           currentRunTime = runtime;

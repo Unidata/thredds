@@ -107,7 +107,7 @@ TdsUpdateConfigBean_
 Must come before the jspResolver
 * XmlViewResolver just means it reads from an XML file (views.xml)
 nothing to do with views of XML files.
-* _*NOTE:*_ In order to read in spring-servlet.xml, the mock framework
+* *NOTE:* In order to read in spring-servlet.xml, the mock framework
 in tds module needs
 +
 ------------------------------------------------------------------------------
@@ -127,13 +127,12 @@ use this to deal with restrictedDataset redirects.
 
 * return void
 * write directly to *HttpServletResponse* output stream
-* see *CdmRemoteController.handleRequest()*
+* see *CdmRemoteController.handleDataRequest(), AdminDebugController*
 
 === Write HTML, XML yourself into a string
 
 * return a *ResponseEntity<String>* allows to set headers, return value
-* see *CdmRemoteController.handleCapabilitiesRequest(),
-MetadataController*
+* see *CdmRemoteController.handleCapabilitiesRequest(), MetadataController*
 +
 -----------------------------------------------------------------------------
 HttpHeaders responseHeaders = new HttpHeaders();
@@ -174,46 +173,39 @@ __Document__=jdom doc, __Transform__=name of xslt xml doc
 * Class level constraints are useful if it is necessary to inspect more
 than a single property of the class to validate it
 
-javax.validation eg *NcssGridController*
+==== javax.validation
 
+* eg *NcssGridController*
 * @Valid JSP 303, with hibernate implementation
 https://docs.jboss.org/hibernate/validator/4.0.1/reference/en-US/html/validator-usingvalidator.html
 * @Valid *NcssGridParamsBean* params in the controller handler
-* @NcssGridRequestConstraint public class NcssGridParamsBean extends
-NcssParamsBean \{…
+* @NcssGridRequestConstraint public class NcssGridParamsBean extends NcssParamsBean
 * @Constraint(validatedBy=NcssGridRequestValidator.class)
-* public class NcssGridRequestValidator implements
-ConstraintValidator<NcssGridRequestConstraint, NcssGridParamsBean> +
- * +
-*
+* public class NcssGridRequestValidator implements ConstraintValidator<NcssGridRequestConstraint, NcssGridParamsBean> +
 
-*org.springframework.validation.Validator* eg
-**RemoteCatalogServiceController, CdmRemoteController**:
+==== org.springframework.validation.Validator*
 
+* eg *RemoteCatalogServiceController, CdmRemoteController*
 * Spring cover of validation frameworks
-* The Validator and the DataBinder make up the validation package, which
-is primarily used in but not limited to the MVC framework.
+* The Validator and the DataBinder make up the validation package, which is primarily used in but not limited to the MVC framework.
 * http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html
 * dont need DataBinder
-* must put initBinder() into Controller. some question on how to
-restrict to correct model fields, see
-http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model
+* must put initBinder() into Controller. some question on how to restrict to correct model fields, see
 
- +
+    http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model
 
-validation error handling:
+==== validation error handling:
 
-* --------------------------------------------
+[source,java]
+----
 if (validationResult.hasErrors())
   throw new BindException(validationResult);
---------------------------------------------
+----
 
 === Error handling
 
-* Errors are handled by throwing an exception which is picked up by an
-ExceptionHandler, eg *thredds.server.TdsErrorHandling*
-* let exceptions propagate out of the controllers - do not catch unless
-necessary
+* Errors are handled by throwing an exception which is picked up by an ExceptionHandler, eg *thredds.server.TdsErrorHandling*
+* let exceptions propagate out of the controllers - do not catch unless necessary
 * essentially a way to switch return types
 * see https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc
 
@@ -236,10 +228,6 @@ necessary
 |BindException |BAD_REQUEST |validation error
 |Throwable |INTERNAL_SERVER_ERROR |server error
 |======================================================================
-
- 
-
-'''''
 
 == Servlets and Controllers mappings summary
 
@@ -282,14 +270,12 @@ RootController
  /thredds/current, /thredds/, /thredds/\{filename} +
  /dataroots.txt |requires _tdsMonitor_ role (used by TdsMonitor) | 
 
-|AdminSpringInfoController |/admin/spring |/showControllers |  | 
+|AdminSpringInfoController | /admin/spring |/showControllers |  | 
 
-|CatalogServiceController |*/catalog* |/\{path}/catalogName.[xml|html]
-|needs *catalog* prefix now a|
+|CatalogServiceController | */catalog* | /\{path}/catalogName.[xml\|html]
+|needs *catalog* prefix (new in v5)|
 ModelAndView *-> InvCatalogXmlView* (xml)
-
 void (write HTML directly to output)
-
 |CdmRemoteController |*/cdmremote* |/\{path}?\{cdmr query}
 (link:../../netcdf-java/reference/stream/CdmRemote.html[ref]) | 
 |ResponseEntity<String>, void
@@ -312,22 +298,18 @@ _thredds/server/serverinfo/serverInfo_html_
 |MetadataController |*/metadata* |/\{path}[?accept=xml] |metadata=vars
 |ResponseEntity<String>
 
-|NcssGridController |*/ncss/grid* + |/\{path}?\{ncss query}
+|NcssGridController |*/ncss/grid* |/\{path}?\{ncss query}
 (link:../reference/services/NetcdfSubsetServiceReference.html[ref]) +
  **/dataset.[html|xml]  +
- **/pointDataset.[html|xml] +
- **/datasetBoundaries.xml + a|
+ **/pointDataset.[html\|xml] +
+ **/datasetBoundaries.xml + |
 may be able to redirect cdmrfeature
-
- 
-
- |ModelAndView
 
 |NcssPointController |*/ncss/point* |/\{path}?\{ncss query}
 (link:../reference/services/NetcdfSubsetServiceReference.html[ref]) +
- **/dataset.[html|xml]  +
- **/pointDataset.[html|xml] +
- **/station.xml |  |ModelAndView
+ **/dataset.[html\|xml]  +
+ **/pointDataset.[html\|xml] +
+ **/station.xml |  |
 
 |RadarServerController |/radarServer |/\{path}?\{radar query} |  | 
 
@@ -343,33 +325,27 @@ may be able to redirect cdmrfeature
 
 === Unit Testing
 
-* *com.eclipsesource.restfuse* is limited and appears to be abandoned,
-phase it out of our tests ?? not sure may still be viable.
+* *com.eclipsesource.restfuse* is limited and appears to be abandoned, removed
 * @ContextConfiguration(locations =
 \{``/WEB-INF/applicationContext.xml'', ``/WEB-INF/spring-servlet.xml''},
 loader = MockTdsContextLoader.class) +
- +
-
- 
 
 === Debugging
 
-\1) Look in serverStartup.log and search for messages with
-``RequestMappingHandlerMapping: Mapped'' :
+1. Look in serverStartup.log and search for messages with "RequestMappingHandlerMapping: Mapped" :
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-712013-10-23T13:54:40.342-0600 [     17458][        ] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: Mapped "{[/admin/collection || /admin/collection/trigger],methods=[],params=[],headers=[],consumes=[],produces=[],custom=[]}" onto protected org.springframework.web.servlet.ModelAndView thredds.server.admin.CollectionController.handleCollectionTriggers(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) throws java.lang.Exception 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----
+712013-10-23T13:54:40.342-0600 [     17458][        ] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: Mapped "{[/admin/collection || /admin/collection/trigger],methods=[],params=[],headers=[],consumes=[],produces=[],custom=[]}" onto protected org.springframework.web.servlet.ModelAndView thredds.server.admin.CollectionController.handleCollectionTriggers(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) throws java.lang.Exception
+----
 
- +
- 2) set these to debug level:
+2. set these to debug level:
 
-------------------------------------------------------------------------
- 
+[source,xml]
+----
 <logger name="org.springframework.http" level="info" additivity="false">
   <appender-ref ref="threddsServlet"/>
 </logger>
 <logger name="org.springframework.web" level="info" additivity="false">
   <appender-ref ref="threddsServlet"/>
 </logger>
-------------------------------------------------------------------------
+----

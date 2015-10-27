@@ -2,7 +2,7 @@
 :stylesheet: ../../tds_adoc.css
 :linkcss:
 
-=== CDM Remote Feature Subsetting Parameters
+=== CdmrFeature Subsetting Parameters
 
 [width="100%",cols="20%,10%,30%,30%,10%",options="header",]
 |=====================================================================================================================================================
@@ -11,11 +11,11 @@
 |*north, south, east, west* |no |lat/lon bounding box, units of degrees_east, degrees_north | south < north, west < east; if crossing 180 meridian, use east boundary > 180  |
 |*minx, miny, maxx, maxy* |no |Projection bounding box, in projection coordinate units (km) |min < max; use only for gridded data on a projection |
 |*horizStride* |no |Take only every nth point (both x and y) | |1
-|*time* |no | Time as a link:{w3cDate}[W3C date] or _present_ (the time slice closest to the requested time is returned) or _all_ (all times are returned) |Must be a time within the dataset time range |_present_
-|*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present). Times may be a link:#W3Cdate[W3C date] or _present_. Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
-|*timeStride*|no |Take only every nth time in the available series |Used with time_range or _all_ | 1
-|*runtime*   |no |Time as a link:{w3cDate}[W3C date] or _latest_ (restrict to that runtime) or _all_. |Used only if there is an independent runtime coordinate. | _latest_
-|*timeOffset*|no |Restrict to an offset from the runtime coordinate (timeOffset units same as the dataset), or _first_ or _all_ |Used for 2D time coordinate | all
+|*time* |no | Datetime as a link:{w3cDate}[W3C date] or _present_ (the time slice closest to the requested time is returned) or _all_ (all times are returned) |Must be a time within the dataset time range |_present_
+|*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present). Datetime may be a link:#W3Cdate[W3C date] or _present_. Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
+|*timeStride*|no |Take every nth time in the available series |Used with time_range or _all_ | 1
+|*runtime*   |no |Datetime as a link:{w3cDate}[W3C date] or _latest_ (restrict to that runtime) or _all_. |Used only if there is an independent runtime coordinate. | _latest_
+|*timeOffset*|no |Time as an offset from the runtime coordinate, or _first_ or _all_ |Used only for 2D time coordinate, units same as the dataset | all
 |*vertCoord* |no |Restrict to specified vertical level coordinate value. |Used only if there is a vertical coordinate. |all
 |*ensCoord*  |no |Restrict to specified ensemble coordinate. |Used only if there is an ensemble coordinate. |all
 |=====================================================================================================================================================
@@ -54,12 +54,13 @@ Temporal subsetting::
 2D Time subsetting::
 
 * A 2D time dataset will have CoverageType set to _FMRC_.
-* You may specify a runtime with a date, _latest_ or _all_; specify a timeOffset with a numeric value, _first_, or _all_.
- If only one is set, use the default for the other. If neither is set, then return all times for latest runtime.
-* TimeOffset units must be the same as the dataset.
-* Time parameters are only used if timeOffset is not set. It must be explicitly set (ie no default is used). There are 2 cases:
+* You may specify a *runtime* with a date, _latest_ or _all_. Default is _latest_.
+* You may specify a *timeOffset* with a numeric value, _first_, or _all_. A timeOffset value is a duration of time, it is added
+  to the runtime to give the requested time. Its units must be the same as the dataset. Default is _all_.
+* *Time* parameters may be used only used if timeOffset is not. There are 2 cases:
 . Runtime is set to a specific value or _latest_ (not _all_). Time parameters (point or range) can then be used.
 . Runtime to set to _all_. Time point (date, or _present_) only can then be used.
+* If no runtime, timeOffset, or time parameters are set, then return all times for latest runtime.
 * Special cases:
 . Set specific runtime = constant runtime dataset
 . Set specific timeOffset, set runTime to _all_ = constant offset dataset
@@ -69,5 +70,5 @@ Interval coordinate::
 
 * If the coordinate is an _interval coordinate_ (common for vertical or time coordinates), it has a lower and upper bound, eg (2.0-10.0 m) or (12-24 hours).
 * The request is still made with a single value. The interval that contains the requested value is used.
-* If the requested value is contained in more than one interval (happens with mixed interval time coordinates), the midpoint of the interval is calculated, and the closest midpoint to the requested
-value is used.
+* If the requested value is contained in more than one interval (happens with mixed interval time coordinates),
+the midpoint of the interval is calculated, and the closest midpoint to the requested value is used.

@@ -128,7 +128,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     return new CoverageTransform(dt.getName(), atts, dt.getTransformType() == TransformType.Projection);
   }
 
-  private static ucar.nc2.util.Optional<CoverageCoordAxis> makeCoordAxis( DtCoverageCS gcs, ucar.nc2.dataset.CoordinateAxis dtCoordAxis, DtCoverageAdapter reader) {
+  private static ucar.nc2.util.Optional<CoverageCoordAxis> makeCoordAxis(DtCoverageCS gcs, ucar.nc2.dataset.CoordinateAxis dtCoordAxis, DtCoverageAdapter reader) {
     String name = dtCoordAxis.getFullName();
     DataType dataType = dtCoordAxis.getDataType();
     AxisType axisType = dtCoordAxis.getAxisType();

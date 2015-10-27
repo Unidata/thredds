@@ -73,7 +73,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since 12/5/13
  */
 public class GribCdmIndex implements IndexReader {
-  static public enum GribCollectionType {GRIB1, GRIB2, Partition1, Partition2, none}
+  public enum GribCollectionType {GRIB1, GRIB2, Partition1, Partition2, none}
 
   static private final Logger classLogger = LoggerFactory.getLogger(GribCdmIndex.class);
 
@@ -722,10 +722,10 @@ public class GribCdmIndex implements IndexReader {
   ////////////////////////////////////////////////////////////////////////////////////
   // Used by IOSPs
 
-  public static GribCollectionImmutable openGribCollectionFromRaf(RandomAccessFile raf,
-                                                                  FeatureCollectionConfig config, CollectionUpdateType updateType, org.slf4j.Logger logger) throws IOException {
+  public static GribCollectionImmutable openGribCollectionFromRaf(RandomAccessFile raf, FeatureCollectionConfig config,
+                CollectionUpdateType updateType, org.slf4j.Logger logger) throws IOException {
 
-    GribCollectionImmutable result;
+    GribCollectionImmutable result = null;
 
     // check if its a plain ole GRIB1/2 data file
     boolean isGrib1 = false;
@@ -733,18 +733,16 @@ public class GribCdmIndex implements IndexReader {
     if (!isGrib2) isGrib1 = Grib1RecordScanner.isValidFile(raf);
 
     if (isGrib1 || isGrib2) {
-
       result = openGribCollectionFromDataFile(isGrib1, raf, config, updateType, null, logger);
-      // close the data file, the ncx2 raf file is managed by gribCollection
+      // close the data file, the ncx raf file is managed by gribCollection
       raf.close();
 
-    } else {  // check its an ncx2 file
+    } else  {  // check its an ncx file
       result = openGribCollectionFromIndexFile(raf, config, logger);
     }
 
     return result;
   }
-
 
   /**
    * Open a grib collection from a single grib1 or grib2 file.

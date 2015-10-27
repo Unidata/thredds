@@ -63,6 +63,11 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   }
 
   @Override
+  public boolean isTime2D() {
+    return true;
+  }
+
+  @Override
   protected void setDataset(CoordSysContainer dataset) {
     if (shape != null) throw new RuntimeException("Cant change axis once set");
     shape = new int[2];
@@ -101,24 +106,25 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
     if (params == null)
       return Optional.of(new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this)));
 
-    CoordAxisHelper helper = new CoordAxisHelper(runCoord);
+    CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
+    boolean runtimeAll = (Boolean) params.get(SubsetParams.runtimeAll);
+    boolean latest = (rundate == null) && !runtimeAll; // default is latest
+
     int run_index = -1;
-
-    if (params.isTrue(SubsetParams.runtimeLatest))
+    if (latest) {
       run_index = runCoord.getNcoords() - 1;
-    else {
-      CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
-      if (rundate != null) {
-        double rundateTarget = runCoord.convert(rundate);
-        run_index = helper.findCoordElement(rundateTarget, true);  // LOOK Bounded
-      }
-    }
 
+    } else if (rundate != null){
+      double rundateTarget = runCoord.convert(rundate);
+      CoordAxisHelper helper = new CoordAxisHelper(runCoord);
+      run_index = helper.findCoordElement(rundateTarget, true);  // LOOK Bounded
+    }
     if (run_index >= 0) {
       CoverageCoordAxis1D time1D = getTimeAxisForRun(run_index);
       return time1D.subset(params);
     }
 
+    // no subsetting needed
     return Optional.of(new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this)));
   }
 
@@ -189,6 +195,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
                       0.0, values, reader, true));
     }
 
+    // LOOK what about the other cases ??
     return null;
   }
 

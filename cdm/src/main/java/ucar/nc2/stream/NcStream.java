@@ -266,101 +266,7 @@ public class NcStream {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static long encodeArrayStructure(ArrayStructure as, ByteOrder bo, OutputStream os) throws java.io.IOException {
-    long size = 0;
 
-    ArrayStructureBB dataBB = StructureDataDeep.copyToArrayBB(as, bo, true);  // force canonical packing
-    List<String> ss = new ArrayList<>();
-    List<Object> heap = dataBB.getHeap();
-    List<Integer> count = new ArrayList<>();
-    if (heap != null) {
-      for (Object ho : heap) {
-        if (ho instanceof String) {
-          count.add(1);
-          ss.add((String) ho);
-        } else if (ho instanceof String[]) {
-          String[] hos = (String[]) ho;
-          count.add(hos.length);
-          Collections.addAll(ss, hos);
-        }
-      }
-    }
-
-    // LOOK optionally compress
-    StructureMembers sm = dataBB.getStructureMembers();
-    ByteBuffer bb = dataBB.getByteBuffer();
-    NcStreamProto.StructureData proto = NcStream.encodeStructureDataProto(bb.array(), count, ss, (int) as.getSize(), sm.getStructureSize());
-    byte[] datab = proto.toByteArray();
-    size += NcStream.writeVInt(os, datab.length); // proto len
-    os.write(datab); // proto
-    size += datab.length;
-    // System.out.printf("encodeArrayStructure write sdata size= %d%n", datab.length);
-
-    return size;
-  }
-
-  static NcStreamProto.StructureData encodeStructureDataProto(byte[] fixed, List<Integer> count, List<String> ss, int nrows, int rowLength) {
-    NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
-    builder.setData(ByteString.copyFrom(fixed));
-    builder.setNrows(nrows);
-    builder.setRowLength(rowLength);
-    for (Integer c : count)
-      builder.addHeapCount(c);
-    for (String s : ss)
-      builder.addSdata(s);
-    return builder.build();
-  }
-
-  public static ArrayStructureBB decodeArrayStructure(StructureMembers sm, int shape[], byte[] proto) throws java.io.IOException {
-    NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
-    builder.mergeFrom(proto);
-
-    ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
-    ArrayStructureBB dataBB = new ArrayStructureBB(sm, shape, bb, 0);
-
-    List<String> ss = builder.getSdataList();
-    List<Integer> count = builder.getHeapCountList();
-
-    int scount = 0;
-    for (Integer c : count) {
-      if (c == 1) {
-        dataBB.addObjectToHeap(ss.get(scount++));
-      } else {
-        String[] hos = new String[c];
-        for (int i = 0; i < c; i++)
-          hos[i] = ss.get(scount++);
-        dataBB.addObjectToHeap(hos);
-      }
-    }
-
-    return dataBB;
-  }
-
-  public static StructureData decodeStructureData(StructureMembers sm, ByteOrder bo, byte[] proto) throws java.io.IOException {
-    NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
-    builder.mergeFrom(proto);
-
-    ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
-    bb.order(bo);
-    ArrayStructureBB dataBB = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
-
-    List<String> ss = builder.getSdataList();
-    List<Integer> count = builder.getHeapCountList();
-
-    int scount = 0;
-    for (Integer c : count) {
-      if (c == 1) {
-        dataBB.addObjectToHeap(ss.get(scount++));
-      } else {
-        String[] hos = new String[c];
-        for (int i = 0; i < c; i++)
-          hos[i] = ss.get(scount++);
-        dataBB.addObjectToHeap(hos);
-      }
-    }
-
-    return dataBB.getStructureData(0);
-  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -449,7 +355,7 @@ public class NcStream {
     return bb.limit();
   }
 
-  static int writeVLong(OutputStream out, long i) throws IOException {
+  static public int writeVLong(OutputStream out, long i) throws IOException {
     int count = 0;
     while ((i & ~0x7F) != 0) {
       writeByte(out, (byte) ((i & 0x7f) | 0x80));
@@ -685,7 +591,12 @@ public class NcStream {
       try {
         long stride = pr.getStride();
         if (stride == 0) stride = 1; // default in protobuf2 was 1, but protobuf3 is 0, luckily 0 is illegal
-        section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1), (int) stride);
+        if (pr.getSize() == 0)
+          section.appendRange(Range.EMPTY);
+        else if (pr.getSize() == -1)
+          section.appendRange(Range.VLEN);
+        else
+          section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1), (int) stride);
       } catch (InvalidRangeException e) {
         throw new RuntimeException("Bad Section in ncstream", e);
       }

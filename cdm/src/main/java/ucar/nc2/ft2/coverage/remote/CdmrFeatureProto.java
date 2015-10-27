@@ -1702,7 +1702,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> 
@@ -1711,7 +1711,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index);
@@ -1719,7 +1719,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     int getAttsCount();
@@ -1727,7 +1727,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
@@ -1736,7 +1736,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
@@ -2138,7 +2138,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
@@ -2148,7 +2148,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
@@ -2159,7 +2159,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     public int getAttsCount() {
@@ -2169,7 +2169,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
@@ -2179,7 +2179,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .Attribute atts = 3;</code>
      *
      * <pre>
-     * look for calendar attribute here?
+     * find calendar attribute here?
      * </pre>
      */
     public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
@@ -3054,7 +3054,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
@@ -3068,7 +3068,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public int getAttsCount() {
@@ -3082,7 +3082,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
@@ -3096,7 +3096,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public Builder setAtts(
@@ -3117,7 +3117,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public Builder setAtts(
@@ -3135,7 +3135,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public Builder addAtts(ucar.nc2.stream.NcStreamProto.Attribute value) {
@@ -3155,7 +3155,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public Builder addAtts(
@@ -3176,7 +3176,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public Builder addAtts(
@@ -3194,7 +3194,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public Builder addAtts(
@@ -3212,7 +3212,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public Builder addAllAtts(
@@ -3231,7 +3231,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public Builder clearAtts() {
@@ -3248,7 +3248,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public Builder removeAtts(int index) {
@@ -3265,7 +3265,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder getAttsBuilder(
@@ -3276,7 +3276,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
@@ -3290,7 +3290,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
@@ -3305,7 +3305,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder() {
@@ -3316,7 +3316,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder(
@@ -3328,7 +3328,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .Attribute atts = 3;</code>
        *
        * <pre>
-       * look for calendar attribute here?
+       * find calendar attribute here?
        * </pre>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute.Builder> 
@@ -10349,7 +10349,7 @@ public final class CdmrFeatureProto {
      * <code>optional bool bigend = 3;</code>
      *
      * <pre>
-     * LOOK [default = true];
+     * proto2 [default = true];
      * </pre>
      */
     boolean getBigend();
@@ -10450,6 +10450,8 @@ public final class CdmrFeatureProto {
      */
     com.google.protobuf.ByteString
         getCoordSysNameBytes();
+
+    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.BigendPresentCase getBigendPresentCase();
   }
   /**
    * Protobuf type {@code GeoReferencedArray}
@@ -10465,7 +10467,6 @@ public final class CdmrFeatureProto {
     private GeoReferencedArray() {
       coverageName_ = "";
       dataType_ = 0;
-      bigend_ = false;
       version_ = 0;
       compress_ = 0;
       uncompressedSize_ = 0L;
@@ -10511,8 +10512,8 @@ public final class CdmrFeatureProto {
               break;
             }
             case 24: {
-
-              bigend_ = input.readBool();
+              bigendPresentCase_ = 3;
+              bigendPresent_ = input.readBool();
               break;
             }
             case 32: {
@@ -10598,6 +10599,35 @@ public final class CdmrFeatureProto {
     }
 
     private int bitField0_;
+    private int bigendPresentCase_ = 0;
+    private java.lang.Object bigendPresent_;
+    public enum BigendPresentCase
+        implements com.google.protobuf.Internal.EnumLite {
+      BIGEND(3),
+      BIGENDPRESENT_NOT_SET(0);
+      private int value = 0;
+      private BigendPresentCase(int value) {
+        this.value = value;
+      }
+      public static BigendPresentCase valueOf(int value) {
+        switch (value) {
+          case 3: return BIGEND;
+          case 0: return BIGENDPRESENT_NOT_SET;
+          default: throw new java.lang.IllegalArgumentException(
+            "Value is undefined for this oneof enum.");
+        }
+      }
+      public int getNumber() {
+        return this.value;
+      }
+    };
+
+    public BigendPresentCase
+    getBigendPresentCase() {
+      return BigendPresentCase.valueOf(
+          bigendPresentCase_);
+    }
+
     public static final int COVERAGENAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object coverageName_;
     /**
@@ -10657,16 +10687,18 @@ public final class CdmrFeatureProto {
     }
 
     public static final int BIGEND_FIELD_NUMBER = 3;
-    private boolean bigend_;
     /**
      * <code>optional bool bigend = 3;</code>
      *
      * <pre>
-     * LOOK [default = true];
+     * proto2 [default = true];
      * </pre>
      */
     public boolean getBigend() {
-      return bigend_;
+      if (bigendPresentCase_ == 3) {
+        return (java.lang.Boolean) bigendPresent_;
+      }
+      return false;
     }
 
     public static final int VERSION_FIELD_NUMBER = 4;
@@ -10844,8 +10876,9 @@ public final class CdmrFeatureProto {
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
       }
-      if (bigend_ != false) {
-        output.writeBool(3, bigend_);
+      if (bigendPresentCase_ == 3) {
+        output.writeBool(
+            3, (boolean)((java.lang.Boolean) bigendPresent_));
       }
       if (version_ != 0) {
         output.writeUInt32(4, version_);
@@ -10883,9 +10916,10 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(2, dataType_);
       }
-      if (bigend_ != false) {
+      if (bigendPresentCase_ == 3) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(3, bigend_);
+          .computeBoolSize(
+              3, (boolean)((java.lang.Boolean) bigendPresent_));
       }
       if (version_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -11039,8 +11073,6 @@ public final class CdmrFeatureProto {
 
         dataType_ = 0;
 
-        bigend_ = false;
-
         version_ = 0;
 
         compress_ = 0;
@@ -11053,6 +11085,8 @@ public final class CdmrFeatureProto {
         bitField0_ = (bitField0_ & ~0x00000080);
         coordSysName_ = "";
 
+        bigendPresentCase_ = 0;
+        bigendPresent_ = null;
         return this;
       }
 
@@ -11079,7 +11113,9 @@ public final class CdmrFeatureProto {
         int to_bitField0_ = 0;
         result.coverageName_ = coverageName_;
         result.dataType_ = dataType_;
-        result.bigend_ = bigend_;
+        if (bigendPresentCase_ == 3) {
+          result.bigendPresent_ = bigendPresent_;
+        }
         result.version_ = version_;
         result.compress_ = compress_;
         result.uncompressedSize_ = uncompressedSize_;
@@ -11095,6 +11131,7 @@ public final class CdmrFeatureProto {
         result.axisName_ = axisName_;
         result.coordSysName_ = coordSysName_;
         result.bitField0_ = to_bitField0_;
+        result.bigendPresentCase_ = bigendPresentCase_;
         onBuilt();
         return result;
       }
@@ -11116,9 +11153,6 @@ public final class CdmrFeatureProto {
         }
         if (other.dataType_ != 0) {
           setDataTypeValue(other.getDataTypeValue());
-        }
-        if (other.getBigend() != false) {
-          setBigend(other.getBigend());
         }
         if (other.getVersion() != 0) {
           setVersion(other.getVersion());
@@ -11153,6 +11187,15 @@ public final class CdmrFeatureProto {
           coordSysName_ = other.coordSysName_;
           onChanged();
         }
+        switch (other.getBigendPresentCase()) {
+          case BIGEND: {
+            setBigend(other.getBigend());
+            break;
+          }
+          case BIGENDPRESENT_NOT_SET: {
+            break;
+          }
+        }
         onChanged();
         return this;
       }
@@ -11178,6 +11221,21 @@ public final class CdmrFeatureProto {
         }
         return this;
       }
+      private int bigendPresentCase_ = 0;
+      private java.lang.Object bigendPresent_;
+      public BigendPresentCase
+          getBigendPresentCase() {
+        return BigendPresentCase.valueOf(
+            bigendPresentCase_);
+      }
+
+      public Builder clearBigendPresent() {
+        bigendPresentCase_ = 0;
+        bigendPresent_ = null;
+        onChanged();
+        return this;
+      }
+
       private int bitField0_;
 
       private java.lang.Object coverageName_ = "";
@@ -11313,27 +11371,29 @@ public final class CdmrFeatureProto {
         return this;
       }
 
-      private boolean bigend_ ;
       /**
        * <code>optional bool bigend = 3;</code>
        *
        * <pre>
-       * LOOK [default = true];
+       * proto2 [default = true];
        * </pre>
        */
       public boolean getBigend() {
-        return bigend_;
+        if (bigendPresentCase_ == 3) {
+          return (java.lang.Boolean) bigendPresent_;
+        }
+        return false;
       }
       /**
        * <code>optional bool bigend = 3;</code>
        *
        * <pre>
-       * LOOK [default = true];
+       * proto2 [default = true];
        * </pre>
        */
       public Builder setBigend(boolean value) {
-        
-        bigend_ = value;
+        bigendPresentCase_ = 3;
+        bigendPresent_ = value;
         onChanged();
         return this;
       }
@@ -11341,13 +11401,15 @@ public final class CdmrFeatureProto {
        * <code>optional bool bigend = 3;</code>
        *
        * <pre>
-       * LOOK [default = true];
+       * proto2 [default = true];
        * </pre>
        */
       public Builder clearBigend() {
-        
-        bigend_ = false;
-        onChanged();
+        if (bigendPresentCase_ == 3) {
+          bigendPresentCase_ = 0;
+          bigendPresent_ = null;
+          onChanged();
+        }
         return this;
       }
 
@@ -13995,32 +14057,33 @@ public final class CdmrFeatureProto {
       "\017coordTransforms\030\007 \003(\0132\017.CoordTransform\022" +
       "\035\n\tcoordAxes\030\010 \003(\0132\n.CoordAxis\022\030\n\005grids\030" +
       "\t \003(\0132\t.Coverage\022#\n\014coverageType\030\n \001(\0162\r",
-      ".CoverageType\"\326\001\n\022GeoReferencedArray\022\024\n\014" +
+      ".CoverageType\"\352\001\n\022GeoReferencedArray\022\024\n\014" +
       "coverageName\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162\t.D" +
-      "ataType\022\016\n\006bigend\030\003 \001(\010\022\017\n\007version\030\004 \001(\r" +
-      "\022\033\n\010compress\030\005 \001(\0162\t.Compress\022\030\n\020uncompr" +
-      "essedSize\030\006 \001(\004\022\r\n\005shape\030\007 \003(\r\022\020\n\010axisNa" +
-      "me\030\010 \003(\t\022\024\n\014coordSysName\030\t \001(\t\"\233\001\n\014DataR" +
-      "esponse\022\035\n\tcoordAxes\030\001 \003(\0132\n.CoordAxis\022\033" +
-      "\n\010coordSys\030\002 \003(\0132\t.CoordSys\022(\n\017coordTran" +
-      "sforms\030\003 \003(\0132\017.CoordTransform\022%\n\010geoArra" +
-      "y\030\004 \003(\0132\023.GeoReferencedArray*\323\001\n\010AxisTyp",
-      "e\022\013\n\007RunTime\020\000\022\014\n\010Ensemble\020\001\022\010\n\004Time\020\002\022\010" +
-      "\n\004GeoX\020\003\022\010\n\004GeoY\020\004\022\010\n\004GeoZ\020\005\022\007\n\003Lat\020\006\022\007\n" +
-      "\003Lon\020\007\022\n\n\006Height\020\010\022\014\n\010Pressure\020\t\022\021\n\rRadi" +
-      "alAzimuth\020\n\022\022\n\016RadialDistance\020\013\022\023\n\017Radia" +
-      "lElevation\020\014\022\014\n\010Spectral\020\r\022\016\n\nTimeOffset" +
-      "\020\016*a\n\013AxisSpacing\022\013\n\007regular\020\000\022\022\n\016irregu" +
-      "larPoint\020\001\022\026\n\022contiguousInterval\020\002\022\031\n\025di" +
-      "scontiguousInterval\020\003*K\n\014CoverageType\022\013\n" +
-      "\007General\020\000\022\017\n\013Curvilinear\020\001\022\010\n\004Grid\020\002\022\t\n" +
-      "\005Swath\020\003\022\010\n\004Fmrc\020\004*S\n\016DependenceType\022\017\n\013",
-      "independent\020\000\022\r\n\tdependent\020\001\022\n\n\006scalar\020\002" +
-      "\022\010\n\004twoD\020\003\022\013\n\007fmrcReg\020\004*t\n\010Calendar\022\027\n\023p" +
-      "roleptic_gregorian\020\000\022\r\n\tgregorian\020\001\022\n\n\006n" +
-      "oleap\020\002\022\014\n\010all_leap\020\003\022\020\n\014uniform30day\020\004\022" +
-      "\n\n\006julian\020\005\022\010\n\004none\020\006B0\n\034ucar.nc2.ft2.co" +
-      "verage.remoteB\020CdmrFeatureProtob\006proto3"
+      "ataType\022\020\n\006bigend\030\003 \001(\010H\000\022\017\n\007version\030\004 \001" +
+      "(\r\022\033\n\010compress\030\005 \001(\0162\t.Compress\022\030\n\020uncom" +
+      "pressedSize\030\006 \001(\004\022\r\n\005shape\030\007 \003(\r\022\020\n\010axis" +
+      "Name\030\010 \003(\t\022\024\n\014coordSysName\030\t \001(\tB\020\n\016bige" +
+      "nd_present\"\233\001\n\014DataResponse\022\035\n\tcoordAxes" +
+      "\030\001 \003(\0132\n.CoordAxis\022\033\n\010coordSys\030\002 \003(\0132\t.C" +
+      "oordSys\022(\n\017coordTransforms\030\003 \003(\0132\017.Coord" +
+      "Transform\022%\n\010geoArray\030\004 \003(\0132\023.GeoReferen",
+      "cedArray*\323\001\n\010AxisType\022\013\n\007RunTime\020\000\022\014\n\010En" +
+      "semble\020\001\022\010\n\004Time\020\002\022\010\n\004GeoX\020\003\022\010\n\004GeoY\020\004\022\010" +
+      "\n\004GeoZ\020\005\022\007\n\003Lat\020\006\022\007\n\003Lon\020\007\022\n\n\006Height\020\010\022\014" +
+      "\n\010Pressure\020\t\022\021\n\rRadialAzimuth\020\n\022\022\n\016Radia" +
+      "lDistance\020\013\022\023\n\017RadialElevation\020\014\022\014\n\010Spec" +
+      "tral\020\r\022\016\n\nTimeOffset\020\016*a\n\013AxisSpacing\022\013\n" +
+      "\007regular\020\000\022\022\n\016irregularPoint\020\001\022\026\n\022contig" +
+      "uousInterval\020\002\022\031\n\025discontiguousInterval\020" +
+      "\003*K\n\014CoverageType\022\013\n\007General\020\000\022\017\n\013Curvil" +
+      "inear\020\001\022\010\n\004Grid\020\002\022\t\n\005Swath\020\003\022\010\n\004Fmrc\020\004*S",
+      "\n\016DependenceType\022\017\n\013independent\020\000\022\r\n\tdep" +
+      "endent\020\001\022\n\n\006scalar\020\002\022\010\n\004twoD\020\003\022\013\n\007fmrcRe" +
+      "g\020\004*t\n\010Calendar\022\027\n\023proleptic_gregorian\020\000" +
+      "\022\r\n\tgregorian\020\001\022\n\n\006noleap\020\002\022\014\n\010all_leap\020" +
+      "\003\022\020\n\014uniform30day\020\004\022\n\n\006julian\020\005\022\010\n\004none\020" +
+      "\006B0\n\034ucar.nc2.ft2.coverage.remoteB\020CdmrF" +
+      "eatureProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -14082,7 +14145,7 @@ public final class CdmrFeatureProto {
     internal_static_GeoReferencedArray_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_GeoReferencedArray_descriptor,
-        new java.lang.String[] { "CoverageName", "DataType", "Bigend", "Version", "Compress", "UncompressedSize", "Shape", "AxisName", "CoordSysName", });
+        new java.lang.String[] { "CoverageName", "DataType", "Bigend", "Version", "Compress", "UncompressedSize", "Shape", "AxisName", "CoordSysName", "BigendPresent", });
     internal_static_DataResponse_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_DataResponse_fieldAccessorTable = new

@@ -30,7 +30,7 @@ import java.util.List;
 
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestNcstreamCompareWithFilesP {
+public class TestCdmRemoteCompareHeadersP {
   static String contentRoot = TestDir.cdmUnitTestDir + "formats";
   static String urlPath = "cdmremote/scanCdmUnitTests/formats";
 
@@ -90,7 +90,7 @@ public class TestNcstreamCompareWithFilesP {
 
   /////////////////////////////////////////////////////////////
 
-  public TestNcstreamCompareWithFilesP(String filename) {
+  public TestCdmRemoteCompareHeadersP(String filename) {
     this.filename = filename;
   }
 
@@ -101,16 +101,16 @@ public class TestNcstreamCompareWithFilesP {
     String name = StringUtil2.substitute(filename.substring(contentRoot.length()), "\\", "/");
     String remote = TestWithLocalServer.withPath(urlPath + name);
     total++;
-    success += compareDatasets(filename, remote);
+    success += compareDatasets(filename, remote, false);
   }
 
-  static int compareDatasets(String local, String remote) throws IOException {
+  static int compareDatasets(String local, String remote, boolean readData) throws IOException {
     try (NetcdfFile ncfile = NetcdfDataset.openFile(local, null);
          NetcdfFile ncremote = new CdmRemote(remote)) {
 
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
-      boolean ok = mind.compare(ncfile, ncremote, new NcstreamObjFilter(), false, false, false);
+      boolean ok = mind.compare(ncfile, ncremote, new NcstreamObjFilter(), false, false, readData);
       if (!ok) {
         System.out.printf("--Compare %s to %s%n", local, remote);
         System.out.printf("  %s%n", f);
@@ -120,7 +120,7 @@ public class TestNcstreamCompareWithFilesP {
     return 1;
   }
 
-  private static class NcstreamObjFilter implements CompareNetcdf2.ObjFilter {
+  public static class NcstreamObjFilter implements CompareNetcdf2.ObjFilter {
 
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {
@@ -137,107 +137,6 @@ public class TestNcstreamCompareWithFilesP {
       return true;
     }
 
-  }
-
-  //////////////////////////////////////////////////////////////
-  public static void main3(String[] args) {
-    try {
-      String filename = "C:/data/formats/netcdf3/testWrite.nc";
-      NetcdfFile ncfile = NetcdfFile.open(filename);
-      NcStreamWriter writer = new NcStreamWriter(ncfile, null);
-
-      File file = new File("C:/temp/out.ncs");
-      FileOutputStream fos = new FileOutputStream(file);
-      writer.streamAll(fos);
-      fos.close();
-
-      NetcdfFile ncfileBack = NetcdfFile.open(file.getPath());
-
-      Formatter f = new Formatter();
-      CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, true);
-      boolean ok = cn.compare(ncfile, ncfileBack);
-      if (ok)
-        System.out.printf("compare %s ok %n", file);
-      else
-        System.out.printf("compare %s NOT OK %n%s", file, f.toString());
-
-      ncfileBack.close();
-      ncfile.close();
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public static void main2(String[] args) {
-    try {
-      String remote = "http://localhost:8081/thredds/cdmremote/testCdmremote/netcdf3/testWrite.nc";
-      CdmRemote ncfileRemote = new CdmRemote(remote);
-
-      String fileOut = "C:/temp/out2.ncs";
-      ncfileRemote.writeToFile(fileOut);
-      NetcdfFile ncfileBack = NetcdfFile.open(fileOut);
-
-      String filename = "C:/data/formats/netcdf3/testWrite.nc";
-      NetcdfFile ncfileOrg = NetcdfFile.open(filename);
-
-      Formatter f = new Formatter();
-      CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, true);
-      boolean ok = cn.compare(ncfileOrg, ncfileBack);
-      if (ok)
-        System.out.printf("compare %s ok %n", fileOut);
-      else
-        System.out.printf("compare %s NOT OK %n%s", fileOut, f.toString());
-
-      ncfileBack.close();
-      ncfileOrg.close();
-      ncfileRemote.close();
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-  }
-
-  private static void write(String filenameIn, String filenameOut) {
-    long start = System.currentTimeMillis();
-    try {
-      File fileIn = new File(filenameIn);
-      System.out.printf("COPY %s len = %d%n", filenameIn, fileIn.length());
-      NetcdfFile ncfile = NetcdfFile.open(filenameIn);
-      NcStreamWriter writer = new NcStreamWriter(ncfile, null);
-
-      File file = new File(filenameOut);
-      FileOutputStream fos = new FileOutputStream(file);
-      writer.streamAll(fos);
-      fos.close();
-
-      NetcdfFile ncfileBack = NetcdfFile.open(file.getPath());
-
-      Formatter f = new Formatter();
-      CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, true);
-      boolean ok = cn.compare(ncfile, ncfileBack);
-      if (ok) {
-        double ratio = (double) file.length() / fileIn.length();
-        System.out.printf("compare %s ok len = %d ratio = %f%n", file, file.length(), ratio);
-      } else {
-        System.out.printf("compare %s NOT OK %n%s", file, f.toString());
-      }
-      ncfileBack.close();
-      ncfile.close();
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("That took %d msecs%n", took);
-  }
-
-
-  public static void main1(String[] args) {
-    //write("C:/dev/github/thredds/cdm/src/test/data/testWrite.nc", "C:/tmp/out.ncs");
-    write("G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.00Z.grb2", "C:/tmp/out.ncs");
   }
 
 }

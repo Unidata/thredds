@@ -45,6 +45,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DescribeCoverage extends WcsRequest {
@@ -59,13 +60,14 @@ public class DescribeCoverage extends WcsRequest {
     this.coverages = coverages;
     if (this.coverages.size() < 1)
       throw new IllegalArgumentException("Coverage list must contain at least one ID [" + this.coverages.size() + "].");
-    String badCovIds = "";
+    List<String> badCovIds = new ArrayList<>();
     for (String curCov : coverages) {
       if (!this.getWcsDataset().isAvailableCoverageName(curCov))
-        badCovIds += (badCovIds.length() > 0 ? ", " : "") + curCov;
+        badCovIds.add(curCov);
     }
-    if (badCovIds.length() > 0)
+    if (badCovIds.size() > 0) {
       throw new WcsException("Coverage ID list contains one or more unknown IDs [" + badCovIds + "].");
+    }
   }
 
   public Document getDescribeCoverageDoc() {

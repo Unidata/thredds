@@ -1786,6 +1786,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
         int index = asbb.addObjectToHeap(result);
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap
+
       } else if (m.isVariableLength()) {
         // We need to do like readVLEN, but store the resulting array
         // in the asbb heap (a bit of a hack).
@@ -1829,7 +1830,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           }
           result = ndimarray;
         }
-        // Store result in the heap
+        // Store vlen result in the heap
         int index = asbb.addObjectToHeap(result);
         bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
         bb.putInt(startPos, index); // overwrite with the index into the StringHeap

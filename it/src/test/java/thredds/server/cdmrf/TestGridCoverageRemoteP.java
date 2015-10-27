@@ -44,6 +44,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
@@ -51,7 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Description
+ * cdmrfeature
  *
  * @author John
  * @since 8/17/2015
@@ -86,7 +87,7 @@ public class TestGridCoverageRemoteP {
   Double time_offset, vert_level;
 
   public TestGridCoverageRemoteP(String endpoint, String covName, String rt_val, String time_val, Double time_offset, Double vert_level) {
-    this.endpoint = "cdmrFeature:" + TestWithLocalServer.withPath(endpoint);
+    this.endpoint = ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME + TestWithLocalServer.withPath(endpoint);
 
     this.covName = covName;
     this.rt_val = rt_val == null ? null : CalendarDate.parseISOformat(null, rt_val);
@@ -99,7 +100,12 @@ public class TestGridCoverageRemoteP {
   public void testReadGridCoverageSlice() throws IOException, InvalidRangeException {
     System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
 
-    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
+    FeatureDatasetCoverage cc = null;
+    try {
+      Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(endpoint);
+      Assert.assertTrue(opt.getErrorMessage(), opt.isPresent());
+      cc = opt.get();
+
       Assert.assertNotNull(endpoint, cc);
       Assert.assertEquals(1, cc.getCoverageCollections().size());
       CoverageCollection gcs = cc.getCoverageCollections().get(0);
@@ -108,6 +114,9 @@ public class TestGridCoverageRemoteP {
       Assert.assertNotNull(covName, cover);
 
       readOne(cover, rt_val, time_val, time_offset, vert_level);
+
+    } finally {
+      if (cc != null) cc.close();
     }
   }
 

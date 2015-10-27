@@ -34,8 +34,6 @@ package ucar.nc2.iosp.hdf4;
 
 import ucar.ma2.DataType;
 import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
-import ucar.nc2.constants.CDM;
 
 /**
  * @author caron
@@ -80,11 +78,9 @@ public class H4type {
   */
   static DataType setDataType(short type, Variable v) {
     DataType dt;
-    boolean unsigned = false;
     switch (type) {
       case 3:
-        dt = unsigned ? DataType.UBYTE : DataType.BYTE;
-        unsigned = true;
+        dt = DataType.UBYTE;
         break;
       case 4:
         dt =  DataType.CHAR;
@@ -95,29 +91,29 @@ public class H4type {
       case 6:
         dt =  DataType.DOUBLE;
         break;
-      case 21:
-        unsigned = true;
-        //coverity[missing_break]
       case 20:
-        dt =  unsigned ? DataType.UBYTE : DataType.BYTE;
+        dt =  DataType.BYTE;
+        break;
+      case 21:
+        dt =  DataType.UBYTE;
+        break;
+      case 22:
+        dt =  DataType.SHORT;
         break;
       case 23:
-        unsigned = true;
-         //coverity[missing_break]
-      case 22:
-        dt =  unsigned ? DataType.USHORT : DataType.SHORT;
+        dt =  DataType.USHORT;
+        break;
+      case 24:
+        dt =  DataType.INT;
         break;
       case 25:
-        unsigned = true;
-        //coverity[missing_break]
-      case 24:
-        dt =  unsigned ? DataType.UINT : DataType.INT;
+        dt =  DataType.UINT;
+        break;
+      case 26:
+        dt =  DataType.LONG;
         break;
       case 27:
-        unsigned = true;
-         //coverity[missing_break]
-      case 26:
-        dt =  unsigned ? DataType.ULONG : DataType.LONG;
+        dt =  DataType.ULONG;
         break;
       default:
         throw new IllegalStateException("unknown type= " + type);

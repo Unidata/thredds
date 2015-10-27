@@ -319,10 +319,11 @@ public class WcsRequestParser {
       range = new thredds.server.wcs.v1_0_0_1.WcsCoverage.VerticalRange(value, 1);
     }
 
-    if (range == null) {
+/* cannot be null
+   if (range == null) {
       log.debug("parseRangeSetAxisValues(): Invalid Vertical range requested [" + rangeSetAxisSelectionString + "].");
       throw new thredds.server.wcs.v1_0_0_1.WcsException(thredds.server.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Vertical", "Invalid Vertical range requested.");
-    }
+    } */
 
     return range;
   }

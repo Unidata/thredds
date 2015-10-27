@@ -1,10 +1,8 @@
-NetCDF-Java Library Home
-========================
+:tdsDocs: ../tds/reference
 
 = image:netcdfBig.gif[image] NetCDF-Java Library
 
- +
- The NetCDF-Java Library is a Java interface to
+The NetCDF-Java Library is a pure Java interface to
 http://www.unidata.ucar.edu/software/netcdf/index.html[NetCDF files], as
 well as to many other types of scientific data formats. 
 
@@ -24,235 +22,150 @@ or browse] previous netCDF-Java support questions.
 
 '''''
 
-=== Overview
+== Overview
 
-The NetCDF-Java library implements a link:CDM/index.html[Common Data
-Model](CDM), a generalization of the NetCDF, OpenDAP and HDF5 data
-models. The library is a prototype for the
-http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html[NetCDF-4
-project], which provides a C language API for the ``data access layer''
-of the CDM, on top of the
-http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html[HDF5 file format]. The
-NetCDF-Java library is a 100% Java framework for _reading_ netCDF and
-other file formats into the CDM, as well as _writing_ to the netCDF-3
-file format. link:reference/netcdf4Clibrary.html[Writing to the netCDF-4
-file format] requires installing the netCDF C library. The NetCDF-Java
-library also implements
-http://www.unidata.ucar.edu/software/netcdf/ncml/[NcML], which allows
-you to add metadata to CDM datasets, as well as to create virtual
-datasets through aggregation. The link:../tds/TDS.html[THREDDS Data
-Server] (TDS) is built on top of the NetCDF-Java library.
+The NetCDF-Java library implements a link:CDM/index.adoc[Common Data Model](CDM), a generalization of the NetCDF, OpenDAP and HDF5 data models.
+The library is a prototype for the http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html[NetCDF-4 project],
+which provides a C language API for the *_data access layer_* of the CDM, on top of the
+http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html[HDF5 file format].
+The NetCDF-Java library is a 100% Java framework for _reading_ netCDF and other file formats into the CDM, as well as _writing_ to the netCDF-3 file format.
+link:reference/netcdf4Clibrary.adoc[Writing to the netCDF-4 file format] requires installing the netCDF C library.
+The NetCDF-Java library also implements http://www.unidata.ucar.edu/software/netcdf/ncml/[NcML],
+which allows you to add metadata to CDM datasets, as well as to create virtual datasets through aggregation.
+The link:../tds/TDS.adoc[THREDDS Data Server] (TDS) is built on top of the NetCDF-Java library.
 
 CDM/TDS source is hosted on https://github.com/Unidata/thredds[GitHub].
 To build the latest stable version from source or contribute code to the
-THREDDS project, see link:tutorial/SourceCodeBuild.html[here]. Most
+THREDDS project, see link:tutorial/SourceCodeBuild.adoc[here]. Most
 projects use *netcdfAll.jar* or *toolsUI.jar* (see below for links), or
 include the desired http://artifacts.unidata.ucar.edu/[artifacts] in
 their maven or gradle builds. See
-link:reference/BuildDependencies.html[Build Dependencies] for details.
+link:reference/BuildDependencies.adoc[Build Dependencies] for details.
 
-Unidata CDM/THREDDS Software Engineering tools:
+=== CDM/THREDDS Software Engineering tools:
 
-* http://artifacts.unidata.ucar.edu/[Maven repository] for maven
-artifacts
+* http://artifacts.unidata.ucar.edu/[Maven repository] for maven artifacts
 * http://github.com/unidata[GitHub repository] for source code
-* https://travis-ci.org/Unidata/thredds[Travis] Continuous Integration /
-unit testing
+* https://travis-ci.org/Unidata/thredds[Travis] Continuous Integration / unit testing
 * https://bugtracking.unidata.ucar.edu/browse/TDS[JIRA] issue tracking
-* https://scan.coverity.com/projects/388?tab=overview[Coverity] static
-analysis
+* https://scan.coverity.com/projects/388?tab=overview[Coverity] static analysis
 
 [[v46]]
 === Current stable release version 4.6 (requires Java 7)
 
-* The
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/netcdfAll-4.6.jar[complete
+* The ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/netcdfAll-4.6.jar[complete
 netCDF library jar] implements the full CDM model, with all dependent
 jars included.
-* The
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/toolsUI-4.6.jar[toolsUI.jar]
+* The ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/toolsUI-4.6.jar[toolsUI.jar]
 also includes UI classes, and allows you to run the netCDF ToolsUI
 application directly from it such as "__java -Xmx1g -jar toolsUI.jar__"
-* The
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/ncIdv-4.6.jar[ncIDV.jar]
+* The ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/ncIdv-4.6.jar[ncIDV.jar]
 is for the development branch of the IDV.
-* link:javadoc/index.html[Public javadoc.] This is the public interface.
+* link:javadoc/index.adoc[Public javadoc.] This is the public interface.
 Future changes to the API will attempt to remain backwards compatible
 with this API.
-* link:javadocAll/index.html[All javadoc]. This is the javadoc for all
-packages and all methods except private. CAREFUL, much of this will
-change.
-* Try out the *4.6* version of ToolsUI application:
-link:webstart/netCDFtools.jnlp[launch from webstart].
-* Unidata public
-https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/[Maven
-repository] for maven artifacts
+* link:javadocAll/index.html[All javadoc]. This is the javadoc for all packages and all methods except private. CAREFUL, much of this will change.
+* Try out the *4.6* version of ToolsUI application: link:webstart/netCDFtools.jnlp[launch from webstart].
+* Unidata public https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/[Maven repository] for maven artifacts
 * All source is on https://github.com/Unidata/thredds[GitHub]
 
-[[v45]]
-=== Previous release version 4.5 (requires Java 7)
+[[v50]]
+=== Current development version 5.0 (requires Java 8)
 
-* The
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/netcdfAll-4.5.jar[complete
-netCDF library jar] implements the full CDM model, with all dependent
-jars included.
-* The
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/toolsUI-4.5.jar[toolsUI.jar]
-also includes UI classes, and allows you to run the netCDF ToolsUI
-application directly from it such as "__java -Xmx1g -jar toolsUI.jar__"
-* The
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/ncIdv-4.5.jar[ncIDV.jar]
+* The ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v5.0/netcdfAll-5.0.jar[complete netCDF library jar]
+implements the full CDM model, with all dependent jars included.
+* The ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v5.0/toolsUI-5.0.jar[toolsUI.jar]
+also includes UI classes, and allows you to run the netCDF ToolsUI application directly from it such as "__java -Xmx1g -jar toolsUI.jar__"
+* The ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v5.0/ncIdv-5.0.jar[ncIDV.jar]
 is for the development branch of the IDV.
-* http://www.unidata.ucar.edu/software/thredds/v4.5/netcdf-java/javadoc/index.html[Public
-javadoc.] This is the public interface. Future changes to the API will
-attempt to remain backwards compatible with this API.
-* http://www.unidata.ucar.edu/software/thredds/v4.5/netcdf-java/javadocAll/index.html[All
-javadoc]. This is the javadoc for all packages and all methods except
-private. CAREFUL, much of this will change.
-* Try out the *4.5* version of ToolsUI application:
-http://www.unidata.ucar.edu/software/thredds/v4.5/netcdf-java/webstart/netCDFtools.jnlp[launch
-from webstart].
-* Unidata public
-https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/[Maven
-repository] for maven artifacts
+* http://www.unidata.ucar.edu/software/thredds/v5.0/netcdf-java/javadoc/index.html[Public javadoc.]
+This is the public interface. Future changes to the API will attempt to remain backwards compatible with this API.
+* http://www.unidata.ucar.edu/software/thredds/v5.0/netcdf-java/javadocAll/index.html[All javadoc].
+This is the javadoc for all packages and all methods except private. CAREFUL, much of this will change.
+* Try out the *5.0* version of ToolsUI application:
+http://www.unidata.ucar.edu/software/thredds/v5.0/netcdf-java/webstart/netCDFtools.jnlp[launch from webstart].
+* Unidata public https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/[Maven repository] for maven artifacts
 * All source is on https://github.com/Unidata/thredds[GitHub]
-
-[[v]]
-=== Previous release version 4.3 (requires Java 6)
-
-* The
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar[complete
-netCDF library jar] implements the full CDM model, with all dependent
-jars included.
-* The
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar[toolsUI.jar]
-also includes UI classes, and allows you to run the netCDF ToolsUI
-application directly from it with "__java -Xmx1g -jar toolsUI.jar__"
-* The
-ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv-4.3.jar[ncIDV.jar]
-is for the released version of the IDV.
-* http://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/index.html[Public
-javadoc.] This is the public interface. Future changes to the API will
-attempt to remain backwards compatible with this API.
-* http://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadocAll/index.html[All
-javadoc]. This is the javadoc for all packages and all methods except
-private. CAREFUL, much of this will change.
-* Try out the *4.3* version of ToolsUI application:
-http://www.unidata.ucar.edu/software/thredds/netcdf-java/v4.3/webstart/netCDFtools.jnlp[launch
-from webstart].
-* Unidata public
-https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/[Maven
-repository] for maven artifacts
-* All source is on https://github.com/Unidata/thredds[GitHub]
+* Version 5 is a magor version upgrade with link:{tdsDocs}/../UpgradingTo5.adoc[many improvements to the API].
 
 === File format types
 
-The NetCDF-Java library can read various
-link:reference/formats/FileTypes.html[file types and remote access
-protocols].
+The NetCDF-Java library can read various link:reference/formats/FileTypes.adoc[file types and remote access protocols].
 
 Notes to GRIB users:
 
-* *You must use 4.6+ branch to read GRIB files. Many bug fixes and
-improvements are on that branch. Other branches are not supported.*
+* *You must use 4.6+ branch to read GRIB files. Many bug fixes and improvements are on that branch. Other branches are not supported.*
 * If your GRIB files are using non-WMO-standard tables, please closely
 examine the output from the CDM and report problems. Obtain the tables
 from the producer is possible and send them to us.
 * Indexing has changed since 4.3 (this will be detected automatically).
 * Evolving documentation for GRIB is at:
 
-_________________________________________________________
-* link:reference/formats/GribTables.html[GribTables.html]
-* link:reference/formats/GribFiles.html[GribFiles.html]
-_________________________________________________________
+** link:reference/formats/GribTables.adoc[GribTables.html]
+** link:reference/formats/GribFiles.adoc[GribFiles.html]
 
 === Caveats and not-so-stable APIs:
 
-* *Writing* to netCDF-3 format is supported, but extended features in
-the CDM, e.g. groups, structures, long data types are not yet supported.
-* *Writing* to netCDF-4 format is supported, if you have the
-link:reference/netcdf4Clibrary.html[netCDF C library loaded].
-* The catalog API will be redone, however the current API will remain
-supported if possible.
+* *Writing* to netCDF-3 format is supported, but extended features in the CDM, e.g. groups, structures, long data types are not yet supported.
+* *Writing* to netCDF-4 format is supported, if you have the link:reference/netcdf4Clibrary.adoc[netCDF C library loaded].
 
 === Related Documents:
 
-* link:reference/faq.html[Frequently Asked Questions]
-* link:tutorial/index.html[Tutorial]
-* link:reference/Cookbook.html[Cookbook]
-* link:/software/netcdf/examples/programs/[Example Basic Programs in
-C/C++/Fortran/Java]
-* link:reference/index.html[Reference Documentation]
-* link:CDM/index.html[Common Data Model]
-* link:ncml/index.htm[NetCDF Markup Language]:
-http://www.unidata.ucar.edu/software/netcdf/ncml/AnnotatedSchema4.html[annotated
-schema]
+* link:reference/faq.adoc[Frequently Asked Questions]
+* link:tutorial/index.adoc[Tutorial]
+* link:reference/Cookbook.adoc[Cookbook]
+* link:/software/netcdf/examples/programs/[Example Basic Programs in C/C++/Fortran/Java]
+* link:reference/index.adoc[Reference Documentation]
+* link:CDM/index.adoc[Common Data Model]
+* link:ncml/index.adoc[NetCDF Markup Language] and ncml/AnnotatedSchema4.adoc[annotated schema]
 
 === CF Conventions
 
-http://thredds-test.unidata.ucar.edu/thredds/cf_examples.html[Sample CF
-DSG Files]
-
-http://www.cfconventions.org[CF Conventions Home page]
-
-link:reference/FeatureDatasets/CFpointImplement.html[Short guide to
-writing files using CF 1.6 discrete sampling features Conventions]
-
-link:CDM/CFdiff.html[Differences between CF and CDM]
-
-link:reference/FeatureDatasets/CFencodingTable.html[CF Point Observation
-Data encoding Table]
-
-http://www.ral.ucar.edu/projects/titan/docs/radial_formats/cfradial.html[CF/Radial
-RADAR/LIDAR Data Format]
-
-CF Convention Conformance Checking
-
-* http://cfconventions.org/compliance-checker.html
-
-* http://htap.icg.kfa-juelich.de:50080/upload
+* http://thredds-test.unidata.ucar.edu/thredds/cf_examples.html[Sample CF DSG Files]
+* http://www.cfconventions.org[CF Conventions Home page]
+* link:reference/FeatureDatasets/CFpointImplement.adoc[Short guide to writing files using CF 1.6 discrete sampling features Conventions]
+* link:CDM/CFdiff.adoc[Differences between CF and CDM]
+* link:reference/FeatureDatasets/CFencodingTable.adoc[CF Point Observation Data encoding Table]
+* http://www.ral.ucar.edu/projects/titan/docs/radial_formats/cfradial.html[CF/Radial RADAR/LIDAR Data Format]
+* CF Convention Conformance Checking
+** http://cfconventions.org/compliance-checker.html
+** http://htap.icg.kfa-juelich.de:50080/upload
 
 === Coordinate Systems
 
-Working notes and documentation on the *_coordinate system_* layer of
-the CDM
+Working notes and documentation on the *_coordinate system_* layer of the CDM:
 
-* link:CDM/index.html#CoordSys[Common Data Model (CDM) and Coordinate
+* link:CDM/index.adoc#CoordSys[Common Data Model (CDM) and Coordinate
 Systems]
 * link:CDM/CoordinateSystemsNeeded.htm[Why we need Coordinate Systems]
 * _Coordinate Attribute Conventions
-(link:tutorial/CoordinateAttributes.html[examples])
-(link:reference/CoordinateAttributes.html[reference])
+(link:tutorial/CoordinateAttributes.adoc[examples])
+(link:reference/CoordinateAttributes.adoc[reference])
 
-=== Feature Types
+=== Feature Datasets
 
-Working notes and documents on the _*scientific feature type*_ layer of
-the CDM
+Working notes and documents on the *_scientific feature type_* layer of the CDM:
 
-* link:../tds/reference/collections/FeatureCollections.html[Feature
-Collections] (draft)
-* link:reference/FeatureDatasets/CFpointImplement.html[CDM
-implementation of CF discrete sampling features (DRAFT)]
-* Complete link:reference/FeatureDatasets/PointUML.html[Point Feature
-UML]
-* link:reference/FeatureDatasets/Overview.html[Feature Types (Overview)]
-* link:tutorial/GridDatatype.html[Grid Datatype]
+* link:reference/FeatureDatasets/Overview.adoc[Feature Datasets (Overview)]
+* link:CoverageFeatures.adoc[Coverage Dataset]: Data in a multidimensional grid, eg model output, satellite data.
+* link:PointFeatures.adoc[Point Dataset]: Discrete Sampling Geometry (DSG) datasets
+* link:reference/FeatureDatasets/CFpointImplement.adoc[CDM implementation of CF discrete sampling features]
+* link:reference/FeatureDatasets/PointFeatureUML.svg[Point Feature UML]
 * Adding unstructured grids to the CDM
-http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_NetCDF_Java.pdf[statement
-of work]
+http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_NetCDF_Java.pdf[statement of work]
+* link:{tdsDocs}/collections/FeatureCollections.adoc[Feature Collections in TDS]
 
-=== Streaming NetCDF (Experimental)
+=== Streaming NetCDF
 
-* link:reference/stream/NcStream.html[NetCDF Streaming Format]
-* link:reference/stream/CdmRemote.html[CDM Remote Web Service]
+* link:reference/stream/NcStream.adoc[NetCDF Streaming Format]
+* link:reference/stream/CdmRemote.adoc[CDM Remote Web Service]
+* link:reference/stream/CdmrFeature.adoc[CDM Remote Feature Web Service]
 
 === Metadata:
 
-* link:metadata/DataDiscoveryAttConvention.html[NetCDF Attribute
-Convention for Dataset Discovery]
-* https://geo-ide.noaa.gov/wiki/index.php?title=NcISO[NcISO:] generation
-of ISO 19115-2 metadata from NetCDF data sources.
-link:../tds/reference/ncISO.html[TDS implementation]
+* link:metadata/DataDiscoveryAttConvention.adoc[NetCDF Attribute Convention for Dataset Discovery]
+* https://geo-ide.noaa.gov/wiki/index.php?title=NcISO[NcISO:] generation of ISO 19115-2 metadata from NetCDF data sources.
+link:{tdsDocs}/ncISO.adoc[TDS implementation]
 
 === Miscellaneous Resources
 
@@ -332,5 +245,4 @@ System (National Meteorological Center, CMA, Beijing, China)
 
 '''''
 
-link:NetcdfUsers.htm[image:nc.gif[image]] This document was last updated
-May 2015
+link:NetcdfUsers.htm[image:nc.gif[image]] This document is maintained by elves and was last updated October 2015

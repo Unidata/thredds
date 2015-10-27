@@ -1,17 +1,16 @@
-DM Remote Feature for Point Data
-:linkcss:
-:stylesheet: ../../cdm.css
-:w3cDate: http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cdate
-:w3cDuration: http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/services/NetcdfSubsetServiceReference.html#W3Cduration
+= CDM Remote Feature for Point Data
+:tdsDocs: ../../../tds/reference/services
+:w3cDate: {tdsDocs}/NetcdfSubsetServiceReference.adoc#W3Cdate
+:w3cDuration: {tdsDocs}/NetcdfSubsetServiceReference.adoc#W3Cduration
 
 CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM feature datasets, using
-link:NcStream.html[ncstream] as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
+link:NcStream.adoc[ncstream] as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
 two levels of services:
 
-1.  *link:CdmRemote.html[CdmRemote]* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
+1.  *link:CdmRemote.adoc[CdmRemote]* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
 CDM local datasets and *DODSNetcdfFile* provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.
 2.  *CdmrFeature* provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and 
-Unidata's link:../../../tds/reference/services/NetcdfSubsetServiceReference.html[_NetCDF Subset Service_] __(NCSS)__. This API and protocol is redone
+Unidata's link:{tdsDocs}/NetcdfSubsetServiceReference.adoc[_NetCDF Subset Service_]. This API and protocol is redone
 in version 5.0.
 
 The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.
@@ -33,18 +32,18 @@ Example service requests are:
 [cols=",,",options="header",]
 |=====================================================================================================================================================
 |Request |Response |Meaning
-|http://server:8080/thredds/cdmrfeature/data.nc/point?**req=form** |HTML form |form interface
+|\http://server:8080/thredds/cdmrfeature/data.nc/point?**req=form** |HTML form |form interface
 
-|http://server:8080/thredds/cdmrfeature/data.nc/point?**req=capabilities** |capabilities XML |describe dataset 
+|\http://server:8080/thredds/cdmrfeature/data.nc/point?**req=capabilities** |capabilities XML |describe dataset
 
-|http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data** |pointFeatureList message |get all the data
+|\http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data** |pointFeatureList message |get all the data
 
-|http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data&north=40.3&south=22.8&east=-80&west=-105** |pointFeatureList message |get data in 
+|\http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data&north=40.3&south=22.8&east=-80&west=-105** |pointFeatureList message |get data in
 bounding box
 
-|http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data&time_start=&time_end=** |pointFeatureList message |get data in time range
+|\http://server:8080/thredds/cdmrfeature/data.nc/point?**req=data&time_start=&time_end=** |pointFeatureList message |get data in time range
 
-|http://server:8080/thredds/cdmfeature/data.nc/point?**req=data&var=Temp,lat,lon** |pointFeatureList message |get data for listed variables
+|\http://server:8080/thredds/cdmfeature/data.nc/point?**req=data&var=Temp,lat,lon** |pointFeatureList message |get data for listed variables
 |=====================================================================================================================================================
 
 * data requests return an unordered list of observation as StructureData
@@ -64,25 +63,25 @@ Example service requests are:
 [cols=",,",options="header",]
 |=====================================================================================================================================================
 |Request |Response |Meaning
-|http://server:8080/thredds/cdmrfeature/data.nc/station?**req=form** |HTML form |form interface
+|\http://server:8080/thredds/cdmrfeature/data.nc/station?**req=form** |HTML form |form interface
 
-|http://server:8080/thredds/cdmrfeature/data.nc/station?**req=capabilities** |capabilities XML |describe dataset
+|\http://server:8080/thredds/cdmrfeature/data.nc/station?**req=capabilities** |capabilities XML |describe dataset
 
-|http://server:8080/thredds/cdmrfeature/data.nc/station?**req=stations** |stationListMessage |get all stations
+|\http://server:8080/thredds/cdmrfeature/data.nc/station?**req=stations** |stationListMessage |get all stations
 
-|http://server:8080/thredds/cdmrfeature/data.nc/station?**req=stations&north=40.3&south=22.8&east=-80&west=-105** |stationListMessage |get stations in
+|\http://server:8080/thredds/cdmrfeature/data.nc/station?**req=stations&north=40.3&south=22.8&east=-80&west=-105** |stationListMessage |get stations in
 bounding box
 
-|http://server:8080/thredds/cdmrfeature/data.nc/station?**req=stations&stn=KDEN,KLOG,MOAS** |stationListMessage |get stations in list
+|\http://server:8080/thredds/cdmrfeature/data.nc/station?**req=stations&stn=KDEN,KLOG,MOAS** |stationListMessage |get stations in list
 
-|http://server:8080/thredds/cdmrfeature/data.nc/station?**req=data&time_start=&time_end=&stn=KDEN** |pointFeatureList message |get data in time range
+|\http://server:8080/thredds/cdmrfeature/data.nc/station?**req=data&time_start=&time_end=&stn=KDEN** |pointFeatureList message |get data in time range
 
-|http://server:8080/thredds/cdmrfeature/data.nc/station?**req=data&stn=KDEN,KLOG,MOAS** |pointFeatureList message |get data for station list
+|\http://server:8080/thredds/cdmrfeature/data.nc/station?**req=data&stn=KDEN,KLOG,MOAS** |pointFeatureList message |get data for station list
 
-|http://server:8080/thredds/cdmrfeature/data.nc/station?**req=data&north=40.3&south=22.8&east=-80&west=-105** |pointFeatureList message |get data in
+|\http://server:8080/thredds/cdmrfeature/data.nc/station?**req=data&north=40.3&south=22.8&east=-80&west=-105** |pointFeatureList message |get data in
 bounding box
 
-|http://server:8080/thredds/cdmrfeature/data.nc/station?**req=data&var=Temp,lat,lon&stn=KDEN** |pointFeatureList message |get data for listed
+|\http://server:8080/thredds/cdmrfeature/data.nc/station?**req=data&var=Temp,lat,lon&stn=KDEN** |pointFeatureList message |get data for listed
 variables
 |=====================================================================================================================================================
 
@@ -111,7 +110,7 @@ GetCapabilities XML document
 This is an ad-hoc format (for now), example:
 
 [source,xml]
-----------------------------------------------------------------------------------------------------------------------
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <capabilities location="http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome">
   <featureDataset type="station" url="http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome/station" />
@@ -143,9 +142,7 @@ This is an ad-hoc format (for now), example:
     <accept>ncstream</accept>
   </AcceptList>
 </capabilities>
-----------------------------------------------------------------------------------------------------------------------
-
- 
+----
 
 '''''
 
@@ -154,7 +151,7 @@ PointStream Grammer
 
 An _*pointstream*_ is a sequence of one or more messages:
 
---------------------------------------------------------------------------------------------------------------
+----
    pointstream = {message}
    message = stationListMessage | pointFeatureListMessage | errorMessage | endMessage
    stationListMessage = MAGIC_StationList, vlen, PointStreamProto.StationList
@@ -178,7 +175,7 @@ An _*pointstream*_ is a sequence of one or more messages:
    MAGIC_END                    =  0xed, 0xed, 0xde, 0xde
 
    MAGIC_ERR                    =  0xab, 0xad, 0xba, 0xda
---------------------------------------------------------------------------------------------------------------
+----
 
 The protobuf messages are defined by
 
@@ -208,7 +205,7 @@ Nov-11-2010
 collectionController. We will replacce this with pure catalog configuration in 4.2+. This is now being shown in serverStartup.log +
 
 [source,xml]
----------------------------------------------------------------------------------
+----
  <bean id="collectionManager" class="thredds.server.cdmremote.CollectionManager">
  <property name="collections">
   <list>
@@ -222,11 +219,11 @@ collectionController. We will replacce this with pure catalog configuration in 4
   </list>
  </property>
 </bean>
----------------------------------------------------------------------------------
+----
 
 
 [source,xml]
---------------------------------------------------------------------------------------------------------------
+----
  <bean id="ncMetars" class="thredds.server.cdmremote.CollectionBean">
    <property name="path" value="/idd/metar/ncdecoded"/>
    <property name="spec" value="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
@@ -237,11 +234,11 @@ collectionController. We will replacce this with pure catalog configuration in 4
  </bean>
 
 etc
---------------------------------------------------------------------------------------------------------------
+----
 
 This is now being shown in serverStartup.log:
 
-------------------------------------------------------------------------------------------------------
+----
 serverStartup: CdmRemoteController collections
    /idd/metar/gempak == /data/ldm/gempak/surface/#yyyyMMdd#_sao.gem
    /idd/bufr/quickScat == /data/ldm/gempak/surface/**/#yyyyMMdd#.gem
@@ -250,11 +247,11 @@ serverStartup: CdmRemoteController collections
    /idd/metar/gempakLocalHome == C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem
    /idd/metar/gempakLocal == D:/formats/gempak/surface2/#yyyyMMdd#_sao.gem
    /idd/metar/ncdecodedLocal == Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc
-------------------------------------------------------------------------------------------------------
+----
 
 So the URLs are
 
-------------------------------------------------------------------------------
+----
  http://server:port/thredds/cdmremote/path?req
 eg:
  http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak
@@ -262,11 +259,11 @@ eg:
  http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/bufr/quickScat
  http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal
  http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome?req=form
-------------------------------------------------------------------------------
+----
 
 *3) The default output is the dataset description: should be getCapabilities ????* +
 
--------------------------------------------------------------------------------------------------------
+----
 FeatureDataset on location= http://localhost:8080/thredds/cdmremote/local/metars/collection
   featureType= STATION
   title= null
@@ -287,13 +284,13 @@ FeatureCollection 0
    npts = -1
      bb =  lat= [-90.00,82.51] lon= [-180.00,180.00]
 
--------------------------------------------------------------------------------------------------------
+----
 
 \4) In ToolsUI, FeatureType/PointFeature Tab:
 
 *cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection*
 
-----------------------------------------------------------------------------------------------------------------------------
+----
  
 FeatureDataset on location= cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
   featureType= STATION
@@ -336,11 +333,11 @@ FeatureCollection 0
  STATION cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection
    npts = -1
      bb =  lat= [-90.00,82.51] lon= [-180.00,180.00]
-----------------------------------------------------------------------------------------------------------------------------
+----
 
 Ask for station data, on the server, its rather slow:
 
------------------------------------------------------------------------------------------------
+----
 CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060325_0000.nc
 CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060326_0000.nc
 CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_20060327_0000.nc
@@ -355,12 +352,9 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
 
 
   (check to see what the strategy is for stations: coomplete scan or ??)
------------------------------------------------------------------------------------------------
+----
 
 \5) *cdmremoteCatalog.xml* defines datasets for the collections we have working so far.
 
- +
-
 '''''
-
 image:../../nc.gif[image] This document was last updated April 2015

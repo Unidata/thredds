@@ -80,6 +80,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     }
     this.crange = builder.crange;
 
+    // LOOK this is fishy
     this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
   }
 

@@ -132,25 +132,4 @@ public class TestCdmRemoteServer {
     }
   }
 
- /* public void testCompareWithFile() throws IOException {
-    final String urlPrefix = CdmRemote.SCHEME+"http://localhost:8081/thredds/cdmremote/opendapTest/";
-    final String dirName = TestAll.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
-
-    TestAll.actOnAll(dirName, new TestAll.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestAll.Act() {
-      public int doAct(String filename) throws IOException {
-        filename = StringUtil2.replace(filename, '\\', "/");
-        filename = StringUtil2.remove(filename, dirName);
-        String dodsUrl = urlPrefix+filename;
-        String localPath = dirName+filename;
-        System.out.println("--Compare "+localPath+" to "+dodsUrl);
-
-        NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
-        NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);
-        CompareNetcdf.compareFiles(org_ncfile, dods_file);
-        return 1;
-      }
-    });
-  }*/
-
-
 }

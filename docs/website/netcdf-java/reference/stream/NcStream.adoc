@@ -58,10 +58,7 @@ We don't use protobuf messages for the data, since protobuf messages are built i
 its source onto the output stream, eg socket). The multidimensional data is written to the stream in row-major order, with reader-makes-right byte
 ordering. A data message identifying the variable and the section that the data represents is part of every data message.
 
-Variable length datatypes like String and Opaque use the vdataMessage for data transfer. First the number of objects is written, then each object,
-preceded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes.
-
-Ncstream implements the full link:../../CDM/CDM-UML.png[CDM data model.]
+Ncstream implements the full link:../../CDM/index.adoc[CDM data model.]
 
 See also:
 

@@ -45,9 +45,10 @@ import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
- * Describe
+ * Grib 2D time that is regular, not orthogonal.
  *
  * @author caron
  * @since 10/12/2015.
@@ -60,8 +61,10 @@ public class TestCoverageFMRCnonOrthogonal {
     String gridName = "Maximum_temperature_height_above_ground_12_Hour_Maximum";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
-    try (FeatureDatasetCoverage fdc = (FeatureDatasetCoverage) FeatureDatasetFactoryManager.open(filename)) {
-      Assert.assertNotNull(filename, fdc);
+    // FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog
+    Formatter errlog = new Formatter();
+    try (FeatureDatasetCoverage fdc = (FeatureDatasetCoverage) FeatureDatasetFactoryManager.open(null, filename, null, errlog)) {
+      Assert.assertNotNull(errlog.toString(), fdc);
 
       VariableSimpleIF vs = fdc.getDataVariable(gridName);
       Assert.assertNotNull(gridName, vs);

@@ -112,16 +112,20 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       System.out.printf("TableConfigurer = %s%n", tc.getClass().getName());
     }
 
-    // gotta do some work
-    TableAnalyzer analyser = TableAnalyzer.factory(tc, wantFeatureType, ds);
-    if (analyser == null)
-      return null;
+    try {
+      // gotta do some work
+      TableAnalyzer analyser = TableAnalyzer.factory(tc, wantFeatureType, ds);
+      if (analyser == null)
+        return null;
 
-    if (!analyser.featureTypeOk(wantFeatureType, errlog)) {
+      if (!analyser.featureTypeOk(wantFeatureType, errlog)) {
+        return null;
+      }
+      return analyser;
+
+    } catch (Throwable t) {
       return null;
     }
-
-    return analyser;
   }
 
   @Override

@@ -1,7 +1,5 @@
 = THREDDS Client Catalog Specification
 
-'''''
-
 A THREDDS catalog is a way to describe an inventory of available
 datasets. These catalogs provide a simple hierarchical structure for
 organizing a collection of datasets, an access method for each dataset,
@@ -9,6 +7,7 @@ a human understandable name for each dataset, and a structure on which
 further descriptive information can be placed.
 
 This document specifies the semantics of a THREDDS catalog, as well as
+its representation as an XML document.
 its representation as an XML document.
 
 == Contents:
@@ -61,40 +60,29 @@ link:Example1.0rc8.xml[Example] 1.0 Catalog
 
 InvCatalog XML Schema:
 
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[Version
-1.0.7]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd[Version
-1.0.6]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd[Version
-1.0.5]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.4.xsd[Version
-1.0.4]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.3.xsd[Version
-1.0.3]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd[Version
-1.0.2]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd[Version
-1.0.1]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd[Version
-1.0]
+* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[Version 1.0.7]
+* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd[Version 1.0.6]
+* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd[Version 1.0.5]
+* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.4.xsd[Version 1.0.4]
+* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.3.xsd[Version 1.0.3]
+* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd[Version 1.0.2]
+* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd[Version 1.0.1]
+* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd[Version 1.0]
 
-link:../reference/DigitalLibraries.html[Writing metadata for Digital
-Libraries]
+link:../reference/DigitalLibraries.html[Writing metadata for Digital Libraries]
 
-Java API to read catalogs in the
-http://www.unidata.ucar.edu/software/netcdf-java/[netCDF-Java library].
+Java API to read catalogs in the http://www.unidata.ucar.edu/software/netcdf-java/[netCDF-Java library].
 
 link:Changes.html[Changes] since version 1.0.1.
 
 link:InvCatalogServerSpec.html[Server-side catalog specification]
 
-'''''
-
 == Base Catalog Elements
 
 === _catalog_ element
 
-------------------------------------------------------------------------
+[source,xml]
+----
 <xsd:element name="catalog">
   <xsd:complexType>
     <xsd:sequence>
@@ -109,14 +97,14 @@ link:InvCatalogServerSpec.html[Server-side catalog specification]
     <xsd:attribute name="version" type="xsd:token" default="1.0.7" />
   </xsd:complexType>
 </xsd:element>
-------------------------------------------------------------------------
+----
 
 The _catalog_ element is the top-level element. It may contain zero or
 more _link:#service[service]_ elements, followed by zero or more
 _link:InvCatalogServerSpec.html#datasetRoot_Element[datasetRoot]_
 elements, followed by zero or more _link:#property[property]_ elements,
 followed by one or more _link:#dataset[dataset]_ elements. The _base_ is
-used to resolve any reletive URLsin the catalog such as catalogRefs,
+used to resolve any reletive URLs in the catalog such as catalogRefs,
 services, etc. It is usually the URL of the catalog document itself.
 Optionally the catalog may have a display __name__. The _expires_
 element tells clients when this catalog should be reread, so they can
@@ -127,21 +115,23 @@ used to document which version of the schema was used.
 
 Example of simplest useful catalog. Note the necessary presence of the
 http://en.wikipedia.org/wiki/XML_namespace[xml namespace] attribute
-_*xmlns=``http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1''*_
+_xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"_
 on the catalog element.
 
--------------------------------------------------------------------------------------
- <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1" >
-   <service name="aggServer" serviceType="DODS"  base="http://acd.ucar.edu/dodsC/" />
+[source,xml]
+----
+ <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
+   <service name="aggServer" serviceType="DODS"  base="http://acd.ucar.edu/thredds/dodsC/" />
    <dataset name="SAGE III Ozone Loss" urlPath="sage.nc">
      <serviceName>aggServer</serviceName>
    </dataset>
  </catalog>
--------------------------------------------------------------------------------------
+----
 
 === _service_ element
 
--------------------------------------------------------------------------
+[source,xml]
+----
 <xsd:element name="service">
  <xsd:complexType>
   <xsd:sequence>
@@ -156,7 +146,7 @@ on the catalog element.
   <xsd:attribute name="suffix" type="xsd:string" />
  </xsd:complexType>
 </xsd:element>
--------------------------------------------------------------------------
+----
 
 A _service_ element represents a data access service and allows basic
 data access information to be factored out of _dataset_ and _access_
@@ -182,7 +172,7 @@ that the _serviceType_ (and possibly the _dataFormat_ attribute for bulk
 transport methods) should be sufficient to allow clients to access
 datasets.
 
-Only _service_ element with _serviceType=``Compound''_ may have nested
+Only _service_ element with _serviceType="Compound"_ may have nested
 service elements. Use Compound services when you systematically offer
 more than one way to access a dataset (e.g.__DODS__ and __FTP__), *and*
 the access URLs are the same except for the service base. Nested
@@ -191,21 +181,24 @@ elements, and so must have unique names.
 
 Example:
 
-------------------------------------------------------------------------------------------------
+[source,xml]
+----
  <service name="mcidasServer" serviceType="ADDE" base="http://thredds.ucar.edu/thredds/adde/" />
-------------------------------------------------------------------------------------------------
+----
 
 Example with service base URL relative to catalog URL (see
 link:#constructingURLs[constructing URLS] for how the resolved URL is
 created):
 
---------------------------------------------------------
+[source,xml]
+----
  <service name="this" serviceType="DODS" base="dods/" />
---------------------------------------------------------
+----
 
 === __dataset__ element
 
--------------------------------------------------------------------------------------------
+[source,xml]
+----
 <xsd:element name="dataset" type="DatasetType" />
 <xsd:complexType name="DatasetType">
   <xsd:sequence>
@@ -226,7 +219,7 @@ created):
   <xsd:attribute name="serviceName" type="xsd:string" /> <!-- deprecated : use element -->
   <xsd:attribute name="urlPath" type="xsd:token" />
 </xsd:complexType>
--------------------------------------------------------------------------------------------
+----
 
 A _dataset_ element represents a named, logical set of data at a level
 of granularity appropriate for presentation to a user. A dataset is
@@ -257,7 +250,7 @@ followed by 0 or more _link:#access[access]_ elements, followed by 0 or
 more nested _dataset_ elements (actually you can use any element in the
 dataset substitution group: dataset or catalogRef). The data represented
 by a nested dataset element should be a subset, a specialization or in
-some other sense ``contained'' within the data represented by its parent
+some other sense "contained" within the data represented by its parent
 dataset element.
 
 The _link:#collectionTypes[collectionType]_ attribute is used to
@@ -294,7 +287,8 @@ link:#compoundService[compound service].
 
 Examples:
 
----------------------------------------------------------------------------------
+[source,xml]
+----
 <dataset name="DC8 flight 1999-11-19" urlPath="SOLVE_DC8_19991119.nc">
   <serviceName>agg</serviceName>
 </dataset>
@@ -303,22 +297,24 @@ Examples:
   <metadata xlink:href="http://dataportal.ucar.edu/metadata/tracep_dc8_1min_05"/>
   <access serviceName="disk" urlPath="SOLVE_DC8_19991119.nc"/>
 </dataset>
----------------------------------------------------------------------------------
+----
 
 An example using an alias; in this case the dataset referred to
 logically replaces the alias dataset.
 
------------------------------------------------------------------------------------
+[source,xml]
+----
 <dataset name="Station Data">
   <dataset name="Metar data" urlPath="cgi-bin/MetarServer.pl?format=qc" />
   <dataset name="Level 3 Radar data" urlPath="cgi-bin/RadarServer.pl?format=qc" />
   <dataset name="Alias to SOLVE dataset" alias="SOLVE_DC8_19991119"/>
 </dataset>
------------------------------------------------------------------------------------
+----
 
 === __access__ element
 
--------------------------------------------------------------------
+[source,xml]
+----
 <xsd:element name="access">
   <xsd:complexType>
     <xsd:sequence>
@@ -329,7 +325,7 @@ logically replaces the alias dataset.
     <xsd:attribute name="dataFormat" type="dataFormatTypes"/>
   </xsd:complexType>
 </xsd:element >
--------------------------------------------------------------------
+----
 
 An _access_ element specifies how a dataset can be accessed through a
 data link:#service[_service_]. It always refers to the dataset that it
@@ -349,16 +345,18 @@ copied to the client.
 
 Example:
 
---------------------------------------------------------------------------------------
+[source,xml]
+----
 <access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" />
---------------------------------------------------------------------------------------
+----
 
 The common case is that the access element is __implicit__, based on the
 dataset’s _serviceName_ and __urlPath__.
 
 === _catalogRef_ element
 
------------------------------------------------------------
+[source,xml]
+----
 <xsd:element name="catalogRef" substitutionGroup="dataset">
   <xsd:complexType>
     <xsd:complexContent>
@@ -368,7 +366,7 @@ dataset’s _serviceName_ and __urlPath__.
     </xsd:complexContent>
   </xsd:complexType>
 </xsd:element>
------------------------------------------------------------
+----
 
 A _catalogRef_ element refers to another THREDDS catalog that logically
 is a nested _dataset_ inside this parent catalog. This is used to
@@ -398,20 +396,22 @@ downloads the referenced catalog.
 
 Example:
 
--------------------------------------------------------------------------------------
+[source,xml]
+----
 <catalogRef xlink:title="NCEP Model Data" xlink:href="http://yerserv/uniModels.xml"/>
--------------------------------------------------------------------------------------
+----
 
 === __XLink__ attributeGroup
 
----------------------------------------
+[source,xml]
+----
   <xsd:attributeGroup name="XLink">
     <xsd:attribute ref="xlink:href" />
     <xsd:attribute ref="xlink:title" />
     <xsd:attribute ref="xlink:show"/>
     <xsd:attribute ref="xlink:type" />
   </xsd:attributeGroup>
----------------------------------------
+----
 
 These are attributes from the http://www.w3.org/TR/xlink/[XLink
 specification] that are used to point to another web resource. The
@@ -424,11 +424,10 @@ attributes__.__
 
 Example:
 
----------------------------------------------------------------------------------------------
+[source,xml]
+----
 <documentation xlink:href="http://cloud1.arc.nasa.gov/solve/" xlink:title="SOLVE home page"/>
----------------------------------------------------------------------------------------------
-
-'''''
+----
 
 == THREDDS Metadata Elements
 
@@ -437,7 +436,8 @@ discovery centers, and for annotation and documentation of datasets.
 
 === _threddsMetadataGroup_ Model Group
 
---------------------------------------------------------------------
+[source,xml]
+----
 <xsd:group name="threddsMetadataGroup">
   <xsd:choice minOccurs="0" maxOccurs="unbounded">
     <xsd:element name="documentation" type="documentationType"/>
@@ -462,7 +462,7 @@ discovery centers, and for annotation and documentation of datasets.
     <xsd:element ref="dataSize"/>
   </xsd:choice>
 </xsd:group>
---------------------------------------------------------------------
+----
 
 The elements in the _threddsMetadataGroup_ may be used as nested
 elements of both _link:#dataset[dataset]_ and _link:#metadata[metadata]_
@@ -521,7 +521,7 @@ _dataSize_ element can be used to specify how large the dataset would be
 if it were to be copied to a client.
 
 Including any of these elements in a metadata element with its _inherit_
-attribute set to ``true'' means that they apply to the containing
+attribute set to "true" means that they apply to the containing
 dataset and any nested datasets.
 
 If your intention is to enable THREDDS to write entries into a Digital
@@ -535,15 +535,17 @@ there are on the dataset usage.
 
 Examples:
 
------------------------------------------------------------------------------------------
+[source,xml]
+----
 <documentation type="summary"> The SAGE III Ozone Loss and Validation Experiment (SOLVE)
  was a measurement campaign designed to examine the processes controlling ozone levels
  at mid- to high latitudes. Measurements were made in the Arctic high-latitude
  region in winter using the NASA DC-8 and ER-2 aircraft,
  as well as balloon platforms and ground-based instruments. </documentation>
------------------------------------------------------------------------------------------
+----
 
--------------------------------------------------------------------------------------------
+[source,xml]
+----
 <documentation type="rights"> Users of these data files are expected  to follow the NASA
   ESPO Archive guidelines for use of the SOLVE data, including consulting with the PIs
   of the individual measurements  for interpretation and credit.
@@ -552,11 +554,12 @@ Examples:
 <keyword>Ocean Biomass</keyword>
 
 <project vocabulary="DIF">NASA Earth Science Project Office, Ames Research Center</project>
--------------------------------------------------------------------------------------------
+----
 
 === __documentation__ Type
 
-------------------------------------------------------------------------------------------
+[source,xml]
+----
 <xsd:complexType name="documentationType" mixed="true">
   <xsd:sequence>
     <xsd:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded"
@@ -566,10 +569,10 @@ Examples:
   <xsd:attribute name="type" type="documentationEnumTypes"/>
   <xsd:attributeGroup ref="XLink" />
 </xsd:complexType>
-------------------------------------------------------------------------------------------
+----
 
 The _documentation_ element may contain arbitrary plain text content, or
-XHTML.We call this kind of content ``human readable'' information. It
+XHTML.We call this kind of content "human readable" information. It
 has an optional link:#docTypeEnum[documentation type] attribute, such as
 summary, funding, history, etc.
 
@@ -582,16 +585,18 @@ the link:#metadata[metadata] element instead.
 
 Examples:
 
----------------------------------------------------------------------------
+[source,xml]
+----
 <documentation xlink:href="http://espoarchive.nasa.gov/archive/index.html"
     xlink:title="Earth Science Project Office Archives"/>
 
 <documentation>Used in doubled CO2 scenario</documentation>
----------------------------------------------------------------------------
+----
 
 === __metadata__ element
 
--------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <xsd:element name="metadata">
   <xsd:complexType>
     <xsd:choice>
@@ -604,12 +609,12 @@ Examples:
     <xsd:attributeGroup ref="XLink" />
   </xsd:complexType>
 </xsd:element>
--------------------------------------------------------------------------------------------------
+----
 
 A _metadata_ element contains or refers to structured information (in
 XML) about datasets, which is used by client programs to display,
 describe, or search for the dataset.  We call this kind of content
-``machine readable'' information.
+"machine readable" information.
 
 A _metadata_ element contains any number of elements from the
 link:#threddsMetadataGroup[threddsMetadataGroup] in any order, OR it
@@ -624,17 +629,18 @@ nested datasets. If true, the metadata element becomes logically part of
 each nested dataset. (The metadata always applies to the containing
 dataset whether _inherited_ is true or not.)
 
-The _metadataType_ attribute may have any value, but the ``well known''
+The _metadataType_ attribute may have any value, but the "well known"
 values are listed in the link:#metadataType[metadataType] enumeration.
 To use metadata elements from the
 link:#threddsMetadataGroup[threddsMetadataGroup], do not include the
-metada type attribute (or set it to ``THREDDS''). To use your own
+metada type attribute (or set it to "THREDDS"). To use your own
 elements, give it a metadata type, and add a namespace declaration (see
 example below).
 
 Examples:
 
-----------------------------------------------------------------------------
+[source,xml]
+----
 // contains Thredds metadata
 <metadata inherited="true">
   <contributor role="data manager">John Smith</contributor>
@@ -646,12 +652,13 @@ Examples:
 // link to external file containing Thredds metadata
 <metadata xlink:href="http://dataportal.ucar.edu/metadata/solveMetadata.xml"
    xlink:title="Solve metadata" />
-----------------------------------------------------------------------------
+----
 
 If you use an XLink, it should point to a document whose top element is
 a metadata element, which declares the THREDDS namespace:
 
-----------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0">
   <contributor role="Investigator">Mashor Mashnor</contributor>
@@ -668,13 +675,14 @@ a metadata element, which declares the THREDDS namespace:
   </publisher>
 
 </metadata>
-----------------------------------------------------------------------------------------------
+----
 
 When using elements from another namespace, all the subelements should
 be in the same namespace, which should be declared in the metadata
 element:
 
------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
   <dc:title>Goto considered harmful</dc:title >
   <dc:description>The unbridled use of the go to statement has an immediate consequence
@@ -683,21 +691,23 @@ element:
   </dc:description>
   <dc:author>Edsger W. Dijkstra</dc:author>
 </metadata>
------------------------------------------------------------------------------------------------
+----
 
 If you use an XLink to point to elements from another namespace, add a
 metadataType attribute:
 
-------------------------------------------------------------------------
+[source,xml]
+----
 <metadata xlink:href="http://www.unidata.ucar.edu/metadata/ncep/dif.xml"
     xlink:title="NCEP DIF metadata" metadataType="DublinCore"/>
-------------------------------------------------------------------------
+----
 
 whose xlink:href should point to a document whose top element is a
 metadata element, which declares a different namespace (note you also
 still need to declare the THREDDS namespace):
 
------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
            xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -708,12 +718,13 @@ still need to declare the THREDDS namespace):
   </dc:description>
   <dc:author>Edsger W. Dijkstra</dc:author>
 </metadata>
------------------------------------------------------------------------------------------------
+----
 
 This equivalent declaration makes the other namespace the default
 namespace:
 
------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <cat:metadata  xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
                xmlns="http://purl.org/dc/elements/1.1/">
@@ -724,18 +735,19 @@ namespace:
   </description>
   <author>Edsger W. Dijkstra</author>
 </cat:metadata>
------------------------------------------------------------------------------------------------
+----
 
 === _property_ element
 
----------------------------------------------------
+[source,xml]
+----
 <xsd:element name="property">
   <xsd:complexType>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="value" type="xsd:string"/>
   </xsd:complexType>
 </xsd:element>
----------------------------------------------------
+----
 
 Property elements are arbitrary name/value pairs to associate with a
 link:#catalog[catalog], link:#dataset[dataset] or link:#service[service]
@@ -744,13 +756,15 @@ THREDDS data model objects.
 
 Example:
 
--------------------------------------------
+[source,xml]
+----
 <property name="Conventions" value="WRF" />
--------------------------------------------
+----
 
 === __source__ Type
 
-----------------------------------------------------------------------
+[source,xml]
+----
 <xsd:complexType name="sourceType">
   <xsd:sequence>
     <xsd:element name="name" type="controlledVocabulary"/>
@@ -762,7 +776,7 @@ Example:
     </xsd:element>
   </xsd:sequence>
 </xsd:complexType>
-----------------------------------------------------------------------
+----
 
 This is used by the link:#creator[creator] and
 link:#publisher[publisher] elements to specify roles of responsibility
@@ -773,17 +787,19 @@ has attributes to specify a web _url_ and an _email_ address.
 
 Example:
 
-------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <publisher>
   <name vocabulary="DIF">UCAR/NCAR/CDP > Community Data Portal, National Center for Atmospheric
     Research, University Corporation for Atmospheric Research</name>
   <contact url="http://dataportal.ucar.edu" email="cdp@ucar.edu"/>
 </publisher>
-------------------------------------------------------------------------------------------------
+----
 
 === __contributor__ Element
 
-----------------------------------------------------------------------
+[source,xml]
+----
 <xsd:element name="contributor">
   <xsd:complexType>
     <xsd:simpleContent>
@@ -793,7 +809,7 @@ Example:
     </xsd:simpleContent>
   </xsd:complexType>
 </xsd:element>
-----------------------------------------------------------------------
+----
 
 A _contributor_ is simply a person’s name with an optional _role_
 attribute that specifies the role that the person plays with regard to
@@ -802,13 +818,15 @@ controlled vocabulary.
 
 Example:
 
----------------------------------------------
+[source,xml]
+----
 <contributor role="PI">Jane Doe</contributor>
----------------------------------------------
+----
 
 === __geospatialCoverage__ Element
 
-------------------------------------------------------------------------------------------------
+[source,xml]
+----
   <xsd:element name="geospatialCoverage">
    <xsd:complexType>
     <xsd:sequence>
@@ -837,7 +855,7 @@ Example:
      <xsd:enumeration value="down"/>
    </xsd:restriction>
   </xsd:simpleType>
-------------------------------------------------------------------------------------------------
+----
 
 A geospatialCoverage element specifies a lat/lon bounding box, and an
 altitude range that the data covers.
@@ -858,7 +876,8 @@ use the name *_global_* (see example below):
 
 Example:
 
---------------------------------------------
+[source,xml]
+----
  <geospatialCoverage zpositive="down">
    <northsouth>
      <start>10</start>
@@ -883,11 +902,12 @@ Example:
   <geospatialCoverage>
     <name vocabulary="Thredds">global</name>
   </geospatialCoverage>
---------------------------------------------
+----
 
 === __timeCoverage__ Type
 
-------------------------------------------------------------------
+[source,xml]
+----
 <xsd:complexType name="timeCoverageType">
   <xsd:sequence>
     <xsd:choice minOccurs="2" maxOccurs="3" >
@@ -898,7 +918,7 @@ Example:
     <xsd:element name="resolution" type="duration" minOccurs="0"/>
   </xsd:sequence>
 </xsd:complexType>
-------------------------------------------------------------------
+----
 
 A timeCoverage element specifies a date range. The date range can be
 specified in three ways: 1) by giving both a _start_ and an _end_
@@ -909,7 +929,8 @@ should be used to indicate the data resolution for time series data.
 
 Example:
 
-----------------------------------------------------------------
+[source,xml]
+----
 <timeCoverage>
   <start>1999-11-16T12:00:00</start>
   <end>present</end>
@@ -925,11 +946,12 @@ Example:
   <duration>10 days</duration>
   <resolution>15 minutes</resolution>
 </timeCoverage>
-----------------------------------------------------------------
+----
 
 === __date__ Type
 
---------------------------------------------------------------------------
+[source,xml]
+----
 <xsd:simpleType name="dateType">
   <xsd:union memberTypes="xsd:date xsd:dateTime udunitDate">
     <xsd:simpleType>
@@ -948,38 +970,37 @@ Example:
     </xsd:annotation>
   </xsd:restriction>
 </xsd:simpleType>
---------------------------------------------------------------------------
+[source,xml]
+----
 
 A _*dateType*_ follows the http://www.w3.org/TR/NOTE-datetime[W3C
 profile of ISO 8601 for date/time formats]. Note that it is a simple
 type, so that it can be used as the type of an attribute. It can be one
 of the following:
 
-1.  an
-http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#date[xsd:date], with
-form ``CCYY-MM-DD''
-2.  an
-http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#dateTime[xsd:dateTime]
-with form ``CCYY-MM-DDThh:mm:ss'', ``CCYY-MM-DDThh:mm:ssZ'' or
-``CCYY-MM-DDThh:mm:ss-hh:ss''
+1.  an http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#date[xsd:date], with form "CCYY-MM-DD"
+2.  an http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#dateTime[xsd:dateTime]
+with form "CCYY-MM-DDThh:mm:ss", "CCYY-MM-DDThh:mm:ssZ" or "CCYY-MM-DDThh:mm:ss-hh:ss"
 3.  a valid http://www.unidata.ucar.edu/packages/udunits/[udunits] date
 string
-4.  the string ``present''
+4.  the string "present"
 
 Examples:
 
--------------------------------------------------------------------
+[source,xml]
+----
 <start>1999-11-16</start>
 <start>1999-11-16T12:00:00</start> // implied UTC
 <start>1999-11-16T12:00:00Z</start> // explicit UTC
 <start>1999-11-16T12:00:00-05:00</start> // EST time zone specified
 <start>20 days since 1991-01-01</start>
 <start>present</start>
--------------------------------------------------------------------
+----
 
 === __dateTypeFormatted__ Type
 
-------------------------------------------------------------------------------------------
+[source,xml]
+----
 <xsd:complexType name="dateTypeFormatted">
   <xsd:simpleContent>
     <xsd:extension base="dateType">
@@ -988,7 +1009,7 @@ Examples:
     </xsd:extension>
   </xsd:simpleContent>
 </xsd:complexType>
-------------------------------------------------------------------------------------------
+----
 
 A _*dateTypeFormatted*_ extends dateType by allowing an optional,
 user-defined _format_ attribute and an optional _type_ attribute. The
@@ -998,22 +1019,25 @@ user-defined _format_ attribute and an optional _type_ attribute. The
 
 Example:
 
------------------------------------------------------------------------------------
+[source,xml]
+----
 <start format="yyyy DDD" type="created">1999 189</start> <!-- year, day of year -->
+----
 
+----
 _Example_Format_String___________Example_Text___________________
 "yyyy.MM.dd G 'at' HH:mm:ss z"  2001.07.04 AD at 12:08:56 PDT
-"EEE, MMM d, ''yy"              Wed, Jul 4, '01
+"EEE, MMM d, "yy"              Wed, Jul 4, '01
 "K:mm a, z"                     0:08 PM, PDT
 "yyyyy.MMMMM.dd GGG hh:mm aaa"  02001.July.04 AD 12:08 PM
 "EEE, d MMM yyyy HH:mm:ss Z"    Wed, 4 Jul 2001 12:08:56 -0700
 "yyMMddHHmmssZ"                 010704120856-0700
-
------------------------------------------------------------------------------------
+----
 
 === __duration__ Type
 
--------------------------------------------------------------------------------
+[source,xml]
+----
 <xsd:simpleType name="duration">
   <xsd:union memberTypes="xsd:duration udunitDuration" />
 </xsd:simpleType>
@@ -1026,12 +1050,12 @@ _Example_Format_String___________Example_Text___________________
     </xsd:annotation>
   </xsd:restriction>
 </xsd:simpleType>
--------------------------------------------------------------------------------
+----
 
 A duration type can be one of the following:
 
 an http://www.w3schools.com/schema/schema_dtypes_date.asp[xsd:duration]
-type specified in the following form ``PnYnMnDTnHnMnS'' where:
+type specified in the following form "PnYnMnDTnHnMnS" where:
 
 * P indicates the period (required)
 * nY indicates the number of years
@@ -1048,14 +1072,16 @@ duration string.
 
 Example:
 
----------------------------------
+[source,xml]
+----
 <duration>P5Y2M10DT15H</duration>
 <duration>5 days</duration>
----------------------------------
+----
 
 === __dataSize__ Element
 
----------------------------------------------------------------------
+[source,xml]
+----
 <xsd:element name="dataSize">
   <xsd:complexType>
     <xsd:simpleContent>
@@ -1065,20 +1091,22 @@ Example:
     </xsd:simpleContent>
   </xsd:complexType>
 </xsd:element>
----------------------------------------------------------------------
+----
 
 A dataSize element is just a number with a units attribute, which should
-be ``bytes'', ``Kbytes'', ``Mbytes'', ``Gbytes'' or ``Tbytes''.
+be "bytes", "Kbytes", "Mbytes", "Gbytes" or "Tbytes".
 
 Example:
 
----------------------------------------
+[source,xml]
+----
 <dataSize units="Kbytes">123</dataSize>
----------------------------------------
+----
 
 === _controlledVocabulary_ Type
 
---------------------------------------------------------
+[source,xml]
+----
 <xsd:complexType name="controlledVocabulary">
  <xsd:simpleContent>
   <xsd:extension base="xsd:string">
@@ -1086,7 +1114,7 @@ Example:
   </xsd:extension>
  </xsd:simpleContent>
 </xsd:complexType>
---------------------------------------------------------
+----
 
 A controlledVocabulary simply adds an optional vocabulary attribute to
 the string-valued element, indicating that the value comes from a
@@ -1094,13 +1122,15 @@ restricted list.
 
 Example:
 
---------------------------------------------
+[source,xml]
+----
  <name vocabulary="DIF">UCAR/NCAR/CDP</name>
---------------------------------------------
+----
 
 === __variables__ Element
 
------------------------------------------------------------------------------------
+[source,xml]
+----
 <xsd:element name="variables">
   <xsd:complexType>
     <xsd:choice>
@@ -1125,7 +1155,7 @@ Example:
     <xsd:attributeGroup ref="XLink"/>
   </xsd:complexType>
 </xsd:element>
------------------------------------------------------------------------------------
+----
 
 A _variables_ element contains a list of variables OR a _variableMap_
 element that refers to another document that contains a list of
@@ -1146,13 +1176,14 @@ factor these out and refer to them from multiple places.
 
 The main purpose of the _variables_ element is to describe a dataset for
 a search service or digital library, for example GCMD requires a list of
-dataset ``Parameter Valids'' from their controlled vocabulary. A client
-might want to show those ``standard variable names'' to a user, since
+dataset "Parameter Valids" from their controlled vocabulary. A client
+might want to show those "standard variable names" to a user, since
 the names may be more meaningful than the actual variable names.
 
 Examples:
 
------------------------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <variables vocabulary="CF-1.0">
   <variable name="wv" vocabulary_name="Wind Speed" units="m/s">Wind Speed @ surface</variable>
   <variable name="wdir" vocabulary_name="Wind Direction" units= "degrees">Wind Direction @ surface</variable>
@@ -1162,12 +1193,13 @@ Examples:
 <variables vocabulary="GRIB-NCEP" xlink:href="http://www.unidata.ucar.edu//GRIB-NCEPtable2.xml">
   <variableMap xlink:href="../standardQ/Eta.xml" />
 </variables>
------------------------------------------------------------------------------------------------------------------
+----
 
 A _varibleMap_ should point to an XML document with a top-level
 _variables_ element with the THREDDS namespace declared:
 
------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <variables xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
   <variable name="wv" vocabulary_name="Wind Speed" units="m/s"/>
@@ -1175,13 +1207,11 @@ _variables_ element with the THREDDS namespace declared:
   <variable name="o3c" vocabulary_name="Ozone Concentration" units="g/g"/>
   ...
 </variables>
------------------------------------------------------------------------------------
-
-'''''
+----
 
 == Other Enumerations
 
-The remaining definitions are all enumerations of ``well-known'' values.
+The remaining definitions are all enumerations of "well-known" values.
 Note that for all of these, any token is a legal value. However,
 standard software is likely to understand only the values that are
 explicitly listed. We encourage you to use these *_well-known values_*
@@ -1191,7 +1221,8 @@ future versions of this schema.
 
 === collection types
 
-----------------------------------------------------
+[source,xml]
+----
 <xsd:simpleType name="collectionTypes">
   <xsd:union memberTypes="xsd:token">
     <xsd:simpleType>
@@ -1203,7 +1234,7 @@ future versions of this schema.
     </xsd:simpleType>
   </xsd:union>
 </xsd:simpleType>
-----------------------------------------------------
+----
 
 These are the types of link:#coherentDataset[coherent dataset]
 collections, used in a dataset element. This will be elaborated in
@@ -1211,7 +1242,8 @@ future versions.
 
 === dataFormat types
 
--------------------------------------------------------------
+[source,xml]
+----
 <!-- DataFormat Types -->
 <xsd:simpleType name="dataFormatTypes">
   <xsd:union memberTypes="xsd:token mimeType">
@@ -1257,7 +1289,7 @@ future versions.
     </xsd:annotation>
   </xsd:restriction>
 </xsd:simpleType>
--------------------------------------------------------------
+----
 
 These describe the data formats, used in an link:#access[access]
 attribute or link:#dataset[dataset] element, when the service is a bulk
@@ -1273,18 +1305,20 @@ will add it to this list (check to see if its a mime type first).
 
 Examples:
 
-----------------------------------------
+[source,xml]
+----
 <dataFormat>NcML</dataFormat>
 <dataFormat>image/gif</dataFormat>
 <dataFormat>image/jpeg</dataFormat>
 <dataFormat>image/png</dataFormat>
 <dataFormat>video/mpeg</dataFormat>
 <dataFormat>video/quicktime</dataFormat>
-----------------------------------------
+----
 
 === dataType types
 
----------------------------------------------
+[source,xml]
+----
 <xsd:simpleType name="dataTypes">
   <xsd:union memberTypes="xsd:token">
     <xsd:simpleType>
@@ -1300,7 +1334,7 @@ Examples:
     </xsd:simpleType>
   </xsd:union>
 </xsd:simpleType>
----------------------------------------------
+----
 
 These are
 thelink:../../netcdf-java/reference/FeatureDatasets/Overview.html[Feature
@@ -1309,7 +1343,8 @@ the data.
 
 === date types
 
---------------------------------------------------
+[source,xml]
+----
 <xsd:simpleType name="dateEnumTypes">
   <xsd:union memberTypes="xsd:token">
     <xsd:simpleType>
@@ -1324,7 +1359,7 @@ the data.
     </xsd:simpleType>
   </xsd:union>
 </xsd:simpleType>
---------------------------------------------------
+----
 
 The date type enumeration defines a basic set of types for a
 link:#date[date] element. These values were taken from the Dublin Core
@@ -1338,7 +1373,8 @@ data type).
 
 === documentation types
 
-------------------------------------------------
+[source,xml]
+----
 <xsd:simpleType name="documentationEnumTypes">
  <xsd:union memberTypes="xsd:token">
   <xsd:simpleType>
@@ -1352,7 +1388,7 @@ data type).
   </xsd:simpleType>
  </xsd:union>
 </xsd:simpleType>
-------------------------------------------------
+----
 
 The documentation type enumeration defines a basic set of types used by
 the link:#documentation[documentation] element.
@@ -1365,7 +1401,8 @@ data type).
 
 === metadata types
 
------------------------------------------------------
+[source,xml]
+----
   <xsd:simpleType name="metadataTypeEnum">
     <xsd:union memberTypes="xsd:token">
       <xsd:simpleType>
@@ -1384,7 +1421,7 @@ data type).
      </xsd:simpleType>
    </xsd:union>
   </xsd:simpleType>
------------------------------------------------------
+----
 
 The metadata type enumeration defines a basic set of types used by the
 link:#metadata[metadata] element.
@@ -1397,7 +1434,8 @@ data type).
 
 === serviceTypes Type
 
-------------------------------------------------------------
+[source,xml]
+----
 <xsd:simpleType name="serviceTypes">
  <xsd:union memberTypes="xsd:token">
   <xsd:simpleType>
@@ -1443,7 +1481,7 @@ data type).
   </xsd:simpleType>
  </xsd:union>
 </xsd:simpleType>
-------------------------------------------------------------
+----
 
 These are the known service types, used in a link:#service[service]
 element, that indicate how to access a dataset. A serviceType is
@@ -1493,12 +1531,12 @@ dataFormatType.
 The last set of service types are THREDDS defined types. The *Catalog*
 and *Resolver* types return XML documents over HTTP. These are generally
 handled internally by THREDDS. A
-link:#compoundService[Compound]link:#compoundService[service] just
-indicates that the service is composed of other services.
+link:#compoundService[Compound Service] just indicates that the service is composed of other services.
 
 === variableNameVocabulary types
 
-----------------------------------------------
+[source,xml]
+----
 <xsd:simpleType name="variableNameVocabulary">
   <xsd:union memberTypes="xsd:token">
     <xsd:simpleType>
@@ -1511,7 +1549,7 @@ indicates that the service is composed of other services.
     </xsd:simpleType>
   </xsd:union>
 </xsd:simpleType>
-----------------------------------------------
+----
 
 These are the known vocabularies for standard variable names, used in
 the link:#variables[variables] element. *CF* refers to the
@@ -1529,22 +1567,21 @@ file format defines a set of standard parameters.
 You can also use another vocabulary name; send it to us and we will add
 it to this list.
 
-'''''
-
-=== Dataset Access Methods
+== Dataset Access Methods
 
 There are two ways a dataset’s access methods can be specified:
 
 1.  A _dataset_ element may include a _urlPath_ attribute. The value of
-the _urlPath_ attribute along with the _dataset_ element’s ``default''
+the _urlPath_ attribute along with the _dataset_ element’s default
 service (see link:#Precedence_for_a_Datasets_Default[below]) specify one
 or more [link:#note_compoundService[*]] access methods.
 2.  A _dataset_ element may include child _access_ elements.
-Each _access_ element defines one or more [link:#note_compoundService[*]]link:#Access_Methods_and_Compound_Services_[access] methods.
+Each _access_ element defines one or more link:#Access_Methods_and_Compound_Services_[access] methods(*).
 The values of the _access_ element’s _urlPath_ and _serviceName_ attributes specify one or more access methods.
-If the _access_ element does not include a _serviceName_ attribute, the _dataset_ element’s ``default'' service (see link:#Precedence_for_a_Datasets_Default[below]) is used instead.
+If the _access_ element does not include a _serviceName_ attribute, the _dataset_ element’s default service
+(see link:#Precedence_for_a_Datasets_Default[below]) is used instead.
 
-[[note_compoundService]]* Multiple access methods are defined whenever the service element
+(*) Multiple access methods are defined whenever the service element
 that is referenced is a compound service. More on this in the
 "link:#Access_Methods_and_Compound_Services_[Access Methods and Compound
 Services]" section below. +
@@ -1553,34 +1590,31 @@ How a dataset access URL is constructed from the _service_ element and
 _urlPath_ attribute is discussed in the following section,
 "link:#constructingURLs[Constructing Dataset Access URLs]".
 
-==== Precedence for a Dataset’s ``Default'' Service
+=== Precedence for a Dataset’s Default Service
 
 There are a number of ways a _service_ element can be referenced by a
 __dataset__. When multiple references come into play for a given
 dataset, the following is the precedence for deciding on the default
 service to use with access methods:
 
-1.  A child _serviceName_ element (XPath: "`./serviceName`").
-2.  A child _serviceName_ element of a child _metadata_ element
-(XPath: "`./metadata/serviceName`")
-3.  [**DEPRECATED**] A dataset element’s serviceName attribute
-(XPath: ``@serviceName'') [**Deprecated**: use a child _serviceName_
-element instead.] +
+1.  A child _serviceName_ element (XPath: _./serviceName_).
+2.  A child _serviceName_ element of a child _metadata_ element (XPath: _./metadata/serviceName_)
+3.  A dataset element’s serviceName attribute (XPath: _@serviceName_)
 4.  The _serviceName_ element in an inherited _metadata_ element of the
 closest ancestor _dataset_ (XPath: the first item in the set given by
-"`ancestor::dataset/metadata[@inherited=true]/serviceName`") +
+_ancestor::dataset/metadata[@inherited=true]/serviceName_)
 
-The _service_ with the highest precedence is the ``default'' service for
-that _dataset_ element.
+The _service_ with the highest precedence is the default service for that _dataset_ element.
 
-==== Examples
+=== Examples
 
-\1) A _dataset_ element has a _urlPath_ attribute and inherits a
+1. A _dataset_ element has a _urlPath_ attribute and inherits a
 _serviceName_ element from a parent/ancestor dataset. This is probably
 the most common case as many catalogs will contain datasets that all
 refer to one service.
-
----------------------------------------------------------
++
+[source,xml]
+----
 <dataset name="collection of data">
   <metadata inherited="true">
     <serviceName>myservice</serviceName>
@@ -1590,50 +1624,52 @@ refer to one service.
   <dataset name="their dataset" urlPath="theirData.nc" />
   ...
 </dataset>
----------------------------------------------------------
+----
 
-\2) A _dataset_ element has a _urlPath_ attribute and directly contains
-a _serviceName_ element.
-
------------------------------------------------
+2. A _dataset_ element has a _urlPath_ attribute and directly contains a _serviceName_ element.
++
+[source,xml]
+----
 <dataset name="my dataset" urlPath="myData.nc">
   <serviceName>myservice</serviceName>
 </dataset>
------------------------------------------------
+----
 
-\3) A _dataset_ element contains a child _access_ element. Example:
-
---------------------------------------------------------
+3. A _dataset_ element contains a child _access_ element. Example:
++
+[source,xml]
+----
 <dataset name="my dataset">
   <access serviceName="myservice" urlPath="myData.nc" />
 </dataset>
---------------------------------------------------------
-
+----
++
 There are several ways for a dataset to have more than one access
 method:
 
-\4) An access method can reference a link:#compoundService[compound
-service]. More on access methods and compound service
+4. An access method can reference a link:#compoundService[compound service]. More on access methods and compound service
 link:#Access_Methods_and_Compound_Services_[below].
 
-\5) A dataset can contain multiple access elements. Example:
-
---------------------------------------------------------------
+5. A dataset can contain multiple access elements. Example:
++
+[source,xml]
+----
 <dataset name="my dataset">
   <access serviceName="myservice" urlPath="myData.nc" />
   <access serviceName="ftpservice" urlPath="mine/myData.nc" />
 </dataset>
---------------------------------------------------------------
+----
 
-==== Access Methods and Compound Services
+=== Access Methods and Compound Services
 
 Any link:#compoundService[compound service] (i.e., any _service_ element
-of type ``Compound'') used in the construction of access methods results
-in one access method for each non-``Compound'', nested service.
+of type Compound) used in the construction of access methods results
+in one access method for each non-Compound, nested service.
 
 For example:
 
-----------------------------------------------------------------------
+[source,xml]
+----
 <service name="all" serviceType="Compound" base="" >
   <service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" />
   <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
@@ -1641,26 +1677,22 @@ For example:
 <dataset name="cool data" urlPath="cool/data.nc">
   <serviceName>all</serviceName>
 </dataset>
-----------------------------------------------------------------------
+----
 
-results in two access methods for ``cool data''; one using the ``odap''
-_service_ element and the other using the ``wcs'' _service_ element,
-both using the _urlPath_ attribute value ``cool/data.nc''
+results in two access methods for "cool data"; one using the "odap"
+_service_ element and the other using the "wcs" _service_ element,
+both using the _urlPath_ attribute value "cool/data.nc"
 
-'''''
-
-=== ____Constructing URLs
+== Constructing URLs
 
 A dataset access URL is constructed by concatenating the service base
 URL with the access urlPath. If the service has a suffix attribute, that
 is then appended:
 
--------------------------------------------------------
    URL = service.base + access.urlPath + service.suffix
--------------------------------------------------------
 
 Note: These operations are straight string concatenations, a slash
-(``/'') is not automatically added. If a slash is needed between the
+("/") is not automatically added. If a slash is needed between the
 base and urlPath, remember to include a trailing slash on the value of
 the service@base attribute.
 
@@ -1679,11 +1711,9 @@ service base is __/airtemp/__, the resolved URL is
 __http://thredds.ucar.edu/thredds/airtemp/__. The *java.net.URI* class
 in JDK 1.4+ will resolve relative URLs.
 
-'''''
-
 == Dataset Classification
 
-THREDDS _*Dataset Inventory Catalogs*_ organize and describe collections
+THREDDS *_Dataset Inventory Catalogs_* organize and describe collections
 of data. A catalog can be thought of as a logical directory of data
 resources available via the Internet. A dataset may be a *_direct
 dataset_* (describes how to directly access data over the Internet), a
@@ -1723,8 +1753,8 @@ contents can be thought of as 1) the contents of the query dataset, and
 * A *_resolver dataset_* is a kind of query dataset, with service type
 __Resolver__. It returns a catalog which must contain either a direct
 dataset, or a coherent collection dataset. It is typically used to
-implement a _*virtual*_ dataset like ``latest model run'' or ``latest
-measurement'' on a real time dataset, where the actual URL must be
+implement a _*virtual*_ dataset like "latest model run" or "latest
+measurement" on a real time dataset, where the actual URL must be
 generated when the user requests it.
 * A _*DQC dataset*_ is a collection of query datasets. It has service
 type __QueryCapability__, and its URL points to an XML document called a
@@ -1736,8 +1766,6 @@ A query dataset looks a lot like a link:#catalogRef[catalogRef], since
 you dereference a URL and get a catalog back. However, a catalogRef is
 cacheable, but a query dataset is inherently dynamic, so is not
 cacheable.
-
-'''''
 
 == Datasets as Web Resources
 
@@ -1768,17 +1796,15 @@ objects), semantically equivilent to the original dataset. It currently
 requires that the selected dataset have an ID, but it can be generalized
 to handle any XPath expression. The syntax of that service is:
 
----------------------------------------------------------------------------------
+----
   http://<host>/thredds/catalogServices?cmd=subset&catalog=<catalog>&dataset=<ID>
----------------------------------------------------------------------------------
+----
 
 Example:
 
----------------------------------------------------------------------------------------------------------------------------------------------------
+----
  http://thredds.ucar.edu/thredds/catalogServices?cmd=subset&catalog=http://thredds.ucar.edu/thredds/idv/rt-models.1.0.xml&dataset=idd.model.nam_211
----------------------------------------------------------------------------------------------------------------------------------------------------
-
-'''''
+----
 
 == Index
 
@@ -1830,7 +1856,7 @@ dataset should be harvested into a Digital library record.
 link:#threddsMetadataGroup[threddsMetadataGroup.]
 * link:#metadata[metadata] element is a container or a pointer to other
 metadata elements.
-* link:#metadataType[metadataType] values are the ``well known'' types
+* link:#metadataType[metadataType] values are the "well known" types
 of metadata records, used in a metadata element.
 * link:#project[project] element, used in
 link:#threddsMetadataGroup[threddsMetadataGroup.]
@@ -1870,6 +1896,5 @@ the units of z goes up or down as z increases.
 
 '''''
 
-image:../thread.png[THREDDS]This document is maintained by Unidata and
-was last updated April 2015. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].
+image:../thread.png[THREDDS]This document was last updated Ocober 2015.
+Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS support].

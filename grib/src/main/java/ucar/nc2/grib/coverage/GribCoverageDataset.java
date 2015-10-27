@@ -39,7 +39,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import net.jcip.annotations.Immutable;
@@ -78,6 +77,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 
@@ -93,29 +93,26 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   static private final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
   static private final boolean show = false;
 
-  static public FeatureDatasetCoverage open(String endpoint) throws IOException {
+  static public Optional<FeatureDatasetCoverage> open(String endpoint) throws IOException {
     GribCollectionImmutable gc;
+
+    if (endpoint.startsWith("file:"))
+      endpoint = endpoint.substring("file:".length());
 
     // try to fail fast
     RandomAccessFile raf = null;
     try {
       raf = new RandomAccessFile(endpoint, "r");
-      GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
-      boolean isIndexFile = (type != GribCdmIndex.GribCollectionType.none);
-      if (isIndexFile) {
-        gc = GribCdmIndex.openGribCollectionFromIndexFile(raf, new FeatureCollectionConfig(), logger);  // LOOK no config !
-      } else {
-        gc = GribCdmIndex.openGribCollectionFromRaf(raf, new FeatureCollectionConfig(), CollectionUpdateType.nocheck, logger);
-      }
+      gc = GribCdmIndex.openGribCollectionFromRaf(raf, new FeatureCollectionConfig(), CollectionUpdateType.nocheck, logger);
 
       if (gc == null) {
         raf.close();
-        return null;
+        return Optional.empty(CoverageDatasetFactory.NOT_GRIB_FILE);
       }
 
     } catch (IOException ioe) {
       if (raf != null) raf.close();
-      return null;
+      throw ioe;
     }
 
     List<CoverageCollection> datasets = new ArrayList<>();
@@ -125,7 +122,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
         datasets.add(gribCov.makeCoverageCollection());
       }
     }
-    return new FeatureDatasetCoverage(endpoint, gc.getGlobalAttributes(), gc, datasets);
+    FeatureDatasetCoverage result = new FeatureDatasetCoverage(endpoint, gc.getGlobalAttributes(), gc, datasets);
+    return Optional.of(result);
   }
 
   //////////////////////////////////////////////////////////////////
@@ -951,7 +949,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     if (coordAxis instanceof LatLonAxis2D)
       return readLatLonAxis2DCoordValues((LatLonAxis2D) coordAxis);
 
-    Optional<Coordinate> opt = group.findCoordinate(coordAxis.getName());
+    java.util.Optional<Coordinate> opt = group.findCoordinate(coordAxis.getName());
     if (!opt.isPresent()) throw new IllegalStateException();
     Coordinate coord = opt.get();
 

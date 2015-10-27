@@ -406,10 +406,10 @@ public class IospHelper {
   public static long copyToByteChannel(Array data, WritableByteChannel channel) throws java.io.IOException {
     Class classType = data.getElementType();
 
-    if (data instanceof ArrayStructure) { // use NcStream encoding
+    /* if (data instanceof ArrayStructure) { // use NcStream encoding
       DataOutputStream os = new DataOutputStream(Channels.newOutputStream(channel));
       return NcStream.encodeArrayStructure((ArrayStructure) data, null, os);
-    }
+    } */
 
     DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel));
     IndexIterator iterA = data.getIndexIterator();
@@ -504,9 +504,9 @@ public class IospHelper {
     else
       dataOut = new DataOutputStream(out);
 
-    if (data instanceof ArrayStructure) { // use NcStream encoding
+    /* if (data instanceof ArrayStructure) { // use NcStream encoding
       return NcStream.encodeArrayStructure((ArrayStructure) data, null, dataOut);
-    }
+    } */
 
     IndexIterator iterA = data.getIndexIterator();
 

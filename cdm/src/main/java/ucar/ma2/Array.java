@@ -932,7 +932,7 @@ public abstract class Array {
    * Only affects byte, short, and int.
    * When true, conversions to wider types are handled correctly.
    *
-   * @return true if the data is unsigned integer type.
+   * @return true if the data is an unsigned integer type.
    */
   public boolean isUnsigned() {
     return dataType.isUnsigned();

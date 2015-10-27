@@ -56,7 +56,7 @@ public class Service {            // (7)
 
   public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
     this.name = name;
-    this.base = (base.length() == 0 || base.endsWith("/")) ? base : base + "/";
+    this.base = base; // (base.length() == 0 || base.endsWith("/")) ? base : base + "/";
     this.typeS = typeS;
     this.desc = desc;
     this.suffix = suffix;

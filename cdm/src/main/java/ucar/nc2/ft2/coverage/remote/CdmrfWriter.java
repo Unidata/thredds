@@ -427,8 +427,8 @@ public class CdmrfWriter {
     CdmrFeatureProto.GeoReferencedArray.Builder builder = CdmrFeatureProto.GeoReferencedArray.newBuilder();
     builder.setCoverageName(geoArray.getCoverageName());
     builder.setDataType(NcStream.convertDataType(geoArray.getDataType()));
-    builder.setVersion(1);
-    builder.setBigend(ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN); // LOOK ??
+    builder.setVersion(3); // set to >= 3 for proto3
+    builder.setBigend(ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN);
 
     if (deflate) {
       builder.setCompress(NcStreamProto.Compress.DEFLATE);
