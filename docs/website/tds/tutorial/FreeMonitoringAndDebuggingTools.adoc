@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Free Monitoring and Debugging Tools
 ===================================
 

@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Encoding CDM Data in protobuf
 
 == design goals

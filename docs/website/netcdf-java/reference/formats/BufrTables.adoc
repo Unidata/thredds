@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 CDM BUFR Tables
 ===============
 

@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Exporting to Digital Libraries
 ==============================
 

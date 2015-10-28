@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = OGC/ISO Services (WCS, WMS, and ncISO)
 
 == Setting up WCS, WMS, and ncISO

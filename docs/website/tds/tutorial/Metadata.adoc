@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = THREDDS and Metadata
 
 The term **metadata** refers to ``data about data''. The term is

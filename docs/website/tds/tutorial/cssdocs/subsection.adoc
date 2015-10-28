@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 == SECTION TITLE
 
 === SUBSECTION TITLE 1

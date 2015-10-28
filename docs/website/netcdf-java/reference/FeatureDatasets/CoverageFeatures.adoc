@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Coverage Datasets
 :linkcss:
 :stylesheet: ../../cdm.css

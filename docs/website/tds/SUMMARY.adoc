@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 # Summary
 
 Documentation for the THREDDS Data Server.

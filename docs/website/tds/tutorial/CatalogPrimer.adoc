@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = THREDDS Client Catalog Primer
 
 == What this tutorial covers

@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 TDS Tutorial: Basic Tomcat and TDS Security
 ===========================================
 

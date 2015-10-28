@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = TDS Installation Checklist for Production Security
 
 == Initial Installation

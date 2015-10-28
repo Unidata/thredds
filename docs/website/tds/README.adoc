@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = *THREDDS Data Server* 5.0
 
 == Overview

@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 === Enabling SSL in Tomcat
 
 Modify the Tomcat configuration to enable SSL:

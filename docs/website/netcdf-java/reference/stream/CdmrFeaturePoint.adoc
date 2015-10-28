@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = CDM Remote Feature for Point Data
 :tdsDocs: ../../../tds/reference/services
 :w3cDate: {tdsDocs}/NetcdfSubsetServiceReference.adoc#W3Cdate

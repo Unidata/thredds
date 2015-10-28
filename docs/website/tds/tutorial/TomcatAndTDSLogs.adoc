@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = TDS Monitoring and Debugging: Logs!
 
 == What This Section Covers

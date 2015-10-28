@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = The `TdsMonitor` Tool
 
 == Setting up the `TdsMonitor` tool

@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = image:unidataLogo.png[Unidata]THREDDS Data Server (TDS) FAQ
 
 '''''

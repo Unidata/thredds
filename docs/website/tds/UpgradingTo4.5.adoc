@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Upgrading To TDS 4.5
 ====================
 

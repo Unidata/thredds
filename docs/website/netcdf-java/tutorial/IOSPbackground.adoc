@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 IOSP Other Classes
 ==================
 

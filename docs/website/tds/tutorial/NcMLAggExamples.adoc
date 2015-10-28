@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = NcML Aggregation Examples
 
 Our goal in this section is to aggregate datafiles using NcML.

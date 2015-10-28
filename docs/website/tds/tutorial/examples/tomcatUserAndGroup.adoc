@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 === Create a dedicated user/group for running Tomcat
 
 In this example, both the user and group names will be names `tomcat`,

@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = CDM Data Types
 
 This document explains how CDM data types are mapped into Netcdf-Java objects for version 5.0+. An IOSP chooses

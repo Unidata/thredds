@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Recommended Process for Upgrading a THREDDS Data Server (TDS)
 =============================================================
 

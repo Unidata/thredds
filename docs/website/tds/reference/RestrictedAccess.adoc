@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Restricting Access to Datasets in the TDS
 
 '''''

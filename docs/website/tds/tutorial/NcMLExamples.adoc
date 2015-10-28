@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = NcML Examples
 
 Our goal in this section is to enhance two sample datasets using NcML.

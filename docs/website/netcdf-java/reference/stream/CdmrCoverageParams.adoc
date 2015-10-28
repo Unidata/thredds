@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Subsetting Parameters for Grid (Coverage) Datasets:
 ===================================================
 

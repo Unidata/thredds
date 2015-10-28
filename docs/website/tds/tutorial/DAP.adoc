@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 OPeNDAP DAP2 and DAP4 Protocol Services
 =======================================
 

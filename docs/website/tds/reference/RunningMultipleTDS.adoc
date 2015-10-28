@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 TDS Reference: Running Multiple TDS
 ===================================
 

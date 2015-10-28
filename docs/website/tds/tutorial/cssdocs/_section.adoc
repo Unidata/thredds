@@ -1,1 +1,3 @@
+:source-highlighter: coderay
+
 

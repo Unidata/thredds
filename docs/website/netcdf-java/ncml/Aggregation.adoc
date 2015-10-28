@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Aggregating netCDF files with netCDF Datasets
 =============================================
 
