@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 == 8.3 Ragged Arrays
 
 To save space in the netCDF file, it may be desirable to eliminate

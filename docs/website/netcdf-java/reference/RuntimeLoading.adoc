@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Runtime Loading
 
 These are the various classes that can be plugged in at runtime:

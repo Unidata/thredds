@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Ncstream Grammar
 
 == Version 2 (DRAFT)

@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 :tdsDocs: ../tds/reference
 
 = image:netcdfBig.gif[image] NetCDF-Java Library

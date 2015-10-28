@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 === Accessing TDS Monitoring and Debugging Tools
 
 Other than the compelling security reasons, you will want to enable SSL

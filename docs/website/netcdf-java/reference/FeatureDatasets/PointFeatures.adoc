@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Point Feature Datasets
 :linkcss:
 :stylesheet: ../../cdm.css

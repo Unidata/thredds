@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Basic threddsConfig.xml
 
 == TDS Configuration File threddsConfig.xml

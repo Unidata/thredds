@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Structures in NetCDF-3
 ======================
 

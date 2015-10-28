@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Transition to 4.0
 =================
 

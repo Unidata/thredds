@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 === Restrict the permissions in `${tomcat_home}`
 
 1.  Change the user/group ownership `${tomcat_home}` to the `tomcat`

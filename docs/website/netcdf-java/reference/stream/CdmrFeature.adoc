@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = CdmrFeature Web Service
 :tdsDocs: ../../../tds/reference/services
 

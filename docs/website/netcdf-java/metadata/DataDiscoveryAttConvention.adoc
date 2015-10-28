@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Dataset Discovery NetCDF Attribute Convention
 =============================================
 :author: Ethan Davis

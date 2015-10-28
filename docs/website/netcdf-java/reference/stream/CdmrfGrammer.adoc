@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = CdmrFeature Grammer (DRAFT)
 :linkcss:
 :stylesheet: ../../cdm.css

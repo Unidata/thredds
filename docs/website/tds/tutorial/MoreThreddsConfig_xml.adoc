@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 More on the TDS Configuration File
 ==================================
 

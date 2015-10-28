@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 == Datasets that change email discussion on dods-tech (Dec 2005)
 
 John wrote:

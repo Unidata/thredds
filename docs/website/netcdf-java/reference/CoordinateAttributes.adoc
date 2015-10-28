@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 _Coordinate Attribute Convention
 ================================
 

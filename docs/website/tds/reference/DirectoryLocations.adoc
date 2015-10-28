@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Location of TDS Directories
 ===========================
 

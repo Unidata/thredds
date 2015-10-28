@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Running The TDS Behind a Proxy Server
 =====================================
 

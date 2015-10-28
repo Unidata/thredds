@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = FMRC Collections
 
 A __*Forecast Model Run Collection (FMRC)*__ is a  __**collection of

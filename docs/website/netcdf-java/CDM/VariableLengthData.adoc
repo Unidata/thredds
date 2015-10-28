@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Variable Length Data
 
 == Variable Length Data

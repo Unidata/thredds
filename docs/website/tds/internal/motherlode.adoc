@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 THREDDS Motherlode Server Information
 =====================================
 

@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Writing a Coordinate Transform implementation
 =============================================
 

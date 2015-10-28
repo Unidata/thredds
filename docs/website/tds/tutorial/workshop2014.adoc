@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 2014 Training Workshop Schedule : TDS Configuration and Administration
 ======================================================================
 

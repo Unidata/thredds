@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = CDM implementation of CF discrete sampling features
 
 These notes refer to the current release of CDM.

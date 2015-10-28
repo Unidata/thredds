@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 Records in NetCDF-3
 ===================
 

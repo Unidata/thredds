@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Using NcML in TDS
 
 == NCML and the TDS

@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 :coderays:
 
 = Getting Started With the TDS: Local Test Server Setup

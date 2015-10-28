@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = Grib Collections
 
 A GRIB Collection is a collection of files that have GRIB records in
