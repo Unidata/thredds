@@ -135,6 +135,7 @@ public class NcStreamData {
       int nbytes = (int) data.getSizeBytes();
       ByteBuffer bb = ByteBuffer.allocate(nbytes);
       copyArrayToBB(data, bb);
+      bb.flip();
       builder.setPrimarray(ByteString.copyFrom(bb));
     }
 
@@ -372,5 +373,100 @@ public class NcStreamData {
         while (ao.hasNext()) md.opaqueList.add(ByteString.copyFrom((ByteBuffer) ao.next()));
       }
     }
+  }
+
+  public NcStreamProto.Data3 encodeData3(String name, boolean isVlen, Section section, Array data) {
+    NcStreamProto.Data3.Builder builder = NcStreamProto.Data3.newBuilder();
+
+    DataType dataType = data.getDataType();
+
+    builder.setFullName(name);
+    builder.setDataType(NcStream.convertDataType(data.getDataType()));
+    builder.setBigend(ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN);
+    builder.setVersion(NcStream.ncstream_data_version);
+
+    if (!isVlen) {
+      builder.setNelems((int) data.getSize());
+      builder.setSection(NcStream.encodeSection(section));
+    }
+
+    if (isVlen) {
+      builder.setIsVlen(true);
+      // encodeVlenData(builder, section, data);
+
+    } else if (dataType == DataType.STRING) {
+      if (data instanceof ArrayChar) { // is this possible ?
+        ArrayChar cdata =(ArrayChar) data;
+        for (String s:cdata)
+          builder.addStringdata(s);
+        Section ssection = section.removeRange(section.getRank()-1);
+        builder.setSection(NcStream.encodeSection(ssection));
+
+      } else if (data instanceof ArrayObject) {
+        IndexIterator iter = data.getIndexIterator();
+        while (iter.hasNext())
+          builder.addStringdata( (String) iter.next());
+      } else {
+        throw new IllegalStateException("Unknown class for STRING ="+ data.getClass().getName());
+      }
+
+    } else if (dataType == DataType.OPAQUE) {
+      if (data instanceof ArrayObject) {
+        IndexIterator iter = data.getIndexIterator();
+        while (iter.hasNext()) {
+          ByteBuffer bb = (ByteBuffer) iter.next();
+          builder.addOpaquedata(ByteString.copyFrom(bb));
+        }
+      } else {
+        throw new IllegalStateException("Unknown class for OPAQUE ="+ data.getClass().getName());
+      }
+
+    } else if (dataType == DataType.STRUCTURE) {
+      throw new UnsupportedOperationException("Not implemented yet SEQUENCE ="+ data.getClass().getName());
+
+    } else if (dataType == DataType.SEQUENCE) {
+      throw new UnsupportedOperationException("Not implemented yet SEQUENCE ="+ data.getClass().getName());
+
+    } else if (dataType == DataType.DOUBLE) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addDarray(iter.getDoubleNext());
+
+    } else if (dataType == DataType.FLOAT) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addFarray(iter.getFloatNext());
+
+    } else if (dataType.getPrimitiveClassType() == byte.class) {
+      int nbytes = (int) data.getSizeBytes();
+      ByteBuffer bb = ByteBuffer.allocate(nbytes);
+      copyArrayToBB(data, bb);
+      bb.flip();
+      builder.setBarray(ByteString.copyFrom(bb));
+
+    } else if (dataType == DataType.SHORT || dataType == DataType.INT) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addIarray(iter.getIntNext());
+
+    } else if (dataType == DataType.USHORT || dataType == DataType.UINT || dataType == DataType.ENUM2 || dataType == DataType.ENUM4) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addUiarray(iter.getIntNext());
+
+    } else if (dataType == DataType.LONG) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addLarray(iter.getLongNext());
+
+    } else if (dataType == DataType.ULONG) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addUlarray(iter.getLongNext());
+
+    }
+
+    return builder.build();
+
   }
 }

@@ -242,7 +242,9 @@ public class CdmRemoteController implements LastModified {
       StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
       while (stoke.hasMoreTokens()) {
         ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-        size += ncWriter.sendData(cer.v, cer.section, out, qb.getCompression());
+        // size += ncWriter.sendData(cer.v, cer.section, out, qb.getCompression());
+        size += ncWriter.sendData2(cer.v, cer.section, out, qb.getCompression());
+        // size += ncWriter.sendData3(cer.v, cer.section, out, qb.getCompression());
       }
       out.flush();
 

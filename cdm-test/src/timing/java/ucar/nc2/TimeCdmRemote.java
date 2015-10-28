@@ -128,7 +128,16 @@ public class TimeCdmRemote {
     System.out.printf(" compression ratio = %f%n", NcStreamReader.getCompression(true));
   }
 
-  static void doOne(String url, Stat tstat1, Stat tstat2) throws IOException, InvalidRangeException {
+  static void testCdmremote(String url, Stat tstat, int n, boolean readData) throws IOException, InvalidRangeException {
+    Stat stat = new Stat(tstat.getName(), false);
+    for (int i=0; i<n; i++) {
+      testRead("cdmremote:" + server + "/cdmremote/" + url, stat, readData);
+    }
+    System.out.printf(" %s MB/sec%n", stat);
+    tstat.add(stat);
+  }
+
+  static void doAll(String url, Stat tstat1, Stat tstat2) throws IOException, InvalidRangeException {
     // testCdmremoteCompress(url, stat1.setName("compress"), stat2.setName("nocomprs"), 10, true);
     System.out.printf("%n------ filename %s%n", url);
 
@@ -144,8 +153,13 @@ public class TimeCdmRemote {
     tstat2.add(stat2);
   }
 
+  static void doOne(String url, Stat stat1, Stat stat2) throws IOException, InvalidRangeException {
+    System.out.printf("%n------ filename %s%n", url);
+    testCdmremote(url, stat1, 10, true);
+  }
+
   public static void main(String args[]) throws IOException, InvalidRangeException {
-    Stat stat1 = new Stat("CDM ", false);
+    Stat stat1 = new Stat("CDM4", false);
     Stat stat2 = new Stat("DODS", false);
 
     CdmRemote.setAllowCompression(true);
@@ -158,6 +172,6 @@ public class TimeCdmRemote {
     doOne("scanCdmUnitTests/conventions/cf/ccsm2.nc", stat1, stat2);
 
     System.out.printf("%n %s MB/sec%n",stat1);
-    System.out.printf(" %s MB/sec%n", stat2);
+    // System.out.printf(" %s MB/sec%n", stat2);
   }
 }

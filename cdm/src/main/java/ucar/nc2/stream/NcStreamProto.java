@@ -18048,6 +18048,2520 @@ public final class NcStreamProto {
 
   }
 
+  public interface Data3OrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Data3)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional string fullName = 1;</code>
+     */
+    java.lang.String getFullName();
+    /**
+     * <code>optional string fullName = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getFullNameBytes();
+
+    /**
+     * <code>optional .DataType dataType = 2;</code>
+     */
+    int getDataTypeValue();
+    /**
+     * <code>optional .DataType dataType = 2;</code>
+     */
+    ucar.nc2.stream.NcStreamProto.DataType getDataType();
+
+    /**
+     * <code>optional .Section section = 3;</code>
+     */
+    boolean hasSection();
+    /**
+     * <code>optional .Section section = 3;</code>
+     */
+    ucar.nc2.stream.NcStreamProto.Section getSection();
+    /**
+     * <code>optional .Section section = 3;</code>
+     */
+    ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder();
+
+    /**
+     * <code>optional bool bigend = 4;</code>
+     */
+    boolean getBigend();
+
+    /**
+     * <code>optional uint32 version = 5;</code>
+     */
+    int getVersion();
+
+    /**
+     * <code>optional bool isVlen = 7;</code>
+     */
+    boolean getIsVlen();
+
+    /**
+     * <code>optional uint32 nelems = 9;</code>
+     */
+    int getNelems();
+
+    /**
+     * <code>repeated double darray = 10;</code>
+     *
+     * <pre>
+     * oneof
+     * </pre>
+     */
+    java.util.List<java.lang.Double> getDarrayList();
+    /**
+     * <code>repeated double darray = 10;</code>
+     *
+     * <pre>
+     * oneof
+     * </pre>
+     */
+    int getDarrayCount();
+    /**
+     * <code>repeated double darray = 10;</code>
+     *
+     * <pre>
+     * oneof
+     * </pre>
+     */
+    double getDarray(int index);
+
+    /**
+     * <code>repeated float farray = 11;</code>
+     */
+    java.util.List<java.lang.Float> getFarrayList();
+    /**
+     * <code>repeated float farray = 11;</code>
+     */
+    int getFarrayCount();
+    /**
+     * <code>repeated float farray = 11;</code>
+     */
+    float getFarray(int index);
+
+    /**
+     * <code>optional bytes barray = 12;</code>
+     */
+    com.google.protobuf.ByteString getBarray();
+
+    /**
+     * <code>repeated sint32 iarray = 13;</code>
+     */
+    java.util.List<java.lang.Integer> getIarrayList();
+    /**
+     * <code>repeated sint32 iarray = 13;</code>
+     */
+    int getIarrayCount();
+    /**
+     * <code>repeated sint32 iarray = 13;</code>
+     */
+    int getIarray(int index);
+
+    /**
+     * <code>repeated uint32 uiarray = 14;</code>
+     */
+    java.util.List<java.lang.Integer> getUiarrayList();
+    /**
+     * <code>repeated uint32 uiarray = 14;</code>
+     */
+    int getUiarrayCount();
+    /**
+     * <code>repeated uint32 uiarray = 14;</code>
+     */
+    int getUiarray(int index);
+
+    /**
+     * <code>repeated sint64 larray = 15;</code>
+     */
+    java.util.List<java.lang.Long> getLarrayList();
+    /**
+     * <code>repeated sint64 larray = 15;</code>
+     */
+    int getLarrayCount();
+    /**
+     * <code>repeated sint64 larray = 15;</code>
+     */
+    long getLarray(int index);
+
+    /**
+     * <code>repeated uint64 ularray = 16;</code>
+     */
+    java.util.List<java.lang.Long> getUlarrayList();
+    /**
+     * <code>repeated uint64 ularray = 16;</code>
+     */
+    int getUlarrayCount();
+    /**
+     * <code>repeated uint64 ularray = 16;</code>
+     */
+    long getUlarray(int index);
+
+    /**
+     * <code>repeated string stringdata = 17;</code>
+     *
+     * <pre>
+     * string dataType
+     * </pre>
+     */
+    com.google.protobuf.ProtocolStringList
+        getStringdataList();
+    /**
+     * <code>repeated string stringdata = 17;</code>
+     *
+     * <pre>
+     * string dataType
+     * </pre>
+     */
+    int getStringdataCount();
+    /**
+     * <code>repeated string stringdata = 17;</code>
+     *
+     * <pre>
+     * string dataType
+     * </pre>
+     */
+    java.lang.String getStringdata(int index);
+    /**
+     * <code>repeated string stringdata = 17;</code>
+     *
+     * <pre>
+     * string dataType
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getStringdataBytes(int index);
+
+    /**
+     * <code>repeated bytes opaquedata = 18;</code>
+     *
+     * <pre>
+     * opaque dataType
+     * </pre>
+     */
+    java.util.List<com.google.protobuf.ByteString> getOpaquedataList();
+    /**
+     * <code>repeated bytes opaquedata = 18;</code>
+     *
+     * <pre>
+     * opaque dataType
+     * </pre>
+     */
+    int getOpaquedataCount();
+    /**
+     * <code>repeated bytes opaquedata = 18;</code>
+     *
+     * <pre>
+     * opaque dataType
+     * </pre>
+     */
+    com.google.protobuf.ByteString getOpaquedata(int index);
+  }
+  /**
+   * Protobuf type {@code Data3}
+   */
+  public  static final class Data3 extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:Data3)
+      Data3OrBuilder {
+    // Use Data3.newBuilder() to construct.
+    private Data3(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private Data3() {
+      fullName_ = "";
+      dataType_ = 0;
+      bigend_ = false;
+      version_ = 0;
+      isVlen_ = false;
+      nelems_ = 0;
+      darray_ = java.util.Collections.emptyList();
+      farray_ = java.util.Collections.emptyList();
+      barray_ = com.google.protobuf.ByteString.EMPTY;
+      iarray_ = java.util.Collections.emptyList();
+      uiarray_ = java.util.Collections.emptyList();
+      larray_ = java.util.Collections.emptyList();
+      ularray_ = java.util.Collections.emptyList();
+      stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      opaquedata_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    }
+    private Data3(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+      this();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!input.skipField(tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              String s = input.readStringRequireUtf8();
+
+              fullName_ = s;
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+
+              dataType_ = rawValue;
+              break;
+            }
+            case 26: {
+              ucar.nc2.stream.NcStreamProto.Section.Builder subBuilder = null;
+              if (section_ != null) {
+                subBuilder = section_.toBuilder();
+              }
+              section_ = input.readMessage(ucar.nc2.stream.NcStreamProto.Section.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(section_);
+                section_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 32: {
+
+              bigend_ = input.readBool();
+              break;
+            }
+            case 40: {
+
+              version_ = input.readUInt32();
+              break;
+            }
+            case 56: {
+
+              isVlen_ = input.readBool();
+              break;
+            }
+            case 72: {
+
+              nelems_ = input.readUInt32();
+              break;
+            }
+            case 81: {
+              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+                darray_ = new java.util.ArrayList<java.lang.Double>();
+                mutable_bitField0_ |= 0x00000080;
+              }
+              darray_.add(input.readDouble());
+              break;
+            }
+            case 82: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080) && input.getBytesUntilLimit() > 0) {
+                darray_ = new java.util.ArrayList<java.lang.Double>();
+                mutable_bitField0_ |= 0x00000080;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                darray_.add(input.readDouble());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 93: {
+              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+                farray_ = new java.util.ArrayList<java.lang.Float>();
+                mutable_bitField0_ |= 0x00000100;
+              }
+              farray_.add(input.readFloat());
+              break;
+            }
+            case 90: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100) && input.getBytesUntilLimit() > 0) {
+                farray_ = new java.util.ArrayList<java.lang.Float>();
+                mutable_bitField0_ |= 0x00000100;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                farray_.add(input.readFloat());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 98: {
+
+              barray_ = input.readBytes();
+              break;
+            }
+            case 104: {
+              if (!((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
+                iarray_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000400;
+              }
+              iarray_.add(input.readSInt32());
+              break;
+            }
+            case 106: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000400) == 0x00000400) && input.getBytesUntilLimit() > 0) {
+                iarray_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000400;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                iarray_.add(input.readSInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 112: {
+              if (!((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
+                uiarray_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000800;
+              }
+              uiarray_.add(input.readUInt32());
+              break;
+            }
+            case 114: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000800) == 0x00000800) && input.getBytesUntilLimit() > 0) {
+                uiarray_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000800;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                uiarray_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 120: {
+              if (!((mutable_bitField0_ & 0x00001000) == 0x00001000)) {
+                larray_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00001000;
+              }
+              larray_.add(input.readSInt64());
+              break;
+            }
+            case 122: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00001000) == 0x00001000) && input.getBytesUntilLimit() > 0) {
+                larray_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00001000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                larray_.add(input.readSInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 128: {
+              if (!((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+                ularray_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00002000;
+              }
+              ularray_.add(input.readUInt64());
+              break;
+            }
+            case 130: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00002000) == 0x00002000) && input.getBytesUntilLimit() > 0) {
+                ularray_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00002000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                ularray_.add(input.readUInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 138: {
+              String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00004000) == 0x00004000)) {
+                stringdata_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00004000;
+              }
+              stringdata_.add(s);
+              break;
+            }
+            case 146: {
+              if (!((mutable_bitField0_ & 0x00008000) == 0x00008000)) {
+                opaquedata_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
+                mutable_bitField0_ |= 0x00008000;
+              }
+              opaquedata_.add(input.readBytes());
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw new RuntimeException(e.setUnfinishedMessage(this));
+      } catch (java.io.IOException e) {
+        throw new RuntimeException(
+            new com.google.protobuf.InvalidProtocolBufferException(
+                e.getMessage()).setUnfinishedMessage(this));
+      } finally {
+        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+          darray_ = java.util.Collections.unmodifiableList(darray_);
+        }
+        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+          farray_ = java.util.Collections.unmodifiableList(farray_);
+        }
+        if (((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
+          iarray_ = java.util.Collections.unmodifiableList(iarray_);
+        }
+        if (((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
+          uiarray_ = java.util.Collections.unmodifiableList(uiarray_);
+        }
+        if (((mutable_bitField0_ & 0x00001000) == 0x00001000)) {
+          larray_ = java.util.Collections.unmodifiableList(larray_);
+        }
+        if (((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+          ularray_ = java.util.Collections.unmodifiableList(ularray_);
+        }
+        if (((mutable_bitField0_ & 0x00004000) == 0x00004000)) {
+          stringdata_ = stringdata_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00008000) == 0x00008000)) {
+          opaquedata_ = java.util.Collections.unmodifiableList(opaquedata_);
+        }
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.stream.NcStreamProto.internal_static_Data3_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.stream.NcStreamProto.internal_static_Data3_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.stream.NcStreamProto.Data3.class, ucar.nc2.stream.NcStreamProto.Data3.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int FULLNAME_FIELD_NUMBER = 1;
+    private volatile java.lang.Object fullName_;
+    /**
+     * <code>optional string fullName = 1;</code>
+     */
+    public java.lang.String getFullName() {
+      java.lang.Object ref = fullName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        fullName_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>optional string fullName = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getFullNameBytes() {
+      java.lang.Object ref = fullName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        fullName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int DATATYPE_FIELD_NUMBER = 2;
+    private int dataType_;
+    /**
+     * <code>optional .DataType dataType = 2;</code>
+     */
+    public int getDataTypeValue() {
+      return dataType_;
+    }
+    /**
+     * <code>optional .DataType dataType = 2;</code>
+     */
+    public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
+      return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
+    }
+
+    public static final int SECTION_FIELD_NUMBER = 3;
+    private ucar.nc2.stream.NcStreamProto.Section section_;
+    /**
+     * <code>optional .Section section = 3;</code>
+     */
+    public boolean hasSection() {
+      return section_ != null;
+    }
+    /**
+     * <code>optional .Section section = 3;</code>
+     */
+    public ucar.nc2.stream.NcStreamProto.Section getSection() {
+      return section_ == null ? ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance() : section_;
+    }
+    /**
+     * <code>optional .Section section = 3;</code>
+     */
+    public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
+      return getSection();
+    }
+
+    public static final int BIGEND_FIELD_NUMBER = 4;
+    private boolean bigend_;
+    /**
+     * <code>optional bool bigend = 4;</code>
+     */
+    public boolean getBigend() {
+      return bigend_;
+    }
+
+    public static final int VERSION_FIELD_NUMBER = 5;
+    private int version_;
+    /**
+     * <code>optional uint32 version = 5;</code>
+     */
+    public int getVersion() {
+      return version_;
+    }
+
+    public static final int ISVLEN_FIELD_NUMBER = 7;
+    private boolean isVlen_;
+    /**
+     * <code>optional bool isVlen = 7;</code>
+     */
+    public boolean getIsVlen() {
+      return isVlen_;
+    }
+
+    public static final int NELEMS_FIELD_NUMBER = 9;
+    private int nelems_;
+    /**
+     * <code>optional uint32 nelems = 9;</code>
+     */
+    public int getNelems() {
+      return nelems_;
+    }
+
+    public static final int DARRAY_FIELD_NUMBER = 10;
+    private java.util.List<java.lang.Double> darray_;
+    /**
+     * <code>repeated double darray = 10;</code>
+     *
+     * <pre>
+     * oneof
+     * </pre>
+     */
+    public java.util.List<java.lang.Double>
+        getDarrayList() {
+      return darray_;
+    }
+    /**
+     * <code>repeated double darray = 10;</code>
+     *
+     * <pre>
+     * oneof
+     * </pre>
+     */
+    public int getDarrayCount() {
+      return darray_.size();
+    }
+    /**
+     * <code>repeated double darray = 10;</code>
+     *
+     * <pre>
+     * oneof
+     * </pre>
+     */
+    public double getDarray(int index) {
+      return darray_.get(index);
+    }
+    private int darrayMemoizedSerializedSize = -1;
+
+    public static final int FARRAY_FIELD_NUMBER = 11;
+    private java.util.List<java.lang.Float> farray_;
+    /**
+     * <code>repeated float farray = 11;</code>
+     */
+    public java.util.List<java.lang.Float>
+        getFarrayList() {
+      return farray_;
+    }
+    /**
+     * <code>repeated float farray = 11;</code>
+     */
+    public int getFarrayCount() {
+      return farray_.size();
+    }
+    /**
+     * <code>repeated float farray = 11;</code>
+     */
+    public float getFarray(int index) {
+      return farray_.get(index);
+    }
+    private int farrayMemoizedSerializedSize = -1;
+
+    public static final int BARRAY_FIELD_NUMBER = 12;
+    private com.google.protobuf.ByteString barray_;
+    /**
+     * <code>optional bytes barray = 12;</code>
+     */
+    public com.google.protobuf.ByteString getBarray() {
+      return barray_;
+    }
+
+    public static final int IARRAY_FIELD_NUMBER = 13;
+    private java.util.List<java.lang.Integer> iarray_;
+    /**
+     * <code>repeated sint32 iarray = 13;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getIarrayList() {
+      return iarray_;
+    }
+    /**
+     * <code>repeated sint32 iarray = 13;</code>
+     */
+    public int getIarrayCount() {
+      return iarray_.size();
+    }
+    /**
+     * <code>repeated sint32 iarray = 13;</code>
+     */
+    public int getIarray(int index) {
+      return iarray_.get(index);
+    }
+    private int iarrayMemoizedSerializedSize = -1;
+
+    public static final int UIARRAY_FIELD_NUMBER = 14;
+    private java.util.List<java.lang.Integer> uiarray_;
+    /**
+     * <code>repeated uint32 uiarray = 14;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getUiarrayList() {
+      return uiarray_;
+    }
+    /**
+     * <code>repeated uint32 uiarray = 14;</code>
+     */
+    public int getUiarrayCount() {
+      return uiarray_.size();
+    }
+    /**
+     * <code>repeated uint32 uiarray = 14;</code>
+     */
+    public int getUiarray(int index) {
+      return uiarray_.get(index);
+    }
+    private int uiarrayMemoizedSerializedSize = -1;
+
+    public static final int LARRAY_FIELD_NUMBER = 15;
+    private java.util.List<java.lang.Long> larray_;
+    /**
+     * <code>repeated sint64 larray = 15;</code>
+     */
+    public java.util.List<java.lang.Long>
+        getLarrayList() {
+      return larray_;
+    }
+    /**
+     * <code>repeated sint64 larray = 15;</code>
+     */
+    public int getLarrayCount() {
+      return larray_.size();
+    }
+    /**
+     * <code>repeated sint64 larray = 15;</code>
+     */
+    public long getLarray(int index) {
+      return larray_.get(index);
+    }
+    private int larrayMemoizedSerializedSize = -1;
+
+    public static final int ULARRAY_FIELD_NUMBER = 16;
+    private java.util.List<java.lang.Long> ularray_;
+    /**
+     * <code>repeated uint64 ularray = 16;</code>
+     */
+    public java.util.List<java.lang.Long>
+        getUlarrayList() {
+      return ularray_;
+    }
+    /**
+     * <code>repeated uint64 ularray = 16;</code>
+     */
+    public int getUlarrayCount() {
+      return ularray_.size();
+    }
+    /**
+     * <code>repeated uint64 ularray = 16;</code>
+     */
+    public long getUlarray(int index) {
+      return ularray_.get(index);
+    }
+    private int ularrayMemoizedSerializedSize = -1;
+
+    public static final int STRINGDATA_FIELD_NUMBER = 17;
+    private com.google.protobuf.LazyStringList stringdata_;
+    /**
+     * <code>repeated string stringdata = 17;</code>
+     *
+     * <pre>
+     * string dataType
+     * </pre>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getStringdataList() {
+      return stringdata_;
+    }
+    /**
+     * <code>repeated string stringdata = 17;</code>
+     *
+     * <pre>
+     * string dataType
+     * </pre>
+     */
+    public int getStringdataCount() {
+      return stringdata_.size();
+    }
+    /**
+     * <code>repeated string stringdata = 17;</code>
+     *
+     * <pre>
+     * string dataType
+     * </pre>
+     */
+    public java.lang.String getStringdata(int index) {
+      return stringdata_.get(index);
+    }
+    /**
+     * <code>repeated string stringdata = 17;</code>
+     *
+     * <pre>
+     * string dataType
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getStringdataBytes(int index) {
+      return stringdata_.getByteString(index);
+    }
+
+    public static final int OPAQUEDATA_FIELD_NUMBER = 18;
+    private java.util.List<com.google.protobuf.ByteString> opaquedata_;
+    /**
+     * <code>repeated bytes opaquedata = 18;</code>
+     *
+     * <pre>
+     * opaque dataType
+     * </pre>
+     */
+    public java.util.List<com.google.protobuf.ByteString>
+        getOpaquedataList() {
+      return opaquedata_;
+    }
+    /**
+     * <code>repeated bytes opaquedata = 18;</code>
+     *
+     * <pre>
+     * opaque dataType
+     * </pre>
+     */
+    public int getOpaquedataCount() {
+      return opaquedata_.size();
+    }
+    /**
+     * <code>repeated bytes opaquedata = 18;</code>
+     *
+     * <pre>
+     * opaque dataType
+     * </pre>
+     */
+    public com.google.protobuf.ByteString getOpaquedata(int index) {
+      return opaquedata_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (!getFullNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, fullName_);
+      }
+      if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
+        output.writeEnum(2, dataType_);
+      }
+      if (section_ != null) {
+        output.writeMessage(3, getSection());
+      }
+      if (bigend_ != false) {
+        output.writeBool(4, bigend_);
+      }
+      if (version_ != 0) {
+        output.writeUInt32(5, version_);
+      }
+      if (isVlen_ != false) {
+        output.writeBool(7, isVlen_);
+      }
+      if (nelems_ != 0) {
+        output.writeUInt32(9, nelems_);
+      }
+      if (getDarrayList().size() > 0) {
+        output.writeRawVarint32(82);
+        output.writeRawVarint32(darrayMemoizedSerializedSize);
+      }
+      for (int i = 0; i < darray_.size(); i++) {
+        output.writeDoubleNoTag(darray_.get(i));
+      }
+      if (getFarrayList().size() > 0) {
+        output.writeRawVarint32(90);
+        output.writeRawVarint32(farrayMemoizedSerializedSize);
+      }
+      for (int i = 0; i < farray_.size(); i++) {
+        output.writeFloatNoTag(farray_.get(i));
+      }
+      if (!barray_.isEmpty()) {
+        output.writeBytes(12, barray_);
+      }
+      if (getIarrayList().size() > 0) {
+        output.writeRawVarint32(106);
+        output.writeRawVarint32(iarrayMemoizedSerializedSize);
+      }
+      for (int i = 0; i < iarray_.size(); i++) {
+        output.writeSInt32NoTag(iarray_.get(i));
+      }
+      if (getUiarrayList().size() > 0) {
+        output.writeRawVarint32(114);
+        output.writeRawVarint32(uiarrayMemoizedSerializedSize);
+      }
+      for (int i = 0; i < uiarray_.size(); i++) {
+        output.writeUInt32NoTag(uiarray_.get(i));
+      }
+      if (getLarrayList().size() > 0) {
+        output.writeRawVarint32(122);
+        output.writeRawVarint32(larrayMemoizedSerializedSize);
+      }
+      for (int i = 0; i < larray_.size(); i++) {
+        output.writeSInt64NoTag(larray_.get(i));
+      }
+      if (getUlarrayList().size() > 0) {
+        output.writeRawVarint32(130);
+        output.writeRawVarint32(ularrayMemoizedSerializedSize);
+      }
+      for (int i = 0; i < ularray_.size(); i++) {
+        output.writeUInt64NoTag(ularray_.get(i));
+      }
+      for (int i = 0; i < stringdata_.size(); i++) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 17, stringdata_.getRaw(i));
+      }
+      for (int i = 0; i < opaquedata_.size(); i++) {
+        output.writeBytes(18, opaquedata_.get(i));
+      }
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getFullNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, fullName_);
+      }
+      if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, dataType_);
+      }
+      if (section_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getSection());
+      }
+      if (bigend_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, bigend_);
+      }
+      if (version_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, version_);
+      }
+      if (isVlen_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(7, isVlen_);
+      }
+      if (nelems_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(9, nelems_);
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getDarrayList().size();
+        size += dataSize;
+        if (!getDarrayList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        darrayMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        dataSize = 4 * getFarrayList().size();
+        size += dataSize;
+        if (!getFarrayList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        farrayMemoizedSerializedSize = dataSize;
+      }
+      if (!barray_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(12, barray_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < iarray_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeSInt32SizeNoTag(iarray_.get(i));
+        }
+        size += dataSize;
+        if (!getIarrayList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        iarrayMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < uiarray_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(uiarray_.get(i));
+        }
+        size += dataSize;
+        if (!getUiarrayList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        uiarrayMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < larray_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeSInt64SizeNoTag(larray_.get(i));
+        }
+        size += dataSize;
+        if (!getLarrayList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        larrayMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < ularray_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt64SizeNoTag(ularray_.get(i));
+        }
+        size += dataSize;
+        if (!getUlarrayList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        ularrayMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < stringdata_.size(); i++) {
+          dataSize += computeStringSizeNoTag(stringdata_.getRaw(i));
+        }
+        size += dataSize;
+        size += 2 * getStringdataList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < opaquedata_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(opaquedata_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getOpaquedataList().size();
+      }
+      memoizedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Data3 prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code Data3}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Data3)
+        ucar.nc2.stream.NcStreamProto.Data3OrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.stream.NcStreamProto.internal_static_Data3_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.stream.NcStreamProto.internal_static_Data3_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.stream.NcStreamProto.Data3.class, ucar.nc2.stream.NcStreamProto.Data3.Builder.class);
+      }
+
+      // Construct using ucar.nc2.stream.NcStreamProto.Data3.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        fullName_ = "";
+
+        dataType_ = 0;
+
+        if (sectionBuilder_ == null) {
+          section_ = null;
+        } else {
+          section_ = null;
+          sectionBuilder_ = null;
+        }
+        bigend_ = false;
+
+        version_ = 0;
+
+        isVlen_ = false;
+
+        nelems_ = 0;
+
+        darray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000080);
+        farray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000100);
+        barray_ = com.google.protobuf.ByteString.EMPTY;
+
+        iarray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000400);
+        uiarray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000800);
+        larray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00001000);
+        ularray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00002000);
+        stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00004000);
+        opaquedata_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00008000);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.stream.NcStreamProto.internal_static_Data3_descriptor;
+      }
+
+      public ucar.nc2.stream.NcStreamProto.Data3 getDefaultInstanceForType() {
+        return ucar.nc2.stream.NcStreamProto.Data3.getDefaultInstance();
+      }
+
+      public ucar.nc2.stream.NcStreamProto.Data3 build() {
+        ucar.nc2.stream.NcStreamProto.Data3 result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.stream.NcStreamProto.Data3 buildPartial() {
+        ucar.nc2.stream.NcStreamProto.Data3 result = new ucar.nc2.stream.NcStreamProto.Data3(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        result.fullName_ = fullName_;
+        result.dataType_ = dataType_;
+        if (sectionBuilder_ == null) {
+          result.section_ = section_;
+        } else {
+          result.section_ = sectionBuilder_.build();
+        }
+        result.bigend_ = bigend_;
+        result.version_ = version_;
+        result.isVlen_ = isVlen_;
+        result.nelems_ = nelems_;
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          darray_ = java.util.Collections.unmodifiableList(darray_);
+          bitField0_ = (bitField0_ & ~0x00000080);
+        }
+        result.darray_ = darray_;
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          farray_ = java.util.Collections.unmodifiableList(farray_);
+          bitField0_ = (bitField0_ & ~0x00000100);
+        }
+        result.farray_ = farray_;
+        result.barray_ = barray_;
+        if (((bitField0_ & 0x00000400) == 0x00000400)) {
+          iarray_ = java.util.Collections.unmodifiableList(iarray_);
+          bitField0_ = (bitField0_ & ~0x00000400);
+        }
+        result.iarray_ = iarray_;
+        if (((bitField0_ & 0x00000800) == 0x00000800)) {
+          uiarray_ = java.util.Collections.unmodifiableList(uiarray_);
+          bitField0_ = (bitField0_ & ~0x00000800);
+        }
+        result.uiarray_ = uiarray_;
+        if (((bitField0_ & 0x00001000) == 0x00001000)) {
+          larray_ = java.util.Collections.unmodifiableList(larray_);
+          bitField0_ = (bitField0_ & ~0x00001000);
+        }
+        result.larray_ = larray_;
+        if (((bitField0_ & 0x00002000) == 0x00002000)) {
+          ularray_ = java.util.Collections.unmodifiableList(ularray_);
+          bitField0_ = (bitField0_ & ~0x00002000);
+        }
+        result.ularray_ = ularray_;
+        if (((bitField0_ & 0x00004000) == 0x00004000)) {
+          stringdata_ = stringdata_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00004000);
+        }
+        result.stringdata_ = stringdata_;
+        if (((bitField0_ & 0x00008000) == 0x00008000)) {
+          opaquedata_ = java.util.Collections.unmodifiableList(opaquedata_);
+          bitField0_ = (bitField0_ & ~0x00008000);
+        }
+        result.opaquedata_ = opaquedata_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.stream.NcStreamProto.Data3) {
+          return mergeFrom((ucar.nc2.stream.NcStreamProto.Data3)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.Data3 other) {
+        if (other == ucar.nc2.stream.NcStreamProto.Data3.getDefaultInstance()) return this;
+        if (!other.getFullName().isEmpty()) {
+          fullName_ = other.fullName_;
+          onChanged();
+        }
+        if (other.dataType_ != 0) {
+          setDataTypeValue(other.getDataTypeValue());
+        }
+        if (other.hasSection()) {
+          mergeSection(other.getSection());
+        }
+        if (other.getBigend() != false) {
+          setBigend(other.getBigend());
+        }
+        if (other.getVersion() != 0) {
+          setVersion(other.getVersion());
+        }
+        if (other.getIsVlen() != false) {
+          setIsVlen(other.getIsVlen());
+        }
+        if (other.getNelems() != 0) {
+          setNelems(other.getNelems());
+        }
+        if (!other.darray_.isEmpty()) {
+          if (darray_.isEmpty()) {
+            darray_ = other.darray_;
+            bitField0_ = (bitField0_ & ~0x00000080);
+          } else {
+            ensureDarrayIsMutable();
+            darray_.addAll(other.darray_);
+          }
+          onChanged();
+        }
+        if (!other.farray_.isEmpty()) {
+          if (farray_.isEmpty()) {
+            farray_ = other.farray_;
+            bitField0_ = (bitField0_ & ~0x00000100);
+          } else {
+            ensureFarrayIsMutable();
+            farray_.addAll(other.farray_);
+          }
+          onChanged();
+        }
+        if (other.getBarray() != com.google.protobuf.ByteString.EMPTY) {
+          setBarray(other.getBarray());
+        }
+        if (!other.iarray_.isEmpty()) {
+          if (iarray_.isEmpty()) {
+            iarray_ = other.iarray_;
+            bitField0_ = (bitField0_ & ~0x00000400);
+          } else {
+            ensureIarrayIsMutable();
+            iarray_.addAll(other.iarray_);
+          }
+          onChanged();
+        }
+        if (!other.uiarray_.isEmpty()) {
+          if (uiarray_.isEmpty()) {
+            uiarray_ = other.uiarray_;
+            bitField0_ = (bitField0_ & ~0x00000800);
+          } else {
+            ensureUiarrayIsMutable();
+            uiarray_.addAll(other.uiarray_);
+          }
+          onChanged();
+        }
+        if (!other.larray_.isEmpty()) {
+          if (larray_.isEmpty()) {
+            larray_ = other.larray_;
+            bitField0_ = (bitField0_ & ~0x00001000);
+          } else {
+            ensureLarrayIsMutable();
+            larray_.addAll(other.larray_);
+          }
+          onChanged();
+        }
+        if (!other.ularray_.isEmpty()) {
+          if (ularray_.isEmpty()) {
+            ularray_ = other.ularray_;
+            bitField0_ = (bitField0_ & ~0x00002000);
+          } else {
+            ensureUlarrayIsMutable();
+            ularray_.addAll(other.ularray_);
+          }
+          onChanged();
+        }
+        if (!other.stringdata_.isEmpty()) {
+          if (stringdata_.isEmpty()) {
+            stringdata_ = other.stringdata_;
+            bitField0_ = (bitField0_ & ~0x00004000);
+          } else {
+            ensureStringdataIsMutable();
+            stringdata_.addAll(other.stringdata_);
+          }
+          onChanged();
+        }
+        if (!other.opaquedata_.isEmpty()) {
+          if (opaquedata_.isEmpty()) {
+            opaquedata_ = other.opaquedata_;
+            bitField0_ = (bitField0_ & ~0x00008000);
+          } else {
+            ensureOpaquedataIsMutable();
+            opaquedata_.addAll(other.opaquedata_);
+          }
+          onChanged();
+        }
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.stream.NcStreamProto.Data3 parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.stream.NcStreamProto.Data3) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object fullName_ = "";
+      /**
+       * <code>optional string fullName = 1;</code>
+       */
+      public java.lang.String getFullName() {
+        java.lang.Object ref = fullName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          fullName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string fullName = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getFullNameBytes() {
+        java.lang.Object ref = fullName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          fullName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string fullName = 1;</code>
+       */
+      public Builder setFullName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        fullName_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string fullName = 1;</code>
+       */
+      public Builder clearFullName() {
+        
+        fullName_ = getDefaultInstance().getFullName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string fullName = 1;</code>
+       */
+      public Builder setFullNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        fullName_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int dataType_ = 0;
+      /**
+       * <code>optional .DataType dataType = 2;</code>
+       */
+      public int getDataTypeValue() {
+        return dataType_;
+      }
+      /**
+       * <code>optional .DataType dataType = 2;</code>
+       */
+      public Builder setDataTypeValue(int value) {
+        dataType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .DataType dataType = 2;</code>
+       */
+      public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        ucar.nc2.stream.NcStreamProto.DataType result = ucar.nc2.stream.NcStreamProto.DataType.valueOf(dataType_);
+        return result == null ? ucar.nc2.stream.NcStreamProto.DataType.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>optional .DataType dataType = 2;</code>
+       */
+      public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        dataType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .DataType dataType = 2;</code>
+       */
+      public Builder clearDataType() {
+        
+        dataType_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private ucar.nc2.stream.NcStreamProto.Section section_ = null;
+      private com.google.protobuf.SingleFieldBuilder<
+          ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> sectionBuilder_;
+      /**
+       * <code>optional .Section section = 3;</code>
+       */
+      public boolean hasSection() {
+        return sectionBuilder_ != null || section_ != null;
+      }
+      /**
+       * <code>optional .Section section = 3;</code>
+       */
+      public ucar.nc2.stream.NcStreamProto.Section getSection() {
+        if (sectionBuilder_ == null) {
+          return section_ == null ? ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance() : section_;
+        } else {
+          return sectionBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .Section section = 3;</code>
+       */
+      public Builder setSection(ucar.nc2.stream.NcStreamProto.Section value) {
+        if (sectionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          section_ = value;
+          onChanged();
+        } else {
+          sectionBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>optional .Section section = 3;</code>
+       */
+      public Builder setSection(
+          ucar.nc2.stream.NcStreamProto.Section.Builder builderForValue) {
+        if (sectionBuilder_ == null) {
+          section_ = builderForValue.build();
+          onChanged();
+        } else {
+          sectionBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>optional .Section section = 3;</code>
+       */
+      public Builder mergeSection(ucar.nc2.stream.NcStreamProto.Section value) {
+        if (sectionBuilder_ == null) {
+          if (section_ != null) {
+            section_ =
+              ucar.nc2.stream.NcStreamProto.Section.newBuilder(section_).mergeFrom(value).buildPartial();
+          } else {
+            section_ = value;
+          }
+          onChanged();
+        } else {
+          sectionBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>optional .Section section = 3;</code>
+       */
+      public Builder clearSection() {
+        if (sectionBuilder_ == null) {
+          section_ = null;
+          onChanged();
+        } else {
+          section_ = null;
+          sectionBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>optional .Section section = 3;</code>
+       */
+      public ucar.nc2.stream.NcStreamProto.Section.Builder getSectionBuilder() {
+        
+        onChanged();
+        return getSectionFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .Section section = 3;</code>
+       */
+      public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
+        if (sectionBuilder_ != null) {
+          return sectionBuilder_.getMessageOrBuilder();
+        } else {
+          return section_ == null ?
+              ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance() : section_;
+        }
+      }
+      /**
+       * <code>optional .Section section = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder> 
+          getSectionFieldBuilder() {
+        if (sectionBuilder_ == null) {
+          sectionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              ucar.nc2.stream.NcStreamProto.Section, ucar.nc2.stream.NcStreamProto.Section.Builder, ucar.nc2.stream.NcStreamProto.SectionOrBuilder>(
+                  getSection(),
+                  getParentForChildren(),
+                  isClean());
+          section_ = null;
+        }
+        return sectionBuilder_;
+      }
+
+      private boolean bigend_ ;
+      /**
+       * <code>optional bool bigend = 4;</code>
+       */
+      public boolean getBigend() {
+        return bigend_;
+      }
+      /**
+       * <code>optional bool bigend = 4;</code>
+       */
+      public Builder setBigend(boolean value) {
+        
+        bigend_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool bigend = 4;</code>
+       */
+      public Builder clearBigend() {
+        
+        bigend_ = false;
+        onChanged();
+        return this;
+      }
+
+      private int version_ ;
+      /**
+       * <code>optional uint32 version = 5;</code>
+       */
+      public int getVersion() {
+        return version_;
+      }
+      /**
+       * <code>optional uint32 version = 5;</code>
+       */
+      public Builder setVersion(int value) {
+        
+        version_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 version = 5;</code>
+       */
+      public Builder clearVersion() {
+        
+        version_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private boolean isVlen_ ;
+      /**
+       * <code>optional bool isVlen = 7;</code>
+       */
+      public boolean getIsVlen() {
+        return isVlen_;
+      }
+      /**
+       * <code>optional bool isVlen = 7;</code>
+       */
+      public Builder setIsVlen(boolean value) {
+        
+        isVlen_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool isVlen = 7;</code>
+       */
+      public Builder clearIsVlen() {
+        
+        isVlen_ = false;
+        onChanged();
+        return this;
+      }
+
+      private int nelems_ ;
+      /**
+       * <code>optional uint32 nelems = 9;</code>
+       */
+      public int getNelems() {
+        return nelems_;
+      }
+      /**
+       * <code>optional uint32 nelems = 9;</code>
+       */
+      public Builder setNelems(int value) {
+        
+        nelems_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 nelems = 9;</code>
+       */
+      public Builder clearNelems() {
+        
+        nelems_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Double> darray_ = java.util.Collections.emptyList();
+      private void ensureDarrayIsMutable() {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+          darray_ = new java.util.ArrayList<java.lang.Double>(darray_);
+          bitField0_ |= 0x00000080;
+         }
+      }
+      /**
+       * <code>repeated double darray = 10;</code>
+       *
+       * <pre>
+       * oneof
+       * </pre>
+       */
+      public java.util.List<java.lang.Double>
+          getDarrayList() {
+        return java.util.Collections.unmodifiableList(darray_);
+      }
+      /**
+       * <code>repeated double darray = 10;</code>
+       *
+       * <pre>
+       * oneof
+       * </pre>
+       */
+      public int getDarrayCount() {
+        return darray_.size();
+      }
+      /**
+       * <code>repeated double darray = 10;</code>
+       *
+       * <pre>
+       * oneof
+       * </pre>
+       */
+      public double getDarray(int index) {
+        return darray_.get(index);
+      }
+      /**
+       * <code>repeated double darray = 10;</code>
+       *
+       * <pre>
+       * oneof
+       * </pre>
+       */
+      public Builder setDarray(
+          int index, double value) {
+        ensureDarrayIsMutable();
+        darray_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated double darray = 10;</code>
+       *
+       * <pre>
+       * oneof
+       * </pre>
+       */
+      public Builder addDarray(double value) {
+        ensureDarrayIsMutable();
+        darray_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated double darray = 10;</code>
+       *
+       * <pre>
+       * oneof
+       * </pre>
+       */
+      public Builder addAllDarray(
+          java.lang.Iterable<? extends java.lang.Double> values) {
+        ensureDarrayIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, darray_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated double darray = 10;</code>
+       *
+       * <pre>
+       * oneof
+       * </pre>
+       */
+      public Builder clearDarray() {
+        darray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000080);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Float> farray_ = java.util.Collections.emptyList();
+      private void ensureFarrayIsMutable() {
+        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+          farray_ = new java.util.ArrayList<java.lang.Float>(farray_);
+          bitField0_ |= 0x00000100;
+         }
+      }
+      /**
+       * <code>repeated float farray = 11;</code>
+       */
+      public java.util.List<java.lang.Float>
+          getFarrayList() {
+        return java.util.Collections.unmodifiableList(farray_);
+      }
+      /**
+       * <code>repeated float farray = 11;</code>
+       */
+      public int getFarrayCount() {
+        return farray_.size();
+      }
+      /**
+       * <code>repeated float farray = 11;</code>
+       */
+      public float getFarray(int index) {
+        return farray_.get(index);
+      }
+      /**
+       * <code>repeated float farray = 11;</code>
+       */
+      public Builder setFarray(
+          int index, float value) {
+        ensureFarrayIsMutable();
+        farray_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated float farray = 11;</code>
+       */
+      public Builder addFarray(float value) {
+        ensureFarrayIsMutable();
+        farray_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated float farray = 11;</code>
+       */
+      public Builder addAllFarray(
+          java.lang.Iterable<? extends java.lang.Float> values) {
+        ensureFarrayIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, farray_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated float farray = 11;</code>
+       */
+      public Builder clearFarray() {
+        farray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000100);
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString barray_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes barray = 12;</code>
+       */
+      public com.google.protobuf.ByteString getBarray() {
+        return barray_;
+      }
+      /**
+       * <code>optional bytes barray = 12;</code>
+       */
+      public Builder setBarray(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        barray_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes barray = 12;</code>
+       */
+      public Builder clearBarray() {
+        
+        barray_ = getDefaultInstance().getBarray();
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> iarray_ = java.util.Collections.emptyList();
+      private void ensureIarrayIsMutable() {
+        if (!((bitField0_ & 0x00000400) == 0x00000400)) {
+          iarray_ = new java.util.ArrayList<java.lang.Integer>(iarray_);
+          bitField0_ |= 0x00000400;
+         }
+      }
+      /**
+       * <code>repeated sint32 iarray = 13;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getIarrayList() {
+        return java.util.Collections.unmodifiableList(iarray_);
+      }
+      /**
+       * <code>repeated sint32 iarray = 13;</code>
+       */
+      public int getIarrayCount() {
+        return iarray_.size();
+      }
+      /**
+       * <code>repeated sint32 iarray = 13;</code>
+       */
+      public int getIarray(int index) {
+        return iarray_.get(index);
+      }
+      /**
+       * <code>repeated sint32 iarray = 13;</code>
+       */
+      public Builder setIarray(
+          int index, int value) {
+        ensureIarrayIsMutable();
+        iarray_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint32 iarray = 13;</code>
+       */
+      public Builder addIarray(int value) {
+        ensureIarrayIsMutable();
+        iarray_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint32 iarray = 13;</code>
+       */
+      public Builder addAllIarray(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureIarrayIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, iarray_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint32 iarray = 13;</code>
+       */
+      public Builder clearIarray() {
+        iarray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000400);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> uiarray_ = java.util.Collections.emptyList();
+      private void ensureUiarrayIsMutable() {
+        if (!((bitField0_ & 0x00000800) == 0x00000800)) {
+          uiarray_ = new java.util.ArrayList<java.lang.Integer>(uiarray_);
+          bitField0_ |= 0x00000800;
+         }
+      }
+      /**
+       * <code>repeated uint32 uiarray = 14;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getUiarrayList() {
+        return java.util.Collections.unmodifiableList(uiarray_);
+      }
+      /**
+       * <code>repeated uint32 uiarray = 14;</code>
+       */
+      public int getUiarrayCount() {
+        return uiarray_.size();
+      }
+      /**
+       * <code>repeated uint32 uiarray = 14;</code>
+       */
+      public int getUiarray(int index) {
+        return uiarray_.get(index);
+      }
+      /**
+       * <code>repeated uint32 uiarray = 14;</code>
+       */
+      public Builder setUiarray(
+          int index, int value) {
+        ensureUiarrayIsMutable();
+        uiarray_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 uiarray = 14;</code>
+       */
+      public Builder addUiarray(int value) {
+        ensureUiarrayIsMutable();
+        uiarray_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 uiarray = 14;</code>
+       */
+      public Builder addAllUiarray(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureUiarrayIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, uiarray_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 uiarray = 14;</code>
+       */
+      public Builder clearUiarray() {
+        uiarray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000800);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> larray_ = java.util.Collections.emptyList();
+      private void ensureLarrayIsMutable() {
+        if (!((bitField0_ & 0x00001000) == 0x00001000)) {
+          larray_ = new java.util.ArrayList<java.lang.Long>(larray_);
+          bitField0_ |= 0x00001000;
+         }
+      }
+      /**
+       * <code>repeated sint64 larray = 15;</code>
+       */
+      public java.util.List<java.lang.Long>
+          getLarrayList() {
+        return java.util.Collections.unmodifiableList(larray_);
+      }
+      /**
+       * <code>repeated sint64 larray = 15;</code>
+       */
+      public int getLarrayCount() {
+        return larray_.size();
+      }
+      /**
+       * <code>repeated sint64 larray = 15;</code>
+       */
+      public long getLarray(int index) {
+        return larray_.get(index);
+      }
+      /**
+       * <code>repeated sint64 larray = 15;</code>
+       */
+      public Builder setLarray(
+          int index, long value) {
+        ensureLarrayIsMutable();
+        larray_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint64 larray = 15;</code>
+       */
+      public Builder addLarray(long value) {
+        ensureLarrayIsMutable();
+        larray_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint64 larray = 15;</code>
+       */
+      public Builder addAllLarray(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureLarrayIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, larray_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint64 larray = 15;</code>
+       */
+      public Builder clearLarray() {
+        larray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00001000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> ularray_ = java.util.Collections.emptyList();
+      private void ensureUlarrayIsMutable() {
+        if (!((bitField0_ & 0x00002000) == 0x00002000)) {
+          ularray_ = new java.util.ArrayList<java.lang.Long>(ularray_);
+          bitField0_ |= 0x00002000;
+         }
+      }
+      /**
+       * <code>repeated uint64 ularray = 16;</code>
+       */
+      public java.util.List<java.lang.Long>
+          getUlarrayList() {
+        return java.util.Collections.unmodifiableList(ularray_);
+      }
+      /**
+       * <code>repeated uint64 ularray = 16;</code>
+       */
+      public int getUlarrayCount() {
+        return ularray_.size();
+      }
+      /**
+       * <code>repeated uint64 ularray = 16;</code>
+       */
+      public long getUlarray(int index) {
+        return ularray_.get(index);
+      }
+      /**
+       * <code>repeated uint64 ularray = 16;</code>
+       */
+      public Builder setUlarray(
+          int index, long value) {
+        ensureUlarrayIsMutable();
+        ularray_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 ularray = 16;</code>
+       */
+      public Builder addUlarray(long value) {
+        ensureUlarrayIsMutable();
+        ularray_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 ularray = 16;</code>
+       */
+      public Builder addAllUlarray(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureUlarrayIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, ularray_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 ularray = 16;</code>
+       */
+      public Builder clearUlarray() {
+        ularray_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00002000);
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureStringdataIsMutable() {
+        if (!((bitField0_ & 0x00004000) == 0x00004000)) {
+          stringdata_ = new com.google.protobuf.LazyStringArrayList(stringdata_);
+          bitField0_ |= 0x00004000;
+         }
+      }
+      /**
+       * <code>repeated string stringdata = 17;</code>
+       *
+       * <pre>
+       * string dataType
+       * </pre>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getStringdataList() {
+        return stringdata_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string stringdata = 17;</code>
+       *
+       * <pre>
+       * string dataType
+       * </pre>
+       */
+      public int getStringdataCount() {
+        return stringdata_.size();
+      }
+      /**
+       * <code>repeated string stringdata = 17;</code>
+       *
+       * <pre>
+       * string dataType
+       * </pre>
+       */
+      public java.lang.String getStringdata(int index) {
+        return stringdata_.get(index);
+      }
+      /**
+       * <code>repeated string stringdata = 17;</code>
+       *
+       * <pre>
+       * string dataType
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getStringdataBytes(int index) {
+        return stringdata_.getByteString(index);
+      }
+      /**
+       * <code>repeated string stringdata = 17;</code>
+       *
+       * <pre>
+       * string dataType
+       * </pre>
+       */
+      public Builder setStringdata(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureStringdataIsMutable();
+        stringdata_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string stringdata = 17;</code>
+       *
+       * <pre>
+       * string dataType
+       * </pre>
+       */
+      public Builder addStringdata(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureStringdataIsMutable();
+        stringdata_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string stringdata = 17;</code>
+       *
+       * <pre>
+       * string dataType
+       * </pre>
+       */
+      public Builder addAllStringdata(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureStringdataIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, stringdata_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string stringdata = 17;</code>
+       *
+       * <pre>
+       * string dataType
+       * </pre>
+       */
+      public Builder clearStringdata() {
+        stringdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00004000);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string stringdata = 17;</code>
+       *
+       * <pre>
+       * string dataType
+       * </pre>
+       */
+      public Builder addStringdataBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureStringdataIsMutable();
+        stringdata_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<com.google.protobuf.ByteString> opaquedata_ = java.util.Collections.emptyList();
+      private void ensureOpaquedataIsMutable() {
+        if (!((bitField0_ & 0x00008000) == 0x00008000)) {
+          opaquedata_ = new java.util.ArrayList<com.google.protobuf.ByteString>(opaquedata_);
+          bitField0_ |= 0x00008000;
+         }
+      }
+      /**
+       * <code>repeated bytes opaquedata = 18;</code>
+       *
+       * <pre>
+       * opaque dataType
+       * </pre>
+       */
+      public java.util.List<com.google.protobuf.ByteString>
+          getOpaquedataList() {
+        return java.util.Collections.unmodifiableList(opaquedata_);
+      }
+      /**
+       * <code>repeated bytes opaquedata = 18;</code>
+       *
+       * <pre>
+       * opaque dataType
+       * </pre>
+       */
+      public int getOpaquedataCount() {
+        return opaquedata_.size();
+      }
+      /**
+       * <code>repeated bytes opaquedata = 18;</code>
+       *
+       * <pre>
+       * opaque dataType
+       * </pre>
+       */
+      public com.google.protobuf.ByteString getOpaquedata(int index) {
+        return opaquedata_.get(index);
+      }
+      /**
+       * <code>repeated bytes opaquedata = 18;</code>
+       *
+       * <pre>
+       * opaque dataType
+       * </pre>
+       */
+      public Builder setOpaquedata(
+          int index, com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureOpaquedataIsMutable();
+        opaquedata_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes opaquedata = 18;</code>
+       *
+       * <pre>
+       * opaque dataType
+       * </pre>
+       */
+      public Builder addOpaquedata(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureOpaquedataIsMutable();
+        opaquedata_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes opaquedata = 18;</code>
+       *
+       * <pre>
+       * opaque dataType
+       * </pre>
+       */
+      public Builder addAllOpaquedata(
+          java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
+        ensureOpaquedataIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, opaquedata_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes opaquedata = 18;</code>
+       *
+       * <pre>
+       * opaque dataType
+       * </pre>
+       */
+      public Builder clearOpaquedata() {
+        opaquedata_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00008000);
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:Data3)
+    }
+
+    // @@protoc_insertion_point(class_scope:Data3)
+    private static final ucar.nc2.stream.NcStreamProto.Data3 DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new ucar.nc2.stream.NcStreamProto.Data3();
+    }
+
+    public static ucar.nc2.stream.NcStreamProto.Data3 getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Data3>
+        PARSER = new com.google.protobuf.AbstractParser<Data3>() {
+      public Data3 parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        try {
+          return new Data3(input, extensionRegistry);
+        } catch (RuntimeException e) {
+          if (e.getCause() instanceof
+              com.google.protobuf.InvalidProtocolBufferException) {
+            throw (com.google.protobuf.InvalidProtocolBufferException)
+                e.getCause();
+          }
+          throw e;
+        }
+      }
+    };
+
+    public static com.google.protobuf.Parser<Data3> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Data3> getParserForType() {
+      return PARSER;
+    }
+
+    public ucar.nc2.stream.NcStreamProto.Data3 getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface ErrorOrBuilder extends
       // @@protoc_insertion_point(interface_extends:Error)
       com.google.protobuf.MessageOrBuilder {
@@ -18568,6 +21082,11 @@ public final class NcStreamProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_ArrayStructureDataCol_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_Data3_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Data3_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_Error_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -18626,15 +21145,22 @@ public final class NcStreamProto {
       "ta\030\014 \001(\0132\026.ArrayStructureDataCol\022\r\n\005vlen" +
       "s\030\r \003(\r\022\022\n\nopaquedata\030\016 \003(\014\"B\n\025ArrayStru" +
       "ctureDataCol\022\032\n\nmemberData\030\001 \003(\0132\006.Data2" +
-      "\022\r\n\005shape\030\003 \003(\r\"\030\n\005Error\022\017\n\007message\030\001 \001(" +
-      "\t*\325\001\n\010DataType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SH" +
-      "ORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006D" +
-      "OUBLE\020\006\022\n\n\006STRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SE" +
-      "QUENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020",
-      "\014\022\n\n\006OPAQUE\020\r\022\t\n\005UBYTE\020\016\022\n\n\006USHORT\020\017\022\010\n\004" +
-      "UINT\020\020\022\t\n\005ULONG\020\021*!\n\010Compress\022\010\n\004NONE\020\000\022" +
-      "\013\n\007DEFLATE\020\001B \n\017ucar.nc2.streamB\rNcStrea" +
-      "mProtob\006proto3"
+      "\022\r\n\005shape\030\003 \003(\r\"\254\002\n\005Data3\022\020\n\010fullName\030\001 " +
+      "\001(\t\022\033\n\010dataType\030\002 \001(\0162\t.DataType\022\031\n\007sect" +
+      "ion\030\003 \001(\0132\010.Section\022\016\n\006bigend\030\004 \001(\010\022\017\n\007v" +
+      "ersion\030\005 \001(\r\022\016\n\006isVlen\030\007 \001(\010\022\016\n\006nelems\030\t" +
+      " \001(\r\022\016\n\006darray\030\n \003(\001\022\016\n\006farray\030\013 \003(\002\022\016\n\006",
+      "barray\030\014 \001(\014\022\016\n\006iarray\030\r \003(\021\022\017\n\007uiarray\030" +
+      "\016 \003(\r\022\016\n\006larray\030\017 \003(\022\022\017\n\007ularray\030\020 \003(\004\022\022" +
+      "\n\nstringdata\030\021 \003(\t\022\022\n\nopaquedata\030\022 \003(\014\"\030" +
+      "\n\005Error\022\017\n\007message\030\001 \001(\t*\325\001\n\010DataType\022\010\n" +
+      "\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n" +
+      "\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRING" +
+      "\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005ENUM1" +
+      "\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\r\022\t\n\005" +
+      "UBYTE\020\016\022\n\n\006USHORT\020\017\022\010\n\004UINT\020\020\022\t\n\005ULONG\020\021" +
+      "*!\n\010Compress\022\010\n\004NONE\020\000\022\013\n\007DEFLATE\020\001B \n\017u",
+      "car.nc2.streamB\rNcStreamProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -18732,8 +21258,14 @@ public final class NcStreamProto {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_ArrayStructureDataCol_descriptor,
         new java.lang.String[] { "MemberData", "Shape", });
-    internal_static_Error_descriptor =
+    internal_static_Data3_descriptor =
       getDescriptor().getMessageTypes().get(13);
+    internal_static_Data3_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_Data3_descriptor,
+        new java.lang.String[] { "FullName", "DataType", "Section", "Bigend", "Version", "IsVlen", "Nelems", "Darray", "Farray", "Barray", "Iarray", "Uiarray", "Larray", "Ularray", "Stringdata", "Opaquedata", });
+    internal_static_Error_descriptor =
+      getDescriptor().getMessageTypes().get(14);
     internal_static_Error_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Error_descriptor,

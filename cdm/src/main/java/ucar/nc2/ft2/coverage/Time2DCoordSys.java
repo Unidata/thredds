@@ -102,7 +102,7 @@ public class Time2DCoordSys {
      2b time (not range) = constant forecast dataset
    */
   public Optional<List<CoverageCoordAxis>> subset(SubsetParams params, AtomicBoolean isConstantForcast, boolean makeCFcompliant) {
-    return null;
+    return Optional.empty("not implemented by "+getClass().getName());
     /*
     List<CoverageCoordAxis> result = new ArrayList<>();
 

@@ -382,3 +382,108 @@ so i think not a problem; just have to deal with sequences
 . Difficulty of parsing in python client
 . should data be in protobuf? not sure of overhead
 .. ok as streaming protocol, less so as file format
+
+== data transfer dods vs cdm, with/without compression
+
+----
+filename scanCdmUnitTests/formats/grib1/Mercator.grib1
+  CDM : avg=11.4 std=1.46 (n=10) MB/sec
+  DODS: avg=12.6 std=.337 (n=10) MB/sec
+  CDM2: avg=13.5 std=1.72 (n=10) MB/sec
+  CDM3: avg=12.3 std=1.75 (n=10) MB/sec
+  CDM4: avg=13.4 std=1.75 (n=10) MB/sec
+
+compress:
+  CDM : avg=8.75 std=1.06 (n=10) MB/sec
+  DODS: avg=2.07 std=.0464 (n=10) MB/sec
+  compression ratio = 2.592550
+----
+----
+filename scanCdmUnitTests/formats/grib2/ds.pop12.bin
+  CDM : avg=14.7 std=1.12 (n=10) MB/sec
+  DODS: avg=17.6 std=1.87 (n=10) MB/sec
+  CDM2: avg=15.4 std=.497 (n=10) MB/sec
+  CDM3: avg=13.0 std=1.66 (n=10) MB/sec
+  CDM4: avg=15.4 std=.690 (n=10) MB/sec
+
+compress:
+  CDM : avg=38.1 std=.654 (n=10) MB/sec
+  DODS: avg=24.5 std=.988 (n=10) MB/sec
+  compression ratio = 49.604264
+----
+----
+filename scanCdmUnitTests/formats/grib2/AVOR_000.grb
+  CDM : avg=8.96 std=.934 (n=10) MB/sec
+  DODS: avg=10.1 std=.470 (n=10) MB/sec
+  CDM2: avg=9.45 std=.519 (n=10) MB/sec
+  CDM3: avg=8.77 std=.548 (n=10) MB/sec
+  CDM4: avg=9.38 std=.210 (n=10) MB/sec
+
+compress:
+  CDM : avg=8.94 std=.374 (n=10) MB/sec
+  DODS: avg=2.92 std=.0769 (n=10) MB/sec
+  compression ratio = 3.506321
+
+----
+----
+filename scanCdmUnitTests/conventions/cf/bora_feb_001.nc
+  CDM : avg=10.7 std=.817 (n=10) MB/sec
+  DODS: avg=10.3 std=1.51 (n=10) MB/sec
+  CDM2: avg=11.9 std=.637 (n=10) MB/sec
+  CDM3: avg=11.5 std=.865 (n=10) MB/sec
+  CDM4: avg=11.5 std=1.08 (n=10) MB/sec
+
+compress:
+ CDM : avg=8.14 std=.361 (n=10) MB/sec
+ DODS: avg=1.81 std=.0522 (n=10) MB/sec
+ compression ratio = 1.533374
+
+----
+----
+filename scanCdmUnitTests/conventions/cf/ccsm2.nc
+  CDM : avg=11.8 std=.412 (n=10) MB/sec
+  DODS: avg=11.2 std=.461 (n=10) MB/sec
+  CDM2: avg=13.6 std=.383 (n=10) MB/sec
+  CDM3: avg=12.7 std=.302 (n=10) MB/sec
+  CDM4: avg=13.2 std=.228 (n=10) MB/sec
+
+compress:
+  CDM : avg=9.34 std=.435 (n=10) MB/sec
+  DODS: avg=1.94 std=.0773 (n=10) MB/sec
+  compression ratio = 1.600860
+----
+----
+total
+
+  CDM : avg=11.5 std=2.14 (n=50) MB/sec
+  DODS: avg=12.4 std=2.97 (n=50) MB/sec
+  CDM2: avg=12.8 std=2.19 (n=50) MB/sec
+  CDM3: avg=11.7 std=1.95 (n=50) MB/sec
+  CDM4: avg=12.6 std=2.25 (n=50) MB/sec
+
+compress:
+  CDM : avg=14.6 std=11.7 (n=50) MB/sec
+  DODS: avg=6.65 std=8.95 (n=50) MB/sec
+----
+
+=== Conclusions
+
+==== compression
+
+. ds.pop12.bin distorts compression result, in fact most dods files are very bad (tomcat?), and cdm somewhat worse in compression
+. client/server on the same machine, so not bandwidth limited; need to test compression across network
+. needs more study on usefullness, for now client leave default off, server compress if asked.
+
+==== CDM algo
+
+. not clear if these results are statistically significant, but they seem to be stable.
+. CDM2 10% faster in this test.
+..    CDM: current, with data outside of proto. not sure why proto is faster. ByteBuffer.wrap() does not have to make extra copy.
+..    CDM2: proto with byte array, has extra copy ByteString -> ByteBuffer -> Array
+..    CDM3: proto with repeating arrays, converts to Objects, proto -> ArrayList<Object> -> Array.
+..    CDM4: same as CDM2, using writeToDelimited() and parseFromDelimited() - handles message delimiting
+
+==== CDM vs DODS
+
+. not clear if these results are statistically significant, but they seem to be stable.
+. ignore compress for now.

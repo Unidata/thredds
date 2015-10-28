@@ -163,6 +163,34 @@ message ArrayStructureDataCol {
 
 //////////////////////////////////
 
+message Data3 {
+  string fullName = 1;
+  DataType dataType = 2;
+  Section section = 3;
+  bool bigend = 4;
+  uint32 version = 5;
+  bool isVlen = 7;
+  uint32 nelems = 9;
+
+  // oneof
+  repeated double darray=10;
+  repeated float farray=11;
+  bytes barray=12;
+  repeated sint32 iarray=13;
+  repeated uint32 uiarray=14;
+  repeated sint64 larray=15;
+  repeated uint64 ularray=16;
+
+  repeated string stringdata = 17;  // string dataType
+  repeated bytes opaquedata = 18;  // opaque dataType
+
+  //ArrayStructureDataCol structdata = 12;  // structure/seq dataType
+  //repeated uint32 vlens = 13;      // isVlen true
+}
+
+
+//////////////////////////////////
+
 message Error {
   string message = 1;
 }

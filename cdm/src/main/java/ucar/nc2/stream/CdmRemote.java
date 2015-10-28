@@ -192,7 +192,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
       InputStream is = method.getResponseAsStream();  // Closed by HTTPMethod.close().
       NcStreamReader reader = new NcStreamReader();
-      NcStreamReader.DataResult result = reader.readData(is, this);
+      // NcStreamReader.DataResult result = reader.readData(is, this);
+      NcStreamReader.DataResult result = reader.readData2(is, this);
+      // NcStreamReader.DataResult result = reader.readData3(is, this);
 
       assert v.getFullNameEscaped().equals(result.varNameFullEsc);
       return result.data;
