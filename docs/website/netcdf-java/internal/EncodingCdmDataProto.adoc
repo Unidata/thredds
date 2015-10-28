@@ -161,6 +161,9 @@ compress:= if NcStreamProto.Data is compressed, and with what algorithm.
 . decompress if needed
 . now apply protobuf parsing
 
+* Alternatively, just turn on compression at the Tomcat server (remote access only not file format).
+* opendap uses this; client can decompress input stream on the fly. measure speedup?
+
 === Make it possible to break data response into multiple messages
 
 ----

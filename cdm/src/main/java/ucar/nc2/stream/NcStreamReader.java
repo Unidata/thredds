@@ -60,8 +60,20 @@ public class NcStreamReader {
   static private final Logger logger = LoggerFactory.getLogger(NcStreamReader.class);
 
   private static final boolean debug = false;
+  private static final boolean showDeflate = false;
 
-  public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
+  private static double total_uncompressedSize = 0.0;
+  private static double total_compressedSize = 0.0;
+  static public double getCompression(boolean reset) {
+    double result =  total_uncompressedSize / total_compressedSize;
+    if (reset) {
+      total_compressedSize = 0;
+      total_uncompressedSize = 0;
+    }
+    return result;
+  }
+
+    public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
     byte[] b = new byte[4];
     NcStream.readFully(is, b);
 
@@ -195,6 +207,9 @@ public class NcStreamReader {
       NcStream.readFully(in, resultb);
 
       data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(resultb)); // another copy, not sure can do anything
+      if (showDeflate) System.out.printf("Deflate = %d / %d = %f %n", uncompressedSize, dsize, ((float)uncompressedSize)/dsize);
+      total_uncompressedSize += uncompressedSize;
+      total_compressedSize += dsize;
 
     } else {
       data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(datab));

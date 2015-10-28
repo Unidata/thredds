@@ -66,8 +66,11 @@ public class CdmRemoteQueryBeanValidator implements Validator {
     else if (bean.getReq().equalsIgnoreCase("header")) reqType = CdmRemoteQueryBean.RequestType.header;
     else if (bean.getReq().equalsIgnoreCase("ncml")) reqType = CdmRemoteQueryBean.RequestType.ncml;
     else reqType = CdmRemoteQueryBean.RequestType.data; // default
-
     bean.setReqType(reqType);
+
+    int deflateLevel = bean.getDeflate();
+    if (deflateLevel >= 0)
+      bean.setDeflate(deflateLevel);
   }
 
 }
