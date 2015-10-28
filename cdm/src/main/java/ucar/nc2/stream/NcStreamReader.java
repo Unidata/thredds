@@ -32,6 +32,7 @@
  */
 package ucar.nc2.stream;
 
+import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
@@ -39,6 +40,7 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.ma2.*;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
@@ -60,8 +62,20 @@ public class NcStreamReader {
   static private final Logger logger = LoggerFactory.getLogger(NcStreamReader.class);
 
   private static final boolean debug = false;
+  private static final boolean showDeflate = false;
 
-  public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
+  private static double total_uncompressedSize = 0.0;
+  private static double total_compressedSize = 0.0;
+  static public double getCompression(boolean reset) {
+    double result =  total_uncompressedSize / total_compressedSize;
+    if (reset) {
+      total_compressedSize = 0;
+      total_uncompressedSize = 0;
+    }
+    return result;
+  }
+
+    public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
     byte[] b = new byte[4];
     NcStream.readFully(is, b);
 
@@ -176,10 +190,10 @@ public class NcStreamReader {
         ArrayStructureBB data = new ArrayStructureBB(members, section.getShape(), ByteBuffer.wrap(datab), 0);
         return new DataResult(dproto.getVarName(), data);
 
-      } /* else { // version > 0 uses a NcStreamProto.StructureData message
+      } else { // version > 0 and < 3 uses a NcStreamProto.StructureData message
         ArrayStructureBB data = NcStream.decodeArrayStructure(members, section.getShape(), datab);
         return new DataResult(dproto.getVarName(), data);
-      } */
+      }
     }
 
     // otherwise its a multidim array
@@ -194,16 +208,127 @@ public class NcStreamReader {
       byte[] resultb = new byte[uncompressedSize];
       NcStream.readFully(in, resultb);
 
-      /* ByteArrayOutputStream bout = new ByteArrayOutputStream(uncompressedSize);
-      IO.copy(in, bout);  // decompress
-      byte[] resultb = bout.toByteArray();  // another fucking copy - should overrride ByteArrayOutputStream(byte[] myown);  */
       data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(resultb)); // another copy, not sure can do anything
+      if (showDeflate) System.out.printf("Deflate = %d / %d = %f %n", uncompressedSize, dsize, ((float)uncompressedSize)/dsize);
+      total_uncompressedSize += uncompressedSize;
+      total_compressedSize += dsize;
 
     } else {
       data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(datab));
     }
 
     return new DataResult(dproto.getVarName(), data);
+  }
+
+  public DataResult readData2(InputStream is, NetcdfFile ncfile) throws IOException {
+    if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
+      throw new IOException("Data transfer corrupted on " + ncfile.getLocation());
+
+    int psize = NcStream.readVInt(is);
+    if (debug) System.out.println("  readData data message len= " + psize);
+    byte[] dp = new byte[psize];
+    NcStream.readFully(is, dp);
+
+    NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseFrom(dp);
+    // NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseDelimitedFrom(is);
+
+    // ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+
+    DataType dataType = NcStream.convertDataType(dproto.getDataType());
+    Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
+    int nelems = dproto.getNelems();
+    assert nelems == section.computeSize();
+
+    // special cases
+    if (dataType == DataType.STRING) {
+      Array data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      for (String s : dproto.getStringdataList()) {
+        ii.setObjectNext(s);
+      }
+      return new DataResult(dproto.getFullName(), data);
+
+    } else if (dataType == DataType.OPAQUE) {
+      Array data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      for (ByteString s : dproto.getOpaquedataList()) {
+        ii.setObjectNext( s.asReadOnlyByteBuffer());
+      }
+      return new DataResult(dproto.getFullName(), data);
+
+    } else {
+      Array data = Array.factory(dataType, section.getShape(), dproto.getPrimarray().asReadOnlyByteBuffer()); // bo ??
+      return new DataResult(dproto.getFullName(), data);
+    }
+
+  }
+
+  public DataResult readData3(InputStream is, NetcdfFile ncfile) throws IOException {
+    if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
+      throw new IOException("Data transfer corrupted on " + ncfile.getLocation());
+
+    int psize = NcStream.readVInt(is);
+    if (debug) System.out.println("  readData data message len= " + psize);
+    byte[] dp = new byte[psize];
+    NcStream.readFully(is, dp);
+
+    NcStreamProto.Data3 dproto = NcStreamProto.Data3.parseFrom(dp);
+
+    DataType dataType = NcStream.convertDataType(dproto.getDataType());
+    Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
+    int nelems = dproto.getNelems();
+    assert nelems == section.computeSize();
+
+    // special cases
+    if (dataType == DataType.STRING) {
+      Array data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      for (String s : dproto.getStringdataList()) {
+        ii.setObjectNext(s);
+      }
+      return new DataResult(dproto.getFullName(), data);
+
+    } else if (dataType == DataType.OPAQUE) {
+      Array data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      for (ByteString s : dproto.getOpaquedataList()) {
+        ii.setObjectNext( s.asReadOnlyByteBuffer());
+      }
+      return new DataResult(dproto.getFullName(), data);
+
+    } else if (dataType.getPrimitiveClassType() == byte.class) {
+      Array data = Array.factory(dataType, section.getShape(), dproto.getBarray().asReadOnlyByteBuffer()); // bo ??
+      return new DataResult(dproto.getFullName(), data);
+
+    } else {
+      Array data = Array.factory(dataType, section.getShape());
+      if (dataType == DataType.DOUBLE) {
+        for (int i=0; i<nelems; i++)
+          data.setDouble(i, dproto.getDarray(i));
+
+      } else if (dataType == DataType.FLOAT) {
+        for (int i=0; i<nelems; i++)
+          data.setFloat(i, dproto.getFarray(i));
+
+      } else if (dataType == DataType.SHORT || dataType == DataType.INT) {
+        for (int i=0; i<nelems; i++)
+          data.setInt(i, dproto.getIarray(i));
+
+      } else if (dataType == DataType.USHORT || dataType == DataType.UINT || dataType == DataType.ENUM2 || dataType == DataType.ENUM4) {
+        for (int i=0; i<nelems; i++)
+          data.setInt(i, dproto.getUiarray(i));
+
+      } else if (dataType == DataType.LONG) {
+        for (int i=0; i<nelems; i++)
+          data.setLong(i, dproto.getLarray(i));
+
+      } else if (dataType == DataType.ULONG) {
+        for (int i=0; i<nelems; i++)
+          data.setLong(i, dproto.getUlarray(i));
+      }
+      return new DataResult(dproto.getFullName(), data);
+    }
+
   }
 
   public StructureDataIterator getStructureIterator(InputStream is, NetcdfFile ncfile) throws IOException {

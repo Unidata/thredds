@@ -161,6 +161,9 @@ compress:= if NcStreamProto.Data is compressed, and with what algorithm.
 . decompress if needed
 . now apply protobuf parsing
 
+* Alternatively, just turn on compression at the Tomcat server (remote access only not file format).
+* opendap uses this; client can decompress input stream on the fly. measure speedup?
+
 === Make it possible to break data response into multiple messages
 
 ----
@@ -191,7 +194,7 @@ message Data {
 into
 
 ----
-message Data {
+message Data2 {
   string fullName = 1;
   DataType dataType = 2;
   Section section = 3;
@@ -209,16 +212,21 @@ message Data {
 }
 ----
 
-<1> *primarray* has nelems * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
-<2> *stringdata* has nelems strings, turn into multidim array of String with section info
-<3> *structdata* has nelems StructureData objects, turn into multidim array of StructureData with section info and bigend
-<4> *vlens* has section.size array lengths; section does not include the last (vlen) dimension
-<5> *opaquedata* has nelems opaque objects, turn into multidim array of Opaque with section info
+<1> *primarray* has _nelems_ * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
+<2> *stringdata* has _nelems_ strings, turn into multidim array of String with section info
+<3> *structdata* has _nelems_ StructureData objects, turn into multidim array of StructureData with section info and bigend
+<4> *vlens* has _section.size_ array lengths; section does not include the last (vlen) dimension; data in primarray
+<5> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with section info
 
 Issues
 
 . Cant use _oneof_ because it doesnt allow repeated
-. not trying to be backwards compatible - not sure if its possible
+. backwards compatible - not sure if its possible
+. using *bytes primarray* forces us to copy data twice, 1 from the primitive array to a ByteBuffer, then to a ByteString
+.. lame that ByteString doesnt have a byte[] constructor, but they need immutability
+.. could use different field for each primitive type (there are 7 plus 3 unsigned) for only one copy
+.. we already have string and opaque, add 10 more ?
+.. this would obviate bigend i think
 
 === Vlen
 
@@ -236,43 +244,24 @@ Possible protobuf encoding:
 
 ----
 message ArrayStructureDataCol {
-  repeated MemberData memberData = 1;
-  repeated uint32 shape = 3; // shape vs section
-}
-
-message MemberData {
-  string shortName = 1;
-  DataType type = 2;
-  repeated uint32 shape = 3; // shape vs section
-  bool isVlen = 7;
-
-  // oneof following
-  bytes primarray = 10;        // rectangular, primitive array # <1>
-  repeated string stringdata = 11;  // string dataType # <2>
-  ArrayStructureDataCol structdata = 12;  // structure/seq dataType # <3>
-  repeated uint32 vlens = 13;  // isVlen true # <4>
-  repeated bytes opaquedata = 14;  // opaque dataType # <4>
+  repeated Data2 memberData = 1;
+  repeated uint32 shape = 3; // needed?
 }
 ----
 
-. almost identical with Data, perhaps can use Data instead of MmberData?
-. could get rid of ArrayStructureDataCol and use repeated MemberData memberData in Data ??
+. this is column oriented data storage (see below)
 
 === Sequence
 
 Sequence can use same as Structure, with these considerations:
 
 . section is not used
-. nelems is used to specify how many StructureData objects are in the Data message. This is (*)
+. nelems is used to specify how many StructureData objects are in the Data message. This is the value of (*)
 . There may be multiple Data messages
 .. Anticipate buffering, say, 1000 StructureData objects into a Data message, and send a sequence of messages until done
 . Nested Sequences must be complete (?)
 .. Allow user to request nested Sequence, which then could be sent in multiple messages
 .. Allow user to select what members are sent, to skip nested sequences if they are too large
-
-=== Issues
-
-. Backwards compatibility with versions < 5 ?
 
 === Column oriented storage for Nested Structures
 
@@ -296,11 +285,9 @@ can be encoded like:
   long s.inner.fld4(123,99,2,3);
 ----
 
-I think of this as column oriented.
-
 * The shape of member data includes the outer structure(s).
 * All of the data resides at the innermost Structure.
-* Or one could flatten the structure members to eliminate nesting.
+* Or one could flatten the structure members to eliminate nesting, rely on parsing the name to reconstruct nested structures
 
 === Vlen Structures
 
@@ -330,7 +317,7 @@ makes a vlen in the outer dimension:
 ** VLEN_START, row, row, row... VLEN_END
 ** repeated bytes
 
-Now
+Also
 
 ----
 Structure {
@@ -354,18 +341,17 @@ might make a vlen in a middle dimension:
 
 * Could require that Structures can only use vlen if 1D, eliminating Structure s(123,*)
 * Then a vlen Structure must be a Sequence
-* Then we code Sequences in a special way
+* Then we code Sequences in a special way?
 
-* Making up a seperate Data message for each StructureData is too much overhead
+* Making up a seperate Data message for each StructureData is too much overhead?
 * Could create a general encoding for vlens of arbitrary placement
-** Clen is a List, non-vlen is an array
+** Vlen is a List, non-vlen is an array
 * Would like protobuf to reflect this
-
 
 
 === Vlens inside of structures
 
-These can only make other vlens (last dimension may be a vlen)
+These can only make other vlens (last dimension a vlen)
 
 ----
 Structure {
@@ -373,38 +359,131 @@ Structure {
   string fld2(*);
   Structure {
     float fld3;
-    long fld4(2,3);
-  } inner(99)
-} s(*)
-----
-
-makes:
-
-----
-  int s.fld1(*)
-  string s.fld2(*, *);
-  float s.inner.fld3(*,99);
-  long s.inner.fld4(*,99,2,3);
-----
-
-----
-Structure {
-  int fld1
-  string fld2(12);
-  Structure {
-    float fld3;
     long fld4(2,*);
   } inner(99)
-} s(*)
+} s(33)
 ----
 
 makes:
 
 ----
-  int s.fld1(*)
-  string s.fld2(*, 12);
-  float s.inner.fld3(*,99);
-  long s.inner.fld4(*,99,2,*);
+  int s.fld1(33)
+  string s.fld2(33, *);
+  float s.inner.fld3(33,99);
+  long s.inner.fld4(33,99,2,*);
 ----
 
-so i think not a problem
+so i think not a problem; just have to deal with sequences
+
+
+=== Issues
+
+. Backwards compatibility with versions < 5 ?
+. Difficulty of parsing in python client
+. should data be in protobuf? not sure of overhead
+.. ok as streaming protocol, less so as file format
+
+== data transfer dods vs cdm, with/without compression
+
+----
+filename scanCdmUnitTests/formats/grib1/Mercator.grib1
+  CDM : avg=11.4 std=1.46 (n=10) MB/sec
+  DODS: avg=12.6 std=.337 (n=10) MB/sec
+  CDM2: avg=13.5 std=1.72 (n=10) MB/sec
+  CDM3: avg=12.3 std=1.75 (n=10) MB/sec
+  CDM4: avg=13.4 std=1.75 (n=10) MB/sec
+
+compress:
+  CDM : avg=8.75 std=1.06 (n=10) MB/sec
+  DODS: avg=2.07 std=.0464 (n=10) MB/sec
+  compression ratio = 2.592550
+----
+----
+filename scanCdmUnitTests/formats/grib2/ds.pop12.bin
+  CDM : avg=14.7 std=1.12 (n=10) MB/sec
+  DODS: avg=17.6 std=1.87 (n=10) MB/sec
+  CDM2: avg=15.4 std=.497 (n=10) MB/sec
+  CDM3: avg=13.0 std=1.66 (n=10) MB/sec
+  CDM4: avg=15.4 std=.690 (n=10) MB/sec
+
+compress:
+  CDM : avg=38.1 std=.654 (n=10) MB/sec
+  DODS: avg=24.5 std=.988 (n=10) MB/sec
+  compression ratio = 49.604264
+----
+----
+filename scanCdmUnitTests/formats/grib2/AVOR_000.grb
+  CDM : avg=8.96 std=.934 (n=10) MB/sec
+  DODS: avg=10.1 std=.470 (n=10) MB/sec
+  CDM2: avg=9.45 std=.519 (n=10) MB/sec
+  CDM3: avg=8.77 std=.548 (n=10) MB/sec
+  CDM4: avg=9.38 std=.210 (n=10) MB/sec
+
+compress:
+  CDM : avg=8.94 std=.374 (n=10) MB/sec
+  DODS: avg=2.92 std=.0769 (n=10) MB/sec
+  compression ratio = 3.506321
+
+----
+----
+filename scanCdmUnitTests/conventions/cf/bora_feb_001.nc
+  CDM : avg=10.7 std=.817 (n=10) MB/sec
+  DODS: avg=10.3 std=1.51 (n=10) MB/sec
+  CDM2: avg=11.9 std=.637 (n=10) MB/sec
+  CDM3: avg=11.5 std=.865 (n=10) MB/sec
+  CDM4: avg=11.5 std=1.08 (n=10) MB/sec
+
+compress:
+ CDM : avg=8.14 std=.361 (n=10) MB/sec
+ DODS: avg=1.81 std=.0522 (n=10) MB/sec
+ compression ratio = 1.533374
+
+----
+----
+filename scanCdmUnitTests/conventions/cf/ccsm2.nc
+  CDM : avg=11.8 std=.412 (n=10) MB/sec
+  DODS: avg=11.2 std=.461 (n=10) MB/sec
+  CDM2: avg=13.6 std=.383 (n=10) MB/sec
+  CDM3: avg=12.7 std=.302 (n=10) MB/sec
+  CDM4: avg=13.2 std=.228 (n=10) MB/sec
+
+compress:
+  CDM : avg=9.34 std=.435 (n=10) MB/sec
+  DODS: avg=1.94 std=.0773 (n=10) MB/sec
+  compression ratio = 1.600860
+----
+----
+total
+
+  CDM : avg=11.5 std=2.14 (n=50) MB/sec
+  DODS: avg=12.4 std=2.97 (n=50) MB/sec
+  CDM2: avg=12.8 std=2.19 (n=50) MB/sec
+  CDM3: avg=11.7 std=1.95 (n=50) MB/sec
+  CDM4: avg=12.6 std=2.25 (n=50) MB/sec
+
+compress:
+  CDM : avg=14.6 std=11.7 (n=50) MB/sec
+  DODS: avg=6.65 std=8.95 (n=50) MB/sec
+----
+
+=== Conclusions
+
+==== compression
+
+. ds.pop12.bin distorts compression result, in fact most dods files are very bad (tomcat?), and cdm somewhat worse in compression
+. client/server on the same machine, so not bandwidth limited; need to test compression across network
+. needs more study on usefullness, for now client leave default off, server compress if asked.
+
+==== CDM algo
+
+. not clear if these results are statistically significant, but they seem to be stable.
+. CDM2 10% faster in this test.
+..    CDM: current, with data outside of proto. not sure why proto is faster. ByteBuffer.wrap() does not have to make extra copy.
+..    CDM2: proto with byte array, has extra copy ByteString -> ByteBuffer -> Array
+..    CDM3: proto with repeating arrays, converts to Objects, proto -> ArrayList<Object> -> Array.
+..    CDM4: same as CDM2, using writeToDelimited() and parseFromDelimited() - handles message delimiting
+
+==== CDM vs DODS
+
+. not clear if these results are statistically significant, but they seem to be stable.
+. ignore compress for now.

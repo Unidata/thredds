@@ -134,7 +134,9 @@ public class NcStreamData {
     } else { // normal case
       int nbytes = (int) data.getSizeBytes();
       ByteBuffer bb = ByteBuffer.allocate(nbytes);
-      encodePrimitiveArray(data, bb);
+      copyArrayToBB(data, bb);
+      bb.flip();
+      builder.setPrimarray(ByteString.copyFrom(bb));
     }
 
   }
@@ -159,15 +161,15 @@ public class NcStreamData {
     int nbytes = count * data.getDataType().getSize();
     ByteBuffer bb = ByteBuffer.allocate(nbytes);
 
-    encodePrimitiveArray(data, bb);
+    // copyArrayToBB(data, bb);
     iter = data.getIndexIterator();
     while (iter.hasNext()) {
       Array varray = (Array) iter.next();
-      encodePrimitiveArray(varray, bb);
+      copyArrayToBB(varray, bb);
     }
   }
 
-  long encodePrimitiveArray(Array data, ByteBuffer out) {
+  void copyArrayToBB(Array data, ByteBuffer out) {
     Class classType = data.getElementType();
     IndexIterator iterA = data.getIndexIterator();
 
@@ -202,7 +204,6 @@ public class NcStreamData {
     } else
       throw new UnsupportedOperationException("Class type = " + classType.getName());
 
-    return data.getSizeBytes();
   }
 
   private class MemberData {
@@ -211,9 +212,11 @@ public class NcStreamData {
     DataType dtype;
     boolean isVlen;
 
+    ByteBuffer bb;
     List<String> stringList;
     List<ByteString> opaqueList;
-    ByteBuffer bb;
+    List<Array> vlenList;
+    List<Integer> vlens;
 
     public MemberData(StructureMembers.Member member, int nelems) {
       this.member = member;
@@ -221,7 +224,8 @@ public class NcStreamData {
       this.dtype = member.getDataType();
       this.isVlen = member.isVariableLength();
 
-      if (isVlen);
+      if (isVlen)
+        vlenList = new ArrayList<>(nelems);
       else if (dtype == DataType.STRING)
         stringList = new ArrayList<>(nelems * member.getSize());
       else if (dtype == DataType.OPAQUE)
@@ -229,6 +233,20 @@ public class NcStreamData {
       else if (dtype == DataType.STRUCTURE);
       else
         bb = ByteBuffer.allocate(nelems * member.getSizeBytes());
+    }
+
+    int completeVlens() {
+      vlens = new ArrayList<>(nelems);
+      int total = 0;
+      for (Array va : vlenList) {
+        vlens.add((int) va.getSize());
+        total += va.getSize();
+      }
+      bb = ByteBuffer.allocate(nelems * member.getSizeBytes());
+      for (Array va : vlenList) {
+        copyArrayToBB(va, bb);
+      }
+      return total;
     }
   }
 
@@ -252,7 +270,11 @@ public class NcStreamData {
     // use most efficient form of data extraction
     for (int recno=0; recno<nelems; recno++) {
       for (MemberData md : memberData) {
-        extractData(as, recno, md);
+        if (md.member.isVariableLength()) {
+          md.vlenList.add(as.getArray(recno, md.member));
+        } else {
+          extractData(as, recno, md);
+        }
       }
     }
 
@@ -262,7 +284,12 @@ public class NcStreamData {
       nested.setFullName(md.member.getName());
       nested.setDataType(NcStream.convertDataType(md.member.getDataType()));
       nested.setNelems(md.nelems);
-      if (md.member.getDataType() == DataType.STRING)
+      if (md.member.isVariableLength()) {
+        md.completeVlens();
+        nested.addAllVlens (md.vlens);
+        nested.setPrimarray(ByteString.copyFrom(md.bb));
+
+      } else if (md.member.getDataType() == DataType.STRING)
         nested.addAllStringdata(md.stringList);
       else if (md.member.getDataType() == DataType.OPAQUE)
         nested.addAllOpaquedata(md.opaqueList);
@@ -278,24 +305,25 @@ public class NcStreamData {
   void extractData(ArrayStructure as, int recno, MemberData md) {
     StructureMembers.Member m = md.member;
     ByteBuffer bb = md.bb;
+    Class classType = md.dtype.getPrimitiveClassType();
 
     if (m.isScalar()) {
-      if (md.dtype == DataType.DOUBLE)
+      if (classType == double.class)
         bb.putDouble(as.getScalarDouble(recno, m));
 
-      else if (md.dtype == DataType.FLOAT)
+      else if (classType == float.class)
         bb.putFloat(as.getScalarFloat(recno, m));
 
-      else if (md.dtype.getPrimitiveClassType() == byte.class)
+      else if (classType == byte.class)
         bb.put(as.getScalarByte(recno, m));
 
-      else if (md.dtype.getPrimitiveClassType() == short.class)
+      else if (classType == short.class)
         bb.putShort(as.getScalarShort(recno, m));
 
-      else if (md.dtype.getPrimitiveClassType() == int.class)
+      else if (classType == int.class)
         bb.putInt(as.getScalarInt(recno, m));
 
-      else if (md.dtype.getPrimitiveClassType() == long.class)
+      else if (classType == long.class)
         bb.putLong(as.getScalarLong(recno, m));
 
       else if (md.dtype == DataType.CHAR)
@@ -308,27 +336,27 @@ public class NcStreamData {
         md.opaqueList.add( ByteString.copyFrom((ByteBuffer) as.getScalarObject(recno, m)));
 
     } else {
-      if (md.dtype == DataType.DOUBLE) {
+      if (classType == double.class) {
         double[] data = as.getJavaArrayDouble(recno, m);
         for (double aData : data) bb.putDouble(aData);
 
-      } else if (md.dtype == DataType.FLOAT) {
+      } else if (classType == float.class) {
         float[] data = as.getJavaArrayFloat(recno, m);
         for (float aData : data) bb.putFloat(aData);
 
-      } else if (md.dtype.getPrimitiveClassType() == byte.class) {
+      } else if (classType == byte.class) {
         byte[] data = as.getJavaArrayByte(recno, m);
         for (byte aData : data) bb.put(aData);
 
-      } else if (md.dtype.getPrimitiveClassType() == short.class) {
+      } else if (classType == short.class) {
         short[] data = as.getJavaArrayShort(recno, m);
         for (short aData : data) bb.putShort(aData);
 
-      } else if (md.dtype.getPrimitiveClassType() == int.class) {
+      } else if (classType == int.class) {
         int[] data = as.getJavaArrayInt(recno, m);
         for (int aData : data) bb.putInt(aData);
 
-      } else if (md.dtype.getPrimitiveClassType() == long.class) {
+      } else if (classType == long.class) {
         long[] data = as.getJavaArrayLong(recno, m);
         for (long aData : data) bb.putLong(aData);
 
@@ -345,5 +373,100 @@ public class NcStreamData {
         while (ao.hasNext()) md.opaqueList.add(ByteString.copyFrom((ByteBuffer) ao.next()));
       }
     }
+  }
+
+  public NcStreamProto.Data3 encodeData3(String name, boolean isVlen, Section section, Array data) {
+    NcStreamProto.Data3.Builder builder = NcStreamProto.Data3.newBuilder();
+
+    DataType dataType = data.getDataType();
+
+    builder.setFullName(name);
+    builder.setDataType(NcStream.convertDataType(data.getDataType()));
+    builder.setBigend(ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN);
+    builder.setVersion(NcStream.ncstream_data_version);
+
+    if (!isVlen) {
+      builder.setNelems((int) data.getSize());
+      builder.setSection(NcStream.encodeSection(section));
+    }
+
+    if (isVlen) {
+      builder.setIsVlen(true);
+      // encodeVlenData(builder, section, data);
+
+    } else if (dataType == DataType.STRING) {
+      if (data instanceof ArrayChar) { // is this possible ?
+        ArrayChar cdata =(ArrayChar) data;
+        for (String s:cdata)
+          builder.addStringdata(s);
+        Section ssection = section.removeRange(section.getRank()-1);
+        builder.setSection(NcStream.encodeSection(ssection));
+
+      } else if (data instanceof ArrayObject) {
+        IndexIterator iter = data.getIndexIterator();
+        while (iter.hasNext())
+          builder.addStringdata( (String) iter.next());
+      } else {
+        throw new IllegalStateException("Unknown class for STRING ="+ data.getClass().getName());
+      }
+
+    } else if (dataType == DataType.OPAQUE) {
+      if (data instanceof ArrayObject) {
+        IndexIterator iter = data.getIndexIterator();
+        while (iter.hasNext()) {
+          ByteBuffer bb = (ByteBuffer) iter.next();
+          builder.addOpaquedata(ByteString.copyFrom(bb));
+        }
+      } else {
+        throw new IllegalStateException("Unknown class for OPAQUE ="+ data.getClass().getName());
+      }
+
+    } else if (dataType == DataType.STRUCTURE) {
+      throw new UnsupportedOperationException("Not implemented yet SEQUENCE ="+ data.getClass().getName());
+
+    } else if (dataType == DataType.SEQUENCE) {
+      throw new UnsupportedOperationException("Not implemented yet SEQUENCE ="+ data.getClass().getName());
+
+    } else if (dataType == DataType.DOUBLE) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addDarray(iter.getDoubleNext());
+
+    } else if (dataType == DataType.FLOAT) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addFarray(iter.getFloatNext());
+
+    } else if (dataType.getPrimitiveClassType() == byte.class) {
+      int nbytes = (int) data.getSizeBytes();
+      ByteBuffer bb = ByteBuffer.allocate(nbytes);
+      copyArrayToBB(data, bb);
+      bb.flip();
+      builder.setBarray(ByteString.copyFrom(bb));
+
+    } else if (dataType == DataType.SHORT || dataType == DataType.INT) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addIarray(iter.getIntNext());
+
+    } else if (dataType == DataType.USHORT || dataType == DataType.UINT || dataType == DataType.ENUM2 || dataType == DataType.ENUM4) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addUiarray(iter.getIntNext());
+
+    } else if (dataType == DataType.LONG) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addLarray(iter.getLongNext());
+
+    } else if (dataType == DataType.ULONG) {
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext())
+        builder.addUlarray(iter.getLongNext());
+
+    }
+
+    return builder.build();
+
   }
 }

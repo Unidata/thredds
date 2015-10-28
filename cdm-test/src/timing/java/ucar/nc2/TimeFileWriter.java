@@ -33,11 +33,8 @@
 
 package ucar.nc2;
 
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
-import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;

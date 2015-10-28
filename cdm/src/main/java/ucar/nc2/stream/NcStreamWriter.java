@@ -110,7 +110,8 @@ public class NcStreamWriter {
     size += NcStream.writeVInt(out, datab.length); // dataProto len
     size += writeBytes(out, datab); // dataProto
 
-    /* if (v.getDataType() == DataType.SEQUENCE) {
+    // version < 3
+    if (v.getDataType() == DataType.SEQUENCE) {
       int count = 0;
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
       //coverity[FB.BC_UNCONFIRMED_CAST]
@@ -128,19 +129,51 @@ public class NcStreamWriter {
       return size;
     }
 
+    // version < 3
     if (v.getDataType() == DataType.STRUCTURE) {
       ArrayStructure abb = (ArrayStructure) v.read();   // read all - LOOK break this up into chunks if needed
       //coverity[FB.BC_UNCONFIRMED_CAST]
       size += NcStream.encodeArrayStructure(abb, bo, out);
       if (show) System.out.printf(" NcStreamWriter sent ArrayStructure bytes = %d%n", size);
       return size;
-    } */
+    }
 
     // Writing the size of the block is handled for us.
     DataOutputStream dos = compress.setupStream(out, (int) uncompressedLength);
     v.readToStream(section, dos);
     dos.flush();
     size += dos.size();
+    return size;
+  }
+
+  public long sendData2(Variable v, Section section, OutputStream out, NcStreamCompression compress) throws IOException, InvalidRangeException {
+    if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
+
+    // ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
+    long size = 0;
+    size += writeBytes(out, NcStream.MAGIC_DATA); // magic
+    NcStreamData encoder = new NcStreamData();
+    NcStreamProto.Data2 dataProto = encoder.encodeData2(v.getFullName(), v.isVariableLength(), section, v.read(section));
+
+    dataProto.writeDelimitedTo(out);
+    //byte[] datab = dataProto.toByteArray();
+    //size += NcStream.writeVInt(out, datab.length); // dataProto len
+    //size += writeBytes(out, datab); // dataProto
+    return size;
+  }
+
+  public long sendData3(Variable v, Section section, OutputStream out, NcStreamCompression compress) throws IOException, InvalidRangeException {
+    if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
+
+    ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
+    long size = 0;
+    size += writeBytes(out, NcStream.MAGIC_DATA); // magic
+    NcStreamData encoder = new NcStreamData();
+    NcStreamProto.Data3 dataProto = encoder.encodeData3(v.getFullName(), v.isVariableLength(), section, v.read(section));
+
+    byte[] datab = dataProto.toByteArray();
+    size += NcStream.writeVInt(out, datab.length); // dataProto len
+    size += writeBytes(out, datab); // dataProto
     return size;
   }
 

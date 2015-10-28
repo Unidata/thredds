@@ -54,9 +54,10 @@ public class CdmRemoteQueryBean {
   // raw query parameters
   private String req;
   private String var;
+  private int deflate = -1;
 
   // type of compression
-  private NcStreamCompression compress = NcStreamCompression.none();
+  private NcStreamCompression compressType = NcStreamCompression.none(); // default
 
   // parsed
   private RequestType reqType = null;
@@ -86,11 +87,15 @@ public class CdmRemoteQueryBean {
   }
 
   NcStreamCompression getCompression() {
-    return compress;
+    return compressType;
   }
 
-  public void setDeflate(String level) {
-    compress = NcStreamCompression.deflate(Integer.parseInt(level));
+  public int getDeflate() {
+    return deflate;
+  }
+
+  public void setDeflate(int level) {
+    compressType = NcStreamCompression.deflate(level);
   }
 
   private List<String> errs;

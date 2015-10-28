@@ -37,9 +37,9 @@ package ucar.nc2.dt;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.StructureMembers;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 
-import java.io.*;
 import java.util.Iterator;
 import java.util.ArrayList;
 

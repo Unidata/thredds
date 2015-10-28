@@ -56,8 +56,6 @@ public class Stat {
   private double sumsq = 0.0;
   private ArrayList samples = null;
 
-
-
   public Stat() { }
 
   /**
@@ -81,6 +79,12 @@ public class Stat {
     this.n = n;
     this.sum = n * avg;
     this.sumsq = n * (std * std  + avg * avg);
+  }
+
+  public void add(Stat s) {
+    sum += s.sum;
+    sumsq += s.sumsq;
+    n += s.n;
   }
 
   /**
@@ -114,20 +118,17 @@ public class Stat {
     return (n == 0) ? 0.0 : sum/n;
   }
 
-  /**
-   * @return standard deviation of samples
-   */
   public double std() {
     if (n == 0) return 0.0;
     double avg = average();
     return Math.sqrt( sumsq/n - avg * avg);
   }
 
-  /**
-   * @return name.
-   */
   public String getName() { return name; }
-  public void setName(String name) { this.name = name; }
+  public Stat setName(String name) {
+    this.name = name;
+    return this;
+  }
 
   /**
    * @return number of samples.
@@ -233,7 +234,7 @@ public class Stat {
   }
 
   public String toString() {
-    return name +": avg= "+ Format.d(average(), 3)+" std=" +Format.d(std(), 3);
+    return String.format("%s: avg=%s std=%s (n=%d)", name, Format.d(average(), 3), Format.d(std(), 3), n);
   }
 
 }

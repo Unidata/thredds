@@ -59,10 +59,16 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   // static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private boolean showRequest = false;
+  static private boolean compress = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
   }
+
+  static public void setAllowCompression(boolean b) {
+    compress = b;
+  }
+
 
   /**
    * Create the canonical form of the URL.
@@ -151,7 +157,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
 
     Formatter f = new Formatter();
-    f.format("%s?req=data&var=%s", remoteURI, v.getFullNameEscaped());
+    f.format("%s?req=data", remoteURI);
+    if (compress)
+      f.format("&deflate=5");
+    f.format("&var=%s", v.getFullNameEscaped());
     if ((section != null) && (section.computeSize() != v.getSize()) && (v.getDataType() != DataType.SEQUENCE)) {
       f.format("(%s)", section.toString());
     }
@@ -183,7 +192,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
       InputStream is = method.getResponseAsStream();  // Closed by HTTPMethod.close().
       NcStreamReader reader = new NcStreamReader();
-      NcStreamReader.DataResult result = reader.readData(is, this);
+      // NcStreamReader.DataResult result = reader.readData(is, this);
+      NcStreamReader.DataResult result = reader.readData2(is, this);
+      // NcStreamReader.DataResult result = reader.readData3(is, this);
 
       assert v.getFullNameEscaped().equals(result.varNameFullEsc);
       return result.data;

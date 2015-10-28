@@ -34,8 +34,6 @@
 
 package timing;
 
-import timing.*;
-
 import java.util.Random;
 
 public class Example {

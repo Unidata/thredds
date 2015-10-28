@@ -107,7 +107,8 @@ public class NcStreamWriterChannel {
     size += NcStream.writeVInt(wbc, datab.length); // dataProto len
     size += writeBytes(wbc, datab); // dataProto
 
-    /* if (v.getDataType() == DataType.SEQUENCE) {
+    // version < 3
+    if (v.getDataType() == DataType.SEQUENCE) {
       int count = 0;
       DataOutputStream os = new DataOutputStream(Channels.newOutputStream(wbc));
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
@@ -123,7 +124,7 @@ public class NcStreamWriterChannel {
       size += writeBytes(wbc, NcStream.MAGIC_VEND);
       if (show) System.out.printf(" NcStreamWriter sent %d sdata bytes = %d%n", count, size);
       return size;
-    } */
+    }
 
     // regular arrays
     long len = section.computeSize();

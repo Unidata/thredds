@@ -81,6 +81,7 @@ public class DConnect2 implements Closeable
 {
 
     static private boolean allowSessions = false;
+    static private boolean showCompress = false;
 
     static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -321,9 +322,13 @@ public class DConnect2 implements Closeable
 
                 if(encoding != null && encoding.equals("deflate")) {
                     is = new BufferedInputStream(new InflaterInputStream(is), 1000);
+                    if (showCompress) System.out.printf("deflate %s%n", urlString);
 
                 } else if(encoding != null && encoding.equals("gzip")) {
                     is = new BufferedInputStream(new GZIPInputStream(is), 1000);
+                    if (showCompress) System.out.printf("gzip %s%n", urlString);
+                } else {
+                    if (showCompress) System.out.printf("none %s%n", urlString);
                 }
 
                 command.process(is);

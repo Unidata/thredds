@@ -38,7 +38,6 @@ import org.jdom2.Element;
 import java.io.*;
 import java.util.List;
 
-import ucar.nc2.ncml.NcMLReader;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
@@ -55,11 +54,11 @@ public class TimeStringParsing {
     String filename = "file:C:\\Documents and Settings\\caron\\.unidata\\cachePersist\\fileD-godas-singleAgg.ncml";
     Element aggElem = ucar.nc2.util.xml.Parse.readRootElement(filename);
 
-    List<Element> ncList = aggElem.getChildren("netcdf", NcMLReader.ncNS);
+    List<Element> ncList = aggElem.getChildren("netcdf", thredds.client.catalog.Catalog.ncmlNS);
     for (Element netcdfElemNested : ncList) {
       String location = netcdfElemNested.getAttributeValue("location");
 
-      List<Element> cacheElemList = netcdfElemNested.getChildren("cache", NcMLReader.ncNS);
+      List<Element> cacheElemList = netcdfElemNested.getChildren("cache", thredds.client.catalog.Catalog.ncmlNS);
       for (Element cacheElemNested : cacheElemList) {
         String varName = cacheElemNested.getAttributeValue("varName");
         String sdata = cacheElemNested.getText();

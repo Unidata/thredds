@@ -605,7 +605,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
             && !suffix.equalsIgnoreCase("gz") && !suffix.equalsIgnoreCase("bz2"))
       return null;
 
-    // see if already decompressed, look in cache if need be
+    // see if already decompressed, check in cache as needed
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
     if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
       // see if its locked - another thread is writing it
