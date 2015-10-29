@@ -1,13 +1,15 @@
 package thredds.crawlabledataset.s3;
 
-import java.io.File;
-import java.io.IOException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * A basic implementation of {@link ThreddsS3Client}.
@@ -69,7 +71,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             // by some of the caching mechanism.
             S3ObjectSummary self = null;
             for (S3ObjectSummary objectSummary: objectListing.getObjectSummaries()) {
-                if (objectSummary.getKey().equals(s3uri.getKeyWithTrailingDelimiter())) {
+                if (Objects.equals(objectSummary.getKey(), s3uri.getKeyWithTrailingDelimiter())) {
                     self = objectSummary;
                     break;
                 }
