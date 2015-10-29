@@ -262,6 +262,26 @@ CDM2: avg=12.8 std=2.19 (n=50) MB/sec
 
  CDM4: avg=12.6 std=2.29 (n=50) MB/sec
 
+-----------------
+no buffer, use Delimited read/write
+
+------ filename scanCdmUnitTests/formats/grib1/Mercator.grib1
+ CDM4: avg=14.3 std=1.42 (n=20) MB/sec
+
+------ filename scanCdmUnitTests/formats/grib2/ds.pop12.bin
+ CDM4: avg=15.8 std=.926 (n=20) MB/sec
+
+------ filename scanCdmUnitTests/formats/grib2/AVOR_000.grb
+ CDM4: avg=9.79 std=.569 (n=20) MB/sec
+
+------ filename scanCdmUnitTests/conventions/cf/bora_feb_001.nc
+ CDM4: avg=12.4 std=1.18 (n=20) MB/sec
+
+------ filename scanCdmUnitTests/conventions/cf/ccsm2.nc
+ CDM4: avg=14.0 std=.491 (n=20) MB/sec
+
+ CDM4: avg=13.2 std=2.27 (n=100) MB/sec
+
 ===================================================
 ===================================================
  data transfer dods vs cdm, with/without compression
@@ -327,7 +347,6 @@ compress:
   compression ratio = 1.600860
 
 total
-
   CDM : avg=11.5 std=2.14 (n=50) MB/sec
   DODS: avg=12.4 std=2.97 (n=50) MB/sec
   CDM2: avg=12.8 std=2.19 (n=50) MB/sec

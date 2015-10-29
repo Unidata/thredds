@@ -155,7 +155,7 @@ public class TimeCdmRemote {
 
   static void doOne(String url, Stat stat1, Stat stat2) throws IOException, InvalidRangeException {
     System.out.printf("%n------ filename %s%n", url);
-    testCdmremote(url, stat1, 10, true);
+    testCdmremote(url, stat1, 20, true);
   }
 
   public static void main(String args[]) throws IOException, InvalidRangeException {

@@ -128,9 +128,8 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
     if (AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class) != null)
       throw ex;
 
-    //ex.printStackTrace();
     logger.error("uncaught exception", ex);
-    ex.printStackTrace(); // temporary - remove in production
+//    ex.printStackTrace(); // temporary - remove in production
 
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);

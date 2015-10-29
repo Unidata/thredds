@@ -1,0 +1,165 @@
+= NcStream Data message (version 2)
+
+This documents version 2 of the NcStream Data message, used by CDM/TDS >= 5.0.
+
+== Grammer
+
+----
+data2Message := MAGIC_DATA2, vlenb, NcStreamProto.Data2
+
+vlenb := variable length encoded positive integer == length of the following object in bytes
+NcStreamProto.Data2 := Data message encoded by protobuf
+----
+
+* This is protobuf "demarkated message".
+
+== NcStreamProto.Data2
+
+----
+message Data2 {
+  string fullName = 1;
+  DataType dataType = 2;
+  Section section = 3;
+  bool bigend = 4;
+  uint32 version = 5;
+  bool isVlen = 7;
+  uint32 nelems = 9;
+
+  bytes primarray = 10;        // rectangular, primitive array # <1>
+  repeated string stringdata = 11;  // string dataType # <2>
+  ArrayStructureDataCol structdata = 12;  // structure/seq dataType # <3>
+  repeated uint32 vlens = 13;  // isVlen true # <4>
+  repeated bytes opaquedata = 14;  // opaque dataType # <5>
+}
+
+message ArrayStructureDataCol {
+  repeated Data2 memberData = 1;
+}
+----
+
+<1> *primarray* has _nelems_ * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
+<2> *stringdata* has _nelems_ strings, turn into multidim array of String with section info
+<3> *structdata* has _nelems_ StructureData objects, turn into multidim array of StructureData with section info and bigend
+<4> *vlens* has _section.size_ array lengths; section does not include the last (vlen) dimension; data in primarray
+<5> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with section info
+
+=== Arrays of primitive data
+
+* For all primitive data types, specified by _dataType_, with _isVlen_=false.
+* The data is laid out in row-major order in _primarry_.
+* The number of elements is _nelems_.
+* The shape of the Array is specified by _section_.
+* Endianness is specified by _bigend_. This is _reader-make-right_.
+
+=== Arrays of string
+
+* For data type = STRING.
+* The data is laid out in row-major order in _stringdata_.
+* The number of elements is _nelems_.
+* The shape of the Array is specified by _section_.
+* String data is always UTF-8 encoded.
+
+=== Arrays of opaque
+
+* For data type = OPAQUE.
+* The data is laid out in row-major order in _opaquedata_.
+* The number of elements is _nelems_.
+* The shape of the Array is specified by _section_.
+* Opague data are variable length of bytes, aka blobs.
+
+=== Vlen
+
+Variable-length data can only have a variable length in its innermost (fastest varying) dimension, so it has the form:
+
+----
+  dataType varname(d1,d2,di,*);
+
+  where
+    d1,d2,di are 0 or more fixel length dimensions; this is the data's "fixed shape".
+    * is the last, variable-length dimension.
+----
+
+* For _isVlen_ = true.
+* The data is laid out in row-major order in _primdata_, _stringdata_, or _opaquedata_, depending on the _dataType_.
+* The total number of elements in the data array is _nelems_.
+* The fixed shape of the data is specified by _section_.
+* The length of each variable-length array is stored in _vlens_. There will be _shape.size()_ of them.
+* The sum of the _vlens_ is equal to _nelems_.
+* see link:../../CDM/VariableLengthData.adoc[vlen data]
+
+Examples:
+
+. when encoding, the length of each vlen is known, so:
+.. _float vlen(*)_ will have a known length, so can be encoded the same as a regular array
+.. _float vlen(3,7, *)_ has 21 variable length arrays, stored in the vlens array
+... *primarray* has nelems * sizeof(dataType) bytes, turn into dim array of primitives, use vlens to divide into variable length arrays
+
+
+=== Structures
+
+* For data type = STRUCTURE.
+* The data is stored seperately for each member in _ArrayStructureDataCol_. This is called _column oriented_ storage.
+* The number of rows in the Structure is _nelems_.
+* The shape of the array of Structures is specified by _section_, where _section.size()_ == nelems.
+
+For each Structure Member:
+
+* Each member has a _Data2_ message in the _ArrayStructureDataCol.memberData_.
+* The member _dataType_ is arbitrary, including nested Structures.
+* The member _section_ describes the shape of the entire data array, including parent Structures (see Nested Structures below).
+* The data is stored exactly the same as in top-level _Data2_ messages.
+
+=== Nested Structures
+
+A nested structure like
+
+----
+Structure {
+  int fld1
+  string fld2(12);
+  Structure {
+    float fld3;
+    long fld4(2,3);
+  } inner(99)
+} s(123)
+----
+
+can be encoded like:
+
+----
+  int s.fld1(123)
+  string s.fld2(123, 12);
+  float s.inner.fld3(123,99);
+  long s.inner.fld4(123,99,2,3);
+----
+
+* The shape of member data includes the outer structure(s).
+* All of the data resides at the innermost Structure.
+
+==== Vlens inside of structures
+
+These can only make other vlens (last dimension a vlen):
+
+----
+Structure {
+  int fld1
+  string fld2(*);
+  Structure {
+    float fld3;
+    long fld4(2,*);
+  } inner(99)
+} s(33)
+----
+
+makes:
+
+----
+  int s.fld1(33)
+  string s.fld2(33,*);
+  float s.inner.fld3(33,99);
+  long s.inner.fld4(33,99,2,*);
+----
+
+so these are coded just like vlens in the innermost Structure, with a fixed shape including any parent Structures.
+
+== TODO: Sequences

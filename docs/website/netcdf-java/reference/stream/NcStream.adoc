@@ -46,6 +46,11 @@ Implementation
 
 Messages are encoded using Google's http://code.google.com/p/protobuf/[Protobuf] library.
 
+The protobuf messages are defined by
+
+* *\{repo}/cdm/src/main/java/ucar/nc2/stream/ncStream.proto*
+* *\{repo}/cdm/src/main/java/ucar/nc2/ft2/coverage/remote/cdmrfeature.proto*
+
 ____
 "Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You
 define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to
@@ -56,20 +61,16 @@ ____
 The main advantage of protobuf over XML is performance, since both message size and parsing speed is improved. A very important feature of protobuf is
 the ability to evolve the message structure in a way that doesn't break previous code.
 
-We don't use protobuf messages for the data, since protobuf messages are built in memory, and we need to be able to stream (write data directly from
-its source onto the output stream, eg socket). The multidimensional data is written to the stream in row-major order, with reader-makes-right byte
-ordering. A data message identifying the variable and the section that the data represents is part of every data message.
-
 Ncstream implements the full link:../../CDM/index.adoc[CDM data model.]
 
 See also:
 
+* link:NcStreamGrammer.adoc[ncstream grammer]
 * link:CdmRemote.adoc[CdmRemote] service
 * link:CdmrFeature.adoc[CdmrFeature] service
-* link:NcStreamGrammer.adoc[ncstream grammer]
 
 '''''
 
-image:../../nc.gif[image] This document was last updated August 2015
+image:../../nc.gif[image] This document was last updated October 2015
 
  
