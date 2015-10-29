@@ -22,9 +22,11 @@ The CDM Remote services and protocol are experimental and should not be used out
 The client forms requests of the form **endpoint?query**. The possible query parameters are:
 
 ---------------------------------------------------------------
-  req=( CDL | NcML | capabilities | header | data)
-  var=vars
+  'req'=( 'CDL' | 'NcML' | 'capabilities' | 'header' | 'data')
+  'var'=vars
+  'deflate'=0..9
 where:
+  deflate := deflate at this level
   vars := varspec | varspec[';' varspec]
   varspec := varname[subsetSpec]
   varname := escaped variable name
@@ -39,7 +41,7 @@ where:
 ---------------------------------------------------------------
 
 * Request parameter values are case-insensitive
-* The var parameter is only used for data requests (req=data)
+* The deflate and var parameters are only used for data requests (req=data)
 * The variable names are case-sensitive and must be link:../../CDM/Identifiers.adoc#cdmremote[backslash-escaped]
 * Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
 * Optional components are enclosed between square braces '[' and ']'.

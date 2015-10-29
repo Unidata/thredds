@@ -158,7 +158,6 @@ message Data2 {
 
 message ArrayStructureDataCol {
   repeated Data2 memberData = 1;
-  repeated uint32 shape = 3; // shape vs section
 }
 
 //////////////////////////////////
@@ -193,8 +192,9 @@ message Data3 {
 
 message Error {
   string message = 1;
+  uint32 code = 2;
 }
 
 // cd cdm/src/main/java
 // protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
-// Last compiled on 2015/09/20 using Protobuf 2.6.1
+// requires Protobuf 3+

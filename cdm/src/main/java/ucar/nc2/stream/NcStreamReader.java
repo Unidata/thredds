@@ -224,13 +224,13 @@ public class NcStreamReader {
     if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
       throw new IOException("Data transfer corrupted on " + ncfile.getLocation());
 
-    int psize = NcStream.readVInt(is);
-    if (debug) System.out.println("  readData data message len= " + psize);
-    byte[] dp = new byte[psize];
-    NcStream.readFully(is, dp);
+    //int psize = NcStream.readVInt(is);
+    //if (debug) System.out.println("  readData data message len= " + psize);
+   // byte[] dp = new byte[psize];
+    //NcStream.readFully(is, dp);
 
-    NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseFrom(dp);
-    // NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseDelimitedFrom(is);
+    // NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseFrom(dp);
+    NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseDelimitedFrom(is);
 
     // ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
 

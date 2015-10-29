@@ -66,8 +66,7 @@ its use is discouraged, except for ASCII string data in netCDF-3.
 
 === Structure
 
-A *Structure* is a type of Variable that contains other Variables,
-analogous to a *_struct_* in C, or a *_row_* in a relational database.
+A *Structure* is a type of Variable that contains other Variables, analogous to a *_struct_* in C, or a *_row_* in a relational database.
 In general, the data in a Structure are physically stored close together
 on disk, so that it is efficient to retrieve all of the data in a
 Structure at the same time. A Variable contained in a Structure is a
@@ -81,6 +80,26 @@ StructureData objects. Alternatively, one can call
 *Structure.getStructureIterator()* and iterate through the
 *StructureData* in canonical order. This potentially is a very efficient
 way to access the data, since the data does not have to be read into memory all at the same time.
+
+A Structure can only have a variable length dimension if its 1D, ie its a Sequence. This is not a restriction on generality,
+since one can always make:
+
+----
+Structure {
+  ...
+} s(123,*);
+----
+
+into
+
+----
+Structure {
+  Structure {
+    ...
+  } inner(*);
+} s(123);
+----
+
 
 === Sequence
 
