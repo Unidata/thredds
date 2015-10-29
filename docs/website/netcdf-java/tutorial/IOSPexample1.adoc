@@ -1,4 +1,6 @@
 :source-highlighter: coderay
+[[threddsDocs]]
+
 
 IOSP Example 1
 ==============

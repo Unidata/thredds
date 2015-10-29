@@ -1,0 +1,29 @@
+
+/* body#threddsDocs div#wrap div#container div#content { */
+
+/* section formatting */
+
+body#threddsDocs div#content div.sect1 {
+    border: 3px solid #CFCFCF;
+    padding: 30px 30px 10px 30px;
+    margin: 20px 0px 60px 0px;
+}
+
+body#threddsDocs div#content div.sect1 h2 {
+    text-decoration: none;
+    border: none;
+    background-color: #FFFFFF;
+    padding: 0px 10px 0px 10px;
+    margin: -43px 0px 0px 0px;
+    float: left;
+}
+
+/* CodeRay override */
+
+body#threddsDocs div#content  pre.CodeRay .comment {
+   color: #4E4E46;
+}
+
+body#threddsDocs div#content pre.CodeRay {
+    background-color: #E3E4E6;
+}

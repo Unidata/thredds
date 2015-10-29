@@ -1,4 +1,6 @@
 :source-highlighter: coderay
+[[threddsDocs]]
+
 
 = CDM Remote Web Service
 :tdsDocs: ../../../tds/reference/services
