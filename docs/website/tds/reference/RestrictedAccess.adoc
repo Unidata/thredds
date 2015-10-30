@@ -1,4 +1,6 @@
 :source-highlighter: coderay
+[[threddsDocs]]
+
 
 = Restricting Access to Datasets in the TDS
 

@@ -1,10 +1,5 @@
-:stylesheet: tds_adoc.css
-:linkcss:
 :source-highlighter: coderay
-:tdsversion: 5.0.0
-:docinfo1:
-:last-update-label!:
-[[tdsDocs]]
+[[threddsDocs]]
 
 = Upgrading to CDM / TDS version 5
 
@@ -381,6 +376,3 @@ For example:
 ----
 
 '''''
-
-image:http://www.unidata.ucar.edu/images/logos/thredds_tds-75x75.png[TDS]This document was last updated October 2015.
-Send comments to the mailto:thredds@unidata.ucar.edu[THREDDS list].

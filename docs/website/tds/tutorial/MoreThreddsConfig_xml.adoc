@@ -1,4 +1,6 @@
 :source-highlighter: coderay
+[[threddsDocs]]
+
 
 More on the TDS Configuration File
 ==================================

@@ -1,4 +1,6 @@
 :source-highlighter: coderay
+[[threddsDocs]]
+
 
 = THREDDS and Metadata
 

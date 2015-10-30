@@ -1,4 +1,6 @@
 = NcStream Data message (version 1)
+[[threddsDocs]]
+
 
 This documents version 1 of the NcStream Data message, used by CDM/TDS < 5.0.
 

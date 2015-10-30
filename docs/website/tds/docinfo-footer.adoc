@@ -1,8 +1,0 @@
-:source-highlighter: coderay
-
-Verion: \{tdsversion} +
- Last updated: \{docdatetime} +
- +
-
-image:http://www.unidata.ucar.edu/images/logos/thredds_tds-75x75.png[TDS]Please
-Send comments to the mailto:thredds@unidata.ucar.edu[THREDDS list].

@@ -1,4 +1,6 @@
 :source-highlighter: coderay
+[[threddsDocs]]
+
 
 Aggregating netCDF files with netCDF Datasets
 =============================================

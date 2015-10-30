@@ -1,4 +1,6 @@
 :source-highlighter: coderay
+[[threddsDocs]]
+
 
 :stylesheet: ../../tds/tutorial/tutorial_adoc.css
 :linkcss:

@@ -1,4 +1,6 @@
 :source-highlighter: coderay
+[[threddsDocs]]
+
 
 = CDM Remote Feature for Point Data
 :tdsDocs: ../../../tds/reference/services
