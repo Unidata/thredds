@@ -10,8 +10,9 @@
 . *_Other clients_*: ArrayStructure -> proto -> python client
 . *_CdmrFeature_*: Use same messages or at least same ideas in CdmrFeature protocol
 . *_Ncstream file format_* (NcStreamIosp.java) : capture ncstream messages into file as valid CDM file
-. *efficient*: minimize data copying
+. *efficient*: minimize data copying, replicating metadata
 . *simple*: let protobuf handle complexity
+. *self-contained*: should be able to parse / recreate data just be itself
 
 == Current design/implementation
 
@@ -255,18 +256,6 @@ message ArrayStructureDataCol {
 
 . this is column oriented data storage (see below)
 
-=== Sequence
-
-Sequence can use same as Structure, with these considerations:
-
-. section is not used
-. nelems is used to specify how many StructureData objects are in the Data message. This is the value of (*)
-. There may be multiple Data messages
-.. Anticipate buffering, say, 1000 StructureData objects into a Data message, and send a sequence of messages until done
-. Nested Sequences must be complete (?)
-.. Allow user to request nested Sequence, which then could be sent in multiple messages
-.. Allow user to select what members are sent, to skip nested sequences if they are too large
-
 === Column oriented storage for Nested Structures
 
 ----
@@ -379,6 +368,19 @@ makes:
 
 so i think not a problem; just have to deal with sequences
 
+=== Sequence
+
+Sequence has these considerations:
+
+. section is not used
+. nelems is used to specify how many StructureData objects are in the Data message. This is the value of (*)
+. There may be multiple Data messages
+.. Anticipate buffering, say, 1000 StructureData objects into a Data message, and send a sequence of messages until done
+. Nested Sequences must be complete (?)
+.. Allow user to request nested Sequence, which then could be sent in multiple messages
+.. Allow user to select what members are sent, to skip nested sequences if they are too large
+
+Would be best to have a row-orientaton. Each row could be  a byte array. The list of Members would be sufficient to parse the byte array.
 
 === Issues
 

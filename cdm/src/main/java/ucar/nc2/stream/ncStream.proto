@@ -138,6 +138,7 @@ message StructureData {
 }
 
 //////////////////////////////////
+// col oriented
 
 message Data2 {
   string fullName = 1;
@@ -149,18 +150,21 @@ message Data2 {
   uint32 nelems = 9;
 
   // oneof
-  bytes primarray = 10;            // rectangular, primitive array
+  bytes primdata = 10;              // rectangular, primitive array
   repeated string stringdata = 11;  // string dataType
-  ArrayStructureDataCol structdata = 12;  // structure/seq dataType
-  repeated uint32 vlens = 13;      // isVlen true
-  repeated bytes opaquedata = 14;  // opaque dataType
+  repeated uint32 vlens = 12;       // isVlen true
+  repeated bytes opaquedata = 13;   // opaque dataType
+
+  // structures
+  ArrayStructureCol structdata = 14;  // structure/seq dataType
 }
 
-message ArrayStructureDataCol {
+message ArrayStructureCol {
   repeated Data2 memberData = 1;
 }
 
 //////////////////////////////////
+// row oriented
 
 message Data3 {
   string fullName = 1;
@@ -171,22 +175,30 @@ message Data3 {
   bool isVlen = 7;
   uint32 nelems = 9;
 
-  // oneof
-  repeated double darray=10;
-  repeated float farray=11;
-  bytes barray=12;
-  repeated sint32 iarray=13;
-  repeated uint32 uiarray=14;
-  repeated sint64 larray=15;
-  repeated uint64 ularray=16;
-
-  repeated string stringdata = 17;  // string dataType
-  repeated bytes opaquedata = 18;  // opaque dataType
-
-  //ArrayStructureDataCol structdata = 12;  // structure/seq dataType
-  //repeated uint32 vlens = 13;      // isVlen true
+  bytes primdata = 10;              // rectangular, primitive array # <1>
+  repeated string stringdata = 11;  // string dataType # <2>
+  repeated uint32 vlens = 12;   // vlen lengths # <4>
+  repeated bytes opaquedata = 13;   // opaque dataTypes # <4>
+  ArrayStructureRow structdata = 14;// structure/seq dataType
 }
 
+message Member {
+  string shortName = 1;
+  DataType dataType = 2;
+  repeated uint32 shape = 3;  // or section?
+  bool isVlen = 4;
+}
+
+message ArrayStructureRow {
+  repeated Member members = 1;
+  uint64 nrows = 5;      // number of rows in this message
+  uint32 rowLength = 6;  // length in bytes of each row
+
+  bytes fixdata = 10;            // fixed data # <1>
+  repeated string stringdata = 11;  // string dataType # <2>
+  repeated bytes bytedata = 13;  // opaque dataType and vlens # <4>
+  repeated ArrayStructureRow structdata = 14;  // structure/seq dataType # <5>
+}
 
 //////////////////////////////////
 

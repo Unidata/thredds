@@ -10,10 +10,8 @@ Subsetting Parameters for Grid (Coverage) Datasets:
 
 [cols=",,,,",options="header",]
 |=======================================================================
-|Parameter Name |Required |Description / possible values |Constraints
-|default
-|*var* |yes |Name(s) of variables (comma separated, no blanks), or
-__all__. |Variables must be in the dataset description. |
+|Parameter Name |Required |Description / possible values |Constraints |default
+|*var* |yes |Name(s) of variables (comma separated, no blanks), or __all__. |Variables must be in the dataset description. |
 
 |*north, south, east, west* |no |lat/lon bounding box, units of
 degrees_east, degrees_north |south < north, west < east; if crossing 180
