@@ -141,7 +141,7 @@ message StructureData {
 // col oriented
 
 message Data2 {
-  string fullName = 1;
+  string name = 1;      // fullname for top, shortname for member
   DataType dataType = 2;
   Section section = 3;
   bool bigend = 4;

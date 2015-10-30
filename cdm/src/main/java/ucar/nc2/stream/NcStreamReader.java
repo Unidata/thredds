@@ -246,7 +246,7 @@ public class NcStreamReader {
       for (String s : dproto.getStringdataList()) {
         ii.setObjectNext(s);
       }
-      return new DataResult(dproto.getFullName(), data);
+      return new DataResult(dproto.getName(), data);
 
     } else if (dataType == DataType.OPAQUE) {
       Array data = Array.factory(dataType, section.getShape());
@@ -254,11 +254,11 @@ public class NcStreamReader {
       for (ByteString s : dproto.getOpaquedataList()) {
         ii.setObjectNext( s.asReadOnlyByteBuffer());
       }
-      return new DataResult(dproto.getFullName(), data);
+      return new DataResult(dproto.getName(), data);
 
     } else {
       Array data = Array.factory(dataType, section.getShape(), dproto.getPrimdata().asReadOnlyByteBuffer()); // bo ??
-      return new DataResult(dproto.getFullName(), data);
+      return new DataResult(dproto.getName(), data);
     }
 
   }

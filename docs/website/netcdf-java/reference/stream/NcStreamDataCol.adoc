@@ -38,11 +38,11 @@ message ArrayStructureDataCol {
 }
 ----
 
-<1> *primdata* has _nelems_ * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
-<2> *stringdata* has _nelems_ strings, turn into multidim array of String with section info
+<1> *primdata* has _nelems_ * sizeof(dataType) bytes, turn into multidim array of primitives with section and bigend
+<2> *stringdata* has _nelems_ strings, turn into multidim array of String with section
 <3> *vlens* has _section.size_ array lengths; section does not include the last (vlen) dimension; data in primdata
-<4> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with section info
-<5> *structdata* has _nelems_ StructureData objects, turn into multidim array of StructureData with section info and bigend
+<4> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with section
+<5> *structdata* has _nelems_ StructureData objects, turn into multidim array of StructureData with section
 
 === Arrays of primitive data
 
@@ -76,7 +76,7 @@ Variable-length data can only have a variable length in its innermost (fastest v
   dataType varname(d1,d2,di,*);
 
   where
-    d1,d2,di are 0 or more fixel length dimensions; this is the data's "fixed shape".
+    d1,d2,di are 0 or more fixed-length dimensions; this is the data's "fixed shape".
     * is the last, variable-length dimension.
 ----
 
@@ -101,7 +101,7 @@ Examples:
 * For data type = STRUCTURE.
 * The data is stored seperately for each member in _ArrayStructureDataCol_. This is called _column oriented_ storage.
 * The number of rows in the Structure is _nelems_.
-* The shape of the array of Structures is specified by _section_, where _section.size()_ == nelems.
+* The shape of the array of Structures is specified by _section_, where _section.size() == nelems_.
 
 For each Structure Member:
 
@@ -112,7 +112,7 @@ For each Structure Member:
 
 === Nested Structures
 
-A nested structure like
+A nested Structure like
 
 ----
 Structure {
@@ -161,7 +161,7 @@ makes:
   long s.inner.fld4(33,99,2,*);
 ----
 
-so these are coded just like vlens in the innermost Structure, with a fixed shape including any parent Structures.
+so these are coded as normal vlens in the innermost Structure, with a fixed shape including any parent Structures.
 
 == Nested sequences
 
@@ -202,7 +202,7 @@ which gives in the innermost nested structures:
   long s.inner.fld4(33,*,2,*);
 ----
 
-The idea is that the _vlens_ array is a listing of the lengths needed, it takes the place of (33,*), and tells the reader
+The solution is that the _vlens_ array lists variable-length array length; taking the place of (33,*), and tells the reader
 how to divide up the nelems flds:
 
 ----
@@ -212,35 +212,36 @@ how to divide up the nelems flds:
   long s.inner.fld4(nelems,2,*);
 ----
 
-The _s.seq_ Data2 will look like:
+In this example _s.seq_ Data2 has:
 
 ----
 message Data2 {
   string fullName = "seq"
-  DataType dataType = SEQUENCE
+  DataType dataType = "SEQUENCE"
   Section section = null;
   bool isVlen = "true";
   uint32 nelems = sum of vlens
 
   bytes primdata = null
-  repeated string null
+  repeated string = null
   repeated uint32 vlens = size: 33
   repeated bytes opaquedata = null;
   ArrayStructureCol structdata = present
 }
 ----
 
-Assume for this example that the sum of vlens = 6789
+Assume for this example that the sum of vlens = 6789.
+The reader uses seq _s.seq.vlens_ to allocate the 6738 values into 33 variable length arrays of Structure objects.
 
-The _s.seq.fld2_ Data2 will look like:
+The _s.seq.fld2_ Data2 has:
 
 ----
 message Data2 {
   string fullName = "fld2"
-  DataType dataType = FLOAT
-  Section section = (6738);
+  DataType dataType = "FLOAT"
+  Section section = "(6738)";
   bool isVlen = "false";
-  uint32 nelems = 6738
+  uint32 nelems = "6738"
 
   bytes primdata = 6738 floats
   repeated string null
@@ -250,13 +251,13 @@ message Data2 {
 }
 ----
 
-The _s.seq.fld4_ Data2 will look like:
+The _s.seq.fld4_ Data2 has:
 
 ----
 message Data2 {
   string fullName = "fld4"
-  DataType dataType = LONG
-  Section section = (6738,2);
+  DataType dataType = "LONG"
+  Section section = "(6738,2)";
   bool isVlen = "true";
   uint32 nelems = sum of vlens
 
@@ -268,5 +269,5 @@ message Data2 {
 }
 ----
 
-The reader uses seq _s.seq.vlens_ to allocate the 6738 values into 33 variable length arrays of Structure objects.
+The reader uses seq _s.seq.fld4.vlens_ to allocate the values into 6738*2 variable length arrays of longs.
 

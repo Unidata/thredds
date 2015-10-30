@@ -15197,14 +15197,22 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string fullName = 1;</code>
+     * <code>optional string name = 1;</code>
+     *
+     * <pre>
+     * fullname for top, shortname for member
+     * </pre>
      */
-    java.lang.String getFullName();
+    java.lang.String getName();
     /**
-     * <code>optional string fullName = 1;</code>
+     * <code>optional string name = 1;</code>
+     *
+     * <pre>
+     * fullname for top, shortname for member
+     * </pre>
      */
     com.google.protobuf.ByteString
-        getFullNameBytes();
+        getNameBytes();
 
     /**
      * <code>optional .DataType dataType = 2;</code>
@@ -15379,7 +15387,7 @@ public final class NcStreamProto {
       super(builder);
     }
     private Data2() {
-      fullName_ = "";
+      name_ = "";
       dataType_ = 0;
       bigend_ = false;
       version_ = 0;
@@ -15418,7 +15426,7 @@ public final class NcStreamProto {
             case 10: {
               String s = input.readStringRequireUtf8();
 
-              fullName_ = s;
+              name_ = s;
               break;
             }
             case 16: {
@@ -15550,34 +15558,42 @@ public final class NcStreamProto {
     }
 
     private int bitField0_;
-    public static final int FULLNAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object fullName_;
+    public static final int NAME_FIELD_NUMBER = 1;
+    private volatile java.lang.Object name_;
     /**
-     * <code>optional string fullName = 1;</code>
+     * <code>optional string name = 1;</code>
+     *
+     * <pre>
+     * fullname for top, shortname for member
+     * </pre>
      */
-    public java.lang.String getFullName() {
-      java.lang.Object ref = fullName_;
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        fullName_ = s;
+        name_ = s;
         return s;
       }
     }
     /**
-     * <code>optional string fullName = 1;</code>
+     * <code>optional string name = 1;</code>
+     *
+     * <pre>
+     * fullname for top, shortname for member
+     * </pre>
      */
     public com.google.protobuf.ByteString
-        getFullNameBytes() {
-      java.lang.Object ref = fullName_;
+        getNameBytes() {
+      java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        fullName_ = b;
+        name_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -15830,8 +15846,8 @@ public final class NcStreamProto {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (!getFullNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, fullName_);
+      if (!getNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
@@ -15877,8 +15893,8 @@ public final class NcStreamProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!getFullNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, fullName_);
+      if (!getNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
       }
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -16054,7 +16070,7 @@ public final class NcStreamProto {
       }
       public Builder clear() {
         super.clear();
-        fullName_ = "";
+        name_ = "";
 
         dataType_ = 0;
 
@@ -16110,7 +16126,7 @@ public final class NcStreamProto {
         ucar.nc2.stream.NcStreamProto.Data2 result = new ucar.nc2.stream.NcStreamProto.Data2(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        result.fullName_ = fullName_;
+        result.name_ = name_;
         result.dataType_ = dataType_;
         if (sectionBuilder_ == null) {
           result.section_ = section_;
@@ -16158,8 +16174,8 @@ public final class NcStreamProto {
 
       public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.Data2 other) {
         if (other == ucar.nc2.stream.NcStreamProto.Data2.getDefaultInstance()) return this;
-        if (!other.getFullName().isEmpty()) {
-          fullName_ = other.fullName_;
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
           onChanged();
         }
         if (other.dataType_ != 0) {
@@ -16243,71 +16259,91 @@ public final class NcStreamProto {
       }
       private int bitField0_;
 
-      private java.lang.Object fullName_ = "";
+      private java.lang.Object name_ = "";
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>optional string name = 1;</code>
+       *
+       * <pre>
+       * fullname for top, shortname for member
+       * </pre>
        */
-      public java.lang.String getFullName() {
-        java.lang.Object ref = fullName_;
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          fullName_ = s;
+          name_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>optional string name = 1;</code>
+       *
+       * <pre>
+       * fullname for top, shortname for member
+       * </pre>
        */
       public com.google.protobuf.ByteString
-          getFullNameBytes() {
-        java.lang.Object ref = fullName_;
+          getNameBytes() {
+        java.lang.Object ref = name_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          fullName_ = b;
+          name_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>optional string name = 1;</code>
+       *
+       * <pre>
+       * fullname for top, shortname for member
+       * </pre>
        */
-      public Builder setFullName(
+      public Builder setName(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        fullName_ = value;
+        name_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>optional string name = 1;</code>
+       *
+       * <pre>
+       * fullname for top, shortname for member
+       * </pre>
        */
-      public Builder clearFullName() {
+      public Builder clearName() {
         
-        fullName_ = getDefaultInstance().getFullName();
+        name_ = getDefaultInstance().getName();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string fullName = 1;</code>
+       * <code>optional string name = 1;</code>
+       *
+       * <pre>
+       * fullname for top, shortname for member
+       * </pre>
        */
-      public Builder setFullNameBytes(
+      public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
         
-        fullName_ = value;
+        name_ = value;
         onChanged();
         return this;
       }
@@ -23098,36 +23134,36 @@ public final class NcStreamProto {
       "Range\"q\n\rStructureData\022\016\n\006member\030\001 \003(\r\022\014" +
       "\n\004data\030\002 \001(\014\022\021\n\theapCount\030\003 \003(\r\022\r\n\005sdata" +
       "\030\004 \003(\t\022\r\n\005nrows\030\005 \001(\004\022\021\n\trowLength\030\006 \001(\r" +
-      "\"\203\002\n\005Data2\022\020\n\010fullName\030\001 \001(\t\022\033\n\010dataType" +
-      "\030\002 \001(\0162\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Sec" +
-      "tion\022\016\n\006bigend\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n",
-      "\006isVlen\030\007 \001(\010\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdat" +
-      "a\030\n \001(\014\022\022\n\nstringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003" +
-      "(\r\022\022\n\nopaquedata\030\r \003(\014\022&\n\nstructdata\030\016 \001" +
-      "(\0132\022.ArrayStructureCol\"/\n\021ArrayStructure" +
-      "Col\022\032\n\nmemberData\030\001 \003(\0132\006.Data2\"\203\002\n\005Data" +
-      "3\022\020\n\010fullName\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162\t." +
-      "DataType\022\031\n\007section\030\003 \001(\0132\010.Section\022\016\n\006b" +
-      "igend\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n\006isVlen\030\007" +
-      " \001(\010\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030\n \001(\014\022\022" +
-      "\n\nstringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003(\r\022\022\n\nopa",
-      "quedata\030\r \003(\014\022&\n\nstructdata\030\016 \001(\0132\022.Arra" +
-      "yStructureRow\"W\n\006Member\022\021\n\tshortName\030\001 \001" +
-      "(\t\022\033\n\010dataType\030\002 \001(\0162\t.DataType\022\r\n\005shape" +
-      "\030\003 \003(\r\022\016\n\006isVlen\030\004 \001(\010\"\256\001\n\021ArrayStructur" +
-      "eRow\022\030\n\007members\030\001 \003(\0132\007.Member\022\r\n\005nrows\030" +
-      "\005 \001(\004\022\021\n\trowLength\030\006 \001(\r\022\017\n\007fixdata\030\n \001(" +
-      "\014\022\022\n\nstringdata\030\013 \003(\t\022\020\n\010bytedata\030\r \003(\014\022" +
-      "&\n\nstructdata\030\016 \003(\0132\022.ArrayStructureRow\"" +
-      "&\n\005Error\022\017\n\007message\030\001 \001(\t\022\014\n\004code\030\002 \001(\r*" +
-      "\325\001\n\010DataType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHOR",
-      "T\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOU" +
-      "BLE\020\006\022\n\n\006STRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQU" +
-      "ENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020\014\022" +
-      "\n\n\006OPAQUE\020\r\022\t\n\005UBYTE\020\016\022\n\n\006USHORT\020\017\022\010\n\004UI" +
-      "NT\020\020\022\t\n\005ULONG\020\021*!\n\010Compress\022\010\n\004NONE\020\000\022\013\n" +
-      "\007DEFLATE\020\001B \n\017ucar.nc2.streamB\rNcStreamP" +
-      "rotob\006proto3"
+      "\"\377\001\n\005Data2\022\014\n\004name\030\001 \001(\t\022\033\n\010dataType\030\002 \001" +
+      "(\0162\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Section" +
+      "\022\016\n\006bigend\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n\006isV",
+      "len\030\007 \001(\010\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030\n " +
+      "\001(\014\022\022\n\nstringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003(\r\022\022" +
+      "\n\nopaquedata\030\r \003(\014\022&\n\nstructdata\030\016 \001(\0132\022" +
+      ".ArrayStructureCol\"/\n\021ArrayStructureCol\022" +
+      "\032\n\nmemberData\030\001 \003(\0132\006.Data2\"\203\002\n\005Data3\022\020\n" +
+      "\010fullName\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162\t.Data" +
+      "Type\022\031\n\007section\030\003 \001(\0132\010.Section\022\016\n\006bigen" +
+      "d\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n\006isVlen\030\007 \001(\010" +
+      "\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030\n \001(\014\022\022\n\nst" +
+      "ringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003(\r\022\022\n\nopaqued",
+      "ata\030\r \003(\014\022&\n\nstructdata\030\016 \001(\0132\022.ArrayStr" +
+      "uctureRow\"W\n\006Member\022\021\n\tshortName\030\001 \001(\t\022\033" +
+      "\n\010dataType\030\002 \001(\0162\t.DataType\022\r\n\005shape\030\003 \003" +
+      "(\r\022\016\n\006isVlen\030\004 \001(\010\"\256\001\n\021ArrayStructureRow" +
+      "\022\030\n\007members\030\001 \003(\0132\007.Member\022\r\n\005nrows\030\005 \001(" +
+      "\004\022\021\n\trowLength\030\006 \001(\r\022\017\n\007fixdata\030\n \001(\014\022\022\n" +
+      "\nstringdata\030\013 \003(\t\022\020\n\010bytedata\030\r \003(\014\022&\n\ns" +
+      "tructdata\030\016 \003(\0132\022.ArrayStructureRow\"&\n\005E" +
+      "rror\022\017\n\007message\030\001 \001(\t\022\014\n\004code\030\002 \001(\r*\325\001\n\010" +
+      "DataType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022",
+      "\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020" +
+      "\006\022\n\n\006STRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE" +
+      "\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006O" +
+      "PAQUE\020\r\022\t\n\005UBYTE\020\016\022\n\n\006USHORT\020\017\022\010\n\004UINT\020\020" +
+      "\022\t\n\005ULONG\020\021*!\n\010Compress\022\010\n\004NONE\020\000\022\013\n\007DEF" +
+      "LATE\020\001B \n\017ucar.nc2.streamB\rNcStreamProto" +
+      "b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -23218,7 +23254,7 @@ public final class NcStreamProto {
     internal_static_Data2_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Data2_descriptor,
-        new java.lang.String[] { "FullName", "DataType", "Section", "Bigend", "Version", "IsVlen", "Nelems", "Primdata", "Stringdata", "Vlens", "Opaquedata", "Structdata", });
+        new java.lang.String[] { "Name", "DataType", "Section", "Bigend", "Version", "IsVlen", "Nelems", "Primdata", "Stringdata", "Vlens", "Opaquedata", "Structdata", });
     internal_static_ArrayStructureCol_descriptor =
       getDescriptor().getMessageTypes().get(12);
     internal_static_ArrayStructureCol_fieldAccessorTable = new

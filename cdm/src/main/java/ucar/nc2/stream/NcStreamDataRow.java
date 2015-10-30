@@ -49,7 +49,7 @@ import java.util.List;
  * @author caron
  * @since 10/26/2015.
  */
-public class NcStreamData {
+public class NcStreamDataRow {
 
   /*
   message Data2 {
@@ -75,16 +75,16 @@ public class NcStreamData {
   opaquedata has nelems opaque objects, turn into multidim array of Opaque with section info
 */
 
-  public NcStreamProto.Data2 encodeData2(String name, boolean isVlen, Section section, Array data) {
+  public NcStreamProto.Data2 encodeData3(String name, boolean isVlen, Section section, Array data) {
     NcStreamProto.Data2.Builder builder = NcStreamProto.Data2.newBuilder();
-    encodeData2(builder, name, isVlen, section, data);
+    encodeData3(builder, name, isVlen, section, data);
     return builder.build();
   }
 
-  void encodeData2(NcStreamProto.Data2.Builder builder, String name, boolean isVlen, Section section, Array data) {
+  void encodeData3(NcStreamProto.Data2.Builder builder, String name, boolean isVlen, Section section, Array data) {
     DataType dataType = data.getDataType();
 
-    builder.setFullName(name);
+    builder.setName(name);
     builder.setDataType(NcStream.convertDataType(data.getDataType()));
     builder.setBigend(ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN);
     builder.setVersion(NcStream.ncstream_data_version);
@@ -281,7 +281,7 @@ public class NcStreamData {
     NcStreamProto.ArrayStructureCol.Builder builder = NcStreamProto.ArrayStructureCol.newBuilder();
     for (MemberData md : memberData) {
       NcStreamProto.Data2.Builder nested = NcStreamProto.Data2.newBuilder();
-      nested.setFullName(md.member.getName());
+      nested.setName(md.member.getName());
       nested.setDataType(NcStream.convertDataType(md.member.getDataType()));
       nested.setNelems(md.nelems);
       if (md.member.isVariableLength()) {

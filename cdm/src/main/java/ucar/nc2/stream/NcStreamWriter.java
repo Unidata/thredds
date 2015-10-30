@@ -152,7 +152,7 @@ public class NcStreamWriter {
     // ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
     long size = 0;
     size += writeBytes(out, NcStream.MAGIC_DATA); // magic
-    NcStreamData encoder = new NcStreamData();
+    NcStreamDataCol encoder = new NcStreamDataCol();
     NcStreamProto.Data2 dataProto = encoder.encodeData2(v.getFullName(), v.isVariableLength(), section, v.read(section));
 
     // dataProto.writeDelimitedTo(out);
