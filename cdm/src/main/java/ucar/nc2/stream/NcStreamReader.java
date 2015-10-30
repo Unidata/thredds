@@ -224,13 +224,13 @@ public class NcStreamReader {
     if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
       throw new IOException("Data transfer corrupted on " + ncfile.getLocation());
 
-    //int psize = NcStream.readVInt(is);
-    //if (debug) System.out.println("  readData data message len= " + psize);
-   // byte[] dp = new byte[psize];
-    //NcStream.readFully(is, dp);
+    int psize = NcStream.readVInt(is);
+    if (debug) System.out.println("  readData data message len= " + psize);
+    byte[] dp = new byte[psize];
+    NcStream.readFully(is, dp);
 
-    // NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseFrom(dp);
-    NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseDelimitedFrom(is);
+    NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseFrom(dp);
+    // NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseDelimitedFrom(is);
 
     // ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
 
@@ -257,75 +257,7 @@ public class NcStreamReader {
       return new DataResult(dproto.getFullName(), data);
 
     } else {
-      Array data = Array.factory(dataType, section.getShape(), dproto.getPrimarray().asReadOnlyByteBuffer()); // bo ??
-      return new DataResult(dproto.getFullName(), data);
-    }
-
-  }
-
-  public DataResult readData3(InputStream is, NetcdfFile ncfile) throws IOException {
-    if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
-      throw new IOException("Data transfer corrupted on " + ncfile.getLocation());
-
-    int psize = NcStream.readVInt(is);
-    if (debug) System.out.println("  readData data message len= " + psize);
-    byte[] dp = new byte[psize];
-    NcStream.readFully(is, dp);
-
-    NcStreamProto.Data3 dproto = NcStreamProto.Data3.parseFrom(dp);
-
-    DataType dataType = NcStream.convertDataType(dproto.getDataType());
-    Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
-    int nelems = dproto.getNelems();
-    assert nelems == section.computeSize();
-
-    // special cases
-    if (dataType == DataType.STRING) {
-      Array data = Array.factory(dataType, section.getShape());
-      IndexIterator ii = data.getIndexIterator();
-      for (String s : dproto.getStringdataList()) {
-        ii.setObjectNext(s);
-      }
-      return new DataResult(dproto.getFullName(), data);
-
-    } else if (dataType == DataType.OPAQUE) {
-      Array data = Array.factory(dataType, section.getShape());
-      IndexIterator ii = data.getIndexIterator();
-      for (ByteString s : dproto.getOpaquedataList()) {
-        ii.setObjectNext( s.asReadOnlyByteBuffer());
-      }
-      return new DataResult(dproto.getFullName(), data);
-
-    } else if (dataType.getPrimitiveClassType() == byte.class) {
-      Array data = Array.factory(dataType, section.getShape(), dproto.getBarray().asReadOnlyByteBuffer()); // bo ??
-      return new DataResult(dproto.getFullName(), data);
-
-    } else {
-      Array data = Array.factory(dataType, section.getShape());
-      if (dataType == DataType.DOUBLE) {
-        for (int i=0; i<nelems; i++)
-          data.setDouble(i, dproto.getDarray(i));
-
-      } else if (dataType == DataType.FLOAT) {
-        for (int i=0; i<nelems; i++)
-          data.setFloat(i, dproto.getFarray(i));
-
-      } else if (dataType == DataType.SHORT || dataType == DataType.INT) {
-        for (int i=0; i<nelems; i++)
-          data.setInt(i, dproto.getIarray(i));
-
-      } else if (dataType == DataType.USHORT || dataType == DataType.UINT || dataType == DataType.ENUM2 || dataType == DataType.ENUM4) {
-        for (int i=0; i<nelems; i++)
-          data.setInt(i, dproto.getUiarray(i));
-
-      } else if (dataType == DataType.LONG) {
-        for (int i=0; i<nelems; i++)
-          data.setLong(i, dproto.getLarray(i));
-
-      } else if (dataType == DataType.ULONG) {
-        for (int i=0; i<nelems; i++)
-          data.setLong(i, dproto.getUlarray(i));
-      }
+      Array data = Array.factory(dataType, section.getShape(), dproto.getPrimdata().asReadOnlyByteBuffer()); // bo ??
       return new DataResult(dproto.getFullName(), data);
     }
 

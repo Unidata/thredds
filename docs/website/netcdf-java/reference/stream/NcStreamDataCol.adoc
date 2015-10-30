@@ -1,8 +1,9 @@
-= NcStream Data message (version 2)
+= NcStream Data Col-oriented (version 2)
 [[threddsDocs]]
 
-
-This documents version 2 of the NcStream Data message, used by CDM/TDS >= 5.0.
+* This documents version 2 of the NcStream Data message, used by CDM/TDS >= 5.0.
+* This is the "column oriented" variant.
+* Leaving out compression for now.
 
 == Grammer
 
@@ -12,8 +13,6 @@ data2Message := MAGIC_DATA2, vlenb, NcStreamProto.Data2
 vlenb := variable length encoded positive integer == length of the following object in bytes
 NcStreamProto.Data2 := Data message encoded by protobuf
 ----
-
-* This is protobuf "demarkated message".
 
 == NcStreamProto.Data2
 
@@ -27,11 +26,11 @@ message Data2 {
   bool isVlen = 7;
   uint32 nelems = 9;
 
-  bytes primarray = 10;        // rectangular, primitive array # <1>
+  bytes primdata = 10;              // rectangular, primitive array # <1>
   repeated string stringdata = 11;  // string dataType # <2>
-  ArrayStructureDataCol structdata = 12;  // structure/seq dataType # <3>
-  repeated uint32 vlens = 13;  // isVlen true # <4>
-  repeated bytes opaquedata = 14;  // opaque dataType # <5>
+  repeated uint32 vlens = 12;      // isVlen true # <3>
+  repeated bytes opaquedata = 13;   // opaque dataTypes # <4>
+  ArrayStructureCol structdata = 14;// structure/seq dataType
 }
 
 message ArrayStructureDataCol {
@@ -39,11 +38,11 @@ message ArrayStructureDataCol {
 }
 ----
 
-<1> *primarray* has _nelems_ * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
+<1> *primdata* has _nelems_ * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
 <2> *stringdata* has _nelems_ strings, turn into multidim array of String with section info
-<3> *structdata* has _nelems_ StructureData objects, turn into multidim array of StructureData with section info and bigend
-<4> *vlens* has _section.size_ array lengths; section does not include the last (vlen) dimension; data in primarray
-<5> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with section info
+<3> *vlens* has _section.size_ array lengths; section does not include the last (vlen) dimension; data in primdata
+<4> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with section info
+<5> *structdata* has _nelems_ StructureData objects, turn into multidim array of StructureData with section info and bigend
 
 === Arrays of primitive data
 
@@ -94,7 +93,7 @@ Examples:
 . when encoding, the length of each vlen is known, so:
 .. _float vlen(*)_ will have a known length, so can be encoded the same as a regular array
 .. _float vlen(3,7, *)_ has 21 variable length arrays, stored in the vlens array
-... *primarray* has nelems * sizeof(dataType) bytes, turn into dim array of primitives, use vlens to divide into variable length arrays
+... *primdata* has nelems * sizeof(dataType) bytes, turn into dim array of primitives, use vlens to divide into variable length arrays
 
 
 === Structures
@@ -164,4 +163,110 @@ makes:
 
 so these are coded just like vlens in the innermost Structure, with a fixed shape including any parent Structures.
 
-== TODO: Sequences
+== Nested sequences
+
+An outer sequence is not a problem
+
+----
+Sequence {
+  int fld1
+  string fld2(12);
+  Structure {
+    float fld3;
+    long fld4(2,3);
+  } inner(99)
+} seq;
+----
+
+Because when writing the data, the actual number sent over the wire will be known.
+
+The problem comes with nested sequences:
+
+----
+Structure {
+  int fld1
+  string fld2(*);
+  Sequence {
+    float fld3;
+    long fld4(2,*);
+  } seq;
+} s(33)
+----
+
+which gives in the innermost nested structures:
+
+----
+  int s.fld1(33)
+  string s.fld2(33,*);
+  float s.inner.fld3(33,*);
+  long s.inner.fld4(33,*,2,*);
+----
+
+The idea is that the _vlens_ array is a listing of the lengths needed, it takes the place of (33,*), and tells the reader
+how to divide up the nelems flds:
+
+----
+  int s.fld1(33)
+  string s.fld2(33,*);
+  float s.inner.fld3(nelems);
+  long s.inner.fld4(nelems,2,*);
+----
+
+The _s.seq_ Data2 will look like:
+
+----
+message Data2 {
+  string fullName = "seq"
+  DataType dataType = SEQUENCE
+  Section section = null;
+  bool isVlen = "true";
+  uint32 nelems = sum of vlens
+
+  bytes primdata = null
+  repeated string null
+  repeated uint32 vlens = size: 33
+  repeated bytes opaquedata = null;
+  ArrayStructureCol structdata = present
+}
+----
+
+Assume for this example that the sum of vlens = 6789
+
+The _s.seq.fld2_ Data2 will look like:
+
+----
+message Data2 {
+  string fullName = "fld2"
+  DataType dataType = FLOAT
+  Section section = (6738);
+  bool isVlen = "false";
+  uint32 nelems = 6738
+
+  bytes primdata = 6738 floats
+  repeated string null
+  repeated uint32 vlens = null
+  repeated bytes opaquedata = null;
+  ArrayStructureCol structdata = null
+}
+----
+
+The _s.seq.fld4_ Data2 will look like:
+
+----
+message Data2 {
+  string fullName = "fld4"
+  DataType dataType = LONG
+  Section section = (6738,2);
+  bool isVlen = "true";
+  uint32 nelems = sum of vlens
+
+  bytes primdata = nelems longs
+  repeated string null
+  repeated uint32 vlens = size: 6738*2
+  repeated bytes opaquedata = null;
+  ArrayStructureCol structdata = null
+}
+----
+
+The reader uses seq _s.seq.vlens_ to allocate the 6738 values into 33 variable length arrays of Structure objects.
+
