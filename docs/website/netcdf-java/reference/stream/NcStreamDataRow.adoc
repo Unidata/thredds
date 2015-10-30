@@ -1,4 +1,5 @@
 = NcStream Data Row-oriented (version 2)
+[[threddsDocs]]
 
 * This documents version 2 of the NcStream Data message, used by CDM/TDS >= 5.0.
 * This is the "row oriented" variant.
