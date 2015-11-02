@@ -7,13 +7,13 @@
 Other than the compelling security reasons, you will want to enable SSL
 to take advantage of a couple of monitoring and debugging tools: the
 http://localhost:8080/thredds/admin/debug[TDS Remote Management Tool],
-and the link:../tdsMonitor.html[TdsMonitor Tool] – both of which
+and the link:../tdsMonitor.adoc[TdsMonitor Tool] – both of which
 (out-of-the-box) require SSL to access.
 
 Enable SSL in Tomcat
 
 If Tomcat has not already been configured to run via SSL, follow the
-tutorial in the previous section to link:enablingSSL.html[Enable SSL in
+tutorial in the previous section to link:enablingSSL.adoc[Enable SSL in
 Tomcat].
 
 Modify `${tomcat_home}/conf/tomcat-users.xml` to add the new `tdsConfig`

@@ -7,8 +7,8 @@
 :stylesheet: ../../cdm.css
 
 A Forecast Model Run Collection (FMRC) is a collection of forecast model output.
-An FMRC *featureCollection* supersedes using NcML link:../../ncml/FmrcAggregation.html[FMRC Aggregation].
-In the TDS, one uses a link:../../../tds/reference/collections/FeatureCollections.html[FMRC FeatureCollection] element.
+An FMRC *featureCollection* supersedes using NcML link:../../ncml/FmrcAggregation.adoc[FMRC Aggregation].
+In the TDS, one uses a link:../../../tds/reference/collections/FeatureCollections.adoc[FMRC FeatureCollection] element.
 This document covers the CDM aspects of FMRC feature collections.
 
 == Overview
@@ -55,7 +55,7 @@ debug);* +
 
 The collection may be one of:
 
-1.  link:../../../tds/reference/collections/CollectionSpecification.html[collection
+1.  link:../../../tds/reference/collections/CollectionSpecification.adoc[collection
 specification] string
 2.  __catalog__:catalogURL
 3.  filename.ncml
@@ -88,7 +88,7 @@ elements.
 
 * http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[FMRC Aggregation] and
 http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[poster]
-* link:../../../tds/reference/collections/FeatureCollections.html[Configuring TDS with the FeatureCollection element]
+* link:../../../tds/reference/collections/FeatureCollections.adoc[Configuring TDS with the FeatureCollection element]
 
 '''''
 

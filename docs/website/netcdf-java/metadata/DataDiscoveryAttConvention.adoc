@@ -30,7 +30,7 @@ http://www.fgdc.gov/[FGDC], http://www.isotc211.org/scope.htm#19115[ISO
 19115] etc. metadata formats.
 
 These attributes parallel THREDDS catalog specification’s
-link:../../tds/catalog/InvCatalogServerSpec.html[digital library
+link:../../tds/catalog/InvCatalogServerSpec.adoc[digital library
 metadata]. Attributes are used to add information inside the NetCDF
 file, while THREDDS catalog metadata adds information external to the
 NetCDF file.
@@ -46,8 +46,8 @@ vs ``creator_*''). +
 
 * Example netCDF file
 [link:../reference/formats/examples/2005092200_sst_21-24.en.nc[netCDF]][link:../reference/formats/examples/2005092200_sst_21-24.en.ncml[ncML]] +
-* link:DataDiscoveryAttConvention-Issues-ToDo.html[Issues and ToDo List]
-* link:ncACDD-metadataMappings.html[Map attributes into various
+* link:DataDiscoveryAttConvention-Issues-ToDo.adoc[Issues and ToDo List]
+* link:ncACDD-metadataMappings.adoc[Map attributes into various
 standards]
 * https://geo-ide.noaa.gov/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery[NOAA
 GEO-IDE page on NetCDF ACDD] [Added 5 Oct 2011]
@@ -120,7 +120,7 @@ metadata/keyword@vocabulary
 
 link:#cdm_data_type_Attribute[cdm_data_type] +
 
-The link:../../tds/catalog/InvCatalogServerSpec.html[THREDDS data type]
+The link:../../tds/catalog/InvCatalogServerSpec.adoc[THREDDS data type]
 appropriate for this dataset.
 
 metadata/dataType
@@ -237,7 +237,7 @@ are taken. +
 
 metadata/variables@vocabulary
 
-link:DataDiscoveryAttConvention.html#license_Attribute[license]
+link:DataDiscoveryAttConvention.adoc#license_Attribute[license]
 
 Describe the restrictions to data access and distribution.
 
@@ -630,12 +630,12 @@ like support@<institution> or data@<institution> +
 [cols=",,",options="header",]
 |=======================================================================
 |Attribute |Description |THREDDS
-|link:DataDiscoveryAttConvention.html#date_available_Attribute[date_available] +
+|link:DataDiscoveryAttConvention.adoc#date_available_Attribute[date_available] +
 |The date (often a range) on which this data was made available (or, if
 a range, during which the data was available).
 |metadata/date[@type=``available'']
 
-|link:DataDiscoveryAttConvention.html#date_valid_Attribute[date_valid]
+|link:DataDiscoveryAttConvention.adoc#date_valid_Attribute[date_valid]
 |The date (often a range) for which the data is valid.
 |metadata/date[@type=``valid'']
 |=======================================================================

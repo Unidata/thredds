@@ -14,7 +14,7 @@ http://www.opendap.org/[OPeNDAP], and
 http://www.hdfgroup.org/products/hdf5/[HDF5] data models to create a
 common API for many types of scientific data. The NetCDF Java library is
 an implementation of the CDM which can read many
-link:../reference/formats/FileTypes.html[file formats] besides netCDF.
+link:../reference/formats/FileTypes.adoc[file formats] besides netCDF.
 We call these *_CDM files,_* a shorthand for __files that can be read by
 the NetCDF Java library and accessed through the CDM data model__.
 

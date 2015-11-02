@@ -88,11 +88,11 @@ vertical coordinate.*
 === Resources
 
 * Standard vertical transforms are documented on this page. You can
-alsolink:../tutorial/CoordTransBuilder.html[implement your own].
+alsolink:../tutorial/CoordTransBuilder.adoc[implement your own].
 * You may also be interested in
-link:StandardCoordinateTransforms.html[Standard Horizontal Coordinate
+link:StandardCoordinateTransforms.adoc[Standard Horizontal Coordinate
 Transforms].
-* link:CoordinateAttributes.html[The CDM _Coordinate Conventions]
+* link:CoordinateAttributes.adoc[The CDM _Coordinate Conventions]
 
 == Standard Vertical Transforms
 

@@ -54,7 +54,7 @@ writing CDM to netCDF4, currently we just anonymize the shared
 dimensions.
 * A CDM Structure member Variables may have attributes. NetCDF4 / HDF5
 does not support attributes on fields in Compound fields. The CDM uses
-link:Netcdf4CompoundAttributes.html[these conventions] for specifying
+link:Netcdf4CompoundAttributes.adoc[these conventions] for specifying
 attributes on compound fields.
 ___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 

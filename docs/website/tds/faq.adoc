@@ -12,10 +12,10 @@
 whats going on!]
 * link:#restart[I made changes to my catalog and restarted tomcat but
 nothing changes!]
-* link:../netcdf-java/reference/BuildDependencies.html[I’m building my
+* link:../netcdf-java/reference/BuildDependencies.adoc[I’m building my
 own maven project and want to use your jar files. Where is the Unidata
 Repository?]
-* link:../netcdf-java/tutorial/SourceCodeBuild.html[I’d like to
+* link:../netcdf-java/tutorial/SourceCodeBuild.adoc[I’d like to
 contribute a bug fix or improvement to the THREDDS code. How do I do
 that?]
 * link:#citation[I’m submitting a paper for publication and want to
@@ -197,8 +197,8 @@ Boulder, CO: UCAR/Unidata. (http://doi.org/10.5065/D6N014KG)
 *Q: How do I construct the URLs I find in a THREDDS Catalog?* +
 
 A: Heres the general idea in the
-link:tutorial/CatalogPrimer.html#Constructing_an_access_URL[tutorial]
-and the link:catalog/InvCatalogSpec.html#constructingURLs[catalog spec]
+link:tutorial/CatalogPrimer.adoc#Constructing_an_access_URL[tutorial]
+and the link:catalog/InvCatalogSpec.adoc#constructingURLs[catalog spec]
 docs. If you are using the CDM library, you can call
 
 ----------------------
@@ -269,7 +269,7 @@ There is currently no per-client resource throttle, unfortunately, but
 we are aware of the need for that. Any given request is single-threaded,
 so can’t hog too many resources. One can limit the size of opendap
 responses, which tends to be the main problem on some servers. See the
-link:./reference/ThreddsConfigXMLFile.html#opendap[OPeNDAP section] of
+link:./reference/ThreddsConfigXMLFile.adoc#opendap[OPeNDAP section] of
 the threddsConfig.xml page for details.
 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -396,7 +396,7 @@ the correct information to the proxied server so the request information
 will be correct.
 
 For more information, see our
-link:reference/TomcatBehindProxyServer.html[web page on running Tomcat
+link:reference/TomcatBehindProxyServer.adoc[web page on running Tomcat
 behind a proxy server]. It contains links to Tomcat documentation on
 both mod_proxy and mod_jk as well as some user contributed documentation
 on setting up mod_proxy.
@@ -412,7 +412,7 @@ The files and coordinates in a JoinExisting Aggregations are cached, and
 in some circumstances won’t get updated. The default location for the
 cache is *$\{tomcat_home}/content/thredds/cache/agg/* unless you change
 it in the
-link:reference/ThreddsConfigXMLFile.html#AggregationCache[threddsConfig.xml]
+link:reference/ThreddsConfigXMLFile.adoc#AggregationCache[threddsConfig.xml]
 file. Go to that directory, there will be files with the name of the
 cached dataset(s). Delete the file for the dataset that needs updating
 and restart Tomcat.
@@ -533,7 +533,7 @@ ________________________________________________________________________________
 Esentially this is a tradeoff between storage space and the time to
 decompress. I assume you dont want to store the files uncompressed, so
 you have to pay the price of that. To control how these files are
-cached, see link:reference/ThreddsConfigXMLFile.html#DiskCache[CDM
+cached, see link:reference/ThreddsConfigXMLFile.adoc#DiskCache[CDM
 library Disk cache]. I would suggest that you use: +
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -633,7 +633,7 @@ directory created above.
 `content` directory by setting the *tds.content.root.path* system
 property with a command-line argument (e.g.,
 "`-Dtds.content.root.path=/some/absolute/path`"). More information is
-available link:reference/DirectoryLocations.html[here].
+available link:reference/DirectoryLocations.adoc[here].
 ______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 '''''
@@ -734,7 +734,7 @@ restart Tomcat.
 
 The other possibility is that you havent given the TDS enough heap
 space. The default heap size is quite small, so you need to always set
-this, eg in link:reference/ChecklistReference.html[setenv.sh], this sets
+this, eg in link:reference/ChecklistReference.adoc[setenv.sh], this sets
 the heap to 4 GB.
 
 --------------------------------
@@ -757,7 +757,7 @@ without restarting Tomcat, you will eventually run into
 JDK/Tomcat. The only thing to do is to stop and restart Tomcat.
 
 You can increase PermGen using this JVM option, eg in
-link:reference/ChecklistReference.html[setenv.sh]:
+link:reference/ChecklistReference.adoc[setenv.sh]:
 
 -----------------------------------
 MAX_PERM_GEN="-XX:MaxPermSize=256m"
@@ -831,7 +831,7 @@ ________________________________________________________________________________
 Well-behaved web crawlers are supposed to look for a *robots.txt* file
 on the server and follow its instructions. To set up a robots.txt file
 that excludes web crawlers from crawling your server, follow
-link:./reference/Performance.html#robots[these directions].
+link:./reference/Performance.adoc#robots[these directions].
 ______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 '''''

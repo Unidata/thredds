@@ -23,11 +23,11 @@ Host]
 * link:#proxy[Reverse Proxy]
 * link:#shutdown[Protecting the Tomcat `SHUTDOWN` Port]
 
-You should know how to do a link:GettingStarted.html[basic installation]
+You should know how to do a link:GettingStarted.adoc[basic installation]
 of Tomcat, Java, and the TDS; and be familiar with the
-link:GettingStarted.html#tour[Tomcat directory structure];
-link:GettingStarted.html#files[Tomcat server configuration]; and the
-link:GettingStarted.html#manager[Tomcat manager application].
+link:GettingStarted.adoc#tour[Tomcat directory structure];
+link:GettingStarted.adoc#files[Tomcat server configuration]; and the
+link:GettingStarted.adoc#manager[Tomcat manager application].
 
 == Why Is Security Important?
 
@@ -425,7 +425,7 @@ error: `java.io.IOException: Cannot recover key`.
 Other than the compelling security reasons, you will want to enable
 TSL/SSL to take advantage of a couple of monitoring and debugging tools:
 the http://localhost:8080/thredds/admin/debug[TDS Remote Management
-Tool], and the link:tdsMonitor.html[TdsMonitor Tool] – both of which
+Tool], and the link:tdsMonitor.adoc[TdsMonitor Tool] – both of which
 (out-of-the-box) require TSL/SSL to access.
 
 The web application deployment descriptor, aka `web.xml`, specifies if
@@ -441,7 +441,7 @@ container-managed security constraints upon application deployment.
 _The TDS has been pre-configured to require that TSL/SSL encryption is
 enabled in order to access the both the
 http://localhost:8080/thredds/admin/debug[TDS Remote Management Tool],
-and the link:tdsMonitor.html[TdsMonitor Tool]._
+and the link:tdsMonitor.adoc[TdsMonitor Tool]._
 
 `web.xml` from the TDS Remote Management Tool:
 
@@ -496,7 +496,7 @@ constrained requests on any connection, including an unprotected one.
 Other than the compelling security reasons, you will want to enable
 TSL/SSL to take advantage of a couple of monitoring and debugging tools:
 the http://localhost:8080/thredds/admin/debug[TDS Remote Management
-Tool], and the link:tdsMonitor.html[TdsMonitor Tool] – both of which
+Tool], and the link:tdsMonitor.adoc[TdsMonitor Tool] – both of which
 (out-of-the-box) require TSL/SSL to access.
 
 Enable TSL/SSL in Tomcat
@@ -679,7 +679,7 @@ proxy server.
 
 === Resources
 
-* link:../reference/TomcatBehindProxyServer.html[Running The TDS Behind
+* link:../reference/TomcatBehindProxyServer.adoc[Running The TDS Behind
 a Proxy Server] +
  How to set up a reverse proxy for the TDS using Tomcat and the Apache
 HTTP server.

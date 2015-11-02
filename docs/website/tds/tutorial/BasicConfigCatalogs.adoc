@@ -9,7 +9,7 @@
 === Location of the TDS Configuration Directory
 
 If desired, the location can be set to a directory outside of the Tomcat
-install directory. See the link:../reference/DirectoryLocations.html[TDS
+install directory. See the link:../reference/DirectoryLocations.adoc[TDS
 Configuration Directory section] of the TDS Reference for more
 information.
 
@@ -40,7 +40,7 @@ TDS configuration)
 from `catalog.xml`.]
 ** `threddsConfig.xml` - configuration file for allowing non-default
 services, configuring caching, etc (more details available
-link:../reference/ThreddsConfigXMLFile.html[here]).
+link:../reference/ThreddsConfigXMLFile.adoc[here]).
 ** `logs/`
 *** `catalogInit.log` - log file for messages generated while reading
 TDS configuration catalogs during TDS initialization and
@@ -142,7 +142,7 @@ tree of configuration catalogs.
 == TDS Configuration Catalogs
 
 TDS configuration catalogs are like THREDDS
-link:CatalogPrimer.html[Client catalogs] with extensions. They contain
+link:CatalogPrimer.adoc[Client catalogs] with extensions. They contain
 information detailing the datasets the TDS will serve and what services
 will be available for each dataset:
 

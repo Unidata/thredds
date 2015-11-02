@@ -61,7 +61,7 @@ configuration files in:
 === Locations of Data Directories
 
 The location of your data directories is configured in your
-link:CatalogConfiguration.html[configuration catalog(s)]. So, if your
+link:CatalogConfiguration.adoc[configuration catalog(s)]. So, if your
 data is located in `/data/pub`, you simply use the appropriate
 `/data/pub` locations in your various dataset configurations
 (`datasetRoot`, `datasetScan`, and `featureCollection` elements).
@@ -70,10 +70,10 @@ data is located in `/data/pub`, you simply use the appropriate
 
 The various cache directories (`agg/`, `cdm/`, `wcs/` e.g.) can be
 configured with the `dir` child element of the various caching elements
-in the link:ThreddsConfigXMLFile.html[`threddsConfig.xml`] file.
+in the link:ThreddsConfigXMLFile.adoc[`threddsConfig.xml`] file.
 However, *we recommend* using a symbolic link to move `content/thredds`
 instead (more detail
-link:ThreddsConfigXMLFile.html#Cache_Locations[here]).
+link:ThreddsConfigXMLFile.adoc#Cache_Locations[here]).
 
 '''''
 
@@ -102,7 +102,7 @@ TDS configuration)
 ** `enhancedCatalog.xml` - an example catalog [Note: It is referenced
 from `catalog.xml`.]
 ** `threddsConfig.xml` - configuration file for allowing non-default
-services, configuring caching, etc (link:ThreddsConfigXMLFile.html[more
+services, configuring caching, etc (link:ThreddsConfigXMLFile.adoc[more
 detailed information]).
 ** `logs/`
 *** `catalogInit.log` - log file for messages generated while reading

@@ -98,7 +98,7 @@ that you want), eg:
 3.  Use the ToolsUI NcML ``Write Netcdf File'' button to copy just those
 variables to a new netCDF file.
 4.  (or) Save the NcML file and use the
-link:../reference/Cookbook.html#writeClassic[command line copy]. One can
+link:../reference/Cookbook.adoc#writeClassic[command line copy]. One can
 generate the NcML from a script and automate the process.
 
 '''''
@@ -240,7 +240,7 @@ spaced, and they must be in alphabetic order.
 
 **Scan directory, assign date coordinate value from filename**. The date
 coordinate must be derivable from the filename, using the
-link:Aggregation.html#dateFormatMark[dateFormatMark] attribute. +
+link:Aggregation.adoc#dateFormatMark[dateFormatMark] attribute. +
 
 -----------------------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
@@ -305,7 +305,7 @@ explicitly**. Overrides existing coordinate variable, if any. +
 **Scan directory, assign date coordinate value from filename**. Each
 file must have exactly one time slice. The date coordinate must be
 derivable from the filename, using the
-link:Aggregation.html#dateFormatMark[dateFormatMark] attribute. +
+link:Aggregation.adoc#dateFormatMark[dateFormatMark] attribute. +
 
 -----------------------------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>

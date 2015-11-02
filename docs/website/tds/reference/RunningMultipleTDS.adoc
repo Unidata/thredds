@@ -14,7 +14,7 @@ recommended**.
 
 **Note**: A better solution may be to run two Tomcat instances each
 running a TDS and then run a proxy server in front of both TDS instances
-(see our "link:TomcatBehindProxyServer.html[Running Tomcat Behind a
+(see our "link:TomcatBehindProxyServer.adoc[Running Tomcat Behind a
 Proxy Server]" documentation for more information on proxy
 configuration).
 

@@ -8,7 +8,7 @@
 :toc:
 
 This describes the on-the-wire protocol for CdmrFeature.
-Follows or reuses the link:NcstreamGrammer.html[NcStream grammer] whenever possible.
+Follows or reuses the link:NcstreamGrammer.adoc[NcStream grammer] whenever possible.
 
 == Grammer
 

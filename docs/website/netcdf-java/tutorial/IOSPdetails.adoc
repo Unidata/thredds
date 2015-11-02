@@ -404,7 +404,7 @@ calling close on the RandomAccessFile:
 
 == Adding Coordinate System Information
 
-Adding link:../CDM/index.html[Coordinate System] information is the
+Adding link:../CDM/index.adoc[Coordinate System] information is the
 single most useful thing you can do to your datasets, to make them
 accessible to other programmers. As the IOSP writer, you are in the best
 position to understand the data in the file and correctly interpret it.
@@ -417,7 +417,7 @@ file, CoordinateSystem information is encoded using a
 _http://www.unidata.ucar.edu/software/netcdf/conventions.html[Convention]_
 for adding Attributes, naming Variables and Dimensions, etc. in a
 standard way. The simplest and most direct way to add Coordinate Systems
-is to use the CDM link:CoordinateAttributes.html[_Coordinate Attribute
+is to use the CDM link:CoordinateAttributes.adoc[_Coordinate Attribute
 Conventions]. Another approach is to follow an existing Convention, in
 particular the http://www.cfconventions.org/[CF Convention] is an
 increasingly important one for gridded model data, and work is being
@@ -428,7 +428,7 @@ exactly what Dimension, Variables, and Attribute objects you have
 populated the NetcdfFile object with, no more and no less. When a client
 uses the NetcdfDataset interface in _enhanced_ mode, the Coordinate
 System information is parsed by a
-link:CoordSysBuilder.html[_CoordSysBuilder_] object, and Coordinate
+link:CoordSysBuilder.adoc[_CoordSysBuilder_] object, and Coordinate
 Axis, Coordinate System, and Coordinate Transform objects are created
 and made available through the NetcdfDataset API. In some cases, new
 Variables, Dimensions and Attributes may be created. Its very important

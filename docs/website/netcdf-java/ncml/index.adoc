@@ -88,7 +88,7 @@ modifications in it.
 1.  Using a text or XML editor, create the NcML file with an ``xml'' or
 ``ncml'' file extension. Reference the existing file using the
 _location_ attribute, and add, change or delete metadata in the NcML as
-in this link:Tutorial.html#modify[example].
+in this link:Tutorial.adoc#modify[example].
 2.  Write the new file as a netCDF-3 format file:
 1.  Use the NetCDF-Java library
 file:///C|/dev/github/thredds/docs/web/netcdf-java/site/reference/manPages.html#nccopy[nccopy
@@ -108,10 +108,10 @@ A more advanced use is to modify existing NetCDF files, as well as to
 create ``virtual'' NetCDF datasets, for example through aggregation. In
 that case, you’ll have to read more:
 
-* link:Tutorial.html[Tutorial]
-* link:Aggregation.html[Aggregation]
-* link:Cookbook.html[Cookbook Examples]
-* link:AnnotatedSchema4.html[Annotated Schema for Netcdf-Java 4]
+* link:Tutorial.adoc[Tutorial]
+* link:Aggregation.adoc[Aggregation]
+* link:Cookbook.adoc[Cookbook Examples]
+* link:AnnotatedSchema4.adoc[Annotated Schema for Netcdf-Java 4]
 * http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd[ncml-2.2.xsd]
 
 '''''

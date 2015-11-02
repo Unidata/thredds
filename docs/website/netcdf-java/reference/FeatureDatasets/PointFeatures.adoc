@@ -44,7 +44,7 @@ The *_Point Feature Types_* that are implemented are:
 === Related documents:
 
 * CF 1.6 http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries[Discrete Sampling Geometries Conventions]
-* link:CFencodingTable.html[CDM Nested Table encoding]
+* link:CFencodingTable.adoc[CDM Nested Table encoding]
 * Complete link:PointFeatureUML.svg[Point Feature UML]
 
 == Point Features
@@ -95,7 +95,7 @@ public interface ucar.unidata.geoloc.EarthLocation {
 The _latitude_ and _longitude_ are required, while the _altitude_ may be missing and if so, is set to __Double.NaN__.
 The altitude units (if they exist) can be found from _getFeatureCollection().getAltUnits()_.
 
-The actual data of the observation is contained in a **link:../StructureData.html#StructureData[ucar.ma2.StructureData]**, which has a collection of
+The actual data of the observation is contained in a **link:../StructureData.adoc#StructureData[ucar.ma2.StructureData]**, which has a collection of
 *StructureMembers* which describe the individual data members**,** along with many convenience routines for extracting the data.
 
 === PointFeatureCollection

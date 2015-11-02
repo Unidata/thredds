@@ -174,9 +174,9 @@ Catalogs served by the TDS can be subset and/or viewed as HTML. Remote
 catalogs, if allowed/enabled, can be validated, displayed as HTML, or
 subset.
 
-* More details are available link:CatalogService.html[here].
+* More details are available link:CatalogService.adoc[here].
 * Services for remote catalogs can be enabled with the TDS Configuration
-File (link:ThreddsConfigXMLFile.html#Remote[threddsConfig.xml]).
+File (link:ThreddsConfigXMLFile.adoc#Remote[threddsConfig.xml]).
 
 Remote THREDDS Catalog Service
 
@@ -224,9 +224,9 @@ Service Base URL
 Provide ISO 19115 metadata representation of a dataset’s structure and
 metadata
 
-* More details are available link:ncISO.html[here].
+* More details are available link:ncISO.adoc[here].
 * Enable ncISO with the TDS Configuration File
-(link:ThreddsConfigXMLFile.html#ncISO[threddsConfig.xml]).
+(link:ThreddsConfigXMLFile.adoc#ncISO[threddsConfig.xml]).
 
 NCML
 
@@ -253,9 +253,9 @@ Service Base URL
 
 Provide NCML representation of a dataset
 
-* More details are available link:ncISO.html[here].
+* More details are available link:ncISO.adoc[here].
 * Enable ncISO with the TDS Configuration File
-(link:ThreddsConfigXMLFile.html#ncISO[threddsConfig.xml]).
+(link:ThreddsConfigXMLFile.adoc#ncISO[threddsConfig.xml]).
 
 UDDC
 
@@ -285,9 +285,9 @@ conforms to the
 http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discovery[NetCDF
 Attribute Convention for Data Discovery (NACDD)]
 
-* More details are available link:ncISO.html[here].
+* More details are available link:ncISO.adoc[here].
 * Enable ncISO with the TDS Configuration File
-(link:ThreddsConfigXMLFile.html#ncISO[threddsConfig.xml]).
+(link:ThreddsConfigXMLFile.adoc#ncISO[threddsConfig.xml]).
 
 === Data Access Services
 
@@ -323,7 +323,7 @@ Service Base URL
 OPeNDAP DAP2 data access protocol.
 
 * Several configuration options are available
-(link:../reference/ThreddsConfigXMLFile.html#opendap[details]).
+(link:../reference/ThreddsConfigXMLFile.adoc#opendap[details]).
 
 NetCDF Subset Service
 
@@ -351,12 +351,12 @@ Service Base URL
 NetCDF Subset Service: a data access protocol.
 
 * More details are available
-link:NetcdfSubsetServiceReference.html[here].
+link:NetcdfSubsetServiceReference.adoc[here].
 * Enable NCSS and set other configuration options with the TDS
 Configuration File
-(link:ThreddsConfigXMLFile.html#ncss[threddsConfig.xml]). More setup and
+(link:ThreddsConfigXMLFile.adoc#ncss[threddsConfig.xml]). More setup and
 configuration details are available
-link:NetcdfSubsetServiceConfigure.html[here].
+link:NetcdfSubsetServiceConfigure.adoc[here].
 
 CDM Remote
 
@@ -386,7 +386,7 @@ default. It is automatically enabled when an appropriate
 FeatureCollection is used.
 
 * More details are available
-link:../../netcdf-java/reference/stream/CdmRemote.html[here].
+link:../../netcdf-java/reference/stream/CdmRemote.adoc[here].
 
 OGC Web Coverage Service (WCS)
 
@@ -417,9 +417,9 @@ OGC WCS supports access to geospatial data as ``coverages''.
 http://www.opengeospatial.org/standards/wcs[here].
 * Enable OGC WCS and set other configuration options with the TDS
 Configuration File
-(link:ThreddsConfigXMLFile.html#wcs[threddsConfig.xml]). More setup,
+(link:ThreddsConfigXMLFile.adoc#wcs[threddsConfig.xml]). More setup,
 configuration, and implementation details for the TDS’s OGC WCS
-implementation are available link:WCS.html[here].
+implementation are available link:WCS.adoc[here].
 
 OGC Web Map Service (WMS)
 
@@ -451,9 +451,9 @@ datasets.
 http://www.opengeospatial.org/standards/wms[here].
 * Enable OGC WMS and set other configuration options with the TDS
 Configuration File
-(link:ThreddsConfigXMLFile.html#wms[threddsConfig.xml]). More setup,
+(link:ThreddsConfigXMLFile.adoc#wms[threddsConfig.xml]). More setup,
 configuration, and implementation details for the TDS’s OGC WMS
-implementation are available link:WMS.html[here]. Including a link to
+implementation are available link:WMS.adoc[here]. Including a link to
 configuration information for the underlying WMS implementation (ncWMS:
 "http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[Detailed
 ncWMS Configuration]")
@@ -486,7 +486,7 @@ HTTP File Download (HTTP byte ranges are supported)
 * Files accessed through the HTTP file download have their file handles
 cached by default. Configuration settings for this caching can be set
 with the TDS Configuration File
-(link:ThreddsConfigXMLFile.html#FileCache[threddsConfig.xml]).
+(link:ThreddsConfigXMLFile.adoc#FileCache[threddsConfig.xml]).
 
 '''''
 

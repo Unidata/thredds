@@ -22,14 +22,14 @@ More on the TDS Configuration File
 The TDS supports a number of services some enable by default, others
 requiring some configuration before they are available.
 
-* link:../reference/Services.html#serverInfo[Server Information
+* link:../reference/Services.adoc#serverInfo[Server Information
 Services]
-* link:../reference/Services.html#catalogServices[Catalog Services]
-* link:../reference/Services.html#metadataServices[Metadata Services]
-* link:../reference/Services.html#dataAccessServices[Data Access
+* link:../reference/Services.adoc#catalogServices[Catalog Services]
+* link:../reference/Services.adoc#metadataServices[Metadata Services]
+* link:../reference/Services.adoc#dataAccessServices[Data Access
 Services]
 
-Let’s try it out. A quick link:AddingServices.html[exercise].
+Let’s try it out. A quick link:AddingServices.adoc[exercise].
 
 === Writing netCDF-4 files
 
@@ -38,30 +38,30 @@ written to a netCDF-4 file. This capability depends on the netCDF-C
 library and requires configuring the TDS with information about the
 location of the netCDF-C library. This configuration is done in the
 `threddsConfig.xml` file and is described
-link:../reference/ThreddsConfigXMLFile.html#netcdfCLibrary[here].
+link:../reference/ThreddsConfigXMLFile.adoc#netcdfCLibrary[here].
 
 === Configuration of Caching
 
-* link:../reference/ThreddsConfigXMLFile.html#Cache_Locations[Disk and
+* link:../reference/ThreddsConfigXMLFile.adoc#Cache_Locations[Disk and
 Temporary File Caches]
 ** CDM Disk Cache
 ** Aggregation Cache
 ** FeatureCollection Cache
-** link:../reference/ThreddsConfigXMLFile.html#GribIndexWriting[GRIB
+** link:../reference/ThreddsConfigXMLFile.adoc#GribIndexWriting[GRIB
 Index Writing]
 * Object Caching
-** link:../reference/ThreddsConfigXMLFile.html#Cache_Locations[NetcdfFile
+** link:../reference/ThreddsConfigXMLFile.adoc#Cache_Locations[NetcdfFile
 and File Handle Caching] (covered later by John)
-** link:../reference/ThreddsConfigXMLFile.html#CatalogCaching[Static
+** link:../reference/ThreddsConfigXMLFile.adoc#CatalogCaching[Static
 Catalog Caching]
 
 === CDM/TDS Plug-ins
 
-* link:../reference/ThreddsConfigXMLFile.html#runtime[CDM Runtime
+* link:../reference/ThreddsConfigXMLFile.adoc#runtime[CDM Runtime
 Loading of Plug-ins]
-* link:../reference/ThreddsConfigXMLFile.html#DatasetSource[Adding
+* link:../reference/ThreddsConfigXMLFile.adoc#DatasetSource[Adding
 DatasetSource Implementations]
 * Adding Dataset Viewer Links in HTML pages (covered later by John). +
-Various methods are described link:../reference/Viewers.html[here]
-including link:../reference/ThreddsConfigXMLFile.html#Viewers[one] that
+Various methods are described link:../reference/Viewers.adoc[here]
+including link:../reference/ThreddsConfigXMLFile.adoc#Viewers[one] that
 involves changes to the `threddsConfig.xml` file.

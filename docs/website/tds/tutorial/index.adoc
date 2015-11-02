@@ -10,7 +10,7 @@ THREDDS Data Server Administration Tutorial
 '''''
 
 This is the on-line, self-guided tutorial. Follow this link for the
-link:workshop2015.html[2015 TDS Workshop schedule]
+link:workshop2015.adoc[2015 TDS Workshop schedule]
 
 '''''
 
@@ -19,29 +19,29 @@ link:workshop2015.html[2015 TDS Workshop schedule]
 
 === 1.Tomcat Configuration
 
-* link:GettingStarted.html[Getting Started With the TDS: Local Test
+* link:GettingStarted.adoc[Getting Started With the TDS: Local Test
 Server Setup]
-* link:Security.html[Security Overview]
+* link:Security.adoc[Security Overview]
 
 === 2. TDS Configuration
 
-* link:CatalogPrimer.html[Client Catalog Primer]
-* link:BasicConfigCatalogs.html[Basic TDS Configuration Catalogs]
-* link:ConfigCatalogs.html[TDS Configuration Catalogs]
-* link:BasicThreddsConfig_xml.html[Basic threddsConfig.xml]
-* link:AddingServices.html[Adding OGC/ISO Services]
-* link:../reference/WMS.html[Detailed WMS Configuration]
+* link:CatalogPrimer.adoc[Client Catalog Primer]
+* link:BasicConfigCatalogs.adoc[Basic TDS Configuration Catalogs]
+* link:ConfigCatalogs.adoc[TDS Configuration Catalogs]
+* link:BasicThreddsConfig_xml.adoc[Basic threddsConfig.xml]
+* link:AddingServices.adoc[Adding OGC/ISO Services]
+* link:../reference/WMS.adoc[Detailed WMS Configuration]
 * Netcdf Subset Service:
-link:../reference/NetcdfSubsetServiceConfigure.html[configure],
-link:../reference/NetcdfSubsetServiceReference.html[reference]
+link:../reference/NetcdfSubsetServiceConfigure.adoc[configure],
+link:../reference/NetcdfSubsetServiceReference.adoc[reference]
 * threddsConfig.xml
-link:../reference/ThreddsConfigXMLFile.html[reference]
+link:../reference/ThreddsConfigXMLFile.adoc[reference]
 
 === 4. TDS Monitoring and Debugging
 
-* link:TDSMonitoringAndDebugging.html[TDS Monitoring and Debugging]
-* link:TomcatAndTDSLogs.html[Tomcat and TDS Logs]
-* link:tdsMonitor.html[Using the TdsMonitor tool]
+* link:TDSMonitoringAndDebugging.adoc[TDS Monitoring and Debugging]
+* link:TomcatAndTDSLogs.adoc[Tomcat and TDS Logs]
+* link:tdsMonitor.adoc[Using the TdsMonitor tool]
 * There are also various free, 3rd-party monitoring and debugging tools:
 ** http://www.google.com/search?btnG=1&pws=0&q=log+analyzers[Log
 analyzers]
@@ -58,47 +58,47 @@ manager application]
 
 === 5. Using NcML in TDS
 
-* link:../../netcdf-java/ncml/Tutorial.html[Basic NcML tutorial]
-* link:../../netcdf-java/ncml/Aggregation.html[NcML Aggregation]
+* link:../../netcdf-java/ncml/Tutorial.adoc[Basic NcML tutorial]
+* link:../../netcdf-java/ncml/Aggregation.adoc[NcML Aggregation]
 * link:NcML.htm[Using NcML in the TDS]
-* link:NcMLExamples.html[NcML Example Problems]
-* link:NcMLAggExamples.html[NcML Aggregation Example Problems]
+* link:NcMLExamples.adoc[NcML Example Problems]
+* link:NcMLAggExamples.adoc[NcML Aggregation Example Problems]
 
 === 6. Feature Collections
 
-* link:../reference/collections/FeatureCollections.html[Feature
+* link:../reference/collections/FeatureCollections.adoc[Feature
 Collections]
-* link:../reference/collections/GribCollections.html[GRIB Feature
+* link:../reference/collections/GribCollections.adoc[GRIB Feature
 Collections]
-* link:GRIBFeatureCollectionTutorial.html[GRIB Feature Collection
+* link:GRIBFeatureCollectionTutorial.adoc[GRIB Feature Collection
 Tutoria]l
-* link:../reference/collections/FmrcCollection.html[FMRC (Forecast Model
+* link:../reference/collections/FmrcCollection.adoc[FMRC (Forecast Model
 Run Collections)]
-* link:FmrcFeatureCollectionsTutorial.html[FMRC Tutorial]
-* link:../../netcdf-java/reference/formats/GribFiles.html[GRIB Files in
+* link:FmrcFeatureCollectionsTutorial.adoc[FMRC Tutorial]
+* link:../../netcdf-java/reference/formats/GribFiles.adoc[GRIB Files in
 CDM]
-* link:../../netcdf-java/reference/formats/GribTables.html[GRIB Tables
+* link:../../netcdf-java/reference/formats/GribTables.adoc[GRIB Tables
 in CDM]
 
 === 7. Other Advanced Features
 
-* link:../reference/RestrictedAccess.html[Restricting dataset access]
-* link:../reference/Viewers.html[Viewer Links]
+* link:../reference/RestrictedAccess.adoc[Restricting dataset access]
+* link:../reference/Viewers.adoc[Viewer Links]
 
 === 8. Metadata
 
-* link:Metadata.html[THREDDS Metadata]
-* link:../reference/ncISO.html[ISO metadata generation: (ncIso)]
+* link:Metadata.adoc[THREDDS Metadata]
+* link:../reference/ncISO.adoc[ISO metadata generation: (ncIso)]
 
 === 9. Production Servers
 
-* link:Checklist.html[Installation Checklist for Production]
-* link:TroubleShooting.html[TroubleShooting Problems]
-* link:../reference/Performance.html[Performance
-Tips]link:TroubleShooting.html[]
-* link:../UpgradingTo4.5.html[Upgrading to 4.5]
+* link:Checklist.adoc[Installation Checklist for Production]
+* link:TroubleShooting.adoc[TroubleShooting Problems]
+* link:../reference/Performance.adoc[Performance
+Tips]link:TroubleShooting.adoc[]
+* link:../UpgradingTo4.5.adoc[Upgrading to 4.5]
 
 === Other Resources:
 
-* link:../reference/index.html[Reference documentation]
-* link:../faq.html[FAQ]
+* link:../reference/index.adoc[Reference documentation]
+* link:../faq.adoc[FAQ]

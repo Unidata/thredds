@@ -11,7 +11,7 @@ The Netcdf-Java library uses the Apache
 http://hc.apache.org/httpclient-3.x/index.html[HttpClient 3.1 library]
 for almost all HTTP processing (a small number of utilities use the
 java.net package). HttpClient is used to access OPeNDAP datasets, for
-WCS, WMS, and CdmRemote access, and to link:./HTTPservice.html[open
+WCS, WMS, and CdmRemote access, and to link:./HTTPservice.adoc[open
 remote files served over HTTP]. The Netcdf-Java library provides
 *ucar.httpclient.HttpClientManager* to manage HttpClient settings.
 Future versions of the Netcdf-Java library will use
@@ -89,7 +89,7 @@ to the server. The ssl scheme is usually part of an SSL connection where
 the server authenticates to the client and then the client authenticates
 to the server.
 
-See the file link:./Session.html#Credentials[Session.html] for details.
+See the file link:./Session.html#Credentials[Session.adoc] for details.
 
 === Authorization
 

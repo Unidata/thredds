@@ -58,7 +58,7 @@ link:#changes[Change History]
 
 == Related resources:
 
-Catalog Tutorial link:../tutorial/CatalogPrimer.html[Primer]
+Catalog Tutorial link:../tutorial/CatalogPrimer.adoc[Primer]
 
 link:Example1.0rc8.xml[Example] 1.0 Catalog
 
@@ -73,13 +73,13 @@ InvCatalog XML Schema:
 * http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd[Version 1.0.1]
 * http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd[Version 1.0]
 
-link:../reference/DigitalLibraries.html[Writing metadata for Digital Libraries]
+link:../reference/DigitalLibraries.adoc[Writing metadata for Digital Libraries]
 
 Java API to read catalogs in the http://www.unidata.ucar.edu/software/netcdf-java/[netCDF-Java library].
 
-link:Changes.html[Changes] since version 1.0.1.
+link:Changes.adoc[Changes] since version 1.0.1.
 
-link:InvCatalogServerSpec.html[Server-side catalog specification]
+link:InvCatalogServerSpec.adoc[Server-side catalog specification]
 
 == Base Catalog Elements
 
@@ -105,7 +105,7 @@ link:InvCatalogServerSpec.html[Server-side catalog specification]
 
 The _catalog_ element is the top-level element. It may contain zero or
 more _link:#service[service]_ elements, followed by zero or more
-_link:InvCatalogServerSpec.html#datasetRoot_Element[datasetRoot]_
+_link:InvCatalogServerSpec.adoc#datasetRoot_Element[datasetRoot]_
 elements, followed by zero or more _link:#property[property]_ elements,
 followed by one or more _link:#dataset[dataset]_ elements. The _base_ is
 used to resolve any reletive URLs in the catalog such as catalogRefs,
@@ -530,7 +530,7 @@ dataset and any nested datasets.
 
 If your intention is to enable THREDDS to write entries into a Digital
 Library, you should to be aware of
-link:../reference/DigitalLibraries.html[how elements are mapped to
+link:../reference/DigitalLibraries.adoc[how elements are mapped to
 Digital Libraries]. For example, you will probably want to add a
 _documentation_ element with type _summary_ as its content will be the
 description of the dataset in the DL entry. Another documentation
@@ -1341,7 +1341,7 @@ Examples:
 ----
 
 These are
-thelink:../../netcdf-java/reference/FeatureDatasets/Overview.html[Feature
+thelink:../../netcdf-java/reference/FeatureDatasets/Overview.adoc[Feature
 Types] of the datasets, which are used by clients to know how to display
 the data.
 

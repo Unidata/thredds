@@ -16,7 +16,7 @@ http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[poster]
 for a detailed example.
 
 Previously this functionality was provided using
-link:../../../netcdf-java/ncml/FmrcAggregation.html[FMRC Aggregation]
+link:../../../netcdf-java/ncml/FmrcAggregation.adoc[FMRC Aggregation]
 through NcML and the *<fmrcDataset>* element in the TDS configuration
 catalog. As of TDS 4.2, that implementation is now deprecated and
 *<featureCollection>* elements are the correct way to provide this
@@ -40,7 +40,7 @@ their time and runtime coordinates and the actual data values.
 
 * Its best if the reference time is part of the filename, in a way that
 can be extracted with a
-link:FeatureCollections.html#dateExtractor[DateExtractor].
+link:FeatureCollections.adoc#dateExtractor[DateExtractor].
 * If there is a serviceType=``HTTPServer'' for the Feature Collection,
 it is removed from the virtual datasets (all except the _Files_
 datasets).
@@ -122,7 +122,7 @@ put *regularize* = false (or leave it off).
 == Working with FMRC in ToolsUI
 
 The ToolsUI FMRC tab allows you to view internal strurctures of an FMRC.
-You can pass it a link:CollectionSpecification.html[collection
+You can pass it a link:CollectionSpecification.adoc[collection
 specification string] or a file with a *featureCollection* element in
 it.
 
@@ -137,7 +137,7 @@ debug);* +
 
 The collection may be one of:
 
-1.  link:CollectionSpecification.html[collection specification] string
+1.  link:CollectionSpecification.adoc[collection specification] string
 2.  __catalog__:catalogURL
 3.  filename.ncml
 

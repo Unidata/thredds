@@ -60,10 +60,10 @@ allow a few minor improvements to be made when recreating.
 3.  GRIB Best Collections now show the runtime as an auxiliary
 coordinate, and runtimes are monotonic increasing.
 4.  Some GRIB specific
-link:reference/collections/GribCollectionFaq.html[FAQs]
+link:reference/collections/GribCollectionFaq.adoc[FAQs]
 5.  For complete information, see
-link:reference/collections/GribCollections.html[GRIB Collections] and
-link:reference/collections/TDM.html[TDM].
+link:reference/collections/GribCollections.adoc[GRIB Collections] and
+link:reference/collections/TDM.adoc[TDM].
 
 == Bug Fixes in version 4.6
 

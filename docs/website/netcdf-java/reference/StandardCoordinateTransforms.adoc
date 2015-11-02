@@ -109,11 +109,11 @@ attributes.*
 
 * The http://cfconventions.org/[CF Conventions]
 * Standard vertical transforms are documented on this page. You can
-alsolink:../tutorial/CoordTransBuilder.html[implement your own].
+alsolink:../tutorial/CoordTransBuilder.adoc[implement your own].
 * You may also be interested in
-link:StandardVerticalTransforms.html[Standard Vertical Coordinate
+link:StandardVerticalTransforms.adoc[Standard Vertical Coordinate
 Transforms].
-* link:CoordinateAttributes.html[The CDM Coordinate Conventions]
+* link:CoordinateAttributes.adoc[The CDM Coordinate Conventions]
 
 '''''
 

@@ -1305,11 +1305,11 @@ dataset/metadata/variables/variable@units
 
 == NetCDF Attribute Convention for Dataset Discovery
 
-link:DataDiscoveryAttConvention.html[Specification]
+link:DataDiscoveryAttConvention.adoc[Specification]
 
 == THREDDS DL Metadata
 
-link:../../tds/catalog/InvCatalogServerSpec.html[Specification] +
+link:../../tds/catalog/InvCatalogServerSpec.adoc[Specification] +
 
 == Dublin Core
 

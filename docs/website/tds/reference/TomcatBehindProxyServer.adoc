@@ -103,7 +103,7 @@ matches the requested URL.
 Check that the Data Access URL in the OPeNDAP Data Access Form matches
 the requested URL (minus the ``.html'' suffix).
 
-If you have link:RemoteManagement.html[TDS Remote Management]
+If you have link:RemoteManagement.adoc[TDS Remote Management]
 configured, go to the TDS debug page (e.g.,
 `http://localhost:8080/thredds/admin/debug`) and follow the ``Show HTTP
 Request info'' link. Once there, check that the values listed for server

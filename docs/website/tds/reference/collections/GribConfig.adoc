@@ -42,7 +42,7 @@ the TDS starts.
 
 These instructions are tailored for TDS users. To work with Grib
 Collections in client software using the CDM stack, see
-link:../../../netcdf-java/reference/formats/GribFiles.html[CDM Grib
+link:../../../netcdf-java/reference/formats/GribFiles.adoc[CDM Grib
 Files].
 
 == Stage One: GribCollection Creation
@@ -269,7 +269,7 @@ only contain 3 hour intervals, instead of a mixture of intervals.
 4.  GRIB-2 uses ids of discipline-category-number, eg ``0-1-8''.
 
 Also see
-link:../../../netcdf-java/reference/formats/GribFiles.html#intvFilter[CDM
+link:../../../netcdf-java/reference/formats/GribFiles.adoc#intvFilter[CDM
 docs].
 
 --

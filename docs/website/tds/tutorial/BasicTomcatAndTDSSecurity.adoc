@@ -611,7 +611,7 @@ application.
 === Additional resources
 
 We have compiled a list of a few
-link:AdditionalSecurityConfiguration.html[additional steps] you should
+link:AdditionalSecurityConfiguration.adoc[additional steps] you should
 take to help secure Tomcat and your TDS server. This is not a complete
 laundry list of security fixes! Please use it as a starting point when
 securing your server.

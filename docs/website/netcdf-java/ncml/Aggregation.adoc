@@ -22,7 +22,7 @@ for the dimension.
 3.  **link:#joinNew[JoinNew]**: Variables of the same name (in different
 files) are connected along a new outer dimension. Each file becomes one
 . A new coordinate variable is created for the dimension.
-4.  link:FmrcAggregation.html[*ForecastModelRunCollection*] (FMRC): A
+4.  link:FmrcAggregation.adoc[*ForecastModelRunCollection*] (FMRC): A
 collection of forecast model runs with two time coordinates: a _*run
 time*_ and a __*forecast time*__.
 
@@ -461,7 +461,7 @@ to assign attributes to it, which is something you are likely to need to
 do, for example defining a units attribute is usually necessary.
 Assigning the *_CoordinateAxisType* type is one way to make sure that
 the
-link:../reference/CoordinateAttributes.html#CoordinateAttributes[Coordinate
+link:../reference/CoordinateAttributes.adoc#CoordinateAttributes[Coordinate
 layer] correctly identifies the coordinate type. Using CF Conventions is
 strongly recommended.
 
@@ -566,7 +566,7 @@ The _*dateFormatMark*_ attribute is used on *joinNew* aggregation, as
 well as *joinExisting* if there is only one time slice in each file, to
 create date coordinate values out of the filename. It consists of a
 section of text, a `#' marking character, then a
-link:AnnotatedSchema4.html#SimpleDateFormat[*java.text.SimpleDateFormat*]
+link:AnnotatedSchema4.adoc#SimpleDateFormat[*java.text.SimpleDateFormat*]
 string. The number of characters before the # is skipped in the
 filename, then the next part of the filename must match the
 SimpleDateFormat string, then it ignores any trailing text. For example:
@@ -720,7 +720,7 @@ One can nest netcdf elements in aggregation, for example:
 </netcdf>
 -----------------------------------------------------------------------
 
-See also: link:AnnotatedSchema4.html[Annotated NcML Schema]
+See also: link:AnnotatedSchema4.adoc[Annotated NcML Schema]
 
 '''''
 

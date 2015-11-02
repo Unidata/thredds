@@ -10,7 +10,7 @@ The THREDDS Data Server (TDS) uses specialized catalogs to configure the
 server, called _server-side catalogs_ or __configuration catalogs__.
 This document specifies the semantics and XML representation of the
 server-side specializations allowed in THREDDS catalogs. It should be
-used in conjunction with the link:InvCatalogSpec.html[client-side
+used in conjunction with the link:InvCatalogSpec.adoc[client-side
 catalog specification].
 
 == Contents:
@@ -25,8 +25,8 @@ Server-side elements described in this document:
 
 Also see:
 
-* link:../reference/DatasetScan.html[DatasetScan] reference
-* link:../reference/collections/FeatureCollections.html[FeatureCollection]
+* link:../reference/DatasetScan.adoc[DatasetScan] reference
+* link:../reference/collections/FeatureCollections.adoc[FeatureCollection]
 reference
 * http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.8.xsd[Catalog
 XML xsd] +
@@ -132,7 +132,7 @@ directory and all subdirectories. (NOT IMPLEMENTED)
 
 The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to
 server side catalogs, along with the
-*link:../reference/RestrictedAccess.html[restrictAccess]* attribute:
+*link:../reference/RestrictedAccess.adoc[restrictAccess]* attribute:
 
 --------------------------------------------------------------------------------
 <xsd:element name="dataset" type="DatasetType" />
@@ -158,7 +158,7 @@ server side catalogs, along with the
 --------------------------------------------------------------------------------
 
 * The *restrictAccess* attribute is a server-side option that tells the
-TDS to link:../reference/RestrictedAccess.html[restrict access] to this
+TDS to link:../reference/RestrictedAccess.adoc[restrict access] to this
 dataset. It is always inherited by all contained datasets.
 * The *ncml:netcdf* element is used only on the server, it
 link:../tutorial/NcML.htm[modifies the dataset with NcML]. For
@@ -205,7 +205,7 @@ an absolute path. The *_addLatest_* attribute is the simplest possible
 way to add a _latest resolver service_ to a datasetScan. +
 
 A _datasetScan_ element is in the dataset substitutionGroup, so it can
-be used wherever a _link:InvCatalogSpec.html#dataset[dataset]_ element
+be used wherever a _link:InvCatalogSpec.adoc#dataset[dataset]_ element
 can be used. It is an extension of a DatasetType, so any of dataset’s
 nested elements and attributes can be used in it. This allows you to add
 enhanced metadata to a datasetScan. However you should not add nested
@@ -327,7 +327,7 @@ dataset is included if (include1 OR include2 OR ...) AND (!exclude1 AND !exclude
 ------------------------------------------------------------------------------------------
 
 More examples are available in the
-link:../reference/DatasetScan.html#Including_Only_the_Desired_Files[TDS
+link:../reference/DatasetScan.adoc#Including_Only_the_Desired_Files[TDS
 datasetsScan documentation]. +
 
 == namer Element +
@@ -464,7 +464,7 @@ any dataset that was last modified within the number of minutes
 specified by the _lastModifedLimit_ attribute. +
 
 An example is available in the
-link:../reference/DatasetScan.html#Adding_Proxy_Datasets[TDS
+link:../reference/DatasetScan.adoc#Adding_Proxy_Datasets[TDS
 datasetsScan documentation].
 
 == addProxies Element

@@ -15,7 +15,7 @@ Unidata | NetCDF Java
 = NetCDF Java
 
 image:/img/v3/logos/netcdfjava-50x50.png[NetCDF Java] The NetCDF Java
-library implements the link:CDM/index.html[Common Data Model] (CDM) to
+library implements the link:CDM/index.adoc[Common Data Model] (CDM) to
 interface netCDF files and other types of scientific data formats.
 
 link:CDM/[See the CDM (netCDF Java) overview]
@@ -35,7 +35,7 @@ documentation]? Try the following:
 Use the *link:/mailing_lists/archives/netcdf-java/[NetCDF Java Mailing
 List]* to query experts in the Unidata community
 
-View *link:/support/help/MailArchives/netcdf/maillist.html[Current
+View *link:/support/help/MailArchives/netcdf/maillist.adoc[Current
 Support Questions]* being asked of NetCDF Java developers
 
 *link:/support/requestSupport.jsp[Request Support]* from NetCDF Java
@@ -43,10 +43,10 @@ developers, or email: support-netcdf-java@unidata.ucar.edu
 
 ===== Training and Tutorials
 
-* link:/events/index.html#training[image:/community/img/awards2003-32x32.png[Training
+* link:/events/index.adoc#training[image:/community/img/awards2003-32x32.png[Training
 Workshop]] Attend the annual netCDF
-link:/events/index.html#training[training workshop] at the
-link:/about/index.html#visit[UPC] in Boulder
+link:/events/index.adoc#training[training workshop] at the
+link:/about/index.adoc#visit[UPC] in Boulder
 * link:tutorial/[image:/support/img/documentation-32x32.png[Tutorial]]
 Learn about netCDF Java and the CDM from an link:tutorial/[in-depth
 tutorial]
@@ -54,8 +54,8 @@ tutorial]
 Workshop]] View the
 link:/software/netcdf/workshops/most-recent/nj_cdm/[tutorial] from the
 latest netCDF training workshop
-* link:reference/Cookbook.html[image:/software/img/cookbook-32x32.png[Cookbook]]
-Use the netCDF Java link:reference/Cookbook.html[cookbook] for common
+* link:reference/Cookbook.adoc[image:/software/img/cookbook-32x32.png[Cookbook]]
+Use the netCDF Java link:reference/Cookbook.adoc[cookbook] for common
 examples
 * link:/software/netcdf/examples/programs/[image:/software/img/build-32x32.png[Example
 Programs]] View basic link:/software/netcdf/examples/programs/[example
@@ -72,11 +72,11 @@ The NetCDF Java is an Open Source project led by developers at the
 Unidata Program Center. If you’re interested in contributing to the
 project, you might be interested in these resources:
 
-* link:v4.3/javadoc/index.html[image:/img/v3/logos/java-32x32.png[Javadocs]]Unidata
+* link:v4.3/javadoc/index.adoc[image:/img/v3/logos/java-32x32.png[Javadocs]]Unidata
 NetCDF Java +
- *link:v4.3/javadoc/index.html[Javadoc API]*
-* link:CDM/index.html[image:/software/img/build-32x32.png[NetCDF Java
-Architecture]]**link:CDM/index.html[CDM Architecture]** +
+ *link:v4.3/javadoc/index.adoc[Javadoc API]*
+* link:CDM/index.adoc[image:/software/img/build-32x32.png[NetCDF Java
+Architecture]]**link:CDM/index.adoc[CDM Architecture]** +
  for developers
 * https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdf/[image:/img/v3/logos/maven-32x32.png[Maven]]
 Access netCDF Java +
@@ -99,7 +99,7 @@ and tools available to a broader, more diverse audience. The following
 are a list of NetCDF Java-related projects between the Unidata Program
 Center and external collaborators.
 
-===== link:/projects/index.html#cdm[Common Data Model]
+===== link:/projects/index.adoc#cdm[Common Data Model]
 
 image:/img/v3/logos/cdm-75x75.png[Common Data Model] Unidata’s
 link:CDM/[Common Data Model] (link:CDM/[CDM]) is an abstract data model
@@ -108,6 +108,6 @@ http://www.opendap.org/[OPeNDAP], and
 http://www.hdfgroup.org/products/hdf5/[HDF5] data models to create a
 common API for many types of scientific data. The NetCDF Java library is
 an implementation of the CDM which can read many
-link:index.html#formats[file formats] besides netCDF.
+link:index.adoc#formats[file formats] besides netCDF.
 
-link:/projects/index.html#cdm[More about the CDM]
+link:/projects/index.adoc#cdm[More about the CDM]

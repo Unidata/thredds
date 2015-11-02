@@ -11,7 +11,7 @@ THREDDS Group - Planning
 
 == Version 4.1 [Sept 15]
 
-[link:../../../../archive/src/docs/web/thredds/tech/devel/threddsGroup/threddsCatalog2/backlogs.html[thredds.catalog2]]
+[link:../../../../archive/src/docs/web/thredds/tech/devel/threddsGroup/threddsCatalog2/backlogs.adoc[thredds.catalog2]]
 Cleanup THREDDS Catalog API for access, creation, improved XML parsing,
 and smaller memory footprint.
 

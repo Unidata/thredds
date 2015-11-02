@@ -13,7 +13,7 @@ _note: needs updating as of 3/2015_
 
 The resources are THREDDS datasets. The resource URIs can be discovered
 in a
-link:../../../../archive/src/docs/web/thredds/tech/TDS.html#Catalogs[THREDDS
+link:../../../../archive/src/docs/web/thredds/tech/TDS.adoc#Catalogs[THREDDS
 catalog], by looking for datasets that use the *NetcdfSubset* Service
 type. Generally these resource URLs look like:
 

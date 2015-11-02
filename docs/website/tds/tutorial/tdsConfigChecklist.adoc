@@ -11,22 +11,22 @@ TDS Configuration Checklist for Production
 
 * Edit the server information in
 *$\{tomcat_home}/content/thredds/threddsConfig.xml*
-(link:BasicThreddsConfig_xml.html[more info])
+(link:BasicThreddsConfig_xml.adoc[more info])
 * If modifying CSS, place css files in
 *$\{tomcat_home}/content/thredds/public/* and make changes to the
 *htmlSetup* tag in *$\{tomcat_home}/content/thredds/threddsConfig.xml*
-(link:BasicThreddsConfig_xml.html[more info])
+(link:BasicThreddsConfig_xml.adoc[more info])
 * Enable netCDF-4 output, if desired and the C netCDF library is
 installed on your system (new as of TDS 4.3.13)
-(link:../reference/ThreddsConfigXMLFile.html#netcdfCLibrary[more info])
+(link:../reference/ThreddsConfigXMLFile.adoc#netcdfCLibrary[more info])
 * Configure caches, if required
-(link:../reference/ThreddsConfigXMLFile.html#Cache_Locations[more info])
+(link:../reference/ThreddsConfigXMLFile.adoc#Cache_Locations[more info])
 * Configure and add new Viewer links
-(link:../reference/Viewers.html[more info])
+(link:../reference/Viewers.adoc[more info])
 * Specify other root catalogs, if needed
-(link:../reference/ThreddsConfigXMLFile.html#catalogRoots[more info])
+(link:../reference/ThreddsConfigXMLFile.adoc#catalogRoots[more info])
 * If needed, Restrict Dataset Access using Tomcat
-(link:../reference/RestrictedAccess.html[more info])
+(link:../reference/RestrictedAccess.adoc[more info])
 
 == Configuration Catalogs
 
@@ -35,27 +35,27 @@ the *catalogRef* tag: +
      &ltcatalogRef xlink:title=``Title of linked catalog''
 xlink:href=``otherCatalog.xml'' name=``''/>
 * Enable the services you wish to expose for your dataset
-(link:ConfigCatalogs.html[more info])
+(link:ConfigCatalogs.adoc[more info])
 ** Note: Make sure these services are enabled in the
 *$\{tomcat_home}/content/thredds/threddsConfig.xml* file
-(link:../reference/ThreddsConfigXMLFile.html#Remote[more info])
+(link:../reference/ThreddsConfigXMLFile.adoc#Remote[more info])
 ** Make sure the service base URLs (the ``base'' attribute) exactly
-match the values given on link:ConfigCatalogs.html[this] page
+match the values given on link:ConfigCatalogs.adoc[this] page
 * Add or link to metadata related to your dataset
-(link:ConfigCatalogs.html[more info])
+(link:ConfigCatalogs.adoc[more info])
 * If your catalog will serve GRIB data, use the GribFeatureCollection!
-(link:../reference/collections/GribCollections.html[more info])
+(link:../reference/collections/GribCollections.adoc[more info])
 * Configure datasetRoot, dataset (single file), and datasetScan
 (directory) tags to expose the datafiles on your system through the
-catalog (link:BasicConfigCatalogs.html[more info])
+catalog (link:BasicConfigCatalogs.adoc[more info])
 * If needed, Restrict Dataset Access at the catalog level
-(link:../reference/RestrictedAccess.html[more info])
+(link:../reference/RestrictedAccess.adoc[more info])
 
 == Adding New TDS Configuration options or New Configuration Catalogs
 
 ==== Pre-Tomcat Startup
 
-* If you have enabled link:TDSMonitoringAndDebugging.html[access
+* If you have enabled link:TDSMonitoringAndDebugging.adoc[access
 logging] (and you should), zip up the unused access logs in
 *$\{tomcat_home}/logs/* and archive them off to another directory.
 * Likewise, zip up the unused TDS servlet logs in
@@ -63,5 +63,5 @@ logging] (and you should), zip up the unused access logs in
 
 ==== Post-Tomcat Startup
 
-* Check the various new logs for errors (link:TroubleShooting.html[more
+* Check the various new logs for errors (link:TroubleShooting.adoc[more
 info])

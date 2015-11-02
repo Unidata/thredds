@@ -35,7 +35,7 @@ ________________________
 --
 ________________________
 
-For an overview, see: link:../CDM/index.html[CDM Object Model]. The
+For an overview, see: link:../CDM/index.adoc[CDM Object Model]. The
 Coordinate Axes for a Variable must use a subset of the Variables’s
 dimensions.
 
@@ -61,7 +61,7 @@ of the core APIs.
 === See also :
 
 * _Coordinate Attribute
-link:../tutorial/CoordinateAttributes.html[Examples]
+link:../tutorial/CoordinateAttributes.adoc[Examples]
 
 === Contents
 
@@ -74,8 +74,8 @@ link:../tutorial/CoordinateAttributes.html[Examples]
 == Summary of the CDM _Coordinate Conventions:
 
 A Transform is defined by creating a Coordinate Transform Variable (see
-link:../tutorial/CoordinateAttributes.html#Example4[Example] and
-link:CoordinateAttributes.html[Reference]). The attributes of the
+link:../tutorial/CoordinateAttributes.adoc#Example4[Example] and
+link:CoordinateAttributes.adoc[Reference]). The attributes of the
 Coordinate Transform Variable become the parameters of the transform. A
 variable is a Coordinate Transform Variable if one (or both) of these is
 true:
@@ -101,8 +101,8 @@ coordinate. The CF CoordSysBuilder will thus add the *_CoordinateAxes =
 ``vertCoordName''* attribute to indicate this.
 
 A Transform is defined by creating a Coordinate Transform Variable (see
-link:../tutorial/CoordinateAttributes.html#Example4[Example] and
-link:CoordinateAttributes.html[Reference]). The attributes of the
+link:../tutorial/CoordinateAttributes.adoc#Example4[Example] and
+link:CoordinateAttributes.adoc[Reference]). The attributes of the
 Coordinate Transform Variable become the parameters of the transform. A
 variable is a Coordinate Transform Variable if one (or both) of these is
 true:
@@ -263,7 +263,7 @@ Coordinate Transform Variables in the same dataset.
 
 This is a general mechanism for any transformation a file writer wants
 to define. The nj22 library has a
-link:StandardCoordinateTransforms.html[set of transforms that it
+link:StandardCoordinateTransforms.adoc[set of transforms that it
 recognizes], mostly based on the
 http://www.cgd.ucar.edu/cms/eaton/cf-metadata/[CF-1 conventions].
 Attributes should be String, integer, or double valued.** +

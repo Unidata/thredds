@@ -8,11 +8,11 @@
 
 === For more information
 
-* link:../reference/collections/CollectionSpecification.html[Collection
+* link:../reference/collections/CollectionSpecification.adoc[Collection
 specification]
-* link:../reference/collections/FeatureCollections.html[Feature
+* link:../reference/collections/FeatureCollections.adoc[Feature
 Collections Reference]
-* link:../reference/collections/GribCollections.html[GRIB Collection
+* link:../reference/collections/GribCollections.adoc[GRIB Collection
 Reference]
 
 The featureCollection element is a way to tell the TDS to serve
@@ -53,7 +53,7 @@ datasets.
 called __all__.
 4.  You can add any metadata that is appropriate.
 5.  The collection of files is defined, using a
-link:../reference/collections/CollectionSpecification.html[collection
+link:../reference/collections/CollectionSpecification.adoc[collection
 specification string]. Everything under */machine/tds/data/grib/fnl*
 will be scanned for files with names that match the regular expression
 *fnl_.*_00_c$*
@@ -184,7 +184,7 @@ link:files/catalogGribfc.xml[catalogGribfc.xml] has:
 1.  A THREDDS featureCollection is defined, of type GRIB1. All contained
 datasets will all have a _path_ starting with **gribfc/ecmwf**.
 2.  The collection of files is defined, using a
-link:../reference/collections/CollectionSpecification.html[collection
+link:../reference/collections/CollectionSpecification.adoc[collection
 specification string]. Subdirectories of */machine/tds/tutorial/ecmwf*
 will be scanned for files with names that match the regular expression
 **ECMWF_GNERA_d000..20121001**$*.* A date will be extracted from the

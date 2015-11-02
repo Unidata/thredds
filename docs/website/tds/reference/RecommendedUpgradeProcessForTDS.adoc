@@ -33,7 +33,7 @@ TDS
 2.  https://server:port/manager/html/
 3.  One reason to stop-and-restart Tomcat, besides cleaning up log files
 (some of which Tomcat keeps open), is to avoid the PermGen memory error
-mentioned link:../tutorial/BasicTomcatAndTDSSecurity.html[here]
+mentioned link:../tutorial/BasicTomcatAndTDSSecurity.adoc[here]
 4.  The Tomcat and TDS log files we clean up when upgrading:
 * In $\{TOMCAT_HOME}/logs/*
 * In $\{TOMCAT_HOME}/content/thredds/logs/*

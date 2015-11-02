@@ -278,7 +278,7 @@ understood by the higher layers of the CDM, you should also add the
 Coordinate System and Typed Dataset information that is needed. To do
 so, you need to understand the Conventions used by these layers. In this
 case, we have Point data, so we are going to use Unidata’s
-link:../reference/CoordinateAttributes.html[_Coordinate Conventions] and
+link:../reference/CoordinateAttributes.adoc[_Coordinate Conventions] and
 Unidata’s
 http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html[Point
 Observation Conventions] which requires us to add certain attributes.
@@ -386,7 +386,7 @@ We now have not only a working IOSP, but a PointObsDataset that can be
 displayed and georeferenced! Working source code for this example is
 link:files/UspLightning1.java[here]. Modify the main program to point to
 the link:files/lightningData.txt[data file], and try running it. Note
-that you need to link:../reference/RuntimeLoading.html[load your class
+that you need to link:../reference/RuntimeLoading.adoc[load your class
 at runtime], for example by calling:
 
 ----------------------------------------------------------

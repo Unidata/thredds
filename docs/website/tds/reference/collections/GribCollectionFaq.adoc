@@ -66,7 +66,7 @@ is built.
 given time unit.
 
 There are a number of requirements that you must understand for each
-type. link:Partitions.html[Details].
+type. link:Partitions.adoc[Details].
 ______________________________________________________________________________________________________________________________________________
 
 '''''

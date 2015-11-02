@@ -21,7 +21,7 @@ FAQ
 
 Miscellaneous
 
-* link:../tutorial/SourceCodeBuild.html[How do I build from source or
+* link:../tutorial/SourceCodeBuild.adoc[How do I build from source or
 contribute to the NetCDF Java Library?]
 
 == Arrays
@@ -114,7 +114,7 @@ ________________________________________________________________________________
 **Q: How do I control where temporary files are placed (Disk Caching)**?
 
 ____________________________________
-See link:Caching.html[Disk Caching].
+See link:Caching.adoc[Disk Caching].
 ____________________________________
 
 == I/O Service Provider
@@ -193,7 +193,7 @@ ________________________________________________________________________________
 ________________________________________________________________________________________________________________________________________________________________________________________________
 The netCDF-Java library currently uses http://www.slf4j.org[SLF4J
 logging]. This allows you to switch what logging implementation is used.
-Read more link:BuildDependencies.html#_logging[here].
+Read more link:BuildDependencies.adoc#_logging[here].
 ________________________________________________________________________________________________________________________________________________________________________________________________
 
 *Q: Im using the log4j logging package. How do I get rid of the message
@@ -270,7 +270,7 @@ editor.
 3.  If its a grid dataset,open it in the FeatureTypes/Grid tab to make
 sure you see grids, to check for complete coordinate system. If you
 don’t see the grids you expect, the CoordSys tab might be helpful. It
-takes some expertise to understand link:../CDM/index.html[how Coordinate
+takes some expertise to understand link:../CDM/index.adoc[how Coordinate
 systems work]. When all else fails, follow the
 http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html[CF
 specification].
@@ -298,7 +298,7 @@ signed, so its up to the application to check _Variable.isUnsigned()_ or
 _Array.isUnsigned()_ and do the right thing when doing computations with
 the data. The library itself handles all conversions and computations
 correctly, for example __Array.getDouble()__. See
-link:../CDM/DataType.html#integer[CDM Datatypes] for more details on how
+link:../CDM/DataType.adoc#integer[CDM Datatypes] for more details on how
 to work with unsigned data arrays.
 
 The correct way to widen is to use the equivalent of these static
@@ -358,15 +358,15 @@ ________________________________________________________________________________
 *Q: What files can the library read?*
 
 ____________________________________________
-See link:formats/FileTypes.html[File Types].
+See link:formats/FileTypes.adoc[File Types].
 ____________________________________________
 
 *Q: How do I read a file of type X?*
 
 _________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
-In general, you link:../tutorial/index.html[open any CDM file] in the
+In general, you link:../tutorial/index.adoc[open any CDM file] in the
 same way, and access it through the
-link:../CDM/index.html#dataAccess[extended netCDF data model]. The whole
+link:../CDM/index.adoc#dataAccess[extended netCDF data model]. The whole
 point of the CDM is to hide the details of the file format. However,
 some file type may require special handling:
 
@@ -374,7 +374,7 @@ some file type may require special handling:
 have. Open the file as above and see 1) if you get any error messages,
 2) if any of the variables have ``Unknown'' in their name, and 3) if the
 data looks wrong. If any of those happen, prepare to enter
-link:formats/GribTables.html[GRIB table hell realm]. (BUFR is arguably
+link:formats/GribTables.adoc[GRIB table hell realm]. (BUFR is arguably
 worse, but there’s nothing yet that you can do about it).
 _________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -427,15 +427,15 @@ Netcdf-Java library supports writing netCDF-3 file format using the
 http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2[classic
 data model]. Writing to the netCDF-4 ** file format is supported using a
 http://en.wikipedia.org/wiki/Java_Native_Interface[JNI] interface to
-the link:netcdf4Clibrary.html[netCDF C library.] Writing the full
+the link:netcdf4Clibrary.adoc[netCDF C library.] Writing the full
 http://www.unidata.ucar.edu/software/netcdf-java/CDM/[CDM data model] is
 in beta, as of version 4.5. See:
 
 * Program with complete control: *ucar.nc2.NetcdfFileWriter* javadoc and
-link:../tutorial/NetcdfWriting.html[NetCDF File Writing tutorial].
+link:../tutorial/NetcdfWriting.adoc[NetCDF File Writing tutorial].
 * Copy complete files from a program: *ucar.nc2.FileWriter2* writes CDM
 files to netCDF-3 or netCDF-4 format.
-* Command line file copying: ** See link:manPages.html#nccopy[here] for
+* Command line file copying: ** See link:manPages.adoc#nccopy[here] for
 details.
 ___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -454,7 +454,7 @@ details are here:
 HDF5 is a very complicated format, and we do not plan to write a pure
 Java version for _writing_ netCDF4 files (we do have a pure Java version
 for _reading_ both HDF5 and netCDF-4). You must use the JNI interfacce
-to the link:netcdf4Clibrary.html[netCDF C library].
+to the link:netcdf4Clibrary.adoc[netCDF C library].
 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 *Q: Can I stream a NetcdfFile object to a client?*
@@ -467,8 +467,8 @@ file to the client. For performance, you can try copying to a solid
 state disk.
 
 We are working on an experimental streaming format for NetCDF, called
-link:stream/NcStream.html[ncstream], and a remote access protocol called
-link:stream/CdmRemote.html[CdmRemote]. These are fully functional as of
+link:stream/NcStream.adoc[ncstream], and a remote access protocol called
+link:stream/CdmRemote.adoc[CdmRemote]. These are fully functional as of
 CDM version 4.2, but are still evolving and should only be used if you
 can tolerate non-stable APIs and formats.
 _______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -563,7 +563,7 @@ ________________________________________________________________________________
 
 ___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 If you are converting the entire file, you can do it on
-thelink:manPages.html#nccopy[command line].
+thelink:manPages.adoc#nccopy[command line].
 
 You can do it from a Java program like this:
 
@@ -588,8 +588,8 @@ void convert(String datasetIn, String filenameOut, boolean wantNetcdf4) throws I
 Note that this can be used for any
 https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Classic-Model-Format.html#NetCDF_002d4-Classic-Model-Format[classic
 model]CDM dataset, not just GRIB. So _datasetIn_ above can refer to an
-NcML file, an OPeNDAP URL, any of these link:formats/FileTypes.html[File
-Types], etc. See link:DatasetUrls.html[here] for more details.
+NcML file, an OPeNDAP URL, any of these link:formats/FileTypes.adoc[File
+Types], etc. See link:DatasetUrls.adoc[here] for more details.
 ___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 '''''

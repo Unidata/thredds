@@ -11,7 +11,7 @@ NetcdfFileWriteable Tutorial
 write data to new or existing netCDF-3 files.
 
 This class is deprecated in CDM 4.3+. Use
-link:NetcdfWriting.html[NetcdfWriter] instead.
+link:NetcdfWriting.adoc[NetcdfWriter] instead.
 
 === Creating a new netCDF-3 file
 
