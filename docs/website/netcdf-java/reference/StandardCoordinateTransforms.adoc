@@ -28,7 +28,7 @@ For example:
 ------------------------------------------------------------------------
   float data(y0, x0);
     data:grid_mapping = "Lambert_Conformal";
-     
+
   double x0(x0=640);
     x0:standard_name = "projection_x_coordinate";
     x0:long_name = "x distance on the projection plane from the origin";
@@ -43,7 +43,7 @@ For example:
     Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
     Lambert_Conformal:standard_parallel = 38.5; // double
     Lambert_Conformal:longitude_of_central_meridian = 262.5; // double
-    Lambert_Conformal:latitude_of_projection_origin = 38.5; // double 
+    Lambert_Conformal:latitude_of_projection_origin = 38.5; // double
 ------------------------------------------------------------------------
 
 In this example, the *Lambert_Conformal* variable defines the projection
@@ -82,10 +82,10 @@ float mylat(y0, x0);
 float mylon(y0, x0);
   mylon:standard_name = "longitude";
 
-float data(y0, x0); 
+float data(y0, x0);
   data:grid_mapping = "Lambert_Conformal";
   data:coordinates = "mylat mylon x0 y0";
-... 
+...
 ------------------------------------------
 
 When both the projection (with 1D projection coordinates) and the 2D
@@ -109,7 +109,7 @@ attributes.*
 
 * The http://cfconventions.org/[CF Conventions]
 * Standard vertical transforms are documented on this page. You can
-alsolink:../tutorial/CoordTransBuilder.adoc[implement your own].
+also link:../tutorial/CoordTransBuilder.adoc[implement your own].
 * You may also be interested in
 link:StandardVerticalTransforms.adoc[Standard Vertical Coordinate
 Transforms].
@@ -160,8 +160,8 @@ _____________________________________________________________
    char Albers_Projection;
      :grid_mapping_name = "albers_conical_equal_area";
      :standard_parallel = 20.0, 60.0; // one or two
-     :longitude_of_central_meridian = -32.0; 
-     :latitude_of_projection_origin = 40.0; 
+     :longitude_of_central_meridian = -32.0;
+     :latitude_of_projection_origin = 40.0;
      :false_easting = 0.0;
      :false_northing = 0.0;
      :earth_radius = 6371.229;
@@ -197,8 +197,8 @@ ________________________________________________________________________________
 -----------------------------------------------
    char Flat_Earth;
      :grid_mapping_name = "flat_earth";
-     :longitude_of_projection_origin = -132.0; 
-     :latitude_of_projection_origin = 40.0; 
+     :longitude_of_projection_origin = -132.0;
+     :latitude_of_projection_origin = 40.0;
 -----------------------------------------------
 
 This is not a standard CF projection. It is used when a ``flat earth''
@@ -211,17 +211,17 @@ ________________________________________________________________________________
 ----------------------------------------------
    char Geostationary;
      :grid_mapping_name = "geostationary";
-     :longitude_of_projection_origin = -97.0; 
-     :latitude_of_projection_origin = 0.0; 
-     :perspective_point_height= 33.0, 45.0;  
+     :longitude_of_projection_origin = -97.0;
+     :latitude_of_projection_origin = 0.0;
+     :perspective_point_height= 33.0, 45.0;
      :false_easting = 0.0;
      :false_northing = 0.0;
      :earth_radius = 6371.229;
      :semi_major_axis =  6378.137;
      :semi_minor_axis =  6356.752;
      :inverse_flattening =   298.257;
-     :sweep_angle_axis= 33.0, 45.0;  
-     :fixed_angle_axis= 33.0, 45.0;  
+     :sweep_angle_axis= 33.0, 45.0;
+     :fixed_angle_axis= 33.0, 45.0;
 ----------------------------------------------
 
 This uses an ellipsoidal earth. Notes from CF:
@@ -248,10 +248,10 @@ _________________________________________________________
 ---------------------------------------------------------
    char Lambert_azimuth_Projection;
      :grid_mapping_name = "lambert_azimuthal_equal_area";
-     :longitude_of_projection_origin = -32.0; 
-     :latitude_of_projection_origin = 90.0; 
-     :false_easting = 0.0; // km 
-     :false_northing = 0.0; // km 
+     :longitude_of_projection_origin = -32.0;
+     :latitude_of_projection_origin = 90.0;
+     :false_easting = 0.0; // km
+     :false_northing = 0.0; // km
      :earth_radius = 6371.229;
 ---------------------------------------------------------
 
@@ -265,8 +265,8 @@ ______________________________________________________________
    char Lambert_Conformal;
      :grid_mapping_name = "lambert_conformal_conic";
      :standard_parallel = 33.0, 45.0;   // one or two
-     :longitude_of_central_meridian = -97.0; 
-     :latitude_of_projection_origin = 40.0; 
+     :longitude_of_central_meridian = -97.0;
+     :latitude_of_projection_origin = 40.0;
      :false_easting = 0.0;
      :false_northing = 0.0;
      :earth_radius = 6371.229;
@@ -305,7 +305,7 @@ ________________________________________________________________________________
    char McIDAS_Projection;
      :grid_mapping_name = "mcidas_area";
      :AreaHeader = 33.0, 45.0, ...;   // an integer array
-     :NavHeader = -97.0, ...;        // an integer array 
+     :NavHeader = -97.0, ...;        // an integer array
 ---------------------------------------------------------
 
 This is not a standard CF projection. The headers are read from a McIDAS
@@ -318,9 +318,9 @@ _________________________________________________________________
 ----------------------------------------------
   char Mercator_Projection;
      :grid_mapping_name = "mercator";
-     :longitude_of_projection_origin = 110.0; 
-     :latitude_of_projection_origin = -25.0; 
-     :standard_parallel = 0.02; 
+     :longitude_of_projection_origin = 110.0;
+     :latitude_of_projection_origin = -25.0;
+     :standard_parallel = 0.02;
 ----------------------------------------------
 
 This uses a spherical earth and default radius. See Snyder, p 47.
@@ -363,8 +363,8 @@ ________________________________________________________________________________
 ----------------------------------------------
   char Orthographic_Projection;
      :grid_mapping_name = "orthographic";
-     :longitude_of_projection_origin = 110.0; 
-     :latitude_of_projection_origin = -25.0; 
+     :longitude_of_projection_origin = 110.0;
+     :latitude_of_projection_origin = -25.0;
 ----------------------------------------------
 
 This is not a standard CF projection. This uses a spherical earth and
@@ -377,9 +377,9 @@ ________________________________________________________________________________
 --------------------------------------------------------------
    char Polar_Stereographic;
      :grid_mapping_name = "polar_stereographic";
-     :straight_vertical_longitude_from_pole = -32.0; 
-     :latitude_of_projection_origin = 90.0; 
-     :scale_factor_at_projection_origin = 0.9330127018922193; 
+     :straight_vertical_longitude_from_pole = -32.0;
+     :latitude_of_projection_origin = 90.0;
+     :scale_factor_at_projection_origin = 0.9330127018922193;
      :false_easting = 0.0;
      :false_northing = 0.0;
      :semi_major_axis =  6378.137;
@@ -396,9 +396,9 @@ The polar stereographic will accept these alternate parameter names:
 ------------------------------------------------
    char Polar_Stereographic;
      :grid_mapping_name = "polar_stereographic";
-     :longitude_of_projection_origin = -32.0; 
-     :latitude_of_projection_origin = 90.0; 
-     :standard_parallel = 0.9330127018922193; 
+     :longitude_of_projection_origin = -32.0;
+     :latitude_of_projection_origin = 90.0;
+     :standard_parallel = 0.9330127018922193;
 ------------------------------------------------
 
 If the *standard_parallel* is specified, this indicates the parallel
@@ -470,7 +470,7 @@ ________________________________________________________________________________
      :longitude_of_central_meridian = 0.0; // required
      :false_easting = 0.0;
      :false_northing = 0.0;
-     :earth_radius = 6371.229; 
+     :earth_radius = 6371.229;
 ------------------------------------------------------
 
 Spherical earth. See CF http://cf-trac.llnl.gov/trac/ticket/77[adding
@@ -487,9 +487,9 @@ ______________________________________________________________
 --------------------------------------------------------------
    char Stereographic;
      :grid_mapping_name = "stereographic";
-     :longitude_of_projection_origin = -32.0; 
-     :latitude_of_projection_origin = 90.0; 
-     :scale_factor_at_projection_origin = 0.9330127018922193; 
+     :longitude_of_projection_origin = -32.0;
+     :latitude_of_projection_origin = 90.0;
+     :scale_factor_at_projection_origin = 0.9330127018922193;
      :false_easting = 0.0;
      :false_northing = 0.0;
      :semi_major_axis =  6378.137;
@@ -506,9 +506,9 @@ _____________________________________________________________
 -------------------------------------------------------------
    char Transverse_mercator;
      :grid_mapping_name = "transverse_mercator";
-     :longitude_of_central_meridian = -32.0; 
-     :latitude_of_projection_origin = 40.0; 
-     :scale_factor_at_central_meridian = 0.9330127018922193; 
+     :longitude_of_central_meridian = -32.0;
+     :latitude_of_projection_origin = 40.0;
+     :scale_factor_at_central_meridian = 0.9330127018922193;
      :false_easting = 0.0;
      :false_northing = 0.0;
      :semi_major_axis =  6378.137;
@@ -527,7 +527,7 @@ ________________________________________________________________________________
 ----------------------------------------------------------
    char UTM_Projection;
      :grid_mapping_name = "universal_transverse_mercator";
-     :utm_zone_number = 22; 
+     :utm_zone_number = 22;
      :semi_major_axis = 6378137;
      :inverse_flattening = 298.257;
      :_CoordinateTransformType = "Projection";
@@ -545,12 +545,12 @@ _________________________________________________
 -------------------------------------------------
    char vertical_perspective_Projection;
      :grid_mapping_name = "vertical_perspective";
-     :longitude_of_projection_origin = -97.0; 
-     :latitude_of_projection_origin = 40.0; 
+     :longitude_of_projection_origin = -97.0;
+     :latitude_of_projection_origin = 40.0;
      :height_above_earth = 23980.0; // km
      :earth_radius = 6371.229;
-     :false_easting = 0.0; 
-     :false_northing = 0.0; 
+     :false_easting = 0.0;
+     :false_northing = 0.0;
      :_CoordinateTransformType = "Projection";
      :_CoordinateAxisTypes = "GeoX GeoY";
 -------------------------------------------------

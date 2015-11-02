@@ -41,7 +41,7 @@ doc], point to variables in the same file, which the calculation needs:
 
 --------------------------------------------------------------------------------
 Definition:
-  z(n,k,j,i) = eta(n,j,i)*(1+s(k)) + depth_c*s(k) +  (depth(j,i)-depth_c)*C(k)  
+  z(n,k,j,i) = eta(n,j,i)*(1+s(k)) + depth_c*s(k) +  (depth(j,i)-depth_c)*C(k)
 --------------------------------------------------------------------------------
 
 So in this example, anywhere you see s(k) in the definition, one uses
@@ -50,11 +50,11 @@ the variable s_rho in the calculation. Similarly for the rest:
 ----------------------------------------
 Definition term     actual variable name
 ---------------     -------------------
-s                   s_rho 
-eta                     zeta 
-depth               h 
-a                   theta_s 
-b                   theta_b 
+s                   s_rho
+eta                     zeta
+depth               h
+a                   theta_s
+b                   theta_b
 depth_c                 hc
 ----------------------------------------
 
@@ -88,7 +88,7 @@ vertical coordinate.*
 === Resources
 
 * Standard vertical transforms are documented on this page. You can
-alsolink:../tutorial/CoordTransBuilder.adoc[implement your own].
+also link:../tutorial/CoordTransBuilder.adoc[implement your own].
 * You may also be interested in
 link:StandardCoordinateTransforms.adoc[Standard Horizontal Coordinate
 Transforms].
@@ -118,7 +118,7 @@ _________________________________________________________________________
      :positive = "down";
      :standard_name = "atmosphere_ln_pressure_coordinate";
      :formula_terms = "p0: P0 lev: levCoord";
-  
+
 ----------------------------------------------------------
 
 atmosphere_ln_pressure_coordinate transform only works in CF
@@ -205,7 +205,7 @@ ________________________________________________________________________________
      :standard_name = "ocean_s_coordinate";
      :formula_terms = "s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc";
      :_CoordinateAxisType = "GeoZ";
-     :_CoordinateZisPositive = "up"; 
+     :_CoordinateZisPositive = "up";
      :_CoordinateTransformType = "Vertical";
      :_CoordinateAxes = "s_rho";
 --------------------------------------------------------------------------------------
@@ -286,7 +286,7 @@ ________________________________________________________________________________
 ____________________________________________________________________________________________________________
 ------------------------------------------------------------------------------------------------------------
  public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
-  GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "conventions/cf/ccsm2.nc"); 
+  GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "conventions/cf/ccsm2.nc");
   GridDatatype grid = gds.findGridDatatype("T");
   GridCoordSystem gcs = grid.getCoordinateSystem();
 

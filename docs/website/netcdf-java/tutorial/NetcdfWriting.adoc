@@ -12,7 +12,7 @@ Netcdf File Writing
 CDM version 4.3 and above allows you to programatically create, edit,
 and add data to netCDF-3 and netCDF-4 files, using _NetcdfFileWriter_ or
 the _FileWriter2_ class. If you just want to copy an existing CDM
-dataset, you can use thelink:../reference/manPages.adoc#nccopy[CDM
+dataset, you can use the link:../reference/manPages.adoc#nccopy[CDM
 nccopy application]. By combining nccopy and NcML, you can copy just
 parts of an existing dataset, as well as
 link:../ncml/index.htm#modify[make modifications to it with NcML].
@@ -111,7 +111,7 @@ netcdf C:/tmp/testWrite.nc {
    char svar(svar_len=80);
    char names(names=3, svar_len=80);
    double scalar;
-    
+
     // global attributes:
    :yo = "face";
    :versionD = 1.2; // double
@@ -156,7 +156,7 @@ In both cases the data writing is the same, for example:
        A.setDouble(ima.set(i, j), (double) (i * 1000000 + j * 1000));
      }
    }
-   
+
 2) int[] origin = new int[2];
    try {
 3)   writer.write(v, origin, A);
@@ -363,7 +363,7 @@ FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, ch
 NetcdfFile ncfileOut = writer.write();
 ncfileIn.close();
 ncfileOut.close();
-  
+
 --------------------------------------------------------------------------------------------
 
 See link:../reference/netcdf4Clibrary.adoc#writing[here] for more

@@ -1341,7 +1341,7 @@ Examples:
 ----
 
 These are
-thelink:../../netcdf-java/reference/FeatureDatasets/Overview.adoc[Feature
+the link:../../netcdf-java/reference/FeatureDatasets/Overview.adoc[Feature
 Types] of the datasets, which are used by clients to know how to display
 the data.
 

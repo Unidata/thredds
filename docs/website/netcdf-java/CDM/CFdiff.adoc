@@ -8,7 +8,7 @@ CDM/CF Differences
 = Differences between CDM and CF
 
 CF is a metadata standard for netCDF files. CDM is a data model for many
-differerent data formats, which generally conforms to CF whenever the
+different data formats, which generally conforms to CF whenever the
 two overlap. This documents the differences in metadata interpretation.
 
 == Coordinate Systems
@@ -35,7 +35,7 @@ link:../reference/StandardCoordinateTransforms.adoc[standard
 grid_mapping] that specifies the projection, the CDM uses the projection
 for the Coordinate System layer, and not the lat, lon variables. In some
 circumstances, for example in extracting a single variable into a
-seperate file, including the 2D lat(y,x) and lon(y,x) variables can
+separate file, including the 2D lat(y,x) and lon(y,x) variables can
 triple the size of the file. CDM therefore allows a user to create an
 ``almost-CF compliant'' file without the 2D lat(y,x) and lon(y,x)
 variables. Generally the user also has an option to include these
@@ -51,7 +51,7 @@ as per the recommendations in the Udunits package
 This implies that a time coordinate always has a numeric data type, and
 uses udunits to transform _``value time_unit since reference''_ into a
 date.
-* CDM: Seelink:CalendarDateTime.adoc[CDM Calendar Dates] for details.
+* CDM: See link:CalendarDateTime.adoc[CDM Calendar Dates] for details.
 ** Also accepts time coordinates as ISO formatted Strings. The variable
 data type may be String or Char.
 ** As of CDM 4.3, http://joda-time.sourceforge.net/[joda time] is used

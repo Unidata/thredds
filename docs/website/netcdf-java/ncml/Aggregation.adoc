@@ -30,17 +30,17 @@ time*_ and a __*forecast time*__.
 
 Download link:examples/aggUnionSimple.ncml[aggUnionSimple.ncml],
 link:examples/cldc.mean.nc[cldc.mean.nc]
-andlink:examples/lflx.mean.nc[lflx.mean.nc] and place them together in a
+and link:examples/lflx.mean.nc[lflx.mean.nc] and place them together in a
 single directory. In the ToolsUI **NcML Tab**, open
 *aggUnionSimple.ncml* and examine it:
 
 -----------------------------------------------------------------------
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
   <attribute name="title" type="string" value="Union cldc and lflx"/>
-  <aggregation type="union">    
+  <aggregation type="union">
     <netcdf location="cldc.mean.nc"/>
     <netcdf location="lflx.mean.nc"/>
-  </aggregation> 
+  </aggregation>
 </netcdf>
 -----------------------------------------------------------------------
 
@@ -120,7 +120,7 @@ files._*
 == Exercise 2: Aggregation on an existing dimension
 
 Download link:examples/aggExisting.ncml[aggExisting.ncml],
-link:examples/jan.nc[jan.nc] andlink:examples/feb.nc[feb.nc] and place
+link:examples/jan.nc[jan.nc] and link:examples/feb.nc[feb.nc] and place
 them together in a single directory. In the ToolsUI **NcML Tab**, open
 *aggExisting.ncml* and examine it:
 
@@ -177,7 +177,7 @@ netcdf feb.nc {
      float lon(lon=4);
      int time(time=28);
  }
- 
+
 -------------------------------------
 
 In the ToolsUI **Viewer Tab**, open *aggExisting.ncml* and examine it
@@ -316,7 +316,7 @@ of length 3:
 
 Download link:examples/aggNew.ncml[aggNew.ncml],
 link:examples/time0.nc[time0.nc,] link:examples/time1.nc[time1.nc]
-andlink:examples/time2.nc[time2.nc] and place them together in a single
+and link:examples/time2.nc[time2.nc] and place them together in a single
 directory. In the ToolsUI **NcML Tab**, open *aggNew.ncml* and examine
 it:
 
@@ -533,7 +533,7 @@ the coordinate variable and assign it values:
 You can also explicitly list the values:
 
 ---------------------------------------
-  <values>12.0 27.0 39.0 51.0</values> 
+  <values>12.0 27.0 39.0 51.0</values>
 ---------------------------------------
 
 If the values are evenly spaced, you can use the start/increment form,
@@ -572,7 +572,7 @@ filename, then the next part of the filename must match the
 SimpleDateFormat string, then it ignores any trailing text. For example:
 
 ------------------------------------------
-      Filename: CG2006158_120000h_usfc.nc 
+      Filename: CG2006158_120000h_usfc.nc
 DateFormatMark: CG#yyyyDDD_HHmmss
 ------------------------------------------
 
@@ -645,7 +645,7 @@ _______________________________________________________________________
     <variableAgg name="T"/>
     <scan location="/data/goes/" suffix=".gini" />
   </aggregation>
-</netcdf> 
+</netcdf>
 -----------------------------------------------------------------------
 _______________________________________________________________________
 
@@ -706,17 +706,17 @@ One can nest netcdf elements in aggregation, for example:
  <aggregation dimName="time" type="joinExisting">
    <netcdf>
    <aggregation type="union">
-    <netcdf location="file:C:/test/path/temperature_20080101.nc" /> 
+    <netcdf location="file:C:/test/path/temperature_20080101.nc" />
     <netcdf location="file:C:/test/path/salinity_20080101.nc" />
    </aggregation>
   </netcdf>
     <netcdf>
    <aggregation type="union">
-    <netcdf location="file:C:/test/path/temperature_20080102.nc" /> 
+    <netcdf location="file:C:/test/path/temperature_20080102.nc" />
     <netcdf location="file:C:/test/path/salinity_20080102.nc" />
    </aggregation>
-  </netcdf> 
- </aggregation> 
+  </netcdf>
+ </aggregation>
 </netcdf>
 -----------------------------------------------------------------------
 
