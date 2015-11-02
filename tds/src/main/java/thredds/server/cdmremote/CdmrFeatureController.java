@@ -480,8 +480,8 @@ public class CdmrFeatureController { // implements LastModified {
       return null;
     }
 
-    res.setContentLength(infoString.length());
     res.setContentType(getContentType(query));
+    res.setContentLength(infoString.getBytes(CDM.utf8Charset).length);
 
     OutputStream out = res.getOutputStream();
     out.write(infoString.getBytes(CDM.utf8Charset));
