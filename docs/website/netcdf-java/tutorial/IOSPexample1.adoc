@@ -9,7 +9,7 @@ IOSP Example 1
 
 '''''
 
-We will work on an examplelink:files/lightningData.txt[lightning data]
+We will work on an example link:files/lightningData.txt[lightning data]
 test file, which looks like:
 
 _______________________________________________________
@@ -90,12 +90,12 @@ and place each strike into a Strike object:
    }
 8) return records.size();
  }
- 
+
  private class Strike {
    int d;
    double lat, lon, amp;
    int n;
-   
+
    Strike( Date d, double lat, double lon, double amp, int n ) {
 9)  this.d = (int) (d.getTime() / 1000);
     this.lat = lat;
@@ -212,7 +212,7 @@ The additional code looks like:
   private  ArrayDouble.D1 lonArray;
   private  ArrayDouble.D1 ampArray;
   private  ArrayInt.D1 nstrokesArray;
-  
+
   private int readAllData(RandomAccessFile raf) throws IOException, NumberFormatException, ParseException {
    ArrayList records = new ArrayList();
    // Creating the Strike records same as above ....
@@ -223,7 +223,7 @@ The additional code looks like:
    lonArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, shape);
    ampArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, shape);
    nstrokesArray = (ArrayInt.D1) Array.factory(DataType.INT, shape);
-   
+
 3) for (int i = 0; i < records.size(); i++) {
     Strike strike = (Strike) records.get(i);
     dateArray.set(i, strike.d);
@@ -257,7 +257,7 @@ Variable:
  date.setCachedData(dateArray, false);
 
    Variable lat = new Variable(ncfile, null, null, "lat");
-   // .. 
+   // ..
  lat.setCachedData(latArray, false);
 
    // do this for all variables
@@ -278,7 +278,7 @@ understood by the higher layers of the CDM, you should also add the
 Coordinate System and Typed Dataset information that is needed. To do
 so, you need to understand the Conventions used by these layers. In this
 case, we have Point data, so we are going to use Unidata’s
-link:../reference/CoordinateAttributes.html[_Coordinate Conventions] and
+link:../reference/CoordinateAttributes.adoc[_Coordinate Conventions] and
 Unidata’s
 http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html[Point
 Observation Conventions] which requires us to add certain attributes.
@@ -386,11 +386,11 @@ We now have not only a working IOSP, but a PointObsDataset that can be
 displayed and georeferenced! Working source code for this example is
 link:files/UspLightning1.java[here]. Modify the main program to point to
 the link:files/lightningData.txt[data file], and try running it. Note
-that you need to link:../reference/RuntimeLoading.html[load your class
+that you need to link:../reference/RuntimeLoading.adoc[load your class
 at runtime], for example by calling:
 
 ----------------------------------------------------------
-   NetcdfFile.registerIOProvider(UspLightning.class);     
+   NetcdfFile.registerIOProvider(UspLightning.class);
 ----------------------------------------------------------
 
 '''''

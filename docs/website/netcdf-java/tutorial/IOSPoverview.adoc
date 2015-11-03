@@ -113,7 +113,7 @@ defines the requested data subset.
 4.  Release all resources, for example, by calling
 **RandomAccessFile.close**().
 5.  You must give you IOSP a unique id, version and description. See
-link:../reference/formats/FileTypes.html[CDM File Types].
+link:../reference/formats/FileTypes.adoc[CDM File Types].
 6.  If any of your top level variables (not inside of a Structure) are
 Sequences, this is how the data in them will be accessed, and you must
 implement it.

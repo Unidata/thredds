@@ -34,7 +34,7 @@ repositories {
 ----
 
 Next, select modules based on the functionality you need. In the minimal case, you'll just want `cdm` and a
-<<Logging,logger>>. `cdm` implements the link:../CDM/index.html[CDM data model] and allows you to read NetCD-3 files (and a number of other
+<<Logging,logger>>. `cdm` implements the link:../CDM/index.adoc[CDM data model] and allows you to read NetCD-3 files (and a number of other
 file types). An example using JDK14 logging:
 
 [source,xml]
@@ -65,12 +65,12 @@ dependencies {
 ----
 
 There are optional modules that add support for reading (and sometimes writing) various
-link:formats/FileTypes.html[scientific data formats]. The formats associated with each module are:
+link:formats/FileTypes.adoc[scientific data formats]. The formats associated with each module are:
 
 * `bufr`: BUFR
 * `clcommon`: GINI and FYSAT
 * `grib`: GRIB-1 and GRIB-2
-* `netcdf4`: NetCDF-4. Writing requires the link:netcdf4Clibrary.html[NetCDF-4 C library]
+* `netcdf4`: NetCDF-4. Writing requires the link:netcdf4Clibrary.adoc[NetCDF-4 C library]
 to be installed.
 * `opendap`: OPeNDAP
 * `visadCdm`: GEMPAK grid, station, and sounding; McIDAS grid; and ADDE image and station

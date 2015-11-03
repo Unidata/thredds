@@ -196,7 +196,7 @@ An example:
 
 --------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" 
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
           location="C:/dev/github/thredds/cdm/src/test/data/testWrite.nc">
   <dimension name="lat" length="64" />
   <dimension name="lon" length="128" />
@@ -204,7 +204,7 @@ An example:
   <dimension name="names" length="3" />
 
   <variable name="names" type="char" shape="names names_len" />
- 
+
   <variable name="temperature" shape="lat lon" type="double">
     <attribute name="units" value="K" />
     <attribute name="scale" type="int" value="1 2 3" />
@@ -220,7 +220,7 @@ __*variable*__, __*dimension*__, __*attribute*__, or other _*group*_
 elements.
 
 ----------------------------------------------------------------
-  
+
 <xsd:element name="group">
   <xsd:complexType>
 (1)<xsd:choice minOccurs="0" maxOccurs="unbounded">
@@ -543,7 +543,7 @@ variable. Only one of the logical views can be used per variable.
      <xsd:attribute name="section" type="xsd:token" use="required"/>  <!-- creates anonymous dimensions -->
    </xsd:complexType>
  </xsd:element>
-   
+
  <xsd:element name="logicalSlice">
    <xsd:complexType>
      <xsd:attribute name="dimName" type="xsd:token" use="required"/>
@@ -628,7 +628,7 @@ netcdf element.
 
 (14) <xsd:element name="scanFmrc" minOccurs="0" maxOccurs="unbounded">
       <xsd:complexType>
-(7)    <xsd:attribute name="location" type="xsd:string" 
+(7)    <xsd:attribute name="location" type="xsd:string"
 (8)    <xsd:attribute name="regExp" type="xsd:string" />use="required"/>
 (9)    <xsd:attribute name="suffix" type="xsd:string" />
 (10)   <xsd:attribute name="subdirs" type="xsd:boolean" default="true"/>
@@ -640,7 +640,7 @@ netcdf element.
       </xsd:complexType>
      </xsd:element>
     </xsd:sequence>
-    
+
 (16) <xsd:attribute name="type" type="AggregationType" use="required"/>
 (17) <xsd:attribute name="dimName" type="xsd:token" />
 (18) <xsd:attribute name="recheckEvery" type="xsd:string" />
@@ -665,7 +665,7 @@ link:#promoteGlobalAttribute[promoteGlobalAttribute] element.
 4.  Specify which variables should be cached (outer aggregation only)
 with a link:#cacheVariable[cacheVariable] element.
 5.  Nested *netcdf* datasets can be explicitly listed.
-6.  Nested netcdf datasets can be implictly specified with a *scan*
+6.  Nested netcdf datasets can be implicitly specified with a *scan*
 element.
 7.  The scan directory **location**.
 8.  If you specify a **regExp**, only files with whose full pathnames
@@ -683,13 +683,13 @@ min'' or ``1 hour''.
 12. A *dateFormatMark* is used on *_joinNew_* types to create date
 coordinate values out of the filename. It consists of a section of text,
 a `#' marking character, then a
-java.text.link:#SimpleDateFormat[SimpleDateFormat] string. The number of
+link:#SimpleDateFormat[java.text.SimpleDateFormat] string. The number of
 characters before the # is skipped in the filename, then the next part
 of the filename must match the SimpleDateFormat string. You can ignore
 trailing text. For example:
 +
 --------------------------------------------------------------
-        Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
+        Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini
  DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm
 --------------------------------------------------------------
 +
@@ -703,10 +703,10 @@ of having to open each file and read it.
 13. You can optionally specify that the files should be opened in
 link:#enhance[enhanced mode] (default is
 __NetcdfDataset.EnhanceMode.None__). Generally you should do this if the
-ncml needs to operate on the datset after the CoordSysBuilder has
+ncml needs to operate on the dataset after the CoordSysBuilder has
 augmented it. Otherwise, you should not enhance.
 14. A specialized scanFmrc element can be used for a
-_*link:FmrcAggregation.html#forecastModelRunSingleCollection[forecastModelRunSingleCollection]*_
+_*link:FmrcAggregation.adoc#forecastModelRunSingleCollection[forecastModelRunSingleCollection]*_
 aggregation, where forecast model run data is stored in multiple files,
 with one forecast time per file.
 15. For scanFmrc, the run date and the forecast date is extracted from
@@ -716,14 +716,14 @@ these require matching a specific string in the file’s pathname and then
 matching a date or hour offset immediately before or after the match.
 The match is specified by placing it between `#' marking characters. The
 *runDateMatcher* and *forecastDateMatcher* has a
-java.text.link:#SimpleDateFormat[SimpleDateFormat] string before or
+link:#SimpleDateFormat[java.text.SimpleDateFormat] string before or
 after the match, while a *forecastOffsetMatcher* counts the number of
 `H' characters, and extracts an hour offset from the run date. For
 example:
 +
 ----------------------------------------------------
-     
-             Filename:  gfs_3_20060706_0300_006.grb 
+
+             Filename:  gfs_3_20060706_0300_006.grb
        runDateMatcher: #gfs_3_#yyyyMMdd_HH
 forecastOffsetMatcher:                     HHH#.grb#
 ----------------------------------------------------
@@ -784,7 +784,7 @@ the outer (first) dimension. +
 (2)  <xsd:attribute name="orgName" type="xsd:string"/>
    </xsd:complexType>
   </xsd:element>
-  
+
 -----------------------------------------------------------------
 
 1.  The name of the variable to be created.

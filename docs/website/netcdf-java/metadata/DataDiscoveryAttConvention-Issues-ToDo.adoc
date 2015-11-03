@@ -123,26 +123,26 @@ discovery arena. Could just be used as text to feed into a free text
 search (extension to summary?). I.e., how would this be mapped into
 THREDDS metadata (maybe documentation). +
 
-link:DataDiscoveryAttConvention.html#summary_Attribute[summary] +
+link:DataDiscoveryAttConvention.adoc#summary_Attribute[summary] +
 
 More general than a summary. +
 
  +
 
-link:DataDiscoveryAttConvention.html#acknowledgement_Attribute[acknowledgement] +
+link:DataDiscoveryAttConvention.adoc#acknowledgement_Attribute[acknowledgement] +
 
 I don’t see a place for this in CF. Maybe comment. +
 
 http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#des[history] +
 
-link:DataDiscoveryAttConvention.html#history_Attribute[history] +
+link:DataDiscoveryAttConvention.adoc#history_Attribute[history] +
 
 Pretty direct mapping from CF to this proposal. How compare with
 processing_level? +
 
 http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#des[institution] +
 
-link:DataDiscoveryAttConvention.html#creator_name_Attribute[creator_name] +
+link:DataDiscoveryAttConvention.adoc#creator_name_Attribute[creator_name] +
  creator_url +
  creator_email +
 
@@ -151,25 +151,25 @@ or institution). However, the more structured nature of the creator_*
 attributes might cause problems with an actual mapping to/from the more
 free text nature of the institution attribute. +
 
-link:DataDiscoveryAttConvention.html#contributor_name_Attribute[contributor_name] +
+link:DataDiscoveryAttConvention.adoc#contributor_name_Attribute[contributor_name] +
  contributor_role
 
 Another possible mapping (contributor can also be individual or
 institution). +
 
-link:DataDiscoveryAttConvention.html#id_Attribute[id] +
+link:DataDiscoveryAttConvention.adoc#id_Attribute[id] +
  naming_authority +
 
 Not good match. The id/naming_authority pair is intended to provide a
 ``globally'' unique ID for a dataset; doesn’t have to be related to
 creation of dataset. +
 
-link:DataDiscoveryAttConvention.html#project_Attribute[project] +
+link:DataDiscoveryAttConvention.adoc#project_Attribute[project] +
 
 Kind of one level above creator/institution. More of a ``why was this
 dataset created'' rather than ``where was it created''. +
 
-link:DataDiscoveryAttConvention.html#summary_Attribute[summary] +
+link:DataDiscoveryAttConvention.adoc#summary_Attribute[summary] +
 
 The summary is intended as a human readable description of the dataset
 that can be used in free text searches. Should probably contain
@@ -189,18 +189,18 @@ source (add to proposal?) +
 Seems like this would be a good addition to the proposed attributes.
 This information should probably also be in the summary attribute. +
 
-link:DataDiscoveryAttConvention.html#processing_level_Attribute[processing_level] +
+link:DataDiscoveryAttConvention.adoc#processing_level_Attribute[processing_level] +
 
 As Jonathan said, this is a bit vague. However, some places have
 specific processing level terminology. Do we want to allow for
 specifyingcontrolled lists of values? +
 
-link:DataDiscoveryAttConvention.html#project_Attribute[project] +
+link:DataDiscoveryAttConvention.adoc#project_Attribute[project] +
 
 I think project fits better in the creator/institution area than
 source. +
 
-link:DataDiscoveryAttConvention.html#summary_Attribute[summary] +
+link:DataDiscoveryAttConvention.adoc#summary_Attribute[summary] +
 
 The summary is intended as a human readable description of the dataset
 that can be used in free text searches. Should probably contain source
@@ -208,12 +208,12 @@ information.
 
 http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#des[standard_name] +
 
-link:DataDiscoveryAttConvention.html#standard_name_Attribute[standard_name] +
+link:DataDiscoveryAttConvention.adoc#standard_name_Attribute[standard_name] +
 
 Direct mapping between CF and this proposal. The only change is to allow
 use of non-CF standard name values (which should only be done if the CF
 convention is not being followed). This is done by indicating in the
-link:DataDiscoveryAttConvention.html#standard_name_vocabulary_Attribute[standard_name_vocabulary]
+link:DataDiscoveryAttConvention.adoc#standard_name_vocabulary_Attribute[standard_name_vocabulary]
 attribute the name of the variable name controlled vocabulary that is
 being used. +
  +
@@ -223,15 +223,15 @@ If so, need to not use ``standard_name''. +
 
 http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#des[title] +
 
-link:DataDiscoveryAttConvention.html#title_Attribute[title] +
+link:DataDiscoveryAttConvention.adoc#title_Attribute[title] +
 
 Direct mapping between CF and this proposal. +
 
  +
 
-link:DataDiscoveryAttConvention.html#time_coverage_start_Attribute[time_coverage_*] +
+link:DataDiscoveryAttConvention.adoc#time_coverage_start_Attribute[time_coverage_*] +
 
-link:DataDiscoveryAttConvention.html#geospatial_lat_min_Attribute[geospatial_*]
+link:DataDiscoveryAttConvention.adoc#geospatial_lat_min_Attribute[geospatial_*]
 
 Some points from Jonathan: 1) can deduce info from coordinate variables;
 2) need to be rewritten if subselection is made. +

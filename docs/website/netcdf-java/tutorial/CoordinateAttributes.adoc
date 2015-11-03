@@ -39,9 +39,9 @@ ________________________
 
 === See also :
 
-* link:../CDM/index.html[CDM Object Model].
+* link:../CDM/index.adoc[CDM Object Model].
 * _Coordinate Attribute
-link:../reference/CoordinateAttributes.html[Reference]
+link:../reference/CoordinateAttributes.adoc[Reference]
 
 === Contents:
 
@@ -579,7 +579,7 @@ code,CDL------------------------------------------------------ code,CDL
 
 Generally the set of valid transforms are not specified by this
 *_Coordinates* Convention. The
-link:../reference/StandardCoordinateTransforms.html[transforms that the
+link:../reference/StandardCoordinateTransforms.adoc[transforms that the
 nj22 library recognizes] come from the CF grid mappings and vertical
 transforms, so these are recommended, when possible, for the actual
 transform content.

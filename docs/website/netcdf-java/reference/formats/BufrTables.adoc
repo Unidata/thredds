@@ -57,7 +57,7 @@ seperated value) format:
    NCEP.12,  7,    8,       12,    -1,    -1, resource:/resources/bufrTables/local/ncep/ncepAwc.v12.override.csv, wmo_csv, , ,
    NCEP.14,  7,   -1,       14,    -1,    -1, resource:/resources/bufrTables/local/ncep/ncep.B07.14.local.csv, wmo_csv, resource:/resources/bufrTables/local/ncep/ncep.B4L-007-013-D.diff, mel_bufr
    NCEP.any, 7,   -1,       -1,    -1,    -1, resource:/resources/bufrTables/local/ncep/ncep.B07.local.csv, wmo_csv, resource:/resources/bufrTables/local/ncep/ncep.B4L-007-013-D.diff, mel_bufr
-... 
+...
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 1.  Each row contains the *center id, subcenter id, master table
@@ -83,7 +83,7 @@ A user can programmatically add another lookup table by calling
 ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile(). It must be in the
 same csv format as above. It will be searched first.
 
-This can also be done through thelink:../RuntimeLoading.html[runtime
+This can also be done through the link:../RuntimeLoading.adoc[runtime
 configuration] XML file.
 
  

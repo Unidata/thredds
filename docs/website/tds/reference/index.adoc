@@ -9,10 +9,10 @@ TDS Reference
 
 == THREDDS Catalogs
 
-* link:../tutorial/CatalogPrimer.html[Primer]
-* link:../catalog/InvCatalogSpec.html[Specification] (as annotated XML
+* link:../tutorial/CatalogPrimer.adoc[Primer]
+* link:../catalog/InvCatalogSpec.adoc[Specification] (as annotated XML
 Schema)
-* link:../catalog/InvCatalogServerSpec.html[Extensions for Server
+* link:../catalog/InvCatalogServerSpec.adoc[Extensions for Server
 Configuration]
 
 '''''
@@ -21,61 +21,61 @@ Configuration]
 
 === System Admin
 
-* link:ChecklistReference.html[Checklist for Production Installation]
-* link:RecommendedUpgradeProcessForTDS.html[Recommended Process for
+* link:ChecklistReference.adoc[Checklist for Production Installation]
+* link:RecommendedUpgradeProcessForTDS.adoc[Recommended Process for
 Upgrading a TDS]
-* link:DirectoryLocations.html[Location of Directories]
-* link:RunningMultipleTDS.html[Running Multiple TDS in a Single Tomcat
+* link:DirectoryLocations.adoc[Location of Directories]
+* link:RunningMultipleTDS.adoc[Running Multiple TDS in a Single Tomcat
 Instance] (not recommended)
-* link:TomcatBehindProxyServer.html[Running The TDS Behind a Proxy
+* link:TomcatBehindProxyServer.adoc[Running The TDS Behind a Proxy
 Server]
 
 === Tomcat Configuration
 
-* link:TomcatSecurity.html[Tomcat Security]
-* link:AccessLog.html[Tomcat Logging]
+* link:TomcatSecurity.adoc[Tomcat Security]
+* link:AccessLog.adoc[Tomcat Logging]
 
 === TDS Administration
 
-* link:CatalogConfiguration.html[Configuration Catalogs]
-* link:DatasetScan.html[DatasetScan]
-* link:collections/FeatureCollections.html[FeatureCollections]
-* link:ServletLog.html[Logging]
-* link:ConfigWithTdsProperties.html[Properties]
-* link:RemoteManagement.html[Remote Management]
-* link:ThreddsConfigXMLFile.html[threddsConfig.xml]
+* link:CatalogConfiguration.adoc[Configuration Catalogs]
+* link:DatasetScan.adoc[DatasetScan]
+* link:collections/FeatureCollections.adoc[FeatureCollections]
+* link:ServletLog.adoc[Logging]
+* link:ConfigWithTdsProperties.adoc[Properties]
+* link:RemoteManagement.adoc[Remote Management]
+* link:ThreddsConfigXMLFile.adoc[threddsConfig.xml]
 
 === TDS Services
 
-* link:CatalogService.html[Catalog Services] 
-* link:Services.html[Data Access Services]:
+* link:CatalogService.adoc[Catalog Services] 
+* link:Services.adoc[Data Access Services]:
 ** OPeNDAP
 ** NetCDF Subset Service:
-link:NetcdfSubsetServiceConfigure.html[configure],
-link:services/NetcdfSubsetServiceReference.html[reference]
-** link:../../netcdf-java/reference/stream/CdmRemote.html[CdmRemote] and
-link:../../netcdf-java/reference/stream/CdmrFeature.html[CdmrFeature]
-** link:WCS.html[WCS 1.0 Service]
-** link:WMS.html[WMS 1.3.0 Service]
+link:NetcdfSubsetServiceConfigure.adoc[configure],
+link:services/NetcdfSubsetServiceReference.adoc[reference]
+** link:../../netcdf-java/reference/stream/CdmRemote.adoc[CdmRemote] and
+link:../../netcdf-java/reference/stream/CdmrFeature.adoc[CdmrFeature]
+** link:WCS.adoc[WCS 1.0 Service]
+** link:WMS.adoc[WMS 1.3.0 Service]
 * Metadata
-** link:ncISO.html[ncISO: Dataset Metadata Services]
-** link:DigitalLibraries.html[OAI Metadata harvesting]
+** link:ncISO.adoc[ncISO: Dataset Metadata Services]
+** link:DigitalLibraries.adoc[OAI Metadata harvesting]
 ** also see:
 http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discovery[Attribute
 Conventions Dataset Discovery]
-* link:ThreddsConfigXMLFile.html#Server_Info_Docs[Server Information]
+* link:ThreddsConfigXMLFile.adoc#Server_Info_Docs[Server Information]
 
 === Customization
 
-* link:DatasetSource.html[Dataset Source Plug-in]
-* link:Viewers.html[Viewer Links]
+* link:DatasetSource.adoc[Dataset Source Plug-in]
+* link:Viewers.adoc[Viewer Links]
 
 === Restricted Access to Datasets
 
-* link:RestrictedAccess.html[Restricted Access] to Datasets
-* link:PluggableRestrictedAccess.html[Adding your own Authenticator for
+* link:RestrictedAccess.adoc[Restricted Access] to Datasets
+* link:PluggableRestrictedAccess.adoc[Adding your own Authenticator for
 Restricting Access]
-* link:HTTPsecurityChallenge.html[HTTP Security Challenge Messages
+* link:HTTPsecurityChallenge.adoc[HTTP Security Challenge Messages
 Example]
 
 '''''
@@ -84,18 +84,18 @@ Example]
 
 TDM does background Indexing for GRIB and Point Feature Collections
 
-* link:collections/TDM.html[Thredds Data Manager (TDM)]
-* link:collections/TDM.html#GCPass1[GCPass1] : This is a utility program
+* link:collections/TDM.adoc[Thredds Data Manager (TDM)]
+* link:collections/TDM.adoc#GCPass1[GCPass1] : This is a utility program
 to examine the files in a collection before actually indexing them.
 
 '''''
 
 === Also see:
 
-* link:../faq.html[TDS FAQ]
-* link:../tutorial/index.html[TDS Tutorial]
+* link:../faq.adoc[TDS FAQ]
+* link:../tutorial/index.adoc[TDS Tutorial]
 * TDS Architecture link:TDSarchictecture.ppt[powerpoint]
-* link:Performance.html[TDS Performance]
+* link:Performance.adoc[TDS Performance]
 * https://wiki.ucar.edu/display/unidata/TDS+Servlets+Configuration+(4.4.0-alpha)[TDS
 Servlets Configuration]
 

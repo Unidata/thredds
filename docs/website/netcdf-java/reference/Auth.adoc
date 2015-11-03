@@ -36,7 +36,7 @@ approach is to provide various kinds of authorization credentials
 (broadly construed) to servers by clients.
 
 Before reading this document, the reader should have read the
-link:./Session.html[Session.html] and the HTTPauthentication.html
+link:./Session.html[Session.adoc] and the HTTPauthentication.html
 documents to understand the context in which the authorization
 mechanisms operate. The section link:#Status[Status] should also be read
 to get important information about the current state of this code.

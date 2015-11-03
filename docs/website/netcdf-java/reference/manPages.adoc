@@ -58,10 +58,10 @@ using F90 section specificiation
 == nccopy
 
 Copies a dataset to a netCDF-3 (default) or netCDF-4 file. The input may
-be any link:formats/FileTypes.html[CDM dataset], including OPeNDAP URLs,
+be any link:formats/FileTypes.adoc[CDM dataset], including OPeNDAP URLs,
 NcML, GRIB files, etc. If the dataset uses the extended data model, you
 must write to netCDF-4. If writing to netCDF-4, you must have the
-link:netcdf4Clibrary.html[netcdf-4 C library loaded].
+link:netcdf4Clibrary.adoc[netcdf-4 C library loaded].
 
 -------------------------------------------------------------------------------------
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.write.Nccopy [options]
@@ -134,13 +134,13 @@ where
 
 == CFPointWriter
 
-Copies a CDM link:FeatureDatasets/PointFeatures.html[point feature
+Copies a CDM link:FeatureDatasets/PointFeatures.adoc[point feature
 dataset] to
 http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries[CF/NetCDF
 format]. The CF conventions target NetCDF-3, but you can also write
 NetCDF-4 files in
 https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Classic-Model-Format.html[classic
-mode]. For that, you must first install the link:netcdf4Clibrary.html[C
+mode]. For that, you must first install the link:netcdf4Clibrary.adoc[C
 library].
 
 -----------------------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.ft.point.writer.CFPointW
 == GribCdmIndex
 
 Write GRIB Collection Indexes from an XML file containing a
-link:../../tds/reference/collections/GribCollections.html[GRIB
+link:../../tds/reference/collections/GribCollections.adoc[GRIB
 <featureCollection> XML element].
 
 ----------------------------------------------------------------------------------------------
@@ -200,9 +200,9 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmI
 
 Note that the output file is placed in the root directory of the
 collection, as specified by the
-link:../../tds/reference/collections/CollectionSpecification.html[Collection
+link:../../tds/reference/collections/CollectionSpecification.adoc[Collection
 Specification] of the GRIB
-link:../../tds/reference/collections/FeatureCollections.html[<featureCollection>].
+link:../../tds/reference/collections/FeatureCollections.adoc[<featureCollection>].
 
 '''''
 

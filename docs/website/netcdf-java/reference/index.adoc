@@ -7,44 +7,44 @@ NetCDF-Java Reference
 
 = Netcdf-Java Library Reference Documentation
 
-* link:faq.html[Frequently Asked Questions]
-* link:manPages.html[CDM utility programs]
-* link:Cookbook.html[Cookbook Examples]
+* link:faq.adoc[Frequently Asked Questions]
+* link:manPages.adoc[CDM utility programs]
+* link:Cookbook.adoc[Cookbook Examples]
 
 === NetCDF-Java library
 
-* link:StructureData.html[ArrayStructures]
-* link:formats/BufrFiles.html[BUFR Files]
-* link:formats/BufrTables.html[BUFR Tables]
-* link:CoordinateAttributes.html[CDM Coordinate Attribute Convention]
-* link:DatasetUrls.html[Dataset URLs]
-* link:Caching.html[Disk Caching]
-* link:formats/FileTypes.html[File Types]
-* link:formats/GribFiles.html[GRIB Files]
-* link:formats/GribTables.html[GRIB Tables in CDM]
-* HTTP link:Auth.html[Authentication] and link:Session.html[Session]
+* link:StructureData.adoc[ArrayStructures]
+* link:formats/BufrFiles.adoc[BUFR Files]
+* link:formats/BufrTables.adoc[BUFR Tables]
+* link:CoordinateAttributes.adoc[CDM Coordinate Attribute Convention]
+* link:DatasetUrls.adoc[Dataset URLs]
+* link:Caching.adoc[Disk Caching]
+* link:formats/FileTypes.adoc[File Types]
+* link:formats/GribFiles.adoc[GRIB Files]
+* link:formats/GribTables.adoc[GRIB Tables in CDM]
+* HTTP link:Auth.adoc[Authentication] and link:Session.adoc[Session]
 Control
-* link:HTTPservice.html[HTTP Server: remote files using HTTP]
-* link:BuildDependencies.html[Build Dependencies]
-* link:netcdf4Clibrary.html[NetCDF-4 file writing]
-* link:RuntimeLoading.html[Runtime Loading] (aka Plug-ins)
-* link:StandardCoordinateTransforms.html[Standard Horizontal Coordinate
+* link:HTTPservice.adoc[HTTP Server: remote files using HTTP]
+* link:BuildDependencies.adoc[Build Dependencies]
+* link:netcdf4Clibrary.adoc[NetCDF-4 file writing]
+* link:RuntimeLoading.adoc[Runtime Loading] (aka Plug-ins)
+* link:StandardCoordinateTransforms.adoc[Standard Horizontal Coordinate
 Transforms]
-* link:StandardCoordinateTransforms.html[Standard Vertical Coordinate
+* link:StandardCoordinateTransforms.adoc[Standard Vertical Coordinate
 Transforms]
 
-=== Common Data Model (link:../CDM/index.html[Overview])
+=== Common Data Model (link:../CDM/index.adoc[Overview])
 
-* link:../CDM/AttributeConventions.html[CDM Attributes]
-* link:../CDM/Identifiers.html[CDM Identifiers]
-* link:FeatureDatasets/CFpointImplement.html[CDM implementation of CF
+* link:../CDM/AttributeConventions.adoc[CDM Attributes]
+* link:../CDM/Identifiers.adoc[CDM Identifiers]
+* link:FeatureDatasets/CFpointImplement.adoc[CDM implementation of CF
 discrete sampling features]
-* link:stream/CdmRemote.html[CDM Remote]
-* link:../CDM/CFdiff.html[CF and CDM differences]
-* link:../CDM/CalendarDateTime.html[Calendar Dates]
-* link:../CDM/DataType.html[Data Types]
-* link:FeatureDatasets/Overview.html[Feature Types]
-* link:FeatureDatasets/GridCoverage.html[Grid Coverag]e
+* link:stream/CdmRemote.adoc[CDM Remote]
+* link:../CDM/CFdiff.adoc[CF and CDM differences]
+* link:../CDM/CalendarDateTime.adoc[Calendar Dates]
+* link:../CDM/DataType.adoc[Data Types]
+* link:FeatureDatasets/Overview.adoc[Feature Types]
+* link:FeatureDatasets/GridCoverage.adoc[Grid Coverag]e
 
 '''''
 

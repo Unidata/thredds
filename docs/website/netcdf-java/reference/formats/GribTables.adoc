@@ -160,7 +160,7 @@ parameters, or else the file will fail to open.
 
 You can set strictMode programatically via
 *ucar.nc2.grib.grib1.tables.Grib1StandardTables.setStrict(true);* or in
-the link:../RuntimeLoading.html#XML[RunTime configuration file] by
+the link:../RuntimeLoading.adoc#XML[RunTime configuration file] by
 adding
 
 ---------------------------
@@ -191,7 +191,7 @@ version that a GRIB file uses, you must track down the corrrect table
 and add it to the CDM at runtime. (Also, send it to us so we can include
 it in the next release). To add a table at runtime:
 
-1.  Use link:../RuntimeLoading.html[Runtime Loading] to add your own
+1.  Use link:../RuntimeLoading.adoc[Runtime Loading] to add your own
 table programmatically within your application, or by using the Runtime
 configuration file.
 2.  Tables that are added at runtime take precedence over the standard

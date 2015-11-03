@@ -17,7 +17,7 @@ objects that follow this object model:
 
 image:../images/CoordSys.png[image]
 
-For more details, see the link:../CDM/index.html[CDM Object Model].
+For more details, see the link:../CDM/index.adoc[CDM Object Model].
 
 A CoordSysBuilderIF class must be created for each type of dataset that
 encodes their coordinate systems differently. This obviously is
@@ -108,7 +108,7 @@ Transforms. Examples of existing *CoordSysBuilder* subclasses are in the
 
 The *ucar.nc2.dataset.CoordSysBuilder* class uses the " *_Coordinate*
 *attributes*" (``underscore Coordinate attributes'', described fully
-link:../reference/CoordinateAttributes.html[here]) to create Coordinate
+link:../reference/CoordinateAttributes.adoc[here]) to create Coordinate
 System objects. An attribute that starts with an underscore is a
 ``system attribute'', which usually implies some special processing or
 behavior within the NetCDF library (both C and Java).
@@ -371,7 +371,7 @@ have a reference to a *ucar.unidata.geoloc.Projection* or a
 to do the actual mathematical transformation. The Netcdf-Java library
 has a number of these, mostly following the CF-1.0 specification
 (Appendix F for projections, Appendix D for vertical transforms). You
-can also link:CoordTransBuilder.html[write your own implementation] and
+can also link:CoordTransBuilder.adoc[write your own implementation] and
 add them at run time.
 
 For this lesson, we will concentrate on what your CoordSysBuilder needs

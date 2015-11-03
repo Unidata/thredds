@@ -55,7 +55,7 @@ variables as coordinates for the _Reflectivity_ data. The _gateR_
 variable is a coordinate variable, but the others are not, so we call
 them _*coordinate axes*_ to keep things clear. This usage of the
 _*_CoordinateAxes*_ attribute follows a
-link:../CoordinateAttributes.html[proposed attribute convention for
+link:../CoordinateAttributes.adoc[proposed attribute convention for
 coordinate systems].
 
 The meaning of these coordinate axes is that the data at

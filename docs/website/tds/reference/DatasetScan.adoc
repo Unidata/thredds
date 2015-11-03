@@ -13,7 +13,7 @@ The *datasetScan* element allows you to serve all files in a directory
 tree. The files must be homogenous enough that the same metadata can be
 applied to all of them.
 
-See link:../catalog/InvCatalogServerSpec.html#datasetScan_Element[Server
+See link:../catalog/InvCatalogServerSpec.adoc#datasetScan_Element[Server
 Catalog Spec] for formal definition of the XML.
 
 == Example
@@ -126,7 +126,7 @@ catalog, the catalogRef xlink:href value of ``GFS/catalog.xml'' resolves
 to **http://server:8080/thredds/catalog/ncep/GFS/catalog.xml**.
 3.  The dataset access URLs are built from the service base attribute
 and the dataset urlPath attribute (see the
-link:../catalog/InvCatalogSpec.html#constructingURLs[THREDDS URL
+link:../catalog/InvCatalogSpec.adoc#constructingURLs[THREDDS URL
 construction] documentation). So the dataset URLs from the above catalog
 would be
 **http://server:8080/thredds/dodsC/ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1**.
@@ -167,7 +167,7 @@ for example:
 
 A _datasetScan_ element can specify which files and directories it will
 include with a _filter_ element (also see
-link:../catalog/InvCatalogServerSpec.html[server catalog spec] for
+link:../catalog/InvCatalogServerSpec.adoc[server catalog spec] for
 details). When no filter element is given, all files and directories are
 included in the generated catalog(s). Adding a *filter* element to your
 datasetScan element allows you to include (and/or exclude) the files and
@@ -277,7 +277,7 @@ catalogScan (default true)
 this amount (in minutes, may be fractional) are excluded. (default 0)
 
 Also see
-link:../catalog/InvCatalogServerSpec.html#addProxies_Element[Server-side
+link:../catalog/InvCatalogServerSpec.adoc#addProxies_Element[Server-side
 Catalog specification] document.
 
 == Adding _timeCoverage_ Elements

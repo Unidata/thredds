@@ -33,22 +33,22 @@ decides what the valid dataPaths are.
 === Servlets
 
 * CatalogGenServlet: _/cataloggen/*_
-* link:Paths.html#catalogService[CatalogServicesServlet]:
+* link:Paths.adoc#catalogService[CatalogServicesServlet]:
 _/catalogServices/*, /catalog.html_
-* link:Paths.html#catalog[CatalogServlet]: _/catalog/*_
-* link:Paths.html#cdmValidate[CoordSysValidatorServlet]: _/cdmValidate_
-* link:Paths.html#DLWriter[DLwriterServlet]: _/DLwriter_
+* link:Paths.adoc#catalog[CatalogServlet]: _/catalog/*_
+* link:Paths.adoc#cdmValidate[CoordSysValidatorServlet]: _/cdmValidate_
+* link:Paths.adoc#DLWriter[DLwriterServlet]: _/DLwriter_
 * DqcServlet: _/dqc/*_
-* link:Paths.html#FileServer[FileServerServlet]: _/fileServer/*_
-* link:Paths.html#modelInventory[FmrcInventoryServlet]__:
+* link:Paths.adoc#FileServer[FileServerServlet]: _/fileServer/*_
+* link:Paths.adoc#modelInventory[FmrcInventoryServlet]__:
 /modelInventory/*__
 * MetarServlet: _/idd/metar/*_
-* link:Paths.html#dodsC[NcDODSServlet]: _/dodsC/*_
-* link:Paths.html#ncss[NetcdfServlet]: _/ncss/grid/*_
+* link:Paths.adoc#dodsC[NcDODSServlet]: _/dodsC/*_
+* link:Paths.adoc#ncss[NetcdfServlet]: _/ncss/grid/*_
 * StationObsCollectionServlet: _/obsServer/*_
 * ThreddsDefaultServlet__: everything else__
-* link:Paths.html#view[ViewServlet]__: /view/*__
-* link:Paths.html#wcs[WCSServlet]: _/wcs/*_
+* link:Paths.adoc#view[ViewServlet]__: /view/*__
+* link:Paths.adoc#wcs[WCSServlet]: _/wcs/*_
 
 '''''
 

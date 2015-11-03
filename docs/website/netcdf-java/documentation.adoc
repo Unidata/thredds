@@ -68,7 +68,7 @@ is for the development branch of the IDV.
 * link:javadoc/index.adoc[Public javadoc.] This is the public interface.
 Future changes to the API will attempt to remain backwards compatible
 with this API.
-* link:javadocAll/index.html[All javadoc]. This is the javadoc for all packages and all methods except private. CAREFUL, much of this will change.
+* link:javadocAll/index.adoc[All javadoc]. This is the javadoc for all packages and all methods except private. CAREFUL, much of this will change.
 * Try out the *4.6* version of ToolsUI application: link:webstart/netCDFtools.jnlp[launch from webstart].
 * Unidata public https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/[Maven repository] for maven artifacts
 * All source is on https://github.com/Unidata/thredds[GitHub]
@@ -105,8 +105,8 @@ from the producer is possible and send them to us.
 * Indexing has changed since 4.3 (this will be detected automatically).
 * Evolving documentation for GRIB is at:
 
-** link:reference/formats/GribTables.adoc[GribTables.html]
-** link:reference/formats/GribFiles.adoc[GribFiles.html]
+** link:reference/formats/GribTables.adoc[GribTables.adoc]
+** link:reference/formats/GribFiles.adoc[GribFiles.adoc]
 
 === Caveats and not-so-stable APIs:
 

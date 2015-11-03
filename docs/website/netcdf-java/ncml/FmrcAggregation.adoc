@@ -7,7 +7,7 @@ FMRC Aggregation
 
 = *Forecast Model Run Collection* Aggregation
 
-See also: link:AnnotatedSchema4.html[Annotated NcML Schema]
+See also: link:AnnotatedSchema4.adoc[Annotated NcML Schema]
 
 == 1. Definitions
 
@@ -113,7 +113,7 @@ dataset.
 
 === Case 1: All data for each forecast model run is in a single file
 
-This case is similar to a link:Aggregation.html#joinNew[JoinNew]
+This case is similar to a link:Aggregation.adoc#joinNew[JoinNew]
 aggregation, in that a new, outer dimension is created, and each file
 becomes one slice of the new dataset.
 
@@ -152,7 +152,7 @@ Equivalently, you can use an NcML *scan* element:
 1.  All the files in the directory **_/data/ldm/CONUS_80km/_**, ending
 in *_.grib1_* will be aggregated. The run time coordinate values will be
 extracted from the filename, using the
-link:Aggregation.html#dateFormatMark[dateFormatMark] attribute. +
+link:Aggregation.adoc#dateFormatMark[dateFormatMark] attribute. +
 
 A runtime dimension and coordinate variable is added, and the time
 coordinate is made into a 2D coordinate, as required for an FMRC
@@ -285,7 +285,7 @@ that have a literal "**_nmm.GrbF**" in the name, followed by exactly 5
 digits, and nothing afterwards, will be used. The *runDateMatcher*
 matches the literal *``_nmm.GrbF''* in the file’s full pathname**,**
 then applies the
-link:AnnotatedSchema4.html#SimpleDateFormat[_*java.text.SimpleDateFormat*_]
+link:AnnotatedSchema4.adoc#SimpleDateFormat[_*java.text.SimpleDateFormat*_]
 *yyMMddHH* to the 8 characters that come before the match, to derive the
 run date coordinate. The *forecastOffsetMatcher* also matches the
 literal *``_nmm.GrbF'',* then turns the 3 characters after the match
@@ -314,7 +314,7 @@ literals, and the other chanarcters ``y'', ``M'', ``d'', ``H'' are
 special characters that match year, month, day and hour numbers,
 respectively. The dates are assumed to be GMT unless otherwise
 specified. See
-link:AnnotatedSchema4.html#SimpleDateFormat[_*java.text.SimpleDateFormat*_]
+link:AnnotatedSchema4.adoc#SimpleDateFormat[_*java.text.SimpleDateFormat*_]
 for more details of how date matching works.
 
 === Notes common to all cases

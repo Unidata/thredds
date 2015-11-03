@@ -351,7 +351,7 @@ is deployed.
 
 ==== Upgrading the TDS
 
-A link:Checklist.html[maintenance checklist] and contains helpful
+A link:Checklist.adoc[maintenance checklist] and contains helpful
 information about upgrading the TDS.
 http://www.unidata.ucar.edu/software/thredds/current/tds/UpgradingTo4.6.html[New
 features] and
@@ -552,14 +552,14 @@ well-formed and without error.
 
 ==== TDS Monitoring & Debugging Tools
 
-You will need to enable link:Security.html#ssl[Enable SSL encryption] to
+You will need to enable link:Security.adoc#ssl[Enable SSL encryption] to
 access a couple of TDS monitoring and debugging tools.
 
 * If you plan to deploy the TDS in a _production environment_ you will
 need to follow the best practices outlined in the
-link:Security.html[Production server overview] section of the tutorial
+link:Security.adoc[Production server overview] section of the tutorial
 to finish hardening your server environment.
-* The link:BasicThreddsConfig_xml.html[Basic TDS Configuration] and
-link:ConfigCatalogs.html[TDS Configuration Catalogs] sections of this
+* The link:BasicThreddsConfig_xml.adoc[Basic TDS Configuration] and
+link:ConfigCatalogs.adoc[TDS Configuration Catalogs] sections of this
 tutorial covers the TDS configuration files, configuration options and
 TDS catalog structure.

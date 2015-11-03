@@ -12,7 +12,7 @@
 Language]
 * http://www.unidata.ucar.edu/software/netcdf/ncml/Aggregation.html[NcML
 Aggregation]
-* link:../reference/DatasetScan.html[DatasetScan]
+* link:../reference/DatasetScan.adoc[DatasetScan]
 * http://www.unidata.ucar.edu/software/netcdf/ncml/FmrcAggregation.html[FMRC
 Aggregation]
 

@@ -35,7 +35,7 @@ __conventionName__**.** If not, loop through the *CoordSysBuilderIF*
 classes and call
 
 -----------------------------------
- boolean isMine(NetcdfFile ncfile) 
+ boolean isMine(NetcdfFile ncfile)
 -----------------------------------
 
 on each, until one returns true. If none are found, use the default
@@ -75,7 +75,7 @@ interface.
 -----------------------------------------------------------------------------------------------------------------------------------
 
 * This registers a single table for the given center/subcenter/version.
-* See link:formats/GribTables.html[GribTables] for more information
+* See link:formats/GribTables.adoc[GribTables] for more information
 about parameter tables.
 * GRIB2 table handling is still being developed.
 
@@ -87,7 +87,7 @@ about parameter tables.
 
 * This registers one or more tables for different
 center/subcenter/versions.
-* See link:formats/GribTables.html[GribTables] for more information
+* See link:formats/GribTables.adoc[GribTables] for more information
 about lookup tables.
 * GRIB2 table handling is still being developed.
 
@@ -97,7 +97,7 @@ about lookup tables.
   ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile( String filename) throws throws FileNotFoundException;
 -----------------------------------------------------------------------------------------------------------
 
-The file must be a link:formats/BufrTables.html[BUFR table lookup file].
+The file must be a link:formats/BufrTables.adoc[BUFR table lookup file].
 
 ''''
 
@@ -139,18 +139,18 @@ for the given *transformName* in the dataset. The type must be
 _vertical_ or __projection__.
 4.  Loads a *FeatureDatasetFactory* with the given class name which open
 *FeatureDatasets* of the given featureType.
-5.  Load a link:formats/GribTables.html[GRIB-1 parameter table] (as of
+5.  Load a link:formats/GribTables.adoc[GRIB-1 parameter table] (as of
 version 4.3)
-6.  Load a link:formats/GribTables.html[GRIB-1 parameter table lookup]
+6.  Load a link:formats/GribTables.adoc[GRIB-1 parameter table lookup]
 (as of version 4.3)
-7.  Load a link:formats/GribTables.html[GRIB-1 parameter lookup table]
+7.  Load a link:formats/GribTables.adoc[GRIB-1 parameter lookup table]
 (versions < 4.3, deprecated)
-8.  Load a link:formats/GribTables.html[GRIB-2 parameter lookup table]
+8.  Load a link:formats/GribTables.adoc[GRIB-2 parameter lookup table]
 (versions < 4.3, deprecated)
-9.  Load a link:formats/BufrTables.html[BUFR table lookup] file
-10. Turn link:formats/GribTables.html#strict[strict GRIB1 table
+9.  Load a link:formats/BufrTables.adoc[BUFR table lookup] file
+10. Turn link:formats/GribTables.adoc#strict[strict GRIB1 table
 handling] off.
-11. Set thelink:netcdf4Clibrary.html[netCDF-4 C library] path and name.
+11. Set the link:netcdf4Clibrary.adoc[netCDF-4 C library] path and name.
 
 There are several ways pass the Runtime Configuration XML to the CDM
 library. From your application, you can pass a *java.io.InputStream* (or
@@ -161,7 +161,7 @@ http://www.jdom.org/[JDOM] element) to
 ----
   // Example 1: read from file
   StringBuffer errlog = new StringBuffer();
-  FileInputStream fis = new FileInputStream( filename);   
+  FileInputStream fis = new FileInputStream( filename);
   ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);
   System.out.println( errlog);
 
@@ -224,7 +224,7 @@ implementing class(es). For example, if the JAR file contained a class
 named com.mycompany.MyIOSP, the JAR file would contain a file named:
 +
 ---------------------------------------------------
- META-INF/services/ucar.nc2.iosp.IOServiceProvider 
+ META-INF/services/ucar.nc2.iosp.IOServiceProvider
 ---------------------------------------------------
 +
 containing the line:

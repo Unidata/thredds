@@ -193,7 +193,7 @@ directory tree.
 ------------------------------------
 
 You can place a link to your own _*Viewer*_ on the TDS HTML page, by
-loading a link:Viewers.html[viewer] at runtime. This line is needed in
+loading a link:Viewers.adoc[viewer] at runtime. This line is needed in
 the config file only if you are writing your own Java class.
 
 === Adding Dataset Sources
@@ -203,7 +203,7 @@ the config file only if you are writing your own Java class.
 -----------------------------------------------------------
 
 You can add a _*DataSource*_ - essentially an IOSP with access to
-Servlet request parameters, by loading a link:DatasetSource.html[dataset
+Servlet request parameters, by loading a link:DatasetSource.adoc[dataset
 source] at runtime.
 
 === Checking for Updates
@@ -263,7 +263,7 @@ Header on all OPeNDAP responses.
 === WCS Service
 
 The OGC WCS service provided as part of the TDS is described in more
-detail link:WCS.html[here]. By default this service is enabled, and can
+detail link:WCS.adoc[here]. By default this service is enabled, and can
 be disabled by including the following in the `threddsConfig.xml` file:
 
 ----------------------
@@ -303,7 +303,7 @@ successful download. Do not set to <= 0.
 === WMS Service
 
 The OGC WMS service provided as part of the TDS is described in more
-detail link:WMS.html[here]. By default this service is enabled, and can
+detail link:WMS.adoc[here]. By default this service is enabled, and can
 be disabled by including the following in the `threddsConfig.xml` file:
 
 ----------------------
@@ -347,7 +347,7 @@ service will return.
 === NetCDF Subset Service (NCSS)
 
 The NetCDF Subset Service provided as part of the TDS is described in
-more detail link:NetcdfSubsetServiceReference.html[here]. By default
+more detail link:NetcdfSubsetServiceReference.adoc[here]. By default
 this service is enabled, and can be disabled by including the following
 in the `threddsConfig.xml` file:
 
@@ -405,7 +405,7 @@ the following in the `threddsConfig.xml` file:
 
 Each of the *allow* elements above enables the corresponding ncISO
 service (NCML, UDDC, and ISO). The ncISO services are described in more
-detail on the link:ncISO.html[ncISO page].
+detail on the link:ncISO.adoc[ncISO page].
 
 '''''
 
@@ -787,7 +787,7 @@ thus > 7M datastes), and so Linux is preferred for large installations.
 
 === User Triggering
 
-You must have link:RemoteManagement.html[Remote Managenment] enabled
+You must have link:RemoteManagement.adoc[Remote Managenment] enabled
 (enable SSL in Tomcat, and login as a user with the *tdsConfig*
 user-role).
 

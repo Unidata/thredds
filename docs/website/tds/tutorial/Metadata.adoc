@@ -176,7 +176,7 @@ ending with the present time.
 scanning the directory named by **location**. The *name* attribute is
 used as the title of DL records, so try to make it concise yet
 descriptive. The *ID* is also very important. See
-link:../reference/DatasetScan.html[here] for a full description of the
+link:../reference/DatasetScan.adoc[here] for a full description of the
 datasetScan element.
 7.  This metadata also applies to all the dynamically created datasets
 in the datasetScan element.
@@ -188,7 +188,7 @@ bounding box for the dataset.
 10. The *variables* element list the data variables available in the
 dataset.
 11. There are a number of special instructions for datasetScan (see
-link:../reference/DatasetScan.html#addTimeCoverage[here] for the gory
+link:../reference/DatasetScan.adoc#addTimeCoverage[here] for the gory
 details). The *filter* element specifies which files and directories to
 include or exclude from the catalog. The *addDatasetSize* element
 indicates that a *dataSize* element should be added to each atomic
@@ -207,8 +207,8 @@ datasets in a collection differ only in their time coverage.
 Catalog 1.0 Specification]
 * http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html[NetCDF
 Attribute Convention for Dataset Discovery]
-* link:../catalog/InvCatalogSpec.html[THREDDS Catalog specification] -
-link:../catalog/InvCatalogSpec.html#threddsMetadataGroup[Metadata
+* link:../catalog/InvCatalogSpec.adoc[THREDDS Catalog specification] -
+link:../catalog/InvCatalogSpec.adoc#threddsMetadataGroup[Metadata
 Section]
 
 '''''

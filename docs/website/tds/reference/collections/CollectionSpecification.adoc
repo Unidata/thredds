@@ -74,7 +74,7 @@ Remember that an unescaped ``.'' matches any character. An escaped
 ``\.'' matches the literal ``.'' character.
 
 From the filename, extract the date by applying the
-link:SimpleDateFormat.html[SimpleDateFormat] template _yyyyMMdd_HHmm_ to
+link:SimpleDateFormat.adoc[SimpleDateFormat] template _yyyyMMdd_HHmm_ to
 the portion of the filename after
 
 _________________
@@ -105,7 +105,7 @@ Demarcate the part of the filename where the run date is encoded, using
 /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#20090301_0600#.grib1
 -----------------------------------------------------------------------------------------
 
-Substitute a link:SimpleDateFormat.html[SimpleDateFormat]:
+Substitute a link:SimpleDateFormat.adoc[SimpleDateFormat]:
 
 -----------------------------------------------------------------------------------------
 /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1
@@ -134,7 +134,7 @@ directory and file names, with the exception of the `.'
 The *date extractor* can only be used on the filename in a collection
 specification string. If the date is part of a directory name, use the
 more general *dateFormatMark* on the
-*link:FeatureCollections.html#collection[collection]* element.
+*link:FeatureCollections.adoc#collection[collection]* element.
 
 The *date extractor* element cannot be used after the regular
 expression. So **GFS_Alaska_191km_#yyyyMMdd_HHmm#.*grib**$ is ok but

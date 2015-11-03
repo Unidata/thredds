@@ -16,7 +16,7 @@ sections for each of these services.
 
 ==== WCS Configuration
 
-To enable the link:../reference/WCS.html[WCS service] for locally served
+To enable the link:../reference/WCS.adoc[WCS service] for locally served
 datasets, you will need the following in your `threddsConfig.xml` file:
 
 ---------------------
@@ -27,13 +27,13 @@ datasets, you will need the following in your `threddsConfig.xml` file:
 
 Additional WCS configuration options can be set in the
 `threddsConfig.xml` file, more details are available in the
-link:../reference/ThreddsConfigXMLFile.html#WCS[WCS section] of the
+link:../reference/ThreddsConfigXMLFile.adoc#WCS[WCS section] of the
 `threddsConfig.xml` file documentation.
 
 [[wms_configuration]]
 ==== WMS Configuration
 
-To enable the link:../reference/WMS.html[WMS service] for locally served
+To enable the link:../reference/WMS.adoc[WMS service] for locally served
 datasets, you will need the following in your `threddsConfig.xml` file:
 
 ---------------------
@@ -44,12 +44,12 @@ datasets, you will need the following in your `threddsConfig.xml` file:
 
 Additional WMS configuration options can be set in the
 `threddsConfig.xml` file, more details are available in the
-link:../reference/ThreddsConfigXMLFile.html#WMS[WMS section] of the
+link:../reference/ThreddsConfigXMLFile.adoc#WMS[WMS section] of the
 `threddsConfig.xml` file documentation.
 
 ==== ncISO Configuration
 
-To enable the link:../reference/ncISO.html[ncISO services] for locally
+To enable the link:../reference/ncISO.adoc[ncISO services] for locally
 served datasets, you will need the following in your `threddsConfig.xml`
 file:
 

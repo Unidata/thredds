@@ -107,14 +107,14 @@ In addition to the library path, the CDM also needs to know the library
 name. This is almost always ``netcdf'', unless you’ve renamed it.
 
 * For TDS users, we recommend setting the library path and name in the
-link:../../tds/reference/ThreddsConfigXMLFile.html#netcdfCLibrary[THREDDS
+link:../../tds/reference/ThreddsConfigXMLFile.adoc#netcdfCLibrary[THREDDS
 configuration file].
 * For standalone CDM library use, you can
 ** create a system environment variable: `JNA_PATH=/path/to/library`
 ** set a Java property on the command line:
 `-Djna.library.path=/path/to/library`
 ** set the library path and name in the
-link:RuntimeLoading.html#XML[runtime configuration file]
+link:RuntimeLoading.adoc#XML[runtime configuration file]
 ** directly call
 http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/javadocAll/ucar/nc2/jni/netcdf/Nc4Iosp.html#setLibraryAndPath(java.lang.String,%20java.lang.String)[Nc4Iosp.setLibraryAndPath()]
 from your Java program
@@ -146,7 +146,7 @@ system library path.
 
 == Writing NetCDF-4 files
 
-* From the command line: see link:manPages.html#nccopy[nccopy man page]
+* From the command line: see link:manPages.adoc#nccopy[nccopy man page]
 * From ToolsUI: in *Viewer* tab, bring up the file to copy, then click
 ``Write netCDF file'' button to get dialog.
 * From TDS NetCDF Subset Service: choose *netcdf-4* output type.

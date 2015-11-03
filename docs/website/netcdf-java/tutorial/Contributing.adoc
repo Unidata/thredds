@@ -25,7 +25,7 @@ Follow these steps to submit a pull request to Unidata:
 . Create a branch for the changes that you will make based on `master`.
 .. `git checkout -b <branch_name> master`
 .. For instance: `git checkout -b fix_radar_iosp master`
-. Make changes to the source code. See link:SourceCodeBuild.html[this tutorial] for help building THREDDS.
+. Make changes to the source code. See link:SourceCodeBuild.adoc[this tutorial] for help building THREDDS.
 . Commit your changes using the git link:http://git-scm.com/docs/git-add[add] and
       link:http://git-scm.com/docs/git-commit[commit] commands.
 . link:http://git-scm.com/docs/git-push[Push] your changes to GitHub.
