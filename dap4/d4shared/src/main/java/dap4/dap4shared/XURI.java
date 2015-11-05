@@ -7,6 +7,7 @@ package dap4.dap4shared;
 import dap4.core.util.DapUtil;
 import dap4.core.util.Escape;
 import org.apache.http.NameValuePair;
+import ucar.httpservices.HTTPUtil;
 
 import java.net.*;
 import java.nio.charset.Charset;
@@ -112,7 +113,7 @@ public class XURI
         // Note that if the path has a drive letter, this parse
         // will treat it as the host; fix below
         try {
-            this.url = new URI(this.trueurl);
+            this.url = HTTPUtil.parseToURI(this.trueurl);
         } catch (URISyntaxException mue) {
             throw new URISyntaxException(this.trueurl, mue.getMessage());
         }

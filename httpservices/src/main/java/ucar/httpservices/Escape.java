@@ -213,15 +213,15 @@ public class Escape
             query = m.group(4);
             fragment = m.group(5);
         } else {// faster, but may not work quite right
-            URL u = null;
-            try {u = new URL(surl);} catch (MalformedURLException e) {
+            URI u = null;
+            try {u = HTTPUtil.parseToURI(surl);} catch (URISyntaxException e) {
                 return null;
             }
-            protocol = u.getProtocol();
+            protocol = u.getScheme();
             authority = u.getAuthority();
             path = u.getPath();
             query = u.getQuery();
-            fragment = u.getRef();
+            fragment = u.getFragment();
         }
         // Reassemble
         StringBuilder url = new StringBuilder();
