@@ -60,8 +60,10 @@ public class TestFormBuilder extends UnitTestCommon
 
     static final boolean DEBUG = false;
 
-    static final int ECHOPORT = 4444;
-    static final String ECHOURL = "http://localhost:" + ECHOPORT;
+    static final int SIMPLEECHOPORT = 4444;
+    static final int MULTIECHOPORT = 4445;
+    static final String SIMPLEECHOURL = "http://localhost:" + SIMPLEECHOPORT;
+    static final String MULTIECHOURL = "http://localhost:" + MULTIECHOPORT;
 
     // Field values to use
     static final String DESCRIPTIONENTRY = "TestFormBuilder";
@@ -116,8 +118,8 @@ public class TestFormBuilder extends UnitTestCommon
             HttpEntity content = builder.build();
             String body = null;
             try (
-                    EchoService echo = new EchoService(ECHOPORT).startecho();
-                    HTTPMethod postMethod = HTTPFactory.Post(ECHOURL)
+                    EchoService echo = new EchoService(SIMPLEECHOPORT).startecho();
+                    HTTPMethod postMethod = HTTPFactory.Post(SIMPLEECHOURL)
             ) {
                 postMethod.setRequestContent(content);
                 postMethod.execute();
@@ -158,8 +160,8 @@ public class TestFormBuilder extends UnitTestCommon
             HttpEntity content = builder.build();
             String body = null;
             try (
-                    EchoService echo = new EchoService(ECHOPORT).startecho();
-                    HTTPMethod postMethod = HTTPFactory.Post(ECHOURL)
+                    EchoService echo = new EchoService(MULTIECHOPORT).startecho();
+                    HTTPMethod postMethod = HTTPFactory.Post(MULTIECHOURL)
             ) {
                 postMethod.setRequestContent(content);
                 postMethod.execute();

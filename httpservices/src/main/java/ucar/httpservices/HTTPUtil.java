@@ -37,6 +37,8 @@ import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -237,6 +239,35 @@ abstract public class HTTPUtil
         if((s1 == null) ^ (s2 == null)) return false;
         if((s1.length() == 0) ^ (s2.length() == 0)) return true;
         return s1.equals(s2);
+    }
+
+    /**
+     * Convert a uri string to an instance of java.net.URI.
+     * The critical thing is that this procedure can handle backslash
+     * escaped uris as well as %xx escaped uris.
+     *
+     * @param u  the uri to convert
+     * @return The URI corresponding to u.
+     * @throws URISyntaxException
+     */
+    static public URI
+    parseToURI(final String u)
+            throws URISyntaxException
+    {
+        StringBuilder buf = new StringBuilder();
+        int i = 0;
+        while(i < u.length()) {
+            char c = u.charAt(i++);
+            if(c == '\\') {
+                if(i + 1 == u.length())
+                    throw new URISyntaxException(u, "Trailing '\' at end of url");
+                buf.append("%5c");
+                c = u.charAt(i++);
+                buf.append(String.format("%%%02x", (int) c));
+            } else
+                buf.append(c);
+        }
+        return new URI(buf.toString());
     }
 
 

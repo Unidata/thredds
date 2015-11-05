@@ -35,6 +35,8 @@ package ucar.httpservices;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -154,7 +156,7 @@ public class HTTPMethod implements AutoCloseable
 
     protected HTTPSession session = null;
     protected boolean localsession = false;
-    protected String methodurl = null;
+    protected URI methodurl = null;
     protected List<Header> headers = new ArrayList<Header>();
     protected HttpEntity content = null;
     protected HTTPSession.Methods methodkind = null;
@@ -192,8 +194,8 @@ public class HTTPMethod implements AutoCloseable
         if(url == null)
             throw new HTTPException("HTTPMethod: cannot find usable url");
         try {
-            new URL(url);
-        } catch (MalformedURLException mue) {
+            this.methodurl = HTTPUtil.parseToURI(url); /// validate
+        } catch (URISyntaxException mue) {
             throw new HTTPException("Malformed URL: " + url, mue);
         }
 
@@ -201,14 +203,9 @@ public class HTTPMethod implements AutoCloseable
             session = HTTPFactory.newSession(url);
             localsession = true;
         }
-
         this.session = session;
-
         url = HTTPSession.removeprincipal(url);
-
-        this.methodurl = url;
         this.session.addMethod(this);
-
         this.methodkind = m;
     }
 
@@ -270,7 +267,7 @@ public class HTTPMethod implements AutoCloseable
             throw new HTTPException("HTTPMethod: attempt to execute closed method");
         if(this.methodurl == null)
             throw new HTTPException("HTTPMethod: no url specified");
-        if(!localsession && !sessionCompatible(this.methodurl))
+        if(!localsession && !sessionCompatible(this.methodurl.toString()))
             throw new HTTPException("HTTPMethod: session incompatible url: " + this.methodurl);
 
         if(this.request != null)
