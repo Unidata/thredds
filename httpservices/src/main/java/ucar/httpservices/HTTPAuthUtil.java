@@ -69,16 +69,17 @@ abstract public class HTTPAuthUtil
     //////////////////////////////////////////////////
     // URL Decomposition
 
+    /*
     static URI decompose(String suri)
         throws HTTPException
     {
         try {
-            URI uri = new URI(suri);
+            URI uri = HTTPUtil.parseToURI(suri);
             return uri;
         } catch (URISyntaxException use) {
             throw new HTTPException("HTTPAuthUtil: illegal url: " + suri);
         }
-    }
+    } */
 
     /**
      * Create an AuthScope from a URL; pull out any principal
@@ -95,7 +96,7 @@ abstract public class HTTPAuthUtil
         if(surl == null)
         throw new HTTPException("Null argument");
         try {
-            URI uri = HTTPAuthUtil.decompose(surl);
+            URI uri = HTTPUtil.parseToURI(surl);
             AuthScope scope = new AuthScope(uri.getHost(),
                 uri.getPort(),
                 HTTPAuthUtil.makerealm(uri.toURL()),
@@ -103,7 +104,7 @@ abstract public class HTTPAuthUtil
             return scope;
         } catch (IllegalArgumentException e) {
             return null;
-        } catch (MalformedURLException mue) {
+        } catch (URISyntaxException | MalformedURLException mue) {
             throw new HTTPException(mue);
         }
     }
@@ -115,8 +116,8 @@ abstract public class HTTPAuthUtil
         return urlToScope(surl, ANY_SCHEME);
     }
 
-    static public URL
-    scopeToURL(AuthScope scope)
+    static public URI
+    scopeToURI(AuthScope scope)
         throws HTTPException
     {
         try {
@@ -127,9 +128,9 @@ abstract public class HTTPAuthUtil
                 scheme = "https";
             else
                 scheme = "http";
-            URL url = new URL(scheme, scope.getHost(), scope.getPort(), "");
+            URI url = new URI(scheme, null, scope.getHost(), scope.getPort(), "",null,null);
             return url;
-        } catch (MalformedURLException mue) {
+        } catch (URISyntaxException mue) {
             throw new HTTPException(mue);
         }
     }
