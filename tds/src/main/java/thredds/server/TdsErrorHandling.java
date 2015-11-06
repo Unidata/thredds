@@ -85,7 +85,7 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
   public ResponseEntity<String> handle(IllegalArgumentException ex) {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    ex.printStackTrace();
+    // ex.printStackTrace();
     return new ResponseEntity<>("IllegalArgumentException: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 

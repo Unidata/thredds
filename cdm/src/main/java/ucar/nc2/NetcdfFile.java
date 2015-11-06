@@ -2476,7 +2476,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return sbuff.toString();
   }
 
-
   /**
    * Escape standard special characters in a netcdf object name.
    *

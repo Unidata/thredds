@@ -270,8 +270,8 @@ public class CompareNetcdf2 {
     ok &= checkAll(name, org.getGroups(), copy.getGroups(), groups);
     for (int i = 0; i < groups.size(); i += 2) {
       Group orgGroup = (Group) groups.get(i);
-      Group ncmlGroup = (Group) groups.get(i + 1);
-      ok &= compareGroups(orgGroup, ncmlGroup, filter);
+      Group copyGroup = (Group) groups.get(i + 1);
+      ok &= compareGroups(orgGroup, copyGroup, filter);
     }
 
     return ok;
@@ -311,7 +311,7 @@ public class CompareNetcdf2 {
         StringWriter sw = new StringWriter(5000);
         e.printStackTrace(new PrintWriter(sw));
         f.format("%s", sw.toString());
-        ok = false;
+        return false;
       }
     }
 
@@ -459,7 +459,7 @@ public class CompareNetcdf2 {
     }
 
     for (Object aList2 : list2) {
-      ok &= checkEach(what, aList2, "file2", list2, "file1", list1, result);
+      ok &= checkEach(what, aList2, "file2", list2, "file1", list1, null);
     }
 
     return ok;

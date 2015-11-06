@@ -83,7 +83,7 @@ public class RequestPathFilter implements javax.servlet.Filter {
     String path = TdsPathUtils.extractPath(request, null);
     if (path != null) {
       if (StringValidateEncodeUtils.containsAngleBracketCharacters(path)
-              || StringValidateEncodeUtils.containsBackslashCharacters(path)
+//              || StringValidateEncodeUtils.containsBackslashCharacters(path)
               || !StringValidateEncodeUtils.validPath(path)) {
 
         String msg = "Invalid request path [" + Escape.html(ServletUtil.getRequestPath(request)) + "].";

@@ -86,8 +86,9 @@ public class TestCdmRemoteMisc {
     // cdmremote:http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/hdf5/grid_1_3d_xyz_aug.h5
     try (NetcdfFile ncremote = new CdmRemote(TestWithLocalServer.withPath(urlPath + "/hdf5/grid_1_3d_xyz_aug.h5"))) {
       Variable v = ncremote.findVariable("HDFEOS_INFORMATION/StructMetadata\\.0");
+      Assert.assertNotNull(v);
       Array data = v.read();
-      assert data.getSize() == 0;
+      Assert.assertEquals(32000, data.getSize());
     }
   }
 
@@ -271,7 +272,7 @@ public class TestCdmRemoteMisc {
 
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, true, true, true);
-      boolean ok = mind.compare(ncfileLocal, ncfileRemote, new TestCdmRemoteCompareHeadersP.NcstreamObjFilter(), true, false, true);
+      boolean ok = mind.compare(ncfileLocal, ncfileRemote, new TestCdmRemoteCompareHeadersP.NcstreamObjFilter(), false, false, true);
 
       System.out.printf("--Compare %s to %s%n", localFile, remoteFile);
       System.out.printf("  %s%n", f);

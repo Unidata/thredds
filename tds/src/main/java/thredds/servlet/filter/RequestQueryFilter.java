@@ -101,8 +101,8 @@ public class RequestQueryFilter implements Filter {
         if (!allowAngleBrackets && StringValidateEncodeUtils.containsAngleBracketCharacters(decodedQuery))
           badQuery = true;
 
-        else if (StringValidateEncodeUtils.containsBackslashCharacters(decodedQuery)
-                || !StringValidateEncodeUtils.validSingleLineString(decodedQuery))
+        // else if (StringValidateEncodeUtils.containsBackslashCharacters(decodedQuery) || !StringValidateEncodeUtils.validSingleLineString(decodedQuery))
+        else if (!StringValidateEncodeUtils.validSingleLineString(decodedQuery))
           badQuery = true;
 
         if (badQuery) {
