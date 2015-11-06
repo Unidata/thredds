@@ -128,7 +128,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest) System.out.printf(" took %d msecs %n", took);
   }
 
-  // Closes is.
+  // Closes the input stream.
   public CdmRemote(InputStream is, String location ) throws IOException {
     long start = System.currentTimeMillis();
     remoteURI = location;
@@ -193,7 +193,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       InputStream is = method.getResponseAsStream();  // Closed by HTTPMethod.close().
       NcStreamReader reader = new NcStreamReader();
       // NcStreamReader.DataResult result = reader.readData(is, this);
-      NcStreamReader.DataResult result = reader.readData2(is, this);
+      NcStreamReader.DataResult result = reader.readData(is, this);
       // NcStreamReader.DataResult result = reader.readData3(is, this);
 
       assert v.getFullNameEscaped().equals(result.varNameFullEsc);

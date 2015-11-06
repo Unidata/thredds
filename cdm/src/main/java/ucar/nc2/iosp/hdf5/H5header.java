@@ -1086,7 +1086,9 @@ public class H5header {
             data[count++] = vlenArray;
         }
       }
-      return (scalar) ? data[0] : Array.makeObjectArray(readType, Array.class, shape, data);
+      // return (scalar) ? data[0] : Array.makeObjectArray(readType, data[0].getClass(), shape, data);
+      return (scalar) ? data[0] : Array.makeVlenArray(shape, data);
+
     } // vlen case
 
     // NON-STRUCTURE CASE

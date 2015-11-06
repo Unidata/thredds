@@ -856,8 +856,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (fld.fldtypeid == Nc4prototypes.NC_CHAR) {
         fld.data = Array.factory(DataType.STRING, new int[]{len}); // LOOK ??
       } else if (ct.isVlen) {
-        fld.data = Array.makeObjectArray(ct.dt, ct.dt.getPrimitiveClassType(), new int[]{len}, null);
-        // fld.data = Array.factory( Object.class, new int[] { len});  // object array
+        // fld.data = Array.makeObjectArray(ct.dt, ct.dt.getPrimitiveClassType(), new int[]{len}, null);
+        // fld.data = Array.makeVlenArray(ct.dt, ct.dt.getPrimitiveClassType(), new int[]{len}, null); LOOK BAD
       } else {
         fld.data = Array.factory(ct.dt, new int[]{len});
       }
@@ -1816,8 +1816,18 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         Array result;
         if (prefixrank == 0) // if scalar, return just the singleton vlen array
           result = fieldarray[0];
-        else if (prefixrank == 1)
+
+        else {
+          int[] newshape = new int[prefixrank];
+          System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
+          // result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), newshape, fieldarray);
+          result = Array.makeVlenArray(newshape, fieldarray);
+        }
+
+        /*
+                else if (prefixrank == 1)
           result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), new int[]{size}, fieldarray);
+
         else {
           // Otherwise create and fill in an n-dimensional Array Of Arrays
           int[] newshape = new int[prefixrank];
@@ -1829,7 +1839,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             iter.setObjectNext(fieldarray[i]);
           }
           result = ndimarray;
-        }
+        } */
         // Store vlen result in the heap
         int index = asbb.addObjectToHeap(result);
         bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
@@ -1923,7 +1933,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     //ArrayObject.D1 vlenArray = new ArrayObject.D1( dtype, len);
 
     // Collect the vlen's data arrays
-    Object[] data = new Object[len];
+    Array[] data = new Array[len];
     switch (userType.baseTypeid) {      // LOOK not complete
       case Nc4prototypes.NC_UINT:
       case Nc4prototypes.NC_INT:
@@ -1956,21 +1966,23 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     if (prefixrank == 0) { // if scalar, return just the len Array
-      return (Array) data[0];
-    } else if (prefixrank == 1)
-      return Array.makeObjectArray(ctype.dt, data[0].getClass(), new int[]{len}, data);
+      return data[0];
+    } //else if (prefixrank == 1)
+      // return Array.makeObjectArray(ctype.dt, data[0].getClass(), new int[]{len}, data);
+      //return Array.makeVlenArray(new int[]{len}, data);
 
     // Otherwise create and fill in an n-dimensional Array Of Arrays
     int[] shape = new int[prefixrank];
     for (int i = 0; i < prefixrank; i++)
       shape[i] = section.getRange(i).length();
 
-    Array ndimarray = Array.makeObjectArray(ctype.dt, Array.class, shape, null);
+    // Array ndimarray = Array.makeObjectArray(ctype.dt, Array.class, shape, null);
+    Array ndimarray = Array.makeVlenArray(shape, data);
     // Transfer the elements of data into the n-dim arrays
-    IndexIterator iter = ndimarray.getIndexIterator();
-    for (int i = 0; iter.hasNext(); i++) {
-      iter.setObjectNext(data[i]);
-    }
+    //IndexIterator iter = ndimarray.getIndexIterator();
+   // for (int i = 0; iter.hasNext(); i++) {
+   //   iter.setObjectNext(data[i]);
+    //}
     return ndimarray;
   }
 

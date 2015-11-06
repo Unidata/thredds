@@ -15192,8 +15192,8 @@ public final class NcStreamProto {
 
   }
 
-  public interface Data2OrBuilder extends
-      // @@protoc_insertion_point(interface_extends:Data2)
+  public interface DataColOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:DataCol)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -15376,17 +15376,17 @@ public final class NcStreamProto {
     ucar.nc2.stream.NcStreamProto.ArrayStructureColOrBuilder getStructdataOrBuilder();
   }
   /**
-   * Protobuf type {@code Data2}
+   * Protobuf type {@code DataCol}
    */
-  public  static final class Data2 extends
+  public  static final class DataCol extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:Data2)
-      Data2OrBuilder {
-    // Use Data2.newBuilder() to construct.
-    private Data2(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      // @@protoc_insertion_point(message_implements:DataCol)
+      DataColOrBuilder {
+    // Use DataCol.newBuilder() to construct.
+    private DataCol(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
     }
-    private Data2() {
+    private DataCol() {
       name_ = "";
       dataType_ = 0;
       bigend_ = false;
@@ -15404,7 +15404,7 @@ public final class NcStreamProto {
     getUnknownFields() {
       return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
     }
-    private Data2(
+    private DataCol(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
       this();
@@ -15547,14 +15547,14 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_Data2_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_Data2_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ucar.nc2.stream.NcStreamProto.Data2.class, ucar.nc2.stream.NcStreamProto.Data2.Builder.class);
+              ucar.nc2.stream.NcStreamProto.DataCol.class, ucar.nc2.stream.NcStreamProto.DataCol.Builder.class);
     }
 
     private int bitField0_;
@@ -15964,53 +15964,53 @@ public final class NcStreamProto {
     }
 
     private static final long serialVersionUID = 0L;
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseFrom(byte[] data)
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseFrom(java.io.InputStream input)
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseDelimitedFrom(java.io.InputStream input)
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseDelimitedFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data2 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataCol parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -16021,7 +16021,7 @@ public final class NcStreamProto {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Data2 prototype) {
+    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.DataCol prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -16036,25 +16036,25 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code Data2}
+     * Protobuf type {@code DataCol}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:Data2)
-        ucar.nc2.stream.NcStreamProto.Data2OrBuilder {
+        // @@protoc_insertion_point(builder_implements:DataCol)
+        ucar.nc2.stream.NcStreamProto.DataColOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_Data2_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_Data2_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                ucar.nc2.stream.NcStreamProto.Data2.class, ucar.nc2.stream.NcStreamProto.Data2.Builder.class);
+                ucar.nc2.stream.NcStreamProto.DataCol.class, ucar.nc2.stream.NcStreamProto.DataCol.Builder.class);
       }
 
-      // Construct using ucar.nc2.stream.NcStreamProto.Data2.newBuilder()
+      // Construct using ucar.nc2.stream.NcStreamProto.DataCol.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -16107,23 +16107,23 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_Data2_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_DataCol_descriptor;
       }
 
-      public ucar.nc2.stream.NcStreamProto.Data2 getDefaultInstanceForType() {
-        return ucar.nc2.stream.NcStreamProto.Data2.getDefaultInstance();
+      public ucar.nc2.stream.NcStreamProto.DataCol getDefaultInstanceForType() {
+        return ucar.nc2.stream.NcStreamProto.DataCol.getDefaultInstance();
       }
 
-      public ucar.nc2.stream.NcStreamProto.Data2 build() {
-        ucar.nc2.stream.NcStreamProto.Data2 result = buildPartial();
+      public ucar.nc2.stream.NcStreamProto.DataCol build() {
+        ucar.nc2.stream.NcStreamProto.DataCol result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public ucar.nc2.stream.NcStreamProto.Data2 buildPartial() {
-        ucar.nc2.stream.NcStreamProto.Data2 result = new ucar.nc2.stream.NcStreamProto.Data2(this);
+      public ucar.nc2.stream.NcStreamProto.DataCol buildPartial() {
+        ucar.nc2.stream.NcStreamProto.DataCol result = new ucar.nc2.stream.NcStreamProto.DataCol(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.name_ = name_;
@@ -16164,16 +16164,16 @@ public final class NcStreamProto {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.stream.NcStreamProto.Data2) {
-          return mergeFrom((ucar.nc2.stream.NcStreamProto.Data2)other);
+        if (other instanceof ucar.nc2.stream.NcStreamProto.DataCol) {
+          return mergeFrom((ucar.nc2.stream.NcStreamProto.DataCol)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.Data2 other) {
-        if (other == ucar.nc2.stream.NcStreamProto.Data2.getDefaultInstance()) return this;
+      public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.DataCol other) {
+        if (other == ucar.nc2.stream.NcStreamProto.DataCol.getDefaultInstance()) return this;
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
           onChanged();
@@ -16244,11 +16244,11 @@ public final class NcStreamProto {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        ucar.nc2.stream.NcStreamProto.Data2 parsedMessage = null;
+        ucar.nc2.stream.NcStreamProto.DataCol parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ucar.nc2.stream.NcStreamProto.Data2) e.getUnfinishedMessage();
+          parsedMessage = (ucar.nc2.stream.NcStreamProto.DataCol) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -17141,27 +17141,27 @@ public final class NcStreamProto {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:Data2)
+      // @@protoc_insertion_point(builder_scope:DataCol)
     }
 
-    // @@protoc_insertion_point(class_scope:Data2)
-    private static final ucar.nc2.stream.NcStreamProto.Data2 DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:DataCol)
+    private static final ucar.nc2.stream.NcStreamProto.DataCol DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new ucar.nc2.stream.NcStreamProto.Data2();
+      DEFAULT_INSTANCE = new ucar.nc2.stream.NcStreamProto.DataCol();
     }
 
-    public static ucar.nc2.stream.NcStreamProto.Data2 getDefaultInstance() {
+    public static ucar.nc2.stream.NcStreamProto.DataCol getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<Data2>
-        PARSER = new com.google.protobuf.AbstractParser<Data2>() {
-      public Data2 parsePartialFrom(
+    private static final com.google.protobuf.Parser<DataCol>
+        PARSER = new com.google.protobuf.AbstractParser<DataCol>() {
+      public DataCol parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         try {
-          return new Data2(input, extensionRegistry);
+          return new DataCol(input, extensionRegistry);
         } catch (RuntimeException e) {
           if (e.getCause() instanceof
               com.google.protobuf.InvalidProtocolBufferException) {
@@ -17173,16 +17173,16 @@ public final class NcStreamProto {
       }
     };
 
-    public static com.google.protobuf.Parser<Data2> parser() {
+    public static com.google.protobuf.Parser<DataCol> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<Data2> getParserForType() {
+    public com.google.protobuf.Parser<DataCol> getParserForType() {
       return PARSER;
     }
 
-    public ucar.nc2.stream.NcStreamProto.Data2 getDefaultInstanceForType() {
+    public ucar.nc2.stream.NcStreamProto.DataCol getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -17193,27 +17193,27 @@ public final class NcStreamProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
-    java.util.List<ucar.nc2.stream.NcStreamProto.Data2> 
+    java.util.List<ucar.nc2.stream.NcStreamProto.DataCol> 
         getMemberDataList();
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
-    ucar.nc2.stream.NcStreamProto.Data2 getMemberData(int index);
+    ucar.nc2.stream.NcStreamProto.DataCol getMemberData(int index);
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
     int getMemberDataCount();
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
-    java.util.List<? extends ucar.nc2.stream.NcStreamProto.Data2OrBuilder> 
+    java.util.List<? extends ucar.nc2.stream.NcStreamProto.DataColOrBuilder> 
         getMemberDataOrBuilderList();
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
-    ucar.nc2.stream.NcStreamProto.Data2OrBuilder getMemberDataOrBuilder(
+    ucar.nc2.stream.NcStreamProto.DataColOrBuilder getMemberDataOrBuilder(
         int index);
   }
   /**
@@ -17257,10 +17257,10 @@ public final class NcStreamProto {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                memberData_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Data2>();
+                memberData_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.DataCol>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              memberData_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Data2.parser(), extensionRegistry));
+              memberData_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.DataCol.parser(), extensionRegistry));
               break;
             }
           }
@@ -17291,36 +17291,36 @@ public final class NcStreamProto {
     }
 
     public static final int MEMBERDATA_FIELD_NUMBER = 1;
-    private java.util.List<ucar.nc2.stream.NcStreamProto.Data2> memberData_;
+    private java.util.List<ucar.nc2.stream.NcStreamProto.DataCol> memberData_;
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
-    public java.util.List<ucar.nc2.stream.NcStreamProto.Data2> getMemberDataList() {
+    public java.util.List<ucar.nc2.stream.NcStreamProto.DataCol> getMemberDataList() {
       return memberData_;
     }
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
-    public java.util.List<? extends ucar.nc2.stream.NcStreamProto.Data2OrBuilder> 
+    public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DataColOrBuilder> 
         getMemberDataOrBuilderList() {
       return memberData_;
     }
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
     public int getMemberDataCount() {
       return memberData_.size();
     }
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
-    public ucar.nc2.stream.NcStreamProto.Data2 getMemberData(int index) {
+    public ucar.nc2.stream.NcStreamProto.DataCol getMemberData(int index) {
       return memberData_.get(index);
     }
     /**
-     * <code>repeated .Data2 memberData = 1;</code>
+     * <code>repeated .DataCol memberData = 1;</code>
      */
-    public ucar.nc2.stream.NcStreamProto.Data2OrBuilder getMemberDataOrBuilder(
+    public ucar.nc2.stream.NcStreamProto.DataColOrBuilder getMemberDataOrBuilder(
         int index) {
       return memberData_.get(index);
     }
@@ -17569,22 +17569,22 @@ public final class NcStreamProto {
       }
       private int bitField0_;
 
-      private java.util.List<ucar.nc2.stream.NcStreamProto.Data2> memberData_ =
+      private java.util.List<ucar.nc2.stream.NcStreamProto.DataCol> memberData_ =
         java.util.Collections.emptyList();
       private void ensureMemberDataIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          memberData_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Data2>(memberData_);
+          memberData_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.DataCol>(memberData_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          ucar.nc2.stream.NcStreamProto.Data2, ucar.nc2.stream.NcStreamProto.Data2.Builder, ucar.nc2.stream.NcStreamProto.Data2OrBuilder> memberDataBuilder_;
+          ucar.nc2.stream.NcStreamProto.DataCol, ucar.nc2.stream.NcStreamProto.DataCol.Builder, ucar.nc2.stream.NcStreamProto.DataColOrBuilder> memberDataBuilder_;
 
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
-      public java.util.List<ucar.nc2.stream.NcStreamProto.Data2> getMemberDataList() {
+      public java.util.List<ucar.nc2.stream.NcStreamProto.DataCol> getMemberDataList() {
         if (memberDataBuilder_ == null) {
           return java.util.Collections.unmodifiableList(memberData_);
         } else {
@@ -17592,7 +17592,7 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
       public int getMemberDataCount() {
         if (memberDataBuilder_ == null) {
@@ -17602,9 +17602,9 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
-      public ucar.nc2.stream.NcStreamProto.Data2 getMemberData(int index) {
+      public ucar.nc2.stream.NcStreamProto.DataCol getMemberData(int index) {
         if (memberDataBuilder_ == null) {
           return memberData_.get(index);
         } else {
@@ -17612,10 +17612,10 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
       public Builder setMemberData(
-          int index, ucar.nc2.stream.NcStreamProto.Data2 value) {
+          int index, ucar.nc2.stream.NcStreamProto.DataCol value) {
         if (memberDataBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -17629,10 +17629,10 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
       public Builder setMemberData(
-          int index, ucar.nc2.stream.NcStreamProto.Data2.Builder builderForValue) {
+          int index, ucar.nc2.stream.NcStreamProto.DataCol.Builder builderForValue) {
         if (memberDataBuilder_ == null) {
           ensureMemberDataIsMutable();
           memberData_.set(index, builderForValue.build());
@@ -17643,9 +17643,9 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
-      public Builder addMemberData(ucar.nc2.stream.NcStreamProto.Data2 value) {
+      public Builder addMemberData(ucar.nc2.stream.NcStreamProto.DataCol value) {
         if (memberDataBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -17659,10 +17659,10 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
       public Builder addMemberData(
-          int index, ucar.nc2.stream.NcStreamProto.Data2 value) {
+          int index, ucar.nc2.stream.NcStreamProto.DataCol value) {
         if (memberDataBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -17676,10 +17676,10 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
       public Builder addMemberData(
-          ucar.nc2.stream.NcStreamProto.Data2.Builder builderForValue) {
+          ucar.nc2.stream.NcStreamProto.DataCol.Builder builderForValue) {
         if (memberDataBuilder_ == null) {
           ensureMemberDataIsMutable();
           memberData_.add(builderForValue.build());
@@ -17690,10 +17690,10 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
       public Builder addMemberData(
-          int index, ucar.nc2.stream.NcStreamProto.Data2.Builder builderForValue) {
+          int index, ucar.nc2.stream.NcStreamProto.DataCol.Builder builderForValue) {
         if (memberDataBuilder_ == null) {
           ensureMemberDataIsMutable();
           memberData_.add(index, builderForValue.build());
@@ -17704,10 +17704,10 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
       public Builder addAllMemberData(
-          java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Data2> values) {
+          java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.DataCol> values) {
         if (memberDataBuilder_ == null) {
           ensureMemberDataIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -17719,7 +17719,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
       public Builder clearMemberData() {
         if (memberDataBuilder_ == null) {
@@ -17732,7 +17732,7 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
       public Builder removeMemberData(int index) {
         if (memberDataBuilder_ == null) {
@@ -17745,16 +17745,16 @@ public final class NcStreamProto {
         return this;
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
-      public ucar.nc2.stream.NcStreamProto.Data2.Builder getMemberDataBuilder(
+      public ucar.nc2.stream.NcStreamProto.DataCol.Builder getMemberDataBuilder(
           int index) {
         return getMemberDataFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
-      public ucar.nc2.stream.NcStreamProto.Data2OrBuilder getMemberDataOrBuilder(
+      public ucar.nc2.stream.NcStreamProto.DataColOrBuilder getMemberDataOrBuilder(
           int index) {
         if (memberDataBuilder_ == null) {
           return memberData_.get(index);  } else {
@@ -17762,9 +17762,9 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
-      public java.util.List<? extends ucar.nc2.stream.NcStreamProto.Data2OrBuilder> 
+      public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DataColOrBuilder> 
            getMemberDataOrBuilderList() {
         if (memberDataBuilder_ != null) {
           return memberDataBuilder_.getMessageOrBuilderList();
@@ -17773,33 +17773,33 @@ public final class NcStreamProto {
         }
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
-      public ucar.nc2.stream.NcStreamProto.Data2.Builder addMemberDataBuilder() {
+      public ucar.nc2.stream.NcStreamProto.DataCol.Builder addMemberDataBuilder() {
         return getMemberDataFieldBuilder().addBuilder(
-            ucar.nc2.stream.NcStreamProto.Data2.getDefaultInstance());
+            ucar.nc2.stream.NcStreamProto.DataCol.getDefaultInstance());
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
-      public ucar.nc2.stream.NcStreamProto.Data2.Builder addMemberDataBuilder(
+      public ucar.nc2.stream.NcStreamProto.DataCol.Builder addMemberDataBuilder(
           int index) {
         return getMemberDataFieldBuilder().addBuilder(
-            index, ucar.nc2.stream.NcStreamProto.Data2.getDefaultInstance());
+            index, ucar.nc2.stream.NcStreamProto.DataCol.getDefaultInstance());
       }
       /**
-       * <code>repeated .Data2 memberData = 1;</code>
+       * <code>repeated .DataCol memberData = 1;</code>
        */
-      public java.util.List<ucar.nc2.stream.NcStreamProto.Data2.Builder> 
+      public java.util.List<ucar.nc2.stream.NcStreamProto.DataCol.Builder> 
            getMemberDataBuilderList() {
         return getMemberDataFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          ucar.nc2.stream.NcStreamProto.Data2, ucar.nc2.stream.NcStreamProto.Data2.Builder, ucar.nc2.stream.NcStreamProto.Data2OrBuilder> 
+          ucar.nc2.stream.NcStreamProto.DataCol, ucar.nc2.stream.NcStreamProto.DataCol.Builder, ucar.nc2.stream.NcStreamProto.DataColOrBuilder> 
           getMemberDataFieldBuilder() {
         if (memberDataBuilder_ == null) {
           memberDataBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              ucar.nc2.stream.NcStreamProto.Data2, ucar.nc2.stream.NcStreamProto.Data2.Builder, ucar.nc2.stream.NcStreamProto.Data2OrBuilder>(
+              ucar.nc2.stream.NcStreamProto.DataCol, ucar.nc2.stream.NcStreamProto.DataCol.Builder, ucar.nc2.stream.NcStreamProto.DataColOrBuilder>(
                   memberData_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
@@ -17866,8 +17866,8 @@ public final class NcStreamProto {
 
   }
 
-  public interface Data3OrBuilder extends
-      // @@protoc_insertion_point(interface_extends:Data3)
+  public interface DataRowOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:DataRow)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -18042,17 +18042,17 @@ public final class NcStreamProto {
     ucar.nc2.stream.NcStreamProto.ArrayStructureRowOrBuilder getStructdataOrBuilder();
   }
   /**
-   * Protobuf type {@code Data3}
+   * Protobuf type {@code DataRow}
    */
-  public  static final class Data3 extends
+  public  static final class DataRow extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:Data3)
-      Data3OrBuilder {
-    // Use Data3.newBuilder() to construct.
-    private Data3(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      // @@protoc_insertion_point(message_implements:DataRow)
+      DataRowOrBuilder {
+    // Use DataRow.newBuilder() to construct.
+    private DataRow(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
     }
-    private Data3() {
+    private DataRow() {
       fullName_ = "";
       dataType_ = 0;
       bigend_ = false;
@@ -18070,7 +18070,7 @@ public final class NcStreamProto {
     getUnknownFields() {
       return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
     }
-    private Data3(
+    private DataRow(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
       this();
@@ -18213,14 +18213,14 @@ public final class NcStreamProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_Data3_descriptor;
+      return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.stream.NcStreamProto.internal_static_Data3_fieldAccessorTable
+      return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ucar.nc2.stream.NcStreamProto.Data3.class, ucar.nc2.stream.NcStreamProto.Data3.Builder.class);
+              ucar.nc2.stream.NcStreamProto.DataRow.class, ucar.nc2.stream.NcStreamProto.DataRow.Builder.class);
     }
 
     private int bitField0_;
@@ -18622,53 +18622,53 @@ public final class NcStreamProto {
     }
 
     private static final long serialVersionUID = 0L;
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(byte[] data)
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(java.io.InputStream input)
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseDelimitedFrom(java.io.InputStream input)
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseDelimitedFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ucar.nc2.stream.NcStreamProto.Data3 parseFrom(
+    public static ucar.nc2.stream.NcStreamProto.DataRow parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -18679,7 +18679,7 @@ public final class NcStreamProto {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.Data3 prototype) {
+    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.DataRow prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -18694,25 +18694,25 @@ public final class NcStreamProto {
       return builder;
     }
     /**
-     * Protobuf type {@code Data3}
+     * Protobuf type {@code DataRow}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:Data3)
-        ucar.nc2.stream.NcStreamProto.Data3OrBuilder {
+        // @@protoc_insertion_point(builder_implements:DataRow)
+        ucar.nc2.stream.NcStreamProto.DataRowOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_Data3_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_Data3_fieldAccessorTable
+        return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                ucar.nc2.stream.NcStreamProto.Data3.class, ucar.nc2.stream.NcStreamProto.Data3.Builder.class);
+                ucar.nc2.stream.NcStreamProto.DataRow.class, ucar.nc2.stream.NcStreamProto.DataRow.Builder.class);
       }
 
-      // Construct using ucar.nc2.stream.NcStreamProto.Data3.newBuilder()
+      // Construct using ucar.nc2.stream.NcStreamProto.DataRow.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -18765,23 +18765,23 @@ public final class NcStreamProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.stream.NcStreamProto.internal_static_Data3_descriptor;
+        return ucar.nc2.stream.NcStreamProto.internal_static_DataRow_descriptor;
       }
 
-      public ucar.nc2.stream.NcStreamProto.Data3 getDefaultInstanceForType() {
-        return ucar.nc2.stream.NcStreamProto.Data3.getDefaultInstance();
+      public ucar.nc2.stream.NcStreamProto.DataRow getDefaultInstanceForType() {
+        return ucar.nc2.stream.NcStreamProto.DataRow.getDefaultInstance();
       }
 
-      public ucar.nc2.stream.NcStreamProto.Data3 build() {
-        ucar.nc2.stream.NcStreamProto.Data3 result = buildPartial();
+      public ucar.nc2.stream.NcStreamProto.DataRow build() {
+        ucar.nc2.stream.NcStreamProto.DataRow result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public ucar.nc2.stream.NcStreamProto.Data3 buildPartial() {
-        ucar.nc2.stream.NcStreamProto.Data3 result = new ucar.nc2.stream.NcStreamProto.Data3(this);
+      public ucar.nc2.stream.NcStreamProto.DataRow buildPartial() {
+        ucar.nc2.stream.NcStreamProto.DataRow result = new ucar.nc2.stream.NcStreamProto.DataRow(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.fullName_ = fullName_;
@@ -18822,16 +18822,16 @@ public final class NcStreamProto {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.stream.NcStreamProto.Data3) {
-          return mergeFrom((ucar.nc2.stream.NcStreamProto.Data3)other);
+        if (other instanceof ucar.nc2.stream.NcStreamProto.DataRow) {
+          return mergeFrom((ucar.nc2.stream.NcStreamProto.DataRow)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.Data3 other) {
-        if (other == ucar.nc2.stream.NcStreamProto.Data3.getDefaultInstance()) return this;
+      public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.DataRow other) {
+        if (other == ucar.nc2.stream.NcStreamProto.DataRow.getDefaultInstance()) return this;
         if (!other.getFullName().isEmpty()) {
           fullName_ = other.fullName_;
           onChanged();
@@ -18902,11 +18902,11 @@ public final class NcStreamProto {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        ucar.nc2.stream.NcStreamProto.Data3 parsedMessage = null;
+        ucar.nc2.stream.NcStreamProto.DataRow parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ucar.nc2.stream.NcStreamProto.Data3) e.getUnfinishedMessage();
+          parsedMessage = (ucar.nc2.stream.NcStreamProto.DataRow) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -19779,27 +19779,27 @@ public final class NcStreamProto {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:Data3)
+      // @@protoc_insertion_point(builder_scope:DataRow)
     }
 
-    // @@protoc_insertion_point(class_scope:Data3)
-    private static final ucar.nc2.stream.NcStreamProto.Data3 DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:DataRow)
+    private static final ucar.nc2.stream.NcStreamProto.DataRow DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new ucar.nc2.stream.NcStreamProto.Data3();
+      DEFAULT_INSTANCE = new ucar.nc2.stream.NcStreamProto.DataRow();
     }
 
-    public static ucar.nc2.stream.NcStreamProto.Data3 getDefaultInstance() {
+    public static ucar.nc2.stream.NcStreamProto.DataRow getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<Data3>
-        PARSER = new com.google.protobuf.AbstractParser<Data3>() {
-      public Data3 parsePartialFrom(
+    private static final com.google.protobuf.Parser<DataRow>
+        PARSER = new com.google.protobuf.AbstractParser<DataRow>() {
+      public DataRow parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         try {
-          return new Data3(input, extensionRegistry);
+          return new DataRow(input, extensionRegistry);
         } catch (RuntimeException e) {
           if (e.getCause() instanceof
               com.google.protobuf.InvalidProtocolBufferException) {
@@ -19811,16 +19811,16 @@ public final class NcStreamProto {
       }
     };
 
-    public static com.google.protobuf.Parser<Data3> parser() {
+    public static com.google.protobuf.Parser<DataRow> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<Data3> getParserForType() {
+    public com.google.protobuf.Parser<DataRow> getParserForType() {
       return PARSER;
     }
 
-    public ucar.nc2.stream.NcStreamProto.Data3 getDefaultInstanceForType() {
+    public ucar.nc2.stream.NcStreamProto.DataRow getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -23059,20 +23059,20 @@ public final class NcStreamProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_StructureData_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_Data2_descriptor;
+    internal_static_DataCol_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_Data2_fieldAccessorTable;
+      internal_static_DataCol_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_ArrayStructureCol_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_ArrayStructureCol_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_Data3_descriptor;
+    internal_static_DataRow_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_Data3_fieldAccessorTable;
+      internal_static_DataRow_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_Member_descriptor;
   private static
@@ -23134,36 +23134,36 @@ public final class NcStreamProto {
       "Range\"q\n\rStructureData\022\016\n\006member\030\001 \003(\r\022\014" +
       "\n\004data\030\002 \001(\014\022\021\n\theapCount\030\003 \003(\r\022\r\n\005sdata" +
       "\030\004 \003(\t\022\r\n\005nrows\030\005 \001(\004\022\021\n\trowLength\030\006 \001(\r" +
-      "\"\377\001\n\005Data2\022\014\n\004name\030\001 \001(\t\022\033\n\010dataType\030\002 \001" +
-      "(\0162\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Section" +
-      "\022\016\n\006bigend\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n\006isV",
-      "len\030\007 \001(\010\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030\n " +
-      "\001(\014\022\022\n\nstringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003(\r\022\022" +
-      "\n\nopaquedata\030\r \003(\014\022&\n\nstructdata\030\016 \001(\0132\022" +
-      ".ArrayStructureCol\"/\n\021ArrayStructureCol\022" +
-      "\032\n\nmemberData\030\001 \003(\0132\006.Data2\"\203\002\n\005Data3\022\020\n" +
-      "\010fullName\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162\t.Data" +
-      "Type\022\031\n\007section\030\003 \001(\0132\010.Section\022\016\n\006bigen" +
-      "d\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n\006isVlen\030\007 \001(\010" +
-      "\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030\n \001(\014\022\022\n\nst" +
-      "ringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003(\r\022\022\n\nopaqued",
-      "ata\030\r \003(\014\022&\n\nstructdata\030\016 \001(\0132\022.ArrayStr" +
-      "uctureRow\"W\n\006Member\022\021\n\tshortName\030\001 \001(\t\022\033" +
-      "\n\010dataType\030\002 \001(\0162\t.DataType\022\r\n\005shape\030\003 \003" +
-      "(\r\022\016\n\006isVlen\030\004 \001(\010\"\256\001\n\021ArrayStructureRow" +
-      "\022\030\n\007members\030\001 \003(\0132\007.Member\022\r\n\005nrows\030\005 \001(" +
-      "\004\022\021\n\trowLength\030\006 \001(\r\022\017\n\007fixdata\030\n \001(\014\022\022\n" +
-      "\nstringdata\030\013 \003(\t\022\020\n\010bytedata\030\r \003(\014\022&\n\ns" +
-      "tructdata\030\016 \003(\0132\022.ArrayStructureRow\"&\n\005E" +
-      "rror\022\017\n\007message\030\001 \001(\t\022\014\n\004code\030\002 \001(\r*\325\001\n\010" +
-      "DataType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022",
-      "\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020" +
-      "\006\022\n\n\006STRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE" +
-      "\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006O" +
-      "PAQUE\020\r\022\t\n\005UBYTE\020\016\022\n\n\006USHORT\020\017\022\010\n\004UINT\020\020" +
-      "\022\t\n\005ULONG\020\021*!\n\010Compress\022\010\n\004NONE\020\000\022\013\n\007DEF" +
-      "LATE\020\001B \n\017ucar.nc2.streamB\rNcStreamProto" +
-      "b\006proto3"
+      "\"\201\002\n\007DataCol\022\014\n\004name\030\001 \001(\t\022\033\n\010dataType\030\002" +
+      " \001(\0162\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Secti" +
+      "on\022\016\n\006bigend\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n\006i",
+      "sVlen\030\007 \001(\010\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030" +
+      "\n \001(\014\022\022\n\nstringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003(\r" +
+      "\022\022\n\nopaquedata\030\r \003(\014\022&\n\nstructdata\030\016 \001(\013" +
+      "2\022.ArrayStructureCol\"1\n\021ArrayStructureCo" +
+      "l\022\034\n\nmemberData\030\001 \003(\0132\010.DataCol\"\205\002\n\007Data" +
+      "Row\022\020\n\010fullName\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162" +
+      "\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Section\022\016\n" +
+      "\006bigend\030\004 \001(\010\022\017\n\007version\030\005 \001(\r\022\016\n\006isVlen" +
+      "\030\007 \001(\010\022\016\n\006nelems\030\t \001(\r\022\020\n\010primdata\030\n \001(\014" +
+      "\022\022\n\nstringdata\030\013 \003(\t\022\r\n\005vlens\030\014 \003(\r\022\022\n\no",
+      "paquedata\030\r \003(\014\022&\n\nstructdata\030\016 \001(\0132\022.Ar" +
+      "rayStructureRow\"W\n\006Member\022\021\n\tshortName\030\001" +
+      " \001(\t\022\033\n\010dataType\030\002 \001(\0162\t.DataType\022\r\n\005sha" +
+      "pe\030\003 \003(\r\022\016\n\006isVlen\030\004 \001(\010\"\256\001\n\021ArrayStruct" +
+      "ureRow\022\030\n\007members\030\001 \003(\0132\007.Member\022\r\n\005nrow" +
+      "s\030\005 \001(\004\022\021\n\trowLength\030\006 \001(\r\022\017\n\007fixdata\030\n " +
+      "\001(\014\022\022\n\nstringdata\030\013 \003(\t\022\020\n\010bytedata\030\r \003(" +
+      "\014\022&\n\nstructdata\030\016 \003(\0132\022.ArrayStructureRo" +
+      "w\"&\n\005Error\022\017\n\007message\030\001 \001(\t\022\014\n\004code\030\002 \001(" +
+      "\r*\325\001\n\010DataType\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SH",
+      "ORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006D" +
+      "OUBLE\020\006\022\n\n\006STRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SE" +
+      "QUENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020" +
+      "\014\022\n\n\006OPAQUE\020\r\022\t\n\005UBYTE\020\016\022\n\n\006USHORT\020\017\022\010\n\004" +
+      "UINT\020\020\022\t\n\005ULONG\020\021*!\n\010Compress\022\010\n\004NONE\020\000\022" +
+      "\013\n\007DEFLATE\020\001B \n\017ucar.nc2.streamB\rNcStrea" +
+      "mProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -23249,11 +23249,11 @@ public final class NcStreamProto {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_StructureData_descriptor,
         new java.lang.String[] { "Member", "Data", "HeapCount", "Sdata", "Nrows", "RowLength", });
-    internal_static_Data2_descriptor =
+    internal_static_DataCol_descriptor =
       getDescriptor().getMessageTypes().get(11);
-    internal_static_Data2_fieldAccessorTable = new
+    internal_static_DataCol_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_Data2_descriptor,
+        internal_static_DataCol_descriptor,
         new java.lang.String[] { "Name", "DataType", "Section", "Bigend", "Version", "IsVlen", "Nelems", "Primdata", "Stringdata", "Vlens", "Opaquedata", "Structdata", });
     internal_static_ArrayStructureCol_descriptor =
       getDescriptor().getMessageTypes().get(12);
@@ -23261,11 +23261,11 @@ public final class NcStreamProto {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_ArrayStructureCol_descriptor,
         new java.lang.String[] { "MemberData", });
-    internal_static_Data3_descriptor =
+    internal_static_DataRow_descriptor =
       getDescriptor().getMessageTypes().get(13);
-    internal_static_Data3_fieldAccessorTable = new
+    internal_static_DataRow_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_Data3_descriptor,
+        internal_static_DataRow_descriptor,
         new java.lang.String[] { "FullName", "DataType", "Section", "Bigend", "Version", "IsVlen", "Nelems", "Primdata", "Stringdata", "Vlens", "Opaquedata", "Structdata", });
     internal_static_Member_descriptor =
       getDescriptor().getMessageTypes().get(14);

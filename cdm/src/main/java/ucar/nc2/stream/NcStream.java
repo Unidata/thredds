@@ -82,6 +82,7 @@ public class NcStream {
 
   static public final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
   static public final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
+  static public final byte[] MAGIC_DATA2 = new byte[]{(byte) 0xac, (byte) 0xec, (byte) 0xce, (byte) 0xca};
   static public final byte[] MAGIC_VDATA = new byte[]{(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};
   static public final byte[] MAGIC_VEND = new byte[]{(byte) 0xed, (byte) 0xef, (byte) 0xfe, (byte) 0xda};
 
@@ -255,6 +256,8 @@ public class NcStream {
     NcStreamProto.Section.Builder sbuilder = NcStreamProto.Section.newBuilder();
     for (Range r : section.getRanges()) {
       NcStreamProto.Range.Builder rbuilder = NcStreamProto.Range.newBuilder();
+      if (r.length() < 0)
+        System.out.printf("HEY%n");
       rbuilder.setStart(r.first());
       rbuilder.setSize(r.length());
       rbuilder.setStride(r.stride());
@@ -587,11 +590,12 @@ public class NcStream {
         long stride = pr.getStride();
         if (stride == 0) stride = 1; // default in protobuf2 was 1, but protobuf3 is 0, luckily 0 is illegal
         if (pr.getSize() == 0)
-          section.appendRange(Range.EMPTY);
-        else if (pr.getSize() == -1)
-          section.appendRange(Range.VLEN);
+          section.appendRange(Range.EMPTY); // used for scalars
+        else if (pr.getSize() < 0) //nshould not happen
+          System.out.printf("HEY%n");
         else
           section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1), (int) stride);
+
       } catch (InvalidRangeException e) {
         throw new RuntimeException("Bad Section in ncstream", e);
       }

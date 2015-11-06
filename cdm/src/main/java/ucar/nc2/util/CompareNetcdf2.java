@@ -42,6 +42,7 @@ import ucar.ma2.*;
 import ucar.nc2.iosp.netcdf4.Nc4;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Formatter;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class CompareNetcdf2 {
   public interface ObjFilter {
     // if true, compare attribute, else skip comparision
     boolean attCheckOk(Variable v, Attribute att);
+
     // if true, compare variable, else skip comparision
     boolean varDataTypeCheckOk(Variable v);
   }
@@ -165,7 +167,7 @@ public class CompareNetcdf2 {
     long took = System.currentTimeMillis() - start;
     f.format(" Time to compare = %d msecs%n", took);
 
-        // coordinate systems
+    // coordinate systems
     if (org instanceof NetcdfDataset && copy instanceof NetcdfDataset) {
       NetcdfDataset orgds = (NetcdfDataset) org;
       NetcdfDataset copyds = (NetcdfDataset) copy;
@@ -303,7 +305,7 @@ public class CompareNetcdf2 {
     // data !!
     if (compareData) {
       try {
-        compareVariableData(org, copy, showCompare, justOne);
+        ok &= compareVariableData(org, copy, showCompare, justOne);
 
       } catch (IOException e) {
         StringWriter sw = new StringWriter(5000);
@@ -324,7 +326,7 @@ public class CompareNetcdf2 {
         Structure ncmlS = (Structure) copy;
 
         List vars = new ArrayList();
-        ok &= checkAll("struct "+orgS.getNameAndDimensions(), orgS.getVariables(), ncmlS.getVariables(), vars);
+        ok &= checkAll("struct " + orgS.getNameAndDimensions(), orgS.getVariables(), ncmlS.getVariables(), vars);
         for (int i = 0; i < vars.size(); i += 2) {
           Variable orgV = (Variable) vars.get(i);
           Variable ncmlV = (Variable) vars.get(i + 1);
@@ -351,7 +353,7 @@ public class CompareNetcdf2 {
   }
 
 
-  private boolean compareCoordinateSystem(CoordinateSystem cs1, CoordinateSystem cs2,  ObjFilter filter) {
+  private boolean compareCoordinateSystem(CoordinateSystem cs1, CoordinateSystem cs2, ObjFilter filter) {
     if (showCompare)
       f.format("compare CoordinateSystem '%s' to '%s' %n", cs1.getName(), cs2.getName());
 
@@ -368,7 +370,7 @@ public class CompareNetcdf2 {
     return ok;
   }
 
-  private boolean compareCoordinateAxis(CoordinateAxis a1, CoordinateAxis a2,  ObjFilter filter) {
+  private boolean compareCoordinateAxis(CoordinateAxis a1, CoordinateAxis a2, ObjFilter filter) {
     if (showCompare)
       f.format("  compare CoordinateAxis '%s' to '%s' %n", a1.getShortName(), a2.getShortName());
 
@@ -377,10 +379,9 @@ public class CompareNetcdf2 {
   }
 
 
-
   // make sure each object in wantList is contained in container, using equals().
 
-    // make sure each object in each list are in the other list, using equals().
+  // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
 
   private boolean checkAttributes(Variable v, List<Attribute> list1, List<Attribute> list2, ObjFilter filter) {
@@ -394,7 +395,7 @@ public class CompareNetcdf2 {
 
     for (Attribute att2 : list2) {
       if (filter == null || filter.attCheckOk(v, att2))
-      ok &= checkEach(name, att2, "file2", list2, "file1", list1, null);
+        ok &= checkEach(name, att2, "file2", list2, "file1", list1, null);
     }
 
     return ok;
@@ -416,8 +417,7 @@ public class CompareNetcdf2 {
   }
 
 
-
-    // make sure each object in each list are in the other list, using equals().
+  // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
 
   private boolean checkEnums(Group org, Group copy) {
@@ -448,8 +448,7 @@ public class CompareNetcdf2 {
   }
 
 
-
- // make sure each object in each list are in the other list, using equals().
+  // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
 
   private boolean checkAll(String what, List list1, List list2, List result) {
@@ -506,24 +505,25 @@ public class CompareNetcdf2 {
     return ok;
   }
 
-  private void compareVariableData(Variable var1, Variable var2, boolean showCompare, boolean justOne) throws IOException {
+  private boolean compareVariableData(Variable var1, Variable var2, boolean showCompare, boolean justOne) throws IOException {
     Array data1 = var1.read();
     Array data2 = var2.read();
 
     if (showCompare)
       f.format(" compareArrays %s unlimited=%s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(), data1.getSize());
-    compareData(var1.getFullName(), data1, data2, justOne);
-    if (showCompare) f.format("   ok%n");
+    boolean ok = compareData(var1.getFullName(), data1, data2, justOne);
+    if (showCompare) f.format("   ok=%s%n", ok);
+    return ok;
   }
 
   public boolean compareData(String name, Array data1, double[] data2) {
-    Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
+    Array data2a = Array.factory(DataType.DOUBLE, new int[]{data2.length}, data2);
     return compareData(name, data1, data2a, TOL, false, false);
   }
 
   public boolean compareData(String name, double[] data1, double[] data2) {
-    Array data1a = Array.factory(DataType.DOUBLE, new int[] {data1.length}, data1);
-    Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
+    Array data1a = Array.factory(DataType.DOUBLE, new int[]{data1.length}, data1);
+    Array data2a = Array.factory(DataType.DOUBLE, new int[]{data2.length}, data2);
     return compareData(name, data1a, data2a, TOL, false, false);
   }
 
@@ -547,14 +547,33 @@ public class CompareNetcdf2 {
       ok = false;
     }
 
+    if (testTypes && data1.getDataType() != data2.getDataType()) {
+      f.format(" DIFF %s: data type %s !== %s%n", name, data1.getDataType(), data2.getDataType());
+      ok = false;
+    }
+
     if (!ok) return false;
 
-    DataType dt = DataType.getType(data1);
+    DataType dt = data1.getDataType();
 
     IndexIterator iter1 = data1.getIndexIterator();
     IndexIterator iter2 = data2.getIndexIterator();
 
-    if (dt == DataType.DOUBLE) {
+    if (data1 instanceof ArrayObject) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        Object v1 = iter1.getObjectNext();
+        Object v2 = iter2.getObjectNext();
+        if (v1.getClass() != v2.getClass()) {
+          f.format(" DIFF %s: ArrayObject class %s != %s %n", name, v1.getClass().getName(), v2.getClass().getName());
+          ok = false;
+          if (justOne) break;
+
+        } else if (v1 instanceof Array) {
+          ok &= compareData(name, (Array) v1, (Array) v2, tol, justOne, testTypes);
+        }
+      }
+
+    } else if (dt == DataType.DOUBLE) {
       while (iter1.hasNext() && iter2.hasNext()) {
         double v1 = iter1.getDoubleNext();
         double v2 = iter2.getDoubleNext();
@@ -610,6 +629,21 @@ public class CompareNetcdf2 {
       while (iter1.hasNext() && iter2.hasNext()) {
         compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next(), tol, justOne);
       }
+
+    } else if (dt == DataType.OPAQUE) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        ByteBuffer obj1 = (ByteBuffer) iter1.next();
+        ByteBuffer obj2 = (ByteBuffer) iter2.next();
+        if (obj1.limit() != obj2.limit()) {
+          f.format(" DIFF %s: opaque size %d != %d%n", name, obj1.limit(), obj2.limit() );
+          ok = false;
+          if (justOne) break;
+        }
+      }
+
+    } else {
+      ok = false;
+      f.format(" %s: Unknown data type %s%n", name, data1.getClass().getName());
     }
 
     return ok;
@@ -626,7 +660,7 @@ public class CompareNetcdf2 {
     }
 
     for (StructureMembers.Member m1 : sm1.getMembers()) {
-      if (m1.getName().equals("time")) continue;
+      // if (m1.getName().equals("time")) continue;
       StructureMembers.Member m2 = sm2.findMember(m1.getName());
       Array data1 = sdata1.getArray(m1);
       Array data2 = sdata2.getArray(m2);
@@ -644,7 +678,7 @@ public class CompareNetcdf2 {
   }
 
   static public double pdiff(double d1, double d2) {
-    return Math.abs((d1 - d2) / d1);
+    return 100 * Math.abs((d1 - d2) / d1);
   }
 
   public static void main(String arg[]) throws IOException {

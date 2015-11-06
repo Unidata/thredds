@@ -284,13 +284,26 @@ public class H5iosp extends AbstractIOServiceProvider {
         }
       }
       int prefixrank = 0;
-      for(int i=0;i<shape.length;i++) {if(shape[i] < 0) {prefixrank = i; break;}}
+      for (int i=0;i<shape.length;i++) { // find leftmost vlen
+        if (shape[i] < 0) {
+          prefixrank = i;
+          break;
+        }
+      }
       Array result;
       if(prefixrank == 0) // if scalar, return just the singleton vlen array
         result = data[0];
-      else if (prefixrank == 1)
+       else {
+        int[] newshape = new int[prefixrank];
+        System.arraycopy(shape, 0, newshape, 0, prefixrank);
+        // result = Array.makeObjectArray(readType, data[0].getClass(), newshape, data);
+        result = Array.makeVlenArray(newshape, data);
+      }
+
+      /*
+      else if (prefixrank == 1) // LOOK cant these two cases be combines - just differ in shape ??
         result = Array.makeObjectArray(readType, data[0].getClass(), new int[]{count}, data);
-      else {
+     else {  // LOOK cant these two cases be combines - just differ in shape ??
           // Otherwise create and fill in an n-dimensional Array Of Arrays
           int[] newshape = new int[prefixrank];
           System.arraycopy(shape, 0, newshape, 0, prefixrank);
@@ -301,7 +314,7 @@ public class H5iosp extends AbstractIOServiceProvider {
               iter.setObjectNext(data[i]);
           }
           result = ndimarray;
-      }
+      } */
       //return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
       //return new ArrayObject(data[0].getClass(), shape, data);
       return result;
@@ -363,7 +376,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     ByteBuffer bb = ByteBuffer.wrap(byteArray);
     ArrayStructureBB asbb = new ArrayStructureBB(sm, shape, bb, 0);
 
-    // strings are stored on the heap, and must be read separately
+    // strings and vlens are stored on the heap, and must be read separately
     if (hasHeap) {
       int destPos = 0;
       for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
@@ -463,7 +476,14 @@ public class H5iosp extends AbstractIOServiceProvider {
         Array result;
         if(prefixrank == 0) // if scalar, return just the singleton vlen array
           result = fieldarray[0];
-        else if(prefixrank == 1)
+        else {
+          int[] newshape = new int[prefixrank];
+          System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
+          // result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), newshape, fieldarray);
+          result = Array.makeVlenArray(newshape, fieldarray);
+        }
+
+        /* if (prefixrank == 1)
           result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), new int[]{size}, fieldarray);
         else {
           // Otherwise create and fill in an n-dimensional Array Of Arrays
@@ -476,7 +496,7 @@ public class H5iosp extends AbstractIOServiceProvider {
               iter.setObjectNext(fieldarray[i]);
           }
           result = ndimarray;
-        }
+        } */
 
         //Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
 

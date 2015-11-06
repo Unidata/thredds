@@ -32,6 +32,7 @@
  */
 package ucar.ma2;
 
+import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
@@ -100,7 +101,7 @@ public abstract class Array {
     return factory(dataType, Index.factory(shape), storage);
   }
 
-  /* generate new Array with given type and shape and zeroed storage */
+  /* generate new Array with given type, index and storage */
   static public Array factory(DataType dtype, Index index, Object storage) {
     switch (dtype) {
       case DOUBLE:
@@ -136,11 +137,25 @@ public abstract class Array {
         return ArrayObject.factory(dtype, StructureDataIterator.class, index, (Object[]) storage);
       case OPAQUE:
         return ArrayObject.factory(dtype, ByteBuffer.class, index, (Object[]) storage);
-
-      // LOOK what is this used for ??
-      default:
-        return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage);  // LOOK dont know the object class
     }
+
+    throw new RuntimeException("Cant use this method for datatype "+dtype);
+
+      // used for VLEN ??
+      //default:
+      //  return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage);  // LOOK dont know the object class
+    // }
+  }
+
+  /**
+   * Make a vlen array
+   * @param shape the outer shape, ie excluding the vlen dimension
+   * @param storage must be an Array type. must not be null
+   * @return ArrayObject
+   */
+  static public Array makeVlenArray(int[] shape, @Nonnull Array[] storage) {
+    Index index = Index.factory(shape);
+    return ArrayObject.factory(storage[0].getDataType(), storage[0].getClass(), index, storage);
   }
 
   /**
@@ -424,15 +439,6 @@ public abstract class Array {
   public Index getIndex() {
     return (Index) indexCalc.clone();
   }
-
-  /*
-   * Get an Index object used for indexed access of this Array.
-   *
-   * @return an Index for this Array
-   *
-  public Index getIndexPrivate() {
-    return indexCalc;
-  }  */
 
   /**
    * Get an index iterator for traversing the array in canonical order.
@@ -741,8 +747,12 @@ public abstract class Array {
       case ENUM1:
       case UBYTE:
       case BYTE:
-        if (shape == null) shape = new int[]{bb.limit()};
-        return factory(dtype, shape, bb.array());
+        size = bb.limit();
+        if (shape == null) shape = new int[]{size};
+        result = factory(dtype, shape);
+        for (int i = 0; i < size; i++)
+          result.setByte(i, bb.get(i));
+        return result;
 
       case CHAR:
         size = bb.limit();

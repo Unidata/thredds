@@ -37,6 +37,7 @@ import com.google.protobuf.ByteString;
 import ucar.ma2.*;
 import ucar.nc2.iosp.IospHelper;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Describe
+ * DataCol message encoding.
  *
  * @author caron
  * @since 10/30/2015.
@@ -52,8 +53,8 @@ import java.util.List;
 public class NcStreamDataCol {
 
   /*
-  message Data2 {
-    string fullName = 1;
+  message DataCol {
+    string name = 1;      // fullname for top, shortname for member
     DataType dataType = 2;
     Section section = 3;
     bool bigend = 4;
@@ -72,7 +73,7 @@ public class NcStreamDataCol {
   }
 
   message ArrayStructureCol {
-    repeated Data2 memberData = 1;
+    repeated DataCol memberData = 1;
   }
 
   primdata has nelems * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
@@ -83,13 +84,8 @@ public class NcStreamDataCol {
 
 */
 
-  public NcStreamProto.Data2 encodeData2(String name, boolean isVlen, Section section, Array data) {
-    NcStreamProto.Data2.Builder builder = NcStreamProto.Data2.newBuilder();
-    encodeData2(builder, name, isVlen, section, data);
-    return builder.build();
-  }
-
-  void encodeData2(NcStreamProto.Data2.Builder builder, String name, boolean isVlen, Section section, Array data) {
+  public NcStreamProto.DataCol encodeData2(String name, boolean isVlen, Section section, Array data) {
+    NcStreamProto.DataCol.Builder builder = NcStreamProto.DataCol.newBuilder();
     DataType dataType = data.getDataType();
 
     builder.setName(name);
@@ -108,18 +104,18 @@ public class NcStreamDataCol {
 
     } else if (dataType == DataType.STRING) {
       if (data instanceof ArrayChar) { // is this possible ?
-        ArrayChar cdata =(ArrayChar) data;
-        for (String s:cdata)
+        ArrayChar cdata = (ArrayChar) data;
+        for (String s : cdata)
           builder.addStringdata(s);
-        Section ssection = section.removeRange(section.getRank()-1);
+        Section ssection = section.removeLast();
         builder.setSection(NcStream.encodeSection(ssection));
 
       } else if (data instanceof ArrayObject) {
         IndexIterator iter = data.getIndexIterator();
         while (iter.hasNext())
-          builder.addStringdata( (String) iter.next());
+          builder.addStringdata((String) iter.next());
       } else {
-        throw new IllegalStateException("Unknown class for STRING ="+ data.getClass().getName());
+        throw new IllegalStateException("Unknown class for STRING =" + data.getClass().getName());
       }
 
     } else if (dataType == DataType.OPAQUE) {
@@ -130,55 +126,85 @@ public class NcStreamDataCol {
           builder.addOpaquedata(ByteString.copyFrom(bb));
         }
       } else {
-        throw new IllegalStateException("Unknown class for OPAQUE ="+ data.getClass().getName());
+        throw new IllegalStateException("Unknown class for OPAQUE =" + data.getClass().getName());
       }
 
     } else if (dataType == DataType.STRUCTURE) {
-      builder.setStructdata(encodeStructureData( data));
+      builder.setStructdata(encodeStructureData(data));
 
     } else if (dataType == DataType.SEQUENCE) {
-      throw new UnsupportedOperationException("Not implemented yet SEQUENCE ="+ data.getClass().getName());
+      throw new UnsupportedOperationException("Not implemented yet SEQUENCE =" + data.getClass().getName());
 
     } else { // normal case
       int nbytes = (int) data.getSizeBytes();
       ByteBuffer bb = ByteBuffer.allocate(nbytes);
-      copyArrayToBB(data, bb);
+      bb.order(ByteOrder.nativeOrder());
+      copyArrayToBB(data, false, bb);
       bb.flip();
       builder.setPrimdata(ByteString.copyFrom(bb));
     }
 
+    return builder.build();
   }
 
-  void encodeVlenData(NcStreamProto.Data2.Builder builder, Section section, Array data) {
-    if (!(data instanceof ArrayObject))
-      throw new IllegalStateException("Unknown class for OPAQUE =" + data.getClass().getName());
+  void encodeVlenData(NcStreamProto.DataCol.Builder builder, Section section, Array data) {
+    if (data instanceof ArrayObject) {
+      IndexIterator iter = data.getIndexIterator();
+      int count = 0;
+      int nelems = 0;
+      while (iter.hasNext()) {
+        Array varray = (Array) iter.next();
+        int vlensize = (int) varray.getSize();
+        builder.addVlens(vlensize);
+        nelems += vlensize;
+        count++;
+      }
+      builder.setNelems(nelems);
+      Section ssection = section.removeVlen();
+      builder.setSection(NcStream.encodeSection(ssection));
+      assert ssection.computeSize() == count;
 
-    IndexIterator iter = data.getIndexIterator();
-    int count = 0;
-    while (iter.hasNext()) {
-      Array varray = (Array) iter.next();
-      int vlensize = (int) varray.getSize();
-      builder.addVlens(vlensize);
-      count += vlensize;
+      int nbytes = nelems * data.getDataType().getSize();
+      ByteBuffer bb = ByteBuffer.allocate(nbytes);
+      bb.order(ByteOrder.nativeOrder());
+
+      iter = data.getIndexIterator();
+      while (iter.hasNext()) {
+        Array varray = (Array) iter.next();
+        copyArrayToBB(varray, true, bb);
+      }
+      bb.flip();
+      builder.setPrimdata(ByteString.copyFrom(bb));
+
+      // If the vlen is rank one, the data array may just be an Array of the appropriate type, since the ArrayObject is not needed:
+    } else  {
+      int nbytes = (int) data.getSizeBytes();
+      ByteBuffer bb = ByteBuffer.allocate(nbytes);
+      bb.order(ByteOrder.nativeOrder());
+      copyArrayToBB(data, false, bb);
+      bb.flip();
+      builder.setPrimdata(ByteString.copyFrom(bb));
+      builder.setIsVlen(false);
     }
-    builder.setNelems(count);
-    Section ssection = section.removeRange(section.getRank() - 1);
-    builder.setSection(NcStream.encodeSection(ssection));
-    assert ssection.computeSize() == count;
 
-    int nbytes = count * data.getDataType().getSize();
-    ByteBuffer bb = ByteBuffer.allocate(nbytes);
-
-    iter = data.getIndexIterator();
-    while (iter.hasNext()) {
-      Array varray = (Array) iter.next();
-      copyArrayToBB(varray, bb);
-    }
+    // otherwise WTF ?
+    // throw new IllegalStateException("Unknown class for OPAQUE =" + data.getClass().getName());
   }
 
-  void copyArrayToBB(Array data, ByteBuffer out) {
-    Class classType = data.getElementType();
+  void copyArrayToBB(Array data, boolean isVlen, ByteBuffer out) {
     IndexIterator iterA = data.getIndexIterator();
+
+    // VLEN
+    if (isVlen && data instanceof ArrayObject) {
+      while (iterA.hasNext()) {
+        Object inner = iterA.next();
+        assert (inner instanceof Array);
+        copyArrayToBB((Array) inner, isVlen, out);
+      }
+      return;
+    }
+
+    Class classType = data.getElementType();
 
     if (classType == double.class) {
       while (iterA.hasNext())
@@ -218,9 +244,10 @@ public class NcStreamDataCol {
 
   private class MemberData {
     StructureMembers.Member member;
-    int nelems;
+    Section section;
     DataType dtype;
     boolean isVlen;
+    int nelems;
 
     ByteBuffer bb;
     List<String> stringList;
@@ -229,11 +256,26 @@ public class NcStreamDataCol {
     List<Integer> vlens;
     List<MemberData> members;
 
-    public MemberData(StructureMembers.Member member, int nelems) {
+    public MemberData(StructureMembers.Member member, int[] parent) {
       this.member = member;
-      this.nelems = nelems;
+      this.section = new Section(parent);
+      try {
+        int[] mshape = member.getShape();
+        //if (mshape.length == 0) // scalar
+        //  this.section.appendRange(Range.ONE);
+        //else
+        // compose with the parent
+        for (int s : mshape) {
+          if (s < 0) continue;
+          this.section.appendRange(s);
+        }
+      } catch (InvalidRangeException e) {
+        throw new RuntimeException(e);
+      }
+
       this.dtype = member.getDataType();
       this.isVlen = member.isVariableLength();
+      this.nelems = (int) section.computeSize();
 
       if (isVlen) {
         vlenList = new ArrayList<>(nelems);
@@ -245,25 +287,45 @@ public class NcStreamDataCol {
       } else if (dtype == DataType.STRUCTURE) { // LOOK not doing sequences yet
         members = new ArrayList<>();
         for (StructureMembers.Member m : member.getStructureMembers().getMembers()) {
-          members.add( new MemberData(m, nelems * m.getSize()));
+          members.add(new MemberData(m, section.getShape()));
         }
-      } else
+      } else {
         bb = ByteBuffer.allocate(nelems * member.getSizeBytes());
+        bb.order(ByteOrder.nativeOrder());
+      }
     }
 
-    int completeVlens() {
-      vlens = new ArrayList<>(nelems);
+    int addVlens(Array va) {
       int total = 0;
-      for (Array va : vlenList) {
+      if (va instanceof ArrayObject) {
+        while (va.hasNext()) {
+          Object inner = va.next();
+          assert (inner instanceof Array);
+          total += addVlens((Array) inner);
+        }
+      } else {
         vlens.add((int) va.getSize());
         total += va.getSize();
       }
-      bb = ByteBuffer.allocate(nelems * member.getSizeBytes());
+      return total;
+    }
+
+    int finishVlens() {
+      vlens = new ArrayList<>(nelems*member.getSize());
+      int total = 0;
       for (Array va : vlenList) {
-        copyArrayToBB(va, bb);
+        total += addVlens(va);
+      }
+      this.nelems = total;
+
+      bb = ByteBuffer.allocate(total * member.getSizeBytes());
+      bb.order(ByteOrder.nativeOrder());
+      for (Array va : vlenList) {
+        copyArrayToBB(va, true, bb);
       }
       return total;
     }
+
   }
 
   NcStreamProto.ArrayStructureCol.Builder encodeStructureData(Array data) {
@@ -275,14 +337,14 @@ public class NcStreamDataCol {
     List<MemberData> memberDataList = new ArrayList<>();
     StructureMembers sm = as.getStructureMembers();
     for (StructureMembers.Member m : sm.getMembers()) {
-      memberDataList.add( new MemberData(m, nelems));
+      memberDataList.add(new MemberData(m, as.getShape()));
     }
 
     // data extraction
-    for (int recno=0; recno<nelems; recno++) {
+    for (int recno = 0; recno < nelems; recno++) {
       for (MemberData md : memberDataList) {
         if (md.member.isVariableLength()) {
-          md.vlenList.add(as.getArray(recno, md.member));
+          md.vlenList.add( as.getArray(recno, md.member));
         } else {
           extractData(as, recno, md);
         }
@@ -290,22 +352,26 @@ public class NcStreamDataCol {
     }
 
     // construct the result recursively
-    return buildNestedStructureData( memberDataList);
+    return buildNestedStructureData(memberDataList);
   }
 
   NcStreamProto.ArrayStructureCol.Builder buildNestedStructureData(List<MemberData> mdataList) {
     NcStreamProto.ArrayStructureCol.Builder result = NcStreamProto.ArrayStructureCol.newBuilder();
 
     for (MemberData nestedMemberData : mdataList) {
-      NcStreamProto.Data2.Builder nestedBuilder = NcStreamProto.Data2.newBuilder();
+      NcStreamProto.DataCol.Builder nestedBuilder = NcStreamProto.DataCol.newBuilder();
       nestedBuilder.setName(nestedMemberData.member.getName());
       nestedBuilder.setDataType(NcStream.convertDataType(nestedMemberData.member.getDataType()));
       nestedBuilder.setNelems(nestedMemberData.nelems);
+      nestedBuilder.setSection(NcStream.encodeSection(nestedMemberData.section));
 
       if (nestedMemberData.member.isVariableLength()) {
-        nestedMemberData.completeVlens();
-        nestedBuilder.addAllVlens (nestedMemberData.vlens);
+        nestedMemberData.finishVlens();
+        nestedBuilder.addAllVlens(nestedMemberData.vlens);
+        nestedMemberData.bb.flip();
         nestedBuilder.setPrimdata(ByteString.copyFrom(nestedMemberData.bb));
+        nestedBuilder.setNelems(nestedMemberData.nelems);
+        nestedBuilder.setIsVlen(true);
 
       } else if (nestedMemberData.member.getDataType() == DataType.STRING) {
         nestedBuilder.addAllStringdata(nestedMemberData.stringList);
@@ -314,9 +380,10 @@ public class NcStreamDataCol {
         nestedBuilder.addAllOpaquedata(nestedMemberData.opaqueList);
 
       } else if (nestedMemberData.member.getDataType() == DataType.STRUCTURE) {
-        nestedBuilder.setStructdata(buildNestedStructureData( nestedMemberData.members)); // recurse
+        nestedBuilder.setStructdata(buildNestedStructureData(nestedMemberData.members)); // recurse
 
       } else {
+        nestedMemberData.bb.flip();
         nestedBuilder.setPrimdata(ByteString.copyFrom(nestedMemberData.bb));
       }
 
@@ -360,7 +427,7 @@ public class NcStreamDataCol {
         md.stringList.add(as.getScalarString(recno, m));
 
       else if (md.dtype == DataType.OPAQUE)
-        md.opaqueList.add( ByteString.copyFrom((ByteBuffer) as.getScalarObject(recno, m)));
+        md.opaqueList.add(ByteString.copyFrom((ByteBuffer) as.getScalarObject(recno, m)));
 
       else if (md.dtype == DataType.STRUCTURE)
         extractStructureData(md, as.getScalarStructure(recno, m));
@@ -404,7 +471,7 @@ public class NcStreamDataCol {
 
       } else if (md.dtype == DataType.STRUCTURE) {
         ArrayStructure nested = as.getArrayStructure(recno, m);
-        for (int i=0; i<nested.getSize(); i++) extractStructureData(md, nested.getStructureData(i));
+        for (int i = 0; i < nested.getSize(); i++) extractStructureData(md, nested.getStructureData(i));
       }
     }
   }
@@ -418,81 +485,204 @@ public class NcStreamDataCol {
 
       if (m.isScalar()) {
         if (classType == double.class)
-          bb.putDouble(sdata.getScalarDouble( m));
+          bb.putDouble(sdata.getScalarDouble(m));
 
         else if (classType == float.class)
-          bb.putFloat(sdata.getScalarFloat( m));
+          bb.putFloat(sdata.getScalarFloat(m));
 
         else if (classType == byte.class)
-          bb.put(sdata.getScalarByte( m));
+          bb.put(sdata.getScalarByte(m));
 
         else if (classType == short.class)
-          bb.putShort(sdata.getScalarShort( m));
+          bb.putShort(sdata.getScalarShort(m));
 
         else if (classType == int.class)
-          bb.putInt(sdata.getScalarInt( m));
+          bb.putInt(sdata.getScalarInt(m));
 
         else if (classType == long.class)
-          bb.putLong(sdata.getScalarLong( m));
+          bb.putLong(sdata.getScalarLong(m));
 
         else if (md.dtype == DataType.CHAR)
-          bb.put((byte) sdata.getScalarChar( m));
+          bb.put((byte) sdata.getScalarChar(m));
 
         else if (md.dtype == DataType.STRING)
-          md.stringList.add(sdata.getScalarString( m));
+          md.stringList.add(sdata.getScalarString(m));
 
         else if (md.dtype == DataType.OPAQUE)
-          md.opaqueList.add( ByteString.copyFrom((ByteBuffer) sdata.getScalarObject( m)));
+          md.opaqueList.add(ByteString.copyFrom((ByteBuffer) sdata.getScalarObject(m)));
 
         else if (md.dtype == DataType.STRUCTURE)
-          extractStructureData(md, sdata.getScalarStructure( m));
+          extractStructureData(md, sdata.getScalarStructure(m));
 
       } else {
         if (classType == double.class) {
-          double[] data = sdata.getJavaArrayDouble( m);
+          double[] data = sdata.getJavaArrayDouble(m);
           for (double aData : data) bb.putDouble(aData);
 
         } else if (classType == float.class) {
-          float[] data = sdata.getJavaArrayFloat( m);
+          float[] data = sdata.getJavaArrayFloat(m);
           for (float aData : data) bb.putFloat(aData);
 
         } else if (classType == byte.class) {
-          byte[] data = sdata.getJavaArrayByte( m);
+          byte[] data = sdata.getJavaArrayByte(m);
           for (byte aData : data) bb.put(aData);
 
         } else if (classType == short.class) {
-          short[] data = sdata.getJavaArrayShort( m);
+          short[] data = sdata.getJavaArrayShort(m);
           for (short aData : data) bb.putShort(aData);
 
         } else if (classType == int.class) {
-          int[] data = sdata.getJavaArrayInt( m);
+          int[] data = sdata.getJavaArrayInt(m);
           for (int aData : data) bb.putInt(aData);
 
         } else if (classType == long.class) {
-          long[] data = sdata.getJavaArrayLong( m);
+          long[] data = sdata.getJavaArrayLong(m);
           for (long aData : data) bb.putLong(aData);
 
         } else if (md.dtype == DataType.CHAR) {
-          char[] data = sdata.getJavaArrayChar( m);
+          char[] data = sdata.getJavaArrayChar(m);
           for (char aData : data) bb.put((byte) aData);
 
         } else if (md.dtype == DataType.STRING) {
-          String[] data = sdata.getJavaArrayString( m);
+          String[] data = sdata.getJavaArrayString(m);
           Collections.addAll(md.stringList, data);
 
         } else if (md.dtype == DataType.OPAQUE) {
-          Array ao = sdata.getArray( m);
+          Array ao = sdata.getArray(m);
           while (ao.hasNext()) md.opaqueList.add(ByteString.copyFrom((ByteBuffer) ao.next()));
 
         } else if (md.dtype == DataType.STRUCTURE) {
-          ArrayStructure nestedAS = sdata.getArrayStructure( m);
-          for (int i=0; i<nestedAS.getSize(); i++) extractStructureData(md, nestedAS.getStructureData(i));
+          ArrayStructure nestedAS = sdata.getArrayStructure(m);
+          for (int i = 0; i < nestedAS.getSize(); i++) extractStructureData(md, nestedAS.getStructureData(i));
         }
       }
     }
 
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  private Array readData2(NcStreamProto.DataCol dproto) throws IOException {
+
+    ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+
+    DataType dataType = NcStream.convertDataType(dproto.getDataType());
+    Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
+    if (!dproto.getIsVlen()) {
+      assert dproto.getNelems() == section.computeSize();
+    }
+
+    // special cases
+    if (dproto.getIsVlen()) {
+      return decodeVlenData(dproto);
+
+    } else if (dataType == DataType.STRING) {
+      Array data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      for (String s : dproto.getStringdataList()) {
+        ii.setObjectNext(s);
+      }
+      return data;
+
+    } else if (dataType == DataType.STRUCTURE) {
+      return decodeStructureData(dproto);
+
+    } else if (dataType == DataType.OPAQUE) {
+      Array data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      for (ByteString s : dproto.getOpaquedataList()) {
+        ii.setObjectNext(s.asReadOnlyByteBuffer());
+      }
+      return data;
+
+    } else { // common case
+      ByteBuffer bb = dproto.getPrimdata().asReadOnlyByteBuffer();
+      bb.order(bo);
+      return Array.factory(dataType, section.getShape(), bb);
+    }
+
+  }
+
+  public Array decodeVlenData(NcStreamProto.DataCol dproto) throws IOException {
+    DataType dataType = NcStream.convertDataType(dproto.getDataType());
+    ByteBuffer bb = dproto.getPrimdata().asReadOnlyByteBuffer();
+    ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+    bb.order(bo);
+    Array alldata = Array.factory(dataType, new int[]{dproto.getNelems()}, bb); // flat array
+    IndexIterator all = alldata.getIndexIterator();
+
+    Section section = NcStream.decodeSection(dproto.getSection());
+    Array[] data = new Array[(int) section.computeSize()];
+
+    // divide the primitive data into variable length arrays
+    int count = 0;
+    for (int len : dproto.getVlensList()) {
+      Array primdata = Array.factory(dataType, new int[]{len});
+      IndexIterator prim = primdata.getIndexIterator();
+      for (int i=0; i<len; i++) {
+        prim.setObjectNext( all.getObjectNext()); // generic
+      }
+      data[count++] = primdata;
+    }
+
+    // return Array.makeObjectArray(dataType, data[0].getClass(), section.getShape(), data);
+    return Array.makeVlenArray(section.getShape(), data);
+  }
+
+  public Array decodeStructureData(NcStreamProto.DataCol dproto) throws IOException {
+    NcStreamProto.ArrayStructureCol structData = dproto.getStructdata();
+    Section section = NcStream.decodeSection(dproto.getSection());
+    int nelems = dproto.getNelems();
+    assert nelems == section.computeSize();
+
+    StructureMembers members = new StructureMembers(dproto.getName());
+    for (NcStreamProto.DataCol memberData : structData.getMemberDataList()) {
+      decodeMemberData(members, memberData, section);
+    }
+
+    return new ArrayStructureMA(members, section.getShape());
+  }
+
+  private void decodeMemberData(StructureMembers members, NcStreamProto.DataCol memberData, Section parentSection) throws IOException {
+    String name = memberData.getName();
+    DataType dataType = NcStream.convertDataType(memberData.getDataType());
+    Section section = NcStream.decodeSection(memberData.getSection());
+    if (!memberData.getIsVlen()) {
+      assert memberData.getNelems() == section.computeSize();
+    }
+    Section msection = section.removeFirst(parentSection);
+    if (memberData.getIsVlen())
+      msection = msection.appendRange(Range.VLEN);
+
+    StructureMembers.Member result = members.addMember(name, null, null, dataType, msection.getShape());
+    Array data = readData2(memberData);
+
+
+    /* Array data = null;
+    if (dataType == DataType.STRING) {
+      data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      for (String s : memberData.getStringdataList()) {
+        ii.setObjectNext(s);
+      }
+
+    } else if (dataType == DataType.STRUCTURE) {
+      ; // look
+
+    } else if (dataType == DataType.OPAQUE) {
+      data = Array.factory(dataType, section.getShape());
+      IndexIterator ii = data.getIndexIterator();
+      for (ByteString s : memberData.getOpaquedataList()) {
+        ii.setObjectNext(s.asReadOnlyByteBuffer());
+      }
+
+    } else {
+      ByteBuffer bb = memberData.getPrimdata().asReadOnlyByteBuffer();
+      bb.order(bo);
+      data = Array.factory(dataType, section.getShape(), bb);
+    } */
+
+    result.setDataArray(data);
+  }
 
 }

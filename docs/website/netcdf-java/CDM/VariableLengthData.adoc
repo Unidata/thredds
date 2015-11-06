@@ -28,18 +28,27 @@ In the HDF5/netCDF4 data model this would be expressed as:
   variables:
     vlen_t levels(acqtime);
 
-Reading a vlen Variable will return an ArrayObject, whose elements are rank 1 Arrays of the appropriate type, in this example _ArrayFloat.1D_:
+If the Variable has only a single vlen dimension (rank == 1), the returned data array will be a regular Array of the appropriate type.
+For a Variable with a nested vlen Dimension, the returned data array will be an ArrayObject containing regular Arrays whose lengths are independent.
 
 [source,java]
 ----
 Array data = v.read();
-assert (data instanceof ArrayObject);
-while (data.hasNext()) {
-  Object inner = data.nextObject();
-  assert (inner instanceof Array);
-  assert (inner instanceof ArrayFloat.D1);
+if (data instanceof ArrayObject) {
+  while (data.hasNext()) {
+    Object inner = data.nextObject();
+    assert (inner instanceof Array);
+    assert (inner instanceof ArrayFloat.D1);
+  }
+
+}  else if (data.getDataType == DataType.FLOAT) {
+    assert (data instanceof ArrayFloat.D1);
+
+}  else // etc
+
 }
 ----
+
 
 One can subset on the normal dimensions, but not on the variable length dimension:
 
@@ -51,7 +60,7 @@ Array data = v.read(":,0"); // fail
 
 === Nesting
 
-A vlen dimension doesnt typically makes sense as the outer dimension eg:
+A vlen dimension isnt really needed as the outer dimension eg:
 
       float upper_air(*);
 

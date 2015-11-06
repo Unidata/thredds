@@ -140,7 +140,7 @@ message StructureData {
 //////////////////////////////////
 // col oriented
 
-message Data2 {
+message DataCol {
   string name = 1;      // fullname for top, shortname for member
   DataType dataType = 2;
   Section section = 3;
@@ -160,13 +160,13 @@ message Data2 {
 }
 
 message ArrayStructureCol {
-  repeated Data2 memberData = 1;
+  repeated DataCol memberData = 1;
 }
 
 //////////////////////////////////
 // row oriented
 
-message Data3 {
+message DataRow {
   string fullName = 1;
   DataType dataType = 2;
   Section section = 3;
@@ -175,10 +175,10 @@ message Data3 {
   bool isVlen = 7;
   uint32 nelems = 9;
 
-  bytes primdata = 10;              // rectangular, primitive array # <1>
-  repeated string stringdata = 11;  // string dataType # <2>
-  repeated uint32 vlens = 12;   // vlen lengths # <4>
-  repeated bytes opaquedata = 13;   // opaque dataTypes # <4>
+  bytes primdata = 10;              // rectangular, primitive array
+  repeated string stringdata = 11;  // string dataType
+  repeated uint32 vlens = 12;   // vlen lengths
+  repeated bytes opaquedata = 13;   // opaque dataTypes
   ArrayStructureRow structdata = 14;// structure/seq dataType
 }
 
@@ -194,10 +194,10 @@ message ArrayStructureRow {
   uint64 nrows = 5;      // number of rows in this message
   uint32 rowLength = 6;  // length in bytes of each row
 
-  bytes fixdata = 10;            // fixed data # <1>
-  repeated string stringdata = 11;  // string dataType # <2>
-  repeated bytes bytedata = 13;  // opaque dataType and vlens # <4>
-  repeated ArrayStructureRow structdata = 14;  // structure/seq dataType # <5>
+  bytes fixdata = 10;            // fixed data
+  repeated string stringdata = 11;  // string dataType
+  repeated bytes bytedata = 13;  // opaque dataType and vlens
+  repeated ArrayStructureRow structdata = 14;  // structure/seq dataType
 }
 
 //////////////////////////////////

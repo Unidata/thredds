@@ -66,8 +66,9 @@ public class NcStreamReader {
 
   private static double total_uncompressedSize = 0.0;
   private static double total_compressedSize = 0.0;
+
   static public double getCompression(boolean reset) {
-    double result =  total_uncompressedSize / total_compressedSize;
+    double result = total_uncompressedSize / total_compressedSize;
     if (reset) {
       total_compressedSize = 0;
       total_uncompressedSize = 0;
@@ -75,7 +76,7 @@ public class NcStreamReader {
     return result;
   }
 
-    public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
+  public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
     byte[] b = new byte[4];
     NcStream.readFully(is, b);
 
@@ -134,9 +135,15 @@ public class NcStreamReader {
    * @throws IOException on read error
    */
   public DataResult readData(InputStream is, NetcdfFile ncfile) throws IOException {
-    if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
-      throw new IOException("Data transfer corrupted on " + ncfile.getLocation());
+    byte[] b = new byte[4];
+    NcStream.readFully(is, b);
+    if (NcStream.test(b,NcStream.MAGIC_DATA)) return readData1(is, ncfile);
+    if (NcStream.test(b,NcStream.MAGIC_DATA2)) return readData2(is, ncfile);
 
+    throw new IOException("Data transfer corrupted on " + ncfile.getLocation());
+  }
+
+  private DataResult readData1(InputStream is, NetcdfFile ncfile) throws IOException {
     int psize = NcStream.readVInt(is);
     if (debug) System.out.println("  readData data message len= " + psize);
     byte[] dp = new byte[psize];
@@ -209,7 +216,8 @@ public class NcStreamReader {
       NcStream.readFully(in, resultb);
 
       data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(resultb)); // another copy, not sure can do anything
-      if (showDeflate) System.out.printf("Deflate = %d / %d = %f %n", uncompressedSize, dsize, ((float)uncompressedSize)/dsize);
+      if (showDeflate)
+        System.out.printf("Deflate = %d / %d = %f %n", uncompressedSize, dsize, ((float) uncompressedSize) / dsize);
       total_uncompressedSize += uncompressedSize;
       total_compressedSize += dsize;
 
@@ -220,27 +228,30 @@ public class NcStreamReader {
     return new DataResult(dproto.getVarName(), data);
   }
 
-  public DataResult readData2(InputStream is, NetcdfFile ncfile) throws IOException {
-    if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
-      throw new IOException("Data transfer corrupted on " + ncfile.getLocation());
-
+  private DataResult readData2(InputStream is, NetcdfFile ncfile) throws IOException {
     int psize = NcStream.readVInt(is);
     if (debug) System.out.println("  readData data message len= " + psize);
     byte[] dp = new byte[psize];
     NcStream.readFully(is, dp);
 
-    NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseFrom(dp);
+    NcStreamProto.DataCol dproto = NcStreamProto.DataCol.parseFrom(dp);
     // NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseDelimitedFrom(is);
 
-    // ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+    ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
 
     DataType dataType = NcStream.convertDataType(dproto.getDataType());
     Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
-    int nelems = dproto.getNelems();
-    assert nelems == section.computeSize();
+    if (!dproto.getIsVlen()) {
+      assert dproto.getNelems() == section.computeSize();
+    }
 
     // special cases
-    if (dataType == DataType.STRING) {
+    if (dproto.getIsVlen()) {
+      NcStreamDataCol decoder = new NcStreamDataCol();
+      Array data = decoder.decodeVlenData(dproto);
+      return new DataResult(dproto.getName(), data);
+
+    } else if (dataType == DataType.STRING) {
       Array data = Array.factory(dataType, section.getShape());
       IndexIterator ii = data.getIndexIterator();
       for (String s : dproto.getStringdataList()) {
@@ -248,20 +259,30 @@ public class NcStreamReader {
       }
       return new DataResult(dproto.getName(), data);
 
+    } else if (dataType == DataType.STRUCTURE) {
+      NcStreamDataCol decoder = new NcStreamDataCol();
+      Array data = decoder.decodeStructureData(dproto);
+      return new DataResult(dproto.getName(), data);
+
     } else if (dataType == DataType.OPAQUE) {
       Array data = Array.factory(dataType, section.getShape());
       IndexIterator ii = data.getIndexIterator();
       for (ByteString s : dproto.getOpaquedataList()) {
-        ii.setObjectNext( s.asReadOnlyByteBuffer());
+        ii.setObjectNext(s.asReadOnlyByteBuffer());
       }
       return new DataResult(dproto.getName(), data);
 
-    } else {
-      Array data = Array.factory(dataType, section.getShape(), dproto.getPrimdata().asReadOnlyByteBuffer()); // bo ??
+    } else { // common case
+      ByteBuffer bb = dproto.getPrimdata().asReadOnlyByteBuffer();
+      bb.order(bo);
+      Array data = Array.factory(dataType, section.getShape(), bb);
       return new DataResult(dproto.getName(), data);
     }
 
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // LOOK
 
   public StructureDataIterator getStructureIterator(InputStream is, NetcdfFile ncfile) throws IOException {
     if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))

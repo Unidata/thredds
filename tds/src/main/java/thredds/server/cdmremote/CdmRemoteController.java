@@ -81,7 +81,7 @@ import ucar.nc2.ParsedSectionSpec;
 @RequestMapping("/cdmremote")
 public class CdmRemoteController implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmRemoteController.class);
-  private static final boolean debug = false, showReq = false;
+  private static final boolean debug = false, showReq = true;
 
   @Autowired
   TdsContext tdsContext;

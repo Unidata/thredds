@@ -95,7 +95,7 @@ public class TestCdmRemoteMisc {
   public void testByteOrder() {
     try {
       String filename = "/netcdf3/longOffset.nc";
-      String remoteFile = TestWithLocalServer.withPath(urlPath+filename);
+      String remoteFile = TestWithLocalServer.withPath(urlPath + filename);
       CdmRemote ncfileRemote = new CdmRemote(remoteFile);
 
       String localFile = contentRoot+filename;
@@ -103,8 +103,7 @@ public class TestCdmRemoteMisc {
 
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, true, true, true);
-      boolean ok = mind.compare(ncfileLocal, ncfileRemote, new TestCdmRemoteCompareHeadersP.NcstreamObjFilter(),
-              true, true, true);
+      boolean ok = mind.compare(ncfileLocal, ncfileRemote, new TestCdmRemoteCompareHeadersP.NcstreamObjFilter(), true, true, true);
 
       System.out.printf("--Compare %s to %s%n", localFile, remoteFile);
       System.out.printf("  %s%n", f);
@@ -115,8 +114,67 @@ public class TestCdmRemoteMisc {
 
     } catch (Exception e) {
       e.printStackTrace();
+      assert false;
     }
 
   }
+
+  @Test
+  public void testVlen() {
+    try {
+      String filename = "/netcdf4/vlen/tst_vl.nc";
+      String remoteFile = TestWithLocalServer.withPath(urlPath+filename);
+      CdmRemote ncfileRemote = new CdmRemote(remoteFile);
+
+      String localFile = contentRoot+filename;
+      NetcdfFile ncfileLocal = NetcdfFile.open(localFile);
+
+      Formatter f = new Formatter();
+      CompareNetcdf2 mind = new CompareNetcdf2(f, true, true, true);
+      boolean ok = mind.compare(ncfileLocal, ncfileRemote, new TestCdmRemoteCompareHeadersP.NcstreamObjFilter(), true, true, true);
+
+      System.out.printf("--Compare %s to %s%n", localFile, remoteFile);
+      System.out.printf("  %s%n", f);
+      Assert.assertTrue(ok);
+
+      ncfileLocal.close();
+      ncfileRemote.close();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      assert false;
+    }
+
+  }
+
+  @Test
+  public void testVlenInStructure() {
+    try {
+      String filename = "/netcdf4/vlen/IntTimSciSamp.nc";
+      String remoteFile = TestWithLocalServer.withPath(urlPath+filename);
+      CdmRemote ncfileRemote = new CdmRemote(remoteFile);
+
+      String localFile = contentRoot+filename;
+      NetcdfFile ncfileLocal = NetcdfFile.open(localFile);
+
+      Formatter f = new Formatter();
+      CompareNetcdf2 mind = new CompareNetcdf2(f, true, true, true);
+      boolean ok = mind.compare(ncfileLocal, ncfileRemote, new TestCdmRemoteCompareHeadersP.NcstreamObjFilter(), true, true, true);
+
+      System.out.printf("--Compare %s to %s%n", localFile, remoteFile);
+      System.out.printf("  %s%n", f);
+      Assert.assertTrue(ok);
+
+      ncfileLocal.close();
+      ncfileRemote.close();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      assert false;
+    }
+
+  }
+
+
 
 }
