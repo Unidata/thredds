@@ -130,13 +130,13 @@ public abstract class Array {
         return ArrayLong.factory(index, dtype.isUnsigned(), (long[]) storage);
 
       case STRING:
-        return ArrayObject.factory(dtype, String.class, index, (Object[]) storage);
+        return ArrayObject.factory(dtype, String.class, false, index, (Object[]) storage);
       case STRUCTURE:
-        return ArrayObject.factory(dtype, StructureData.class, index, (Object[]) storage);
+        return ArrayObject.factory(dtype, StructureData.class, false, index, (Object[]) storage);
       case SEQUENCE:
-        return ArrayObject.factory(dtype, StructureDataIterator.class, index, (Object[]) storage);
+        return ArrayObject.factory(dtype, StructureDataIterator.class, false, index, (Object[]) storage);
       case OPAQUE:
-        return ArrayObject.factory(dtype, ByteBuffer.class, index, (Object[]) storage);
+        return ArrayObject.factory(dtype, ByteBuffer.class, false, index, (Object[]) storage);
     }
 
     throw new RuntimeException("Cant use this method for datatype "+dtype);
@@ -155,7 +155,7 @@ public abstract class Array {
    */
   static public Array makeVlenArray(int[] shape, @Nonnull Array[] storage) {
     Index index = Index.factory(shape);
-    return ArrayObject.factory(storage[0].getDataType(), storage[0].getClass(), index, storage);
+    return ArrayObject.factory(storage[0].getDataType(), storage[0].getClass(), true, index, storage);
   }
 
   /**
@@ -177,7 +177,7 @@ public abstract class Array {
    */
   static public Array makeObjectArray(DataType dtype, Class classType, int[] shape, Object storage) {
     Index index = Index.factory(shape);
-    return ArrayObject.factory(dtype, classType, index, (Object[]) storage);
+    return ArrayObject.factory(dtype, classType, false, index, (Object[]) storage);
   }
 
   /**
@@ -221,16 +221,16 @@ public abstract class Array {
         return new ArrayLong(index, true, (long[]) storage);
 
       case STRING:
-        return new ArrayObject(dtype, String.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, String.class, false, index, (Object[]) storage);
       case STRUCTURE:
-        return new ArrayObject(dtype, StructureData.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, StructureData.class, false, index, (Object[]) storage);
       case SEQUENCE:
-        return new ArrayObject(dtype, StructureDataIterator.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, StructureDataIterator.class, false, index, (Object[]) storage);
       case OPAQUE:
-        return new ArrayObject(dtype, ByteBuffer.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, ByteBuffer.class, false, index, (Object[]) storage);
 
       default:
-        return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage);  // LOOK dont know the object class
+        return ArrayObject.factory(DataType.OBJECT, Object.class, false, index, (Object[]) storage);  // LOOK dont know the object class
     }
   }
 
@@ -759,7 +759,7 @@ public abstract class Array {
         if (shape == null) shape = new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
-          result.setChar(i, (char) bb.get(i));
+          result.setByte(i, bb.get(i));
         return result;
 
       case ENUM2:
@@ -955,6 +955,10 @@ public abstract class Array {
    */
   public boolean isConstant() {
     return indexCalc instanceof IndexConstant;
+  }
+
+  public boolean isVlen() {
+    return false;
   }
 
   ///////////////////////////////////////////////////

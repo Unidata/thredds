@@ -374,7 +374,7 @@ public class ArrayStructureBB extends ArrayStructure {
     int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     for (int i = 0; i < count; i++)
-      result.setCharNext(  (char) bbuffer.get(offset + i));
+      result.setByteNext(  bbuffer.get(offset + i));
   }
 
   @Override

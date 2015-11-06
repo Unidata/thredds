@@ -45,11 +45,13 @@ Deprecated classes and methods have been removed, and the module structure and t
 
 === Variable Length (vlen) Dimensions and Variables
 
-* The CDM data model is clarified to allow vlen dimensions only in the innermost (fastest changing) Dimension.
-* Reading a Variable with only a vlen Dimension will result in a regular Array.
+* The CDM data model is clarified to allow *vlen* dimensions only in the outermost (fastest changing) Dimension.
+* Reading a Variable with only a single vlen Dimension will result in a regular Array.
 * Reading a Variable with a nested vlen Dimension will result in an ArrayObject containing regular Arrays of independent lengths.
 * In both cases the returned array's DataType will be the primitive type.
 * Previously the exact Array class and DataType returned from a read on a vlen was not well-defined.
+* Use _Array.isVlen()_ to discover if an Array represents vlen data.
+* _ArrayObject.factory(Class classType, Index index)_ is now _ArrayObject.factory(DataType dtype, Class classType, boolean isVlen, Index index)_
 * Use _Array.makeVlenArray(int[] shape, Array[] data)_ to construct vlen data.
 * see link:../netcdf-java/CDM/VariableLengthData.adoc
 

@@ -559,7 +559,7 @@ public class CompareNetcdf2 {
     IndexIterator iter1 = data1.getIndexIterator();
     IndexIterator iter2 = data2.getIndexIterator();
 
-    if (data1 instanceof ArrayObject) {
+    if (data1.isVlen()) {
       while (iter1.hasNext() && iter2.hasNext()) {
         Object v1 = iter1.getObjectNext();
         Object v2 = iter2.getObjectNext();
@@ -579,7 +579,7 @@ public class CompareNetcdf2 {
         double v2 = iter2.getDoubleNext();
         if (!Double.isNaN(v1) || !Double.isNaN(v2))
           if (!Misc.closeEnough(v1, v2, tol)) {
-            f.format(" DIFF %s: %f != %f count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+            f.format(" DIFF double %s: %f != %f count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
             ok = false;
             if (justOne) break;
           }
@@ -590,7 +590,7 @@ public class CompareNetcdf2 {
         float v2 = iter2.getFloatNext();
         if (!Float.isNaN(v1) || !Float.isNaN(v2))
           if (!Misc.closeEnough(v1, v2, (float) tol)) {
-            f.format(" DIFF %s: %f != %f count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+            f.format(" DIFF float %s: %f != %f count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
             ok = false;
             if (justOne) break;
           }
@@ -600,7 +600,7 @@ public class CompareNetcdf2 {
         int v1 = iter1.getIntNext();
         int v2 = iter2.getIntNext();
         if (v1 != v2) {
-          f.format(" DIFF %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+          f.format(" DIFF int %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
           ok = false;
           if (justOne) break;
         }
@@ -610,7 +610,7 @@ public class CompareNetcdf2 {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
         if (v1 != v2) {
-          f.format(" DIFF %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+          f.format(" DIFF short %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
           ok = false;
           if (justOne) break;
         }
@@ -620,11 +620,42 @@ public class CompareNetcdf2 {
         byte v1 = iter1.getByteNext();
         byte v2 = iter2.getByteNext();
         if (v1 != v2) {
-          f.format(" DIFF %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+          f.format(" DIFF byte %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
           ok = false;
           if (justOne) break;
         }
       }
+    } else if (dt.getPrimitiveClassType() == long.class) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        long v1 = iter1.getLongNext();
+        long v2 = iter2.getLongNext();
+        if (v1 != v2) {
+          f.format(" DIFF long %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+          ok = false;
+          if (justOne) break;
+        }
+      }
+    } else if (dt.getPrimitiveClassType() == char.class) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        char v1 = iter1.getCharNext();
+        char v2 = iter2.getCharNext();
+        if (v1 != v2) {
+          f.format(" DIFF char %s: %s != %s count=%s%n", name, v1, v2, iter1);
+          ok = false;
+          if (justOne) break;
+        }
+      }
+    } else if (dt == DataType.STRING) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        String v1 = (String) iter1.getObjectNext();
+        String v2 = (String) iter2.getObjectNext();
+        if (!v1.equals(v2)) {
+          f.format(" DIFF string %s: %s != %s count=%s%n", name, v1, v2, iter1);
+          ok = false;
+          if (justOne) break;
+        }
+      }
+
     } else if (dt == DataType.STRUCTURE) {
       while (iter1.hasNext() && iter2.hasNext()) {
         compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next(), tol, justOne);

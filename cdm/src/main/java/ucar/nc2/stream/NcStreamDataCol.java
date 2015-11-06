@@ -184,7 +184,10 @@ public class NcStreamDataCol {
       copyArrayToBB(data, false, bb);
       bb.flip();
       builder.setPrimdata(ByteString.copyFrom(bb));
+      // returning as a regular array, not vlen
       builder.setIsVlen(false);
+      builder.setNelems((int) data.getSize());
+      builder.setSection(NcStream.encodeSection(new Section(data.getShape())));
     }
 
     // otherwise WTF ?
@@ -421,7 +424,7 @@ public class NcStreamDataCol {
         bb.putLong(as.getScalarLong(recno, m));
 
       else if (md.dtype == DataType.CHAR)
-        bb.put((byte) as.getScalarChar(recno, m));
+        bb.put((byte) as.getScalarChar(recno, m)); // look this just truncates to first byte
 
       else if (md.dtype == DataType.STRING)
         md.stringList.add(as.getScalarString(recno, m));
@@ -562,7 +565,7 @@ public class NcStreamDataCol {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private Array readData2(NcStreamProto.DataCol dproto) throws IOException {
+  public Array decode(NcStreamProto.DataCol dproto, Section parentSection) throws IOException {
 
     ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
 
@@ -574,7 +577,10 @@ public class NcStreamDataCol {
 
     // special cases
     if (dproto.getIsVlen()) {
-      return decodeVlenData(dproto);
+      if (parentSection == null)
+        return decodeVlenData(dproto);
+      else
+        return decodeVlenData(dproto, parentSection);
 
     } else if (dataType == DataType.STRING) {
       Array data = Array.factory(dataType, section.getShape());
@@ -585,7 +591,7 @@ public class NcStreamDataCol {
       return data;
 
     } else if (dataType == DataType.STRUCTURE) {
-      return decodeStructureData(dproto);
+      return decodeStructureData(dproto, parentSection);
 
     } else if (dataType == DataType.OPAQUE) {
       Array data = Array.factory(dataType, section.getShape());
@@ -603,6 +609,7 @@ public class NcStreamDataCol {
 
   }
 
+  // top level vlen
   public Array decodeVlenData(NcStreamProto.DataCol dproto) throws IOException {
     DataType dataType = NcStream.convertDataType(dproto.getDataType());
     ByteBuffer bb = dproto.getPrimdata().asReadOnlyByteBuffer();
@@ -629,15 +636,56 @@ public class NcStreamDataCol {
     return Array.makeVlenArray(section.getShape(), data);
   }
 
-  public Array decodeStructureData(NcStreamProto.DataCol dproto) throws IOException {
+  // vlen inside a Structure
+  private Array decodeVlenData(NcStreamProto.DataCol dproto, Section parentSection) throws IOException {
+    DataType dataType = NcStream.convertDataType(dproto.getDataType());
+    ByteBuffer bb = dproto.getPrimdata().asReadOnlyByteBuffer();
+    ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+    bb.order(bo);
+    Array alldata = Array.factory(dataType, new int[]{dproto.getNelems()}, bb); // 1D array
+    IndexIterator all = alldata.getIndexIterator();
+
+    int psize = (int) parentSection.computeSize();
+
+    Section section = NcStream.decodeSection(dproto.getSection());
+    Section vsection = section.removeFirst(parentSection);
+    int vsectionSize = (int) vsection.computeSize(); // the # of varlen Arrays at the inner structure
+    // LOOK check for scalar
+
+    // divide the primitive data into variable length arrays
+    int countInner = 0;
+    Array[] pdata = new Array[psize];
+    for (int pCount=0; pCount<psize; pCount++) {
+      Array[] vdata = new Array[vsectionSize];
+      for (int vCount=0; vCount<vsectionSize; vCount++) {
+        int vlen = dproto.getVlens(countInner++);
+        Array primdata = Array.factory(dataType, new int[]{vlen});
+        IndexIterator prim = primdata.getIndexIterator();
+        for (int i = 0; i < vlen; i++) {
+          prim.setObjectNext(all.getObjectNext()); // generic
+        }
+        vdata[vCount] = primdata;
+      }
+      pdata[pCount] = Array.makeVlenArray(vsection.getShape(), vdata);
+    }
+
+    // ArrayObject(parentShape)
+    return Array.makeVlenArray(parentSection.getShape(), pdata);
+  }
+
+
+  private Array decodeStructureData(NcStreamProto.DataCol dproto, Section parentSection) throws IOException {
     NcStreamProto.ArrayStructureCol structData = dproto.getStructdata();
     Section section = NcStream.decodeSection(dproto.getSection());
     int nelems = dproto.getNelems();
     assert nelems == section.computeSize();
 
+    // accumulate parent sections
+    parentSection = section.prepend(parentSection);
+
     StructureMembers members = new StructureMembers(dproto.getName());
     for (NcStreamProto.DataCol memberData : structData.getMemberDataList()) {
-      decodeMemberData(members, memberData, section);
+      decodeMemberData(members, memberData, parentSection);
     }
 
     return new ArrayStructureMA(members, section.getShape());
@@ -650,38 +698,13 @@ public class NcStreamDataCol {
     if (!memberData.getIsVlen()) {
       assert memberData.getNelems() == section.computeSize();
     }
+    // the dproto section includes parents, remove them
     Section msection = section.removeFirst(parentSection);
     if (memberData.getIsVlen())
       msection = msection.appendRange(Range.VLEN);
 
     StructureMembers.Member result = members.addMember(name, null, null, dataType, msection.getShape());
-    Array data = readData2(memberData);
-
-
-    /* Array data = null;
-    if (dataType == DataType.STRING) {
-      data = Array.factory(dataType, section.getShape());
-      IndexIterator ii = data.getIndexIterator();
-      for (String s : memberData.getStringdataList()) {
-        ii.setObjectNext(s);
-      }
-
-    } else if (dataType == DataType.STRUCTURE) {
-      ; // look
-
-    } else if (dataType == DataType.OPAQUE) {
-      data = Array.factory(dataType, section.getShape());
-      IndexIterator ii = data.getIndexIterator();
-      for (ByteString s : memberData.getOpaquedataList()) {
-        ii.setObjectNext(s.asReadOnlyByteBuffer());
-      }
-
-    } else {
-      ByteBuffer bb = memberData.getPrimdata().asReadOnlyByteBuffer();
-      bb.order(bo);
-      data = Array.factory(dataType, section.getShape(), bb);
-    } */
-
+    Array data = decode(memberData, parentSection);
     result.setDataArray(data);
   }
 

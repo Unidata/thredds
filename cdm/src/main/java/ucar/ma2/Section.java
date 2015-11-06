@@ -759,6 +759,13 @@ public class Section {
     return subSection(parentSize, list.size());
   }
 
+  public Section prepend(Section parentSection) {
+    if (parentSection == null) return this;
+    List<Range> ranges = new ArrayList<>(parentSection.getRanges());
+    ranges.addAll(getRanges());
+    return new Section(ranges);
+  }
+
   public boolean isImmutable() {
     return immutable;
   }

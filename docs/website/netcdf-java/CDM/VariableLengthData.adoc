@@ -8,7 +8,7 @@
 
 === Overview
 
-*_Variable Length_* Variables have their innermost (fastest changing) _Dimension.isVariableLength()_ = true.
+*_Variable Length_* Variables have their outermost (fastest changing) _Dimension.isVariableLength()_ = true.
 This means that the length of the dimension varies, and is not known until the data is read.
 A variable length (aka _vlen_) Dimension is shown with a '*' instead of a length. Thus in CDM:
 
@@ -34,7 +34,8 @@ For a Variable with a nested vlen Dimension, the returned data array will be an 
 [source,java]
 ----
 Array data = v.read();
-if (data instanceof ArrayObject) {
+if (data.isVlen()) {
+  assert (data instanceof ArrayObject);
   while (data.hasNext()) {
     Object inner = data.nextObject();
     assert (inner instanceof Array);
@@ -178,7 +179,29 @@ while (iter2.hasNext()) {
 }
 ----
 
+== CDM ArrayObject
+
+[source,java]
+----
+ Structure {
+    int shutterPositionA;
+    int shutterPositionB(12);
+    int loopDataA(3, *);
+    int loopDataB(1, *);
+    int loopDataC(*);
+  } record(time=29);
+----
+
+[cols=2*,options="header"]
+|===
+| col | returns
+| record(i).shutterPositionA.getArray() | ArrayInt.D0
+| record(i).shutterPositionB.getArray() | ArrayInt.D1(12)
+| record(i).shutterPositionA.getArray() | ArrayObject(3).ArrayInt(*)
+| record(i).shutterPositionB.getArray() | ArrayObject(1).ArrayInt(*) or ArrayInt.D1(n) ??
+| record(i).shutterPositionC.getArray() | ArrayInt.D1(m)
+|===
 
 '''''
 
-image:../nc.gif[image] This document was last updated Oct 2015
+image:../nc.gif[image] This document was last updated Nov 2015

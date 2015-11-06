@@ -61,8 +61,8 @@ When reading/writing a String to a file or other external representation, the ch
 http://en.wikipedia.org/wiki/UTF-8[UTF-8 encoded] (note that ASCII is a subset of UTF-8).
 Libraries may use different internal representations, for example the Java library uses UTF-16 encoding.
 
-The *char* type contains uninterpreted characters, typically 7-bit ASCII. These are more or less
-a historical accident from netCDF's Fortran77 roots, and are typically used to store string data. The CDM
+The *char* type is an unsigned byte containing uninterpreted characters, typically 7-bit ASCII. These are more or less
+a historical accident from netCDF's Fortran77 roots, and are typically used to store string data. Internally, Netcdf-Java
 uses Java's *char* primitive type which is actually 2 bytes. Because there is no encoding specified for _char_ data,
 its use is discouraged, except for ASCII string data in netCDF-3.
 

@@ -32,7 +32,6 @@
  */
 package ucar.nc2.stream;
 
-import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
@@ -40,7 +39,6 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.ma2.*;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
@@ -237,48 +235,9 @@ public class NcStreamReader {
     NcStreamProto.DataCol dproto = NcStreamProto.DataCol.parseFrom(dp);
     // NcStreamProto.Data2 dproto = NcStreamProto.Data2.parseDelimitedFrom(is);
 
-    ByteOrder bo = dproto.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
-
-    DataType dataType = NcStream.convertDataType(dproto.getDataType());
-    Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
-    if (!dproto.getIsVlen()) {
-      assert dproto.getNelems() == section.computeSize();
-    }
-
-    // special cases
-    if (dproto.getIsVlen()) {
-      NcStreamDataCol decoder = new NcStreamDataCol();
-      Array data = decoder.decodeVlenData(dproto);
-      return new DataResult(dproto.getName(), data);
-
-    } else if (dataType == DataType.STRING) {
-      Array data = Array.factory(dataType, section.getShape());
-      IndexIterator ii = data.getIndexIterator();
-      for (String s : dproto.getStringdataList()) {
-        ii.setObjectNext(s);
-      }
-      return new DataResult(dproto.getName(), data);
-
-    } else if (dataType == DataType.STRUCTURE) {
-      NcStreamDataCol decoder = new NcStreamDataCol();
-      Array data = decoder.decodeStructureData(dproto);
-      return new DataResult(dproto.getName(), data);
-
-    } else if (dataType == DataType.OPAQUE) {
-      Array data = Array.factory(dataType, section.getShape());
-      IndexIterator ii = data.getIndexIterator();
-      for (ByteString s : dproto.getOpaquedataList()) {
-        ii.setObjectNext(s.asReadOnlyByteBuffer());
-      }
-      return new DataResult(dproto.getName(), data);
-
-    } else { // common case
-      ByteBuffer bb = dproto.getPrimdata().asReadOnlyByteBuffer();
-      bb.order(bo);
-      Array data = Array.factory(dataType, section.getShape(), bb);
-      return new DataResult(dproto.getName(), data);
-    }
-
+    NcStreamDataCol decoder = new NcStreamDataCol();
+    Array data = decoder.decode(dproto, null);
+    return new DataResult(dproto.getName(), data);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////

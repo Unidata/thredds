@@ -76,14 +76,14 @@ message ArrayStructureCol {
 
 === Vlen
 
-Variable-length data can only have a variable length in its innermost (fastest varying) dimension, so it has the form:
+Variable-length data has a *variable length dimension* in its outermost (fastest varying) dimension, so it has the form:
 
 ----
   dataType varname(d1,d2,di,*);
 
   where
     d1,d2,di are 0 or more fixed-length dimensions; this is the data's "fixed shape".
-    * is the last, variable-length dimension.
+    * is the last, vlen dimension.
 ----
 
 * For _isVlen_ = true.
@@ -97,10 +97,9 @@ Variable-length data can only have a variable length in its innermost (fastest v
 Examples:
 
 . when encoding, the length of each vlen is known, so:
-.. _float vlen(*)_ will have a known length, so can be encoded the same as a regular array
+.. _float vlen(*)_ will have a known length when the data is read, so this can be encoded the same as a regular array
 .. _float vlen(3,7, *)_ has 21 variable length arrays, stored in the vlens array
 ... *primdata* has nelems * sizeof(dataType) bytes, turn into dim array of primitives, use vlens to divide into variable length arrays
-
 
 === Structures
 
@@ -159,6 +158,14 @@ Structure {
 ----
 
 makes:
+----
+  int s(33).fld1
+  string s(33).fld2(*);
+  float s(33).inner(99).fld3;
+  long s(33).inner(99).fld4(2,*);
+----
+
+or
 
 ----
   int s.fld1(33)
@@ -168,6 +175,8 @@ makes:
 ----
 
 so these are coded as normal vlens in the innermost Structure, with a fixed shape including any parent Structures.
+
+
 
 == Nested sequences
 
