@@ -29,7 +29,7 @@ In the HDF5/netCDF4 data model this would be expressed as:
     vlen_t levels(acqtime);
 
 If the Variable has only a single vlen dimension (rank == 1), the returned data array will be a regular Array of the appropriate type.
-For a Variable with a nested vlen Dimension, the returned data array will be an ArrayObject containing regular Arrays whose lengths are independent.
+For a Variable with a nested vlen Dimension, the returned data array will be an ArrayObject, with _isVlen() == true_, containing regular Arrays whose lengths are independent.
 
 [source,java]
 ----
@@ -51,7 +51,7 @@ if (data.isVlen()) {
 ----
 
 
-One can subset on the normal dimensions, but not on the variable length dimension:
+One can subset on normal dimensions, but not on the variable length dimension:
 
 [source,java]
 ----
@@ -198,7 +198,7 @@ while (iter2.hasNext()) {
 | record(i).shutterPositionA.getArray() | ArrayInt.D0
 | record(i).shutterPositionB.getArray() | ArrayInt.D1(12)
 | record(i).shutterPositionA.getArray() | ArrayObject(3).ArrayInt(*)
-| record(i).shutterPositionB.getArray() | ArrayObject(1).ArrayInt(*) or ArrayInt.D1(n) ??
+| record(i).shutterPositionB.getArray() | ArrayObject(1).ArrayInt(*)
 | record(i).shutterPositionC.getArray() | ArrayInt.D1(m)
 |===
 
