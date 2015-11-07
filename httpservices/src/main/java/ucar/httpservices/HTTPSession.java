@@ -36,10 +36,7 @@ package ucar.httpservices;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -156,9 +153,9 @@ public class HTTPSession implements Closeable
 
     static final int DFALTTHREADCOUNT = 50;
     static final int DFALTREDIRECTS = 25;
-    static final int DFALTCONNTIMEOUT = 1 * 60 * 1000; // 1 minutes (60000 milliseconds)
+    static final int DFALTCONNTIMEOUT = 60 * 1000; // 1 minutes (60000 milliseconds)
     static final int DFALTSOTIMEOUT = 5 * 60 * 1000; // 5 minutes (300000 milliseconds)
-    static final String DFALTUSERAGENT = "/NetcdfJava/HttpClient4.3";
+    static final String DFALTUSERAGENT = "/NetcdfJava/HttpClient5.0";
 
     //////////////////////////////////////////////////////////////////////////
     // Type Declarations
@@ -432,7 +429,6 @@ public class HTTPSession implements Closeable
     }
 
     /**
-     * @param url
      * @param provider
      * @throws HTTPException
      */

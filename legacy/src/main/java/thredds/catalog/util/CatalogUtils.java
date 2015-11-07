@@ -97,4 +97,13 @@ public class CatalogUtils
         return catRefList;
     }
 
+    // Escape the characters necessary for a path to be valid for a URL
+    static public String escapePathForURL(String path) {
+        try {
+            return new URI(null, null, path, null).toString();
+        } catch (URISyntaxException e) {
+            return path;
+        }
+    }
+
 }
