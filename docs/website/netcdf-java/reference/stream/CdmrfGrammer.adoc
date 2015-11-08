@@ -1,24 +1,20 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = CdmrFeature Grammer (DRAFT)
-:linkcss:
-:stylesheet: ../../cdm.css
-:toc:
 
 This describes the on-the-wire protocol for CdmrFeature.
 Follows or reuses the link:NcstreamGrammer.adoc[NcStream grammer] whenever possible.
 
 == Grammer
 
-A __cdmrfstream__ is an ordered sequence of one or more messages:
+A *_cdmrfstream_* is an ordered sequence of one or more messages:
 
 ----------------------------------------------------------------------------------------------
-   cdmrfstream := MAGIC_START, {message}*, MAGIC_END
+   cdmrfstream := MAGIC_STARTF, {message}*, MAGIC_END
    message := headerMessage | dataMessage | errorMessage
-   headerMessage := MAGIC_HEADER, vlenb, CdmrFeatureProto.GridCoverageDataset
-   dataMessage := MAGIC_DATA, vlenb, CdmrFeatureProto.DataResponse, arrayDataList
+   headerMessage := MAGIC_HEADERF, vlenb, CdmrFeatureProto.GridCoverageDataset
+   dataMessage := MAGIC_DATAF, vlenb, CdmrFeatureProto.DataResponse, arrayDataList
    errorMessage := MAGIC_ERR, vlenb, NcStreamProto.Error
 
    arrayDataList := vlenn, {arrayData}*vlenn

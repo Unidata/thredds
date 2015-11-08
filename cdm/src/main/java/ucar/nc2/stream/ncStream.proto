@@ -16,10 +16,10 @@ message Attribute {
   string name = 1;
   Type type = 2;           // < 5.0
   uint32 len = 3;
-  bytes data = 4;                   // not needed if len == 0
+  bytes data = 4;                   // not needed if len == 0, Attribute with name but no value
   repeated string sdata = 5;        // used for string data
   bool unsigned = 6;                // not used
-  DataType dataType = 7;   // 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+  DataType dataType = 7;   // 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
 }
 
 enum DataType {
@@ -46,7 +46,7 @@ enum DataType {
 
 message Dimension {
   string name = 1;   // short name - optional when private
-  uint64 length = 2; // optional when vlen
+  uint64 length = 2; // optional when vlen, may be zero (unlimited no data yet)
   bool isUnlimited = 3; // is this needed ??
   bool isVlen = 4;
   bool isPrivate = 5;
@@ -55,11 +55,11 @@ message Dimension {
 message Variable {
   string name = 1; // short name
   DataType dataType = 2;
-  repeated Dimension shape = 3;   // actual dimension instead of reference; could use hash id; maybe use name
+  repeated Dimension shape = 3;   // actual dimension instead of reference
   repeated Attribute atts = 4;
-  bool unsigned = 5;
+  bool unsigned = 5;    // not used >= 5
   bytes data = 6;        // "immediate" - store small data in header
-  string enumType = 7;   // only for enum types
+  string enumType = 7;   // EnumTypedef name, only for enum types
 }
 
 message Structure {
@@ -67,8 +67,8 @@ message Structure {
   DataType dataType = 2;   // STRUCTURE or SEQUENCE
   repeated Dimension shape = 3;     // actual dimension instead of reference
   repeated Attribute atts = 4;
-  repeated Variable vars = 5; // members
-  repeated Structure structs = 6; // nested
+  repeated Variable vars = 5;     // members
+  repeated Structure structs = 6; // struct members
 }
 
 message EnumTypedef {
@@ -81,7 +81,7 @@ message EnumTypedef {
 }
 
 message Group {
-  string name = 1;         // short name
+  string name = 1;                // short name
   repeated Dimension dims = 2;
   repeated Variable vars = 3;
   repeated Structure structs = 4;
@@ -100,10 +100,28 @@ message Header {
 
 //////////////////////////////////
 
+message Error {
+  string message = 1;
+  uint32 code = 2;
+}
+
 enum Compress {
   NONE = 0;
   DEFLATE = 1;
 }
+
+message Range {
+  uint64 start = 1;
+  uint64 size = 2;
+  uint64 stride = 3;
+}
+
+message Section {
+  repeated Range range = 1;
+}
+
+////////////////////////////////////////////////////////
+// Data version 1
 
 message Data {
   string varName = 1;          // full escaped name.
@@ -118,16 +136,6 @@ message Data {
   uint32 uncompressedSize = 8;
 }
 
-message Range {
-  uint64 start = 1;
-  uint64 size = 2;
-  uint64 stride = 3;
-}
-
-message Section {
-  repeated Range range = 1;
-}
-
 message StructureData {
   repeated uint32 member = 1; // list of members present, if none then all, these are the index in Structure
   bytes data = 2; // fixed length data
@@ -138,7 +146,7 @@ message StructureData {
 }
 
 //////////////////////////////////
-// col oriented
+// Data version 2 - col oriented
 
 message DataCol {
   string name = 1;      // fullname for top, shortname for member
@@ -164,7 +172,7 @@ message ArrayStructureCol {
 }
 
 //////////////////////////////////
-// row oriented
+// Data version 2 - row oriented
 
 message DataRow {
   string fullName = 1;
@@ -201,12 +209,6 @@ message ArrayStructureRow {
 }
 
 //////////////////////////////////
-
-message Error {
-  string message = 1;
-  uint32 code = 2;
-}
-
 // cd cdm/src/main/java
 // protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
 // requires Protobuf 3+

@@ -1,7 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 CalendarDateTime
 ================
 

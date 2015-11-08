@@ -2,11 +2,9 @@
 [[threddsDocs]]
 
 
-= CF encoding of Point Observation Datasets
+= CDM nested table notation for DSG
 
-=== CDM table notation
-
-*_CDM table notation_* expresses the data structures for point features
+*_CDM nested table notation_* expresses the data structures for point features
 in a way that reflects the data layout on disk, as well as the
 relationship of index space to coordinate space, which we call the
 _connectedness_ of the feature type. The following are the CDM table

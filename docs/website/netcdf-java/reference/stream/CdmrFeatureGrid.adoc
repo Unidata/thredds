@@ -1,0 +1,29 @@
+:source-highlighter: coderay
+[[threddsDocs]]
+:tdsDocs: ../../../tds/reference/services
+
+= CDM Remote Feature Web Service for Coverage / Grid Data
+
+include::CdmrCommon.adoc[]
+
+== CDM Remote Feature
+
+This web service is available from THREDDS Data Servers for *Coverage feature Types* (_GRID, SWATH, FMRC_) and *Point Feature Types*
+(_Point, Station, Trajectory, etc).
+
+The client creates requests of the form *endpoint?query*, where _endpoint_ is the URL of a CdmrFeature service, and _query_ is one or more *_key=value_* parameters, as described below.
+
+Example request:
+
+----
+http://thredds.ucar.edu/thredds/cdmrfeature/grid/grib/NCEP/GFS/Global_0p5deg/Best?req=data&var=Albedo_surface_Mixed_intervals_Average
+----
+
+See link:CdmrfGrammer.adoc[CdmrFeature Grammer] for a description of the on-the-wire protocol.
+
+include::{tdsDocs}/CdmrfParams.adoc[]
+
+'''''
+image:../../nc.gif[image] This document was last updated Nov 2015
+
+ 

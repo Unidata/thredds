@@ -1,4 +1,4 @@
-= NcStream Data Col-oriented (version 2)
+= NcStream Data Column-oriented (version 2)
 [[threddsDocs]]
 
 * This documents version 2 of the NcStream Data message, used by CDM/TDS >= 5.0.
@@ -285,4 +285,9 @@ message DataCol {
 ----
 
 The reader uses seq _s.seq.fld4.vlens_ to allocate the values into 6738*2 variable length arrays of longs.
+
+'''''
+
+image:../../nc.gif[image] This document was last updated November 2015
+
 

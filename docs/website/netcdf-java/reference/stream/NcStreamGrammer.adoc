@@ -1,19 +1,20 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
+= ncstream Grammar
 
-= Ncstream Grammar
+== Version 3
 
-== Version 3 (DRAFT)
+See link:NcStream.adoc[NcStream Overview].
 
-An _ncstream_ is an ordered sequence of one or more messages:
+An *_ncstream_* is an ordered sequence of one or more messages:
 
 ----
    ncstream := MAGIC_START, {message}*, MAGIC_END
    message := headerMessage | dataMessage | data2Message | errorMessage
    headerMessage := MAGIC_HEADER, vlenb, NcStreamProto.Header
-   dataMessage := MAGIC_DATA, vlenb, NcStreamProto.Data, regData | vlenData | seqData | structData
-   data2Message := MAGIC_DATA2, vlenb, NcStreamProto.Data2
+   dataMessage := MAGIC_DATA, vlenb, NcStreamProto.Data, regData|vlenData|seqData|structData
+   data2Message := MAGIC_DATA2, vlenb, NcStreamProto.DataCol
    errorMessage := MAGIC_ERR, vlenb, NcStreamProto.Error
 
    regData := vlenb, (byte)*vlenb
@@ -23,8 +24,7 @@ An _ncstream_ is an ordered sequence of one or more messages:
 
    vlenb := variable length encoded positive integer == length of the following object in bytes
    vlenn := variable length encoded positive integer == number of objects that follow
-   NcStreamProto.Header := Header message encoded by protobuf
-   NcStreamProto.Data := Data message encoded by protobuf
+   NcStreamProto.XXXX := message encoded by protobuf
    byte := actual bytes of data, encoding described by the NcStreamProto.Data message
 
 primitives:
@@ -32,6 +32,7 @@ primitives:
    MAGIC_START := 0x43, 0x44, 0x46, 0x53
    MAGIC_HEADER:= 0xad, 0xec, 0xce, 0xda
    MAGIC_DATA  := 0xab, 0xec, 0xce, 0xba
+   MAGIC_DATA2 := 0xac, 0xec, 0xce, 0xca
    MAGIC_VDATA := 0xab, 0xef, 0xfe, 0xba
    MAGIC_VEND  := 0xed, 0xef, 0xfe, 0xda
    MAGIC_ERR   := 0xab, 0xad, 0xba, 0xda
@@ -54,54 +55,14 @@ taken from the variable's __FillValue_ attribute if it exists, else the default 
 
 == Data Messages
 
+Version 1 (MAGIC_DATA) data messages are used by TDS < 5.0, and Version 2 (MAGIC_DATA2) data messages are used by TDS >= 5.0.
+
 * see link:NcStreamData.adoc[Version 1]
-* see link:NcStreamData2.adoc[Version 2]
+* see link:NcStreamDataCol.adoc[Version 2]
 
-
-== Notes and Questions
-
-Should have a way to efficiently encode sparse data.
-
-Should we store ints using vlen?
-
-Forces on the design:
-
-* Allow data to be streamed.
-* Allow compression
-* Append only writing to disk
-* Efficient encoding of variable length (ragged) arrays
-* Efficient return of results from high level query.
-
-Vlen Language
-~~~~~~~~~~~~~
-
-We already have Fortran 90 syntax, and * indicating a variable length dimension. Do we really want to support arbitrary vlen dimension ??
-
-* array(outer, *)
-* array(*, inner)
-* array(outer, *, inner)
-
-An obvious thing to do is to use java/C "array of arrays". rather than Fortran / netCDF rectangular arrays:
-
-* array[outer][*]
-* array[*][inner]
-* array[outer][*][inner]
-
-what does numPy do ??
-
-java/C assumes in memory. Is this useful for very large, ie out of memory, data?
-
-Nested Tables has taken approach that its better to use Structures rather than arrays, since there are usually multiple fields. Fortran programmers
-prefer arrays, but they are thinking of in memory.
-
-What is the notation that allows a high level specification (eg SQL), that can be efficiently executed by a machine ?
-
-Extending the array model to very large datasets may not be appropriate. Row vs column store.
-
-What about a transform language on the netcdf4 / CDM data model, to allow efficient rewriting of data ? Then it also becomes an extraction language ??
 
 '''''
 
-image:../../nc.gif[image] This document was last updated October 2015
+image:../../nc.gif[image] This document was last updated November 2015
 
  
