@@ -1,17 +1,13 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-CDM Section Spec
-================
-
-= CDM String Section Specification
+= CDM Section Spec
 
 CDM accepts a request for a Variable section in String form.
 
 == Grammar
 
-------------------------------------------------------------------------------------------------
+----
      section specification := selector | selector '.' selector
      selector := varName ['(' dims ')']
      varName := ESCAPED_STRING
@@ -27,20 +23,15 @@ CDM accepts a request for a Variable section in String form.
   
    * Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
    * Optional components are enclosed between square braces '[' and ']'.
- 
-------------------------------------------------------------------------------------------------
+----
 
-== Meaning
+=== Notes
 
-If a variable name appears without (), then the request is for all of
-it.
+If a variable name appears without (), then the request is for all of it.
 
-Examples
+=== Examples
 
  
-
 '''''
 
-image:../nc.gif[image] This document is maintained by
-mailto:caron@unidata.ucar.edu[John Caron] and was last updated March
-2013
+image:../nc.gif[image] This document was last updated March 2013

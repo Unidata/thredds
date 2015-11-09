@@ -1,51 +1,61 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-NetCDF-Java Reference
-=====================
-
-= Netcdf-Java Library Reference Documentation
+= NetCDF-Java Library Reference Documentation
 
 * link:faq.adoc[Frequently Asked Questions]
 * link:manPages.adoc[CDM utility programs]
 * link:Cookbook.adoc[Cookbook Examples]
 
-=== NetCDF-Java library
+== NetCDF-Java library
 
 * link:StructureData.adoc[ArrayStructures]
 * link:formats/BufrFiles.adoc[BUFR Files]
 * link:formats/BufrTables.adoc[BUFR Tables]
-* link:CoordinateAttributes.adoc[CDM Coordinate Attribute Convention]
+* link:BuildDependencies.adoc[Build Dependencies]
+* link:CoordinateAttributes.adoc[Coordinate Attribute Convention]
 * link:DatasetUrls.adoc[Dataset URLs]
 * link:Caching.adoc[Disk Caching]
 * link:formats/FileTypes.adoc[File Types]
 * link:formats/GribFiles.adoc[GRIB Files]
-* link:formats/GribTables.adoc[GRIB Tables in CDM]
-* HTTP link:Auth.adoc[Authentication] and link:Session.adoc[Session]
-Control
+* link:formats/GribTables.adoc[GRIB Tables]
+* HTTP link:Auth.adoc[Authentication] and link:Session.adoc[Session Control]
 * link:HTTPservice.adoc[HTTP Server: remote files using HTTP]
-* link:BuildDependencies.adoc[Build Dependencies]
 * link:netcdf4Clibrary.adoc[NetCDF-4 file writing]
-* link:RuntimeLoading.adoc[Runtime Loading] (aka Plug-ins)
-* link:StandardCoordinateTransforms.adoc[Standard Horizontal Coordinate
-Transforms]
-* link:StandardCoordinateTransforms.adoc[Standard Vertical Coordinate
-Transforms]
+* link:RuntimeLoading.adoc[Runtime Loading] (aka _plug-ins_)
+* link:StandardCoordinateTransforms.adoc[Standard Horizontal Coordinate Transforms]
+* link:StandardCoordinateTransforms.adoc[Standard Vertical Coordinate Transforms]
 
-=== Common Data Model (link:../CDM/index.adoc[Overview])
+== Common Data Model (CDM)
 
-* link:../CDM/AttributeConventions.adoc[CDM Attributes]
+* link:../CDM/index.adoc[Overview]
+* link:../CDM/AttributeConventions.adoc[CDM Attribute Convention]
+* link:../CDM/CalendarDateTime.adoc[CDM Calendar Dates]
 * link:../CDM/Identifiers.adoc[CDM Identifiers]
-* link:FeatureDatasets/CFpointImplement.adoc[CDM implementation of CF
-discrete sampling features]
-* link:stream/CdmRemote.adoc[CDM Remote]
 * link:../CDM/CFdiff.adoc[CF and CDM differences]
-* link:../CDM/CalendarDateTime.adoc[Calendar Dates]
 * link:../CDM/DataType.adoc[Data Types]
-* link:FeatureDatasets/Overview.adoc[Feature Types]
-* link:FeatureDatasets/GridCoverage.adoc[Grid Coverag]e
+* link:../CDM/Netcdf4.adoc[NetCDF4 vs CDM]
+* link:../CDM/Opendap.adoc[OPeNDAP vs CDM]
+* link:../CDM/VariableLengthData.adoc[Variable Length Data]
+
+=== Feature Types
+
+* link:FeatureDatasets/Overview.adoc[Feature Dataset Overview]
+* link:FeatureDatasets/CoverageFeatures.adoc[Grid/Coverage Features]
+** link:FeatureDatasets/FMRC.adoc[Forecast Model Run Collection (FMRC)]
+* link:FeatureDatasets/PointFeatures.adoc[Point Features] (Discrete Sampling Geometry)
+** link:FeatureDatasets/CFpointImplement.adoc[CDM vs CF ]
+** link:FeatureDatasets/CFencodingTable.adoc[CDM encoding summary of CF DSG]
+** link:FeatureDatasets/DSGtableNotation.adoc[CDM nested table notation for DSG]
+
+== CDM Remote Web services and Ncstream
+
+* link:stream/CdmRemote.adoc[CDM Remote Overview]
+* link:stream/CdmrFeatureGrid.adoc[CDM Remote Feature for Coverage/Grid Data]
+* link:stream/CdmrFeaturePoint.adoc[CDM Remote Feature for Point Data]
+* link:stream/NcStream.adoc[Ncstream Overview]
+* link:stream/NcStreamGrammer.adoc[Ncstream Grammer]
 
 '''''
 
-image:../nc.gif[image] This document was last updated May 2015
+image:../nc.gif[image] This document was last updated Nov 2015

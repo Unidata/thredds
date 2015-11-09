@@ -243,6 +243,19 @@ public class ArrayStructureMA extends ArrayStructure {
     m.setDataArray( data);
   }
 
+  public Array getArray(int recno, StructureMembers.Member m) {
+    if (m.isVariableLength()) {
+      Array data = m.getDataArray();
+      if (data instanceof ArrayObject) {
+        ArrayObject ao = (ArrayObject) data;
+        Object dao = ao.getObject(recno);
+        assert dao instanceof Array;
+        return (Array) dao;
+      }
+    }
+    return super.getArray(recno, m);
+  }
+
   /**
    * Create an ArrayStructure for a Structure. Allow nested Structures.
    * Create the data arrays, and an iterator.

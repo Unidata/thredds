@@ -8,16 +8,16 @@
 == Grammar
 
 ----
-data2Message := MAGIC_DATA2, vlenb, NcStreamProto.Data3
+data2Message := MAGIC_DATA2, vlenb, NcStreamProto.DataRow
 
 vlenb := variable length encoded positive integer == length of the following object in bytes
-NcStreamProto.Data3 := Data message encoded by protobuf
+NcStreamProto.DataRow := Data message encoded by protobuf
 ----
 
-== NcStreamProto.Data3
+== NcStreamProto.DataRow
 
 ----
-message Data3 {
+message DataRow {
   string fullName = 1;
   DataType dataType = 2;
   Section section = 3;
@@ -28,18 +28,19 @@ message Data3 {
 
   bytes primdata = 10;              // rectangular, primitive array # <1>
   repeated string stringdata = 11;  // string dataType # <2>
-  repeated uint32 vlens = 12;  // isVlen true # <3>
+  repeated uint32 vlens = 12;       // isVlen true # <3>
   repeated bytes opaquedata = 13;   // opaque dataTypes # <4>
-  ArrayStructureRow structdata = 14;// structure/seq dataType
+  ArrayStructureRow structdata = 14;// structure/seq dataType # <5>
 }
 ----
 
 === Arrays and vlen Arrays (not Structures)
 
-<1> *primdata* has _nelems_ * sizeof(dataType) bytes, turn into multidim array of primitives with section info and bigend
-<2> *stringdata* has _nelems_ strings, turn into multidim array of String with section info
-<3> *vlens* has _section.size_ array lengths; section does not include the last (vlen) dimension; data in primarray
-<4> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with section info
+<1> *primdata* has _nelems * sizeof(dataType)_ bytes, turn into multidim array of primitives with _section_ and _bigend_
+<2> *stringdata* has _nelems_ strings, turn into multidim array of String with _section_
+<3> *vlens* has _section.size_ array lengths; _section_ does not include the last (vlen) dimension; data in _primdata_
+<4> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with _section_
+<5> *structdata* has _nelems_ StructureData objects, turn into multidim array of StructureData with _section_
 
 === Arrays of primitive data
 
@@ -152,10 +153,10 @@ Structure {
 } outer(123)
 ----
 
-Has a Data3 message with
+Has a DataRow message with
 
 ----
-message Data3 {
+message DataRow {
   string fullName = "outer"
   DataType dataType = "DataType.STRUCTURE"
   Section section = "0:122"
@@ -170,7 +171,7 @@ message Data3 {
 }
 ----
 
-Call this *ArrayStructureRow* _outer_. It has 4 members _fld1, fld2, inner_ and _seq_, and looks like:
+Call this *ArrayStructureRow* _outer_. It has 4 members _fld1, fld2, inner_ and _seq_, like:
 
 ----
 message ArrayStructureDataRow {
@@ -237,7 +238,7 @@ Similarly, _outer.fixdata.seq_ is the row number in the _seq_ ArrayStructureRow 
 In this case we dont know the number of rows for each sequence, so this value is very important!
 This is the only way that one can find out how long each nested seq is.
 
-Here is what the _seq_ ArrayStructureRow looks like.
+Here is what the _seq_ ArrayStructureRow is like.
 Assume for this example that when all of the rows in the 123 nested _seq_ are added together, there are 456 of them. So:
 
 ----
@@ -263,5 +264,5 @@ the data is laid out like:
 |fld7 | 4 | 14 | uint32 | index into seq.bytedata
 |=======================================================================
 
-Each of the _fld7_ variable length arrays are stored in a seperate protobuf *bytes* data structure in _bytearray_. There are two of them
+Each of the _fld7_ variable length arrays are stored in a separate protobuf *bytes* data structure in _bytearray_. There are two of them
 for each seq object.

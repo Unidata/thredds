@@ -191,6 +191,8 @@ public class DatasetHtmlWriter {
               break;
 
             case CdmRemote:
+              queryString = "req=cdl";
+              break;
             case CdmrFeature:
               queryString = "req=form";
           }

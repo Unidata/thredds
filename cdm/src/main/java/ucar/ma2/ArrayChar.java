@@ -483,7 +483,7 @@ public class ArrayChar extends Array implements Iterable<String> {
   }
 
   public void setByte(int index, byte value) {
-    storage[index] = (char) value;
+    storage[index] = (char) (value & 0xFF);
   }
 
   public char getChar(int index) {

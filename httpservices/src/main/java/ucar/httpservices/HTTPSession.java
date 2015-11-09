@@ -36,10 +36,7 @@ package ucar.httpservices;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,12 +84,12 @@ import static org.apache.http.auth.AuthScope.ANY_SCHEME;
  * HTTPSession.  The encapsulation is with respect to a specific url
  * This means that once a session is
  * specified, it is tied permanently to that url.
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * It is important to note that Session objects do NOT correspond
  * with the HttpClient objects of the Apache httpclient library.
  * A Session does, however, encapsulate an instance of an Apache HttpClient.
- * <p/>
+ * <p>
  * It is possible to specify a url when invoking, for example,
  * HTTPFactory.Get.  This is because the url argument to the
  * HTTPSession constructor actually serves two purposes.  First, if
@@ -106,19 +103,19 @@ import static org.apache.http.auth.AuthScope.ANY_SCHEME;
  * url such as http://motherlode.ucar.edu/path/file.nc and the url
  * given to HTTPFactory.Get was for something more specific such as
  * http://motherlode.ucar.edu/path/file.nc.dds.
- * <p/>
+ * <p>
  * The important point is that in this second method, the url must
  * be "compatible" with the session url.  The term "compatible"
  * basically means that the HTTPSession url, as a string, must be a
  * prefix of the url given to HTTPFactory.Get. This maintains the
  * semantics of the Session but allows flexibility in accessing data
  * from the server.
- * <p/>
+ * <p>
  * Note that the term legalurl means that the url has reserved
  * characters within identifieers in escaped form. This is
  * particularly and issue for queries. Especially: ?x[0:5] is legal
  * and the square brackets need not be encoded.
- * <p/>
+ * <p>
  * Finally, note that a session cannot be created without a realm (host+port).
  */
 
@@ -156,9 +153,9 @@ public class HTTPSession implements Closeable
 
     static final int DFALTTHREADCOUNT = 50;
     static final int DFALTREDIRECTS = 25;
-    static final int DFALTCONNTIMEOUT = 1 * 60 * 1000; // 1 minutes (60000 milliseconds)
+    static final int DFALTCONNTIMEOUT = 60 * 1000; // 1 minutes (60000 milliseconds)
     static final int DFALTSOTIMEOUT = 5 * 60 * 1000; // 5 minutes (300000 milliseconds)
-    static final String DFALTUSERAGENT = "/NetcdfJava/HttpClient4.3";
+    static final String DFALTUSERAGENT = "/NetcdfJava/HttpClient5.0";
 
     //////////////////////////////////////////////////////////////////////////
     // Type Declarations
@@ -432,18 +429,17 @@ public class HTTPSession implements Closeable
     }
 
     /**
-     * @param url
      * @param provider
      * @throws HTTPException
      */
     static public void
-    setGlobalCredentialsProvider(CredentialsProvider provider,String scheme)
+    setGlobalCredentialsProvider(CredentialsProvider provider, String scheme)
             throws HTTPException
     {
         if(scheme == null || provider == null)
             throw new IllegalArgumentException("null argument");
         AuthScope anybasic = new AuthScope(null, -1, null, scheme);
-        setGlobalCredentialsProvider(anybasic,  provider);
+        setGlobalCredentialsProvider(anybasic, provider);
     }
 
     static public void
@@ -520,13 +516,13 @@ public class HTTPSession implements Closeable
         String newurl = null;
         try {
             int index;
-            URL url = new URL(u);
-            String protocol = url.getProtocol() + "://";
+            URI url = HTTPUtil.parseToURI(u);
+            String protocol = url.getScheme() + "://";
             String host = url.getHost();
             int port = url.getPort();
             String path = url.getPath();
             String query = url.getQuery();
-            String ref = url.getRef();
+            String ref = url.getFragment();
 
             String sport = (port <= 0 ? "" : (":" + port));
             path = (path == null ? "" : path);
@@ -537,7 +533,7 @@ public class HTTPSession implements Closeable
             // (and leaving encoding in place)
             newurl = protocol + host + sport + path + query + ref;
 
-        } catch (MalformedURLException use) {
+        } catch (URISyntaxException use) {
             newurl = u;
         }
         return newurl;
@@ -666,7 +662,7 @@ public class HTTPSession implements Closeable
     // Currently, the granularity of authorization is host+port.
     protected String sessionURL = null; // This is a real url or one from the scope
     protected AuthScope realm = null;
-    protected String realmURL = null;
+    protected String realmURI = null;
     protected boolean closed = false;
 
     protected AbstractHttpClient sessionClient = null;
@@ -698,6 +694,11 @@ public class HTTPSession implements Closeable
     {
         if(url == null || url.length() == 0)
             throw new HTTPException("HTTPSession(): empty URL not allowed");
+        try {
+            HTTPUtil.parseToURI(url); /// validate
+        } catch (URISyntaxException mue) {
+            throw new HTTPException("Malformed URL: " + url, mue);
+        }
         // Make sure url has leading protocol
         if(!url.matches("^[a-zZ-Z0-9+.-]+:.*$"))
             url = "http:" + url; // try to make it parseable
@@ -717,7 +718,7 @@ public class HTTPSession implements Closeable
         if(scope == null)
             throw new HTTPException("HTTPSession(): empty scope not allowed");
         this.realm = scope;
-        this.realmURL = HTTPAuthUtil.scopeToURL(scope).toString();
+        this.realmURI = HTTPAuthUtil.scopeToURI(scope).toString();
         try {
             synchronized (HTTPSession.class) {
                 sessionClient = new DefaultHttpClient(connmgr);

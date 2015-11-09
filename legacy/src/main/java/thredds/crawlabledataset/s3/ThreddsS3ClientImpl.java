@@ -1,16 +1,15 @@
 package thredds.crawlabledataset.s3;
 
-import java.io.File;
-import java.io.IOException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.*;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * A basic implementation of {@link ThreddsS3Client}.
@@ -66,6 +65,19 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             ObjectListing objectListing = s3Client.listObjects(listObjectsRequest);
             logger.info(String.format("Downloaded S3 listing '%s'", s3uri));
 
+            // On S3 it is possible for a prefix to be a valid object (unlike a
+            // filesystem where a node is either a file OR a directory). We
+            // exclude self here so that the "directory" isn't treated as a file
+            // by some of the caching mechanism.
+            S3ObjectSummary self = null;
+            for (S3ObjectSummary objectSummary: objectListing.getObjectSummaries()) {
+                if (Objects.equals(objectSummary.getKey(), s3uri.getKeyWithTrailingDelimiter())) {
+                    self = objectSummary;
+                    break;
+                }
+            }
+            objectListing.getObjectSummaries().remove(self);
+
             if (objectListing.getObjectSummaries().isEmpty() && objectListing.getCommonPrefixes().isEmpty()) {
                 // There are no empty directories in a S3 hierarchy.
                 logger.debug(String.format("In bucket '%s', the key '%s' does not denote an existing virtual directory.",
@@ -89,6 +101,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         try {
             s3Client.getObject(new GetObjectRequest(s3uri.getBucket(), s3uri.getKey()), file);
             logger.info(String.format("Downloaded S3 object '%s' to '%s'", s3uri, file));
+            file.deleteOnExit();
             return file;
         } catch (IllegalArgumentException e) {  // Thrown by getObject() when key == null.
             logger.debug(e.getMessage());

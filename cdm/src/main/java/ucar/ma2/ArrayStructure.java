@@ -310,6 +310,7 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
    * @return Array values.
    */
   public Array getArray(int recno, StructureMembers.Member m) {
+
     DataType dataType = m.getDataType();
     switch (dataType) {
 
@@ -957,6 +958,8 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
       return getArraySequence(recnum, m);
 
     ArrayStructure array = (ArrayStructure) m.getDataArray();
+    if (array == null)
+      System.out.printf("HEY%n");
 
     int count = m.getSize();
     StructureData[] this_sdata = new StructureData[count];

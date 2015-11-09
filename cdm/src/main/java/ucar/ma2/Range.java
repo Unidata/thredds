@@ -60,7 +60,7 @@ import java.util.Iterator;
 
 @Immutable
 public class Range implements RangeIterator  {
-  public static final Range EMPTY = new Range();
+  public static final Range EMPTY = new Range(); // used for unlimited dimension = 0
   public static final Range ONE = new Range(1);
   public static final Range VLEN = new Range(-1);
 

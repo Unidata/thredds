@@ -179,7 +179,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   private Array readVlenData(Variable v, Section section, DataStorage dataStorage) throws IOException, InvalidRangeException {
     raf.seek(dataStorage.filePos);
     int nelems = readVInt(raf);
-    Object[] result = new Object[nelems];
+    Array[] result = new Array[nelems];
 
     for (int elem = 0; elem < nelems; elem++) {
       int dsize = readVInt(raf);
@@ -188,7 +188,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       Array dataArray = Array.factory(v.getDataType(), (int[]) null, ByteBuffer.wrap(data));
       result[elem] = dataArray;
     }
-    return Array.makeObjectArray(v.getDataType(), result[0].getClass(), new int[]{nelems}, result);
+    // return Array.makeObjectArray(v.getDataType(), result[0].getClass(), new int[]{nelems}, result);
+    return Array.makeVlenArray(new int[]{nelems}, result);
     //return dataArray.section(section.getRanges());
   }
 

@@ -43,6 +43,9 @@ import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Formatter;
 
 /**
@@ -58,7 +61,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static public final String SCHEME = PROTOCOL+":";
 
   // static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
-  static private boolean showRequest = false;
+  static private boolean showRequest = true;
   static private boolean compress = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -128,7 +131,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest) System.out.printf(" took %d msecs %n", took);
   }
 
-  // Closes is.
+  // Closes the input stream.
   public CdmRemote(InputStream is, String location ) throws IOException {
     long start = System.currentTimeMillis();
     remoteURI = location;
@@ -160,16 +163,25 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     f.format("%s?req=data", remoteURI);
     if (compress)
       f.format("&deflate=5");
+    //f.format("&var=%s", v.getShortName());
     f.format("&var=%s", v.getFullNameEscaped());
     if ((section != null) && (section.computeSize() != v.getSize()) && (v.getDataType() != DataType.SEQUENCE)) {
       f.format("(%s)", section.toString());
     }
-    // sbuff.append( URLEncoder.encode(f.toString(), "UTF-8")); // LOOK dont % escape query; entire thing varname and section
+    String url = f.toString();
+    // String escapedURI = f.toString();
+    URI escapedURI;
+    try {
+      escapedURI = HTTPUtil.parseToURI(url);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
 
     if (showRequest)
-      System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " section= " + section + " url=" + f);
+      System.out.printf("CdmRemote data request for variable: '%s' section=(%s)%n url='%s'%n esc='%s'%n",
+              v.getFullName(), section, url, escapedURI);
 
-    try (HTTPMethod method = HTTPFactory.Get(httpClient, f.toString())) {
+    try (HTTPMethod method = HTTPFactory.Get(httpClient, escapedURI.toString())) {
       int statusCode = method.execute();
       if (statusCode == 404)
         throw new FileNotFoundException(getErrorMessage(method));
@@ -193,7 +205,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       InputStream is = method.getResponseAsStream();  // Closed by HTTPMethod.close().
       NcStreamReader reader = new NcStreamReader();
       // NcStreamReader.DataResult result = reader.readData(is, this);
-      NcStreamReader.DataResult result = reader.readData2(is, this);
+      NcStreamReader.DataResult result = reader.readData(is, this);
       // NcStreamReader.DataResult result = reader.readData3(is, this);
 
       assert v.getFullNameEscaped().equals(result.varNameFullEsc);

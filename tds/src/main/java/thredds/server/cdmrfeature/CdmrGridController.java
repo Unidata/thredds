@@ -233,7 +233,7 @@ public class CdmrGridController implements LastModified {
 
     CdmrfWriter cdmrfWriter = new CdmrfWriter();
     long size = 0;
-    size += writeBytes(out, NcStream.MAGIC_DATA); // magic
+    size += writeBytes(out, NcStream.MAGIC_DATA2); // data protocol 3 for TDS >= 5.0
     CdmrFeatureProto.DataResponse dataProto = cdmrfWriter.encodeDataResponse(axisSet, sysSet, transformSet, arrays, deflate);
     byte[] datab = dataProto.toByteArray();
     size += NcStream.writeVInt(out, datab.length); // dataProto len

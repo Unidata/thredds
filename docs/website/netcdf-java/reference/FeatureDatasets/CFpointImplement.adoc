@@ -219,7 +219,10 @@ In all cases, latitude, longitude, altitude and time coordinates must be
 recognized in the usual CF way. The altitude coordinate is optional in
 some of the forms.
 
-also see: link:CFencodingTable.adoc[DSG Encoding Table]
+also see:
+
+* link:CFencodingTable.adoc[DSG Encoding Table]
+* link:DSGtableNotation.adoc[CDM table notation for DSG]
 
 === H.1 Point Data
 

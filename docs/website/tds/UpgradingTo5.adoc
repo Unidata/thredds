@@ -43,6 +43,18 @@ Deprecated classes and methods have been removed, and the module structure and t
 * _new Attribute(String name, List values) -> new Attribute(String name, List values, boolean isUnsigned)_
 * _StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, boolean isUnsigned, Number val ) -> StructureDataScalar.addMember( String name, String desc, String units, DataType dtype, Number val )_
 
+=== Variable Length (vlen) Dimensions and Variables
+
+* The CDM data model is clarified to allow *vlen* dimensions only in the outermost (fastest changing) Dimension.
+* Reading a Variable with only a single vlen Dimension will result in a regular Array.
+* Reading a Variable with a nested vlen Dimension will result in an ArrayObject containing regular Arrays of independent lengths.
+* In both cases the returned array's DataType will be the primitive type.
+* Previously the exact Array class and DataType returned from a read on a vlen was not well-defined.
+* Use _Array.isVlen()_ to discover if an Array represents vlen data.
+* _ArrayObject.factory(Class classType, Index index)_ is now _ArrayObject.factory(DataType dtype, Class classType, boolean isVlen, Index index)_
+* Use _Array.makeVlenArray(int[] shape, Array[] data)_ to construct vlen data.
+* see link:../netcdf-java/CDM/VariableLengthData.adoc
+
 === AutoCloseable
 *AutoCloseable* was introduced in Java 7, along with the _try-with-resources_ language feature. Use of this feature makes code more readable
 and more reliable in ensuring that resources (like file handles) are released when done. We strongly recommend that you modify your code to take advantage of it

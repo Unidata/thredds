@@ -32,6 +32,7 @@
  */
 package ucar.ma2;
 
+import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
@@ -100,7 +101,7 @@ public abstract class Array {
     return factory(dataType, Index.factory(shape), storage);
   }
 
-  /* generate new Array with given type and shape and zeroed storage */
+  /* generate new Array with given type, index and storage */
   static public Array factory(DataType dtype, Index index, Object storage) {
     switch (dtype) {
       case DOUBLE:
@@ -129,18 +130,32 @@ public abstract class Array {
         return ArrayLong.factory(index, dtype.isUnsigned(), (long[]) storage);
 
       case STRING:
-        return ArrayObject.factory(dtype, String.class, index, (Object[]) storage);
+        return ArrayObject.factory(dtype, String.class, false, index, (Object[]) storage);
       case STRUCTURE:
-        return ArrayObject.factory(dtype, StructureData.class, index, (Object[]) storage);
+        return ArrayObject.factory(dtype, StructureData.class, false, index, (Object[]) storage);
       case SEQUENCE:
-        return ArrayObject.factory(dtype, StructureDataIterator.class, index, (Object[]) storage);
+        return ArrayObject.factory(dtype, StructureDataIterator.class, false, index, (Object[]) storage);
       case OPAQUE:
-        return ArrayObject.factory(dtype, ByteBuffer.class, index, (Object[]) storage);
-
-      // LOOK what is this used for ??
-      default:
-        return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage);  // LOOK dont know the object class
+        return ArrayObject.factory(dtype, ByteBuffer.class, false, index, (Object[]) storage);
     }
+
+    throw new RuntimeException("Cant use this method for datatype "+dtype);
+
+      // used for VLEN ??
+      //default:
+      //  return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage);  // LOOK dont know the object class
+    // }
+  }
+
+  /**
+   * Make a vlen array
+   * @param shape the outer shape, ie excluding the vlen dimension
+   * @param storage must be an Array type. must not be null
+   * @return ArrayObject
+   */
+  static public Array makeVlenArray(int[] shape, @Nonnull Array[] storage) {
+    Index index = Index.factory(shape);
+    return ArrayObject.factory(storage[0].getDataType(), storage[0].getClass(), true, index, storage);
   }
 
   /**
@@ -162,7 +177,7 @@ public abstract class Array {
    */
   static public Array makeObjectArray(DataType dtype, Class classType, int[] shape, Object storage) {
     Index index = Index.factory(shape);
-    return ArrayObject.factory(dtype, classType, index, (Object[]) storage);
+    return ArrayObject.factory(dtype, classType, false, index, (Object[]) storage);
   }
 
   /**
@@ -206,16 +221,16 @@ public abstract class Array {
         return new ArrayLong(index, true, (long[]) storage);
 
       case STRING:
-        return new ArrayObject(dtype, String.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, String.class, false, index, (Object[]) storage);
       case STRUCTURE:
-        return new ArrayObject(dtype, StructureData.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, StructureData.class, false, index, (Object[]) storage);
       case SEQUENCE:
-        return new ArrayObject(dtype, StructureDataIterator.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, StructureDataIterator.class, false, index, (Object[]) storage);
       case OPAQUE:
-        return new ArrayObject(dtype, ByteBuffer.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, ByteBuffer.class, false, index, (Object[]) storage);
 
       default:
-        return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage);  // LOOK dont know the object class
+        return ArrayObject.factory(DataType.OBJECT, Object.class, false, index, (Object[]) storage);  // LOOK dont know the object class
     }
   }
 
@@ -424,15 +439,6 @@ public abstract class Array {
   public Index getIndex() {
     return (Index) indexCalc.clone();
   }
-
-  /*
-   * Get an Index object used for indexed access of this Array.
-   *
-   * @return an Index for this Array
-   *
-  public Index getIndexPrivate() {
-    return indexCalc;
-  }  */
 
   /**
    * Get an index iterator for traversing the array in canonical order.
@@ -741,15 +747,19 @@ public abstract class Array {
       case ENUM1:
       case UBYTE:
       case BYTE:
-        if (shape == null) shape = new int[]{bb.limit()};
-        return factory(dtype, shape, bb.array());
+        size = bb.limit();
+        if (shape == null) shape = new int[]{size};
+        result = factory(dtype, shape);
+        for (int i = 0; i < size; i++)
+          result.setByte(i, bb.get(i));
+        return result;
 
       case CHAR:
         size = bb.limit();
         if (shape == null) shape = new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
-          result.setChar(i, (char) bb.get(i));
+          result.setByte(i, bb.get(i));
         return result;
 
       case ENUM2:
@@ -945,6 +955,10 @@ public abstract class Array {
    */
   public boolean isConstant() {
     return indexCalc instanceof IndexConstant;
+  }
+
+  public boolean isVlen() {
+    return false;
   }
 
   ///////////////////////////////////////////////////

@@ -149,13 +149,18 @@ public class NcStreamWriter {
   public long sendData2(Variable v, Section section, OutputStream out, NcStreamCompression compress) throws IOException, InvalidRangeException {
     if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
 
-    // ByteOrder bo = ByteOrder.nativeOrder(); // reader makes right
-    long size = 0;
-    size += writeBytes(out, NcStream.MAGIC_DATA); // magic
-    NcStreamData encoder = new NcStreamData();
-    NcStreamProto.Data2 dataProto = encoder.encodeData2(v.getFullName(), v.isVariableLength(), section, v.read(section));
+    boolean isVlen = v.isVariableLength(); //  && v.getRank() > 1;
+    if (isVlen)
+      v.read(section);
+    NcStreamDataCol encoder = new NcStreamDataCol();
+    NcStreamProto.DataCol dataProto = encoder.encodeData2(v.getFullName(), isVlen, section, v.read(section));
+
+    // LOOK trap error, write error message ??
 
     // dataProto.writeDelimitedTo(out);
+    long size = 0;
+    size += writeBytes(out, NcStream.MAGIC_DATA2); // data version 3
+
     byte[] datab = dataProto.toByteArray();
     size += NcStream.writeVInt(out, datab.length); // dataProto len
     size += writeBytes(out, datab); // dataProto

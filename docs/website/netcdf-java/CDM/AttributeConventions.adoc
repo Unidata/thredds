@@ -9,11 +9,8 @@ CDM Attributes
 
 Also see:
 
-* http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions[NetCDF
-User Guide Attribute Conventions]
+* http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions[NetCDF User Guide Attribute Conventions]
 * http://cfconventions.org/[CF Conventions]
-
- +
 
 === _ChunkSize
 
@@ -35,10 +32,6 @@ unsigned. Only used only for byte, short, and int data types. The value
 of the attribute is ignored, but by convention, should be set to
 **true**.
 
- 
-
 '''''
 
-image:../nc.gif[image] This document is maintained by
-mailto:caron@unidata.ucar.edu[John Caron] and was last updated November
-2012
+image:../nc.gif[image] This document was last updated November 2012

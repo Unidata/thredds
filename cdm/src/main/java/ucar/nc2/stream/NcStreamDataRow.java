@@ -44,15 +44,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Describe
+ * LOOK Not Done Yet
  *
  * @author caron
  * @since 10/26/2015.
  */
-public class NcStreamData {
+public class NcStreamDataRow {
 
   /*
-  message Data2 {
+  message DataRow {
     string fullName = 1;
     DataType dataType = 2;
     Section section = 3;
@@ -64,7 +64,7 @@ public class NcStreamData {
     // oneof
     bytes primarray = 10;        // rectangular, primitive array # <1>
     repeated string stringdata = 11;  // string dataType # <2>
-    ArrayStructureCol structdata = 12;  // structure/seq dataType # <3>
+    ArrayStructureRow structdata = 12;  // structure/seq dataType # <3>
     repeated uint32 vlens = 13;  // isVlen true # <4>
     repeated bytes opaquedata = 14;  // opaque dataType # <5>
   }
@@ -75,13 +75,13 @@ public class NcStreamData {
   opaquedata has nelems opaque objects, turn into multidim array of Opaque with section info
 */
 
-  public NcStreamProto.Data2 encodeData2(String name, boolean isVlen, Section section, Array data) {
-    NcStreamProto.Data2.Builder builder = NcStreamProto.Data2.newBuilder();
-    encodeData2(builder, name, isVlen, section, data);
+  public NcStreamProto.DataRow encodeData3(String name, boolean isVlen, Section section, Array data) {
+    NcStreamProto.DataRow.Builder builder = NcStreamProto.DataRow.newBuilder();
+    encodeData3(builder, name, isVlen, section, data);
     return builder.build();
   }
 
-  void encodeData2(NcStreamProto.Data2.Builder builder, String name, boolean isVlen, Section section, Array data) {
+  void encodeData3(NcStreamProto.DataRow.Builder builder, String name, boolean isVlen, Section section, Array data) {
     DataType dataType = data.getDataType();
 
     builder.setFullName(name);
@@ -103,7 +103,7 @@ public class NcStreamData {
         ArrayChar cdata =(ArrayChar) data;
         for (String s:cdata)
           builder.addStringdata(s);
-        Section ssection = section.removeRange(section.getRank()-1);
+        Section ssection = section.removeLast();
         builder.setSection(NcStream.encodeSection(ssection));
 
       } else if (data instanceof ArrayObject) {
@@ -126,7 +126,7 @@ public class NcStreamData {
       }
 
     } else if (dataType == DataType.STRUCTURE) {
-      builder.setStructdata(encodeStructureData(name, data));
+      builder.setStructdata( encodeStructureData(name, data));
 
     } else if (dataType == DataType.SEQUENCE) {
       throw new UnsupportedOperationException("Not implemented yet SEQUENCE ="+ data.getClass().getName());
@@ -141,7 +141,7 @@ public class NcStreamData {
 
   }
 
-  void encodeVlenData(NcStreamProto.Data2.Builder builder, Section section, Array data) {
+  void encodeVlenData(NcStreamProto.DataRow.Builder builder, Section section, Array data) {
     if (!(data instanceof ArrayObject))
       throw new IllegalStateException("Unknown class for OPAQUE =" + data.getClass().getName());
 
@@ -154,7 +154,7 @@ public class NcStreamData {
       count += vlensize;
     }
     builder.setNelems(count);
-    Section ssection = section.removeRange(section.getRank() - 1);
+    Section ssection = section.removeLast();
     builder.setSection(NcStream.encodeSection(ssection));
     assert section.computeSize() == count;
 
@@ -250,13 +250,27 @@ public class NcStreamData {
     }
   }
 
-/* message ArrayStructureCol {
-  repeated Data2 memberData = 1;
-  repeated uint32 shape = 3; // shape vs section
-}
-*/
+/*
+  message Member {
+    string shortName = 1;
+    DataType dataType = 2;
+    repeated uint32 shape = 3;  // or section?
+    bool isVlen = 4;
+  }
 
-  NcStreamProto.ArrayStructureCol.Builder encodeStructureData(String structName, Array data) {
+  message ArrayStructureRow {
+    repeated Member members = 1;
+    uint64 nrows = 5;      // number of rows in this message
+    uint32 rowLength = 6;  // length in bytes of each row
+
+    bytes fixdata = 10;            // fixed data
+    repeated string stringdata = 11;  // string dataType
+    repeated bytes bytedata = 13;  // opaque dataType and vlens
+    repeated ArrayStructureRow structdata = 14;  // structure/seq dataType
+  }
+  */
+
+  NcStreamProto.ArrayStructureRow.Builder encodeStructureData(String structName, Array data) {
     assert data instanceof ArrayStructure;
     ArrayStructure as = (ArrayStructure) data;
     int nelems = (int) as.getSize();
@@ -278,12 +292,13 @@ public class NcStreamData {
       }
     }
 
-    NcStreamProto.ArrayStructureCol.Builder builder = NcStreamProto.ArrayStructureCol.newBuilder();
+    NcStreamProto.ArrayStructureRow.Builder builder = NcStreamProto.ArrayStructureRow.newBuilder();
     for (MemberData md : memberData) {
-      NcStreamProto.Data2.Builder nested = NcStreamProto.Data2.newBuilder();
-      nested.setFullName(md.member.getName());
-      nested.setDataType(NcStream.convertDataType(md.member.getDataType()));
-      nested.setNelems(md.nelems);
+      NcStreamProto.Member.Builder member = NcStreamProto.Member.newBuilder();
+      member.setShortName(md.member.getName());
+      member.setDataType(NcStream.convertDataType(md.member.getDataType()));
+      /* LOOK
+      member.setNelems(md.nelems);
       if (md.member.isVariableLength()) {
         md.completeVlens();
         nested.addAllVlens (md.vlens);
@@ -294,9 +309,9 @@ public class NcStreamData {
       else if (md.member.getDataType() == DataType.OPAQUE)
         nested.addAllOpaquedata(md.opaqueList);
       else
-        nested.setPrimdata(ByteString.copyFrom(md.bb));
+        nested.setPrimdata(ByteString.copyFrom(md.bb)); */
 
-      builder.addMemberData(nested);
+      builder.addMembers(member);
     }
 
     return builder;

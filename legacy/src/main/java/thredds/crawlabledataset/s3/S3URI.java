@@ -1,8 +1,7 @@
 package thredds.crawlabledataset.s3;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+
 import com.google.common.base.Preconditions;
 
 /**
@@ -18,6 +17,7 @@ import com.google.common.base.Preconditions;
 public class S3URI {
     public static final String S3_PREFIX = "s3://";
     public static final String S3_DELIMITER = "/";
+    public static final File S3ObjectTempDir = new File(System.getProperty("java.io.tmpdir"), "S3Objects");
 
     private final String bucket, key;
 
@@ -187,18 +187,16 @@ public class S3URI {
     }
 
     /**
-     * Creates an empty file in the default temporary-file directory that is scheduled for deletion upon virtual
-     * machine termination. Note that a <b>new</b> file is created <i>each</i> time this method is called.
-     * The file name will have a prefix of "S3Object", a suffix of {@code getBaseName()}, and a random string of
-     * characters between.
+     * Gets a temporary file to which the content of the S3Object that this URI points to can be downloaded.
+     * The path of the file is {@code ${java.io.tmpdir}/S3Objects/${hashCode()}/${getBaseName()}}.
+     * This method does not cause the file to be created; we're just returning a suitable path.
      *
-     * @return the path to the newly created file that did not exist before this method was invoked
-     * @throws IOException  if an I/O error occurs or the temporary-file directory does not exist
+     * @return a temporary file to which the content of the S3Object that this URI points to can be downloaded.
      */
-    public File createTempFile() throws IOException {
-        File file = Files.createTempFile("S3Object", getBaseName()).toFile();
-        file.deleteOnExit();
-        return file;
+    public File getTempFile() {
+        // To avoid collisions of files with the same name, create a parent dir named after the S3URI's hashCode().
+        File parentDir = new File(S3ObjectTempDir, String.valueOf(hashCode()));
+        return new File(parentDir, getBaseName());
     }
 
     //////////////////////////////////////// Object ////////////////////////////////////////

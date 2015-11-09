@@ -1,37 +1,18 @@
 :source-highlighter: coderay
 [[threddsDocs]]
-
-
-= CDM Remote Feature for Point Data
 :tdsDocs: ../../../tds/reference/services
 :w3cDate: {tdsDocs}/NetcdfSubsetServiceReference.adoc#W3Cdate
 :w3cDuration: {tdsDocs}/NetcdfSubsetServiceReference.adoc#W3Cduration
 
-CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM feature datasets, using
-link:NcStream.adoc[ncstream] as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
-two levels of services:
+= CDM Remote Feature for Point Data
 
-1.  *link:CdmRemote.adoc[CdmRemote]* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
-CDM local datasets and *DODSNetcdfFile* provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.
-2.  *CdmrFeature* provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and 
-Unidata's link:{tdsDocs}/NetcdfSubsetServiceReference.adoc[_NetCDF Subset Service_]. This API and protocol is redone
-in version 5.0.
+include::CdmrCommon.adoc[]
 
-The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.
+This web service is available from THREDDS Data Servers for *Point Feature Types* (_Point, Station, Trajectory, etc).
 
-'''''
+The client creates requests of the form *endpoint?query*, where _endpoint_ is the URL of a CdmrFeature service, and _query_ is one or more *_key=value_* parameters, as described below.
 
-== PointDataset
-
-Possible requests are:
-
------------------------------------
-  req=( capabilities | data | form)
------------------------------------
-
-Example service requests are:
-
-Example service requests are:
+Example requests:
 
 [cols=",,",options="header",]
 |=====================================================================================================================================================

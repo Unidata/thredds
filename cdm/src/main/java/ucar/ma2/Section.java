@@ -529,6 +529,7 @@ public class Section {
     list = new ArrayList<>();
   }
 
+  ///////////////////////////////////////////////////////
   // these make it mutable
 
   /**
@@ -691,10 +692,6 @@ public class Section {
     return new Section(newList);
   }
 
-  public Section subSection(int from, int endExclusive) {
-    return new Section( list.subList(from, endExclusive));
-  }
-
   /**
    * If any of the ranges are null, which means "all", set the Range from the
    * corresponding length in shape[].
@@ -734,7 +731,40 @@ public class Section {
     return this;
   }
 
-  // end mutable methods
+  /////////////////////////////////// end mutable methods
+  // replace with these:
+
+
+  public Section subSection(int fromIndex, int endExclusive) {
+    return new Section( list.subList(fromIndex, endExclusive));
+  }
+
+  public Section removeLast() {
+    int size = list.size();
+    return subSection(size-2, size-1);
+  }
+
+  public Section removeVlen() {
+    int size = list.size();
+    if (list.get(size-1) == Range.VLEN)
+      return removeLast();
+    else
+      return this;
+  }
+
+  public Section removeFirst(Section parentSection) {
+    int parentSize = parentSection.getRank();
+    assert parentSize <= list.size();
+    if (parentSize == list.size()) return new Section(); // scalar
+    return subSection(parentSize, list.size());
+  }
+
+  public Section prepend(Section parentSection) {
+    if (parentSection == null) return this;
+    List<Range> ranges = new ArrayList<>(parentSection.getRanges());
+    ranges.addAll(getRanges());
+    return new Section(ranges);
+  }
 
   public boolean isImmutable() {
     return immutable;
@@ -852,7 +882,7 @@ public class Section {
 
   /**
    * Compute total number of elements represented by the section.
-   * Any VLEN Ranges are skipped.
+   * Any VLEN or EMPTY Ranges are skipped.
    *
    * @return total number of elements
    */

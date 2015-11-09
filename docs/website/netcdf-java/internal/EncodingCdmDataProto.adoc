@@ -243,6 +243,34 @@ Issues
 ... *nelems* = Sum(vlens)
 ... *primarray* has nelems * sizeof(dataType) bytes, turn into dim array of primitives, use vlens to divide into variable length arrays
 
+==== Vlen Language
+
+We already have Fortran 90 syntax, and * indicating a variable length dimension. Do we really want to support arbitrary vlen dimension ??
+
+* array(outer, *)
+* array(*, inner)
+* array(outer, *, inner)
+
+An obvious thing to do is to use java/C "array of arrays". rather than Fortran / netCDF rectangular arrays:
+
+* array[outer][*]
+* array[*][inner]
+* array[outer][*][inner]
+
+what does numPy do ??
+
+java/C assumes in memory. Is this useful for very large, ie out of memory, data?
+
+Nested Tables has taken approach that its better to use Structures rather than arrays, since there are usually multiple fields. Fortran programmers
+prefer arrays, but they are thinking of in memory.
+
+What is the notation that allows a high level specification (eg SQL), that can be efficiently executed by a machine ?
+
+Extending the array model to very large datasets may not be appropriate. Row vs column store.
+
+What about a transform language on the netcdf4 / CDM data model, to allow efficient rewriting of data ? Then it also becomes an extraction language ??
+
+
 === StructureData
 
 Possible protobuf encoding:

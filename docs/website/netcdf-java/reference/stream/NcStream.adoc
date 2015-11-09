@@ -2,21 +2,18 @@
 [[threddsDocs]]
 
 
-NetCDF Streaming Format
------------------------
+= NetCDF Streaming Format
 
-'''''
-
-Overview
-~~~~~~~~
+== Overview
 
 NetCDF Streaming Format (*ncstream*) is a write-optimized encoding of CDM datasets. Ncstream consists of a series of header and data messages, in any
 order. Writes are always appended. Later messages override earlier ones whenever they overlap or conflict. To add or modify structural metadata,
 simply append a new header message. Each data message identifies the variable and the section (rectangular subset) of data it contains. A variable's
 data thus consists of the collection of data messages for it, if any.
 
-Design Goals
-^^^^^^^^^^^^
+Ncstream implements the full link:../../CDM/index.adoc[CDM data model.]
+
+=== Design Goals
 
 * Experiment with our own on-the-wire protocol to rapidly explore new ideas for remote data access.
 * Experiment with ways to optimize subset extraction of large datasets, especially for the case when the subset is specified in coordinate space
@@ -24,8 +21,7 @@ rather than index space.
 * Must be easy to read ncstream and write netCDF-3 or netCDF-4 files.
 * The information content / data model of ncstream is identical to CDM. So ncstream is an alternate encoding of CDM datasets.
 
-Possible uses
-^^^^^^^^^^^^^
+=== Possible uses
 
 * Study OPeNDAP implementation. The java implementation of ncstream should be (close to) maximal I/O efficient. By comparing the same requests on the
 same server to OPeNDAP, we should be able to tell how much speedup a rewrite of the OPeNDAP software will yield.
@@ -43,36 +39,32 @@ of the complexity of the HDF5 format. Ncstream may comprise a "sweet spot" of fu
 that efficiently converts to netCDF-3 or netCDF-4 files. During that conversion, a smart program could decide on chunking parameters, data-dependent
 compression choices, and other read optimizations.
 
-Implementation
-^^^^^^^^^^^^^^
+=== Implementation
 
 Messages are encoded using Google's http://code.google.com/p/protobuf/[Protobuf] library.
-
-The protobuf messages are defined by
-
-* *\{repo}/cdm/src/main/java/ucar/nc2/stream/ncStream.proto*
-* *\{repo}/cdm/src/main/java/ucar/nc2/ft2/coverage/remote/cdmrfeature.proto*
-
 ____
-"Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You
+Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You
 define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to
 and from a variety of data streams and using a variety of languages. You can even update your data structure without breaking deployed programs that
-are compiled against the "old" format."
+are compiled against the "old" format.
 ____
 
 The main advantage of protobuf over XML is performance, since both message size and parsing speed is improved. A very important feature of protobuf is
 the ability to evolve the message structure in a way that doesn't break previous code.
 
-Ncstream implements the full link:../../CDM/index.adoc[CDM data model.]
+The protobuf messages are defined by
 
-See also:
+* *_\{repo}/cdm/src/main/java/ucar/nc2/stream/ncStream.proto_*
+* *_\{repo}/cdm/src/main/java/ucar/nc2/ft2/coverage/remote/cdmrfeature.proto_*
+
+=== See also
 
 * link:NcStreamGrammer.adoc[ncstream grammer]
-* link:CdmRemote.adoc[CdmRemote] service
-* link:CdmrFeature.adoc[CdmrFeature] service
+* link:CdmRemote.adoc[CdmRemote service]
+* link:CdmrFeature.adoc[CdmrFeature service]
 
 '''''
 
-image:../../nc.gif[image] This document was last updated October 2015
+image:../../nc.gif[image] This document was last updated Nov 2015
 
  

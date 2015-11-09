@@ -946,6 +946,9 @@ public class H5header {
         return new Attribute(matt.name, dtype);
     }
 
+    //if (matt.name.equals("DIMENSION_LIST"))
+     // System.out.printf("HEY%n");
+
     Array attData;
     try {
       attData = readAttributeData(matt, vinfo, dtype);
@@ -956,7 +959,7 @@ public class H5header {
     }
 
     Attribute result;
-    if (attData.getElementType() == Array.class) { // vlen LOOK
+    if (attData.isVlen()) {
       List<Object> dataList = new ArrayList<>();
       while (attData.hasNext()) {
         Array nested = (Array) attData.next();
@@ -1086,7 +1089,9 @@ public class H5header {
             data[count++] = vlenArray;
         }
       }
-      return (scalar) ? data[0] : Array.makeObjectArray(readType, Array.class, shape, data);
+      // return (scalar) ? data[0] : Array.makeObjectArray(readType, data[0].getClass(), shape, data);
+      return (scalar) ? data[0] : Array.makeVlenArray(shape, data);
+
     } // vlen case
 
     // NON-STRUCTURE CASE
@@ -2038,6 +2043,9 @@ public class H5header {
 
     } else if (hdfType == 7) { // reference
       return DataType.ULONG;
+
+    } else if (hdfType == 9) {
+      return null; // dunno
 
     } else if (warnings) {
       if (debugOut != null) debugOut.println("WARNING not handling hdf type = " + hdfType + " size= " + size);

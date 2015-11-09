@@ -201,7 +201,8 @@ public class CdmRemoteController implements LastModified {
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=data")
   public void handleDataRequest(HttpServletRequest request, HttpServletResponse response,
-                            @Valid CdmRemoteQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException, BindException {
+                            @Valid CdmRemoteQueryBean qb, BindingResult validationResult, OutputStream out)
+          throws IOException, BindException, InvalidRangeException {
 
     if (!allowedServices.isAllowed(StandardService.cdmRemote))
       throw new ServiceNotAllowed(StandardService.cdmRemote.toString());
@@ -238,7 +239,7 @@ public class CdmRemoteController implements LastModified {
         return;
       }
 
-      query = EscapeStrings.unescapeURLQuery(query);
+      // query = EscapeStrings.unescapeURLQuery(query);
       StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
       while (stoke.hasMoreTokens()) {
         ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
@@ -251,9 +252,9 @@ public class CdmRemoteController implements LastModified {
       if (debug)
         System.out.printf("CdmRemoteController data ok, size=%s took=%d%n", size, System.currentTimeMillis() - start);
 
-    } catch (IllegalArgumentException | InvalidRangeException e) { // ParsedSectionSpec failed
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-    }
+    } //catch (IllegalArgumentException | InvalidRangeException e) { // ParsedSectionSpec failed
+     // response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+    // }
 
   }
 

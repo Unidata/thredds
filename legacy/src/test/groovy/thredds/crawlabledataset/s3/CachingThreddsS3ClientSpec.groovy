@@ -54,7 +54,7 @@ class CachingThreddsS3ClientSpec extends Specification {
     def "saveObjectToFile - missing key"() {
         setup: "create URI"
         S3URI s3uri = new S3URI("s3://bucket/missing-key")
-        File file = s3uri.createTempFile();
+        File file = s3uri.getTempFile();
 
         when: "caching client's saveObjectToFile() is called twice"
         cachingThreddsS3Client.saveObjectToFile(s3uri, file)
@@ -73,7 +73,7 @@ class CachingThreddsS3ClientSpec extends Specification {
     def "saveObjectToFile - redownloading cached file"() {
         setup: "create URI and File"
         S3URI s3uri = new S3URI("s3://bucket/dataset.nc")
-        File file = s3uri.createTempFile();
+        File file = createTempFile s3uri
 
         when: "caching client's saveObjectToFile() is called twice"
         cachingThreddsS3Client.saveObjectToFile(s3uri, file)
@@ -108,8 +108,8 @@ class CachingThreddsS3ClientSpec extends Specification {
     def "saveObjectToFile - download object to 2 different files"() {
         setup: "create URI and Files"
         S3URI s3uri = new S3URI("s3://bucket/dataset.nc")
-        File file1 = s3uri.createTempFile();
-        File file2 = s3uri.createTempFile();
+        File file1 = File.createTempFile("file1", ".nc")
+        File file2 = File.createTempFile("file2", ".nc")
 
         when: "caching client's saveObjectToFile() is called once with file1 and once with file2"
         cachingThreddsS3Client.saveObjectToFile(s3uri, file1)
@@ -139,9 +139,9 @@ class CachingThreddsS3ClientSpec extends Specification {
         S3URI s3uri3 = new S3URI("s3://bucket/dataset3.nc")
 
         and: "create temp files"
-        File file1 = s3uri1.createTempFile()
-        File file2 = s3uri2.createTempFile()
-        File file3 = s3uri3.createTempFile()
+        File file1 = createTempFile s3uri1
+        File file2 = createTempFile s3uri2
+        File file3 = createTempFile s3uri3
 
         and: "mocking client's saveObjectToFile() is stubbed to return file1, file2, and file3 in order"
         mockThreddsS3Client.saveObjectToFile(_, _) >>> [file1, file2, file3]
@@ -163,5 +163,12 @@ class CachingThreddsS3ClientSpec extends Specification {
         !file1.exists()
         !file2.exists()
         !file3.exists()
+    }
+
+    File createTempFile(S3URI s3URI) {
+        File file = s3URI.tempFile
+        file.parentFile.mkdirs()
+        file.createNewFile()
+        file
     }
 }

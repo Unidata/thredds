@@ -8,7 +8,7 @@
 
 === Overview
 
-*_Variable Length_* Variables have their innermost (fastest changing) _Dimension.isVariableLength()_ = true.
+*_Variable Length_* Variables have their outermost (fastest changing) _Dimension.isVariableLength()_ = true.
 This means that the length of the dimension varies, and is not known until the data is read.
 A variable length (aka _vlen_) Dimension is shown with a '*' instead of a length. Thus in CDM:
 
@@ -28,20 +28,30 @@ In the HDF5/netCDF4 data model this would be expressed as:
   variables:
     vlen_t levels(acqtime);
 
-Reading a vlen Variable will return an ArrayObject, whose elements are rank 1 Arrays of the appropriate type, in this example _ArrayFloat.1D_:
+If the Variable has only a single vlen dimension (rank == 1), the returned data array will be a regular Array of the appropriate type.
+For a Variable with a nested vlen Dimension, the returned data array will be an ArrayObject, with _isVlen() == true_, containing regular Arrays whose lengths are independent.
 
 [source,java]
 ----
 Array data = v.read();
-assert (data instanceof ArrayObject);
-while (data.hasNext()) {
-  Object inner = data.nextObject();
-  assert (inner instanceof Array);
-  assert (inner instanceof ArrayFloat.D1);
+if (data.isVlen()) {
+  assert (data instanceof ArrayObject);
+  while (data.hasNext()) {
+    Object inner = data.nextObject();
+    assert (inner instanceof Array);
+    assert (inner instanceof ArrayFloat.D1);
+  }
+
+}  else if (data.getDataType == DataType.FLOAT) {
+    assert (data instanceof ArrayFloat.D1);
+
+}  else // etc
+
 }
 ----
 
-One can subset on the normal dimensions, but not on the variable length dimension:
+
+One can subset on normal dimensions, but not on the variable length dimension:
 
 [source,java]
 ----
@@ -51,7 +61,7 @@ Array data = v.read(":,0"); // fail
 
 === Nesting
 
-A vlen dimension doesnt typically makes sense as the outer dimension eg:
+A vlen dimension isnt really needed as the outer dimension eg:
 
       float upper_air(*);
 
@@ -169,7 +179,29 @@ while (iter2.hasNext()) {
 }
 ----
 
+== CDM ArrayObject
+
+[source,java]
+----
+ Structure {
+    int shutterPositionA;
+    int shutterPositionB(12);
+    int loopDataA(3, *);
+    int loopDataB(1, *);
+    int loopDataC(*);
+  } record(time=29);
+----
+
+[cols=2*,options="header"]
+|===
+| col | returns
+| record(i).shutterPositionA.getArray() | ArrayInt.D0
+| record(i).shutterPositionB.getArray() | ArrayInt.D1(12)
+| record(i).shutterPositionA.getArray() | ArrayObject(3).ArrayInt(*)
+| record(i).shutterPositionB.getArray() | ArrayObject(1).ArrayInt(*)
+| record(i).shutterPositionC.getArray() | ArrayInt.D1(m)
+|===
 
 '''''
 
-image:../nc.gif[image] This document was last updated Oct 2015
+image:../nc.gif[image] This document was last updated Nov 2015

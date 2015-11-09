@@ -34,6 +34,7 @@
 package thredds.cataloggen;
 
 import thredds.catalog.*;
+import thredds.catalog.util.CatalogUtils;
 import thredds.crawlabledataset.*;
 
 import java.util.*;
@@ -900,8 +901,7 @@ public class CollectionLevelScanner
       path += "catalog.xml";
     else
       path += "/catalog.xml";
-
-    return path;
+    return CatalogUtils.escapePathForURL(path);
 //    }
 //    else
 //    {
