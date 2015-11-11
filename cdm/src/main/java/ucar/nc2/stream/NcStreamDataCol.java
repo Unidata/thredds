@@ -136,12 +136,7 @@ public class NcStreamDataCol {
       throw new UnsupportedOperationException("Not implemented yet SEQUENCE =" + data.getClass().getName());
 
     } else { // normal case
-      int nbytes = (int) data.getSizeBytes();
-      ByteBuffer bb = ByteBuffer.allocate(nbytes);
-      bb.order(ByteOrder.nativeOrder());
-      copyArrayToBB(data, false, bb);
-      bb.flip();
-      builder.setPrimdata(ByteString.copyFrom(bb));
+      builder.setPrimdata(copyArrayToByteString(data));
     }
 
     return builder.build();
@@ -178,12 +173,8 @@ public class NcStreamDataCol {
 
       // If the vlen is rank one, the data array may just be an Array of the appropriate type, since the ArrayObject is not needed:
     } else  {
-      int nbytes = (int) data.getSizeBytes();
-      ByteBuffer bb = ByteBuffer.allocate(nbytes);
-      bb.order(ByteOrder.nativeOrder());
-      copyArrayToBB(data, false, bb);
-      bb.flip();
-      builder.setPrimdata(ByteString.copyFrom(bb));
+      builder.setPrimdata(copyArrayToByteString(data));
+
       // returning as a regular array, not vlen
       builder.setIsVlen(false);
       builder.setNelems((int) data.getSize());
@@ -194,7 +185,16 @@ public class NcStreamDataCol {
     // throw new IllegalStateException("Unknown class for OPAQUE =" + data.getClass().getName());
   }
 
-  void copyArrayToBB(Array data, boolean isVlen, ByteBuffer out) {
+  public static ByteString copyArrayToByteString(Array data) {
+    int nbytes = (int) data.getSizeBytes();
+    ByteBuffer bb = ByteBuffer.allocate(nbytes);
+    bb.order(ByteOrder.nativeOrder());
+    copyArrayToBB(data, false, bb);
+    bb.flip();
+    return ByteString.copyFrom(bb);
+  }
+
+  public static void copyArrayToBB(Array data, boolean isVlen, ByteBuffer out) {
     IndexIterator iterA = data.getIndexIterator();
 
     // VLEN

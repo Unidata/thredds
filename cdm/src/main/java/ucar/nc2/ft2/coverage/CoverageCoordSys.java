@@ -101,7 +101,8 @@ public class CoverageCoordSys {
     this.immutable = true;
   }
 
-  public void setDataset(CoordSysContainer dataset) {if (immutable)
+  public void setDataset(CoordSysContainer dataset) {
+    if (immutable)
       throw new RuntimeException("Cant change CoverageCoordSys dataset once set immutable");
     this.dataset = dataset;
 
@@ -315,7 +316,8 @@ public class CoverageCoordSys {
    */
   public int[] getShape() {
     int rank = 2; // always 2 horiz
-    if (time2DCoordSys != null) rank += 2; // time 2D
+    if (time2DCoordSys != null)
+      rank += time2DCoordSys.getShape().length; // might have scalar runtime
 
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getAxisType().isHoriz()) continue;
@@ -327,8 +329,8 @@ public class CoverageCoordSys {
     int count = 0;
     if (time2DCoordSys != null) {
       int[] timeShape = time2DCoordSys.getShape();
-      result[count++] = timeShape[0];
-      result[count++] = timeShape[1];
+      System.arraycopy(timeShape, 0, result, count, timeShape.length);
+      count += timeShape.length;
     }
 
     for (CoverageCoordAxis axis : getAxes()) {

@@ -773,7 +773,7 @@ public final class ConfigCatalogExtProto {
      * <code>optional string name = 5;</code>
      *
      * <pre>
-     *omit for simple dataset root
+     * omit for simple dataset root
      * </pre>
      */
     java.lang.String getName();
@@ -781,11 +781,29 @@ public final class ConfigCatalogExtProto {
      * <code>optional string name = 5;</code>
      *
      * <pre>
-     *omit for simple dataset root
+     * omit for simple dataset root
      * </pre>
      */
     com.google.protobuf.ByteString
         getNameBytes();
+
+    /**
+     * <code>optional string restrict = 6;</code>
+     *
+     * <pre>
+     * restrict
+     * </pre>
+     */
+    java.lang.String getRestrict();
+    /**
+     * <code>optional string restrict = 6;</code>
+     *
+     * <pre>
+     * restrict
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getRestrictBytes();
   }
   /**
    * Protobuf type {@code DataRoot}
@@ -804,6 +822,7 @@ public final class ConfigCatalogExtProto {
       type_ = 0;
       catLocation_ = "";
       name_ = "";
+      restrict_ = "";
     }
 
     @java.lang.Override
@@ -858,6 +877,12 @@ public final class ConfigCatalogExtProto {
               String s = input.readStringRequireUtf8();
 
               name_ = s;
+              break;
+            }
+            case 50: {
+              String s = input.readStringRequireUtf8();
+
+              restrict_ = s;
               break;
             }
           }
@@ -1016,7 +1041,7 @@ public final class ConfigCatalogExtProto {
      * <code>optional string name = 5;</code>
      *
      * <pre>
-     *omit for simple dataset root
+     * omit for simple dataset root
      * </pre>
      */
     public java.lang.String getName() {
@@ -1035,7 +1060,7 @@ public final class ConfigCatalogExtProto {
      * <code>optional string name = 5;</code>
      *
      * <pre>
-     *omit for simple dataset root
+     * omit for simple dataset root
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -1046,6 +1071,48 @@ public final class ConfigCatalogExtProto {
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int RESTRICT_FIELD_NUMBER = 6;
+    private volatile java.lang.Object restrict_;
+    /**
+     * <code>optional string restrict = 6;</code>
+     *
+     * <pre>
+     * restrict
+     * </pre>
+     */
+    public java.lang.String getRestrict() {
+      java.lang.Object ref = restrict_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        restrict_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>optional string restrict = 6;</code>
+     *
+     * <pre>
+     * restrict
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getRestrictBytes() {
+      java.lang.Object ref = restrict_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        restrict_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -1079,6 +1146,9 @@ public final class ConfigCatalogExtProto {
       if (!getNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessage.writeString(output, 5, name_);
       }
+      if (!getRestrictBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 6, restrict_);
+      }
     }
 
     public int getSerializedSize() {
@@ -1101,6 +1171,9 @@ public final class ConfigCatalogExtProto {
       }
       if (!getNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(5, name_);
+      }
+      if (!getRestrictBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(6, restrict_);
       }
       memoizedSize = size;
       return size;
@@ -1223,6 +1296,8 @@ public final class ConfigCatalogExtProto {
 
         name_ = "";
 
+        restrict_ = "";
+
         return this;
       }
 
@@ -1250,6 +1325,7 @@ public final class ConfigCatalogExtProto {
         result.type_ = type_;
         result.catLocation_ = catLocation_;
         result.name_ = name_;
+        result.restrict_ = restrict_;
         onBuilt();
         return result;
       }
@@ -1282,6 +1358,10 @@ public final class ConfigCatalogExtProto {
         }
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
+          onChanged();
+        }
+        if (!other.getRestrict().isEmpty()) {
+          restrict_ = other.restrict_;
           onChanged();
         }
         onChanged();
@@ -1586,7 +1666,7 @@ public final class ConfigCatalogExtProto {
        * <code>optional string name = 5;</code>
        *
        * <pre>
-       *omit for simple dataset root
+       * omit for simple dataset root
        * </pre>
        */
       public java.lang.String getName() {
@@ -1605,7 +1685,7 @@ public final class ConfigCatalogExtProto {
        * <code>optional string name = 5;</code>
        *
        * <pre>
-       *omit for simple dataset root
+       * omit for simple dataset root
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -1625,7 +1705,7 @@ public final class ConfigCatalogExtProto {
        * <code>optional string name = 5;</code>
        *
        * <pre>
-       *omit for simple dataset root
+       * omit for simple dataset root
        * </pre>
        */
       public Builder setName(
@@ -1642,7 +1722,7 @@ public final class ConfigCatalogExtProto {
        * <code>optional string name = 5;</code>
        *
        * <pre>
-       *omit for simple dataset root
+       * omit for simple dataset root
        * </pre>
        */
       public Builder clearName() {
@@ -1655,7 +1735,7 @@ public final class ConfigCatalogExtProto {
        * <code>optional string name = 5;</code>
        *
        * <pre>
-       *omit for simple dataset root
+       * omit for simple dataset root
        * </pre>
        */
       public Builder setNameBytes(
@@ -1666,6 +1746,95 @@ public final class ConfigCatalogExtProto {
   checkByteStringIsUtf8(value);
         
         name_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object restrict_ = "";
+      /**
+       * <code>optional string restrict = 6;</code>
+       *
+       * <pre>
+       * restrict
+       * </pre>
+       */
+      public java.lang.String getRestrict() {
+        java.lang.Object ref = restrict_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          restrict_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string restrict = 6;</code>
+       *
+       * <pre>
+       * restrict
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getRestrictBytes() {
+        java.lang.Object ref = restrict_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          restrict_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string restrict = 6;</code>
+       *
+       * <pre>
+       * restrict
+       * </pre>
+       */
+      public Builder setRestrict(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        restrict_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string restrict = 6;</code>
+       *
+       * <pre>
+       * restrict
+       * </pre>
+       */
+      public Builder clearRestrict() {
+        
+        restrict_ = getDefaultInstance().getRestrict();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string restrict = 6;</code>
+       *
+       * <pre>
+       * restrict
+       * </pre>
+       */
+      public Builder setRestrictBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        restrict_ = value;
         onChanged();
         return this;
       }
@@ -4904,21 +5073,22 @@ public final class ConfigCatalogExtProto {
     java.lang.String[] descriptorData = {
       "\n5thredds/server/catalog/tracker/configC" +
       "atalogExt.proto\"=\n\007Catalog\022\r\n\005catId\030\001 \001(" +
-      "\004\022\023\n\013catLocation\030\002 \001(\t\022\016\n\006isRoot\030\003 \001(\010\"p" +
-      "\n\010DataRoot\022\017\n\007urlPath\030\001 \001(\t\022\023\n\013dirLocati" +
-      "on\030\002 \001(\t\022\033\n\004type\030\003 \001(\0162\r.DataRootType\022\023\n" +
-      "\013catLocation\030\004 \001(\t\022\014\n\004name\030\005 \001(\t\"\226\001\n\007Dat" +
-      "aset\022\r\n\005catId\030\001 \001(\004\022\014\n\004name\030\002 \001(\t\022\014\n\004pat" +
-      "h\030\003 \001(\t\022\n\n\002id\030\004 \001(\t\022\020\n\010restrict\030\005 \001(\t\022\014\n" +
-      "\004ncml\030\006 \001(\t\022\027\n\006access\030\n \003(\0132\007.Access\022\033\n\010" +
-      "property\030\013 \003(\0132\t.Property\"U\n\006Access\022\023\n\013s",
-      "erviceName\030\001 \001(\t\022\017\n\007urlPath\030\002 \001(\t\022\023\n\013dat" +
-      "aFormatS\030\003 \001(\t\022\020\n\010dataSize\030\004 \001(\004\"\'\n\010Prop" +
-      "erty\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t*b\n\014Dat" +
-      "aRootType\022\010\n\004defo\020\000\022\017\n\013datasetRoot\020\001\022\017\n\013" +
-      "datasetScan\020\002\022\017\n\013catalogScan\020\003\022\025\n\021featur" +
-      "eCollection\020\004B7\n\036thredds.server.catalog." +
-      "trackerB\025ConfigCatalogExtProtob\006proto3"
+      "\004\022\023\n\013catLocation\030\002 \001(\t\022\016\n\006isRoot\030\003 \001(\010\"\202" +
+      "\001\n\010DataRoot\022\017\n\007urlPath\030\001 \001(\t\022\023\n\013dirLocat" +
+      "ion\030\002 \001(\t\022\033\n\004type\030\003 \001(\0162\r.DataRootType\022\023" +
+      "\n\013catLocation\030\004 \001(\t\022\014\n\004name\030\005 \001(\t\022\020\n\010res" +
+      "trict\030\006 \001(\t\"\226\001\n\007Dataset\022\r\n\005catId\030\001 \001(\004\022\014" +
+      "\n\004name\030\002 \001(\t\022\014\n\004path\030\003 \001(\t\022\n\n\002id\030\004 \001(\t\022\020" +
+      "\n\010restrict\030\005 \001(\t\022\014\n\004ncml\030\006 \001(\t\022\027\n\006access" +
+      "\030\n \003(\0132\007.Access\022\033\n\010property\030\013 \003(\0132\t.Prop",
+      "erty\"U\n\006Access\022\023\n\013serviceName\030\001 \001(\t\022\017\n\007u" +
+      "rlPath\030\002 \001(\t\022\023\n\013dataFormatS\030\003 \001(\t\022\020\n\010dat" +
+      "aSize\030\004 \001(\004\"\'\n\010Property\022\014\n\004name\030\001 \001(\t\022\r\n" +
+      "\005value\030\002 \001(\t*b\n\014DataRootType\022\010\n\004defo\020\000\022\017" +
+      "\n\013datasetRoot\020\001\022\017\n\013datasetScan\020\002\022\017\n\013cata" +
+      "logScan\020\003\022\025\n\021featureCollection\020\004B7\n\036thre" +
+      "dds.server.catalog.trackerB\025ConfigCatalo" +
+      "gExtProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4943,7 +5113,7 @@ public final class ConfigCatalogExtProto {
     internal_static_DataRoot_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_DataRoot_descriptor,
-        new java.lang.String[] { "UrlPath", "DirLocation", "Type", "CatLocation", "Name", });
+        new java.lang.String[] { "UrlPath", "DirLocation", "Type", "CatLocation", "Name", "Restrict", });
     internal_static_Dataset_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_Dataset_fieldAccessorTable = new

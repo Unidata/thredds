@@ -60,6 +60,7 @@ public class DataRoot {
   private final FeatureCollectionRef featCollection; // 3) the FeatureCollection that created this (may be null)
   private final CatalogScan catScan;  // 4) the CatalogScan that created this (may be null)
   private final Type type;
+  private final String restrict;
 
   public DataRoot(FeatureCollectionRef featCollection) {
     this.path = featCollection.getPath();
@@ -69,6 +70,7 @@ public class DataRoot {
     this.featCollection = featCollection;
     this.type = Type.featureCollection;
     this.name = featCollection.getCollectionName();
+    this.restrict = featCollection.getRestrictAccess();
     show();
   }
 
@@ -80,6 +82,7 @@ public class DataRoot {
     this.featCollection = null;
     this.type = Type.datasetScan;
     this.name = scan.getName();
+    this.restrict = scan.getRestrictAccess();
     show();
   }
 
@@ -91,10 +94,11 @@ public class DataRoot {
     this.featCollection = null;
     this.type = Type.catalogScan;
     this.name = catScan.getName();
+    this.restrict = null;
     show();
   }
 
-  public DataRoot(String path, String dirLocation) {
+  public DataRoot(String path, String dirLocation, String restrict) {
     this.path = path;
     this.dirLocation = dirLocation;
     this.datasetScan = null;
@@ -102,6 +106,7 @@ public class DataRoot {
     this.featCollection = null;
     this.type = Type.datasetRoot;
     this.name = null;
+    this.restrict = restrict;
     show();
   }
 
@@ -135,6 +140,10 @@ public class DataRoot {
 
   public String getName() {
     return name;
+  }
+
+  public String getRestrict() {
+    return restrict;
   }
 
   // used by PathMatcher

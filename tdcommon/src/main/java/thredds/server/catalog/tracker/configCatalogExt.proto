@@ -22,7 +22,8 @@ message DataRoot {
   string dirLocation = 2;
   DataRootType type = 3;
   string catLocation = 4;    // omit for simple dataset root
-  string name = 5;           //omit for simple dataset root
+  string name = 5;           // omit for simple dataset root
+  string restrict = 6;       // restrict
 }
 
 message Dataset {

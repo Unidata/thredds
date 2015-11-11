@@ -236,6 +236,10 @@ public class DatasetManager implements InitializingBean {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      // see if its under resource control
+      if (!resourceAuthorized(req, res, match.dataRoot.getRestrict()))
+        return null;
+
       FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
 
@@ -275,6 +279,10 @@ public class DatasetManager implements InitializingBean {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      // see if its under resource control
+      if (!resourceAuthorized(req, res, match.dataRoot.getRestrict()))
+        return null;
+
       FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
 
@@ -315,6 +323,10 @@ public class DatasetManager implements InitializingBean {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      // see if its under resource control
+      if (!resourceAuthorized(req, res, match.dataRoot.getRestrict()))
+        return null;
+
       FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
 
@@ -350,16 +362,6 @@ public class DatasetManager implements InitializingBean {
   // Resource control
 
   /**
-   * Find the restrictAccess for this path.
-   *
-   * @param path the complete path name of the dataset
-   * @return the value of the restrictAccess for this dataset, or null if none
-   */
-  public String findResourceControl(String path) {
-    return datasetTracker.findResourceControl(path);
-  }
-
-  /**
    * Check if this is making a request for a restricted dataset, and if so, if its allowed.
    *
    * @param req     the request
@@ -372,8 +374,21 @@ public class DatasetManager implements InitializingBean {
       reqPath = TdsPathUtils.extractPath(req, null);
 
     // see if its under resource control
-    String rc = findResourceControl(reqPath);
-    if (rc != null) {
+    String rc = null;
+    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
+    if (match != null) {
+      rc = match.dataRoot.getRestrict(); // datasetScan, featCollection are restricted at the dataRoot
+    }
+
+    if (rc == null) {
+      rc =  datasetTracker.findResourceControl(reqPath); // regular datasets tracked here
+    }
+
+    return resourceAuthorized(req, res, rc);
+  }
+
+  private boolean resourceAuthorized(HttpServletRequest req, HttpServletResponse res, String rc) {
+    if (rc == null) return true;
       if (debugResourceControl) System.out.println("DatasetHandler request has resource control =" + rc + "\n"
               + ServletUtil.showRequestHeaders(req) + ServletUtil.showSecurity(req, rc));
 
@@ -386,10 +401,10 @@ public class DatasetManager implements InitializingBean {
       }
 
       if (debugResourceControl) System.out.println("ResourceControl granted = " + rc);
-    }
 
     return true;
   }
+
 
   /////////////////////////////////////////////////////////
   // DatasetSource

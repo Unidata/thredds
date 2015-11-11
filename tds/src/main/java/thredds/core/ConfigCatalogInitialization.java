@@ -140,7 +140,7 @@ public class ConfigCatalogInitialization {
                                      AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
     this.contentRootPath = contentRootPath;
     this.contextPath = "/thredds";
-    this.trackerDir = trackerDir != null ? trackerDir : new File(contentRootPath, "cache/catalogs").getPath();
+    this.trackerDir = trackerDir != null ? trackerDir : new File(contentRootPath, "cache/catalog").getPath();
     this.datasetTracker = datasetTracker;
     this.allowedServices = allowedServices;
     this.callback = callback;

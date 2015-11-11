@@ -33,7 +33,6 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import com.beust.jcommander.internal.Lists;
 import net.jcip.annotations.Immutable;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -42,7 +41,6 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Optional;
 
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Time2DCoordSys with run and 2D time coordinate axes.
+ * Time2DCoordSys with run and 2D time coordinate axes. LOOK not complete
  * A CoordSys has 0 or 1 Time2DCoordSys, but there may be several in a Dataset.
  *
  * @author John
