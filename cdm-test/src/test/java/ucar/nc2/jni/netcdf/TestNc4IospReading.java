@@ -1,9 +1,6 @@
 package ucar.nc2.jni.netcdf;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -14,11 +11,14 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.hdf5.TestH5;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.DebugFlags;
+import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.CompareNetcdf;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -144,6 +144,44 @@ public class TestNc4IospReading {
     System.out.printf("***READ %s%n", filename);
     doCompare(filename, false, false, false);
   }
+
+  @BeforeClass
+  public static void setupClass() {
+    DebugFlags debugFlags = new DebugFlagsImpl();
+    debugFlags.set("H5iosp/read", true);
+    debugFlags.set("H5iosp/filePos", true);
+    debugFlags.set("H5iosp/Heap", true);
+    debugFlags.set("H5iosp/filter", true);
+    debugFlags.set("H5iosp/filterIndexer", true);
+    debugFlags.set("H5iosp/chunkIndexer", true);
+    debugFlags.set("H5iosp/vlen", true);
+    debugFlags.set("HdfEos/turnOff", true);
+
+    debugFlags.set("H5header/header", true);
+    debugFlags.set("H5header/btree2", true);
+    debugFlags.set("H5header/continueMessage", true);
+    debugFlags.set("H5header/headerDetails", true);
+    debugFlags.set("H5header/dataBtree", true);
+    debugFlags.set("H5header/groupBtree", true);
+    debugFlags.set("H5header/Heap", true);
+    debugFlags.set("H5header/filePos", true);
+    debugFlags.set("H5header/reference", true);
+    debugFlags.set("H5header/softLink", true);
+    debugFlags.set("H5header/hardLink", true);
+    debugFlags.set("H5header/symbolTable", true);
+    debugFlags.set("H5header/memTracker", true);
+    debugFlags.set("H5header/Variable", true);
+    debugFlags.set("H5header/structure", true);
+
+    //H5iosp.setDebugFlags(debugFlags);
+  }
+
+  @Test
+  public void issue273() throws IOException {
+    File file = new File("/Users/cwardgar/Desktop/comp_complex_more.h5");
+    Assert.assertTrue(doCompare(file.getAbsolutePath(), true, true, true));
+  }
+
 
   private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(location);

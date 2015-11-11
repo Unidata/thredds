@@ -306,7 +306,7 @@ public class CompareNetcdf2 {
     // data !!
     if (compareData) {
       try {
-        compareVariableData(org, copy, showCompare, justOne);
+        ok &= compareVariableData(org, copy, showCompare, justOne);
 
       } catch (IOException e) {
         StringWriter sw = new StringWriter(5000);
@@ -374,8 +374,7 @@ public class CompareNetcdf2 {
     if (showCompare)
       f.format("  compare CoordinateAxis '%s' to '%s' %n", a1.getShortName(), a2.getShortName());
 
-    compareVariable(a1, a2);
-    return true;
+    return compareVariable(a1, a2);
   }
 
 
@@ -508,14 +507,17 @@ public class CompareNetcdf2 {
     return ok;
   }
 
-  private void compareVariableData(Variable var1, Variable var2, boolean showCompare, boolean justOne) throws IOException {
+  private boolean compareVariableData(Variable var1, Variable var2, boolean showCompare, boolean justOne)
+          throws IOException {
     Array data1 = var1.read();
     Array data2 = var2.read();
 
-    if (showCompare)
-      f.format(" compareArrays %s unlimited=%s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(), data1.getSize());
-    compareData(var1.getFullName(), data1, data2, justOne);
-    if (showCompare) f.format("   ok%n");
+    if (showCompare) {
+      f.format(" compareArrays %s unlimited=%s size=%d%n", var1.getNameAndDimensions(), var1.isUnlimited(),
+               data1.getSize());
+    }
+
+    return compareData(var1.getFullName(), data1, data2, justOne);
   }
 
   public boolean compareData(String name, Array data1, double[] data2) {

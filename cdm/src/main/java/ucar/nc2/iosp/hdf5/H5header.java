@@ -1506,7 +1506,11 @@ public class H5header {
       makeVariableShapeAndType(v, mdt, null, vinfo, null);
       addMembersToStructure(g, (Structure) v, vinfo, mdt);
       v.setElementSize(mdt.byteSize);
-
+    } else if (mdt.type == 10 && mdt.base.type == 6) {
+      v = new Structure(ncfile, g, s, name);
+      makeVariableShapeAndType(v, mdt, null, vinfo, null);
+      addMembersToStructure(g, (Structure) v, vinfo, mdt.base);
+      v.setElementSize(mdt.byteSize);
     } else {
       v = new Variable(ncfile, g, s, name);
       makeVariableShapeAndType(v, mdt, null, vinfo, null);
