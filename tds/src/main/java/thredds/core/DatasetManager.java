@@ -66,6 +66,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Formatter;
 
@@ -349,7 +350,7 @@ public class DatasetManager implements InitializingBean {
       Formatter errlog = new Formatter();
       FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog);
       if (cc == null || cc.getCoverageCollections().size() != 1)
-        throw new FileNotFoundException("Not a Grid Dataset " + gds.getName()+" err="+errlog);
+        throw new FileNotFoundException("Not a Grid Dataset " + gds.getName() + " err=" + errlog);
       return cc.getCoverageCollections().get(0);
     }
 
@@ -381,7 +382,7 @@ public class DatasetManager implements InitializingBean {
     }
 
     if (rc == null) {
-      rc =  datasetTracker.findResourceControl(reqPath); // regular datasets tracked here
+      rc = datasetTracker.findResourceControl(reqPath); // regular datasets tracked here
     }
 
     return resourceAuthorized(req, res, rc);
@@ -389,18 +390,20 @@ public class DatasetManager implements InitializingBean {
 
   private boolean resourceAuthorized(HttpServletRequest req, HttpServletResponse res, String rc) {
     if (rc == null) return true;
-      if (debugResourceControl) System.out.println("DatasetHandler request has resource control =" + rc + "\n"
-              + ServletUtil.showRequestHeaders(req) + ServletUtil.showSecurity(req, rc));
+    if (debugResourceControl) System.out.println("DatasetHandler request has resource control =" + rc + "\n"
+            + ServletUtil.showRequestHeaders(req) + ServletUtil.showSecurity(req, rc));
 
-      try {
-        if (!restrictedDatasetAuthorizer.authorize(req, res, rc)) {
-          return false;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e.getMessage());
+    Principal p = req.getUserPrincipal();
+
+    try {
+      if (!restrictedDatasetAuthorizer.authorize(req, res, rc)) {
+        return false;
       }
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage());
+    }
 
-      if (debugResourceControl) System.out.println("ResourceControl granted = " + rc);
+    if (debugResourceControl) System.out.println("ResourceControl granted = " + rc);
 
     return true;
   }

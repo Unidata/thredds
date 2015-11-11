@@ -115,7 +115,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(AuthScope.ANY, new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
+      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -140,7 +140,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(AuthScope.ANY, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
+      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -167,7 +167,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(AuthScope.ANY, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "tigge")));
+      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "tigge")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
