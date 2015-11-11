@@ -66,6 +66,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Formatter;
 
@@ -236,6 +237,10 @@ public class DatasetManager implements InitializingBean {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      // see if its under resource control
+      if (!resourceAuthorized(req, res, match.dataRoot.getRestrict()))
+        return null;
+
       FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
 
@@ -275,6 +280,10 @@ public class DatasetManager implements InitializingBean {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      // see if its under resource control
+      if (!resourceAuthorized(req, res, match.dataRoot.getRestrict()))
+        return null;
+
       FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
 
@@ -315,6 +324,10 @@ public class DatasetManager implements InitializingBean {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      // see if its under resource control
+      if (!resourceAuthorized(req, res, match.dataRoot.getRestrict()))
+        return null;
+
       FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
 
@@ -337,7 +350,7 @@ public class DatasetManager implements InitializingBean {
       Formatter errlog = new Formatter();
       FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog);
       if (cc == null || cc.getCoverageCollections().size() != 1)
-        throw new FileNotFoundException("Not a Grid Dataset " + gds.getName()+" err="+errlog);
+        throw new FileNotFoundException("Not a Grid Dataset " + gds.getName() + " err=" + errlog);
       return cc.getCoverageCollections().get(0);
     }
 
@@ -348,16 +361,6 @@ public class DatasetManager implements InitializingBean {
 
   /////////////////////////////////////////////////////////////////
   // Resource control
-
-  /**
-   * Find the restrictAccess for this path.
-   *
-   * @param path the complete path name of the dataset
-   * @return the value of the restrictAccess for this dataset, or null if none
-   */
-  public String findResourceControl(String path) {
-    return datasetTracker.findResourceControl(path);
-  }
 
   /**
    * Check if this is making a request for a restricted dataset, and if so, if its allowed.
@@ -372,24 +375,39 @@ public class DatasetManager implements InitializingBean {
       reqPath = TdsPathUtils.extractPath(req, null);
 
     // see if its under resource control
-    String rc = findResourceControl(reqPath);
-    if (rc != null) {
-      if (debugResourceControl) System.out.println("DatasetHandler request has resource control =" + rc + "\n"
-              + ServletUtil.showRequestHeaders(req) + ServletUtil.showSecurity(req, rc));
-
-      try {
-        if (!restrictedDatasetAuthorizer.authorize(req, res, rc)) {
-          return false;
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e.getMessage());
-      }
-
-      if (debugResourceControl) System.out.println("ResourceControl granted = " + rc);
+    String rc = null;
+    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
+    if (match != null) {
+      rc = match.dataRoot.getRestrict(); // datasetScan, featCollection are restricted at the dataRoot
     }
+
+    if (rc == null) {
+      rc = datasetTracker.findResourceControl(reqPath); // regular datasets tracked here
+    }
+
+    return resourceAuthorized(req, res, rc);
+  }
+
+  private boolean resourceAuthorized(HttpServletRequest req, HttpServletResponse res, String rc) {
+    if (rc == null) return true;
+    if (debugResourceControl) System.out.println("DatasetHandler request has resource control =" + rc + "\n"
+            + ServletUtil.showRequestHeaders(req) + ServletUtil.showSecurity(req, rc));
+
+    Principal p = req.getUserPrincipal();
+
+    try {
+      if (!restrictedDatasetAuthorizer.authorize(req, res, rc)) {
+        return false;
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage());
+    }
+
+    if (debugResourceControl) System.out.println("ResourceControl granted = " + rc);
 
     return true;
   }
+
 
   /////////////////////////////////////////////////////////
   // DatasetSource

@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author caron
  * @since 10/20/2015.
  */
-public class Time2DOffsetCoordSys extends Time2DCoordSys{
+public class Time2DOffsetCoordSys extends Time2DCoordSys {
   public final TimeOffsetAxis timeOffset;
 
   public Time2DOffsetCoordSys(CoverageCoordAxis1D runAxis, TimeOffsetAxis timeOffset) {
@@ -63,7 +63,10 @@ public class Time2DOffsetCoordSys extends Time2DCoordSys{
 
   @Override
   public int[] getShape() {
-    return new int[] {runAxis.getNcoords(), timeOffset.getNcoords()};
+    if (runAxis.isScalar())
+      return new int[] {timeOffset.getNcoords()};
+    else
+      return new int[] {runAxis.getNcoords(), timeOffset.getNcoords()};
   }
 
   /*

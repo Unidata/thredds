@@ -37,7 +37,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +120,7 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
       CdmrfReader cdmrfReader = new CdmrfReader(endpoint);
       InputStream is = method.getResponseAsStream();
-      if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
+      if (!NcStream.readAndTest(is, NcStream.MAGIC_DATACOV))
         throw new IOException("Data transfer corrupted");
 
       // read Data message
@@ -131,24 +130,16 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
       byte[] dp = new byte[psize];
       NcStream.readFully(is, dp);
-      CdmrFeatureProto.DataResponse dproto = CdmrFeatureProto.DataResponse.parseFrom(dp);
-      DataResponse dataResponse = cdmrfReader.decodeDataResponse(dproto);
+      CdmrFeatureProto.CoverageDataResponse dproto = CdmrFeatureProto.CoverageDataResponse.parseFrom(dp);
+      CoverageDataResponse dataResponse = cdmrfReader.decodeDataResponse(dproto);
 
-      int narrays  = NcStream.readVInt(is);
-      assert narrays == dataResponse.arrayResponse.size();
-      List<GeoReferencedArray> geoArrays = new ArrayList<>();
-
-      // read Data
-      for (GeoArrayResponse arrayResponse : dataResponse.arrayResponse) {
-        geoArrays.add(readData(dataResponse, arrayResponse, is));
-      }
-
+      List<GeoReferencedArray> geoArrays = dataResponse.arrayResponse;
       assert geoArrays.size() == 1; // LOOK maybe need readData(List<names>) returns List<GeoArray> ?
       return geoArrays.get(0);
     }
   }
 
-  public GeoReferencedArray readData(DataResponse dataResponse, GeoArrayResponse arrayResponse, InputStream is) throws IOException {
+  public GeoReferencedArray readData(CoverageDataResponse dataResponse, GeoArrayResponse arrayResponse, InputStream is) throws IOException {
     int sizeIn  = NcStream.readVInt(is);  // not used ?
 
     if (arrayResponse.deflate) {
@@ -175,6 +166,6 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
   @Override
   public double[] readCoordValues(CoverageCoordAxis coordAxis) throws IOException {
-    return new double[0];
+    return new double[0]; // LOOK
   }
 }

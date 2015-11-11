@@ -209,7 +209,7 @@ public class CdmrGridController implements LastModified {
         GeoReferencedArray array = grid.readData(params);
         arrays.add(array);
       }
-      sendDataResponse(arrays, out, true);
+      sendDataResponse(arrays, out, false); // LOOK deflate ??
       out.flush();
 
     } catch (Throwable t) {
@@ -222,6 +222,7 @@ public class CdmrGridController implements LastModified {
 
   private long sendDataResponse(List<GeoReferencedArray> arrays, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
 
+    // turns List into a Set
     Set<CoverageCoordSys> sysSet = arrays.stream().map(GeoReferencedArray::getCoordSysForData).collect(Collectors.toSet());
 
     Set<CoverageTransform> transformSet = new HashSet<>();
@@ -233,19 +234,25 @@ public class CdmrGridController implements LastModified {
 
     CdmrfWriter cdmrfWriter = new CdmrfWriter();
     long size = 0;
-    size += writeBytes(out, NcStream.MAGIC_DATA2); // data protocol 3 for TDS >= 5.0
-    CdmrFeatureProto.DataResponse dataProto = cdmrfWriter.encodeDataResponse(axisSet, sysSet, transformSet, arrays, deflate);
+    size += writeBytes(out, NcStream.MAGIC_DATACOV);
+    CdmrFeatureProto.CoverageDataResponse dataProto = cdmrfWriter.encodeDataResponse(axisSet, sysSet, transformSet, arrays, deflate);
     byte[] datab = dataProto.toByteArray();
     size += NcStream.writeVInt(out, datab.length); // dataProto len
     size += writeBytes(out, datab); // dataProto
 
+    /* float ratio = ((float) uncompressedLength) / deflatedSize;
+    if (showRes)
+      System.out.printf("  org/compress= %d/%d = %f%n", uncompressedLength, deflatedSize, ratio); */
+
+
+    /*
     size += NcStream.writeVInt(out, arrays.size()); // lenn
 
     for (GeoReferencedArray array : arrays) {
       long dataMessageLen = sendData(array.getData(), out, deflate);
       if (showRes) System.out.printf(" CdmrGridController.sendData grid='%s' data message len=%d%n", array.getCoverageName(), dataMessageLen);
       size += dataMessageLen;
-    }
+    } */
 
     return size;
   }

@@ -82,9 +82,12 @@ public class NcStream {
 
   static public final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
   static public final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
-  static public final byte[] MAGIC_DATA2 = new byte[]{(byte) 0xac, (byte) 0xec, (byte) 0xce, (byte) 0xca};
+  static public final byte[] MAGIC_DATA2 = new byte[]{(byte) 0xab, (byte) 0xeb, (byte) 0xbe, (byte) 0xba};
   static public final byte[] MAGIC_VDATA = new byte[]{(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};
   static public final byte[] MAGIC_VEND = new byte[]{(byte) 0xed, (byte) 0xef, (byte) 0xfe, (byte) 0xda};
+
+  static public final byte[] MAGIC_HEADERCOV = new byte[]{(byte) 0xad, (byte) 0xed, (byte) 0xde, (byte) 0xda};
+  static public final byte[] MAGIC_DATACOV = new byte[]{(byte) 0xab, (byte) 0xed, (byte) 0xde, (byte) 0xba};
 
   static public final byte[] MAGIC_ERR = new byte[]{(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
   static public final byte[] MAGIC_END = new byte[]{(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};

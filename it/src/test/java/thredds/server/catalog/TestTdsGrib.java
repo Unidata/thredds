@@ -107,7 +107,7 @@ public class TestTdsGrib {
       Coverage grid = cc.findCoverage(gridName);
       Assert.assertNotNull(gridName, grid);
 
-      int[] expectShape = new int[] {4,4,1,689,1073};
+      int[] expectShape = new int[] {4,1,689,1073};
       Assert.assertArrayEquals(expectShape, grid.getShape());
 
       CoverageCoordSys gcs = grid.getCoordSys();
@@ -115,15 +115,16 @@ public class TestTdsGrib {
 
       CoverageCoordAxis reftime = gcs.getAxis(AxisType.RunTime);
       Assert.assertNotNull(reftime);
-      Assert.assertEquals(4, reftime.getNcoords());
-      double[] want = new double[]{0., 12., 24., 36.};
+      Assert.assertEquals(1, reftime.getNcoords());
+      double[] runtimeValues = new double[]{0.};
       CompareNetcdf2 cn = new CompareNetcdf2();
-      assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
+      assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(runtimeValues), false);
 
       CoverageCoordAxis time = gcs.getTimeAxis();
       Assert.assertNotNull(time);
-      Assert.assertTrue(time instanceof FmrcTimeAxis2D);
-      Assert.assertEquals(16, time.getNcoords());
+      Assert.assertEquals(4, time.getNcoords());
+      double[] timeValues = new double[]{108.,132.,156,180};
+      assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(timeValues), false);
     }
   }
 

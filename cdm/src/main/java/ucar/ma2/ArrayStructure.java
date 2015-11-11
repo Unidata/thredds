@@ -958,9 +958,6 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
       return getArraySequence(recnum, m);
 
     ArrayStructure array = (ArrayStructure) m.getDataArray();
-    if (array == null)
-      System.out.printf("HEY%n");
-
     int count = m.getSize();
     StructureData[] this_sdata = new StructureData[count];
     for (int i = 0; i < count; i++)

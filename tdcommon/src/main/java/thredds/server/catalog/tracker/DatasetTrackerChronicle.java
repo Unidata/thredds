@@ -113,11 +113,11 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     if (callback != null) {
       callback.hasDataset(dataset);
       boolean track = false;
-       if (dataset.getRestrictAccess() != null) {
-         callback.hasRestriction(dataset);
-         track = true;
-       }
-      if (dataset.getNcmlElement()!= null) {
+      if (dataset.getRestrictAccess() != null) {
+        callback.hasRestriction(dataset);
+        track = true;
+      }
+      if (dataset.getNcmlElement() != null) {
         callback.hasNcml(dataset);
         track = true;
       }
@@ -129,18 +129,27 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     if (!hasRestrict && !hasNcml) return false;
 
     String path = null;
-    for (Access access : dataset.getAccess()) {
+    if (dataset instanceof DatasetScan) {
+      path = ((DatasetScan) dataset).getPath();
 
-      String accessPath = access.getUrlPath();
-      if (accessPath == null)
-        System.out.println("HEY trackDataset has null accessPath");
-      if (path == null) path = accessPath;
-      else if (!path.equals(access.getUrlPath())) {
-        System.out.printf(" paths differ: %s%n %s%n%n", path, accessPath);
+    } else if (dataset instanceof FeatureCollectionRef) {
+      path = ((FeatureCollectionRef) dataset).getPath();
+
+    } else { // regular dataset
+      for (Access access : dataset.getAccess()) {
+        String accessPath = access.getUrlPath();
+        if (accessPath == null)
+          catalogInitLog.debug("trackDataset {} access {} has null path", dataset, access);
+        if (path == null) path = accessPath;
+        else if (!path.equals(access.getUrlPath())) {
+          System.out.printf(" paths differ: %s%n %s%n%n", path, accessPath);
+        }
       }
     }
-    if (path == null)
+    if (path == null) {
+      catalogInitLog.debug("trackDataset {} has null path", dataset);
       return false;
+    }
 
     String ncml = null;
     if (hasNcml) {

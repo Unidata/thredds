@@ -36,14 +36,6 @@ enum AxisSpacing {  // same as CoverageCoordAxis.Spacing
   discontiguousInterval=3;
 }
 
-enum CoverageType {
-  General=0;
-  Curvilinear=1;
-  Grid=2;
-  Swath=3;
-  Fmrc=4;
-}
-
 enum DependenceType {  // same as CoverageCoordAxis.DependenceType
   independent=0;     // has its own dimension, is a coordinate variable, eg x(x)
   dependent=1;       // aux coordinate, reftime(time) or time_bounds(time);
@@ -79,15 +71,6 @@ message CoordSys {
   CoverageType coverageType = 5;
 }
 
-message Coverage {
-  string name = 1;               // short name, unique within dataset
-  DataType dataType = 2;
-  repeated Attribute atts = 4;
-  string coordSys = 5;
-  string units = 6;
-  string description = 7;
-}
-
 enum Calendar {  // same as ucar.nc2.time.Calendar
   proleptic_gregorian=0;
   gregorian=1;
@@ -111,6 +94,26 @@ message Rectangle {
   double incy = 4;
 }
 
+//////////////////////////////////////////////////////
+// Coverage
+
+enum CoverageType {
+  General=0;
+  Curvilinear=1;
+  Grid=2;
+  Swath=3;
+  Fmrc=4;
+}
+
+message Coverage {
+  string name = 1;               // short name, unique within dataset
+  DataType dataType = 2;
+  repeated Attribute atts = 4;
+  string coordSys = 5;
+  string units = 6;
+  string description = 7;
+}
+
 message CoverageDataset {
   string name = 1;
   repeated Attribute atts = 2;
@@ -124,8 +127,6 @@ message CoverageDataset {
   repeated Coverage grids = 9;
   CoverageType coverageType = 10;
 }
-
-//////////////////////////////////
 
 message GeoReferencedArray {
   string coverageName = 1;          // full escaped name.
@@ -142,7 +143,7 @@ message GeoReferencedArray {
   bytes primdata = 10;              // rectangular, primitive array
 }
 
-message DataResponse {
+message CoverageDataResponse {
   repeated CoordAxis coordAxes = 1;              // may be shared if asking for multiple grids
   repeated CoordSys coordSys = 2;                //    "
   repeated CoordTransform coordTransforms = 3;   //    "

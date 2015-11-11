@@ -35,6 +35,7 @@ package ucar.nc2.ft2.coverage.remote;
 
 import ucar.nc2.ft2.coverage.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,19 +44,19 @@ import java.util.List;
  * @author caron
  * @since 7/15/2015
  */
-class DataResponse implements CoordSysContainer {
+class CoverageDataResponse implements CoordSysContainer {
 
   public List<CoverageCoordAxis> axes;
   public List<CoverageCoordSys> coordSys;
   public List<CoverageTransform> transforms;
 
-  public List<GeoArrayResponse> arrayResponse;
+  public List<GeoReferencedArray> arrayResponse;
 
-  public DataResponse(List<CoverageCoordAxis> axes, List<CoverageCoordSys> coordSys, List<CoverageTransform> transforms, List<GeoArrayResponse> arrayResponse) {
+  public CoverageDataResponse(List<CoverageCoordAxis> axes, List<CoverageCoordSys> coordSys, List<CoverageTransform> transforms) {
     this.axes = axes;
     this.coordSys = coordSys;
     this.transforms = transforms;
-    this.arrayResponse = arrayResponse;
+    this.arrayResponse = new ArrayList<>(); // set after the constructor is done, because we need to put coordsys in geoArray
 
     for (CoverageCoordSys csys : coordSys) {
       csys.setDataset(this); // LOOK More that should be done ??

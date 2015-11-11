@@ -610,7 +610,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     // LOOK Do we need to strip off a GC in case of bookmarked URLs?
 
     String[] paths = matchPath.split("/");
-    List<String> pathList = (paths.length < 1) ? new ArrayList<String>() : Arrays.asList(paths);
+    List<String> pathList = (paths.length < 1) ? new ArrayList<>() : Arrays.asList(paths);
     DatasetAndGroup dg = findDatasetAndGroup(pathList, topCollection);
     if (dg != null)
       return visit.obtain(topCollection, dg.ds, dg.group);
@@ -642,6 +642,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return new DatasetAndGroup(ds, dg);
     }
 
+    if (gc == null)
+      System.out.printf("HEY%n");
     GribCollectionImmutable.Dataset ds = gc.getDatasetByTypeName(paths.get(0));
     if (ds != null) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;

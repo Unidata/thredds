@@ -36,6 +36,7 @@ package ucar.nc2.ft2.coverage.remote;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
@@ -97,7 +98,7 @@ public class CdmrfReader {
       byte[] b = new byte[4];
       NcStream.readFully(is, b);
 
-      if (!NcStream.test(b, NcStream.MAGIC_HEADER))
+      if (!NcStream.test(b, NcStream.MAGIC_HEADERCOV))
         throw new IOException("Data corrupted on " + endpoint);
 
       // header message
@@ -434,17 +435,18 @@ message Coverage {
     throw new IllegalStateException("illegal data type " + type);
   }
 
-    ///////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////
 
   /*
-    message DataResponse {
+  message CoverageDataResponse {
     repeated CoordAxis coordAxes = 1;              // may be shared if asking for multiple grids
-    repeated CoordSys coordSys = 2;                // may be shared if asking for multiple grids
+    repeated CoordSys coordSys = 2;                //    "
+    repeated CoordTransform coordTransforms = 3;   //    "
 
     repeated GeoReferencedArray geoArray = 4;
   }
    */
-  public DataResponse decodeDataResponse(CdmrFeatureProto.DataResponse dproto) {
+  public CoverageDataResponse decodeDataResponse(CdmrFeatureProto.CoverageDataResponse dproto) {
     List<CoverageTransform> transforms = new ArrayList<>();
     for (CdmrFeatureProto.CoordTransform pt : dproto.getCoordTransformsList())
       transforms.add( decodeCoordTransform(pt));
@@ -457,56 +459,48 @@ message Coverage {
     for (CdmrFeatureProto.CoordAxis paxis : dproto.getCoordAxesList())
       axes.add( decodeCoordAxis(paxis, null));  // LOOK null reader - so all values must be present
 
-    List<GeoArrayResponse> arrays = new ArrayList<>();
+    CoverageDataResponse result = new CoverageDataResponse(axes, coordSys, transforms);
+
     for (CdmrFeatureProto.GeoReferencedArray psys : dproto.getGeoArrayList())
-      arrays.add(decodeGeoReferencedArray(psys));
-
-    return new DataResponse(axes, coordSys, transforms, arrays);
-  }
-
-  /*
-  message GeoReferencedArray {
-    required string gridName = 1;          // full escaped name.
-    required DataType dataType = 2;
-    optional bool bigend = 3 [default = true];
-    optional uint32 version = 4 [default = 0];
-    optional Compress compress = 5 [default = NONE];
-    optional uint64 uncompressedSize = 6;
-
-    repeated uint32 shape = 7;            // the shape of the returned array
-    repeated string axisName = 8;         // each dimension corresponds to this axis
-    required string coordSysName = 9;     // must have coordAxis corresponding to shape
-  }
-   */
-
-  public GeoArrayResponse decodeGeoReferencedArray(CdmrFeatureProto.GeoReferencedArray parray) {
-    GeoArrayResponse result = new GeoArrayResponse();
-
-    result.coverageName = parray.getCoverageName();
-    result.dataType = NcStream.convertDataType(parray.getDataType());
-
-    result.byteOrder = decodeDataByteOrder(parray);
-    result.deflate = parray.getCompress() == NcStreamProto.Compress.DEFLATE;
-    result.uncompressedSize = parray.getUncompressedSize();
-
-    int[] shape = new int[parray.getShapeCount()];
-    for (int i=0; i< parray.getShapeCount(); i++)
-      shape[i] = parray.getShape(i);
-    result.shape = shape;
-
-    result.axisName = parray.getAxisNameList();
-    result.coordSysName = parray.getCoordSysName();
+      result.arrayResponse.add(decodeGeoReferencedArray(result, psys));
 
     return result;
   }
 
-  private ByteOrder decodeDataByteOrder(CdmrFeatureProto.GeoReferencedArray parray) {
-    boolean isMissing = parray.getBigendPresentCase() == CdmrFeatureProto.GeoReferencedArray.BigendPresentCase.BIGENDPRESENT_NOT_SET;
-    if (isMissing) {
-      int version = parray.getVersion();
-      return (version < 3) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
-    }
-    return parray.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+  /*
+  message GeoReferencedArray {
+    string gridName = 1;          // full escaped name.
+    DataType dataType = 2;
+    bool bigend = 3;
+    uint32 version = 4;
+    Compress compress = 5;
+    uint64 uncompressedSize = 6;
+
+    repeated uint32 shape = 7;            // the shape of the returned array
+    repeated string axisName = 8;         // each dimension corresponds to this axis LOOK needed?
+    string coordSysName = 9;            // must have coordAxis corresponding to shape
+    bytes primdata = 10;              // rectangular, primitive array
   }
+   */
+
+  public GeoReferencedArray decodeGeoReferencedArray(CoverageDataResponse dataResponse, CdmrFeatureProto.GeoReferencedArray parray) {
+    DataType dataType = NcStream.convertDataType(parray.getDataType());
+    ByteOrder byteOrder = parray.getBigend() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+    boolean deflate = parray.getCompress() == NcStreamProto.Compress.DEFLATE;
+    long uncompressedSize = parray.getUncompressedSize();
+
+    int[] shape = new int[parray.getShapeCount()];
+    for (int i=0; i< parray.getShapeCount(); i++)
+      shape[i] = parray.getShape(i);
+
+    ByteBuffer bb = parray.getPrimdata().asReadOnlyByteBuffer();
+    bb.order(byteOrder);
+    Array data = Array.factory(dataType, shape, bb);
+
+    CoverageCoordSys csys = dataResponse.findCoordSys( parray.getCoordSysName());
+    if (csys == null) throw new IllegalStateException("Misformed response - no coordsys");
+
+    return new GeoReferencedArray(parray.getCoverageName(), dataType, data, csys);
+    }
 
 }

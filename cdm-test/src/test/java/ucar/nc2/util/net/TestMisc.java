@@ -32,8 +32,6 @@
 
 package ucar.nc2.util.net;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -118,15 +116,5 @@ public class TestMisc extends UnitTestCommon
         }
 
     }
-
-    @Test
-    public void testBackslashEscaped() throws Exception {
-      String url = "http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/hdf5/grid_1_3d_xyz_aug.h5?req=data&var=HDFEOS_INFORMATION/StructMetadata\\.0";
-      try (HTTPMethod m = HTTPFactory.Get(url)) {
-        int statusCode = m.execute();
-        System.out.printf("status = %d%n", statusCode);
-      }
-    }
-
 
 }

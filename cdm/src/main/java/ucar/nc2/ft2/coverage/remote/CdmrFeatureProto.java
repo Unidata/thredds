@@ -336,125 +336,6 @@ public final class CdmrFeatureProto {
   }
 
   /**
-   * Protobuf enum {@code CoverageType}
-   */
-  public enum CoverageType
-      implements com.google.protobuf.ProtocolMessageEnum {
-    /**
-     * <code>General = 0;</code>
-     */
-    General(0, 0),
-    /**
-     * <code>Curvilinear = 1;</code>
-     */
-    Curvilinear(1, 1),
-    /**
-     * <code>Grid = 2;</code>
-     */
-    Grid(2, 2),
-    /**
-     * <code>Swath = 3;</code>
-     */
-    Swath(3, 3),
-    /**
-     * <code>Fmrc = 4;</code>
-     */
-    Fmrc(4, 4),
-    UNRECOGNIZED(-1, -1),
-    ;
-
-    /**
-     * <code>General = 0;</code>
-     */
-    public static final int General_VALUE = 0;
-    /**
-     * <code>Curvilinear = 1;</code>
-     */
-    public static final int Curvilinear_VALUE = 1;
-    /**
-     * <code>Grid = 2;</code>
-     */
-    public static final int Grid_VALUE = 2;
-    /**
-     * <code>Swath = 3;</code>
-     */
-    public static final int Swath_VALUE = 3;
-    /**
-     * <code>Fmrc = 4;</code>
-     */
-    public static final int Fmrc_VALUE = 4;
-
-
-    public final int getNumber() {
-      if (index == -1) {
-        throw new java.lang.IllegalArgumentException(
-            "Can't get the number of an unknown enum value.");
-      }
-      return value;
-    }
-
-    public static CoverageType valueOf(int value) {
-      switch (value) {
-        case 0: return General;
-        case 1: return Curvilinear;
-        case 2: return Grid;
-        case 3: return Swath;
-        case 4: return Fmrc;
-        default: return null;
-      }
-    }
-
-    public static com.google.protobuf.Internal.EnumLiteMap<CoverageType>
-        internalGetValueMap() {
-      return internalValueMap;
-    }
-    private static final com.google.protobuf.Internal.EnumLiteMap<
-        CoverageType> internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<CoverageType>() {
-            public CoverageType findValueByNumber(int number) {
-              return CoverageType.valueOf(number);
-            }
-          };
-
-    public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
-    }
-    public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
-      return getDescriptor();
-    }
-    public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
-      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.getDescriptor().getEnumTypes().get(2);
-    }
-
-    private static final CoverageType[] VALUES = values();
-
-    public static CoverageType valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-      if (desc.getType() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
-      }
-      if (desc.getIndex() == -1) {
-        return UNRECOGNIZED;
-      }
-      return VALUES[desc.getIndex()];
-    }
-
-    private final int index;
-    private final int value;
-
-    private CoverageType(int index, int value) {
-      this.index = index;
-      this.value = value;
-    }
-
-    // @@protoc_insertion_point(enum_scope:CoverageType)
-  }
-
-  /**
    * Protobuf enum {@code DependenceType}
    *
    * <pre>
@@ -589,7 +470,7 @@ public final class CdmrFeatureProto {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.getDescriptor().getEnumTypes().get(3);
+      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.getDescriptor().getEnumTypes().get(2);
     }
 
     private static final DependenceType[] VALUES = values();
@@ -730,7 +611,7 @@ public final class CdmrFeatureProto {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.getDescriptor().getEnumTypes().get(4);
+      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.getDescriptor().getEnumTypes().get(3);
     }
 
     private static final Calendar[] VALUES = values();
@@ -756,6 +637,125 @@ public final class CdmrFeatureProto {
     }
 
     // @@protoc_insertion_point(enum_scope:Calendar)
+  }
+
+  /**
+   * Protobuf enum {@code CoverageType}
+   */
+  public enum CoverageType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>General = 0;</code>
+     */
+    General(0, 0),
+    /**
+     * <code>Curvilinear = 1;</code>
+     */
+    Curvilinear(1, 1),
+    /**
+     * <code>Grid = 2;</code>
+     */
+    Grid(2, 2),
+    /**
+     * <code>Swath = 3;</code>
+     */
+    Swath(3, 3),
+    /**
+     * <code>Fmrc = 4;</code>
+     */
+    Fmrc(4, 4),
+    UNRECOGNIZED(-1, -1),
+    ;
+
+    /**
+     * <code>General = 0;</code>
+     */
+    public static final int General_VALUE = 0;
+    /**
+     * <code>Curvilinear = 1;</code>
+     */
+    public static final int Curvilinear_VALUE = 1;
+    /**
+     * <code>Grid = 2;</code>
+     */
+    public static final int Grid_VALUE = 2;
+    /**
+     * <code>Swath = 3;</code>
+     */
+    public static final int Swath_VALUE = 3;
+    /**
+     * <code>Fmrc = 4;</code>
+     */
+    public static final int Fmrc_VALUE = 4;
+
+
+    public final int getNumber() {
+      if (index == -1) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    public static CoverageType valueOf(int value) {
+      switch (value) {
+        case 0: return General;
+        case 1: return Curvilinear;
+        case 2: return Grid;
+        case 3: return Swath;
+        case 4: return Fmrc;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<CoverageType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        CoverageType> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<CoverageType>() {
+            public CoverageType findValueByNumber(int number) {
+              return CoverageType.valueOf(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.getDescriptor().getEnumTypes().get(4);
+    }
+
+    private static final CoverageType[] VALUES = values();
+
+    public static CoverageType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int index;
+    private final int value;
+
+    private CoverageType(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:CoverageType)
   }
 
   public interface CoordTransformOrBuilder extends
@@ -5003,6 +5003,1081 @@ public final class CdmrFeatureProto {
 
   }
 
+  public interface CalendarDateRangeOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:CalendarDateRange)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional int64 start = 1;</code>
+     */
+    long getStart();
+
+    /**
+     * <code>optional int64 end = 2;</code>
+     */
+    long getEnd();
+
+    /**
+     * <code>optional .Calendar calendar = 3;</code>
+     */
+    int getCalendarValue();
+    /**
+     * <code>optional .Calendar calendar = 3;</code>
+     */
+    ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar getCalendar();
+  }
+  /**
+   * Protobuf type {@code CalendarDateRange}
+   */
+  public  static final class CalendarDateRange extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:CalendarDateRange)
+      CalendarDateRangeOrBuilder {
+    // Use CalendarDateRange.newBuilder() to construct.
+    private CalendarDateRange(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private CalendarDateRange() {
+      start_ = 0L;
+      end_ = 0L;
+      calendar_ = 0;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    }
+    private CalendarDateRange(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+      this();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!input.skipField(tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+
+              start_ = input.readInt64();
+              break;
+            }
+            case 16: {
+
+              end_ = input.readInt64();
+              break;
+            }
+            case 24: {
+              int rawValue = input.readEnum();
+
+              calendar_ = rawValue;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw new RuntimeException(e.setUnfinishedMessage(this));
+      } catch (java.io.IOException e) {
+        throw new RuntimeException(
+            new com.google.protobuf.InvalidProtocolBufferException(
+                e.getMessage()).setUnfinishedMessage(this));
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.Builder.class);
+    }
+
+    public static final int START_FIELD_NUMBER = 1;
+    private long start_;
+    /**
+     * <code>optional int64 start = 1;</code>
+     */
+    public long getStart() {
+      return start_;
+    }
+
+    public static final int END_FIELD_NUMBER = 2;
+    private long end_;
+    /**
+     * <code>optional int64 end = 2;</code>
+     */
+    public long getEnd() {
+      return end_;
+    }
+
+    public static final int CALENDAR_FIELD_NUMBER = 3;
+    private int calendar_;
+    /**
+     * <code>optional .Calendar calendar = 3;</code>
+     */
+    public int getCalendarValue() {
+      return calendar_;
+    }
+    /**
+     * <code>optional .Calendar calendar = 3;</code>
+     */
+    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar getCalendar() {
+      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.valueOf(calendar_);
+      return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.UNRECOGNIZED : result;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (start_ != 0L) {
+        output.writeInt64(1, start_);
+      }
+      if (end_ != 0L) {
+        output.writeInt64(2, end_);
+      }
+      if (calendar_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.proleptic_gregorian.getNumber()) {
+        output.writeEnum(3, calendar_);
+      }
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (start_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, start_);
+      }
+      if (end_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, end_);
+      }
+      if (calendar_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.proleptic_gregorian.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(3, calendar_);
+      }
+      memoizedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code CalendarDateRange}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:CalendarDateRange)
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRangeOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.Builder.class);
+      }
+
+      // Construct using ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        start_ = 0L;
+
+        end_ = 0L;
+
+        calendar_ = 0;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_descriptor;
+      }
+
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDefaultInstanceForType() {
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.getDefaultInstance();
+      }
+
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange build() {
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange buildPartial() {
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange(this);
+        result.start_ = start_;
+        result.end_ = end_;
+        result.calendar_ = calendar_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange) {
+          return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange other) {
+        if (other == ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.getDefaultInstance()) return this;
+        if (other.getStart() != 0L) {
+          setStart(other.getStart());
+        }
+        if (other.getEnd() != 0L) {
+          setEnd(other.getEnd());
+        }
+        if (other.calendar_ != 0) {
+          setCalendarValue(other.getCalendarValue());
+        }
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private long start_ ;
+      /**
+       * <code>optional int64 start = 1;</code>
+       */
+      public long getStart() {
+        return start_;
+      }
+      /**
+       * <code>optional int64 start = 1;</code>
+       */
+      public Builder setStart(long value) {
+        
+        start_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 start = 1;</code>
+       */
+      public Builder clearStart() {
+        
+        start_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long end_ ;
+      /**
+       * <code>optional int64 end = 2;</code>
+       */
+      public long getEnd() {
+        return end_;
+      }
+      /**
+       * <code>optional int64 end = 2;</code>
+       */
+      public Builder setEnd(long value) {
+        
+        end_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 end = 2;</code>
+       */
+      public Builder clearEnd() {
+        
+        end_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int calendar_ = 0;
+      /**
+       * <code>optional .Calendar calendar = 3;</code>
+       */
+      public int getCalendarValue() {
+        return calendar_;
+      }
+      /**
+       * <code>optional .Calendar calendar = 3;</code>
+       */
+      public Builder setCalendarValue(int value) {
+        calendar_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .Calendar calendar = 3;</code>
+       */
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar getCalendar() {
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.valueOf(calendar_);
+        return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>optional .Calendar calendar = 3;</code>
+       */
+      public Builder setCalendar(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        calendar_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .Calendar calendar = 3;</code>
+       */
+      public Builder clearCalendar() {
+        
+        calendar_ = 0;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:CalendarDateRange)
+    }
+
+    // @@protoc_insertion_point(class_scope:CalendarDateRange)
+    private static final ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange();
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<CalendarDateRange>
+        PARSER = new com.google.protobuf.AbstractParser<CalendarDateRange>() {
+      public CalendarDateRange parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        try {
+          return new CalendarDateRange(input, extensionRegistry);
+        } catch (RuntimeException e) {
+          if (e.getCause() instanceof
+              com.google.protobuf.InvalidProtocolBufferException) {
+            throw (com.google.protobuf.InvalidProtocolBufferException)
+                e.getCause();
+          }
+          throw e;
+        }
+      }
+    };
+
+    public static com.google.protobuf.Parser<CalendarDateRange> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CalendarDateRange> getParserForType() {
+      return PARSER;
+    }
+
+    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface RectangleOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Rectangle)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional double startx = 1;</code>
+     */
+    double getStartx();
+
+    /**
+     * <code>optional double starty = 2;</code>
+     */
+    double getStarty();
+
+    /**
+     * <code>optional double incx = 3;</code>
+     */
+    double getIncx();
+
+    /**
+     * <code>optional double incy = 4;</code>
+     */
+    double getIncy();
+  }
+  /**
+   * Protobuf type {@code Rectangle}
+   */
+  public  static final class Rectangle extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:Rectangle)
+      RectangleOrBuilder {
+    // Use Rectangle.newBuilder() to construct.
+    private Rectangle(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private Rectangle() {
+      startx_ = 0D;
+      starty_ = 0D;
+      incx_ = 0D;
+      incy_ = 0D;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    }
+    private Rectangle(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+      this();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!input.skipField(tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 9: {
+
+              startx_ = input.readDouble();
+              break;
+            }
+            case 17: {
+
+              starty_ = input.readDouble();
+              break;
+            }
+            case 25: {
+
+              incx_ = input.readDouble();
+              break;
+            }
+            case 33: {
+
+              incy_ = input.readDouble();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw new RuntimeException(e.setUnfinishedMessage(this));
+      } catch (java.io.IOException e) {
+        throw new RuntimeException(
+            new com.google.protobuf.InvalidProtocolBufferException(
+                e.getMessage()).setUnfinishedMessage(this));
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder.class);
+    }
+
+    public static final int STARTX_FIELD_NUMBER = 1;
+    private double startx_;
+    /**
+     * <code>optional double startx = 1;</code>
+     */
+    public double getStartx() {
+      return startx_;
+    }
+
+    public static final int STARTY_FIELD_NUMBER = 2;
+    private double starty_;
+    /**
+     * <code>optional double starty = 2;</code>
+     */
+    public double getStarty() {
+      return starty_;
+    }
+
+    public static final int INCX_FIELD_NUMBER = 3;
+    private double incx_;
+    /**
+     * <code>optional double incx = 3;</code>
+     */
+    public double getIncx() {
+      return incx_;
+    }
+
+    public static final int INCY_FIELD_NUMBER = 4;
+    private double incy_;
+    /**
+     * <code>optional double incy = 4;</code>
+     */
+    public double getIncy() {
+      return incy_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (startx_ != 0D) {
+        output.writeDouble(1, startx_);
+      }
+      if (starty_ != 0D) {
+        output.writeDouble(2, starty_);
+      }
+      if (incx_ != 0D) {
+        output.writeDouble(3, incx_);
+      }
+      if (incy_ != 0D) {
+        output.writeDouble(4, incy_);
+      }
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (startx_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(1, startx_);
+      }
+      if (starty_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, starty_);
+      }
+      if (incx_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(3, incx_);
+      }
+      if (incy_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(4, incy_);
+      }
+      memoizedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code Rectangle}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Rectangle)
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder.class);
+      }
+
+      // Construct using ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        startx_ = 0D;
+
+        starty_ = 0D;
+
+        incx_ = 0D;
+
+        incy_ = 0D;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_descriptor;
+      }
+
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getDefaultInstanceForType() {
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.getDefaultInstance();
+      }
+
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle build() {
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle buildPartial() {
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle(this);
+        result.startx_ = startx_;
+        result.starty_ = starty_;
+        result.incx_ = incx_;
+        result.incy_ = incy_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle) {
+          return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle other) {
+        if (other == ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.getDefaultInstance()) return this;
+        if (other.getStartx() != 0D) {
+          setStartx(other.getStartx());
+        }
+        if (other.getStarty() != 0D) {
+          setStarty(other.getStarty());
+        }
+        if (other.getIncx() != 0D) {
+          setIncx(other.getIncx());
+        }
+        if (other.getIncy() != 0D) {
+          setIncy(other.getIncy());
+        }
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private double startx_ ;
+      /**
+       * <code>optional double startx = 1;</code>
+       */
+      public double getStartx() {
+        return startx_;
+      }
+      /**
+       * <code>optional double startx = 1;</code>
+       */
+      public Builder setStartx(double value) {
+        
+        startx_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional double startx = 1;</code>
+       */
+      public Builder clearStartx() {
+        
+        startx_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      private double starty_ ;
+      /**
+       * <code>optional double starty = 2;</code>
+       */
+      public double getStarty() {
+        return starty_;
+      }
+      /**
+       * <code>optional double starty = 2;</code>
+       */
+      public Builder setStarty(double value) {
+        
+        starty_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional double starty = 2;</code>
+       */
+      public Builder clearStarty() {
+        
+        starty_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      private double incx_ ;
+      /**
+       * <code>optional double incx = 3;</code>
+       */
+      public double getIncx() {
+        return incx_;
+      }
+      /**
+       * <code>optional double incx = 3;</code>
+       */
+      public Builder setIncx(double value) {
+        
+        incx_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional double incx = 3;</code>
+       */
+      public Builder clearIncx() {
+        
+        incx_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      private double incy_ ;
+      /**
+       * <code>optional double incy = 4;</code>
+       */
+      public double getIncy() {
+        return incy_;
+      }
+      /**
+       * <code>optional double incy = 4;</code>
+       */
+      public Builder setIncy(double value) {
+        
+        incy_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional double incy = 4;</code>
+       */
+      public Builder clearIncy() {
+        
+        incy_ = 0D;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:Rectangle)
+    }
+
+    // @@protoc_insertion_point(class_scope:Rectangle)
+    private static final ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle();
+    }
+
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Rectangle>
+        PARSER = new com.google.protobuf.AbstractParser<Rectangle>() {
+      public Rectangle parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        try {
+          return new Rectangle(input, extensionRegistry);
+        } catch (RuntimeException e) {
+          if (e.getCause() instanceof
+              com.google.protobuf.InvalidProtocolBufferException) {
+            throw (com.google.protobuf.InvalidProtocolBufferException)
+                e.getCause();
+          }
+          throw e;
+        }
+      }
+    };
+
+    public static com.google.protobuf.Parser<Rectangle> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Rectangle> getParserForType() {
+      return PARSER;
+    }
+
+    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface CoverageOrBuilder extends
       // @@protoc_insertion_point(interface_extends:Coverage)
       com.google.protobuf.MessageOrBuilder {
@@ -6336,1081 +7411,6 @@ public final class CdmrFeatureProto {
     }
 
     public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Coverage getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface CalendarDateRangeOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:CalendarDateRange)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>optional int64 start = 1;</code>
-     */
-    long getStart();
-
-    /**
-     * <code>optional int64 end = 2;</code>
-     */
-    long getEnd();
-
-    /**
-     * <code>optional .Calendar calendar = 3;</code>
-     */
-    int getCalendarValue();
-    /**
-     * <code>optional .Calendar calendar = 3;</code>
-     */
-    ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar getCalendar();
-  }
-  /**
-   * Protobuf type {@code CalendarDateRange}
-   */
-  public  static final class CalendarDateRange extends
-      com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:CalendarDateRange)
-      CalendarDateRangeOrBuilder {
-    // Use CalendarDateRange.newBuilder() to construct.
-    private CalendarDateRange(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
-      super(builder);
-    }
-    private CalendarDateRange() {
-      start_ = 0L;
-      end_ = 0L;
-      calendar_ = 0;
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
-    }
-    private CalendarDateRange(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
-      this();
-      int mutable_bitField0_ = 0;
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 8: {
-
-              start_ = input.readInt64();
-              break;
-            }
-            case 16: {
-
-              end_ = input.readInt64();
-              break;
-            }
-            case 24: {
-              int rawValue = input.readEnum();
-
-              calendar_ = rawValue;
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
-      } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
-      } finally {
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.Builder.class);
-    }
-
-    public static final int START_FIELD_NUMBER = 1;
-    private long start_;
-    /**
-     * <code>optional int64 start = 1;</code>
-     */
-    public long getStart() {
-      return start_;
-    }
-
-    public static final int END_FIELD_NUMBER = 2;
-    private long end_;
-    /**
-     * <code>optional int64 end = 2;</code>
-     */
-    public long getEnd() {
-      return end_;
-    }
-
-    public static final int CALENDAR_FIELD_NUMBER = 3;
-    private int calendar_;
-    /**
-     * <code>optional .Calendar calendar = 3;</code>
-     */
-    public int getCalendarValue() {
-      return calendar_;
-    }
-    /**
-     * <code>optional .Calendar calendar = 3;</code>
-     */
-    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar getCalendar() {
-      ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.valueOf(calendar_);
-      return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.UNRECOGNIZED : result;
-    }
-
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (start_ != 0L) {
-        output.writeInt64(1, start_);
-      }
-      if (end_ != 0L) {
-        output.writeInt64(2, end_);
-      }
-      if (calendar_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.proleptic_gregorian.getNumber()) {
-        output.writeEnum(3, calendar_);
-      }
-    }
-
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (start_ != 0L) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(1, start_);
-      }
-      if (end_ != 0L) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, end_);
-      }
-      if (calendar_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.proleptic_gregorian.getNumber()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(3, calendar_);
-      }
-      memoizedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code CalendarDateRange}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:CalendarDateRange)
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRangeOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.Builder.class);
-      }
-
-      // Construct using ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
-      }
-      public Builder clear() {
-        super.clear();
-        start_ = 0L;
-
-        end_ = 0L;
-
-        calendar_ = 0;
-
-        return this;
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CalendarDateRange_descriptor;
-      }
-
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDefaultInstanceForType() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.getDefaultInstance();
-      }
-
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange build() {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange buildPartial() {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange(this);
-        result.start_ = start_;
-        result.end_ = end_;
-        result.calendar_ = calendar_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange) {
-          return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange other) {
-        if (other == ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange.getDefaultInstance()) return this;
-        if (other.getStart() != 0L) {
-          setStart(other.getStart());
-        }
-        if (other.getEnd() != 0L) {
-          setEnd(other.getEnd());
-        }
-        if (other.calendar_ != 0) {
-          setCalendarValue(other.getCalendarValue());
-        }
-        onChanged();
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private long start_ ;
-      /**
-       * <code>optional int64 start = 1;</code>
-       */
-      public long getStart() {
-        return start_;
-      }
-      /**
-       * <code>optional int64 start = 1;</code>
-       */
-      public Builder setStart(long value) {
-        
-        start_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 start = 1;</code>
-       */
-      public Builder clearStart() {
-        
-        start_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      private long end_ ;
-      /**
-       * <code>optional int64 end = 2;</code>
-       */
-      public long getEnd() {
-        return end_;
-      }
-      /**
-       * <code>optional int64 end = 2;</code>
-       */
-      public Builder setEnd(long value) {
-        
-        end_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 end = 2;</code>
-       */
-      public Builder clearEnd() {
-        
-        end_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      private int calendar_ = 0;
-      /**
-       * <code>optional .Calendar calendar = 3;</code>
-       */
-      public int getCalendarValue() {
-        return calendar_;
-      }
-      /**
-       * <code>optional .Calendar calendar = 3;</code>
-       */
-      public Builder setCalendarValue(int value) {
-        calendar_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional .Calendar calendar = 3;</code>
-       */
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar getCalendar() {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar result = ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.valueOf(calendar_);
-        return result == null ? ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar.UNRECOGNIZED : result;
-      }
-      /**
-       * <code>optional .Calendar calendar = 3;</code>
-       */
-      public Builder setCalendar(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Calendar value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        
-        calendar_ = value.getNumber();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional .Calendar calendar = 3;</code>
-       */
-      public Builder clearCalendar() {
-        
-        calendar_ = 0;
-        onChanged();
-        return this;
-      }
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
-
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:CalendarDateRange)
-    }
-
-    // @@protoc_insertion_point(class_scope:CalendarDateRange)
-    private static final ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange();
-    }
-
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<CalendarDateRange>
-        PARSER = new com.google.protobuf.AbstractParser<CalendarDateRange>() {
-      public CalendarDateRange parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new CalendarDateRange(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
-      }
-    };
-
-    public static com.google.protobuf.Parser<CalendarDateRange> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<CalendarDateRange> getParserForType() {
-      return PARSER;
-    }
-
-    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CalendarDateRange getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface RectangleOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:Rectangle)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>optional double startx = 1;</code>
-     */
-    double getStartx();
-
-    /**
-     * <code>optional double starty = 2;</code>
-     */
-    double getStarty();
-
-    /**
-     * <code>optional double incx = 3;</code>
-     */
-    double getIncx();
-
-    /**
-     * <code>optional double incy = 4;</code>
-     */
-    double getIncy();
-  }
-  /**
-   * Protobuf type {@code Rectangle}
-   */
-  public  static final class Rectangle extends
-      com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:Rectangle)
-      RectangleOrBuilder {
-    // Use Rectangle.newBuilder() to construct.
-    private Rectangle(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
-      super(builder);
-    }
-    private Rectangle() {
-      startx_ = 0D;
-      starty_ = 0D;
-      incx_ = 0D;
-      incy_ = 0D;
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
-    }
-    private Rectangle(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
-      this();
-      int mutable_bitField0_ = 0;
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 9: {
-
-              startx_ = input.readDouble();
-              break;
-            }
-            case 17: {
-
-              starty_ = input.readDouble();
-              break;
-            }
-            case 25: {
-
-              incx_ = input.readDouble();
-              break;
-            }
-            case 33: {
-
-              incy_ = input.readDouble();
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
-      } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
-      } finally {
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder.class);
-    }
-
-    public static final int STARTX_FIELD_NUMBER = 1;
-    private double startx_;
-    /**
-     * <code>optional double startx = 1;</code>
-     */
-    public double getStartx() {
-      return startx_;
-    }
-
-    public static final int STARTY_FIELD_NUMBER = 2;
-    private double starty_;
-    /**
-     * <code>optional double starty = 2;</code>
-     */
-    public double getStarty() {
-      return starty_;
-    }
-
-    public static final int INCX_FIELD_NUMBER = 3;
-    private double incx_;
-    /**
-     * <code>optional double incx = 3;</code>
-     */
-    public double getIncx() {
-      return incx_;
-    }
-
-    public static final int INCY_FIELD_NUMBER = 4;
-    private double incy_;
-    /**
-     * <code>optional double incy = 4;</code>
-     */
-    public double getIncy() {
-      return incy_;
-    }
-
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (startx_ != 0D) {
-        output.writeDouble(1, startx_);
-      }
-      if (starty_ != 0D) {
-        output.writeDouble(2, starty_);
-      }
-      if (incx_ != 0D) {
-        output.writeDouble(3, incx_);
-      }
-      if (incy_ != 0D) {
-        output.writeDouble(4, incy_);
-      }
-    }
-
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (startx_ != 0D) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(1, startx_);
-      }
-      if (starty_ != 0D) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(2, starty_);
-      }
-      if (incx_ != 0D) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(3, incx_);
-      }
-      if (incy_ != 0D) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(4, incy_);
-      }
-      memoizedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code Rectangle}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:Rectangle)
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.RectangleOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.Builder.class);
-      }
-
-      // Construct using ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
-      }
-      public Builder clear() {
-        super.clear();
-        startx_ = 0D;
-
-        starty_ = 0D;
-
-        incx_ = 0D;
-
-        incy_ = 0D;
-
-        return this;
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_Rectangle_descriptor;
-      }
-
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getDefaultInstanceForType() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.getDefaultInstance();
-      }
-
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle build() {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle buildPartial() {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle(this);
-        result.startx_ = startx_;
-        result.starty_ = starty_;
-        result.incx_ = incx_;
-        result.incy_ = incy_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle) {
-          return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle other) {
-        if (other == ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle.getDefaultInstance()) return this;
-        if (other.getStartx() != 0D) {
-          setStartx(other.getStartx());
-        }
-        if (other.getStarty() != 0D) {
-          setStarty(other.getStarty());
-        }
-        if (other.getIncx() != 0D) {
-          setIncx(other.getIncx());
-        }
-        if (other.getIncy() != 0D) {
-          setIncy(other.getIncy());
-        }
-        onChanged();
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private double startx_ ;
-      /**
-       * <code>optional double startx = 1;</code>
-       */
-      public double getStartx() {
-        return startx_;
-      }
-      /**
-       * <code>optional double startx = 1;</code>
-       */
-      public Builder setStartx(double value) {
-        
-        startx_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional double startx = 1;</code>
-       */
-      public Builder clearStartx() {
-        
-        startx_ = 0D;
-        onChanged();
-        return this;
-      }
-
-      private double starty_ ;
-      /**
-       * <code>optional double starty = 2;</code>
-       */
-      public double getStarty() {
-        return starty_;
-      }
-      /**
-       * <code>optional double starty = 2;</code>
-       */
-      public Builder setStarty(double value) {
-        
-        starty_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional double starty = 2;</code>
-       */
-      public Builder clearStarty() {
-        
-        starty_ = 0D;
-        onChanged();
-        return this;
-      }
-
-      private double incx_ ;
-      /**
-       * <code>optional double incx = 3;</code>
-       */
-      public double getIncx() {
-        return incx_;
-      }
-      /**
-       * <code>optional double incx = 3;</code>
-       */
-      public Builder setIncx(double value) {
-        
-        incx_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional double incx = 3;</code>
-       */
-      public Builder clearIncx() {
-        
-        incx_ = 0D;
-        onChanged();
-        return this;
-      }
-
-      private double incy_ ;
-      /**
-       * <code>optional double incy = 4;</code>
-       */
-      public double getIncy() {
-        return incy_;
-      }
-      /**
-       * <code>optional double incy = 4;</code>
-       */
-      public Builder setIncy(double value) {
-        
-        incy_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional double incy = 4;</code>
-       */
-      public Builder clearIncy() {
-        
-        incy_ = 0D;
-        onChanged();
-        return this;
-      }
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
-
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:Rectangle)
-    }
-
-    // @@protoc_insertion_point(class_scope:Rectangle)
-    private static final ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle();
-    }
-
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<Rectangle>
-        PARSER = new com.google.protobuf.AbstractParser<Rectangle>() {
-      public Rectangle parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Rectangle(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
-      }
-    };
-
-    public static com.google.protobuf.Parser<Rectangle> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<Rectangle> getParserForType() {
-      return PARSER;
-    }
-
-    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.Rectangle getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -10347,15 +10347,15 @@ public final class CdmrFeatureProto {
 
     /**
      * <code>optional bool bigend = 3;</code>
-     *
-     * <pre>
-     * proto2 [default = true];
-     * </pre>
      */
     boolean getBigend();
 
     /**
      * <code>optional uint32 version = 4;</code>
+     *
+     * <pre>
+     * set to &gt;= 3 for proto3
+     * </pre>
      */
     int getVersion();
 
@@ -10451,7 +10451,14 @@ public final class CdmrFeatureProto {
     com.google.protobuf.ByteString
         getCoordSysNameBytes();
 
-    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.GeoReferencedArray.BigendPresentCase getBigendPresentCase();
+    /**
+     * <code>optional bytes primdata = 10;</code>
+     *
+     * <pre>
+     * rectangular, primitive array
+     * </pre>
+     */
+    com.google.protobuf.ByteString getPrimdata();
   }
   /**
    * Protobuf type {@code GeoReferencedArray}
@@ -10467,12 +10474,14 @@ public final class CdmrFeatureProto {
     private GeoReferencedArray() {
       coverageName_ = "";
       dataType_ = 0;
+      bigend_ = false;
       version_ = 0;
       compress_ = 0;
       uncompressedSize_ = 0L;
       shape_ = java.util.Collections.emptyList();
       axisName_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       coordSysName_ = "";
+      primdata_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -10512,8 +10521,8 @@ public final class CdmrFeatureProto {
               break;
             }
             case 24: {
-              bigendPresentCase_ = 3;
-              bigendPresent_ = input.readBool();
+
+              bigend_ = input.readBool();
               break;
             }
             case 32: {
@@ -10568,6 +10577,11 @@ public final class CdmrFeatureProto {
               coordSysName_ = s;
               break;
             }
+            case 82: {
+
+              primdata_ = input.readBytes();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -10599,35 +10613,6 @@ public final class CdmrFeatureProto {
     }
 
     private int bitField0_;
-    private int bigendPresentCase_ = 0;
-    private java.lang.Object bigendPresent_;
-    public enum BigendPresentCase
-        implements com.google.protobuf.Internal.EnumLite {
-      BIGEND(3),
-      BIGENDPRESENT_NOT_SET(0);
-      private int value = 0;
-      private BigendPresentCase(int value) {
-        this.value = value;
-      }
-      public static BigendPresentCase valueOf(int value) {
-        switch (value) {
-          case 3: return BIGEND;
-          case 0: return BIGENDPRESENT_NOT_SET;
-          default: throw new java.lang.IllegalArgumentException(
-            "Value is undefined for this oneof enum.");
-        }
-      }
-      public int getNumber() {
-        return this.value;
-      }
-    };
-
-    public BigendPresentCase
-    getBigendPresentCase() {
-      return BigendPresentCase.valueOf(
-          bigendPresentCase_);
-    }
-
     public static final int COVERAGENAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object coverageName_;
     /**
@@ -10687,24 +10672,22 @@ public final class CdmrFeatureProto {
     }
 
     public static final int BIGEND_FIELD_NUMBER = 3;
+    private boolean bigend_;
     /**
      * <code>optional bool bigend = 3;</code>
-     *
-     * <pre>
-     * proto2 [default = true];
-     * </pre>
      */
     public boolean getBigend() {
-      if (bigendPresentCase_ == 3) {
-        return (java.lang.Boolean) bigendPresent_;
-      }
-      return false;
+      return bigend_;
     }
 
     public static final int VERSION_FIELD_NUMBER = 4;
     private int version_;
     /**
      * <code>optional uint32 version = 4;</code>
+     *
+     * <pre>
+     * set to &gt;= 3 for proto3
+     * </pre>
      */
     public int getVersion() {
       return version_;
@@ -10857,6 +10840,19 @@ public final class CdmrFeatureProto {
       }
     }
 
+    public static final int PRIMDATA_FIELD_NUMBER = 10;
+    private com.google.protobuf.ByteString primdata_;
+    /**
+     * <code>optional bytes primdata = 10;</code>
+     *
+     * <pre>
+     * rectangular, primitive array
+     * </pre>
+     */
+    public com.google.protobuf.ByteString getPrimdata() {
+      return primdata_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -10876,9 +10872,8 @@ public final class CdmrFeatureProto {
       if (dataType_ != ucar.nc2.stream.NcStreamProto.DataType.CHAR.getNumber()) {
         output.writeEnum(2, dataType_);
       }
-      if (bigendPresentCase_ == 3) {
-        output.writeBool(
-            3, (boolean)((java.lang.Boolean) bigendPresent_));
+      if (bigend_ != false) {
+        output.writeBool(3, bigend_);
       }
       if (version_ != 0) {
         output.writeUInt32(4, version_);
@@ -10902,6 +10897,9 @@ public final class CdmrFeatureProto {
       if (!getCoordSysNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessage.writeString(output, 9, coordSysName_);
       }
+      if (!primdata_.isEmpty()) {
+        output.writeBytes(10, primdata_);
+      }
     }
 
     public int getSerializedSize() {
@@ -10916,10 +10914,9 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(2, dataType_);
       }
-      if (bigendPresentCase_ == 3) {
+      if (bigend_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(
-              3, (boolean)((java.lang.Boolean) bigendPresent_));
+          .computeBoolSize(3, bigend_);
       }
       if (version_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -10957,6 +10954,10 @@ public final class CdmrFeatureProto {
       }
       if (!getCoordSysNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(9, coordSysName_);
+      }
+      if (!primdata_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(10, primdata_);
       }
       memoizedSize = size;
       return size;
@@ -11073,6 +11074,8 @@ public final class CdmrFeatureProto {
 
         dataType_ = 0;
 
+        bigend_ = false;
+
         version_ = 0;
 
         compress_ = 0;
@@ -11085,8 +11088,8 @@ public final class CdmrFeatureProto {
         bitField0_ = (bitField0_ & ~0x00000080);
         coordSysName_ = "";
 
-        bigendPresentCase_ = 0;
-        bigendPresent_ = null;
+        primdata_ = com.google.protobuf.ByteString.EMPTY;
+
         return this;
       }
 
@@ -11113,9 +11116,7 @@ public final class CdmrFeatureProto {
         int to_bitField0_ = 0;
         result.coverageName_ = coverageName_;
         result.dataType_ = dataType_;
-        if (bigendPresentCase_ == 3) {
-          result.bigendPresent_ = bigendPresent_;
-        }
+        result.bigend_ = bigend_;
         result.version_ = version_;
         result.compress_ = compress_;
         result.uncompressedSize_ = uncompressedSize_;
@@ -11130,8 +11131,8 @@ public final class CdmrFeatureProto {
         }
         result.axisName_ = axisName_;
         result.coordSysName_ = coordSysName_;
+        result.primdata_ = primdata_;
         result.bitField0_ = to_bitField0_;
-        result.bigendPresentCase_ = bigendPresentCase_;
         onBuilt();
         return result;
       }
@@ -11153,6 +11154,9 @@ public final class CdmrFeatureProto {
         }
         if (other.dataType_ != 0) {
           setDataTypeValue(other.getDataTypeValue());
+        }
+        if (other.getBigend() != false) {
+          setBigend(other.getBigend());
         }
         if (other.getVersion() != 0) {
           setVersion(other.getVersion());
@@ -11187,14 +11191,8 @@ public final class CdmrFeatureProto {
           coordSysName_ = other.coordSysName_;
           onChanged();
         }
-        switch (other.getBigendPresentCase()) {
-          case BIGEND: {
-            setBigend(other.getBigend());
-            break;
-          }
-          case BIGENDPRESENT_NOT_SET: {
-            break;
-          }
+        if (other.getPrimdata() != com.google.protobuf.ByteString.EMPTY) {
+          setPrimdata(other.getPrimdata());
         }
         onChanged();
         return this;
@@ -11221,21 +11219,6 @@ public final class CdmrFeatureProto {
         }
         return this;
       }
-      private int bigendPresentCase_ = 0;
-      private java.lang.Object bigendPresent_;
-      public BigendPresentCase
-          getBigendPresentCase() {
-        return BigendPresentCase.valueOf(
-            bigendPresentCase_);
-      }
-
-      public Builder clearBigendPresent() {
-        bigendPresentCase_ = 0;
-        bigendPresent_ = null;
-        onChanged();
-        return this;
-      }
-
       private int bitField0_;
 
       private java.lang.Object coverageName_ = "";
@@ -11371,57 +11354,49 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      private boolean bigend_ ;
       /**
        * <code>optional bool bigend = 3;</code>
-       *
-       * <pre>
-       * proto2 [default = true];
-       * </pre>
        */
       public boolean getBigend() {
-        if (bigendPresentCase_ == 3) {
-          return (java.lang.Boolean) bigendPresent_;
-        }
-        return false;
+        return bigend_;
       }
       /**
        * <code>optional bool bigend = 3;</code>
-       *
-       * <pre>
-       * proto2 [default = true];
-       * </pre>
        */
       public Builder setBigend(boolean value) {
-        bigendPresentCase_ = 3;
-        bigendPresent_ = value;
+        
+        bigend_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>optional bool bigend = 3;</code>
-       *
-       * <pre>
-       * proto2 [default = true];
-       * </pre>
        */
       public Builder clearBigend() {
-        if (bigendPresentCase_ == 3) {
-          bigendPresentCase_ = 0;
-          bigendPresent_ = null;
-          onChanged();
-        }
+        
+        bigend_ = false;
+        onChanged();
         return this;
       }
 
       private int version_ ;
       /**
        * <code>optional uint32 version = 4;</code>
+       *
+       * <pre>
+       * set to &gt;= 3 for proto3
+       * </pre>
        */
       public int getVersion() {
         return version_;
       }
       /**
        * <code>optional uint32 version = 4;</code>
+       *
+       * <pre>
+       * set to &gt;= 3 for proto3
+       * </pre>
        */
       public Builder setVersion(int value) {
         
@@ -11431,6 +11406,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>optional uint32 version = 4;</code>
+       *
+       * <pre>
+       * set to &gt;= 3 for proto3
+       * </pre>
        */
       public Builder clearVersion() {
         
@@ -11821,6 +11800,47 @@ public final class CdmrFeatureProto {
         onChanged();
         return this;
       }
+
+      private com.google.protobuf.ByteString primdata_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes primdata = 10;</code>
+       *
+       * <pre>
+       * rectangular, primitive array
+       * </pre>
+       */
+      public com.google.protobuf.ByteString getPrimdata() {
+        return primdata_;
+      }
+      /**
+       * <code>optional bytes primdata = 10;</code>
+       *
+       * <pre>
+       * rectangular, primitive array
+       * </pre>
+       */
+      public Builder setPrimdata(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        primdata_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes primdata = 10;</code>
+       *
+       * <pre>
+       * rectangular, primitive array
+       * </pre>
+       */
+      public Builder clearPrimdata() {
+        
+        primdata_ = getDefaultInstance().getPrimdata();
+        onChanged();
+        return this;
+      }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return this;
@@ -11879,8 +11899,8 @@ public final class CdmrFeatureProto {
 
   }
 
-  public interface DataResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:DataResponse)
+  public interface CoverageDataResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:CoverageDataResponse)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -12040,17 +12060,17 @@ public final class CdmrFeatureProto {
         int index);
   }
   /**
-   * Protobuf type {@code DataResponse}
+   * Protobuf type {@code CoverageDataResponse}
    */
-  public  static final class DataResponse extends
+  public  static final class CoverageDataResponse extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:DataResponse)
-      DataResponseOrBuilder {
-    // Use DataResponse.newBuilder() to construct.
-    private DataResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      // @@protoc_insertion_point(message_implements:CoverageDataResponse)
+      CoverageDataResponseOrBuilder {
+    // Use CoverageDataResponse.newBuilder() to construct.
+    private CoverageDataResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
     }
-    private DataResponse() {
+    private CoverageDataResponse() {
       coordAxes_ = java.util.Collections.emptyList();
       coordSys_ = java.util.Collections.emptyList();
       coordTransforms_ = java.util.Collections.emptyList();
@@ -12062,7 +12082,7 @@ public final class CdmrFeatureProto {
     getUnknownFields() {
       return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
     }
-    private DataResponse(
+    private CoverageDataResponse(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
       this();
@@ -12139,14 +12159,14 @@ public final class CdmrFeatureProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_DataResponse_descriptor;
+      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_DataResponse_fieldAccessorTable
+      return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse.Builder.class);
+              ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse.Builder.class);
     }
 
     public static final int COORDAXES_FIELD_NUMBER = 1;
@@ -12401,53 +12421,53 @@ public final class CdmrFeatureProto {
     }
 
     private static final long serialVersionUID = 0L;
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseFrom(
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseFrom(
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseFrom(byte[] data)
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseFrom(
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseFrom(java.io.InputStream input)
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseFrom(
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseDelimitedFrom(java.io.InputStream input)
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseDelimitedFrom(
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseFrom(
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parseFrom(
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -12458,7 +12478,7 @@ public final class CdmrFeatureProto {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse prototype) {
+    public static Builder newBuilder(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -12473,25 +12493,25 @@ public final class CdmrFeatureProto {
       return builder;
     }
     /**
-     * Protobuf type {@code DataResponse}
+     * Protobuf type {@code CoverageDataResponse}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:DataResponse)
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponseOrBuilder {
+        // @@protoc_insertion_point(builder_implements:CoverageDataResponse)
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_DataResponse_descriptor;
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_DataResponse_fieldAccessorTable
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse.Builder.class);
+                ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse.class, ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse.Builder.class);
       }
 
-      // Construct using ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse.newBuilder()
+      // Construct using ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -12540,23 +12560,23 @@ public final class CdmrFeatureProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_DataResponse_descriptor;
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.internal_static_CoverageDataResponse_descriptor;
       }
 
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse getDefaultInstanceForType() {
-        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse.getDefaultInstance();
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse getDefaultInstanceForType() {
+        return ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse.getDefaultInstance();
       }
 
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse build() {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse result = buildPartial();
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse build() {
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse buildPartial() {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse(this);
+      public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse buildPartial() {
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse result = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse(this);
         int from_bitField0_ = bitField0_;
         if (coordAxesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -12599,16 +12619,16 @@ public final class CdmrFeatureProto {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse) {
-          return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse)other);
+        if (other instanceof ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse) {
+          return mergeFrom((ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse other) {
-        if (other == ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse.getDefaultInstance()) return this;
+      public Builder mergeFrom(ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse other) {
+        if (other == ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse.getDefaultInstance()) return this;
         if (coordAxesBuilder_ == null) {
           if (!other.coordAxes_.isEmpty()) {
             if (coordAxes_.isEmpty()) {
@@ -12725,11 +12745,11 @@ public final class CdmrFeatureProto {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse parsedMessage = null;
+        ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse) e.getUnfinishedMessage();
+          parsedMessage = (ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -13926,27 +13946,27 @@ public final class CdmrFeatureProto {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:DataResponse)
+      // @@protoc_insertion_point(builder_scope:CoverageDataResponse)
     }
 
-    // @@protoc_insertion_point(class_scope:DataResponse)
-    private static final ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:CoverageDataResponse)
+    private static final ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse();
+      DEFAULT_INSTANCE = new ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse();
     }
 
-    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse getDefaultInstance() {
+    public static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<DataResponse>
-        PARSER = new com.google.protobuf.AbstractParser<DataResponse>() {
-      public DataResponse parsePartialFrom(
+    private static final com.google.protobuf.Parser<CoverageDataResponse>
+        PARSER = new com.google.protobuf.AbstractParser<CoverageDataResponse>() {
+      public CoverageDataResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         try {
-          return new DataResponse(input, extensionRegistry);
+          return new CoverageDataResponse(input, extensionRegistry);
         } catch (RuntimeException e) {
           if (e.getCause() instanceof
               com.google.protobuf.InvalidProtocolBufferException) {
@@ -13958,16 +13978,16 @@ public final class CdmrFeatureProto {
       }
     };
 
-    public static com.google.protobuf.Parser<DataResponse> parser() {
+    public static com.google.protobuf.Parser<CoverageDataResponse> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<DataResponse> getParserForType() {
+    public com.google.protobuf.Parser<CoverageDataResponse> getParserForType() {
       return PARSER;
     }
 
-    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.DataResponse getDefaultInstanceForType() {
+    public ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageDataResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -13989,11 +14009,6 @@ public final class CdmrFeatureProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_CoordSys_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_Coverage_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_Coverage_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_CalendarDateRange_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -14003,6 +14018,11 @@ public final class CdmrFeatureProto {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Rectangle_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_Coverage_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Coverage_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_CoverageDataset_descriptor;
   private static
@@ -14014,10 +14034,10 @@ public final class CdmrFeatureProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_GeoReferencedArray_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_DataResponse_descriptor;
+    internal_static_CoverageDataResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_DataResponse_fieldAccessorTable;
+      internal_static_CoverageDataResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -14042,14 +14062,14 @@ public final class CdmrFeatureProto {
       "\n\006values\030\017 \001(\014\"h\n\010CoordSys\022\014\n\004name\030\001 \001(\t" +
       "\022\021\n\taxisNames\030\002 \003(\t\022\026\n\016transformNames\030\003 " +
       "\003(\t\022#\n\014coverageType\030\005 \001(\0162\r.CoverageType" +
-      "\"\205\001\n\010Coverage\022\014\n\004name\030\001 \001(\t\022\033\n\010dataType\030" +
-      "\002 \001(\0162\t.DataType\022\030\n\004atts\030\004 \003(\0132\n.Attribu" +
-      "te\022\020\n\010coordSys\030\005 \001(\t\022\r\n\005units\030\006 \001(\t\022\023\n\013d" +
-      "escription\030\007 \001(\t\"L\n\021CalendarDateRange\022\r\n" +
-      "\005start\030\001 \001(\003\022\013\n\003end\030\002 \001(\003\022\033\n\010calendar\030\003 ",
-      "\001(\0162\t.Calendar\"G\n\tRectangle\022\016\n\006startx\030\001 " +
-      "\001(\001\022\016\n\006starty\030\002 \001(\001\022\014\n\004incx\030\003 \001(\001\022\014\n\004inc" +
-      "y\030\004 \001(\001\"\303\002\n\017CoverageDataset\022\014\n\004name\030\001 \001(" +
+      "\"L\n\021CalendarDateRange\022\r\n\005start\030\001 \001(\003\022\013\n\003" +
+      "end\030\002 \001(\003\022\033\n\010calendar\030\003 \001(\0162\t.Calendar\"G" +
+      "\n\tRectangle\022\016\n\006startx\030\001 \001(\001\022\016\n\006starty\030\002 " +
+      "\001(\001\022\014\n\004incx\030\003 \001(\001\022\014\n\004incy\030\004 \001(\001\"\205\001\n\010Cove" +
+      "rage\022\014\n\004name\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162\t.D",
+      "ataType\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\020\n\010coo" +
+      "rdSys\030\005 \001(\t\022\r\n\005units\030\006 \001(\t\022\023\n\013descriptio" +
+      "n\030\007 \001(\t\"\303\002\n\017CoverageDataset\022\014\n\004name\030\001 \001(" +
       "\t\022\030\n\004atts\030\002 \003(\0132\n.Attribute\022\036\n\nlatlonRec" +
       "t\030\003 \001(\0132\n.Rectangle\022\034\n\010projRect\030\004 \001(\0132\n." +
       "Rectangle\022%\n\tdateRange\030\005 \001(\0132\022.CalendarD" +
@@ -14057,33 +14077,33 @@ public final class CdmrFeatureProto {
       "\017coordTransforms\030\007 \003(\0132\017.CoordTransform\022" +
       "\035\n\tcoordAxes\030\010 \003(\0132\n.CoordAxis\022\030\n\005grids\030" +
       "\t \003(\0132\t.Coverage\022#\n\014coverageType\030\n \001(\0162\r",
-      ".CoverageType\"\352\001\n\022GeoReferencedArray\022\024\n\014" +
+      ".CoverageType\"\350\001\n\022GeoReferencedArray\022\024\n\014" +
       "coverageName\030\001 \001(\t\022\033\n\010dataType\030\002 \001(\0162\t.D" +
-      "ataType\022\020\n\006bigend\030\003 \001(\010H\000\022\017\n\007version\030\004 \001" +
-      "(\r\022\033\n\010compress\030\005 \001(\0162\t.Compress\022\030\n\020uncom" +
-      "pressedSize\030\006 \001(\004\022\r\n\005shape\030\007 \003(\r\022\020\n\010axis" +
-      "Name\030\010 \003(\t\022\024\n\014coordSysName\030\t \001(\tB\020\n\016bige" +
-      "nd_present\"\233\001\n\014DataResponse\022\035\n\tcoordAxes" +
-      "\030\001 \003(\0132\n.CoordAxis\022\033\n\010coordSys\030\002 \003(\0132\t.C" +
-      "oordSys\022(\n\017coordTransforms\030\003 \003(\0132\017.Coord" +
-      "Transform\022%\n\010geoArray\030\004 \003(\0132\023.GeoReferen",
-      "cedArray*\323\001\n\010AxisType\022\013\n\007RunTime\020\000\022\014\n\010En" +
-      "semble\020\001\022\010\n\004Time\020\002\022\010\n\004GeoX\020\003\022\010\n\004GeoY\020\004\022\010" +
-      "\n\004GeoZ\020\005\022\007\n\003Lat\020\006\022\007\n\003Lon\020\007\022\n\n\006Height\020\010\022\014" +
-      "\n\010Pressure\020\t\022\021\n\rRadialAzimuth\020\n\022\022\n\016Radia" +
-      "lDistance\020\013\022\023\n\017RadialElevation\020\014\022\014\n\010Spec" +
-      "tral\020\r\022\016\n\nTimeOffset\020\016*a\n\013AxisSpacing\022\013\n" +
-      "\007regular\020\000\022\022\n\016irregularPoint\020\001\022\026\n\022contig" +
-      "uousInterval\020\002\022\031\n\025discontiguousInterval\020" +
-      "\003*K\n\014CoverageType\022\013\n\007General\020\000\022\017\n\013Curvil" +
-      "inear\020\001\022\010\n\004Grid\020\002\022\t\n\005Swath\020\003\022\010\n\004Fmrc\020\004*S",
-      "\n\016DependenceType\022\017\n\013independent\020\000\022\r\n\tdep" +
-      "endent\020\001\022\n\n\006scalar\020\002\022\010\n\004twoD\020\003\022\013\n\007fmrcRe" +
-      "g\020\004*t\n\010Calendar\022\027\n\023proleptic_gregorian\020\000" +
-      "\022\r\n\tgregorian\020\001\022\n\n\006noleap\020\002\022\014\n\010all_leap\020" +
-      "\003\022\020\n\014uniform30day\020\004\022\n\n\006julian\020\005\022\010\n\004none\020" +
-      "\006B0\n\034ucar.nc2.ft2.coverage.remoteB\020CdmrF" +
-      "eatureProtob\006proto3"
+      "ataType\022\016\n\006bigend\030\003 \001(\010\022\017\n\007version\030\004 \001(\r" +
+      "\022\033\n\010compress\030\005 \001(\0162\t.Compress\022\030\n\020uncompr" +
+      "essedSize\030\006 \001(\004\022\r\n\005shape\030\007 \003(\r\022\020\n\010axisNa" +
+      "me\030\010 \003(\t\022\024\n\014coordSysName\030\t \001(\t\022\020\n\010primda" +
+      "ta\030\n \001(\014\"\243\001\n\024CoverageDataResponse\022\035\n\tcoo" +
+      "rdAxes\030\001 \003(\0132\n.CoordAxis\022\033\n\010coordSys\030\002 \003" +
+      "(\0132\t.CoordSys\022(\n\017coordTransforms\030\003 \003(\0132\017" +
+      ".CoordTransform\022%\n\010geoArray\030\004 \003(\0132\023.GeoR",
+      "eferencedArray*\323\001\n\010AxisType\022\013\n\007RunTime\020\000" +
+      "\022\014\n\010Ensemble\020\001\022\010\n\004Time\020\002\022\010\n\004GeoX\020\003\022\010\n\004Ge" +
+      "oY\020\004\022\010\n\004GeoZ\020\005\022\007\n\003Lat\020\006\022\007\n\003Lon\020\007\022\n\n\006Heig" +
+      "ht\020\010\022\014\n\010Pressure\020\t\022\021\n\rRadialAzimuth\020\n\022\022\n" +
+      "\016RadialDistance\020\013\022\023\n\017RadialElevation\020\014\022\014" +
+      "\n\010Spectral\020\r\022\016\n\nTimeOffset\020\016*a\n\013AxisSpac" +
+      "ing\022\013\n\007regular\020\000\022\022\n\016irregularPoint\020\001\022\026\n\022" +
+      "contiguousInterval\020\002\022\031\n\025discontiguousInt" +
+      "erval\020\003*S\n\016DependenceType\022\017\n\013independent" +
+      "\020\000\022\r\n\tdependent\020\001\022\n\n\006scalar\020\002\022\010\n\004twoD\020\003\022",
+      "\013\n\007fmrcReg\020\004*t\n\010Calendar\022\027\n\023proleptic_gr" +
+      "egorian\020\000\022\r\n\tgregorian\020\001\022\n\n\006noleap\020\002\022\014\n\010" +
+      "all_leap\020\003\022\020\n\014uniform30day\020\004\022\n\n\006julian\020\005" +
+      "\022\010\n\004none\020\006*K\n\014CoverageType\022\013\n\007General\020\000\022" +
+      "\017\n\013Curvilinear\020\001\022\010\n\004Grid\020\002\022\t\n\005Swath\020\003\022\010\n" +
+      "\004Fmrc\020\004B0\n\034ucar.nc2.ft2.coverage.remoteB" +
+      "\020CdmrFeatureProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -14116,24 +14136,24 @@ public final class CdmrFeatureProto {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_CoordSys_descriptor,
         new java.lang.String[] { "Name", "AxisNames", "TransformNames", "CoverageType", });
-    internal_static_Coverage_descriptor =
-      getDescriptor().getMessageTypes().get(3);
-    internal_static_Coverage_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_Coverage_descriptor,
-        new java.lang.String[] { "Name", "DataType", "Atts", "CoordSys", "Units", "Description", });
     internal_static_CalendarDateRange_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_CalendarDateRange_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_CalendarDateRange_descriptor,
         new java.lang.String[] { "Start", "End", "Calendar", });
     internal_static_Rectangle_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_Rectangle_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Rectangle_descriptor,
         new java.lang.String[] { "Startx", "Starty", "Incx", "Incy", });
+    internal_static_Coverage_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_Coverage_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_Coverage_descriptor,
+        new java.lang.String[] { "Name", "DataType", "Atts", "CoordSys", "Units", "Description", });
     internal_static_CoverageDataset_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_CoverageDataset_fieldAccessorTable = new
@@ -14145,12 +14165,12 @@ public final class CdmrFeatureProto {
     internal_static_GeoReferencedArray_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_GeoReferencedArray_descriptor,
-        new java.lang.String[] { "CoverageName", "DataType", "Bigend", "Version", "Compress", "UncompressedSize", "Shape", "AxisName", "CoordSysName", "BigendPresent", });
-    internal_static_DataResponse_descriptor =
+        new java.lang.String[] { "CoverageName", "DataType", "Bigend", "Version", "Compress", "UncompressedSize", "Shape", "AxisName", "CoordSysName", "Primdata", });
+    internal_static_CoverageDataResponse_descriptor =
       getDescriptor().getMessageTypes().get(8);
-    internal_static_DataResponse_fieldAccessorTable = new
+    internal_static_CoverageDataResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_DataResponse_descriptor,
+        internal_static_CoverageDataResponse_descriptor,
         new java.lang.String[] { "CoordAxes", "CoordSys", "CoordTransforms", "GeoArray", });
     ucar.nc2.stream.NcStreamProto.getDescriptor();
   }

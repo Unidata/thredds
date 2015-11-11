@@ -1,6 +1,7 @@
 package thredds.server.catalog;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
@@ -84,7 +85,9 @@ public class TestTdsFmrc {
       assert att.getStringValue().equals("innerTruth");
     }
   }
+
   @Test
+  @Ignore("FMRC regular, not orthogonal")
   public void testFmrcTwoD() throws IOException {
     String catalog = "/catalog/testNAMfmrc/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);

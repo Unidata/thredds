@@ -55,6 +55,7 @@ import java.util.*;
  */
 abstract class GribCollectionBuilderFromIndex {
   static protected final boolean debug = false;
+  static protected final boolean stackTrace = true;
 
   protected GribCollectionMutable gc;
   protected final org.slf4j.Logger logger;
@@ -187,7 +188,7 @@ abstract class GribCollectionBuilderFromIndex {
 
     } catch (Throwable t) {
       logger.warn("Error reading index " + raf.getLocation(), t);
-      if (debug) t.printStackTrace();
+      if (stackTrace) t.printStackTrace();
       return false;
     }
   }

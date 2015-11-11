@@ -275,7 +275,7 @@ public class DataRootPathMatcher {
       }
     }
 
-    // translate and check for existance
+    // translate and check for existence
     String location = AliasTranslator.translateAlias(config.getLocation());
     File file = new File(location);
     if (!skipTestDataDir && !file.exists()) {
@@ -284,7 +284,7 @@ public class DataRootPathMatcher {
     }
 
     // add it
-    putRoot(new DataRoot(config.getPath(), location), catalogRelPath);
+    putRoot(new DataRoot(config.getPath(), location, null), catalogRelPath); // LOOK would be easy to add a restrict here
     logCatalogInit.debug(" added rootPath=<" + path + ">  for DatasetRootConfig location= <" + location + ">");
     return true;
   }

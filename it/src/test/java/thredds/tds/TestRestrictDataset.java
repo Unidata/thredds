@@ -74,7 +74,7 @@ public class TestRestrictDataset {
 
             // restricted GRIB collections
             {"/dodsC/restrictCollection/GFS_CONUS_80km/TwoD.dds"},
-            {"/ncss/restrictCollection/GFS_CONUS_80km/TwoD/dataset.html"},
+            {"/ncss/grid/restrictCollection/GFS_CONUS_80km/TwoD/dataset.html"},
             {"/cdmremote/restrictCollection/GFS_CONUS_80km/TwoD?req=form"},
         });
     }
@@ -115,7 +115,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(AuthScope.ANY, new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
+      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -140,7 +140,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(AuthScope.ANY, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
+      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -167,7 +167,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(AuthScope.ANY, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "secret666")));
+      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "tigge")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -181,6 +181,28 @@ public class TestRestrictDataset {
 
     } catch (Exception e) {
 
+      e.printStackTrace();
+      Assert.fail(e.getMessage());
+    }
+  }
+
+  // from 4.6
+  @Test
+  public void testRestriction() {
+    //String server = "http://thredds-test.unidata.ucar.edu/thredds/";
+    //String endpoint = server + path;
+
+    String endpoint = TestWithLocalServer.withPath(path);
+    System.out.printf("testRestriction req = '%s'%n", endpoint);
+    try {
+      try (HTTPMethod method = HTTPFactory.Get(endpoint)) {
+        int statusCode = method.execute();
+        if (statusCode != 401 && statusCode != 403) {
+          System.out.printf("statuscode=%d expected 401 or 403%n", statusCode);
+          assert false;
+        }
+      }
+    } catch (Exception e) {
       e.printStackTrace();
       Assert.fail(e.getMessage());
     }

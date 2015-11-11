@@ -34,11 +34,15 @@
 package ucar.nc2.ft2.coverage.remote;
 
 import com.google.protobuf.ByteString;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.stream.NcStreamDataCol;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDateRange;
@@ -46,12 +50,14 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.util.List;
+import java.util.zip.DeflaterOutputStream;
 
 /**
  * Server side for Cdmrf
@@ -74,7 +80,7 @@ public class CdmrfWriter {
     CdmrFeatureProto.CoverageDataset header = headerBuilder.build();
 
     // header message
-    size += NcStream.writeBytes(out, NcStream.MAGIC_HEADER);
+    size += NcStream.writeBytes(out, NcStream.MAGIC_HEADERCOV);
     byte[] b = header.toByteArray();
     size += NcStream.writeVInt(out, b.length); // len
     if (show) System.out.println("Write Header len=" + b.length);
@@ -408,9 +414,10 @@ public class CdmrfWriter {
   }
    */
 
-  public CdmrFeatureProto.DataResponse encodeDataResponse(Iterable<CoverageCoordAxis> axes, Iterable<CoverageCoordSys> coordSys, Iterable<CoverageTransform> transforms,
-                                                          List<GeoReferencedArray> arrays, boolean deflate) {
-    CdmrFeatureProto.DataResponse.Builder builder = CdmrFeatureProto.DataResponse.newBuilder();
+  public CdmrFeatureProto.CoverageDataResponse encodeDataResponse(Iterable<CoverageCoordAxis> axes,
+        Iterable<CoverageCoordSys> coordSys, Iterable<CoverageTransform> transforms, List<GeoReferencedArray> arrays, boolean deflate) {
+
+    CdmrFeatureProto.CoverageDataResponse.Builder builder = CdmrFeatureProto.CoverageDataResponse.newBuilder();
     for (CoverageCoordAxis axis : axes)
       builder.addCoordAxes( encodeCoordAxis(axis));
     for (CoverageCoordSys cs : coordSys)
@@ -430,21 +437,57 @@ public class CdmrfWriter {
     builder.setVersion(3); // set to >= 3 for proto3
     builder.setBigend(ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN);
 
-    if (deflate) {
-      builder.setCompress(NcStreamProto.Compress.DEFLATE);
-      long uncompressedSize = geoArray.getData().getSizeBytes();
-      builder.setUncompressedSize(uncompressedSize);
-    }
-
     int shape[] = geoArray.getData().getShape();
     for (int aShape : shape) builder.addShape(aShape);
 
     CoverageCoordSys csys = geoArray.getCoordSysForData();
-    for (String axisName : csys.getAxisNames()) // geoArray.getAxisNames())  // LOOK could use csys.getAxisNames(), but order may be incorrrect, must match shape
+    for (String axisName : csys.getAxisNames()) // geoArray.getAxisNames())  // LOOK could use csys.getAxisNames(), but order may be incorrect, must match shape
       builder.addAxisName(axisName);
 
     builder.setCoordSysName(csys.getName());
 
+    if (deflate) {
+      builder.setCompress(NcStreamProto.Compress.DEFLATE);
+      long uncompressedSize = geoArray.getData().getSizeBytes();
+      builder.setUncompressedSize(uncompressedSize);
+
+    } else {
+      builder.setPrimdata(NcStreamDataCol.copyArrayToByteString( geoArray.getData()));
+    }
+
+
     return builder;
+  }
+
+  private long sendData(Array data, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
+
+    // length of data uncompressed
+    long uncompressedLength = data.getSizeBytes();
+    long size = 0;
+
+    if (deflate) {
+      // write to an internal buffer, so we can find out the size
+      ByteArrayOutputStream bout = new ByteArrayOutputStream();
+      DeflaterOutputStream dout = new DeflaterOutputStream(bout);
+      IospHelper.copyToOutputStream(data, dout);
+
+      // write internal buffer to output stream
+      dout.close();
+      int deflatedSize = bout.size();
+      size += NcStream.writeVInt(out, deflatedSize);
+      bout.writeTo(out);
+      size += deflatedSize;
+
+    } else {
+      size += NcStream.writeVInt(out, (int) uncompressedLength);
+      size += IospHelper.copyToOutputStream(data, out);
+    }
+
+    return size;
+  }
+
+  private int writeBytes(OutputStream out, byte[] b) throws IOException {
+    out.write(b);
+    return b.length;
   }
 }

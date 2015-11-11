@@ -44,14 +44,14 @@ import ucar.unidata.test.util.NeedsExternalResource;
 
 
 /**
- * Describe
+ * this needs a TDS 5.0 server. disable for now
  *
  * @author caron
  * @since 10/5/2015.
  */
 public class TestRemoteCoverage {
 
-  @Test
+  // @Test
   @Category(NeedsExternalResource.class)
   public void testCdmRemoteCoverage() throws Exception {
     String ds = "http://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";

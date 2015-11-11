@@ -242,9 +242,12 @@ public class DataRootManager implements InitializingBean {
 
           for (Map.Entry<String, DataRootExt> entry : list) {
             DataRootExt ds = entry.getValue();
-            e.pw.print(" <b>" + ds.getPath() + "</b>");
+            e.pw.printf(" <b>%s</b>", ds.getPath());
             String url = DataRootManager.this.tdsContext.getContextPath() + "/admin/dir/dataDir/" + ds.getPath() + "/";
-            e.pw.println(" for " + ds.getType() + " directory= <a href='" + url + "'>" + ds.getDirLocation() + "</a> ");
+            e.pw.printf(" for %s directory= <a href='%s'>%s</a>", ds.getType(), url, ds.getDirLocation());
+            if (ds.getRestrict() != null)
+              e.pw.printf(" (restrict ='%s')", ds.getRestrict());
+            e.pw.printf("%n");
           }
         }
       }

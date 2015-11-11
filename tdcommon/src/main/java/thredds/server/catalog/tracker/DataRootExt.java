@@ -4,6 +4,7 @@ package thredds.server.catalog.tracker;
 import thredds.server.catalog.DataRoot;
 
 import java.io.*;
+import java.util.Formatter;
 
 /**
  * Externalized DataRoot.
@@ -21,6 +22,7 @@ public class DataRootExt implements Comparable<DataRootExt> {
   private DataRoot.Type type;
   private String catLocation;
   private String name;
+  private String restrict;
 
   private DataRoot dataRoot;
 
@@ -34,6 +36,7 @@ public class DataRootExt implements Comparable<DataRootExt> {
     this.type = dataRoot.getType();
     this.name = dataRoot.getName();
     this.catLocation = catLocation;
+    this.restrict = dataRoot.getRestrict();
   }
 
   public String getPath() {
@@ -43,13 +46,14 @@ public class DataRootExt implements Comparable<DataRootExt> {
   public DataRoot getDataRoot() {
     if (dataRoot != null) return dataRoot;
     if (type == DataRoot.Type.datasetRoot) {
-      dataRoot = new DataRoot(path, dirLocation);
+      dataRoot = new DataRoot(path, dirLocation, restrict);
     }
     return dataRoot;
   }
 
   public void setDataRoot(DataRoot dataRoot) {
     this.dataRoot = dataRoot;
+    this.restrict = dataRoot.getRestrict();
   }
 
   public String getCatLocation() {
@@ -68,12 +72,16 @@ public class DataRootExt implements Comparable<DataRootExt> {
     return name;
   }
 
+  public String getRestrict() {
+    return restrict;
+  }
+
   /* message DataRoot {
-      required string urlPath = 1;
-      required string dirLocation = 2;
-      required DataRootType type = 3;
-      optional string catLocation = 4;    // omit for simple dataset root
-    } */
+        required string urlPath = 1;
+        required string dirLocation = 2;
+        required DataRootType type = 3;
+        optional string catLocation = 4;    // omit for simple dataset root
+      } */
   public void writeExternal(DataOutputStream out) throws IOException {
     ConfigCatalogExtProto.DataRoot.Builder builder = ConfigCatalogExtProto.DataRoot.newBuilder();
     builder.setUrlPath(path);
@@ -83,6 +91,8 @@ public class DataRootExt implements Comparable<DataRootExt> {
       builder.setCatLocation(catLocation);
       builder.setName(name);
     }
+    if (restrict != null)
+      builder.setRestrict(restrict);
 
     ConfigCatalogExtProto.DataRoot index = builder.build();
     byte[] b = index.toByteArray();
@@ -117,6 +127,8 @@ public class DataRootExt implements Comparable<DataRootExt> {
       catLocation = dsp.getCatLocation();
     if (dsp.getName().length() > 0)
       name = dsp.getName();
+    if (dsp.getRestrict().length() > 0)
+      restrict = dsp.getRestrict();
   }
 
   ////////////////////////////
@@ -158,6 +170,10 @@ public class DataRootExt implements Comparable<DataRootExt> {
 
   @Override
   public String toString() {
-    return path + "," + dirLocation + "," + type;
+    Formatter f = new Formatter();
+    f.format("%s -> %s; type=%s", path, dirLocation, type);
+    if (restrict != null)
+      f.format("; restrict=%s", restrict);
+    return f.toString();
   }
 }
