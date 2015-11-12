@@ -55,6 +55,8 @@ import java.io.IOException;
  * the response object, and this method will return null.  (This is the only
  * circumstance in which this method will return null.)
  * The client will then repeat the request.
+ *
+ * LOOK: should we use Optional ?
  */
 public class TdsRequestedDataset {
   // private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TdsRequestedDataset.class);
@@ -66,31 +68,28 @@ public class TdsRequestedDataset {
 
   static private DatasetManager datasetManager;
 
-  /* public static FeatureCollectionRef getFeatureCollection(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
-    TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
-    if (path != null) trd.path = path;
-    return trd.openAsFeatureCollection(request, response);
-  }  */
-
-  // throw exception of error, return null if restricteed dataset
+  // return null means request has been handled, and calling routine should exit without further processing
   public static FeatureDatasetPoint getPointDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     return trd.openAsPointDataset(request, response);
   }
 
+  // return null means request has been handled, and calling routine should exit without further processing
   public static GridDataset getGridDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     return trd.openAsGridDataset(request, response);
   }
 
-  public static CoverageCollection getGridCoverage(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+  // return null means request has been handled, and calling routine should exit without further processing
+  public static CoverageCollection getCoverageCollection(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     return trd.openAsCoverageDataset(request, response);
   }
 
+  // return null means request has been handled, and calling routine should exit without further processing
   public static NetcdfFile getNetcdfFile(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
@@ -130,22 +129,22 @@ public class TdsRequestedDataset {
     }
   }
 
-  /* public FeatureCollectionRef openAsFeatureCollection(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    return datasetManager.getFeatureCollection(request, response, path);
-  } */
-
+  // return null means request has been handled, and calling routine should exit without further processing
   public FeatureDatasetPoint openAsPointDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return datasetManager.openPointDataset(request, response, path);
   }
 
+  // return null means request has been handled, and calling routine should exit without further processing
   public CoverageCollection openAsCoverageDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return datasetManager.openCoverageDataset(request, response, path);
   }
 
+  // return null means request has been handled, and calling routine should exit without further processing
   public GridDataset openAsGridDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return isRemote ? ucar.nc2.dt.grid.GridDataset.open(path) : datasetManager.openGridDataset(request, response, path);
   }
 
+  // return null means request has been handled, and calling routine should exit without further processing
   public NetcdfFile openAsNetcdfFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return isRemote ? NetcdfDataset.openDataset(path) : datasetManager.openNetcdfFile(request, response, path);
   }
@@ -158,27 +157,4 @@ public class TdsRequestedDataset {
     return path;
   }
 
-  /*
-      @Override
-    public FeatureDataset findDatasetByPath(HttpServletRequest req, HttpServletResponse res, String datasetPath) throws IOException {
-
-      FeatureDataset fd = TdsRequestedDataset.getFeatureCollection(req, res, datasetPath);
-
-      if (fd == null) {
-
-        NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, datasetPath); // LOOK should handle this case ??
-        if (ncfile != null) {
-          //Wrap it into a FeatureDataset
-          Set<NetcdfDataset.Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(NetcdfDataset.Enhance.CoordSystems, NetcdfDataset.Enhance.ConvertEnums));
-          fd = FeatureDatasetFactoryManager.wrap(
-                  FeatureType.ANY,                  // will check FeatureType below if needed...
-                  NetcdfDataset.wrap(ncfile, enhance),
-                  null,
-                  new Formatter(System.err));       // better way to do this?
-        }
-      }
-
-      return fd;
-    }
-   */
 }

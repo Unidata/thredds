@@ -103,7 +103,7 @@ public class NcssGridController extends AbstractNcssController {
       throw new BindException(validationResult);
 
     String datasetPath = getDatasetPath(req);
-    try (CoverageCollection gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
+    try (CoverageCollection gcd = TdsRequestedDataset.getCoverageCollection(req, res, datasetPath)) {
       if (gcd == null) return;
 
       Formatter errs = new Formatter();
@@ -271,7 +271,7 @@ public class NcssGridController extends AbstractNcssController {
     boolean showPointForm = path.endsWith("/pointDataset.html");
     String datasetPath = getDatasetPath(req);
 
-    try (CoverageCollection gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
+    try (CoverageCollection gcd = TdsRequestedDataset.getCoverageCollection(req, res, datasetPath)) {
       if (gcd == null) return null; // restricted dataset
       return ncssShowDatasetInfo.showGridFormTh(gcd, buildDatasetUrl(datasetPath), wantXML);
     }

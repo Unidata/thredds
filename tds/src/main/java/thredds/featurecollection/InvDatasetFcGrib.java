@@ -642,8 +642,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return new DatasetAndGroup(ds, dg);
     }
 
-    if (gc == null)
-      System.out.printf("HEY%n");
     GribCollectionImmutable.Dataset ds = gc.getDatasetByTypeName(paths.get(0));
     if (ds != null) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;
