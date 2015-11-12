@@ -271,4 +271,13 @@ public class Misc {
     return (x < y) ? -1 : ((x == y) ? 0 : 1);
   }
 
+  public static String stackTraceToString(StackTraceElement[] stackTrace) {
+    StringBuffer buf = new StringBuffer();
+    for (StackTraceElement ste : stackTrace) {
+      buf.append(ste.toString());
+      buf.append("\n");
+    }
+    return buf.toString();
+  }
+
 }
