@@ -1,6 +1,12 @@
 language: java
 sudo: false
 
+addons:
+  artifacts:
+    paths:
+      - build/reports/allTests
+    target_paths: Travis/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
+
 env:
   global:
     - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-12.04.5-amd64
@@ -20,6 +26,8 @@ script:
     fi
 
   - if [[ $BUILD_IDV == false ]]; then
+      echo If available, test report at;
+      echo http://unidata-tds-tests.s3.amazonaws.com/Travis/${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
       ./gradlew --info testAll;
     fi
 
