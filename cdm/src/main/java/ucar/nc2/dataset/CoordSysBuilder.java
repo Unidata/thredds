@@ -856,9 +856,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   }
 
   /**
-   * If a variable still doesnt have a coordinate system, use hueristics to try to find one that was probably
-   * forgotten.
-   * Look through all existing CS. create a subset of axes that fits the variable. Choose the one with highest rank.
+   * If a variable still doesnt have a coordinate system, use hueristics to try to find one that was probably forgotten.
+   * Examine existing CS. create a subset of axes that fits the variable. Choose the one with highest rank.
    * It must have X,Y or lat,lon. If so, add it.
    *
    * @param ncDataset why
@@ -913,11 +912,14 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       String csName = CoordinateSystem.makeName(axisList);
       CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
       if (cs != null) {
+      // if (cs != null && cs.isComplete(ve)) {
         if (null != implicit) ve.removeCoordinateSystem(implicit);
         ve.addCoordinateSystem(cs);
         parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s%n", cs.getName(), ve.getFullName());
+
       } else {
         CoordinateSystem csnew = new CoordinateSystem(ncDataset, axisList, null);
+        // if (!csnew.isComplete(ve)) continue;
         csnew.setImplicit(true);
         if (null != implicit) ve.removeCoordinateSystem(implicit);
         ve.addCoordinateSystem(csnew);

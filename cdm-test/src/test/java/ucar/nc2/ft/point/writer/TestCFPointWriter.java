@@ -129,6 +129,7 @@ public class TestCFPointWriter {
       try (FeatureDataset result = FeatureDatasetFactoryManager.open(ftype, fileOut.getPath(), null, out)) {
         if (result == null) {
           System.out.printf(" **failed --> %n%s <--END FAIL messages%n", out);
+          FeatureDatasetFactoryManager.open(ftype, fileOut.getPath(), null, out);
           assert false;
         }
         if (show) {

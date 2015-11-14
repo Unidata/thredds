@@ -228,14 +228,8 @@ public class FeatureScan {
       return fileType;
     }
 
-    public String getSizeK() {
-      Formatter fm = new Formatter();
-      //long size = f.length();
-      //if (size > 10 * 1000 * 1000) fm.format("%6.1f M", ((float) size) / 1000 / 1000);
-      //else if (size > 10 * 1000) fm.format("%6.1f K", ((float) size) / 1000);
-      //else fm.format("%d", size);
-      fm.format("%,10d", f.length() / 1000);
-      return fm.toString();
+    public double getSizeM() {
+      return f.length() / 1000.0 / 1000.0;
     }
 
     public String getCoordMap() {

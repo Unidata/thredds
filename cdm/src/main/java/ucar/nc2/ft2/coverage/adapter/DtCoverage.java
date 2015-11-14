@@ -82,7 +82,7 @@ public class DtCoverage implements IsMissingEvaluator {
 
     CoordinateAxis xaxis = gcs.getXHorizAxis();
     if (xaxis instanceof CoordinateAxis1D) {
-      xDimOrgIndex = findDimension(gcs.getXHorizAxis().getDimension(0));
+      xDimOrgIndex = findDimension(xaxis.getDimension(0));
       yDimOrgIndex = findDimension(gcs.getYHorizAxis().getDimension(0));
 
     } else { // 2D case

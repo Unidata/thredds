@@ -66,6 +66,8 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
+import ucar.nc2.iosp.hdf4.H4header;
+import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.stream.CdmRemote;
@@ -907,16 +909,6 @@ public class ToolsUI extends JPanel {
     ucar.nc2.grib.collection.GribIosp.setDebugFlags(debugFlags);
   }
 
-  /*public void setDebugOutputStream(boolean b) {
-    // System.out.println("setDebugOutputStream "+b);
-    if (b) {
-      if (debugOS == null) debugOS = new PrintStream(debugPane.getOutputStream());
-      NetcdfFile.setDebugOutputStream(debugOS);
-    } else {
-      NetcdfFile.setDebugOutputStream(System.out);
-    }
-  } */
-
   private void makeModesMenu(JMenu modeMenu) {
     AbstractAction a;
 
@@ -985,7 +977,40 @@ public class ToolsUI extends JPanel {
     BAMutil.addActionToMenu(dsMenu, a);
 
     /////////////////////////////////////
-    JMenu subMenu = new JMenu("GRIB");
+    JMenu subMenu = new JMenu("HDF-EOS");
+    modeMenu.add(subMenu);
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        H5iosp.useHdfEos(state);
+      }
+    };
+    a.putValue(BAMutil.STATE, true);
+    BAMutil.setActionProperties(a, null, "use HDF-EOS StructMetadata to augment HDF5", true, '5', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        H4header.useHdfEos(state);
+      }
+    };
+    a.putValue(BAMutil.STATE, true);
+    BAMutil.setActionProperties(a, null, "use HDF-EOS StructMetadata to augment HDF4", true, '4', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        Nc4Iosp.useHdfEos(state);
+      }
+    };
+    a.putValue(BAMutil.STATE, true);
+    BAMutil.setActionProperties(a, null, "use HDF-EOS StructMetadata to augment netcdf4 (JNI)", true, 'N', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    /////////////////////////////////////
+    subMenu = new JMenu("GRIB");
     modeMenu.add(subMenu);
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
