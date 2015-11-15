@@ -54,6 +54,19 @@ import java.util.Collection;
  *
  * @author caron
  * @since 3/16/2015
+ *
+ * Server Arguments
+ * ip: localhost:8081
+ * unidata.testdata.path: /share/testdata/cdmUnitTest
+ * tds.content.root.path: $PWD/tds/src/test/content
+ *
+ * Note that you will also have to modify
+ * $CATALINA_HOME/conf/tomcat-users.xml
+ * to include the following lines:
+ *   <role rolename="tiggeData"/>
+ *   <role rolename="restrictedDatasetUser"/>
+ *   <user username="tiggeUser" password="tigge" roles="tiggeData,restrictedDatasetUser"/>
+ *
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
