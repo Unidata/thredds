@@ -911,15 +911,15 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       String csName = CoordinateSystem.makeName(axisList);
       CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
-      if (cs != null) {
-      // if (cs != null && cs.isComplete(ve)) {
+      // if (cs != null) {
+      if (cs != null && cs.isComplete(ve)) {
         if (null != implicit) ve.removeCoordinateSystem(implicit);
         ve.addCoordinateSystem(cs);
         parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s%n", cs.getName(), ve.getFullName());
 
       } else {
         CoordinateSystem csnew = new CoordinateSystem(ncDataset, axisList, null);
-        // if (!csnew.isComplete(ve)) continue;
+        if (!csnew.isComplete(ve)) continue;
         csnew.setImplicit(true);
         if (null != implicit) ve.removeCoordinateSystem(implicit);
         ve.addCoordinateSystem(csnew);

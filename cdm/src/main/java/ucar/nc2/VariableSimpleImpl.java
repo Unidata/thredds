@@ -58,19 +58,13 @@ public class VariableSimpleImpl implements VariableSimpleIF {
     return new VariableSimpleImpl(name, desc, units, DataType.CHAR, Collections.singletonList(d));
   }
 
-  static public VariableSimpleImpl changeShape(VariableSimpleIF proxy, List<Dimension> dims) {
-    VariableSimpleImpl result = new VariableSimpleImpl(proxy.getShortName(), proxy.getDescription(), proxy.getUnitsString(), proxy.getDataType(), dims);
-    for (Attribute att : proxy.getAttributes()) result.add(att);
-    return result;
-  }
-
   private final String name, desc, units;
   private final DataType dt;
   private final List<Attribute> atts = new ArrayList<>();
   private final List<Dimension> dims;
   private final int[] shape;
 
-  VariableSimpleImpl(String name, String desc, String units, DataType dt, List<Dimension> dims) {
+  public VariableSimpleImpl(String name, String desc, String units, DataType dt, List<Dimension> dims) {
     this.name = name;
     this.desc = desc;
     this.units = units;

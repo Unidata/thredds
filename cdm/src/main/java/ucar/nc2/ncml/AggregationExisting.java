@@ -323,7 +323,8 @@ public class AggregationExisting extends AggregationOuterDimension {
           Array data = pv.getData(dod.getId());
           if (data != null) {
             out.print("    <cache varName='" + pv.varName + "' >");
-            NCdumpW.printArray(data, out);
+            while (data.hasNext())
+              out.printf("%s ", data.next());
             out.print("</cache>\n");
             if (logger.isDebugEnabled())
               logger.debug(" wrote array = " + pv.varName + " nelems= " + data.getSize() + " for " + dataset.getLocation());

@@ -2173,6 +2173,7 @@ public class ToolsUI extends JPanel {
         detailTA.setText(sw.toString());
         detailWindow.show();
         err = true;
+        e.printStackTrace();
       }
 
       return !err;

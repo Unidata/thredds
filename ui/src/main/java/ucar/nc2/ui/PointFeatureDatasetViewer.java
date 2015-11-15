@@ -444,13 +444,11 @@ public class PointFeatureDatasetViewer extends JPanel {
       changingPane.add(stnTable, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.STATION) {
-      StationCollection sfc = (StationCollection) fcb.fc;
-      setStations(sfc);
+      setStations(((StationTimeSeriesFeatureCollection)fcb.fc).getStationFeatures());
       changingPane.add(stnTable, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.STATION_PROFILE) {
-      StationCollection sfc = (StationCollection) fcb.fc;
-      setStations(sfc);
+      setStations(((StationProfileFeatureCollection)fcb.fc).getStationFeatures());
 
       JSplitPane splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, stnTable, stnProfileTable);
       splitExtra.setDividerLocation(changingPane.getHeight() / 2);
@@ -478,12 +476,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     repaint();
   }
 
-  private void setStations(StationCollection stationCollection) {
+  private void setStations(List<StationFeature> stations) {
     List<StationBean> stationBeans = new ArrayList<>();
     try {
-      List<Station> stations = stationCollection.getStations();
-      if (stations == null) return;
-
       for (Station station : stations) {
         stationBeans.add(new StationBean(station));
       }
