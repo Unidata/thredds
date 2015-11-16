@@ -1,14 +1,12 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = Common Data Model
 
 == Overview
 
-Unidata’s Common Data Model (CDM) is an abstract
-http://en.wikipedia.org/wiki/Data_model[data model] for scientific
-datasets. It merges the
+Unidata’s Common Data Model (CDM) is an abstract http://en.wikipedia.org/wiki/Data_model[data model] for scientific datasets.
+It merges the
 http://www.unidata.ucar.edu/software/netcdf/[netCDF],
 http://www.opendap.org/[OPeNDAP], and
 http://www.hdfgroup.org/products/hdf5/[HDF5] data models to create a
@@ -32,6 +30,7 @@ Earth Science community.
 identifies specific types of data, such as __grids__, __radial__, and
 __point data__, adding specialized methods for each kind of data.
 
+[[dataAccess]]
 == Data Access Layer Object Model
 
 image:CDM-UML.png[CDM UML]
@@ -206,6 +205,7 @@ paths that one could call from the HDF-5 library are not available.
 Please send file examples if you find a problem with the CDM reading
 HDF5 files, other than the ones listed above.
 
+[[CoordSys]]
 == Coordinate System Object Model
 
 image:../images/CoordSys.png[CoordSys Object model]
@@ -240,37 +240,39 @@ projection parameters, etc), so these enumerations are quite minimal.
 
 === Restrictions on CoordinateAxes
 
-These are the rules which restrict which Variables can be used as
-Coordinate Axes:
+These are the rules which restrict which Variables can be used as Coordinate Axes:
 
-.  **Shared Dimensions**: All dimensions used by a Coordinate Axis must
-be shared with the data variable. When a variable is part of a
-Structure, the dimensions used by the parent Structure(s) are considered
-to be part of the nested Variable. Exceptions to this rule:
-.  String valued Coordinate Axes may be represented by variables of
-type char with a non-shared dimension representing the string length.
-.  **Structures and nested Structures**: When a variable is part of a
+.  *Shared Dimensions*: All dimensions used by a Coordinate Axis must be shared with the data variable.
+This allows *_shared Dimension joins_* between data and coordinate Variables. This rule is modified by these exceptions:
+..  *String-valued Coordinate Axes* may be represented by variables of
+type _char_ with a non-shared dimension representing the string length.
+.. *CF Discrete Sampling Geometry* representations of point data, allows explicit *_joins_*
+that relax the rules for implicit _shared Dimension joins_.
+See link:../reference/FeatureDatasets/CFpointImplement.adoc[CF point data]
+.  *Structures and nested Structures*: When a variable is part of a
 Structure, the dimensions used by the parent Structure(s) are considered
 to be part of the nested Variable. Therefore, all dimensions used by the
 parent Structure(s) of a Coordinate Axis must be shared with the data
 variable.
-.  **Variable length dimensions and Sequences**: A variable length
+.  *Variable length dimensions and Sequences*: A variable length
 dimension is always a private (non-shared) dimension, and therefore
 cannot be used by a Coordinate Axis, except when the data variable and
 coordinate variable are in the same Structure. For example, a Sequence
 is a variable length array of Structures, and the following examples are
 legitimate uses of coordinate axes.
 
----------------------------------
+[source,java]
+----
 Structure {
   float lat;
   float lon;
   float data;
     data:coordinates = "lat lon";
 } sample(*)
----------------------------------
+----
 
---------------------------------------------
+[source,java]
+----
 Structure {
   float lat;
   float lon; 
@@ -282,63 +284,66 @@ Structure {
   } profile(*)
 
 } station(*)
---------------------------------------------
+----
+
+=== Mathematical formalism for Coordinate Systems
 
 Formally, a Variable is thought of as a sampled function whose domain is
 an index range; each CoordinateAxis is a scalar valued function on the
 same range; each CoordinateSystem is therefore a vector-valued function
-on the same range consisting of its CoordinateAxis functions. To take it
-one step further, when the CoordinateSystem function is invertible, the
-Variable can be thought of as a sampled function whose domain is the
-range of the Coordinate System, that is on *Rn* (the product space of
-real numbers). To be invertible, each CoordinateAxis should be
-invertible. For a 1-dimensional CoordinateAxis this simply means the
-coordinate values are strictly monotonic. For a 2 dimensional
-CoordinateAxis, it means that the lines connecting adjacent coordinates
-do not cross each other. For > 2 dimensional CoordinateAxis, it means
-that the surfaces connecting the adjacent coordinates do not intersect
-each other.
+on the same range, consisting of its CoordinateAxis functions.
+
+When the CoordinateSystem function is invertible, the Variable can be thought of as a sampled function whose domain is the
+range of the Coordinate System, that is, on *R^n^* (the product space of real numbers).
+To be invertible, each CoordinateAxis should be invertible.
+For a 1-dimensional CoordinateAxis this simply means the coordinate values are strictly monotonic.
+For a 2 dimensional CoordinateAxis, it means that the lines connecting adjacent coordinates do not cross each other.
+For > 2 dimensional CoordinateAxis, it means that the surfaces connecting adjacent coordinates do not intersect
+each other. https://www.unidata.ucar.edu/staff/caron/papers/CoordMath.htm[Details]
 
 === Current Encodings
 
-Neither NetCDF, HDF5, or OPeNDAP have Coordinate Systems as part of
-their APIs and data models, so their specification in a file is left to
-to higher level libraries (like HDF-EOS) and to
-http://www.unidata.ucar.edu/software/netcdf/conventions.html[conventions].
-If you are writing netCDF files, we strongly recommend using
-http://cfconventions.org/[CF Conventions].
+When data is stored on disk, it is *_encoded_* into a specific file format.
 
-NetCDF has long had the convention of specifying a 1-dimensional
-CoordinateAxis with a *_coordinate variable_*, which is a Variable
-with the same name as its single dimension. This is a natural and
-elegant way to specify a 1-dimensional CoordinateAxis, since there is an
-automatic association of the Coordinate Variable with any Varaible that
-uses its dimension. Unfortunately there are not similarly elegant ways
-to specify a multidimensional CoordinateAxis, and so various attribute
-conventions have sprung up, that typically list the CoordinateAxis
-variables, for example the CF Conventions has:
+None of the general-purpose encodings like NetCDF, HDF5, or OPeNDAP have Coordinate Systems as part of their APIs and data models,
+so for datasets written in those formats, Coordinate System specification is left to higher level libraries (like HDF-EOS) and to
+http://www.unidata.ucar.edu/software/netcdf/conventions.html[attribute conventions].
+(If you are writing netCDF files, we strongly recommend using http://cfconventions.org/[CF Conventions].)
+Specialized file formats like GRIB, BUFR, NEXRAD, etc. do have coordinate systems as part of their specifications,
+albeit specialized ones. The CDM's intention is to be able to accurately represent these coordinate systems, so that applications
+build on the CDM have a single API to work with.
 
---------------------------------------
+NetCDF has long had the convention of specifying a 1-dimensional CoordinateAxis with a *_coordinate variable_*, which is a Variable
+with the same name as its single dimension. This is a natural and elegant way to specify a 1-dimensional CoordinateAxis, since there is an
+automatic association of the Coordinate Variable with any Variable that uses its dimension.
+There is not a similarly elegant way to specify a multidimensional CoordinateAxis, and so various attribute
+conventions have sprung up, for example the CF Convention simply lists the CoordinateAxis variables (arguably as simple a solution as is possible):
+
+----
   float lat(y,x);
   float lon(y,x);
   float temperature(y,x);
     temperature:coordinates="lat lon";
---------------------------------------
+----
 
 Note that in this example, there is no CoordinateSystem object, so the
 same list has to be added to each Variable, and any CoordinateTransform
 specifications also have to be added to each Variable. However, the
-common case is that all the Variables in a dataset use the same
-Coordinate System.
+common case is that all the Variables in a dataset use the same Coordinate System.
 
-The *ucar.nc2.dataset* layer reads various Conventions and extracts the
-Coordinate Systems using the CoordSysBuilder framework. We often use a
-set of internal attributes called the
+The *ucar.nc2.dataset* layer reads various Conventions and extracts the Coordinate Systems using the *CoordSysBuilder* framework.
+We often use a set of internal attributes called the
 link:../reference/CoordinateAttributes.adoc[underscore Coordinate]
-attributes as a way to standardize the Coordinate Systems infomation.
-Although these may work when working with Unidata software, we do not
-recommend them as a substitute for conventions such as CF.
+attributes as a way to standardize the Coordinate System infomation.
+Although these work when used with the Netcdf-Java library, we do not recommend them as a substitute for conventions such as CF.
 
+The HDF5 file format made some http://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales[wrong choices]
+in trying to support shared dimensions and coordinate variables,
+and the netCDF-4 library adds an
+http://www.unidata.ucar.edu/blogs/developer/en/entry/netcdf4_use_of_dimension_scales[overly complex design] in correcting the problem.
+Fortunately, these complexities are hidden from applications by the *netCDF C* and *Netcdf-Java* libraries.
+
+[[ScientificFeatureTypes]]
 == Scientific Feature Types
 
 Scientific Feature Types are a way to categorize scientific data. The
@@ -347,20 +352,18 @@ Type objects, and allows a user to extract subsets of the Feature Types
 in coordinate space i.e. using spatial and temporal bounding boxes.
 In contrast, the CDM Data Access layer provides array index space
 subsetting, and the client application must know how to map array
-indices into coordinate values. +
- +
- With these Feature Types objects, mapping into other data models like
-ISO/OGC becomes possible.
+indices into coordinate values.
 
-Feature Type definitions, APIU, and encodings are still being developed,
-so applications using these must be able to evolve along with the APIs.
+With these Feature Types objects, mapping into data models like ISO/OGC becomes possible.
+
+Feature Type definitions, APIs, and encodings are still under development, so applications using these must be able to evolve along with the APIs.
 
 * link:../reference/FeatureDatasets/Overview.adoc[FeatureDataset APIs]
 * link:../reference/FeatureDatasets/PointFeatures.adoc[Point Feature APIs]
-* CF Discrete Sampling Geometries Conventions http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries
+* http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries[CF Discrete Sampling Geometries Conventions]
 * CDM Feature Types _draft_ link:CDMfeatures.doc[doc]
 * CDM Point Feature Types _draft_ link:CDMpoints.doc[doc]
 
 '''''
 
-image:../nc.gif[image] This document was last updated Oct 2015.
+image:../nc.gif[image] This document was last updated Nov 2015.

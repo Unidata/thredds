@@ -1,19 +1,15 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Standard Horizontal Transforms
-==============================
-
 = Standard Horizontal Coordinate Transforms
 
-'''''
+== Overview
 
 This page documents the _*horizontal coordinate transforms*_ that are
 standard in CDM. Most follow the
 http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings[CF-1.0
-Convention], where they are called __*grid_mappings*__. They are also
-often called __projections__, because most emply projective geometry.
+Convention], where they are called __*grid_mappings*__.
+They are also often called __projections__, because most employ projective geometry.
 
 To follow CF, typically one creates a __transform definition variable__,
 whose purpose is to contain attributes whose values are the parameters

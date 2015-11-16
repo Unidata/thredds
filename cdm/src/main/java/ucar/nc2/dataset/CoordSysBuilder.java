@@ -401,7 +401,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         Method m;
 
         try {
-          m = c.getMethod("isMine", new Class[]{NetcdfFile.class});   // LOOK cant we test if method exists ?
+          m = c.getMethod("isMine", NetcdfFile.class);   // LOOK cant we test if method exists ?
         } catch (NoSuchMethodException ex) {
           continue;
         }
@@ -427,13 +427,13 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         Class c = csb.getClass();
         Method m;
         try {
-           m = c.getMethod("isMine", new Class[]{NetcdfFile.class});
+           m = c.getMethod("isMine", NetcdfFile.class);
          } catch (NoSuchMethodException ex) {
            continue;
          }
 
          try {
-           Boolean result = (Boolean) m.invoke(null, new Object[]{ds});
+           Boolean result = (Boolean) m.invoke(null, ds);
            if (result) {
              builder = csb;
              convClass = c;

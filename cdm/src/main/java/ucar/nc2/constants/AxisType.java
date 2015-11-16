@@ -41,7 +41,6 @@ package ucar.nc2.constants;
  */
 
 public enum AxisType {
-
   RunTime(0, "R"),   // runtime / reference time
   Ensemble(2, "E"),
   Time(1, "T"),
