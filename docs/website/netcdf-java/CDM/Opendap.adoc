@@ -1,53 +1,33 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-CDM/OPeNDAP
-===========
-
 = CDM – OPeNDAP Interface
 
-When the CDM reads an OPeNDAP dataset, it makes the following
-transformations:
+When the CDM reads an OPeNDAP dataset, it makes the following transformations:
 
-________________________________________________
-*OPeNDAP* *primitive              CDM primitive*
-________________________________________________
-
-[width="100%",cols="50%,50%",]
-|================
+[options="header"]
+|===
+|OPeNDAP primitive|CDM primitive
 |Boolean |boolean
-|Byte |byte*
+|Byte | ubyte
 |Float32 |float
 |Float64 |double
 |Int16 |short
 |Int32 |int
-|UInt16 |short*
-|UInt32 |int*
-|================
+|UInt16 |ushort
+|UInt32 |uint
+|===
 
-* the ___Unsigned__ attribute is set
-
-___________________________________________________
-*Constructor Type                     CDM DataType*
-___________________________________________________
-
-[width="100%",cols="50%,50%",]
-|======================
+[options="header"]
+|===
+|Constructor Type | CDM DataType
 |Grid |Variable
 |List |ignored
-|Sequence |Structure(*)
+|Sequence |Sequence
 |String |String or char
 |Structure |Structure
-a|
-URL
-
- a|
-ignored
-
-|======================
-
- 
+| URL | ignored
+|===
 
 ==== OPeNDAP Attributes
 
@@ -57,12 +37,12 @@ Containers may be nested. The CDM first matches OPeNDAP attribute
 containers against Variable names. On a match, the attributes become the
 Variable’s attributes. Anything that doesn’t match is made into a global
 Variable. The CDM does not support nested attributes, so these are
-flattened by using a ``.'' to separate the container(s) from the name.
+flattened by using a "." to separate the container(s) from the name.
 
 Certain OPeNDAP attribute containers are handled separately. An
-attribute named _*NC_GLOBAL*_ or _*HDF_GLOBAL*_ is assumed to contain
-global attributes. Attribute containers named _*DODS_EXTRA*_ and
-_*EXTRA_DIMENSION*_ are handled as described in the next section.
+attribute named *_NC_GLOBAL_* or *_HDF_GLOBAL_* is assumed to contain
+global attributes. Attribute containers named *_DODS_EXTRA_* and
+*_EXTRA_DIMENSION_* are handled as described in the next section.
 
 ==== OPeNDAP Dimensions
 
@@ -83,21 +63,20 @@ of the same name and length are the same object.
 
 In order to get the full semantics of NetCDF files transported across
 the OPeNDAP protocol, we use 2 special global attributes. If there is a
-global attribute called _*DODS_EXTRA/Unlimited_Dimension*_ then the
+global attribute called *_DODS_EXTRA/Unlimited_Dimension_* then the
 value of that attribute is assumed to be a dimension name, which is then
 set to be an _Unlimited_ dimension. If there is a global attribute
-called _*EXTRA_DIMENSION,*_ then it contains one or more (name, length)
+called *_EXTRA_DIMENSION_* then it contains one or more (name, length)
 attributes which are made into shared CDM Dimensions. This allows a
 server to pass dimensions which are not used in a Variable, but
 conceivably might be needed by a client. Here are examples of these two
 cases:
 
--------------------------------------------------------
+----
     DODS_EXTRA { String Unlimited_Dimension record; }  
--------------------------------------------------------
+----
 
-_DODS_EXTRA_ and _EXTRA_DIMENSION_ are ad-hoc Conventions used only by
-the TDS as far as I know.
+_DODS_EXTRA_ and _EXTRA_DIMENSION_ are ad-hoc Conventions used only by the TDS.
 
 ==== OPeNDAP Grids
 
@@ -105,20 +84,20 @@ An OPeNDAP Grid object is decomposed into different Variables for the
 data array and for each map vector in the Grid. The map vectors are
 placed at the global level, in the order they are found in the DDS. If a
 map vector already exists, then it is assumed to be identical with the
-existing one. Dimensions are currently not checked. For both maps and
+existing one. Dimensions are not checked. For both maps and
 arrays, the containing grid name is discarded. These assumptions
 preserve the semantics of NetCDF datasets, but are a violation of the
 OPeNDAP specification in which Grids constitute a separate namespace.
-Trying to preserve the namespace makes Netcdf datasets incorrect. This
+Trying to preserve the namespace makes NetCDF datasets incorrect. This
 is one of the most important incompatibilities of the NetCDF and OPeNDAP
 data models, since there is not workaround for DAP 2.
 
 In order to preserve the semantics of the map vectors, the following CDM
 attribute is added to the data variable:
 
--------------------------------------
+----
  _Coordinate.Axes = "map1 map2 map3";
--------------------------------------
+----
 
 The CDM Coordinate System layer uses this to associate the array and map
 Variables, as intended by the Grid specification
@@ -126,11 +105,11 @@ Variables, as intended by the Grid specification
 ==== OPeNDAP Strings
 
 The default case is to map OPeNDAP Strings to CDM Strings. If the
-Variable has an attribute named _*DODS/strlen*_ , then the CDM instead
-uses DataType.CHAR. The value of the _*DODS/strlen*_ attribute is the
+Variable has an attribute named _DODS/strlen_ , then the CDM instead
+uses DataType.CHAR. The value of the _DODS/strlen_ attribute is the
 length of the innermost dimension. For example, an OPeNDAP String of
 dimension (5, 7) becomes a char Variable of dimension (5,7,strlen). If
-the Variable has an attribute named __*DODS/dimName*__, then dimName
+the Variable has an attribute named _DODS/dimName_, then dimName
 becomes the dimension name of the inner Dimension, otherwise the
 Dimension is anonymous.
 
@@ -152,5 +131,9 @@ semantics of both are the same, the user is only allowed to read the
 entire sequence (no subsetting). In the general API (ie through the
 NetcdfFile interface), constraint expressions are not supported .
 However, a user could break encapsulation and call
-_*DODSNetcdfFile.readWithCE()*_ to read data with a relational
+*_DODSNetcdfFile.readWithCE()_* to read data with a relational
 constraint expression on a Sequence.
+
+'''''
+
+image:../nc.gif[image] This document was last updated Nov 2015.

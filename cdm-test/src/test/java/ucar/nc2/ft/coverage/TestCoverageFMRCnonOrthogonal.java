@@ -35,6 +35,7 @@ package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.AxisType;
@@ -42,6 +43,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -53,6 +55,7 @@ import java.util.Formatter;
  * @author caron
  * @since 10/12/2015.
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestCoverageFMRCnonOrthogonal {
 
   @Test

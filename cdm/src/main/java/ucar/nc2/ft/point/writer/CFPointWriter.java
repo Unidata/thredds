@@ -186,6 +186,8 @@ public abstract class CFPointWriter implements Closeable {
     try (WriterCFPointCollection pointWriter = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
             pfc.getTimeUnit(), pfc.getAltUnits(), config)) {
 
+      pointWriter.setExtraVariables( pfc.getExtraVariables());
+
       int count = 0;
       for (PointFeature pf : pfc) {
         if (count == 0)
@@ -208,6 +210,8 @@ public abstract class CFPointWriter implements Closeable {
     try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
+      cfWriter.setExtraVariables( fc.getExtraVariables());
+
       ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, null, null); // all data, but no need to sort by station
 
       int count = 0;
@@ -227,18 +231,20 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection pds, String fileOut,
+  private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection fc, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
     try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
-            pds.getTimeUnit(), pds.getAltUnits(), config)) {
+            fc.getTimeUnit(), fc.getAltUnits(), config)) {
+
+      cfWriter.setExtraVariables( fc.getExtraVariables());
 
       // LOOK not always needed
       int count = 0;
       int name_strlen = 0;
-      int nprofiles = pds.size();
+      int nprofiles = fc.size();
       if (nprofiles < 0) {
-        for (ProfileFeature pf : pds) {
+        for (ProfileFeature pf : fc) {
           name_strlen = Math.max(name_strlen, pf.getName().length());
           count++;
         }
@@ -247,7 +253,7 @@ public abstract class CFPointWriter implements Closeable {
       cfWriter.setFeatureAuxInfo(nprofiles, name_strlen);
 
       count = 0;
-      for (ProfileFeature profile : pds) {
+      for (ProfileFeature profile : fc) {
         count += cfWriter.writeProfile(profile);
         if (debug && count % 10 == 0) System.out.printf("%d ", count);
         if (debug && count % 100 == 0) System.out.printf("%n ");
@@ -258,18 +264,20 @@ public abstract class CFPointWriter implements Closeable {
     }
   }
 
-  private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection pds, String fileOut,
+  private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection fc, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
     try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(),
-            pds.getTimeUnit(), pds.getAltUnits(), config)) {
+            fc.getTimeUnit(), fc.getAltUnits(), config)) {
+
+      cfWriter.setExtraVariables( fc.getExtraVariables());
 
       // LOOK not always needed
       int count = 0;
       int name_strlen = 0;
-      int ntrajs = pds.size();
+      int ntrajs = fc.size();
       if (ntrajs < 0) {
-        for (TrajectoryFeature traj : pds) {
+        for (TrajectoryFeature traj : fc) {
           name_strlen = Math.max(name_strlen, traj.getName().length());
           count++;
         }
@@ -278,7 +286,7 @@ public abstract class CFPointWriter implements Closeable {
       cfWriter.setFeatureAuxInfo(ntrajs, name_strlen);
 
       count = 0;
-      for (TrajectoryFeature traj : pds) {
+      for (TrajectoryFeature traj : fc) {
         count += cfWriter.writeTrajectory(traj);
         if (debug && count % 10 == 0) System.out.printf("%d ", count);
         if (debug && count % 100 == 0) System.out.printf("%n ");
@@ -295,7 +303,8 @@ public abstract class CFPointWriter implements Closeable {
     try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-      cfWriter.setStations(fc.getStationFeatures());
+      cfWriter.setExtraVariables( fc.getExtraVariables());
+      cfWriter.setStations( fc.getStationFeatures());
 
       int name_strlen = 0;
       int countProfiles = 0;
@@ -332,6 +341,8 @@ public abstract class CFPointWriter implements Closeable {
 
     try (WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(),
             fc.getTimeUnit(), fc.getAltUnits(), config)) {
+
+      cfWriter.setExtraVariables( fc.getExtraVariables());
 
       int traj_strlen = 0;
       int prof_strlen = 0;
@@ -429,7 +440,6 @@ public abstract class CFPointWriter implements Closeable {
     this.noUnlimitedDimension = (writer.getVersion() == NetcdfFileWriter.Version.netcdf3) && config.recDimensionLength >= 0;   // LOOK NOT USED
     this.isExtendedModel = writer.getVersion().isExtendedModel();
 
-    // setExtraVariables(extra);
     addGlobalAtts(atts);
     addNetcdf3UnknownAtts(noTimeCoverage);
   }
@@ -474,7 +484,7 @@ public abstract class CFPointWriter implements Closeable {
     writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, 0.0));
   }
 
-  private void setExtraVariables(List<Variable> extra) {
+  void setExtraVariables(List<Variable> extra) {
     this.extra = extra;
     if (extra != null) {
       for (Variable v : extra) {
@@ -564,6 +574,7 @@ public abstract class CFPointWriter implements Closeable {
 
     for (Variable v : extra) {
       Variable mv = extraMap.get(v.getShortName());
+      if (mv == null) continue; // may be removed
       try {
         writer.write(mv, v.read());
       } catch (InvalidRangeException e) {
@@ -643,9 +654,16 @@ public abstract class CFPointWriter implements Closeable {
           newVar = writer.addStringVariable(null, oldVar.getShortName(), dims, 20); // LOOK barf
 
        } else {
+         VariableSimpleIF prevVar = writer.findVariable(oldVar.getShortName());
+         if (prevVar != null) {
+           if (extraMap.get(oldVar.getShortName()) != null) { // this is normal, extra got added but not actually needed
+             writer.deleteVariable(oldVar.getShortName());
+             extraMap.remove(oldVar.getShortName());
+           }
+         }
          newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
          if (newVar == null) {
-           logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK barf
+           logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK WHY?
            continue;
          }
        }

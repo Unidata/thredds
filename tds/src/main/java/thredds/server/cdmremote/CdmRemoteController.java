@@ -113,7 +113,6 @@ public class CdmRemoteController implements LastModified {
 
     if (showReq)
       System.out.printf("CdmRemoteController req=%s%n", absPath + "?" + request.getQueryString());
-    long start = System.currentTimeMillis();
     if (debug) {
       System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
     }

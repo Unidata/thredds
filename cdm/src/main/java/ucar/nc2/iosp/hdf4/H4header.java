@@ -91,7 +91,7 @@ public class H4header {
    private static boolean debugTracker = false; // memory tracker
    private static boolean warnings = false; // log messages
 
-   private static boolean debugHdfEosOff = false; // allow to turn hdf eos processing off
+   private static boolean useHdfEos = true; // allow to turn hdf eos processing off
 
    public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
      debugTag1 = debugFlag.isSet("H4header/tag1");
@@ -103,10 +103,13 @@ public class H4header {
      debugChunkTable = debugFlag.isSet("H4header/chunkTable");
      debugChunkDetail = debugFlag.isSet("H4header/chunkDetail");
      debugTracker = debugFlag.isSet("H4header/memTracker");
-     debugHdfEosOff = debugFlag.isSet("HdfEos/turnOff");
      if (debugFlag.isSet("HdfEos/showWork"))
        HdfEos.showWork = true;
    }
+
+  public static void useHdfEos(boolean val) {
+    useHdfEos = val;
+  }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -161,7 +164,7 @@ public class H4header {
     ncfile.setLocation(myRaf.getLocation());
     construct(ncfile, alltags);
 
-    if (!debugHdfEosOff) {
+    if (useHdfEos) {
       isEos = HdfEos.amendFromODL(ncfile, ncfile.getRootGroup());
       if (isEos) {
         adjustDimensions();

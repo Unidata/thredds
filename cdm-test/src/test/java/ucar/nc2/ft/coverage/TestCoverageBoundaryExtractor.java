@@ -35,6 +35,7 @@ package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
@@ -44,6 +45,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -55,6 +57,7 @@ import java.util.List;
  * @author caron
  * @since 10/7/2015.
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestCoverageBoundaryExtractor {
 
   @Test

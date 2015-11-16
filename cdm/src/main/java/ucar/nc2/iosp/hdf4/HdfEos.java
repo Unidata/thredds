@@ -35,7 +35,6 @@ package ucar.nc2.iosp.hdf4;
 import ucar.ma2.ArrayObject;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -54,26 +53,26 @@ import org.jdom2.Element;
 /**
  * Parse structural metadata from HDF-EOS.
  * This allows us to use shared dimensions, identify Coordinate Axes, and the FeatureType.
- *
+ * <p>
  * <p>from HDF-EOS.status.ppt:
-   <pre>
- HDF-EOS is format for EOS  Standard Products
-   <ul>
-   <li>Landsat 7 (ETM+)
-   <li>Terra (CERES, MISR, MODIS, ASTER, MOPITT)
-   <li>Meteor-3M (SAGE III)
-   <li>Aqua (AIRS, AMSU-A, AMSR-E, CERES, MODIS)
-   <li>Aura(MLS, TES, HIRDLS, OMI
- </ul>
- HDF is used by other EOS missions
-   <ul>
-   <li>OrbView 2 (SeaWIFS)
-   <li>TRMM (CERES, VIRS, TMI, PR)
-   <li>Quickscat (SeaWinds)
-   <li>EO-1 (Hyperion, ALI)
-   <li>ICESat (GLAS)
-   <li>Calypso
-   </ul>
+ * <pre>
+ * HDF-EOS is format for EOS  Standard Products
+ * <ul>
+ * <li>Landsat 7 (ETM+)
+ * <li>Terra (CERES, MISR, MODIS, ASTER, MOPITT)
+ * <li>Meteor-3M (SAGE III)
+ * <li>Aqua (AIRS, AMSU-A, AMSR-E, CERES, MODIS)
+ * <li>Aura(MLS, TES, HIRDLS, OMI
+ * </ul>
+ * HDF is used by other EOS missions
+ * <ul>
+ * <li>OrbView 2 (SeaWIFS)
+ * <li>TRMM (CERES, VIRS, TMI, PR)
+ * <li>Quickscat (SeaWinds)
+ * <li>EO-1 (Hyperion, ALI)
+ * <li>ICESat (GLAS)
+ * <li>Calypso
+ * </ul>
  * </pre>
  * </p>
  *
@@ -101,10 +100,10 @@ public class HdfEos {
    * All Variables named StructMetadata.n, where n= 1, 2, 3 ... are read in and their contents concatenated
    * to make the structMetadata String.
    *
-   * @param ncfile Amend this file
+   * @param ncfile   Amend this file
    * @param eosGroup the group containing variables named StructMetadata.*
-   * @throws IOException on read error
    * @return true if HDF-EOS info was found
+   * @throws IOException on read error
    */
   static public boolean amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
     String smeta = getStructMetadata(eosGroup);
@@ -166,8 +165,8 @@ public class HdfEos {
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata
    *
-   * @param ncfile Amend this file
-   * @param structMetadata  structMetadata as String
+   * @param ncfile         Amend this file
+   * @param structMetadata structMetadata as String
    * @throws IOException on read error
    */
   private void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
@@ -245,7 +244,7 @@ public class HdfEos {
     }
 
     if (featureType != null) {
-      if (showWork) System.out.println("***EOS featureType= "+featureType.toString());
+      if (showWork) System.out.println("***EOS featureType= " + featureType.toString());
       rootg.addAttribute(new Attribute(CF.FEATURE_TYPE, featureType.toString()));
       // rootg.addAttribute(new Attribute(CDM.CONVENTIONS, "HDFEOS"));
     }
@@ -272,17 +271,17 @@ public class HdfEos {
         if (dim != null) {                 // already added - may be dimension scale ?
           if (dim.getLength() != length) { // ok as long as it matches
             log.error("Conflicting Dimensions = {} {}", dim, ncfile.getLocation());
-            throw new IllegalStateException("Conflicting Dimensions = "+name);
+            throw new IllegalStateException("Conflicting Dimensions = " + name);
           }
         } else {
           dim = new Dimension(name, length);
-          if (parent.addDimensionIfNotExists(dim) && showWork) System.out.printf(" Add dimension %s %n",dim);
+          if (parent.addDimensionIfNotExists(dim) && showWork) System.out.printf(" Add dimension %s %n", dim);
         }
       } else {
-        log.warn("Dimension "+name+" has size "+sizeS, ncfile.getLocation());
+        log.warn("Dimension " + name + " has size " + sizeS, ncfile.getLocation());
         Dimension udim = new Dimension(name, 1);
         udim.setGroup(parent);
-        unknownDims.add( udim);
+        unknownDims.add(udim);
         if (showWork) System.out.printf(" Add dimension %s %n", udim);
       }
     }
@@ -332,7 +331,7 @@ public class HdfEos {
 
         Element dimList = elem.getChild("DimList");
         List<Element> values = dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
+        setSharedDimensions(v, values, unknownDims, ncfile.getLocation());
         if (showWork) System.out.printf(" set coordinate %s %n", v);
       }
       if ((latAxis != null) && (lonAxis != null)) {
@@ -362,7 +361,7 @@ public class HdfEos {
 
         Element dimList = elem.getChild("DimList");
         List<Element> values = dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
+        setSharedDimensions(v, values, unknownDims, ncfile.getLocation());
       }
     }
 
@@ -415,7 +414,7 @@ public class HdfEos {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
       v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_UP)); // probably
       return AxisType.Height;
-     }
+    }
 
     return null;
   }
@@ -475,7 +474,7 @@ public class HdfEos {
           log.warn("Dimension {} has size {} {} ", sizeS, name, location);
           Dimension udim = new Dimension(name, 1);
           udim.setGroup(parent);
-          unknownDims.add( udim);
+          unknownDims.add(udim);
           if (showWork) System.out.printf(" Add dimension %s %n", udim);
         }
       }
@@ -483,7 +482,7 @@ public class HdfEos {
 
     // Geolocation Variables
     Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
-    if (geoFieldsG == null)  geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
+    if (geoFieldsG == null) geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
 
     if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
@@ -497,20 +496,21 @@ public class HdfEos {
 
         Element dimList = elem.getChild("DimList");
         List<Element> values = dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims, location);
+        setSharedDimensions(v, values, unknownDims, location);
       }
     }
 
     // Data Variables
     Group dataG = parent.findGroup(DATA_FIELDS);
-    if (dataG == null) dataG = parent.findGroup(DATA_FIELDS2);  // eg C:\data\formats\hdf4\eos\mopitt\MOP03M-200501-L3V81.0.1.hdf
+    if (dataG == null)
+      dataG = parent.findGroup(DATA_FIELDS2);  // eg C:\data\formats\hdf4\eos\mopitt\MOP03M-200501-L3V81.0.1.hdf
 
     if (dataG != null) {
       Element f = gridElem.getChild("DataField");
       List<Element> vars = f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText().trim();
-        varname = NetcdfFile.makeValidCdmObjectName( varname);
+        varname = NetcdfFile.makeValidCdmObjectName(varname);
         Variable v = dataG.findVariable(varname);
         //if (v == null)
         //  v = dataG.findVariable( H4header.createValidObjectName(varname));
@@ -518,7 +518,7 @@ public class HdfEos {
 
         Element dimList = elem.getChild("DimList");
         List<Element> values = dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims, location);
+        setSharedDimensions(v, values, unknownDims, location);
       }
 
       // get projection
@@ -536,12 +536,14 @@ public class HdfEos {
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
               v.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
             }
-            if (v.getShortName().equals("XDim"))
+            if (v.getShortName().equals("XDim")) {
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+              v.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
+            }
           }
         }
       }
-  }
+    }
     return FeatureType.GRID;
   }
 
@@ -555,8 +557,10 @@ public class HdfEos {
         String valueS = ve.getText().trim();
         try {
           values.add(Double.parseDouble(valueS));
-        } catch (NumberFormatException e) {  }
+        } catch (NumberFormatException e) {
+          log.warn("Cant parse double value "+valueS);
         }
+      }
       Attribute att = new Attribute(name, values, false);
       v.addAttribute(att);
     } else {
@@ -590,10 +594,10 @@ public class HdfEos {
     List<Dimension> newDims = new ArrayList<>();
     Group group = v.getParentGroup();
 
-    for (int i=0; i<values.size(); i++) {
+    for (int i = 0; i < values.size(); i++) {
       Element value = values.get(i);
       String dimName = value.getText().trim();
-      dimName = NetcdfFile.makeValidCdmObjectName( dimName);
+      dimName = NetcdfFile.makeValidCdmObjectName(dimName);
 
       Dimension dim = group.findDimension(dimName);
       Dimension oldDim = oldDims.get(i);
@@ -605,8 +609,8 @@ public class HdfEos {
         return;
       }
       if (dim.getLength() != oldDim.getLength()) {
-        log.error("Shared dimension ("+dim.getShortName()+") has different length than data dimension ("+oldDim.getShortName()+
-            ") shared="+ dim.getLength() + " org=" + oldDim.getLength() + " for "+ v+" "+location);
+        log.error("Shared dimension (" + dim.getShortName() + ") has different length than data dimension (" + oldDim.getShortName() +
+                ") shared=" + dim.getLength() + " org=" + oldDim.getLength() + " for " + v + " " + location);
         return;
       }
       newDims.add(dim);
@@ -621,7 +625,7 @@ public class HdfEos {
       if (dim.getShortName().equals(wantDim)) {
         int len = oldDim.getLength();
         if (len == 0)
-          dim.setUnlimited( true); // allow zero length dimension !!
+          dim.setUnlimited(true); // allow zero length dimension !!
         dim.setLength(len); // use existing (anon) dimension
         Group parent = dim.getGroup();
         parent.addDimensionIfNotExists(dim);  // add to the parent

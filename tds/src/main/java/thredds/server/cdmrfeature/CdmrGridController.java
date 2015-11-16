@@ -42,7 +42,6 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.LastModified;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
@@ -55,8 +54,6 @@ import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.remote.CdmrFeatureProto;
 import ucar.nc2.ft2.coverage.remote.CdmrfWriter;
@@ -109,10 +106,10 @@ public class CdmrGridController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
 
-    try (CoverageCollection cc = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
-      if (cc == null) {
-        return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
-      }
+    try (CoverageCollection cc = TdsRequestedDataset.getCoverageCollection(request, response, datasetPath)) {
+      if (cc == null) return null;
+        // return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
+
       HttpHeaders responseHeaders = new HttpHeaders();
       responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
       return new ResponseEntity<>(cc.getCoverageType().toString(), responseHeaders, HttpStatus.OK);
@@ -135,7 +132,7 @@ public class CdmrGridController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
 
-    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getCoverageCollection(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return;
 
       response.setContentType(ContentType.binary.getContentHeader());
@@ -160,7 +157,7 @@ public class CdmrGridController implements LastModified {
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
     HttpHeaders responseHeaders;
 
-    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getCoverageCollection(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return null;
 
       String text = gridCoverageDataset.toString();
@@ -195,7 +192,7 @@ public class CdmrGridController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
 
-    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getCoverageCollection(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return;
 
       response.setContentType(ContentType.binary.getContentHeader());

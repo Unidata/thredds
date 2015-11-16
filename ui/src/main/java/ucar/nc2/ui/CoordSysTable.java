@@ -36,6 +36,7 @@ package ucar.nc2.ui;
 import ucar.ma2.*;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
+import ucar.nc2.Dimension;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.time.*;
@@ -127,6 +128,18 @@ public class CoordSysTable extends JPanel {
         if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(tryGrid(v));
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
+
+    varPopup.addAction("Try as Coverage", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        VariableBean vb = (VariableBean) varTable.getSelectedBean();
+        VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
+        if (v == null) return;
+        infoTA.clear();
+        infoTA.appendLine(tryCoverage(v));
         infoTA.gotoTop();
         infoWindow.show();
       }
@@ -619,6 +632,24 @@ public class CoordSysTable extends JPanel {
     return buff.toString();
   }
 
+  private String tryCoverage(VariableEnhanced v) {
+    Formatter buff = new Formatter();
+    buff.format("%s%n", v);
+    List<CoordinateSystem> csList = v.getCoordinateSystems();
+    if (csList.size() == 0)
+      buff.format(" No Coord System found");
+    else {
+      for (CoordinateSystem cs : csList) {
+        buff.format("%nCoordSys: %s%n", cs);
+        Formatter errlog = new Formatter();
+        String result = DtCoverageCSBuilder.describe(ds, cs, errlog);
+        buff.format("  coverage desc: %s%n", result);
+        buff.format("  coverage errlog: %s%n", errlog);
+      }
+    }
+    return buff.toString();
+  }
+
   private String showMissing(Variable v) {
     if (!(v instanceof VariableDS)) return "";
     VariableDS ve = (VariableDS) v;
@@ -719,7 +750,9 @@ public class CoordSysTable extends JPanel {
 
 
     public String getCoverage() {
-      return (coordSysBean == null) ? "" : coordSysBean.getCoverage();
+      if (coordSysBean == null) return "";
+      boolean complete = coordSysBean.coordSys.isComplete(ve);
+      return complete ? coordSysBean.getCoverage() : "Incomplete "+ coordSysBean.getCoverage();
     }
 
   }

@@ -343,7 +343,7 @@ public class RadialDatasetTable extends JPanel {
       int[] shape = new int[] {bean.getNumRadial(), bean.getNumGates()};
       Array arrData = Array.factory( DataType.FLOAT, shape, data);
 
-      imageView.setImage( ImageArrayAdapter.makeGrayscaleImage(arrData));
+      imageView.setImage( ImageArrayAdapter.makeGrayscaleImage(arrData, null));
       imageWindow.show();
 
     } catch (IOException e) {

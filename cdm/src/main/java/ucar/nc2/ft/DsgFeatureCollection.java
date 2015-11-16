@@ -35,8 +35,11 @@ package ucar.nc2.ft;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import ucar.nc2.Variable;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
+
+import java.util.List;
 
 /**
  * A collection of FeatureTypes.
@@ -77,9 +80,9 @@ public interface DsgFeatureCollection {
   /*
    * Other variables needed for completeness, eg joined coordinate variables
    * @return list of extra variables, may be empty not null
-   *
+   */
   @Nonnull
-  List<Variable> getExtraVariables(); */
+  List<Variable> getExtraVariables();
 
   /**
    * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.

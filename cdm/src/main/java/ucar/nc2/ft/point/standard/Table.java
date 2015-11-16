@@ -59,12 +59,7 @@ import ucar.ma2.StructureDataMediator;
 import ucar.ma2.StructureDataProxy;
 import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.Dimension;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleAdapter;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.VariableSimpleImpl;
+import ucar.nc2.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.StructureDS;
@@ -217,8 +212,15 @@ public abstract class Table {
   // change shape of the data variables
   protected void replaceDataVars(StructureMembers sm) {
     for (StructureMembers.Member m : sm.getMembers()) {
-      VariableSimpleIF curr = this.cols.get(m.getName());
-      this.cols.put(m.getName(), VariableSimpleImpl.changeShape(curr, Dimension.makeDimensionsAnon(m.getShape())));
+      VariableSimpleIF org = this.cols.get(m.getName());
+      int rank = org.getRank();
+      List<Dimension> orgDims = org.getDimensions();
+      // only keep the last n
+      int n = m.getShape().length;
+      List<Dimension> dims = orgDims.subList(rank-n, rank);
+      VariableSimpleImpl result = new VariableSimpleImpl(org.getShortName(), org.getDescription(), org.getUnitsString(), org.getDataType(), dims);
+      for (Attribute att : org.getAttributes()) result.add(att);
+      this.cols.put(m.getName(), result);
     }
   }
 

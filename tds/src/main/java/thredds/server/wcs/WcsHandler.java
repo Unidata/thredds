@@ -86,6 +86,8 @@ public class WcsHandler {
     try {
       URI serverURI = new URI(req.getRequestURL().toString());
       request = WcsRequestParser.parseRequest(this.getVersion().getVersionString(), serverURI, req, res);
+      if (request == null) return;
+
       if (request.getOperation().equals(Request.Operation.GetCapabilities)) {
         res.setContentType(ContentType.xml.getContentHeader());
         res.setStatus(HttpServletResponse.SC_OK);

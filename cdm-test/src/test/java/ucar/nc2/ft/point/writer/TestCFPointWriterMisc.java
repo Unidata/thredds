@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -46,18 +47,9 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCC;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.PointFeatureCollectionIterator;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.ProfileFeature;
-import ucar.nc2.ft.ProfileFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -176,47 +168,75 @@ public class TestCFPointWriterMisc {
      }
    }
 
-  // @Test
-  // the z coordinate doesnt fit into the structures, need a way to get it into the rewritten dataset
+  @Test
+  // the z coordinate doesnt fit into the structures, but must be transferred to the rewritten dataset
   public void testPointZCoord() throws Exception {
     String file = TestDir.cdmLocalTestDataDir + "point/pointUnlimited.nc";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.POINT, file, null, buf)) {
+      Assert.assertNotNull(fdpoint);
       List<DsgFeatureCollection> collectionList = fdpoint.getPointFeatureCollectionList();
       assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
       DsgFeatureCollection fc = collectionList.get(0);
       assert fc instanceof PointFeatureCollection;
-      PointFeatureCollection pc = (PointFeatureCollection) fc;
 
       NetcdfFile ncfile = fdpoint.getNetcdfFile();
-      assert ncfile != null;
-      assert null != ncfile.findVariable("z") : "cant find variable 'z' in netcdf file";
-      //assert null != findExtraVariable(pc, "z") : "cant find variable 'z' in feature collection";
+      Assert.assertNotNull(ncfile);
+      Assert.assertNotNull("cant find variable 'z' in netcdf file", ncfile.findVariable("z"));
 
       FeatureDatasetPoint rewrite =  rewriteDataset(fdpoint, "nc3", new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3));
       collectionList = rewrite.getPointFeatureCollectionList();
       fc = collectionList.get(0);
       assert fc instanceof PointFeatureCollection;
-      pc = (PointFeatureCollection) fc;
 
       ncfile = rewrite.getNetcdfFile();
-      assert ncfile != null;
-      assert null != ncfile.findVariable("z") : "cant find variable 'z' in rewritten netcdf file";
-     // assert null != findExtraVariable(pc, "z") : "cant find variable 'z' in rewritten feature collection";
+      Assert.assertNotNull(ncfile);
+      Assert.assertNotNull("cant find variable 'z' in rewritten netcdf file", ncfile.findVariable("z"));
 
       rewrite.close();
     }
   }
 
-  /* Variable findExtraVariable(PointFeatureCollection pc, String name) {
-    for (Variable v : pc.getExtraVariables())
-      if (v.getFullName().equals(name)) return v;
-    return null;
-  } */
+  @Test
+  // the z coordinate doesnt fit into the structures, but must be transferred to the rewritten dataset
+  public void testStationMultidimZCoord() throws Exception {
+    String file = TestDir.cdmLocalTestDataDir + "point/stationMultidim.ncml";
+    Formatter buf = new Formatter();
+    try (FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, file, null, buf)) {
+      Assert.assertNotNull(fdpoint);
+      List<DsgFeatureCollection> collectionList = fdpoint.getPointFeatureCollectionList();
+      assert (collectionList.size() == 1) : "Can't handle point data with multiple collections";
+      DsgFeatureCollection fc = collectionList.get(0);
+      assert fc instanceof StationTimeSeriesFeatureCollection;
+
+      NetcdfFile ncfile = fdpoint.getNetcdfFile();
+      Assert.assertNotNull(ncfile);
+      Assert.assertNotNull("cant find variable 'z' in netcdf file", ncfile.findVariable("z"));
+
+      FeatureDatasetPoint rewrite =  rewriteDataset(fdpoint, "nc3", new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3));
+      collectionList = rewrite.getPointFeatureCollectionList();
+      fc = collectionList.get(0);
+      assert fc instanceof StationTimeSeriesFeatureCollection;
+
+      ncfile = rewrite.getNetcdfFile();
+      Assert.assertNotNull(ncfile);
+      Assert.assertNotNull("cant find variable 'z' in rewritten netcdf file", ncfile.findVariable("z"));
+
+      Variable data = ncfile.findVariable("data");
+      Assert.assertNotNull("cant find variable 'data' in rewritten netcdf file", data);
+      Assert.assertEquals(2, data.getRank());
+      Assert.assertEquals("obs", data.getDimension(0).getShortName());
+      Assert.assertEquals("z", data.getDimension(1).getShortName());
+
+      rewrite.close();
+    }
+  }
+
 
   FeatureDatasetPoint rewriteDataset(FeatureDatasetPoint fdpoint, String prefix, CFPointWriterConfig config) throws IOException {
     String location = fdpoint.getLocation();
-    File fileIn = new File(fdpoint.getLocation());
+    if (location.startsWith("file:")) location = location.substring(5);
+    File fileIn = new File(location);
     long start = System.currentTimeMillis();
 
     int pos = location.lastIndexOf("/");

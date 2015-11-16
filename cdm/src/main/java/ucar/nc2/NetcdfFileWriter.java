@@ -821,6 +821,15 @@ public class NetcdfFileWriter implements Closeable {
     return att;
   }
 
+  public Variable deleteVariable(String fullName) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+
+    Variable v = ncfile.findVariable(fullName);
+    if (v != null)
+      ncfile.removeVariable(v.getParentGroup(), v.getShortName());
+    return v;
+  }
+
 
   /**
    * Rename a variable Attribute. Must be in define mode.

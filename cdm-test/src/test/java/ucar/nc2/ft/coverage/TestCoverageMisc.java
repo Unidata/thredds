@@ -36,6 +36,7 @@ package ucar.nc2.ft.coverage;
 import com.beust.jcommander.internal.Lists;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
@@ -46,6 +47,7 @@ import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -56,6 +58,7 @@ import java.io.IOException;
  * @author caron
  * @since 10/6/2015.
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestCoverageMisc {
 
   @Test

@@ -1,7 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-= CDM Section Spec
+= CDM Section Specification (Fortran 90 array syntax)
 
 CDM accepts a request for a Variable section in String form.
 

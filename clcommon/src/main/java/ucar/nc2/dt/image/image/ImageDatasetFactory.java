@@ -68,7 +68,7 @@ public class ImageDatasetFactory {
     if (gcsys.getTimeAxis() != null)
       ntimes = (int) gcsys.getTimeAxis().getSize();
     Array data = grid.readDataSlice( this.time, 0, -1, -1);
-    return ImageArrayAdapter.makeGrayscaleImage( data);
+    return ImageArrayAdapter.makeGrayscaleImage( data, grid);
   }
 
   /**
@@ -144,7 +144,7 @@ public class ImageDatasetFactory {
       Array data;
       try {
         data = grid.readDataSlice( this.time, 0, -1, -1);
-        return ImageArrayAdapter.makeGrayscaleImage( data);
+        return ImageArrayAdapter.makeGrayscaleImage( data, grid);
       } catch (IOException e) {
         e.printStackTrace();
         return null;
