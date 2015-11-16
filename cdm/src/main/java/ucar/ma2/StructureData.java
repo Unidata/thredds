@@ -38,7 +38,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * A container for a Structure's data. 
+ * A container for a Structure's data.
  * Is normally contained within an ArrayStructure, which is an Array of StructureData.
  * This is the abstract supertype for all implementations.
  *
@@ -54,7 +54,7 @@ import java.util.List;
     <pre> Array getArray(Member m) </pre>
     <pre> Array getArray(String memberName) </pre>
 
- * The following will return an object of type Byte, Char, Double, Float, Int, Long, Short, String, or Structure, depending 
+ * The following will return an object of type Byte, Char, Double, Float, Int, Long, Short, String, or Structure, depending
  * upon the member type:
    <pre> Object getScalarObject( Member m) </pre>
 
@@ -681,10 +681,10 @@ abstract public class StructureData {
     indent.incr();
     for (StructureMembers.Member m : getMembers())
       m.showInternal(f, indent);
-    indent.incr();
+    indent.decr();
   }
 
-   public String toString() { 
+   public String toString() {
     return members.toString();
   }
 

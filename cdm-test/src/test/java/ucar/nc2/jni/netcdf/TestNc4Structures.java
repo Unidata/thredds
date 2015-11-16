@@ -35,16 +35,15 @@
 
 package ucar.nc2.jni.netcdf;
 
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.InvalidRangeException;
+import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -90,5 +89,129 @@ public class TestNc4Structures {
     ncfileIn.close();
     cancel.setDone(true);
     System.out.printf("%s%n", cancel);
+  }
+
+
+  // Demonstrates GitHub issue #296.
+  @Ignore("Resolve issue before we enable this.")
+  @Test
+  public void writeStringMember() throws IOException, InvalidRangeException {
+    File outFile = File.createTempFile("writeStringMember", ".nc4");
+    try {
+      try (NetcdfFileWriter ncFileWriter = NetcdfFileWriter.createNew(
+              NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
+        Structure struct = (Structure) ncFileWriter.addVariable(null, "struct", DataType.STRUCTURE, "");
+        ncFileWriter.addStructureMember(struct, "foo", DataType.STRING, null);
+
+        ncFileWriter.create();
+
+        // Write data
+        ArrayString.D2 fooArray = new ArrayString.D2(1, 1);
+        fooArray.set(0, 0, "bar");
+
+        ArrayStructureMA arrayStruct = new ArrayStructureMA(struct.makeStructureMembers(), struct.getShape());
+        arrayStruct.setMemberArray("foo", fooArray);
+
+        ncFileWriter.write(struct, arrayStruct);
+      }
+
+      // Read the file back in and make sure that what we wrote is what we're getting back.
+      try (NetcdfFile ncFileIn = NetcdfFile.open(outFile.getAbsolutePath())) {
+        Structure struct = (Structure) ncFileIn.findVariable(null, "struct");
+        Assert.assertEquals("bar", struct.readScalarString());
+      }
+    } finally {
+      outFile.delete();
+    }
+  }
+
+  // Demonstrates GitHub issue #298.
+  // I did my best to write test code here that SHOULD work when NetcdfFileWriter and Nc4Iosp are fixed, using
+  // TestStructureArrayW as a reference. However, failure happens very early in the test, so it's hard to know if
+  // the unreached code is 100% correct. It may need to be fixed slightly.
+  @Ignore("Resolve issue before we enable this.")
+  @Test
+  public void writeNestedStructure() throws IOException, InvalidRangeException {
+    File outFile = File.createTempFile("writeNestedStructure", ".nc4");
+    try {
+      try (NetcdfFileWriter ncFileWriter = NetcdfFileWriter.createNew(
+              NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
+        Structure outer = (Structure) ncFileWriter.addVariable(null, "outer", DataType.STRUCTURE, "");
+        Structure inner = (Structure) ncFileWriter.addStructureMember(outer, "inner", DataType.STRUCTURE, "");
+        ncFileWriter.addStructureMember(inner, "foo", DataType.INT, null);
+
+        ncFileWriter.create();
+
+        // Write data
+        ArrayInt.D0 fooArray = new ArrayInt.D0(false);
+        fooArray.set(42);
+
+        StructureDataW innerSdw = new StructureDataW(inner.makeStructureMembers());
+        innerSdw.setMemberData("foo", fooArray);
+        ArrayStructureW innerAsw = new ArrayStructureW(innerSdw);
+
+        StructureDataW outerSdw = new StructureDataW(outer.makeStructureMembers());
+        outerSdw.setMemberData("inner", innerAsw);
+        ArrayStructureW outerAsw = new ArrayStructureW(outerSdw);
+
+        ncFileWriter.write(outer, outerAsw);
+      }
+
+      // Read the file back in and make sure that what we wrote is what we're getting back.
+      try (NetcdfFile ncFileIn = NetcdfFile.open(outFile.getAbsolutePath())) {
+        Structure struct = (Structure) ncFileIn.findVariable(null, "outer");
+
+        StructureData outerStructureData = struct.readStructure();
+        StructureData innerStructureData = outerStructureData.getScalarStructure("inner");
+        int foo = innerStructureData.getScalarInt("foo");
+
+        Assert.assertEquals(42, foo);
+      }
+    } finally {
+      outFile.delete();
+    }
+  }
+
+  // Demonstrates GitHub issue #299.
+  @Ignore("Resolve issue before we enable this.")
+  @Test
+  public void writeUnlimitedLengthStructure() throws IOException, InvalidRangeException {
+    File outFile = File.createTempFile("writeUnlimitedLengthStructure", ".nc4");
+    try {
+      try (NetcdfFileWriter ncFileWriter = NetcdfFileWriter.createNew(
+              NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
+        // Test passes if we do "isUnlimited == false".
+        Dimension dim = ncFileWriter.addDimension(null, "dim", 5, false, true /*false*/, false);
+
+        Structure struct = (Structure) ncFileWriter.addVariable(null, "struct", DataType.STRUCTURE, "dim");
+        ncFileWriter.addStructureMember(struct, "foo", DataType.INT, null);
+
+        ncFileWriter.create();
+
+        // Write data
+        ArrayInt.D2 fooArray = new ArrayInt.D2(5, 1, false);
+        fooArray.set(0, 0, 2);
+        fooArray.set(1, 0, 3);
+        fooArray.set(2, 0, 5);
+        fooArray.set(3, 0, 7);
+        fooArray.set(4, 0, 11);
+
+        ArrayStructureMA arrayStruct = new ArrayStructureMA(struct.makeStructureMembers(), struct.getShape());
+        arrayStruct.setMemberArray("foo", fooArray);
+
+        ncFileWriter.write(struct, arrayStruct);
+      }
+
+      // Read the file back in and make sure that what we wrote is what we're getting back.
+      try (NetcdfFile ncFileIn = NetcdfFile.open(outFile.getAbsolutePath())) {
+        Array fooArray = ncFileIn.readSection("struct.foo");
+
+        int[] expecteds = new int[] { 2, 3, 5, 7, 11 };
+        int[] actuals = (int[]) fooArray.copyToNDJavaArray();
+        Assert.assertArrayEquals(expecteds, actuals);
+      }
+    } finally {
+      outFile.delete();
+    }
   }
 }

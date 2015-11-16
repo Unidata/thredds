@@ -32,26 +32,7 @@
  */
 package ucar.nc2;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.ma2.StructureData;
+import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.hdf5.H5header;
@@ -59,6 +40,14 @@ import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.N3raf;
 import ucar.nc2.write.Nc4Chunking;
+
+import javax.annotation.Nonnull;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Writes Netcdf 3 or 4 formatted files to disk.
@@ -627,18 +616,20 @@ public class NetcdfFileWriter implements Closeable {
   }
 
   /**
-   * Add a structure to the file (netcdf4 only). DO NOT USE YET
+   * Adds a copy of the specified structure to the file (netcdf4 only). DO NOT USE YET
    *
    * @param g         add to this group in the new file
-   * @param org       rent Structure (netcdf4 only), or null if not a member of a Structure
+   * @param original  the structure to make a copy of in the new file.
    * @param shortName name of Variable, must be unique with the file.
    * @param dims      list of Dimensions for the variable in the new file, must already have been added.
    *                  Use a list of length 0 for a scalar variable.
-   * @return the Structure vaiable that has been added
+   * @return the Structure variable that has been added
    */
-  public Structure addStructure(Group g, Structure org, String shortName, List<Dimension> dims) {
+  public Structure addCopyOfStructure(Group g, @Nonnull Structure original, String shortName, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
+    if (original == null)
+      throw new NullPointerException("Original structure must be non-null");
 
     shortName = makeValidObjectName(shortName);
     if (!version.isExtendedModel())
@@ -646,10 +637,12 @@ public class NetcdfFileWriter implements Closeable {
 
     Structure s = new Structure(ncfile, g, null, shortName);
     s.setDimensions(dims);
-    for (Variable m : org.getVariables()) {  // LOOK no nested structs
+
+    for (Variable m : original.getVariables()) {  // LOOK no nested structs
       Variable nest = new Variable(ncfile, g, s, m.getShortName());
       nest.setDataType(m.getDataType());
       nest.setDimensions(m.getDimensions());
+      nest.addAll(m.getAttributes());
       s.addMemberVariable(nest);
     }
 
@@ -665,8 +658,15 @@ public class NetcdfFileWriter implements Closeable {
     if (!version.isExtendedModel())
       throw new IllegalArgumentException("Structure type only supported in extended model, version="+version);
 
-    Variable m = new Variable(ncfile, null, s, shortName, dtype, dims);
-    return s.addMemberVariable(m);
+    Variable m = new Variable(ncfile, null, s, shortName, dtype, dims);  // LOOK: What if dtype == STRUCTURE?
+    s.addMemberVariable(m);
+
+    // We've added a member to s. Recalculate its size and all ancestor structure sizes.
+    for (Structure struct = s; struct != null; struct = struct.getParentStructure()) {
+      struct.calcElementSize();
+    }
+
+    return m;
   }
 
   /**
