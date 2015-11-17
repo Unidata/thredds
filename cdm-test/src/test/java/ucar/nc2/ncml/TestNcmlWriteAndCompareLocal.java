@@ -61,23 +61,12 @@ public class TestNcmlWriteAndCompareLocal {
     return result;
   }
 
-  /* FIXME: This method sucks: it doesn't fail when dirName can't be read.
-  static void addFromScan(final List<Object[]> list, String dirName, FileFilter ff, final boolean compareData) throws IOException {
-    TestDir.actOnAll(dirName, ff, new TestDir.Act() {
-      public int doAct(String filename) throws IOException {
-        list.add(new Object[]{filename, compareData});
-        return 1;
-      }
-    }, true);
-  } */
-
   /////////////////////////////////////////////////////////////
   boolean showFiles = true;
   boolean compareData = false;
 
-  public TestNcmlWriteAndCompareLocal(String location, boolean compareData) {
+  public TestNcmlWriteAndCompareLocal(String location) {
     this.location = StringUtil2.replace(location, '\\', "/");
-    this.compareData = compareData;
   }
 
   String location;
