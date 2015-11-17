@@ -1,4 +1,5 @@
 :source-highlighter: coderay
+:cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
 
 
@@ -43,7 +44,7 @@ The *_Point Feature Types_* that are implemented are:
 
 === Related documents:
 
-* CF 1.6 http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries[Discrete Sampling Geometries Conventions]
+* CF {cf}#discrete-sampling-geometries[Discrete Sampling Geometries Conventions]
 * link:CFencodingTable.adoc[CDM Nested Table encoding]
 * Complete link:PointFeatureUML.svg[Point Feature UML]
 

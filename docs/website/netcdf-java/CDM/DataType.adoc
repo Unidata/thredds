@@ -1,7 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = CDM Data Types
 
 This document explains how CDM data types are mapped into Netcdf-Java objects for version 5.0+. An IOSP chooses
@@ -249,50 +248,7 @@ Sequence data thus cannot be subset, but only sequentially traversed.
 === Variable Length Data
 
 When a Variable has a variable length dimension, *Variable.isVariableLength()* is true and things are more complicated
-than with rectangular arrays.
-
-1.  The Array DataType always matches the Variable DataType. hmmm this
-may not be good
-
-You cannot subset on the variable length dimension, all of it is always
-read. For example:
-
-an *ArrayObject* with the element type is returned. You cannot subset on
-the variable length dimension, all of it is always read. For example:
-
-----
-CDL:
-  short levels(acqtime=10, *);
-----
-
-[source,java]
-----
-Java:
-  Variable v = ncfile.findVariable("levels");
-  Array data = v.read();
-  NCdumpW.printArray(data, "read()",  new PrintWriter( System.out), null);
-
-  // loop over outer dimension
-  while (data.hasNext()) {
-    Array as = (Array) data.next(); // inner variable length array of short
-    NCdumpW.printArray(as, "",  new PrintWriter( System.out), null);
-  }
-
-  // subset ok on outer dimension
-  data = v.read("0:9:2,:");
-  NCdumpW.printArray(data, "read(0:9:2,:)",  new PrintWriter( System.out), null); // ok
-
-  data = v.read(new Section().appendRange(0,9,2).appendRange(null));
-  NCdumpW.printArray(data, "read(Section)",  new PrintWriter( System.out), null); // ok
-----
-
-------------------------------------------------------------------------------------------
-StructureDS
-ArrayObject.D1 newSeq = new ArrayObject.D1(ArraySequence.class, (int) seqArray.getSize());
-
-H5iosp
-Array ndimarray = Array.makeObjectArray(m.getDataType(), Array.class, newshape);
-------------------------------------------------------------------------------------------
+than with rectangular arrays. link:VariableLengthData.adoc[Details].
 
 '''''
 

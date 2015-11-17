@@ -34,7 +34,9 @@
 package ucar.nc2.ui;
 
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.IsMissingEvaluator;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.image.image.ImageArrayAdapter;
 import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
@@ -64,7 +66,6 @@ public class NCdumpPane extends TextHistoryPane {
   private StopButton stopButton;
 
   private NetcdfFile ds;
- // private VariableIF v;
 
   public NCdumpPane(PreferencesExt prefs) {
     super(true);
@@ -217,6 +218,7 @@ public class NCdumpPane extends TextHistoryPane {
     String contents, command;
     ucar.nc2.Variable v = null;
     ucar.ma2.Array data;
+    IsMissingEvaluator eval = null;
 
     CommonTask(String command) {
       this.command = command;
@@ -226,6 +228,9 @@ public class NCdumpPane extends TextHistoryPane {
           v = cer.v;
           cer = cer.child;
         }
+        if (v instanceof IsMissingEvaluator)
+          eval = (IsMissingEvaluator) v;
+
       } catch (Exception e) {
         ta.setText(e.getMessage());
       }
@@ -244,7 +249,7 @@ public class NCdumpPane extends TextHistoryPane {
         data = ds.readSection(command);
 
         if (data != null) {
-          imageView.setImage(ImageArrayAdapter.makeGrayscaleImage( task.data));
+          imageView.setImage(ImageArrayAdapter.makeGrayscaleImage( task.data, eval));
           imageWindow.show();
         }
 

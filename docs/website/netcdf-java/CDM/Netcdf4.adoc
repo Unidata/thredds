@@ -1,13 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
+= NetCDF-4 and CDM Data Models
 
-CDM/Netcdf4 Mapping
-===================
-
-= Mapping between the CDM and NetCDF-4 Data Models
-
-_last modified: June 2014_
+== Overview
 
 The CDM data model is close to, but not identical to the
 http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html[NetCDF-4
@@ -19,118 +15,70 @@ developed, eg to give users some control where needed.
 
 NetCDF-4 intentionally supports a simpler data model than HDF5, which
 means there are HDF5 files that cannot be converted to netCDF-4. See:
-http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15
+http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv15.
 
-'''''
+== DataTypes
 
-== Data Model Differences
+=== From netCDF-4 to CDM
 
-=== DataTypes
-
-___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
-==== From netCDF-4 to CDM
-
-* A netCDF-4 _Compound_ is a CDM __Structure__. Both can be arbitrarily
-nested. The components of the Compound type are called _fields_ in
-NetCDF-4 and _member variables_ in the CDM.
-* A netCDF-4 _Enum_ is a CDM _enum1, enum2,_ or _enum4_ and references a
-_EnumTypedef_ which holds the (enum, String) map.
+* A netCDF-4 _Compound_ is a CDM __Structure__. Both can be arbitrarily nested.
+The components of the Compound type are called _fields_ in NetCDF-4 and _member variables_ in the CDM.
+* A netCDF-4 _Enum_ is a CDM _enum1, enum2,_ or _enum4_ and references a _EnumTypedef_ which holds the (enum, String) map.
 * A netCDF-4 _Vlen_ is mapped to a CDM __variable length Dimension__.
-* A netCDF-4 _Opaque_ type is a CDM _opaque_ type, but the length of the
-data cannot be found until you read the data.
-* NetCDF-4 signed and unsigned _byte, short, int, long_ are mapped to
-CDM __byte, short, int, long__. If unsigned, the attribute *__Unsigned =
-``true''_* is added to the CDM Variable, and *Variable.isUnsigned()* is
-true, as well as *Array.isUnsigned(),* from any data that is read from
-the variable.
+* A netCDF-4 _Opaque_ type is a CDM _opaque_ type, but the length of the data cannot be found until you read the data.
+* NetCDF-4 signed and unsigned _byte, short, int, long_ are mapped to CDM __byte, short, int, long__.
 
-==== *From CDM to netCDF-4*
+=== From CDM to netCDF-4
 
 * A CDM array of Opaque may have a different length for each Opaque
 object. May have to read to find maximum length.
 * A CDM Structure may have member Variables that use shared dimensions.
-NetCDF4 / HDF5 does not support shared dimensions in Compound fields. If
-writing CDM to netCDF4, currently we just anonymize the shared
-dimensions.
+NetCDF4 / HDF5 does not support shared dimensions in Compound fields.
+If writing CDM to netCDF4, the shared dimensions are made private.
 * A CDM Structure member Variables may have attributes. NetCDF4 / HDF5
-does not support attributes on fields in Compound fields. The CDM uses
-link:Netcdf4CompoundAttributes.adoc[these conventions] for specifying
-attributes on compound fields.
-___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+does not support attributes on fields in Compound fields. The CDM uses the
+link:Netcdf4CompoundAttributes.adoc[Compound Attribute conventions] for specifying attributes on compound fields.
 
 === Type Definitions
 
-____________________________________________________________________________________________________________________________________________________________________________________________________________________
-==== From netCDF-4 to CDM
+* A netCDF-4 _Enumeration Type_ becomes a CDM *_EnumTypedef_*
+* All other netCDF-4 type definitions are repeated for each CDM variable that uses them.
+* The attribute *__Typedef = "typename"_* is added to the CDM Variable, where _typename_ is the name of the netCDF-4 type.
+* When writing to a netcdf-4 file, Variable attributes named *__Typedef_* are used to create a netCDF-4 type, thus preserving
+shared type semantics.
 
-* A netCDF-4 _Enumeration Type_ becomes a CDM __EnumTypedef__.
-* All other netCDF-4 type definitions are repeated for each CDM variable
-that uses them. The attribute *_Typedef = "__typename__"* ** is added to
-the CDM Variable, where typename is the name of the netCDF-4 type.
+== Attributes
 
-*From CDM to netCDF-4*
+In CDM, an attribute type may only be a scalar or 1D array of signed or unsigned _byte, short, int, long, float, double,_ or _String_.
+A _char_ type is mapped to a _String_.
 
-* A CDM _EnumTypedef_ becomes a netCDF-4 _Enumeration Type._
-* If a CDM Variable has an attribute *_Typedef = "__typename__",* then
-the Variables’ definition is made into a netCDF-4 type.
-____________________________________________________________________________________________________________________________________________________________________________________________________________________
+In netCDF4, attributes can be of any type, including user-defined.
 
-=== Attributes
+=== From netCDF-4 to CDM
 
-__________________________________________________________________________________________________________________________________________________________________________________________________
-In CDM, an attribute type may only be a scalar or 1D array of signed
-_byte, short, int, long, float, double,_ or __String__. A _char_ type is
-mapped to a __String__.
-
-==== From netCDF-4 to CDM
-
-* An attribute of _compound_ type in netCDF-4 is __flattened__, by
-making each field a separate attribute, with name _attName.fieldName_ in
-the CDM.
+* An attribute of _compound_ type in netCDF-4 is __flattened__, by making each field a separate attribute,
+with name _attName.fieldName_ in the CDM.
 * If the compound attribute is for a compound variable, and the field
 name of the attribute matches a field name of the variable, the
 attribute is added to that field instead of being flattened.
-* An attribute of _enum_ type in netCDF-4 becomes a _String_ type in the
-CDM. *???*
-* An attribute of _opaque_ type in netCDF-4 becomes a _byte_ type in the
-CDM.
-* An attribute of _vlen of type_ in netCDF-4 becomes an array of _type_
-in the CDM.
-* An attribute of an unsigned _byte, short, int_ in netCDF-4 is promoted
-to a signed _short, int, or long_ in the CDM.
+* An attribute of _enum_ type in netCDF-4 becomes a _String_ type in the CDM.
+* An attribute of _opaque_ type in netCDF-4 becomes a _byte_ type in the CDM.
+* An attribute of _vlen of type_ in netCDF-4 becomes an array of _type_ in the CDM.
 
-==== *From CDM to netCDF-4*
+=== From CDM to netCDF-4
 
-* Attributes on member variables of Structures are made into a compound
-attribute on the parent Structure.
-__________________________________________________________________________________________________________________________________________________________________________________________________
+* Attributes on member variables of Structures are made into a compound attribute on the parent Structure.
 
-'''''
-
-== Differences between netCDF-4 C and Java libraries for netCDF4 files
-
-=== Unsigned types
-
-* The C library uses unsigned integer types: NC_UBYTE, NC_USHORT,
-NC_UINT, NC_UINT64.
-* The Java library does not have separate types for unsigned integers,
-but adds the reserved attribute _*_Unsigned = ``true''*_ when the
-variable is unsigned. One can check this with _Variable.isUnsigned(),
-Attribute.isUnsigned(),_ and __Array.isUnsigned()__. Conversions done by
-the library are aware of this convention. Java does not have unsigned
-types, and we dont want to double the internal memory requirements by
-widening the data.
+== Differences between netCDF4 C and Java libraries when reading netCDF4 files
 
 === Enum Typedefs
 
-* If there is a enum typedef that is not used by a variable, it will not
-show up in the enum typedefs.
+* If there is a enum typedef that is not used by a variable, it will not show up in the enum typedefs.
 
 === Attributes
 
 * When a variable is chunked, an integer array attribute named
-__ChunkSize_ is added to the variable, whose values are the chunk size
-for each dimension.
+__ChunkSize_ is added to the variable, whose values are the chunk size for each dimension.
 
 === Creation Order
 
@@ -139,90 +87,37 @@ Variables, Groups and Attributes, while the Java library does not.
 
 === Compound field Types
 
-* in a netCDF4 file, fields in a Compound type may not have shared
-dimension.
+* in a netCDF4 file, fields in a Compound type may not have shared dimension.
 
-'''''
-
-== Differences between netCDF-4 C and Java libraries for HDF5 files
+== Differences between netCDF-4 C and Java libraries reading HDF5 files
 
 === Fixed length Strings with anonymous dimension
 
 * HDF5 object: type = 3 (String) with a dimension.
 * C library: turns these into variable length Strings
-* Java library: turns these into char arrays, with an anonymous
-dimension
+* Java library: turns these into char arrays, with an anonymous dimension
 
 === Anonymous dimensions
 
 * Java library: retains anonymous dimensions
-* C library: turn into shared dimensions, by matching on the dimension
-length
+* C library: turn into shared dimensions, by matching on the dimension length
 
 === Time datatype (HDF type 2)
 
-* Java library: turn into a short, int ot long, depending on the
-precision
+* Java library: turn into a _short, int_ or _long_, depending on the precision
 * C library: ignores this type
 
  
-
-'''''
-
-==
-
 == Internal Notes
 
-\1) char arrays are interpreted as UTF-8 bytes array (Strings) when they
-are attributes . but data arrays are not, they are run through
-unsignedToShort() and cast to char. this seems like trouble.
+. char arrays are interpreted as UTF-8 bytes array (Strings) when they are attributes.
+but data arrays are not, they are run through unsignedToShort() and cast to char. this seems like trouble.
+. nc4 allows arbitrary composition of vlen.
+cdm tries to map these to a variable length dimension, to get a ragged array, not part of the data type.
+But Arrays are rectangular, so its a difficult fit.
+. attributes : n4 can be user defined types, cdm: 1 dim array of primitive or String. Example:
 
-\2) nc4 allows arbitrary composition of vlen. cdm tries to map these to
-a variable length dimension, to get a ragged array, not part of the data
-type. But Arrays are rectangular, so its a difficult fit.
-
-could define ArrayRagged which maps to C multidim arrays.
-
-its natural to map
-
-------------------------------------
- int data(x,y,*) -> int(*) data(x,y)
-------------------------------------
-
-but it doesn’t generalize well to nested vlens. nc4 solution is to
-declare each type separately and chain them:
-
------------------
- int(*) type1;
- type1(*) type2;
- type2 data(x,y);
------------------
-
-Array.isVariableLength(). IOSP might return ArrayInteger from int
-data(*). Needs to return ArrayObject for int data(3,*), with
-Array.isVariableLength() true.
-
-----------------------------------------------------------------------------------------------------------------------------
-int(*)     returns ArrayInt
-int(3,*)   returns ArrayObject(3) with ArrayInt(*) inside
-int(*,3)  returns Array(n,3), whatever n happens to be.
-int(3,*,*) returns ArrayObject(3) with ArrayObject(*) inside with ArrayInt(*) inside.
-int(*,3,*) returns ArrayObject(n) with ArrayObject(3) inside with ArrayInt(*) inside.
-int(*,*,3) returns ArrayObject(n) with ArrayInt(*,3) inside. OR  ArrayObject(n) with ArrayObject(*) with ArrayInt(3) inside.
-
-struct {
-  int i1;
-  float vf(*);
-} s(3);
-
-is like float(3,*) -> ArrayObject(3) with ArrayFloat(*), inside the ArrayStructure.
-this is getting out of control
-----------------------------------------------------------------------------------------------------------------------------
-
-\3) attributes : n4 can be user defined types, cdm: 1 dim array of
-primitive or String.
-
--------------------------------------------------------------------------------------------------------------------------------------------
+----
 netcdf tst_enums {
   types:
     ubyte enum Bradys {Mike = 8, Carol = 7, Greg = 6, Marsha = 5, Peter = 4, Jan = 3, Bobby = 2, Whats-her-face = 1, Alice = 0} ;
@@ -237,6 +132,9 @@ netcdf R:/testdata/netcdf4/nc4/tst_enums.nc {
 
  :brady_attribute = "Alice", "Peter", "Mike";
 }
--------------------------------------------------------------------------------------------------------------------------------------------
+----
 
-==  +
+
+'''''
+
+image:../nc.gif[image] This document was last updated Nov 2015.

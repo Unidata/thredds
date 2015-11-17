@@ -38,6 +38,7 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.util.Misc;
 
 import java.util.*;
 
@@ -71,13 +72,14 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
     for (int runIdx = 0; runIdx < coordT2D.getNruns(); runIdx++) {  // possible duplicate runtimes from different partitions
       CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
-      CoordinateTimeAbstract timesPrev = timeMap.get(coordT2D.getRuntime(runIdx));
+      long runtime = coordT2D.getRuntime(runIdx);
+      CoordinateTimeAbstract timesPrev = timeMap.get(runtime);
       if (timesPrev != null && !shown) {
         logger.warn("CoordinateTime2DUnionizer duplicate runtimes from different partitions {}",
-                GribUtils.stackTraceToString(Thread.currentThread().getStackTrace()));
+                Misc.stackTraceToString(Thread.currentThread().getStackTrace()));
         shown = true;
       }
-      timeMap.put(coordT2D.getRuntime(runIdx), times);   // later partitions will override LOOK could check how many times there are and choose larger
+      timeMap.put(runtime, times);   // later partitions will override LOOK could check how many times there are and choose larger
     }
   }
 

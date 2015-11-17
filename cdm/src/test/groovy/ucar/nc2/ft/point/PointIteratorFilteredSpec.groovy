@@ -1,9 +1,8 @@
 package ucar.nc2.ft.point
 
-import org.junit.Assert
 import spock.lang.Specification
 import ucar.ma2.Array
-import ucar.ma2.ArrayChar
+import ucar.ma2.ArrayObject
 import ucar.ma2.StructureData
 import ucar.nc2.ft.FeatureDatasetPoint
 import ucar.nc2.ft.PointFeature
@@ -25,26 +24,26 @@ class PointIteratorFilteredSpec extends Specification {
         FeatureDatasetPoint fdPoint = PointTestUtil.openPointDataset("pointsToFilter.ncml")
 
         and: "bouding box"
-        double latMin = +10.0;
-        double latMax = +50.0;
-        double lonMin = -60.0;
-        double lonMax = +10.0;
+        double latMin = +10.0
+        double latMax = +50.0
+        double lonMin = -60.0
+        double lonMax = +10.0
         LatLonRect filter_bb = new LatLonRect(
-                new LatLonPointImpl(latMin, lonMin), new LatLonPointImpl(latMax, lonMax));
+                new LatLonPointImpl(latMin, lonMin), new LatLonPointImpl(latMax, lonMax))
 
         and: "time range"
-        CalendarDateUnit calDateUnit = CalendarDateUnit.of("standard", "days since 1970-01-01 00:00:00");
-        CalendarDate start = calDateUnit.makeCalendarDate(20);
-        CalendarDate end = calDateUnit.makeCalendarDate(130);
-        CalendarDateRange filter_date = CalendarDateRange.of(start, end);
+        CalendarDateUnit calDateUnit = CalendarDateUnit.of("standard", "days since 1970-01-01 00:00:00")
+        CalendarDate start = calDateUnit.makeCalendarDate(20)
+        CalendarDate end = calDateUnit.makeCalendarDate(130)
+        CalendarDateRange filter_date = CalendarDateRange.of(start, end)
 
         and: "filtered point iterator"
-        PointFeatureCollection flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
-        PointFeatureIterator pointIterOrig = flattenedDatasetCol.getPointFeatureIterator();
-        PointFeatureIterator pointIterFiltered = new PointIteratorFiltered(pointIterOrig, filter_bb, filter_date);
+        PointFeatureCollection flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint)
+        PointFeatureIterator pointIterOrig = flattenedDatasetCol.getPointFeatureIterator()
+        PointFeatureIterator pointIterFiltered = new PointIteratorFiltered(pointIterOrig, filter_bb, filter_date)
 
         expect:
-        getIdsOfPoints(pointIterFiltered) == ['B', 'E']
+        getIdsOfPoints(pointIterFiltered) == ['BBB', 'EEE']
 
         when: "we call next() when there are no more elements"
         pointIterFiltered.next()
@@ -53,7 +52,7 @@ class PointIteratorFilteredSpec extends Specification {
         e.message == 'This iterator has no more elements.'
 
         cleanup:
-        pointIterFiltered.close()
+        pointIterFiltered?.close()
         fdPoint?.close()
     }
 
@@ -67,10 +66,11 @@ class PointIteratorFilteredSpec extends Specification {
     }
 
     private static String getIdOfPoint(PointFeature pointFeat) throws IOException {
-        StructureData data = pointFeat.getFeatureData();
+        StructureData data = pointFeat.getFeatureData()
         Array memberArray = data.getArray("id");
-        Assert.assertTrue(memberArray instanceof ArrayChar.D1);
+        assert memberArray instanceof ArrayObject.D0
 
-        return ((ArrayChar.D1) memberArray).getString();
+        ArrayObject.D0 memberArrayObject = memberArray as ArrayObject.D0
+        return memberArrayObject.get() as String
     }
 }

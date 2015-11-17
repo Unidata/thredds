@@ -41,7 +41,6 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
@@ -214,10 +213,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return s;
   }
 
-  static private boolean skipEos = false;
+  static private boolean useHdfEos = false;
+  public static void useHdfEos(boolean val) {
+    useHdfEos = val;
+  }
 
   static public void setDebugFlags(DebugFlags flags) {
-    skipEos = flags.isSet("HdfEos/turnOff");
   }
 
   static final private boolean trace = false;
@@ -331,7 +332,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // check if its an HDF5-EOS file
     Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
-    if (eosInfo != null && !skipEos) {
+    if (eosInfo != null && useHdfEos) {
       isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }
 

@@ -1,67 +1,49 @@
 :source-highlighter: coderay
+:cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
-
-
-CalendarDateTime
-================
 
 = CDM Calendar Date Handling
 
-As of CDM version 4.3, dates are no longer handled by the
-http://www.unidata.ucar.edu/software/udunits/[udunits library]. This
-allows handling
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#calendar[non-standard
-Calendars]. This change only affects _*datetime*_ coordinate handling,
-called
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#time-coordinate[time
-coordinates] in CF. For all
-http://en.wikipedia.org/wiki/Dimensional_analysis[dimensional units],
-the udunits package is still used.
+== Overview
 
-'''''
+As of CDM version 4.3, dates are no longer handled by the http://www.unidata.ucar.edu/software/udunits/[udunits library].
+This allows handling {cf}#calendar[non-standard Calendars].
+This change only affects *_datetime_* coordinate handling, called {cf}#time-coordinate[time coordinates] in CF.
+For all http://en.wikipedia.org/wiki/Dimensional_analysis[dimensional units], the udunits package is still used.
 
-=== Definitions and Background
+=== Definitions
 
-* *_time_* is a duration of time (a dimensional unit). Udunits handles
-this using a base unit of ``seconds''. All other udunit time units are
-fixed multiples of a second.
-* _*datetime*_ is an instant of historical time. Udunits represents a
-datetime as a fixed number of seconds since a reference date, eg ``12
-days since 1990-02-03 12:22''.
-* *_calendar date_* (eg ``1990-02-03 12:22'') is a representation of a
-datetime using calendar fields (__millisec, second, minute, hour, day,
-month, year)__. This allows one to correctly represent the same instant
-of time that, for example, is printed in a newspaper or is referenced in
-a history book. We are following the design from the
-http://joda-time.sourceforge.net/userguide.html[joda-time library],
-which has a very good discussion of the issues in datetime handling
-software.
+* *_time_* is a duration of time (a dimensional unit).
+Udunits handles this using a base unit of "seconds".
+All other udunit time units are fixed multiples of a second.
+* *_datetime_* is an instant of historical time.
+Udunits represents a datetime as a fixed number of seconds since a reference date, eg "12 days since 1990-02-03 12:22".
+* *_calendar date_* (eg "1990-02-03 12:22") is a representation of a datetime using calendar fields
+(__millisec, second, minute, hour, day, month, year)__.
+This allows one to correctly represent the same instant of time that, for example, is printed in a newspaper or is referenced in a history book.
+We are following the design from the http://joda-time.sourceforge.net/userguide.html[joda-time library],
+which has a very good discussion of the issues in datetime handling software.
 
-'''''
-
-=== CDM datetime coordinates +
+== CDM datetime coordinates
 
 The CDM library allows datetime coordinates to be specified in the
 following forms:
 
 1.  *link:#udunit[udunit coordinate]:* Variables of any numeric type
 (__byte, short, int, long, float, double__) with a _*units*_ attribute
-that is a udunit date string, eg ``hours since 1930-01-01''. This is the
-only form that conforms to the
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#time-coordinate[current
-CF spec].
+that is a udunit date string, eg "hours since 1930-01-01". This is the
+only form that conforms to the {cf}#time-coordinate[current CF spec].
 2.  *link:#calendar_field[calendar field coordinate]:* Variables of any
 integer type (__byte, short, int, long__) with a _*units*_ attribute
-that is a udunit date string but with ``calendar'' added, eg ``calendar
-months since 1930-01-01''.
+that is a udunit date string but with "calendar" added, eg "calendar
+months since 1930-01-01".
 3.  *link:#ISO_String[ISO String coordinate]:* Variables of type
 _String_ or _char_ in which the values follow (a slightly extended
 version of) the W3C profile of ISO 8601.
 
 === Supported Calendars
 
-CDM 4.3 supports the following values of the *calendar* attribute, which
-is attached to the datetime coordinate:
+CDM supports the following values of the *calendar* attribute, which is attached to the datetime coordinate:
 
 * *gregorian* or *standard* = Mixed Gregorian/Julian calendar. Same as
 Udunits except that the dates 1582-10-05 to 1582-10-14 dont exist, nor
@@ -99,9 +81,7 @@ between CalendarDates.
 (**instead of a *ucar.units.Unit* or *ucar.nc2.units.DateUnit),* and are
 created in classes like **ucar.nc2.datset.CoordinateAxis1DTime**.
 
-'''''
-
-=== CDM udunit date grammar
+== CDM udunit date grammar
 
 The CDM library version 4.3 and after continues to accept udunits for
 time coordinate units, but it doesn’t use the udunit library to process
@@ -118,21 +98,20 @@ period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]
 
 The following specifies the CDM udunit date grammar:
 
---------------------------------------------------------------------------------------------------------------------------------------
+----
 udunitDate     = period SINCE reference_date
-period         = "millisec" | "msec" | "second" | "sec" | "s" | "minute" | "min" | "hour" | "hr" | "day" | "week" | "month" | "mon" | 
-                    "year" | "yr"
+period         = "millisec" | "msec" | "second" | "sec" | "s" | "minute" | "min" | "hour" | "hr"
+                  | "day" | "week" | "month" | "mon" | "year" | "yr"
 period         = period + "s" (plural form)
 reference_date = iso8601 formatted date as described below
 SINCE          = literal (case insensitive)
---------------------------------------------------------------------------------------------------------------------------------------
+----
 
 where
 
 * msec = millisec = seconds / 1000
 
-udunits defines the periods as fixed multiples of seconds. The
-non-obvious ones are:
+udunits defines the periods as fixed multiples of seconds. The non-obvious ones are:
 
 * day = 86400.0 seconds
 * week = 7 days = 604800.0 seconds
@@ -140,9 +119,9 @@ non-obvious ones are:
 * year = 3.15569259747E7 seconds
 
 The udunit package has some other periods that are no longer supported
-by CDM udunit date grammar, such as ``sidereal day'', ``lunar month'',
-``fortnight'', ``eon'', etc. Also CDM doesnt support the full menagerie
-of udunit prefixes like ``nano'', ``mega'', ``kilo'', and so on. Contact
+by CDM udunit date grammar, such as "sidereal day", "lunar month",
+"fortnight", "eon", etc. Also CDM doesnt support the full menagerie
+of udunit prefixes like "nano", "mega", "kilo", and so on. Contact
 us if this is a problem.
 
 CF and CDM agree that one should not use _month_ or _year_ as the period
@@ -176,8 +155,6 @@ in a udunit, in order to avoid the following sort of problems:
 90 years since 1850-01-01 == 1940-01-01T19:08:57Z
 -------------------------------------------------
 
-'''''
-
 === CDM calendar_field unit grammar
 
 The CDM accepts an extended form of udunit grammar, called a **_calendar
@@ -187,7 +164,7 @@ field unit_**:
 CALENDAR period SINCE reference_date
 ------------------------------------
 
-The presence of ``CALENDAR'' (case insensitive) means that the CDM
+The presence of "CALENDAR" (case insensitive) means that the CDM
 library manipulates the calendar field directly, rather than converting
 the period to a fixed multiple of seconds. The actual result depends on
 the calendar used. _*Note that values of the period must be an
@@ -263,17 +240,15 @@ and:
 14 calendar years since 2008-02-29 00:00:00Z == 2022-02-28T00:00:00.000Z
 ------------------------------------------------------------------------
 
-'''''
-
-=== W3C profile of ISO 8601
+== W3C profile of ISO 8601
 
 The CDM uses the http://www.w3.org/TR/NOTE-datetime.html[W3C profile of
 ISO 8601] formatting for reading and writing calendar dates:
 
-__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+____
 The formats defined by the W3C profile of ISO 8601 are as follows.
 Exactly the components shown here must be present, with exactly this
-punctuation. Note that the ``T'' appears literally in the string, to
+punctuation. Note that the "T" appears literally in the string, to
 indicate the beginning of the time element, as specified in ISO 8601.
 
 --------------------------------------------------------------------------------
@@ -303,60 +278,21 @@ where:
      s    = one or more digits representing a decimal fraction of a second
      TZD  = time zone designator (Z or +hh:mm or -hh:mm)
 --------------------------------------------------------------------------
-__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+____
 
-with the following differences, to allow backwards compatibility with
-udunits:
+But the CDM also allows the following, for backwards compatibility with udunits:
 
 * You may use a space instead of the `T'
-* The year may be preceeded by a `+' (ignored) or a `-' (makes the date
-BCE)
-* The date part uses a `-' delimiter instead of a fixed number of digits
-for each field
-* The time part uses a `:' delimiter instead of a fixed number of digits
-for each field
-* The time zone designator may be Z, UTC, or GMT (case insensitive) or
-+hh:mm or -hh:mm
+* The year may be preceeded by a `+' (ignored) or a `-' (makes the date BCE)
+* The date part uses a `-' delimiter instead of a fixed number of digits for each field
+* The time part uses a `:' delimiter instead of a fixed number of digits for each field
+* The time zone designator may be Z, UTC, or GMT (case insensitive) or +hh:mm or -hh:mm
 * The time zone may be omitted, and then UTC is assumed.
 
-In addition, the following must be done:
+In addition:
 
 * Any fields that are not specified are set to zero.
 
 '''''
 
-=== Possible extentions (not implemented)
-
------------------------------------------------------------------------------------------
-N [calendar] UNITS since DATE         // current
-
-
-N [calendar] UNITS since 65500 BCE   // assume we mean 0Z on 1 Jan. always calendar years
-N [calendar] UNITS since 65500k BCE
-N [calendar] UNITS since 65M BCE
-
-
-N calendar Myears before 1980-01-01
------------------------------------------------------------------------------------------
-
-'''''
-
-=== Getting a non-standard CalendarDate
-
-in *CalendarDate* class:
-
----------------------------------------------------------------------------------------------------------------------------------------------
- public static CalendarDate of(Calendar cal, int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute);
----------------------------------------------------------------------------------------------------------------------------------------------
-
-in *CalendarDateFormatter* class:
-
-----------------------------------------------------------------------------------------------------------------
- public static  CalendarDate isoStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException;
-----------------------------------------------------------------------------------------------------------------
-
-'''''
-
-image:../nc.gif[image] This document is maintained by
-mailto:caron@unidata.ucar.edu[John Caron] and was last updated October
-2012
+image:../nc.gif[image] This document was last updated Nov 2015.

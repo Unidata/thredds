@@ -69,7 +69,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugChunkIndexer = false;
   static boolean debugVlen = false;
   static boolean debugStructure = false;
-  static boolean skipEos = false;
+  static boolean useHdfEos = true;
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
 
@@ -81,7 +81,6 @@ public class H5iosp extends AbstractIOServiceProvider {
     debugFilterIndexer = debugFlag.isSet("H5iosp/filterIndexer");
     debugChunkIndexer = debugFlag.isSet("H5iosp/chunkIndexer");
     debugVlen = debugFlag.isSet("H5iosp/vlen");
-    skipEos = debugFlag.isSet("HdfEos/turnOff");
 
     H5header.setDebugFlags(debugFlag);
     H4header.setDebugFlags(debugFlag);
@@ -111,6 +110,10 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
   }
 
+  public static void useHdfEos(boolean val) {
+    useHdfEos = val;
+  }
+
   //////////////////////////////////////////////////////////////////////////////////
 
   //private RandomAccessFile raf;
@@ -128,7 +131,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     // check if its an HDF5-EOS file
     Group eosInfo = ncfile.getRootGroup().findGroup(HdfEos.HDF5_GROUP);
-    if (eosInfo != null && !skipEos) {
+    if (eosInfo != null && useHdfEos) {
       isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }
 
@@ -146,7 +149,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
     Object data;
-    Layout layout = null;
+    Layout layout;
 
     if (vinfo.useFillValue) { // fill value only
       Object pa = IospHelper.makePrimitiveArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());

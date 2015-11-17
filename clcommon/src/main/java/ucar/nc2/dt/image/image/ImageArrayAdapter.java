@@ -50,7 +50,7 @@ public class ImageArrayAdapter {
    * @param ma rank 2 or 3 array.
    * @return BufferedImage
    */
-  public static java.awt.image.BufferedImage makeGrayscaleImage( Array ma) {
+  public static java.awt.image.BufferedImage makeGrayscaleImage( Array ma, IsMissingEvaluator missEval) {
     if (ma.getRank() < 2) return null;
 
     if (ma.getRank() == 3)
@@ -61,7 +61,7 @@ public class ImageArrayAdapter {
 
     int h = ma.getShape()[0];
     int w = ma.getShape()[1];
-    DataBuffer dataBuffer = makeDataBuffer( ma);
+    DataBuffer dataBuffer = makeDataBuffer(ma, missEval);
 
     WritableRaster raster = WritableRaster.createInterleavedRaster(dataBuffer,
         w, h, //   int w, int h,
@@ -77,25 +77,28 @@ public class ImageArrayAdapter {
     return new BufferedImage( colorModel, raster, false, null);
   }
 
-  private static DataBuffer makeDataBuffer( Array ma) {
+  private static DataBuffer makeDataBuffer( Array ma, IsMissingEvaluator missEval) {
     if (ma instanceof ArrayByte)
       return makeByteDataBuffer( (ArrayByte) ma);
 
-    int h = ma.getShape()[0];
-    int w = ma.getShape()[1];
-
-    double min = MAMath.getMinimum(ma); // LOOK we need missing values to be removed !!
-    double max = MAMath.getMaximum(ma);
-    double scale = (max - min);
-    if (scale > 0.0)
-      scale = 255.0 / scale;
+    MAMath.MinMax minmax = MAMath.getMinMaxSkipMissingData(ma, missEval);
+    double diff = (minmax.max - minmax.min);
+    boolean hasMissing = (missEval != null) && missEval.hasMissing();
+    int n = hasMissing ? 254 : 255;
+    double scale = (diff > 0.0) ? n / diff : 1.0;
 
     IndexIterator ii = ma.getIndexIterator();
+    int h = ma.getShape()[0];
+    int w = ma.getShape()[1];
     byte[] byteData = new byte[h*w];
     for (int i = 0; i < byteData.length; i++) {
       double val = ii.getDoubleNext();
-      double sval = ((val - min) * scale);
-      byteData[i] = (byte) (sval); //  < 128.0 ? sval : sval - 255.0);
+      if (missEval != null && missEval.isMissing(val)) {
+        byteData[i] = (byte) 255; // missing
+      } else {
+        double sval = ((val - minmax.min) * scale);
+        byteData[i] = (byte) (sval); //  < 128.0 ? sval : sval - 255.0);
+      }
     }
 
     return new DataBufferByte(byteData, byteData.length);
@@ -105,128 +108,6 @@ public class ImageArrayAdapter {
     byte[] byteData = (byte []) ma.copyTo1DJavaArray();
     return new DataBufferByte(byteData, byteData.length);
   }
-
-    /* ComponentColorModel colorModel = new  ComponentColorModel (cs,
-        new int[] {16}, // int[] bits,
-        false, false, //  boolean hasAlpha,  boolean isAlphaPremultiplied,
-        Transparency.OPAQUE,DataBuffer.TYPE_BYTE); // int transparency,  int transferType)
-
-/*
-    // create a sample model
-    int bitMasks[] = new int[]{0xffff, 0xffff, 0xffff};
-    SampleModel sampleModel = new SinglePixelPackedSampleModel(DataBuffer.TYPE_USHORT, nelems, nlines, bitMasks);
-      new MultiPixelPackedSampleModel(DataBuffer.TYPE_USHORT, nelems, nlines, 16);
-    WritableRaster raster = Raster.createWritableRaster( sampleModel, dataBuffer, null);
-
-    // create a clor model
-    ColorModel colorModel = new DirectColorModel(ColorSpace.getInstance(ColorSpace.CS_LINEAR_RGB),
-                        16, // int bits,
-                        0xffff, // int rmask,
-                        0xffff, //int gmask,
-                        0xffff, // int bmask,
-                        0, // amask
-                        false,
-                        Transparency.OPAQUE);
-
-
-    //new ComponentColorModel( ColorSpace.getInstance(ColorSpace.CS_GRAY),
-    //    false, false, Transparency.OPAQUE, java.awt.image.DataBuffer.TYPE_USHORT); */
-
-
-
-    // long timeEnd = System.currentTimeMillis();
-    // if (Debug.isSet("ADDE/AddeImage/createTiming")) System.out.println("ADDE/AddeImage/createTiming AddeImage = "+ .001*(timeEnd - timeStart)+" sec");
-
-
-  /* private static JLabel test() {
-    byte[] tmp2 = new byte[900*641];
-    for (int i = 0; i < tmp2.length; i++) {
-      int row = i / 640;
-      int col = i % 640;
-      tmp2[i] = (byte) ( row * 255.0 / 900.0);
-    }
-
-    DataBuffer db = new DataBufferByte(tmp2,tmp2.length);
-
-    WritableRaster raster = WritableRaster.createInterleavedRaster
-    (db,900,640,900,1,new int[]{0},null);
-
-    ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-    ComponentColorModel cm = new ComponentColorModel(cs,new int[]
-    {8},false,false,Transparency.OPAQUE,DataBuffer.TYPE_BYTE);
-
-    BufferedImage image = new BufferedImage(cm, raster,true,null);
-
-    Graphics2D g2d = image.createGraphics();
-
-    // Draw on the image
-    g2d.setColor(Color.red);
-    g2d.draw(new Ellipse2D.Float(0, 0, 200, 100));
-    g2d.dispose();
-
-    // Make all filled pixels transparent
-    Color transparent = new Color(0, 0, 0, 0);
-    g2d.setColor(transparent);
-    g2d.setComposite(AlphaComposite.Src);
-    g2d.fill(new Rectangle2D.Float(320, 20, 100, 20));
-    g2d.dispose();
-
-    return new JLabel(new ImageIcon(image));
-  }
-
-  static public void main( String[] args) {
-
-    Array data = Array.factory(int.class, new int[] {255, 100} );
-    int count = 0;
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      int row = count/100;
-      ii.setIntNext(row*255);
-      count++;
-    }
-
-    BufferedImage image = ImageArrayAdapter.makeGrayscaleImage( data);
-
-    Raster raster = image.getRaster();
-    DataBuffer ds = raster.getDataBuffer();
-    SampleModel sm = raster.getSampleModel();
-
-    System.out.println(" image type = "+image.getType());
-    System.out.println(" transfer type = "+sm.getTransferType());
-
-    // see if we can operate on it
-    AffineTransform at = new AffineTransform();  // identity transform
-    AffineTransformOp op = new AffineTransformOp( at, AffineTransformOp.TYPE_NEAREST_NEIGHBOR );
-    BufferedImage targetImage = new BufferedImage(
-             image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR );
-
-    BufferedImage image2 = op.filter( image, targetImage );
-
-    System.out.println("ok!");
-
-    boolean display = true;
-    if (!display) return;
-
-    // show it !!
-    JFrame frame = new JFrame("Test");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        System.exit(0);
-      }
-    });
-
-    ImageIcon icon = new ImageIcon(image2);
-    JLabel lab = new JLabel( icon);
-
-    JPanel main = new JPanel();
-    main.add(lab);
-
-    frame.getContentPane().add(main);
-
-    frame.pack();
-    frame.setLocation(300, 300);
-    frame.setVisible(true);
-  }   */
 
 }
 

@@ -1,19 +1,14 @@
 :source-highlighter: coderay
+:cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
-
-
-Standard Vertical Transforms
-============================
 
 = Standard Vertical Transforms
 
-'''''
+== Overview
 
-This page documents the _*vertical coordinate transforms*_ that are
-standard in CDM. These follow the
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings[CF-1.0
-Convention], where they are called __*Dimensionless Vertical
-Coordinates*__. The purpose of a vertical transform is to define a
+This page documents the *_vertical coordinate transforms_* that are standard in CDM.
+These follow the {cf}#dimensionless-v-coord[CF-1.0 Convention], where they are called *_Dimensionless Vertical Coordinates_*.
+The purpose of a vertical transform is to define a
 function to calculate the pressure or height coordinate of each grid
 point in a data variable. This typically creates a 3D vertical
 coordinate, one which varies at each grid point. The dimensionless
@@ -34,10 +29,9 @@ double s_rho(s_rho=20);
   :formula_terms = "s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc";
 -----------------------------------------------------------------------------------
 
-This example is a CF _*ocean_s_coordinate*_ vertical coordinate. The
-formula terms, explained in the
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#dimensionless-v-coord[CF
-doc], point to variables in the same file, which the calculation needs:
+This example is a CF _ocean_s_coordinate_ vertical coordinate.
+The formula terms, explained in the {cf}#dimensionless-v-coord[CF doc], point to variables in the same file,
+which the calculation needs:
 
 --------------------------------------------------------------------------------
 Definition:
@@ -47,16 +41,16 @@ Definition:
 So in this example, anywhere you see s(k) in the definition, one uses
 the variable s_rho in the calculation. Similarly for the rest:
 
-----------------------------------------
-Definition term     actual variable name
----------------     -------------------
-s                   s_rho
-eta                     zeta
-depth               h
-a                   theta_s
-b                   theta_b
-depth_c                 hc
-----------------------------------------
+[options="header"]
+|====
+|Definition term  |   actual variable name
+|s    |               s_rho
+|eta   |                  zeta
+|depth |              h
+|a    |               theta_s
+|b    |               theta_b
+|depth_c |                hc
+|====
 
 All of these variables must exist in your file, and be the proper
 dimension etc, as spelled out in the CF doc. Note that the file writer
@@ -66,42 +60,37 @@ the CF spec, will use the above information to calculate the 3D vertical
 coordinate.
 
 This 3D vertical coordinate can be obtained in the CDM library by
-opening the file as a **NetcdfDataset**, and examining the
-*CoordinateSystem* attached to each **VariableDS**. Look through the
-transforms from *CoordinateSystem.getCoordinateTransforms()* for the
-vertical transform (class **ucar.nc2.dataset.VerticalCT**). For
+opening the file as a _NetcdfDataset_, and examining the
+_CoordinateSystem_ attached to each _VariableDS_. Look through the
+transforms from _CoordinateSystem.getCoordinateTransforms()_ for the
+vertical transform (class _ucar.nc2.dataset.VerticalCT_). For
 performance, the actual work is not done until you call
-*VerticalTransform vy = VerticalCT.makeVerticalTransform(),* and then
-*VerticalTransform.getCoordinateArray()* to get the 3D coordinate array.
+_VerticalTransform vy = VerticalCT.makeVerticalTransform(),_ and then
+_VerticalTransform.getCoordinateArray()_ to get the 3D coordinate array.
 
 *To summarize, in order for CF Vertical transforms to work in the CDM,
 you must:*
 
-1.  *Add the _standard_name, positive,_ and _formula_terms_ attributes
-to the vertical ccoordinate.*
-2.  *Add to your file all the variables required by the transform
-definition.*
-3.  *If you are writing your own software that needs the 3D
+.  Add the _standard_name, positive,_ and _formula_terms_ attributes
+to the vertical coordinate.
+.  Add to your file all the variables required by the transform
+definition.
+.  If you are writing your own software that needs the 3D
 pressure/height values, follow the above steps to retrieve the 3D
-vertical coordinate.*
+vertical coordinate.
 
 === Resources
 
 * Standard vertical transforms are documented on this page. You can
 also link:../tutorial/CoordTransBuilder.adoc[implement your own].
-* You may also be interested in
-link:StandardCoordinateTransforms.adoc[Standard Horizontal Coordinate
-Transforms].
+* You may also be interested in link:StandardCoordinateTransforms.adoc[Standard Horizontal Coordinate Transforms].
 * link:CoordinateAttributes.adoc[The CDM _Coordinate Conventions]
 
 == Standard Vertical Transforms
 
-Required attributes are in bold, optional in bold italics. Attribute
-names follow the
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings[CF
-Conventions] Appendix D (Vertical Transforms) and Appendix F (Grid
-Mappings). See that document for details on the meanings of the formula
-terms.
+Required attributes are in bold, optional in bold italics.
+Attribute names follow the {cf}#dimensionless-v-coord[CF Conventions] Appendix D (Vertical Transforms).
+See that document for details on the meanings of the formula terms.
 
 These are examples of placing the Coordinate Transform parameters on the
 corresponding vertical coordinate (required by CF). If you are using CF
@@ -110,7 +99,6 @@ they will be added automatically in the CoordSysBuilder.
 
 === atmosphere_ln_pressure_coordinate
 
-_________________________________________________________________________
 ----------------------------------------------------------
   double levCoord(levCoord=26);
      :long_name = "log pressure levels";
@@ -123,11 +111,9 @@ _________________________________________________________________________
 
 atmosphere_ln_pressure_coordinate transform only works in CF
 Conventions.
-_________________________________________________________________________
 
 === atmosphere_hybrid_height_coordinate
 
-____________________________________________________________
 ------------------------------------------------------------
   double lev(lev=26);
      :long_name = "hybrid hybrid height coordinate";
@@ -141,11 +127,9 @@ ____________________________________________________________
      :_CoordinateTransformType = "Vertical";
      :_CoordinateAxes = "lev";
 ------------------------------------------------------------
-____________________________________________________________
 
 === atmosphere_hybrid_sigma_pressure_coordinate
 
-____________________________________________________________________
 --------------------------------------------------------------------
   double lev(lev=26);
      :long_name = "hybrid level at midpoints (1000*(A+B))";
@@ -175,11 +159,9 @@ or +
      :_CoordinateTransformType = "Vertical";
      :_CoordinateAxes = "lev";
 --------------------------------------------------------------------
-____________________________________________________________________
 
 === atmosphere_sigma_coordinate
 
-_______________________________________________________
 -------------------------------------------------------
    float level(level=2);
      :units = "";
@@ -192,11 +174,9 @@ _______________________________________________________
      :_CoordinateTransformType = "Vertical";
      :_CoordinateAxes = "level";
 -------------------------------------------------------
-_______________________________________________________
 
 === ocean_s_coordinate
 
-______________________________________________________________________________________
 --------------------------------------------------------------------------------------
   double s_rho(s_rho=20);
      :long_name = "S-coordinate at RHO-points";
@@ -209,11 +189,9 @@ ________________________________________________________________________________
      :_CoordinateTransformType = "Vertical";
      :_CoordinateAxes = "s_rho";
 --------------------------------------------------------------------------------------
-______________________________________________________________________________________
 
 === ocean_s_coordinate_g1
 
-____________________________________________________________________________________________________________________________________________________________________
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
     char OceanSG1_Transform_s_rho;
      :standard_name = "ocean_s_coordinate_g1";
@@ -228,11 +206,9 @@ ________________________________________________________________________________
 
 Note that *standard_name* and *formula_terms* are the only attributes
 needed. The other are added for extra readability.
-____________________________________________________________________________________________________________________________________________________________________
 
 === ocean_s_coordinate_g2
 
-__________________________________________________________________________________________________________________________________________________
 --------------------------------------------------------------------------------------------------------------------------------------------------
    char OceanSG2_Transform_s_rho;
      :standard_name = "ocean_s_coordinate_g2";
@@ -247,11 +223,9 @@ ________________________________________________________________________________
 
 Note that *standard_name* and *formula_terms* are the only attributes
 needed. The other are added for extra readability.
-__________________________________________________________________________________________________________________________________________________
 
 === ocean_sigma_coordinate
 
-___________________________________________________________
 -----------------------------------------------------------
    float zpos(zpos=22);
      :long_name = "Sigma Layer";
@@ -264,11 +238,9 @@ ___________________________________________________________
      :_CoordinateTransformType = "Vertical";
      :_CoordinateAxes = "zpos";
 -----------------------------------------------------------
-___________________________________________________________
 
 === explicit_field
 
-_________________________________________________________________________________________________________________
 --------------------------------------------------------------------------------------------------------
   char ExplicitField;
     :standard_name = "explicit_field";  // canonical transform name
@@ -279,12 +251,11 @@ ________________________________________________________________________________
 
 This is not part of CF, but a way to mark an existing 3D (4D if time
 dependent) field as the vertical coordinate.
-_________________________________________________________________________________________________________________
 
 == Using Vertical Transforms
 
-____________________________________________________________________________________________________________
-------------------------------------------------------------------------------------------------------------
+[source,java]
+----
  public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
   GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "conventions/cf/ccsm2.nc");
   GridDatatype grid = gds.findGridDatatype("T");
@@ -298,9 +269,8 @@ ________________________________________________________________________________
        doSomething(ca);
   }
 }
-------------------------------------------------------------------------------------------------------------
-____________________________________________________________________________________________________________
+----
 
 '''''
 
-image:../nc.gif[image] This document was last updated January 2015
+image:../nc.gif[image] This document was last updated Nov 2015

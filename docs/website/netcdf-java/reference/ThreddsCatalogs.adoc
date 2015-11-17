@@ -1,15 +1,12 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-THREDDS Catalogs
-================
-
 = THREDDS Catalogs
 
-=== Reading Thredds Catalogs
+== Reading Thredds Catalogs
 
---------------------------------------------------------------------------------
+[source,java]
+----
 import thredds.client.catalog;
 
 public Catalog open(String urlString, boolean showMessages) throws IOException {
@@ -18,7 +15,6 @@ public Catalog open(String urlString, boolean showMessages) throws IOException {
   Catalog cat = builder.buildFromLocation(urlString);
   if (builder.hasFatalError()) {
     System.out.printf("ERRORS %s%n", builder.getErrorMessage());
-    assert false;
     return null;
 
   } else if (showMessages) {
@@ -28,35 +24,42 @@ public Catalog open(String urlString, boolean showMessages) throws IOException {
   }
   return cat;
 }
---------------------------------------------------------------------------------
+----
 
-If you are running throug the catalog, and you find a catalog reference,
-you can open it through:
+If you are running through a catalog, and you find a catalog reference, you can open it through:
 
----------------------------------------------------------------------
+[source,java]
+----
 public Catalog buildFromCatref(CatalogRef catref) throws IOException;
----------------------------------------------------------------------
-
-=== Writing Catalog
-
------------------------------------------------------
-import thredds.client.catalog.tools.CatalogXmlWriter;
-
-CatalogXmlWriter writer = new CatalogXmlWriter();
-writer.writeXML(cat, System.out, false);
------------------------------------------------------
+----
 
 === Opening Datasets from Catalogs
 
------------------------------------------------------------------------------------------
+[source,java]
+----
 import thredds.client.catalog.tools.DataFactory;
 
 DataFactory tdf = new DataFactory();
 NetcdfFile ncfile = tdf.openDataset(location, false, cancelTask, log); // LOOK acquire ??
------------------------------------------------------------------------------------------
+----
 
 === Opening Feature Collections
 
-----------------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
 RadialDatasetSweep rds = (RadialDatasetSweep) FeatureDatasetFactoryManager.open(FeatureType.RADIAL, fullpath, null, errlog);
-----------------------------------------------------------------------------------------------------------------------------
+----
+
+== Writing Catalogs
+
+[source,java]
+----
+import thredds.client.catalog.tools.CatalogXmlWriter;
+
+CatalogXmlWriter writer = new CatalogXmlWriter();
+writer.writeXML(cat, System.out, false);
+----
+
+'''''
+
+image:../nc.gif[image] This document was last updated Nov 2015

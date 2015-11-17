@@ -1,7 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 :tdsDocs: ../tds/reference
 
 = image:netcdfBig.gif[image] NetCDF-Java Library
@@ -80,8 +79,7 @@ with this API.
 implements the full CDM model, with all dependent jars included.
 * The ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v5.0/toolsUI-5.0.jar[toolsUI.jar]
 also includes UI classes, and allows you to run the netCDF ToolsUI application directly from it such as "__java -Xmx1g -jar toolsUI.jar__"
-* The ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v5.0/ncIdv-5.0.jar[ncIDV.jar]
-is for the development branch of the IDV.
+* The ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v5.0/ncIdv-5.0.jar[ncIDV.jar] is for the development branch of the IDV.
 * http://www.unidata.ucar.edu/software/thredds/v5.0/netcdf-java/javadoc/index.html[Public javadoc.]
 This is the public interface. Future changes to the API will attempt to remain backwards compatible with this API.
 * http://www.unidata.ucar.edu/software/thredds/v5.0/netcdf-java/javadocAll/index.html[All javadoc].
@@ -116,12 +114,13 @@ from the producer is possible and send them to us.
 === Related Documents:
 
 * link:reference/faq.adoc[Frequently Asked Questions]
+* link:reference/manPages.adoc[Utility programs]
 * link:tutorial/index.adoc[Tutorial]
 * link:reference/Cookbook.adoc[Cookbook]
-* link:/software/netcdf/examples/programs/[Example Basic Programs in C/C++/Fortran/Java]
+* http://www.unidata.ucar.edu/software/netcdf/examples/programs/[Example Basic Programs in C/C++/Fortran/Java]
 * link:reference/index.adoc[Reference Documentation]
 * link:CDM/index.adoc[Common Data Model]
-* link:ncml/index.adoc[NetCDF Markup Language] and ncml/AnnotatedSchema4.adoc[annotated schema]
+* link:ncml/index.adoc[NetCDF Markup Language] and link:ncml/AnnotatedSchema4.adoc[annotated schema]
 
 === CF Conventions
 
@@ -137,19 +136,15 @@ from the producer is possible and send them to us.
 
 === Coordinate Systems
 
-Working notes and documentation on the *_coordinate system_* layer of the CDM:
+Working notes and documentation on the *_Coordinate System_* layer of the CDM:
 
-* link:CDM/index.adoc#CoordSys[Common Data Model (CDM) and Coordinate
-Systems]
-* link:CDM/CoordinateSystemsNeeded.htm[Why we need Coordinate Systems]
-* _Coordinate Attribute Conventions
-(link:tutorial/CoordinateAttributes.adoc[examples])
-(link:reference/CoordinateAttributes.adoc[reference])
+* link:CDM/index.adoc#CoordSys[Common Data Model (CDM) and Coordinate Systems]
 
 === Feature Datasets
 
-Working notes and documents on the *_scientific feature type_* layer of the CDM:
+Working notes and documents on the *_Feature Type_* layer of the CDM:
 
+* link:CDM/index.adoc#ScientificFeatureTypes[Common Data Model (CDM) and Feature Types]
 * link:reference/FeatureDatasets/Overview.adoc[Feature Datasets (Overview)]
 * link:CoverageFeatures.adoc[Coverage Dataset]: Data in a multidimensional grid, eg model output, satellite data.
 * link:PointFeatures.adoc[Point Dataset]: Discrete Sampling Geometry (DSG) datasets
@@ -173,12 +168,9 @@ link:{tdsDocs}/ncISO.adoc[TDS implementation]
 
 === Miscellaneous Resources
 
-* http://www.unidata.ucar.edu/blogs/developer/en/category/NetCDF+Java[Netcdf-Java
-Blog]
-* Talk at netCDF workshop 2012
-(http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2012.pptx[pptx])
-* __On the suitability of BUFR and GRIB for archiving data__ (short
-paper Dec
+* http://www.unidata.ucar.edu/blogs/developer/en/category/NetCDF+Java[Netcdf-Java Blog]
+* Talk at netCDF workshop 2012 (http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2012.pptx[pptx])
+* __On the suitability of BUFR and GRIB for archiving data__ (short paper Dec
 2011 http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.docx[docx] http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[pdf])
 * Streaming NetCDF (netCDF workshop 2011)
 (http://www.unidata.ucar.edu/staff/caron/presentations/Streaming_NetCDF.pptx[pptx])
@@ -187,66 +179,41 @@ paper Dec
 * Talk at netCDF workshop 2009
 (http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2009.ppt[ppt])
 * http://coast-enviro.er.usgs.gov/models/share/toolsUI.wrf[ToolsUI] demo
-(You may need to download the
-http://www.webex.com/downloadplayer.html[free WebEx Player])
+(You may need to download the http://www.webex.com/downloadplayer.html[free WebEx Player])
 
 === Software libraries used by the Netcdf-Java library:
 
 * Apache Commons http://hc.apache.org/[HTTP Components] for HTTP access
 * http://www.jdom.org/[JDOM] for parsing XML
-* http://www.joda.org/joda-time/[Joda-Time] for Calendar Date/Time
-parsing
+* http://www.joda.org/joda-time/[Joda-Time] for Calendar Date/Time parsing
 * http://www.jgoodies.com/[JGoodies] for UI stuff
-* http://www.jpeg.org/jpeg2000/[JPEG2000] library for decoding GRIB2
-files
-* https://code.google.com/p/protobuf/[Protocol Buffers] from Google for
-fast object serialization
-* http://www.slf4j.org/[Simple Logging Facade for Java] (SLF4J) for
-logging
-* http://www.springframework.org/[Spring] lightweight application
-framework. Used in ToolsUI application.
-* http://www.ssec.wisc.edu/%7Ebillh/visad.html[VisAD] for reading McIDAS
-AREA files.
+* http://www.jpeg.org/jpeg2000/[JPEG2000] library for decoding GRIB2 files
+* https://code.google.com/p/protobuf/[Protocol Buffers] from Google for fast object serialization
+* http://www.slf4j.org/[Simple Logging Facade for Java] (SLF4J) for logging
+* http://www.springframework.org/[Spring] lightweight application framework. Used in ToolsUI application.
+* http://www.ssec.wisc.edu/%7Ebillh/visad.html[VisAD] for reading McIDAS AREA files.
 
 === Applications using the Netcdf-Java library (partial list):
 
-* http://coastwatch.pfel.noaa.gov/erddap/index.html[ERDDAP]
-(Environmental Research Division Data Access Program), from National
-Marine Fisheries Service’s Southwest Fisheries Science Center
-* http://www.pfeg.noaa.gov/products/EDC/[EDC] (Environmental Data
-Connector) plug-in for ArcGIS
-* http://ncwms.sf.net/[ncWMS] (Web Map Service for NetCDF data) and
-http://www.reading.ac.uk/godiva2[demo site] (University of Reading (UK)
-E-Science Center/Jon Blower)
-* http://miningsolutions.itsc.uah.edu/glider/[Globally Leveraged
-Integrated Data Explorer for Research] (aka GLIDER) (Univ. of Alabama at
-Huntsville)
-* http://www.unidata.ucar.edu/software/idv/[Integrated Data Viewer]
-(Unidata)
-* http://www.ncdc.noaa.gov/oa/wct/[NOAA’s Weather and Climate Toolkit]
-(NOAA/NCDC)http://www.ncdc.noaa.gov/wct/[]
-* http://ferret.pmel.noaa.gov/LAS[Live Access Server] from NOAA/OAR/PMEL
-(Pacific Marine Environmental Laboratory)
+* http://coastwatch.pfel.noaa.gov/erddap/index.html[ERDDAP] (Environmental Research Division Data Access Program), from National Marine Fisheries Service’s Southwest Fisheries Science Center
+* http://www.pfeg.noaa.gov/products/EDC/[EDC] (Environmental Data Connector) plug-in for ArcGIS
+* http://ncwms.sf.net/[ncWMS] (Web Map Service for NetCDF data) and http://www.reading.ac.uk/godiva2[demo site] (University of Reading (UK) E-Science Center/Jon Blower)
+* http://miningsolutions.itsc.uah.edu/glider/[Globally Leveraged Integrated Data Explorer for Research] (aka GLIDER) (Univ. of Alabama at Huntsville)
+* http://www.unidata.ucar.edu/software/idv/[Integrated Data Viewer] (Unidata)
+* http://www.ncdc.noaa.gov/oa/wct/[NOAA’s Weather and Climate Toolkit] (NOAA/NCDC)http://www.ncdc.noaa.gov/wct/[]
+* http://ferret.pmel.noaa.gov/LAS[Live Access Server] from NOAA/OAR/PMEL (Pacific Marine Environmental Laboratory)
 * MATLAB toolkits
-** http://sourceforge.net/apps/trac/njtbx[njTBX] (Rich Signell/USGS,
-Sachin Bhate/Mississippi State University)
-** http://code.google.com/p/nctoolbox/[nctoolbox] (Brian
-Schlining/MBARI)
-* https://github.com/rbotafogo/mdarray[MDArray] is a multidimensional
-array library for http://jruby.org/[JRuby] similar to
-http://www.numpy.org/[NumPy]
+** http://sourceforge.net/apps/trac/njtbx[njTBX] (Rich Signell/USGS, Sachin Bhate/Mississippi State University)
+** http://code.google.com/p/nctoolbox/[nctoolbox] (Brian Schlining/MBARI)
+* https://github.com/rbotafogo/mdarray[MDArray] is a multidimensional array library for http://jruby.org/[JRuby] similar to http://www.numpy.org/[NumPy]
 * http://www.myworldgis.org/[My World GIS](Northwestern University)
-* http://www.epic.noaa.gov/java/ncBrowse/[ncBrowse] (EPIC/NOAA) _(this
-uses an earlier version of the library)_
-* http://www.giss.nasa.gov/tools/panoply/[Panoply netCDF
-viewer](NASA/Goddard Institude for Space Studies/Robert B. Schmunk)
-* http://www.verdi-tool.org/[VERDI] ( Community Modeling and Analysis
-System (CMAS) Center at the University of North Carolina at Chapel Hill
-/ Argonne National Laboratory)
+* http://www.epic.noaa.gov/java/ncBrowse/[ncBrowse] (EPIC/NOAA) _(this uses an earlier version of the library)_
+* http://www.giss.nasa.gov/tools/panoply/[Panoply netCDF viewer](NASA/Goddard Institude for Space Studies/Robert B. Schmunk)
+* http://www.verdi-tool.org/[VERDI] ( Community Modeling and Analysis System (CMAS) Center at the University of North Carolina at Chapel Hill / Argonne National Laboratory)
 * MICAPS, Meteorological Information Comprehensive Analysis and Process
 System (National Meteorological Center, CMA, Beijing, China)
 * Google Earth Engine
 
 '''''
 
-link:NetcdfUsers.htm[image:nc.gif[image]] This document is maintained by elves and was last updated October 2015
+link:NetcdfUsers.htm[image:nc.gif[image]] This document is maintained by elves and was last updated Novenmber 2015

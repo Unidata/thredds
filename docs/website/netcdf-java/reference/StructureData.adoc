@@ -1,11 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-ArrayStructures
-===============
-
 = ArrayStructures
+
+== Overview
 
 In the netCDF-3 data model, all data is represented by multidimensional
 arrays, stored on disk or in memory in one-dimensional arrays,

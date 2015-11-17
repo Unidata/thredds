@@ -448,6 +448,11 @@ public class DatasetViewer extends JPanel {
           showDeclaration(table, true);
         }
       });
+      csPopup.addAction("Show Data", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          showData(table);
+        }
+      });
       csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           dumpData(table);
@@ -584,6 +589,27 @@ public class DatasetViewer extends JPanel {
     infoTA.gotoTop();
     infoWindow.setTitle("Variable Info");
     infoWindow.show();
+  }
+
+  private void showData(BeanTable from) {
+    Variable v = getCurrentVariable(from);
+    if (v == null) return;
+    infoTA.clear();
+
+    try {
+      Array data = v.read();
+      infoTA.setText( NCdumpW.toString(data, v.getFullName(), null));
+
+    } catch (Exception ex) {
+      StringWriter s = new StringWriter();
+      ex.printStackTrace( new PrintWriter(s));
+      infoTA.setText( s.toString());
+    }
+
+    infoTA.gotoTop();
+    infoWindow.setTitle("Variable Info");
+    infoWindow.show();
+
   }
 
   private void dumpData(BeanTable from) {
@@ -754,7 +780,7 @@ public class DatasetViewer extends JPanel {
 	  dataWindow.setComponent(variableTable);
     }
     Rectangle r = (Rectangle) prefs.getBean("dataWindowBounds", new Rectangle( 50, 300, 1000, 1200));
-    dataWindow.setBounds( r );
+    dataWindow.setBounds(r);
   	dataWindow.show();
   }
 

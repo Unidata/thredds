@@ -226,13 +226,8 @@ public class DatasetManager implements InitializingBean {
 
   /**
    * Open a file as a GridDataset, using getNetcdfFile(), so that it gets wrapped in NcML if needed.
-   *
-   * @param req     the request
-   * @param res     the response
-   * @param reqPath the request path
-   * @return GridDataset
-   * @throws IOException on read error
    */
+  // return null means request has been handled, and calling routine should exit without further processing
   public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
@@ -276,6 +271,7 @@ public class DatasetManager implements InitializingBean {
     }
   }
 
+  // return null means request has been handled, and calling routine should exit without further processing
   public FeatureDatasetPoint openPointDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
@@ -319,7 +315,7 @@ public class DatasetManager implements InitializingBean {
     }
   }
 
-
+  // return null means request has been handled, and calling routine should exit without further processing
   public CoverageCollection openCoverageDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     // first look for a feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);

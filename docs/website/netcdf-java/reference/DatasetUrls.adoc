@@ -1,7 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = Dataset URLs
 
 The netCDF-Java library can read *datasets* from a variety of sources.

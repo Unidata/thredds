@@ -839,8 +839,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private void readValues() {
-    coords = new double[(int) getSize()];
-    int count = 0;
     Array data;
     try {
       // setUseNaNs(false); // missing values not allowed LOOK not true for point data !!
@@ -851,9 +849,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new IllegalStateException(ioe);
     }
 
-    IndexIterator iter = data.getIndexIterator();
-    while (iter.hasNext())
-      coords[count++] = iter.getDoubleNext();
+    coords = (double []) data.get1DJavaArray(DataType.DOUBLE);
+    //IndexIterator iter = data.getIndexIterator();
+    //while (iter.hasNext())
+    //  coords[count++] = iter.getDoubleNext();
   }
 
   /**

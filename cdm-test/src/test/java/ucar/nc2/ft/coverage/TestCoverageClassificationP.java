@@ -43,7 +43,7 @@ public class TestCoverageClassificationP {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", FeatureType.FMRC, 4, 5, 1});              // scalar vert
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, 3, 5, 4});  // both x,y and lat,lon
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR, 4, 6, 22});  // x,y axis but no projection
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR, 4, 6, 20});  // x,y axis but no projection
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", FeatureType.CURVILINEAR, 4, 5, 7});  // GRIB Curvilinear
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", FeatureType.GRID, 4, 5, 65}); // SRC                               // TP

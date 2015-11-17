@@ -142,7 +142,7 @@ public class TestCoverageCurvilinear {
       CoverageCollection gds = cc.getCoverageCollections().get(0);
       Assert.assertNotNull(endpoint, gds);
       Assert.assertEquals(FeatureType.CURVILINEAR, gds.getCoverageType());
-      Assert.assertEquals(22, gds.getCoverageCount());
+      Assert.assertEquals(20, gds.getCoverageCount());
 
       String covName = "u";
       Coverage cover = gds.findCoverage(covName);

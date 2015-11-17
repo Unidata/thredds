@@ -500,7 +500,7 @@ public class MAMath {
   }
 
   public static MAMath.MinMax getMinMaxSkipMissingData(Array a, IsMissingEvaluator eval) {
-    if (!eval.hasMissing())
+    if (eval == null || !eval.hasMissing())
       return MAMath.getMinMax(a);
 
     IndexIterator iter = a.getIndexIterator();

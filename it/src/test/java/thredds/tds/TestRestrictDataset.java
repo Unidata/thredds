@@ -32,7 +32,6 @@
  */
 package thredds.tds;
 
-import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.Assert;
 import org.junit.Test;
@@ -72,7 +71,7 @@ public class TestRestrictDataset {
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
             {"/dodsC/testRestrictedDataset/testData2.nc.dds"},
-            {"/cdmremote/testRestrictedDataset/testData2.nc?req=form"},
+            {"/cdmremote/testRestrictedDataset/testData2.nc?req=header"},
             {"/fileServer/testRestrictedDataset/testData2.nc"},
          //   {"/wms/testRestrictedDataset/testData2.nc?service=WMS&version=1.3.0&request=GetCapabilities"},
 
@@ -85,7 +84,7 @@ public class TestRestrictDataset {
             // restricted GRIB collections
             {"/dodsC/restrictCollection/GFS_CONUS_80km/TwoD.dds"},
             {"/ncss/grid/restrictCollection/GFS_CONUS_80km/TwoD/dataset.html"},
-            {"/cdmremote/restrictCollection/GFS_CONUS_80km/TwoD?req=form"},
+            {"/cdmremote/restrictCollection/GFS_CONUS_80km/TwoD?req=header"},
         });
     }
 
@@ -131,16 +130,13 @@ public class TestRestrictDataset {
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
-
       Assert.assertEquals(401, statusCode);
 
     } catch (ucar.httpservices.HTTPException e) {
-
       System.out.printf("Should return 401 err=%s%n", e.getMessage());
       assert false;
 
     } catch (Exception e) {
-
       e.printStackTrace();
       assert false;
     }
@@ -158,9 +154,9 @@ public class TestRestrictDataset {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      if (statusCode != 401 && statusCode != 403)
-        assert false;
-      // Assert.assertEquals(401, statusCode);
+      //if (statusCode != 401 && statusCode != 403)
+      //  assert false;
+      Assert.assertEquals(401, statusCode);
 
     } catch (ucar.httpservices.HTTPException e) {
 

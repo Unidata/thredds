@@ -437,7 +437,9 @@ public class FeatureDatasetFactoryManager {
    */
   static public FeatureType findFeatureType(NetcdfFile ncd) {
     // search for explicit featureType global attribute
-    String cdm_datatype = ncd.findAttValueIgnoreCase(null, "cdm_data_type", null);
+    String cdm_datatype = ncd.findAttValueIgnoreCase(null,  CF.FEATURE_TYPE, null);
+    if (cdm_datatype == null)
+      cdm_datatype = ncd.findAttValueIgnoreCase(null, "cdm_data_type", null);
     if (cdm_datatype == null)
       cdm_datatype = ncd.findAttValueIgnoreCase(null, "cdm_datatype", null);
     if (cdm_datatype == null)
@@ -453,6 +455,8 @@ public class FeatureDatasetFactoryManager {
 
     CF.FeatureType cff = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ncd);
     if (cff != null) return CF.FeatureType.convert(cff);
+
+
     return null;
   }
 

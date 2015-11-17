@@ -35,6 +35,7 @@ package ucar.nc2.ft2.coverage.adapter;
 
 import com.beust.jcommander.internal.Lists;
 import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
@@ -45,7 +46,7 @@ import ucar.unidata.geoloc.projection.RotatedPole;
 import java.util.*;
 
 /**
- * Move functionality of ft.CoverageCSFactory
+ * Coverage CS classification and builder, using ucar.nc2.dataset.CoordinateSystem
  *
  * @author caron
  * @since 5/26/2015
@@ -372,7 +373,5 @@ public class DtCoverageCSBuilder {
     }
     return f2.toString();
   }
-
-
 
 }
