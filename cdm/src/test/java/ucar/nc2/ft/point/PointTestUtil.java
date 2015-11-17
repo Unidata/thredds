@@ -1,26 +1,21 @@
 package ucar.nc2.ft.point;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Formatter;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
 import com.google.common.math.DoubleMath;
 import ucar.ma2.Array;
 import ucar.ma2.MAMath;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.NoFactoryFoundException;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.*;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.Station;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Objects;
 
 /**
  * @author cwardgar
@@ -31,7 +26,8 @@ public class PointTestUtil {
     public static FeatureDatasetPoint openPointDataset(String resource)
             throws IOException, NoFactoryFoundException, URISyntaxException {
         File file = new File(PointTestUtil.class.getResource(resource).toURI());
-        return (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, file.getAbsolutePath(), null, new Formatter());
+        return (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+                FeatureType.ANY_POINT, file.getAbsolutePath(), null);
     }
 
     public static void writeFeatureCollection(PointFeatureCollection pointFeatColl) throws IOException {

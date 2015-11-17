@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
     <dimension name="obs" length="6"/>
-    <dimension name="id_strlen" length="1"/>
 
     <variable name="time" shape="obs" type="double">
         <attribute name="standard_name" value="time"/>
@@ -33,9 +32,9 @@
         <values>630 94 1760 264 1090 345</values>
     </variable>
 
-    <variable name="id" shape="obs id_strlen" type="char">
+    <variable name="id" shape="obs" type="string">
         <attribute name="coordinates" value="time lat lon alt"/>
-        <values>ABCDEF</values>
+        <values>AAA BBB CCC DDD EEE FFF</values>
     </variable>
 
     <attribute name="featureType" value="point"/>
