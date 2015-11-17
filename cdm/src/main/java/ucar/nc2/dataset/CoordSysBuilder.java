@@ -48,19 +48,19 @@ import java.util.*;
 
 /**
  * Abstract class for implementing Convention-specific parsing of netCDF files.
- * <p/>
+ * <p>
  * You can use an NcML file alone (use registerNcML()) if file uses a convention attribute.
  * If not, you must implement a class that implements isMine() to identify your files, and
  * call wrapNcML in the augmentDataset method (see eg ATDRadarConvention class).
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * Subclasses Info:
  * <pre>
  * // identify which variables are coordinate axes
  * // default: 1) coordinate variables 2) variables with _coordinateAxisType attribute 3) variables listed
  * // in a coordinates attribute on another variable.
  * findCoordinateAxes( ncDataset);
- * <p/>
+ *
  * // identify which variables are used to describe coordinate system
  * findCoordinateSystems( ncDataset);
  * // identify which variables are used to describe coordinate transforms
@@ -69,13 +69,13 @@ import java.util.*;
  * makeCoordinateAxes( ncDataset);
  * // make Coordinate Systems for all Coordinate Systems Variables
  * makeCoordinateSystems( ncDataset);
- * <p/>
+ *
  * // Assign explicit CoordinateSystem objects to variables
  * assignExplicitCoordinateSystems( ncDataset);
  * makeCoordinateSystemsImplicit( ncDataset);
  * if (useMaximalCoordSys)
  * makeCoordinateSystemsMaximal( ncDataset);
- * <p/>
+ *
  * makeCoordinateTransforms( ncDataset);
  * assignCoordinateTransforms( ncDataset);
  * </pre>
@@ -109,6 +109,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static private List<Convention> conventionList = new ArrayList<>();
   static private Map<String, String> ncmlHash = new HashMap<>();
   static private boolean useMaximalCoordSys = true;
+  static private boolean useCompleteCoordSys = true;
   static private boolean userMode = false;
 
   /**
@@ -166,7 +167,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention("epic-insitu-1.0", EpicInsitu.class, null);
     registerConvention("NCAR-RAF/nimbus", Nimbus.class, null);
     registerConvention("Cosmic1Convention", Cosmic1Convention.class, null);
-    registerConvention("Jason2Convention", Jason2Convention.class, null);  
+    registerConvention("Jason2Convention", Jason2Convention.class, null);
     registerConvention("Suomi", Suomi.class, null);
 
     // new
@@ -283,8 +284,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   /**
    * Breakup list of Convention names in the Convention attribute in CF compliant way.
+   *
    * @param convAttValue original value of Convention attribute
-   * @return  list of Convention names
+   * @return list of Convention names
    */
   static public List<String> breakupConventionNames(String convAttValue) {
     List<String> names = new ArrayList<>();
@@ -313,6 +315,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   /**
    * Build a list of Conventions
+   *
    * @param mainConv this is the main convention
    * @param convAtts list of others, onbly use "extra" Conventions
    * @return comma separated list of Conventions
@@ -427,21 +430,21 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         Class c = csb.getClass();
         Method m;
         try {
-           m = c.getMethod("isMine", NetcdfFile.class);
-         } catch (NoSuchMethodException ex) {
-           continue;
-         }
+          m = c.getMethod("isMine", NetcdfFile.class);
+        } catch (NoSuchMethodException ex) {
+          continue;
+        }
 
-         try {
-           Boolean result = (Boolean) m.invoke(null, ds);
-           if (result) {
-             builder = csb;
-             convClass = c;
-             break;
-           }
-         } catch (Exception ex) {
-           log.error("ERROR: Class " + c.getName() + " Exception invoking isMine method%n" + ex);
-         }
+        try {
+          Boolean result = (Boolean) m.invoke(null, ds);
+          if (result) {
+            builder = csb;
+            convClass = c;
+            break;
+          }
+        } catch (Exception ex) {
+          log.error("ERROR: Class " + c.getName() + " Exception invoking isMine method%n" + ex);
+        }
       }
 
     }
@@ -463,7 +466,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     if (convName == null)
       builder.addUserAdvice("No 'Conventions' global attribute.");
     else if (convClass == DefaultConvention.class)
-      builder.addUserAdvice("No CoordSysBuilder is defined for Conventions= '"+convName+"'\n");
+      builder.addUserAdvice("No CoordSysBuilder is defined for Conventions= '" + convName + "'\n");
     else
       builder.setConventionUsed(convClass.getName());
 
@@ -522,7 +525,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   // subclasses can override any of these routines
 
   @Override
-  public void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException { }
+  public void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
+  }
 
   /**
    * Identify what kind of AxisType the named variable is.
@@ -823,9 +827,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * Make implicit CoordinateSystem objects for variables that dont already have one, by using the
    * variables' list of coordinate axes, and any coordinateVariables for it. Must be at least 2 axes.
    * All of a variable's _Coordinate Variables_ plus any variables listed in a *__CoordinateAxes_* or *_coordinates_* attribute
-     will be made into an *_implicit_* Coordinate System.
-    If there are at least two axes, and the coordinate system uses all of the variable's dimensions,
-    it will be asssigned to the data variable.
+   * will be made into an *_implicit_* Coordinate System.
+   * If there are at least two axes, and the coordinate system uses all of the variable's dimensions,
+   * it will be asssigned to the data variable.
    */
   protected void makeCoordinateSystemsImplicit(NetcdfDataset ncDataset) {
     // do largest rank first
@@ -882,20 +886,18 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       String csName = CoordinateSystem.makeName(axisList);
       CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
-      // if (cs != null) {
-      if (cs != null && cs.isComplete(ve)) {
-        // if (null != implicit) ve.removeCoordinateSystem(implicit);
+      if (cs != null && (!useCompleteCoordSys || cs.isComplete(ve))) {
         ve.addCoordinateSystem(cs);
         parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s%n", cs.getName(), ve.getFullName());
 
       } else {
         CoordinateSystem csnew = new CoordinateSystem(ncDataset, axisList, null);
-        if (!csnew.isComplete(ve)) continue;
-        csnew.setImplicit(true);
-        // if (null != implicit) ve.removeCoordinateSystem(implicit);
-        ve.addCoordinateSystem(csnew);
-        ncDataset.addCoordinateSystem(csnew);
-        parseInfo.format(" created maximal CoordSystem '%s' for var= %s%n", csnew.getName(), ve.getFullName());
+        if (!useCompleteCoordSys || csnew.isComplete(ve)) {
+          csnew.setImplicit(true);
+          ve.addCoordinateSystem(csnew);
+          ncDataset.addCoordinateSystem(csnew);
+          parseInfo.format(" created maximal CoordSystem '%s' for var= %s%n", csnew.getName(), ve.getFullName());
+        }
       }
 
     }
@@ -911,15 +913,19 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
   protected boolean isCoordinateAxisForVariable(Variable axis, VariableEnhanced v) {
+    /* sequence members can only have coords in same structure
+    if (v.getDataType() == DataType.SEQUENCE) return false;
+    Structure p = v.getParentStructure();
+    if (p != null && ) {
+
+    } */
+
+
     List<Dimension> varDims = v.getDimensionsAll();
     List<Dimension> axisDims = axis.getDimensionsAll();
-    /* for (Dimension d : varDims) {
-      if (!d.isShared())
-        return false; // anon cant have coordinates
-    } */ // LOOK
 
     // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
-    int checkDims = axis.getRank();
+    int checkDims = axisDims.size();
     if (axis.getDataType() == DataType.CHAR)
       checkDims--;
 
@@ -1348,13 +1354,13 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       return axesList;
     }
 
-   void addCoordinateTransform(CoordinateTransform ct) {
-     if (cs == null) {
-       parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s%n", v.getFullName(), ct.getName());
-       return;
-     }
-     cs.addCoordinateTransform(ct);
-   }
+    void addCoordinateTransform(CoordinateTransform ct) {
+      if (cs == null) {
+        parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s%n", v.getFullName(), ct.getName());
+        return;
+      }
+      cs.addCoordinateTransform(ct);
+    }
 
   }
 

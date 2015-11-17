@@ -41,6 +41,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.unidata.geoloc.LatLonPoint;
 
+import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public interface GridCoordSystem {
    * Get the list of dimensions used by any of the Axes in the Coordinate System.
    * @return List of Dimension
    */
-  public List<Dimension> getDomain();
+  public Collection<Dimension> getDomain();
 
   // axes
 

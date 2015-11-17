@@ -418,7 +418,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     // collect dimensions
     for (CoordinateAxis axis : coordAxes) {
-      List<Dimension> dims = axis.getDimensions();
+      List<Dimension> dims = axis.getDimensionsAll();
       for (Dimension dim : dims) {
         if (!domain.contains(dim))
           domain.add(dim);
@@ -566,7 +566,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     // collect dimensions
     for (CoordinateAxis axis : coordAxes) {
-      List<Dimension> dims = axis.getDimensions();
+      List<Dimension> dims = axis.getDimensionsAll();
       for (Dimension dim : dims) {
         dim.setShared(true); // make them shared (section will make them unshared)
         if (!domain.contains(dim))
@@ -580,6 +580,11 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   private CoordinateAxis convertUnits(CoordinateAxis axis) {
     String units = axis.getUnitsString();
     SimpleUnit axisUnit = SimpleUnit.factory(units);
+    if (axisUnit == null) {
+      if (warnUnits) log.warn("cant parse unit= {}", units);
+      return axis;
+    }
+
     double factor;
     try {
       factor = axisUnit.convertTo(1.0, SimpleUnit.kmUnit);
