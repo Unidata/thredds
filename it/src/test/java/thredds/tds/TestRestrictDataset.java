@@ -40,10 +40,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
-import ucar.httpservices.HTTPConstantProvider;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
+import ucar.httpservices.*;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.util.Arrays;
@@ -105,7 +102,8 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      HTTPMethod method = HTTPFactory.Get(session);
+        HTTPCachingProvider.clearCache();
+        HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
       Assert.assertEquals(401, statusCode);
@@ -128,7 +126,8 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
+        HTTPCachingProvider.clearCache();
+        session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -153,7 +152,8 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
+        HTTPCachingProvider.clearCache();
+        session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -180,7 +180,8 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "tigge")));
+        HTTPCachingProvider.clearCache();
+        session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "tigge")));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -209,6 +210,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
     try {
       try (HTTPMethod method = HTTPFactory.Get(endpoint)) {
+          HTTPCachingProvider.clearCache();
         int statusCode = method.execute();
         if (statusCode != 401 && statusCode != 403) {
           System.out.printf("statuscode=%d expected 401 or 403%n", statusCode);
