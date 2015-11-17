@@ -1,4 +1,5 @@
 :source-highlighter: coderay
+:cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
 
 
@@ -54,8 +55,7 @@ link:reference/services/NetcdfSubsetServiceReference.adoc[NetCDF Subset
 Service] allows subsetting certain CDM datasets in coordinate space,
 using a REST API. Gridded data subsets can be returned in
 http://cfconventions.org/[CF-compliant] netCDF-3 or netCDF-4. Point data
-subsets can be returned in CSV, XML, or
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries[CF-DSG]
+subsets can be returned in CSV, XML, or {cf}#discrete-sampling-geometries[CF-DSG]
 netCDF files.
 10. The integrated
 link:../netcdf-java/reference/stream/CdmRemote.adoc[CDM Remote Service]

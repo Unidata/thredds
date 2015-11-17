@@ -1,4 +1,5 @@
 :source-highlighter: coderay
+:cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
 
 :stylesheet: ../../tds_adoc.css
@@ -19,7 +20,7 @@ NCSS supports spatial and temporal subsetting on collections of grids, stations 
 link:#DatasetDescription[Dataset Description] XML document, which describes the dataset in enough detail to enable a programmatic client to form valid
 data requests.
 
-NCSS may return netCDF binary files (using http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html[CF Conventions]),
+NCSS may return netCDF binary files (using {cf}[CF Conventions]),
 XML, ASCII, or http://www.opengeospatial.org/standards/waterml[WaterML2] depending on the request and the dataset.
 
 NCSS uses HTTP GET with key-value pairs (KVP) which may appear in any order. The service interface follows

@@ -1,7 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 :tdsDocs: ../tds/reference
 
 = image:netcdfBig.gif[image] NetCDF-Java Library
@@ -115,12 +114,13 @@ from the producer is possible and send them to us.
 === Related Documents:
 
 * link:reference/faq.adoc[Frequently Asked Questions]
+* link:reference/manPages.adoc[Utility programs]
 * link:tutorial/index.adoc[Tutorial]
 * link:reference/Cookbook.adoc[Cookbook]
-* link:/software/netcdf/examples/programs/[Example Basic Programs in C/C++/Fortran/Java]
+* http://www.unidata.ucar.edu/software/netcdf/examples/programs/[Example Basic Programs in C/C++/Fortran/Java]
 * link:reference/index.adoc[Reference Documentation]
 * link:CDM/index.adoc[Common Data Model]
-* link:ncml/index.adoc[NetCDF Markup Language] and ncml/AnnotatedSchema4.adoc[annotated schema]
+* link:ncml/index.adoc[NetCDF Markup Language] and link:ncml/AnnotatedSchema4.adoc[annotated schema]
 
 === CF Conventions
 

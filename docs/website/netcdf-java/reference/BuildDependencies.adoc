@@ -195,4 +195,8 @@ lm.readConfiguration(inputStream);
 </Configuration>
 ----
 
-=== See the http://www.slf4j.org/manual.html[SLF4J manual] for more possibilites.
+See the http://www.slf4j.org/manual.html[SLF4J manual] for more possibilites.
+
+'''''
+
+image:../nc.gif[image] This document was last updated Nov 2015

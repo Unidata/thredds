@@ -6,6 +6,7 @@
 * link:faq.adoc[Frequently Asked Questions]
 * link:manPages.adoc[CDM utility programs]
 * link:Cookbook.adoc[Cookbook Examples]
+* link:BuildDependencies.adoc[Building from source]
 
 == NetCDF-Java library
 
@@ -22,9 +23,11 @@
 * HTTP link:Auth.adoc[Authentication] and link:Session.adoc[Session Control]
 * link:HTTPservice.adoc[HTTP Server: remote files using HTTP]
 * link:netcdf4Clibrary.adoc[NetCDF-4 file writing]
+* link:../ncml/index.adoc[NcML]
 * link:RuntimeLoading.adoc[Runtime Loading] (aka _plug-ins_)
 * link:StandardCoordinateTransforms.adoc[Standard Horizontal Coordinate Transforms]
-* link:StandardCoordinateTransforms.adoc[Standard Vertical Coordinate Transforms]
+* link:StandardVerticalTransforms.adoc[Standard Vertical Coordinate Transforms]
+* link:ThreddsCatalogs.adoc[THREDDS Catalogs]
 
 == Common Data Model (CDM)
 
