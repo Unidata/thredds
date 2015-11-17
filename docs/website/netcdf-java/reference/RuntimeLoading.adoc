@@ -132,29 +132,20 @@ The configuration file looks like this:
 ----
 
 1.  Loads an *IOServiceProvider* with the given class name
-2.  Loads a *CoordSysBuilderIF* with the given class name, which looks
-for the given *Convention* attribute value.
+2.  Loads a *CoordSysBuilderIF* with the given class name, which looks for the given *Convention* attribute value.
 3.  Loads a *CoordTransBuilderIF* with the given class name, which looks
-for the given *transformName* in the dataset. The type must be
-_vertical_ or __projection__.
-4.  Loads a *FeatureDatasetFactory* with the given class name which open
-*FeatureDatasets* of the given featureType.
-5.  Load a link:formats/GribTables.adoc[GRIB-1 parameter table] (as of
-version 4.3)
-6.  Load a link:formats/GribTables.adoc[GRIB-1 parameter table lookup]
-(as of version 4.3)
-7.  Load a link:formats/GribTables.adoc[GRIB-1 parameter lookup table]
-(versions < 4.3, deprecated)
-8.  Load a link:formats/GribTables.adoc[GRIB-2 parameter lookup table]
-(versions < 4.3, deprecated)
+for the given *transformName* in the dataset. The type must be _vertical_ or __projection__.
+4.  Loads a *FeatureDatasetFactory* with the given class name which open *FeatureDatasets* of the given featureType.
+5.  Load a link:formats/GribTables.adoc[GRIB-1 parameter table] (as of version 4.3)
+6.  Load a link:formats/GribTables.adoc[GRIB-1 parameter table lookup] (as of version 4.3)
+7.  Load a link:formats/GribTables.adoc[GRIB-1 parameter lookup table] (versions < 4.3, deprecated)
+8.  Load a link:formats/GribTables.adoc[GRIB-2 parameter lookup table] (versions < 4.3, deprecated)
 9.  Load a link:formats/BufrTables.adoc[BUFR table lookup] file
-10. Turn link:formats/GribTables.adoc#strict[strict GRIB1 table
-handling] off.
+10. Turn link:formats/GribTables.adoc#strict[strict GRIB1 table handling] off.
 11. Set the link:netcdf4Clibrary.adoc[netCDF-4 C library] path and name.
 
 There are several ways pass the Runtime Configuration XML to the CDM
-library. From your application, you can pass a *java.io.InputStream* (or
-http://www.jdom.org/[JDOM] element) to
+library. From your application, you can pass a *java.io.InputStream* (or http://www.jdom.org/[JDOM] element) to
 **ucar.nc2.util.xml.RuntimeConfigParser**, as in the following examples:
 
 [source,java]

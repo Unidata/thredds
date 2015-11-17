@@ -1,9 +1,10 @@
 :source-highlighter: coderay
+:cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
 
 = CDM/CF Differences
 
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#appendix-grid-mappings[CF]
+{cf}#appendix-grid-mappings[CF]
 is a metadata standard for netCDF files. CDM is a data model for many
 different data formats, which generally conforms to CF whenever the
 two overlap. This documents the differences in metadata interpretation.
@@ -11,14 +12,12 @@ two overlap. This documents the differences in metadata interpretation.
 == Calendar Date Coordinates
 
 * CF: Variables representing time must always explicitly include the units attribute.
-The units attribute takes a string value formatted as per the recommendations in the
-[http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#udunits[Udunits package]].
+The units attribute takes a string value formatted as per the recommendations in the {cf}#udunits[Udunits package]].
 This implies that a time coordinate always has a numeric data type. CF uses udunits as its reference library,
 although udunits does not handle non-standard calendars.
 * CDM:
 ** The http://joda-time.sourceforge.net/[joda time library] is used to parse time units, instead of udunits.
-This allows the CDM to process the
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#calendar[CF calendar attribute].
+This allows the CDM to process the {cf}#calendar[CF calendar attribute].
 See link:CalendarDateTime.adoc[CDM Calendar Dates] for details.
 ** Also accepts time coordinates as ISO formatted Strings. The variable data type may be String or char.
 ** An extended date syntax is also supported : "CALENDAR period SINCE reference_date"

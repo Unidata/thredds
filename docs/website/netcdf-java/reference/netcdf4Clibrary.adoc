@@ -2,10 +2,7 @@
 [[threddsDocs]]
 
 
-NetCDF-4 C library
-==================
-
-= NetCDF-4 C Library Loading
+= NetCDF-4 C library
 
 In order to write NetCDF-4 files, you must have the
 https://www.unidata.ucar.edu/software/netcdf/[NetCDF-4 C
@@ -31,7 +28,7 @@ from source].
 
 The easiest way to get NetCDF is through a package management program,
 such as rpm, yum, adept, and others. Details will vary with each program
-but ``netcdf'' is usually the package name you want. Of course, it’s
+but "netcdf" is usually the package name you want. Of course, it’s
 also possible to build from source, as described
 http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html[here].
 
@@ -40,9 +37,8 @@ http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.htm
 When building HDF5, you *must* do so with both the `--enable-threadsafe`
 and `--with-pthread=DIR` options. The `--with-pthread` option must point
 to the directory that contains the POSIX Threads library install
-(`[DIR]/includes/pthread.h`, `[DIR]/lib/libpthread*`). For more
-information, please see the
-http://www.hdfgroup.org/hdf5-quest.html#mthread[HDF5 FAQ].
+([DIR]/includes/pthread.h, [DIR]/lib/libpthread). For more
+information, please see the http://www.hdfgroup.org/hdf5-quest.html#mthread[HDF5 FAQ].
 
 === Mac
 
@@ -53,7 +49,7 @@ is a support question that may be useful.
 == Loading
 
 In order to use NetCDF-4, the CDM must know the location of the
-``netcdf'' shared library, as well as the location(s) of its
+"netcdf" shared library, as well as the location(s) of its
 dependencies. These files will have different extensions depending on
 your platform:
 
@@ -77,7 +73,7 @@ NetCDF-4 and its dependencies, you’ll want to add
 `$NC4_INSTALL_DIR/bin`, `$NC4_INSTALL_DIR/deps/$ARCH/bin`, and
 `$NC4_INSTALL_DIR/deps/$ARCH/lib` to the `PATH` variable.
 `NC4_INSTALL_DIR` is the location where you installed the C library and
-`ARCH` is its architecture (either ``w32'' or ``x64'').
+`ARCH` is its architecture (either "w32" or "x64").
 
 ==== Linux
 
@@ -104,7 +100,7 @@ is a particular issue on Windows, because the libraries are guaranteed
 to be in separate locations by default.
 
 In addition to the library path, the CDM also needs to know the library
-name. This is almost always ``netcdf'', unless you’ve renamed it.
+name. This is almost always "netcdf", unless you’ve renamed it.
 
 * For TDS users, we recommend setting the library path and name in the
 link:../../tds/reference/ThreddsConfigXMLFile.adoc#netcdfCLibrary[THREDDS
@@ -142,18 +138,16 @@ If you get a message like this:
 Make sure that you don’t have an old version of the HDF5 library in your
 system library path.
 
-'''''
-
 == Writing NetCDF-4 files
 
 * From the command line: see link:manPages.adoc#nccopy[nccopy man page]
 * From ToolsUI: in *Viewer* tab, bring up the file to copy, then click
-``Write netCDF file'' button to get dialog.
+"Write netCDF file" button to get dialog.
 * From TDS NetCDF Subset Service: choose *netcdf-4* output type.
-* From a Java program (see _ucar.nc2.dataset.NetcdfDataset.main()_ for
-complete example) :
+* From a Java program (see _ucar.nc2.dataset.NetcdfDataset.main()_ for complete example) :
 +
---------------------------------------------------------------------------------------------
+[source,java]
+----
 Nc4Chunking chunker = Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle);
 NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf4;
 
@@ -162,7 +156,7 @@ FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, ch
 NetcdfFile ncfileOut = writer.write();
 ncfileIn.close();
 ncfileOut.close();
---------------------------------------------------------------------------------------------
+----
 
 === Chunking Strategy (version 4.5)
 
@@ -193,34 +187,22 @@ a null for the chunking parameter to use the default.
 
 For each Variable:
 
-1.  Look for a variable attribute named "**_ChunkSizes"**, whose value
-is a vector of integer chunk sizes, one for each dimension. If it
-exists, use it.
-2.  If the variable does not have an unlimited dimension:
-* it will be chunked if the total size in bytes >
-*Nc4ChunkingDefault.minVariableSize*
-* chunk size will be __*fillFastest*__****( variable.shape,
-**Nc4ChunkingDefault.defaultChunkSize**)
-3.  If the variable has one or more unlimited dimensions, it will be
-chunked, and the chunk size will be calculated as:
-1.  set unlimited dimensions to length one, then compute
-__*fillFastest*__****( variable.shape,
-**Nc4ChunkingDefault.defaultChunkSize**)
-2.  if the resulting chunk size is greater than
-**Nc4ChunkingDefault.minChunksize**, use it
-3.  if not, set the unlimited dimension chunk sizes so that the
-resulting chunksize is close to *Nc4ChunkingDefault.minChunksize.* If
-there are N unlimited dimensions, take the Nth root, ie evenly divide
-the chunk size among the unlimited dimensions.
+.  Look for a variable attribute named *_ChunkSizes_*, whose value is a vector of integer chunk sizes, one for each dimension. If it exists, use it.
+.  If the variable does not have an unlimited dimension:
+.. it will be chunked if the total size in bytes > *Nc4ChunkingDefault.minVariableSize*
+.. chunk size will be _FillFastest( variable.shape, Nc4ChunkingDefault.defaultChunkSize)_
+.  If the variable has one or more unlimited dimensions, it will be chunked, and the chunk size will be calculated as:
+..  set unlimited dimensions to length one, then compute _FillFastest( variable.shape, Nc4ChunkingDefault.defaultChunkSize)_
+..  if the resulting chunk size is greater than *Nc4ChunkingDefault.minChunksize*, use it
+..  if not, set the unlimited dimension chunk sizes so that the resulting chunksize is close to *Nc4ChunkingDefault.minChunksize.*
+If there are N unlimited dimensions, take the Nth root, ie evenly divide the chunk size among the unlimited dimensions.
 
-The __*fillFastest*__****( int[] shape, **maxSize**) algorithm fills the
-fastest varying (rightmost) dimensions first, until the chunkSize is as
-close to *maxSize* as possible without exceeding. The net effect is that
-the chunkSizes will be close to **Nc4ChunkingDefault.defaultChunkSize**,
-with a minimum of **Nc4ChunkingDefault.minChunksize**, and favoring read
-access along the fast dimensions. Any variable with an unlimited
-dimension will use at least *Nc4ChunkingDefault.minChunksize* bytes
-(approx, but if compressing, unused space should be mostly eliminated).
+The *_FillFastest( int[] shape, maxSize)_* algorithm fills the fastest varying (rightmost) dimensions first, until the chunkSize is as
+close to *maxSize* as possible without exceeding.
+The net effect is that the chunkSizes will be close to *Nc4ChunkingDefault.defaultChunkSize*,
+with a minimum of *Nc4ChunkingDefault.minChunksize*, and favoring read access along the fast dimensions.
+Any variable with an unlimited dimension will use at least *Nc4ChunkingDefault.minChunksize* bytes
+(approx), although if compressing, unused space should be mostly eliminated.
 
 Current default values (these can be overidden by the user):
 
@@ -228,15 +210,15 @@ Current default values (these can be overidden by the user):
 * *defaultChunkSize* = 256K
 * *minChunksize* = 8K
 
-By default, compression (deflate level = 5) and the shuffle filter will
-be used. The user can override these by:
+By default, compression (deflate level = 5) and the shuffle filter will be used. The user can override these by:
 
-------------------------------------------------------------------------------------------------------------
+[source,java]
+----
 // set deflate > 0 to compress
 // set shuffle to true for the shuffle filter 
 Nc4Chunking chunker = Nc4Chunking factory(Nc4Chunking.Strategy.standard, int deflateLevel, boolean shuffle);
-------------------------------------------------------------------------------------------------------------
+----
 
-'''''
+''''
 
-image:../nc.gif[image] This document was last updated December 2014
+image:../nc.gif[image] This document was last updated Nov 2015

@@ -1,4 +1,5 @@
 :source-highlighter: coderay
+:cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
 
 = CDM Calendar Date Handling
@@ -6,27 +7,22 @@
 == Overview
 
 As of CDM version 4.3, dates are no longer handled by the http://www.unidata.ucar.edu/software/udunits/[udunits library].
-This allows handling http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#calendar[non-standard Calendars].
-This change only affects *_datetime_* coordinate handling, called
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#time-coordinate[time coordinates] in CF.
+This allows handling {cf}#calendar[non-standard Calendars].
+This change only affects *_datetime_* coordinate handling, called {cf}#time-coordinate[time coordinates] in CF.
 For all http://en.wikipedia.org/wiki/Dimensional_analysis[dimensional units], the udunits package is still used.
 
 === Definitions
 
-* *_time_* is a duration of time (a dimensional unit). Udunits handles
-this using a base unit of "seconds". All other udunit time units are
-fixed multiples of a second.
-* *_datetime_* is an instant of historical time. Udunits represents a
-datetime as a fixed number of seconds since a reference date, eg "12
-days since 1990-02-03 12:22".
-* *_calendar date_* (eg "1990-02-03 12:22") is a representation of a
-datetime using calendar fields (__millisec, second, minute, hour, day,
-month, year)__. This allows one to correctly represent the same instant
-of time that, for example, is printed in a newspaper or is referenced in
-a history book. We are following the design from the
-http://joda-time.sourceforge.net/userguide.html[joda-time library],
-which has a very good discussion of the issues in datetime handling
-software.
+* *_time_* is a duration of time (a dimensional unit).
+Udunits handles this using a base unit of "seconds".
+All other udunit time units are fixed multiples of a second.
+* *_datetime_* is an instant of historical time.
+Udunits represents a datetime as a fixed number of seconds since a reference date, eg "12 days since 1990-02-03 12:22".
+* *_calendar date_* (eg "1990-02-03 12:22") is a representation of a datetime using calendar fields
+(__millisec, second, minute, hour, day, month, year)__.
+This allows one to correctly represent the same instant of time that, for example, is printed in a newspaper or is referenced in a history book.
+We are following the design from the http://joda-time.sourceforge.net/userguide.html[joda-time library],
+which has a very good discussion of the issues in datetime handling software.
 
 == CDM datetime coordinates
 
@@ -36,9 +32,7 @@ following forms:
 1.  *link:#udunit[udunit coordinate]:* Variables of any numeric type
 (__byte, short, int, long, float, double__) with a _*units*_ attribute
 that is a udunit date string, eg "hours since 1930-01-01". This is the
-only form that conforms to the
-http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#time-coordinate[current
-CF spec].
+only form that conforms to the {cf}#time-coordinate[current CF spec].
 2.  *link:#calendar_field[calendar field coordinate]:* Variables of any
 integer type (__byte, short, int, long__) with a _*units*_ attribute
 that is a udunit date string but with "calendar" added, eg "calendar

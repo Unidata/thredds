@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-NcML Tutorial - Basic
-=====================
-
 = NcML Tutorial - Basic
 
 == Introduction
@@ -18,10 +14,10 @@ aggregating other datasets. In the general case, we will call any
 collection of scientific data which can be accessed through the
 NetCDF-Java / CDM library a __*CDM dataset*__.
 
-The _*NetCDF Markup Language (NcML)*_ is an XML dialect that allows you
-to create CDM datasets. An _*NcML document*_ is an XML document that
+The *_NetCDF Markup Language (NcML)*_ is an XML dialect that allows you
+to create CDM datasets. An _NcML document_ is an XML document that
 uses NcML, and defines a CDM dataset. Commonly, the NcML document refers
-to another dataset called the __*referenced CDM dataset*__. The purpose
+to another dataset called the _referenced CDM dataset_. The purpose
 of NcML is to allow:
 
 1.  Metadata to be added, deleted, and changed.
@@ -56,7 +52,8 @@ Download link:examples/example1.nc[example1.nc] and
 link:examples/exercise1.ncml[exercise1.ncml] and place them in the same
 directory. Open *exercise1.ncml* in the in the NcML tab:
 
----------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
     <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"  location="example1.nc">
 
@@ -91,7 +88,7 @@ directory. Open *exercise1.ncml* in the in the NcML tab:
     <values>6 18</values>
   </variable>
 </netcdf>
----------------------------------------------------------------------------------------------------
+----
 
 In this example, data for the **lat**, *lon* and *time* coordinate
 variables comes from the NcML document, while the data for the *rh* and
@@ -101,7 +98,7 @@ _example1.nc._
 Open *exercise1.ncml* in the ToolsUI *NCDump* Tab. This creates the
 following NetCDF Dataset, in CDL notation:
 
-----------------------------------------
+----
 netcdf file:C:/temp/exercise1.ncml {
 
  dimensions:
@@ -125,11 +122,10 @@ netcdf file:C:/temp/exercise1.ncml {
         // Global Attributes:
  :title = "Example Data"; data:
  lat = 41.0, 40.0, 39.0;
- lon =
-    -109.0, -107.0, -105.0, -103.0;
+ lon = -109.0, -107.0, -105.0, -103.0;
  time = 6, 18;
-    }
-----------------------------------------
+}
+----
 
 Note that the name of the dataset is the name of the NcML file, not the
 referenced dataset.
@@ -183,9 +179,9 @@ Since this NcML is generated from the file itself, it is equivalent to
 just naming the file and allowing all of the metadata to be taken from
 it:
 
-------------------------------------------------------------------------------------------------------
+----
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="C:/temp/example1.nc">
-------------------------------------------------------------------------------------------------------
+----
 
 This form is useful in aggregations but not for much else.
 
@@ -198,7 +194,8 @@ Download link:examples/exercise3.ncml[exercise3.ncml] and place it in
 the same directory as example1.nc. Open exercise3.ncml in the ToolsUI
 Viewer tab, and in the NcML tab.
 
-----------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="example1.nc">
 
@@ -218,7 +215,7 @@ Viewer tab, and in the NcML tab.
    </variable>
 
 </netcdf>
-----------------------------------------------------------------------------------------------
+----
 
 1.  The global attribute named ``title'' is given a new value.
 2.  A global attribute named ``Conventions'' is added.
@@ -231,7 +228,7 @@ referenced dataset, you must also define its data values.
 
 This creates the following NetCDF Dataset.
 
-----------------------------------------------
+----
 netcdf file:C:/temp/exercise3.ncml {
   dimensions:
    time = UNLIMITED;   // (2 currently)
@@ -258,7 +255,7 @@ netcdf file:C:/temp/exercise3.ncml {
  :title = "Example Data using CF";
  :Conventions = "CF-1.0";
 }
-----------------------------------------------
+----
 
 Using NcML in this way to modify the contents of a CDM dataset is a kind
 of http://en.wikipedia.org/wiki/Declarative_programming[declarative
@@ -316,13 +313,14 @@ features (aka netCDF classic model). In practice this mostly means no
 Structures or Groups. Strings are ok, and are converted to type char.
 The equivalent Java code to do this is:
 
--------------------------------------------------------------------------------------------------------------
+[source,java]
+----
 NetcdfDataset ncfileIn = NcMLReader.readNcML (ncml_filename, null);
 FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, locationOut, NetcdfFileWriter.Version.netcdf3, null);
 NetcdfFile ncfileOut = writer.write(null);
 ncfileOut.close();
 ncfileIn.close();
--------------------------------------------------------------------------------------------------------------
+----
 
 See also: link:AnnotatedSchema4.adoc[Annotated NcML Schema]
 
