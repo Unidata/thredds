@@ -51,17 +51,17 @@ public class TestNcmlWriteAndCompareLocal {
 
     // try everything from these directories
     try {
-      addFromScan(result, TestDir.cdmLocalTestDataDir + "point/", new SuffixFileFilter(".ncml"), true);
-      addFromScan(result, TestDir.cdmLocalTestDataDir + "ncml/standalone/", new SuffixFileFilter(".ncml"), true);
+      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir + "point/", new SuffixFileFilter(".ncml"), result);
+      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir + "ncml/standalone/", new SuffixFileFilter(".ncml"), result);
 
     } catch (IOException e) {
       e.printStackTrace();
-    }   // */
+    }
 
     return result;
   }
 
-  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
+  /* FIXME: This method sucks: it doesn't fail when dirName can't be read.
   static void addFromScan(final List<Object[]> list, String dirName, FileFilter ff, final boolean compareData) throws IOException {
     TestDir.actOnAll(dirName, ff, new TestDir.Act() {
       public int doAct(String filename) throws IOException {
@@ -69,7 +69,7 @@ public class TestNcmlWriteAndCompareLocal {
         return 1;
       }
     }, true);
-  }
+  } */
 
   /////////////////////////////////////////////////////////////
   boolean showFiles = true;
@@ -94,7 +94,7 @@ public class TestNcmlWriteAndCompareLocal {
     compareNcML(false, false, false);
   }
 
-  public void compareNcML(boolean useRecords, boolean explicit, boolean openDataset) throws IOException {
+  private void compareNcML(boolean useRecords, boolean explicit, boolean openDataset) throws IOException {
     if (compareData) useRecords = false;
 
     if (showFiles) {

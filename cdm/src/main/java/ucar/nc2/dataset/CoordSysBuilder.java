@@ -822,8 +822,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   /**
    * Make implicit CoordinateSystem objects for variables that dont already have one, by using the
    * variables' list of coordinate axes, and any coordinateVariables for it. Must be at least 2 axes.
-   *
-   * @param ncDataset why
+   * All of a variable's _Coordinate Variables_ plus any variables listed in a *__CoordinateAxes_* or *_coordinates_* attribute
+     will be made into an *_implicit_* Coordinate System.
+    If there are at least two axes, and the coordinate system uses all of the variable's dimensions,
+    it will be asssigned to the data variable.
    */
   protected void makeCoordinateSystemsImplicit(NetcdfDataset ncDataset) {
     // do largest rank first
@@ -839,7 +841,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         VariableEnhanced ve = (VariableEnhanced) vp.v;
         String csName = CoordinateSystem.makeName(dataAxesList);
         CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
-        if ((cs != null) && cs.isComplete(vp.v)) { // DANGER WILL ROGERS!
+        if ((cs != null) && cs.isComplete(vp.v)) { // must be complete
           ve.addCoordinateSystem(cs);
           parseInfo.format(" assigned implicit CoordSystem '%s' for var= %s%n", cs.getName(), vp.v.getFullName());
         } else {
@@ -865,17 +867,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   protected void makeCoordinateSystemsMaximal(NetcdfDataset ncDataset) {
     for (VarProcess vp : varList) {
       VariableEnhanced ve = (VariableEnhanced) vp.v;
-      CoordinateSystem implicit = null;
 
       if (vp.hasCoordinateSystem() || !vp.isData()) continue;
-
-      CoordinateSystem existing = null;
-      if (ve.getCoordinateSystems().size() == 1) {
-        existing = ve.getCoordinateSystems().get(0);
-        if (!existing.isImplicit()) continue; // cant overrrride explicit
-        if (existing.getRankRange() >= ve.getRank()) continue; // looks ok
-        implicit = existing;
-      }
 
       // look through all axes that fit
       List<CoordinateAxis> axisList = new ArrayList<>();
@@ -885,35 +878,13 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           axisList.add(axis);
       }
 
-      if ((existing != null) && (axisList.size() <= existing.getRankRange())) continue;
       if (axisList.size() < 2) continue;
-
-      /* ArrayList bestAxisList = null;
-      List csys = ncDataset.getCoordinateSystems();
-      for (int j = 0; j < csys.size(); j++) {
-        CoordinateSystem cs = (CoordinateSystem) csys.get(j);
-        List axes = cs.getCoordinateAxes();
-        ArrayList axisList = new ArrayList();
-        for (int k = 0; k < axes.size(); k++) {
-          CoordinateAxis axis = (CoordinateAxis) axes.get(k);
-          if ( isCoordinateAxisForVariable( axis, ve))
-            axisList.add( axis);
-        }
-
-        if (hasXY( axisList)) {
-          if ((bestAxisList == null) || (axisList.size() > bestAxisList.size()))
-            bestAxisList = axisList;
-        }
-
-      }
-      // make or get a coord sys for it
-      if (bestAxisList != null) { */
 
       String csName = CoordinateSystem.makeName(axisList);
       CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
       // if (cs != null) {
       if (cs != null && cs.isComplete(ve)) {
-        if (null != implicit) ve.removeCoordinateSystem(implicit);
+        // if (null != implicit) ve.removeCoordinateSystem(implicit);
         ve.addCoordinateSystem(cs);
         parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s%n", cs.getName(), ve.getFullName());
 
@@ -921,7 +892,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         CoordinateSystem csnew = new CoordinateSystem(ncDataset, axisList, null);
         if (!csnew.isComplete(ve)) continue;
         csnew.setImplicit(true);
-        if (null != implicit) ve.removeCoordinateSystem(implicit);
+        // if (null != implicit) ve.removeCoordinateSystem(implicit);
         ve.addCoordinateSystem(csnew);
         ncDataset.addCoordinateSystem(csnew);
         parseInfo.format(" created maximal CoordSystem '%s' for var= %s%n", csnew.getName(), ve.getFullName());
@@ -941,6 +912,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    */
   protected boolean isCoordinateAxisForVariable(Variable axis, VariableEnhanced v) {
     List<Dimension> varDims = v.getDimensionsAll();
+    List<Dimension> axisDims = axis.getDimensionsAll();
     /* for (Dimension d : varDims) {
       if (!d.isShared())
         return false; // anon cant have coordinates
@@ -952,8 +924,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       checkDims--;
 
     for (int i = 0; i < checkDims; i++) {
-      Dimension axisDim = axis.getDimension(i);
-
+      Dimension axisDim = axisDims.get(i);
       if (!varDims.contains(axisDim)) {
         return false;
       }

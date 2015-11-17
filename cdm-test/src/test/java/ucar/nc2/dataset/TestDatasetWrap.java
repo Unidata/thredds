@@ -55,40 +55,20 @@ public class TestDatasetWrap {
   @Test
   public void testDatasetWrap() throws Exception {
     doOne(TestDir.cdmUnitTestDir + "conventions/nuwg/eta.nc");
-    //readAllDir( TestAll.testdataDir+ "grid/netcdf");
-  }
-
-  void readAllDir(String dirName) throws Exception {
-    System.out.println("---------------Reading directory "+dirName);
-    File allDir = new File( dirName);
-    File[] allFiles = allDir.listFiles();
-
-    for (int i = 0; i < allFiles.length; i++) {
-      String name = allFiles[i].getAbsolutePath();
-      if (name.endsWith(".nc"))
-        doOne(name);
-    }
-
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
-      if (f.isDirectory())
-        readAllDir(allFiles[i].getAbsolutePath());
-    }
-
   }
 
   private void doOne(String filename) throws Exception {
-    NetcdfFile ncfile = NetcdfDataset.acquireFile(filename, null);
-    NetcdfDataset ncWrap = new NetcdfDataset( ncfile, true);
+    try (NetcdfFile ncfile = NetcdfDataset.acquireFile(filename, null);
+         NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true)) {
 
-    NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null);
-    System.out.println(" dataset wraps= "+filename);
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null);
+      System.out.println(" dataset wraps= " + filename);
 
-    ucar.unidata.test.util.CompareNetcdf.compareFiles(ncd, ncWrap);
-    ncd.close();
-    ncWrap.close();
+      ucar.unidata.test.util.CompareNetcdf.compareFiles(ncd, ncWrap);
+      ncd.close();
+      ncWrap.close();
+    }
   }
-
 
   @Test
   public void testMissingDataReplaced() throws Exception {
@@ -105,15 +85,12 @@ public class TestDatasetWrap {
       Variable wrap = ds.findVariable(varName);
       Array data_wrap = wrap.read();
 
-      boolean ok = true;
       CompareNetcdf2 compare = new CompareNetcdf2();
 
       assert wrap instanceof CoordinateAxis1D;
       CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
 
-      ok &= compare.compareData(varName, data_wrap, axis.getCoordValues());
-
-      assert ok;
+      assert compare.compareData(varName, data_wrap, axis.getCoordValues());
     } finally {
 
       if (ncfile != null) ncfile.close();

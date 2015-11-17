@@ -270,17 +270,6 @@ public class TestDir {
     }
   }
 
-  //
-
-  /**
-   * Call act.doAct() of each file in dirName passing
-   *
-   * @param dirName
-   * @param ff
-   * @param act
-   * @return
-   * @throws IOException
-   */
   public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
     return actOnAll(dirName, ff, act, true);
   }

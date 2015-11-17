@@ -115,4 +115,13 @@ public class TestAggDatasetIsCached {
     cache.showCache();
   }
 
+
+    /* @Test
+  public void testProblem() throws Exception {
+    show = true;
+    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, -1, -1));
+    openWithEnhance( TestDir.cdmUnitTestDir+"/ft/grid/cg/cg.ncml");
+    Aggregation.setPersistenceCache(null);
+  } */
+
 }

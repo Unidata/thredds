@@ -218,16 +218,14 @@ a subset of the Variable’s set of Dimensions. This ensures that every
 data point in the Variable has a corresponding coordinate value for each
 of the CoordinateAxis in the CoordinateSystem.
 
-A *_Coordinate System_* has one or more CoordinateAxis, and zero or more
-CoordinateTransforms.
+A *_Coordinate System_* has one or more CoordinateAxis, and zero or more CoordinateTransforms.
 
-A *_CoordinateAxis_* is a subtype of Variable, and is optionally
-classified according to the types in **AxisType**.
+A *_CoordinateAxis_* is a subtype of Variable, and is optionally classified according to the types in **AxisType**.
 
 A *_CoordinateTransform_* abstractly represents a transformation between
 CoordinateSystems, and  is either a *Projection* or a **Vertical Transform**.
 
-The *_AxisType_* enumerations are specific to the case of georeferencing
+The link:CoordinateAttributes.adoc#AxisTypes[*_AxisType_*] enumerations are specific to the case of georeferencing
 coordinate systems. _Time_ refers to the real date/time of the dataset.
 _Latitude_ and _Longitude_ identify standard horizontal coordinates.
 _Height_ and _Pressure_ identify the vertical coordinate. _GeoX_ and
@@ -287,6 +285,8 @@ Structure {
 } station(*)
 ----
 
+Also see: link:CoordinateAttributes.adoc#CoordSysBuilder[Coordinate System Building].
+
 === Mathematical formalism for Coordinate Systems
 
 Formally, a Variable is thought of as a sampled function whose domain is
@@ -312,13 +312,14 @@ http://www.unidata.ucar.edu/software/netcdf/conventions.html[attribute conventio
 (If you are writing netCDF files, we strongly recommend using http://cfconventions.org/[CF Conventions].)
 Specialized file formats like GRIB, BUFR, NEXRAD, etc. do have coordinate systems as part of their specifications,
 albeit specialized ones. The CDM's intention is to be able to accurately represent these coordinate systems, so that applications
-build on the CDM have a single API to work with.
+using the CDM have a single API to work with.
 
 NetCDF has long had the convention of specifying a 1-dimensional CoordinateAxis with a *_coordinate variable_*, which is a Variable
 with the same name as its single dimension. This is a natural and elegant way to specify a 1-dimensional CoordinateAxis, since there is an
 automatic association of the Coordinate Variable with any Variable that uses its dimension.
-There is not a similarly elegant way to specify a multidimensional CoordinateAxis, and so various attribute
-conventions have sprung up, for example the CF Convention simply lists the CoordinateAxis variables (arguably as simple a solution as is possible):
+There is not a similarly elegant way to specify other kinds of Coordinate axes, such as multidimensional CoordinateAxis (_lat(x,y)_) or
+when axes share a dimension (_lat(obs), lon(obs)_), and so various attribute conventions have evolved to deal with these,
+for example the CF Convention simply lists the CoordinateAxis variables (arguably as simple a solution as is possible):
 
 ----
   float lat(y,x);
