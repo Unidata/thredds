@@ -1,22 +1,15 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-CDM BUFR Tables
-===============
-
 = BUFR Table Handling in CDM
 
-'''''
-
-=== Standard table mapping
+== Standard table mapping
 
 A _standard table_ is a BUFR parameter table that is automatically used
 by the CDM. A _standard table map_ is an association of a standard table
 with a center/subcenter/version id. The CDM internally loads one table
 map located in *bufr.jar* at
-**/resources/bufrTables/local/tablelookup.csv**. It is a csv (comma
-seperated value) format:
+**/resources/bufrTables/local/tablelookup.csv**. It is a csv (comma separated value) format:
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -64,7 +57,7 @@ seperated value) format:
 version,* and **local table version**. These are use to look for a match
 on the BUFR record. The first exact match is used.
 2.  If there is no exact match, then a wildcard match is used, where a
-``-1'' matches any id. The first wildcard match is used.
+"-1" matches any id. The first wildcard match is used.
 3.  When a match is made, the given path to a BUFR *table B* and a BUFR
 *table D* is used. Various table formats are available, given by the
 **format.**.
@@ -85,11 +78,3 @@ same csv format as above. It will be searched first.
 
 This can also be done through the link:../RuntimeLoading.adoc[runtime
 configuration] XML file.
-
- 
-
-'''''
-
-image:../../nc.gif[image] This document is maintained by
-mailto:caron@unidata.ucar.edu[John Caron] and was last updated March,
-2013
