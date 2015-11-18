@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-GRIB Collection
-===============
-
 = CDM GRIB Collection Processing
 
 == Overview
@@ -183,7 +179,8 @@ records are processed. All of the configuration options that you can use
 inside the TDS <**gribConfig**> element can be used inside the
 <**iospParam**> element of the NcML, for example:
 
--------------------------------------------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="E:/ncep/NDFD_CONUS_5km_conduit_20120119_1800.grib2">
  <iospParam>
@@ -193,7 +190,7 @@ inside the TDS <**gribConfig**> element can be used inside the
    </pdsHash>
  </iospParam>
 </netcdf>
--------------------------------------------------------------------------------------------------------------------------------------
+----
 
 See link:../../../tds/reference/collections/GribConfig.adoc[GRIB
 Collection Configuration] for a description of all of the options.
@@ -201,8 +198,6 @@ Collection Configuration] for a description of all of the options.
 Note that you cannot use NcML to open a collection of GRIB files. You
 must generate the Grib Collection index file in a
 link:#Creating[seperate step].
-
-'''''
 
 == Mapping a GRIB Collection into Multidimensional Variables
 
@@ -231,8 +226,7 @@ unique variable:
 
 The GRIB-1 variable name is:
 
-___________________________________________________________________________________________________________
------------------------------------------------------------------------------------------------------------
+----
 %paramName[_%level][_layer][_%interval][_%statName]
 
 where:
@@ -241,13 +235,11 @@ where:
   _layer = added if its a vertical layer (literal)
   %timeInterval = time interval name (eg "12_hour" or "mixed")
   %statName = name of statistical type if applicable, from GRIB-1 table 5
------------------------------------------------------------------------------------------------------------
-___________________________________________________________________________________________________________
+----
 
 The GRIB-1 variable id is:
 
-__________________________________________________________________
-------------------------------------------------------------------
+----
 VAR_%d-%d-%d-%d[_L%d][_layer][_I%s][_S%d]
 
 where:
@@ -256,8 +248,7 @@ where:
   _layer = added if its a vertical layer (literal)
   I%s = interval name (eg "12_hour" or "mixed") if a time interval
   S%d = stat type (octet 21 of PDS) if applicable
-------------------------------------------------------------------
-__________________________________________________________________
+----
 
 === GRIB-2 Variables
 
@@ -274,8 +265,7 @@ __________________________________________________________________
 
 The GRIB-2 variable name is:
 
-_____________________________________________________________________________________________________
------------------------------------------------------------------------------------------------------
+----
 %paramName[_error][_%level][_layer][_%interval][_%statName][_%ensDerivedType][_probability_%probName]
 
 where:
@@ -287,14 +277,11 @@ where:
   %statName = name of statistical type if applicable, from GRIB-2 table 4.10
   %ensDerivedType = name of ensemble derived type if applicable, from GRIB-2 table 4.7
   %probName = name of probability type if applicable
-  
------------------------------------------------------------------------------------------------------
-_____________________________________________________________________________________________________
+----
 
 The GRIB-2 variable id is:
 
-____________________________________________________________
-------------------------------------------------------------
+----
 VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]
 where:
   VAR_%d-%d-%d = discipline-category-paramNo
@@ -303,15 +290,11 @@ where:
   S%d = statistical type code if applicable
   D%d = derived type code if applicable
   Prob_%s = probability name if applicable
-  
-------------------------------------------------------------
-____________________________________________________________
+----
 
 See *ucar.nc2.grib.grib1.Grib1Rectilyser.cdmVariableHash()* and
 *ucar.nc2.grib.grib2.Grib2Rectilyser.cdmVariableHash()* for complete
 details.
-
-'''''
 
 == Lower level interface to GRIB files
 
@@ -322,7 +305,8 @@ change. However these APIs are reletively stable.
 
 For GRIB1 reading, use the classes in **ucar.nc2.grib.grib1**:
 
-------------------------------------------------------------
+[source,java]
+----
  RandomAccessFile raf = new RandomAccessFile(filepath, "r");
  Grib1RecordScanner reader = new Grib1RecordScanner(raf);
  while (reader.hasNext()) {
@@ -330,11 +314,12 @@ For GRIB1 reading, use the classes in **ucar.nc2.grib.grib1**:
    // do good stuff
  }
  raf.close();
-------------------------------------------------------------
+----
 
 or similarly for GRIB2, use the classes in **ucar.nc2.grib.grib2**:
 
------------------------------------------------------------
+[source,java]
+----
 RandomAccessFile raf = new RandomAccessFile(filepath, "r");
 Grib2RecordScanner scan = new Grib2RecordScanner(raf);
  while (scan.hasNext()) {
@@ -342,24 +327,20 @@ Grib2RecordScanner scan = new Grib2RecordScanner(raf);
    // do stuff
  }
 raf.close();
------------------------------------------------------------
+----
 
 The details vary a bit between GRIB1 and GRIB2. To read the data from a
 GRIB1 record:
 
----------------------------------
+[source,java]
+----
 float[] data = gr1.readData(raf);
----------------------------------
+----
 
 To read the data from a GRIB2 record:
 
-------------------------------------------------------------------------
+[source,java]
+----
 Grib2SectionDataRepresentation drs = gr2.getDataRepresentationSection();
 float[] data = gr2.readData(raf, drs.getStartingPosition());
-------------------------------------------------------------------------
-
-'''''
-
-image:../../nc.gif[image] This document is maintained by
-mailto:caron@unidata.ucar.edu[John Caron] and was last updated April
-2015
+----

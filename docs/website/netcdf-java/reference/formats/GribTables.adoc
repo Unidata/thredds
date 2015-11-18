@@ -1,11 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-GRIB Tables in CDM
-==================
-
 = GRIB Tables in CDM
+
+== Overview
 
 The following assumes that you want generic software like the
 netCDF-Java library to be able to correctly read the GRIB files that you
@@ -18,19 +16,10 @@ I have
 http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[proposed]
 a web registry of tables, which would create a unique id for each
 registered table. The writer would then embed the id into the GRIB or
-BUFR message (possibly in the ``local use'' section of GRIB-2, or GRIB-1
+BUFR message (possibly in the "local use" section of GRIB-2, or GRIB-1
 octets > 41 in PDS), and the reader could use the id to unambiguously
 retrieve the table from the web registry. Stay tuned for further details
 and a trial implementation.
-
-*Contents:*
-
-* link:#WriteGrib[Writing Grib Files]
-* link:#GribTables[GRIB-1 Tables]
-* link:#DefineGrib1Params[XML Schema for defining Grib-1 Parameters]
-* GRIB-2 Tables (not done yet)
-
-'''''
 
 == Writing Grib Files
 
@@ -38,12 +27,11 @@ and a trial implementation.
 
 You must encode a center and subcenter id, in order for software to
 correctly match any local tables used in the message. If there is no
-subcenter in use, use id =0 (``no subcenter:), although 255 (''missing")
+subcenter in use, use id =0 ("no subcenter:), although 255 ("missing")
 is acceptable but ambiguous.
 
 === *Encoding the version number(s)*
 
-________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 *GRIB-1* : (octet 4 of the PDS) If you are only using WMO standard
 tables (all parameter ids < 128) then you should use version number = 1,
 2, or 3, corresponding to the WMO standard table version. The
@@ -63,7 +51,6 @@ of Local tables in messages intended for non-local or international
 exchange is strongly discouraged." from
 ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf[WMO
 Manual on Codes].__
-________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 === *Using local tables*
 
@@ -91,16 +78,14 @@ format]. Use the link:#DefineGrib1Params[XML Schema for declaring Grib-1
 Parameters] if you like XML. Do not use HTML, PDF, MS Word etc, since
 these are not machine readable formats.
 4.  A parameter name is encouraged, and is added to the variable as an
-attribute with name ``Grib_Parameter_Name''.
+attribute with name "Grib_Parameter_Name".
 5.  Unidata encourages the use of
 http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html#Database[udunit
 formatting] for expressing units.
 6.  We need to be able to find your tables. Add enough metadata so that
-a google search on ``<your center name> GRIB tables'' finds you within
+a google search on "<your center name> GRIB tables" finds you within
 the first 2 pages. Send a link to netcdf-java@unidata.ucar.edu and we
 will link to you (and use your tables in the CDM library).
-
-'''''
 
 == GRIB-1 Table Handling
 
@@ -118,19 +103,17 @@ You can view all the standard tables used by the CDM in ToolsUI, using
 the *IOSP/GRIB-1/GRIB1-TABLES* tab. A standard table map looks like
 this:
 
-___________________________________________
 -------------------------------------------
 # resources\grib1\lookupTables.txt
 
 # cen sub version table
-  0:    -1:    -1:  dss/WMO_GRIB1.xml
+  0:   -1:    -1:  dss/WMO_GRIB1.xml
   7:   -1:    -1:   wgrib/table2.htm
   9:   -1:   128:  noaa_rfc/params9-128.tab
  57:   -1:     2:   local/afwa.tab
  58:   42:     2:   local/af_2.tab
  60:   255:    2:   local/wrf_amps.wrf
 -------------------------------------------
-___________________________________________
 
 Each row contains the center, subcenter and table version, and the table
 filename, with a colon (:) separating the fields.
@@ -140,7 +123,7 @@ the list of tables is searched for a match. The first exact match is
 used.
 
 If there is no exact match, then a wildcard match is used, where a
-``-1'' for the subcenter or version id matches any id. The first
+"-1" for the subcenter or version id matches any id. The first
 wildcard match is used.
 
 Center 0 is the WMO standard table, called the **_default table_**. It
@@ -148,8 +131,8 @@ is set internally and cannot be overridden by the user.
 
 If a table is not matched, the default table is used.
 
-If a parameter is not found then ``Unknown Parameter
-center-subcenter-version-param'' is used as the name, and an empty
+If a parameter is not found then "Unknown Parameter
+center-subcenter-version-param" is used as the name, and an empty
 string for the units.
 
 If *strictMode* is on, then
@@ -180,7 +163,7 @@ format] we made up.
 2.  *A file ending in .tab:* the
 ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/usertables.txt[format] that
 http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html[wgrib] uses.
-3.  *A file starting with ``table_2_'' or ``local_table_2_''* : the
+3.  *A file starting with "table_2_" or "local_table_2_"* : the
 format the http://www.ecmwf.int/products/data/software/grib.html[ECMWF
 software] uses.
 
@@ -200,8 +183,8 @@ default WMO table cannot be overidden.
 3.  Parameters that are not present in your table are taken from the
 default WMO table, if they exist. Unless *strictMode* is on, your table
 may override entries in the default table.
-4.  If a parameter is not found then ``Unknown Parameter
-center-subcenter-version-param'' is used as the name, and an empty
+4.  If a parameter is not found then "Unknown Parameter
+center-subcenter-version-param" is used as the name, and an empty
 string for the units.
 
 === Specifying a table for a particular dataset
@@ -212,14 +195,14 @@ to write the file. In this case, you dont want to override the correct
 table in the table map, rather you want to fix the problem for just the
 incorrect dataset. Here are the ways that can be done:
 
-____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 ==== Directly embed table in NcML
 
 You can directly embed the table in NcML, using the
 link:#DefineGrib1Params[XML Schema for declaring Grib-1 Parameters].
 Place the table inside of a <iospParam> element. For example:
 
---------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1">
  <iospParam>
@@ -240,38 +223,39 @@ Place the table inside of a <iospParam> element. For example:
   </parameterMap>
  </iospParam>
 </netcdf>
---------------------------------------------------------------------------------------------------
+----
 
 ==== Reference to a Grib Parameter table in NcML
 
 You can reference the table in NcML, with the table being in any
 http://www.ecmwf.int/products/data/software/grib.html[GRIB parameter
 table format] that that CDM recognizes. To do so, you pass the string
-*``GribParameterTable=<absolute file path to table>''* in the iospParam
+*"GribParameterTable=<absolute file path to table>"* in the iospParam
 attribute of the netcdf element:
 
--------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"
   iospParam="gribParameterTable=/data/NCEP/grib1/version123.tab">
 </netcdf>
--------------------------------------------------------------------------------------------------
+----
 
 ==== Reference to a Grib Parameter table lookup in NcML
 
 You can reference a link:#tableMap[table map] in NcML by passing the
-string *``GribParameterTableLookup=<absolute file path to table map>''*
+string *"GribParameterTableLookup=<absolute file path to table map>"*
 in the iospParam attribute of the netcdf element:
 
--------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"
   iospParam="gribParameterTableLookup=/data/NCEP/grib1/lookupTable.txt">
 </netcdf>
--------------------------------------------------------------------------------------------------
+----
 
 You can specify a parameterMap or an iospParam, but not both.
-____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 === Correcting Grib-1 files in a GRIB Feature Collection in a THREDDS
 Data Server
@@ -280,15 +264,14 @@ The above methods of adding or referencing tables in NcML will not work
 for GRIB Feature Collections. In this case, you need to do one of the
 following:
 
-______________________________________________________________________________________________________________________________________________________________________
-==== Directly embed table in featureCollection element of the TDS
-configuration catalog
+==== Directly embed table in featureCollection element of the TDS configuration catalog
 
 You can directly embed an XML table (use the
 link:#DefineGrib1Params[standard XML schema]) in a featureCollection
 element of type GRIB in a TDS configuration catalog:
 
-----------------------------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_0p5deg">
   <collection spec="/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$" name="GFS_Global_0p5deg" />
   <gribConfig>
@@ -306,27 +289,26 @@ element of type GRIB in a TDS configuration catalog:
       <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Pressure Tendency</GCMD>
     </parameter>
     ...
-
   </parameterMap>
 
  </gribConfig>
 </featureCollection>
-----------------------------------------------------------------------------------------------------------------------
+----
 
-==== Reference a table in featureCollection element of the TDS
-configuration catalog
+==== Reference a table in featureCollection element of the TDS configuration catalog
 
 You can add a table in a featureCollection element of type GRIB in a TDS
 configuration catalog:
 
-----------------------------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_0p5deg">
   <collection spec="/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$"  name="GFS_Global_0p5deg" />
   <gribConfig>
     <gribParameterTable>/data/NCEP/grib1/version123.tab</gribParameterTable>
   </gribConfig>
 </featureCollection>
-----------------------------------------------------------------------------------------------------------------------
+----
 
 ==== Reference a table map in featureCollection element of the TDS
 configuration catalog:
@@ -334,28 +316,27 @@ configuration catalog:
 You can add a table lookup in a featureCollection element of type GRIB
 in a TDS configuration catalog:
 
-----------------------------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_0p5deg">
   <collection spec="/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$"  name="GFS_Global_0p5deg" />
   <gribConfig>
     <gribParameterTableLookup>/data/NCEP/grib1/version123.txt</gribParameterTableLookup>
   </gribConfig> 
 </featureCollection>
-----------------------------------------------------------------------------------------------------------------------
-______________________________________________________________________________________________________________________________________________________________________
+----
 
 In all these cases, the table that you specify will take precedence over
 any standard tables. However, you only need to specify the
 changes/additions; when a parameter is not found in your table, the
 standard tables are used.
 
-'''''
-
 == XML Schema for defining Grib-1 Parameters
 
-Derived from NCAR DSS format with additional ``name'' element.
+Derived from NCAR DSS format with additional "name" element.
 
---------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
   <xs:element name="parameterMap">
@@ -367,7 +348,6 @@ Derived from NCAR DSS format with additional ``name'' element.
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-
 
   <xs:element name="parameter">
     <xs:complexType>
@@ -393,17 +373,13 @@ Derived from NCAR DSS format with additional ``name'' element.
     </xs:complexType>
   </xs:element>
 </xs:schema>
-    
---------------------------------------------------------------------------------------
+----
 
 Example: +
 
----------------------------------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" ?>
-
-
-
-
 <parameterMap>
   <title>WMO GRIB1 Parameter Code Table 3</title>
   <source>http://dss.ucar.edu/docs/formats/grib/gribdoc/params.html</source>
@@ -444,11 +420,8 @@ Example: +
     <name>ICAHT</name>
   </parameter>
    ...
-
 </parameterMap>
----------------------------------------------------------------------------------------------------------
-
-'''''
+----
 
 == Notes
 
@@ -496,12 +469,4 @@ table): +
        may be changed at will by the originating centre. If no local table is used, the version  number of the local table shall be encoded as 0.
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
-'''''
-
 == GRIB-2 Tables (TBD)
-
-'''''
-
-image:../../nc.gif[image] This document is maintained by
-mailto:caron@unidata.ucar.edu[John Caron] and was last updated July,
-2013

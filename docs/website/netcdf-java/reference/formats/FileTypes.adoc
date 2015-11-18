@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-CDM FileTypes
-=============
-
 = CDM File Types
 
 The NetCDF-Java/CDM library provides a uniform API to many different
