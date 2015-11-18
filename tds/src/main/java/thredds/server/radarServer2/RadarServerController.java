@@ -34,7 +34,7 @@
 // This is still experimental. Don't rely on any of these methods.
 package thredds.server.radarServer2;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Joiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -470,7 +470,7 @@ public class RadarServerController {
     private void addQueryElement(StringBuilder sb, String name,
                                  String[] values) {
         if (values != null) {
-            addQueryElement(sb, name, StringUtils.join(values, ','));
+            addQueryElement(sb, name, Joiner.on(',').join(values));
         }
     }
 
