@@ -100,7 +100,7 @@ Use the {cf}[CF conventions] to add the proper attributes and values.
 === Resources
 
 * The {cf}[CF Conventions]
-* Standard vertical transforms are documented on this page.
+* Standard horizontal transforms are documented on this page.
 You can also link:../tutorial/CoordTransBuilder.adoc[implement your own].
 * You may also be interested in link:StandardVerticalTransforms.adoc[Standard Vertical Coordinate Transforms].
 * link:CoordinateAttributes.adoc[The CDM _Coordinate Conventions]
@@ -383,12 +383,10 @@ respectively. Example:
      :standard_name = "grid_latitude";
      :long_name = "rotated latitude";
      :units = "degrees";
-     :_CoordinateAxisType = "GeoY";
  float rlon(rlon=90);
      :standard_name = "grid_longitude";
      :long_name = "rotated longitude";
      :units = "degrees";
-     :_CoordinateAxisType = "GeoX";
 ---------------------------------------
 
 The rotated longitude coordinate must be in the range [-180,180] (so
@@ -457,8 +455,6 @@ This uses a spherical or ellipsoidal earth. See Snyder, p 153.
      :semi_major_axis =  6378.137;
      :semi_minor_axis =  6356.752;
      :inverse_flattening =   298.257;
-     :_CoordinateTransformType = "Projection";
-     :_CoordinateAxisTypes = "GeoX GeoY";
 -------------------------------------------------------------
 
 This uses a spherical or ellipsoidal earth. See Snyder, p 53.
@@ -471,8 +467,6 @@ This uses a spherical or ellipsoidal earth. See Snyder, p 53.
      :utm_zone_number = 22;
      :semi_major_axis = 6378137;
      :inverse_flattening = 298.257;
-     :_CoordinateTransformType = "Projection";
-     :_CoordinateAxisTypes = "GeoX GeoY";
 ----------------------------------------------------------
 
 This is not a standard CF projection. UTM uses an ellipsoidal earth.
@@ -490,8 +484,6 @@ Code contributed from the GeoTransform package by Dan Toms, SRI International.
      :earth_radius = 6371.229;
      :false_easting = 0.0;
      :false_northing = 0.0;
-     :_CoordinateTransformType = "Projection";
-     :_CoordinateAxisTypes = "GeoX GeoY";
 -------------------------------------------------
 
 This uses a spherical earth. See Snyder, p 176.

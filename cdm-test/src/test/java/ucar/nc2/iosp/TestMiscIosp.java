@@ -33,6 +33,7 @@
 
 package ucar.nc2.iosp;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
@@ -158,7 +159,7 @@ public class TestMiscIosp {
     }
     FileCache.shutdown();
     RandomAccessFile.setGlobalFileCache(null);
-    assert 0 == TestDir.checkLeaks();
+    Assert.assertEquals(0, TestDir.checkLeaks());
     RandomAccessFile.setDebugLeaks(false);
   }
 

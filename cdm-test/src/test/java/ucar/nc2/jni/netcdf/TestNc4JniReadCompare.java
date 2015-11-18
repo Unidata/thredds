@@ -43,25 +43,16 @@ public class TestNc4JniReadCompare {
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
 
+    FileFilter ff = new NotFileFilter( new SuffixFileFilter(".cdl"));
     List<Object[]> result = new ArrayList<Object[]>(500);
     try {
-      addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf3/", new NotFileFilter( new SuffixFileFilter(".cdl")));
-      addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf4/", new NotFileFilter( new SuffixFileFilter(".cdl")));
-
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf3/", ff, result);
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf4/", ff, result);
     } catch (IOException e) {
       e.printStackTrace();
     }
 
     return result;
-  }
-
-  static void addFromScan(final List<Object[]> list, String dirName, FileFilter ff) throws IOException {
-    TestDir.actOnAll(dirName, ff, new TestDir.Act() {
-      public int doAct(String filename) throws IOException {
-        list.add(new Object[]{filename});
-        return 1;
-      }
-    }, true);
   }
 
   private static class Hdf5FileFilter implements java.io.FileFilter {

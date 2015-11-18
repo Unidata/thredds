@@ -97,7 +97,7 @@ public class CoordinateSystem {
   protected NetcdfDataset ds;
   protected List<CoordinateAxis> coordAxes = new ArrayList<>();
   protected List<CoordinateTransform> coordTrans = new ArrayList<>();
-  protected List<Dimension> domain = new ArrayList<>(); // set of dimension
+  protected Set<Dimension> domain = new HashSet<>(); // set of dimension
   protected String name;
   protected CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
   protected CoordinateAxis aziAxis, elevAxis, radialAxis;
@@ -141,7 +141,7 @@ public class CoordinateSystem {
       }
 
       // collect dimensions
-      List<Dimension> dims = axis.getDimensions();
+      List<Dimension> dims = axis.getDimensionsAll();
       for (Dimension dim : dims) {
         if (!domain.contains(dim))
           domain.add(dim);
@@ -199,7 +199,7 @@ public class CoordinateSystem {
    * List of Dimensions that constitute the domain.
    * @return the List of Dimensions that constitute the domain.
    */
-  public List<Dimension> getDomain() { return domain; }
+  public Collection<Dimension> getDomain() { return domain; }
 
   /**
    * Get the domain rank of the coordinate system = number of dimensions it is a function of.
@@ -387,13 +387,12 @@ public class CoordinateSystem {
   }
 
   /**
-   * Check if this Coordinate System is complete,
-   *   ie if all its dimensions are also used by the Variable.
+   * Check if this Coordinate System is complete for v, ie if all its dimensions are also used by v.
    * @param v check for this variable
    * @return true if all dimensions in V (including parents) are in the domain of this coordinate system.
    */
   public boolean isComplete(VariableIF v) {
-    return /* isCoordinateSystemFor(v) && */ isSubset(v.getDimensionsAll(), domain);
+    return isSubset(v.getDimensionsAll(), domain);
   }
 
  /**
@@ -414,15 +413,7 @@ public class CoordinateSystem {
    * @param set of this?
    * @return true if all the Dimensions in subset are in set
    */
-  public static boolean isSubset(List<Dimension> subset, List<Dimension> set) {
-    for (Dimension d : subset) {
-      if (!(set.contains(d)))
-        return false;
-    }
-    return true;
-  }
-
-  public static boolean isSubsetOf(List<Dimension> subset, Set<Dimension> set) {
+  public static boolean isSubset(Collection<Dimension> subset, Collection<Dimension> set) {
     for (Dimension d : subset) {
       if (!(set.contains(d)))
         return false;

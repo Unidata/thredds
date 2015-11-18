@@ -121,11 +121,6 @@ Conventions.
      :positive = "up";
      :standard_name = "atmosphere_hybrid_height_coordinate";
      :formula_terms = "a: varA b: varB orog: orography";
-     :_CoordinateAxisType = "GeoZ";
-     :_CoordinateZisPositive = "up;
-
-     :_CoordinateTransformType = "Vertical";
-     :_CoordinateAxes = "lev";
 ------------------------------------------------------------
 
 === atmosphere_hybrid_sigma_pressure_coordinate
@@ -137,11 +132,6 @@ Conventions.
      :positive = "down";
      :standard_name = "atmosphere_hybrid_sigma_pressure_coordinate";
      :formula_terms = "a: hyam b: hybm p0: P0 ps: PS";
-     :_CoordinateAxisType = "GeoZ";
-     :_CoordinateZisPositive = "down;
-
-     :_CoordinateTransformType = "Vertical";
-     :_CoordinateAxes = "lev";
 --------------------------------------------------------------------
 
 or +
@@ -153,11 +143,6 @@ or +
      :positive = "down";
      :standard_name = "atmosphere_hybrid_sigma_pressure_coordinate";
      :formula_terms = "ap: hyam b: hybm p0: P0";
-     :_CoordinateAxisType = "GeoZ";
-     :_CoordinateZisPositive = "down;
-
-     :_CoordinateTransformType = "Vertical";
-     :_CoordinateAxes = "lev";
 --------------------------------------------------------------------
 
 === atmosphere_sigma_coordinate
@@ -169,10 +154,6 @@ or +
      :positive = "down";
      :standard_name = "atmosphere_sigma_coordinate";
      :formula_terms = "sigma: level ps: PS ptop: PTOP";
-     :_CoordinateAxisType = "GeoZ";
-     :_CoordinateZisPositive = "down";
-     :_CoordinateTransformType = "Vertical";
-     :_CoordinateAxes = "level";
 -------------------------------------------------------
 
 === ocean_s_coordinate
@@ -184,10 +165,6 @@ or +
      :positive = "up";
      :standard_name = "ocean_s_coordinate";
      :formula_terms = "s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc";
-     :_CoordinateAxisType = "GeoZ";
-     :_CoordinateZisPositive = "up";
-     :_CoordinateTransformType = "Vertical";
-     :_CoordinateAxes = "s_rho";
 --------------------------------------------------------------------------------------
 
 === ocean_s_coordinate_g1
@@ -233,10 +210,6 @@ needed. The other are added for extra readability.
      :positive = "up";
      :standard_name = "ocean_sigma_coordinate";
      :formula_terms = "sigma: zpos eta: elev depth: depth";
-     :_CoordinateAxisType = "GeoZ";
-     :_CoordinateZisPositive = "up";
-     :_CoordinateTransformType = "Vertical";
-     :_CoordinateAxes = "zpos";
 -----------------------------------------------------------
 
 === explicit_field
@@ -245,8 +218,6 @@ needed. The other are added for extra readability.
   char ExplicitField;
     :standard_name = "explicit_field";  // canonical transform name
     :existingDataField = "ght_hybr";  // must be a 3 or 4D pressure / height / geopotential height field
-    :_CoordinateTransformType = "vertical"; // unambiguouly identifies it as vertical transform
-    :_CoordinateAxes = "hybr"; // attach transform to any coord sys with the "hbyr" axis.
 --------------------------------------------------------------------------------------------------------
 
 This is not part of CF, but a way to mark an existing 3D (4D if time

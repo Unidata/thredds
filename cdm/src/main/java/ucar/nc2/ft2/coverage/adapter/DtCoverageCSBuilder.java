@@ -273,7 +273,7 @@ public class DtCoverageCSBuilder {
     boolean is2Dhoriz = isLatLon && (xaxis.getRank() == 2) && (yaxis.getRank() == 2);
     if (is2Dhoriz) {
       Set<Dimension> xyDomain = CoordinateSystem.makeDomain(Lists.newArrayList(xaxis, yaxis));
-      if (timeAxis != null && CoordinateSystem.isSubsetOf(timeAxis.getDimensionsAll(), xyDomain))
+      if (timeAxis != null && CoordinateSystem.isSubset(timeAxis.getDimensionsAll(), xyDomain))
         return FeatureType.SWATH;   // LOOK prob not exactly right
       else
         return FeatureType.CURVILINEAR;

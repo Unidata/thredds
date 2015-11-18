@@ -156,6 +156,9 @@ instead of the exact comparison done by `equals(Array, Array)`.
 * *HorizTransformBuilderIF* now uses *AttributeContainer* instead of *NetcdfDataset, Variable*
 * _CoordinateTransform.makeCoordinateTransform(NetcdfDataset ds, Variable ctv)_ is now _ProjectionCT makeCoordinateTransform(AttributeContainer ctv)_
 * Previously, the optional _false_easting_, and _false_northing_ should match the units of the x and y projection coordinates
+* in *ucar.nc2.dataset.CoordinateSystem*
+** List<Dimension> getDomain() -> Collection<Dimension> getDomain()
+** boolean isSubset(List<Dimension> subset, List<Dimension> set) -> isSubset(Collection<Dimension> subset, Collection<Dimension> set)
 
 === Feature Datasets
 
