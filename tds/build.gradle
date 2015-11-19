@@ -29,7 +29,7 @@ dependencies {
     compile libraries["httpcore"]
 
     compile libraries["coverity-escapers"]
-    compile libraries["commons-fileupload"]
+    // compile libraries["commons-fileupload"]
     compile libraries["jdom2"]
     compile libraries["quartz"]
     compile libraries["commons-lang3"]

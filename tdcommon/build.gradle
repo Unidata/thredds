@@ -9,7 +9,7 @@ dependencies {
     compile libraries["spring-core"]
     compile libraries["quartz"]
     compile libraries["chronicle-map"]
-    compile libraries["openhft-lang"]
+    // compile libraries["openhft-lang"]
 
     compile libraries["slf4j-api"]
     compile libraries["log4j-api"]

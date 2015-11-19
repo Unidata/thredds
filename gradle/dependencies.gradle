@@ -46,7 +46,7 @@ libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-ext
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "4.1.6.RELEASE"
+versions["spring"] = "4.2.3.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -60,7 +60,7 @@ libraries["spring-webmvc"] = "org.springframework:spring-webmvc:${versions["spri
 
 ////////////////////////////////////////// Spring security //////////////////////////////////////////
 
-versions["spring-security"] = "4.0.1.RELEASE"
+versions["spring-security"] = "4.0.3.RELEASE"
 
 libraries["spring-security-core"] = "org.springframework.security:spring-security-core:${versions["spring-security"]}"
 
@@ -93,7 +93,7 @@ libraries["52n-xml-sampling-v20"] = "org.n52.sensorweb:52n-xml-sampling-v20:${ve
 
 ////////////////////////////////////////// Logging //////////////////////////////////////////
 
-versions["slf4j"] = "1.7.7"
+versions["slf4j"] = "1.7.13"
 
 libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
 
@@ -101,7 +101,7 @@ libraries["slf4j-jdk14"] = "org.slf4j:slf4j-jdk14:${versions["slf4j"]}"
 
 libraries["jcl-over-slf4j"] = "org.slf4j:jcl-over-slf4j:${versions["slf4j"]}"
 
-versions["log4j"] = "2.2"
+versions["log4j"] = "2.4.1"
 
 libraries["log4j-api"] = "org.apache.logging.log4j:log4j-api:${versions["log4j"]}"
 
@@ -156,15 +156,15 @@ libraries["jcip-annotations"] = "net.jcip:jcip-annotations:1.0"
 // command line parser
 libraries["jcommander"] = "com.beust:jcommander:1.35"
 
-libraries["jdom2"] = "org.jdom:jdom2:2.0.4"
+libraries["jdom2"] = "org.jdom:jdom2:2.0.6"
 
 // used by FMRC - replace ?
 libraries["je"] = "com.sleepycat:je:4.0.92"
 
-libraries["jna"] = "net.java.dev.jna:jna:4.1.0"
+libraries["jna"] = "net.java.dev.jna:jna:4.2.1"
 
 // replace by javax.time
-libraries["joda-time"] = "joda-time:joda-time:2.8.1"
+libraries["joda-time"] = "joda-time:joda-time:2.9.1"
 
 // HTML scraper
 libraries["jsoup"] = "org.jsoup:jsoup:1.7.2"
@@ -186,9 +186,9 @@ libraries["jj2000"] = "edu.ucar:jj2000:5.3"
 
 libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.10.11"
 
-libraries["chronicle-map"] = "net.openhft:chronicle-map:2.1.7"
+libraries["chronicle-map"] = "net.openhft:chronicle-map:2.3.9"
 
-libraries["openhft-lang"] = "net.openhft:lang:6.6.4"
+// libraries["openhft-lang"] = "net.openhft:lang:6.6.4"
 
 libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.1.Final"
 
@@ -205,7 +205,7 @@ libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.1") {
     exclude group: 'edu.ucar', module: 'cdm'  // version "4.6.1"
 }
 
-libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.0"
+libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.7"
 
