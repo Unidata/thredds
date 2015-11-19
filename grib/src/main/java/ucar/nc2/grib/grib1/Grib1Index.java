@@ -240,6 +240,9 @@ public class Grib1Index extends GribIndex {
         rootBuilder.addRecords(makeRecordProto(r, index));
       }
 
+      if (records.isEmpty())
+        throw new RuntimeException("No GRIB1 records found in "+dataRaf.getLocation());
+
       ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index index = rootBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(fout, b.length); // message size
