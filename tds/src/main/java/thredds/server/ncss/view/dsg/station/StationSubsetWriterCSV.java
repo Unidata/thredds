@@ -37,9 +37,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import org.springframework.http.HttpHeaders;
-import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.server.ncss.exception.NcssException;
 import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
 import ucar.ma2.Array;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
@@ -68,7 +68,7 @@ public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
 
         if (!isStream) {
             httpHeaders.set("Content-Location", datasetPath);
-            String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, ".csv");
+            String fileName = TdsPathUtils.getFileNameForResponse(datasetPath, ".csv");
             httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
         } else {

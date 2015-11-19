@@ -34,8 +34,8 @@ package thredds.server.ncss.view.dsg.point;
 
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.VariableSimpleIF;
@@ -70,7 +70,7 @@ public class PointSubsetWriterCSV extends AbstractPointSubsetWriter {
 
         if (!isStream) {
             httpHeaders.set("Content-Location", datasetPath);
-            String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, ".csv");
+            String fileName = TdsPathUtils.getFileNameForResponse(datasetPath, ".csv");
             httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
         } else {

@@ -36,10 +36,8 @@ import net.opengis.waterml.x20.CollectionDocument;
 import net.opengis.waterml.x20.CollectionType;
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.controller.NcssRequestUtils;
-import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.StationTimeSeriesFeature;
@@ -76,7 +74,7 @@ public class StationSubsetWriterWaterML extends AbstractStationSubsetWriter {
 
     if (!isStream) {
       httpHeaders.set("Content-Location", datasetPath);
-      String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, ".xml");
+      String fileName = TdsPathUtils.getFileNameForResponse(datasetPath, ".xml");
       httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
     }
 

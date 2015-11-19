@@ -69,13 +69,13 @@ public class LoggerFactorySpecial implements LoggerFactory {
     String p = System.getProperty("tds.log.dir");
     if (p != null) dir = p;
 
-    this.maxSize =  maxSize;
-    this.maxBackups =  maxBackups;
+    this.maxSize = maxSize;
+    this.maxBackups = maxBackups;
     try {
       Level tlevel = Level.toLevel(levels);
       if (tlevel != null) level = tlevel;
     } catch (Exception e) {
-      startupLog.error("Illegal Logger level="+levels);
+      startupLog.error("Illegal Logger level=" + levels);
     }
   }
 
@@ -147,7 +147,7 @@ public class LoggerFactorySpecial implements LoggerFactory {
 
       // create logger in log4j2
       // TODO: There are Builders that make this logger creation less awkward.
-      Configuration config = new NullConfiguration(); // LOOK: Why are we using this? Why not DefaultConfiguration?
+      /* Configuration config = new NullConfiguration(); // LOOK: Why are we using this? Why not DefaultConfiguration?
       PatternLayout layout = PatternLayout.createLayout(
               "%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n",  // String pattern
               config,                                         // Configuration config
@@ -157,7 +157,10 @@ public class LoggerFactorySpecial implements LoggerFactory {
               false,                                          // boolean noConsoleNoAnsi
               null,                                           // String header
               null                                            // String footer
-      );
+      ); */
+
+      Configuration config = new NullConfiguration();
+      PatternLayout layout = PatternLayout.newBuilder().withPattern("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n").build();
 
       RollingFileAppender app = RollingFileAppender.createAppender(
               fileName,                                                         // String fileName

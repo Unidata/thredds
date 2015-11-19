@@ -5,9 +5,9 @@ dependencies {
     compile project(':cdm')
     compile libraries["protobuf-java"]
     compile libraries["jdom2"]
-    compile libraries["jsoup"]
     compile libraries["jcip-annotations"]
     compile libraries["jj2000"]
     compile libraries["guava"]
     compile libraries["slf4j-api"]
+    testCompile libraries["jsoup"]
 }

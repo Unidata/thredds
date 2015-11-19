@@ -164,7 +164,7 @@ public class CdmrControllerTest {
                .andReturn();
 
     ByteArrayInputStream bais = new ByteArrayInputStream( result.getResponse().getContentAsByteArray() );
-    assertTrue( NcStream.readAndTest(bais, NcStream.MAGIC_DATA));
+    assertTrue( NcStream.readAndTest(bais, NcStream.MAGIC_DATA2));
    }
 
 

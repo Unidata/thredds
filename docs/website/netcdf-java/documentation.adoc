@@ -130,7 +130,7 @@ from the producer is possible and send them to us.
 * link:CDM/CFdiff.adoc[Differences between CF and CDM]
 * link:reference/FeatureDatasets/CFencodingTable.adoc[CF Point Observation Data encoding Table]
 * http://www.ral.ucar.edu/projects/titan/docs/radial_formats/cfradial.html[CF/Radial RADAR/LIDAR Data Format]
-* CF Convention Conformance Checking
+* CF Convention Conformance Checking:
 ** http://cfconventions.org/compliance-checker.html
 ** http://htap.icg.kfa-juelich.de:50080/upload
 
@@ -162,9 +162,10 @@ http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_
 
 === Metadata:
 
-* link:metadata/DataDiscoveryAttConvention.adoc[NetCDF Attribute Convention for Dataset Discovery]
 * https://geo-ide.noaa.gov/wiki/index.php?title=NcISO[NcISO:] generation of ISO 19115-2 metadata from NetCDF data sources.
-link:{tdsDocs}/ncISO.adoc[TDS implementation]
+* link:{tdsDocs}/ncISO.adoc[TDS implementation]
+* http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discovery[Attribute Convention for Dataset Discovery (current)]
+* link:metadata/DataDiscoveryAttConvention.adoc[Attribute Convention for Dataset Discovery (version 1.0)] (deprecated)
 
 === Miscellaneous Resources
 

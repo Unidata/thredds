@@ -29,11 +29,11 @@ dependencies {
     compile libraries["httpcore"]
 
     compile libraries["coverity-escapers"]
-    compile libraries["commons-fileupload"]
+    // compile libraries["commons-fileupload"]
     compile libraries["jdom2"]
     compile libraries["quartz"]
-    compile libraries["commons-lang3"]
-    compile libraries["commons-io"]
+    // compile libraries["commons-lang3"]
+    // compile libraries["commons-io"]
     compile libraries["jcip-annotations"]
     compile libraries["guava"]
     compile libraries["joda-time"]
@@ -59,12 +59,14 @@ dependencies {
     // compile libraries["geoapi-pending"]
     // compile libraries["oro"]
 
-    // ncss: Needed for XPath operations in NcssShowDatasetInfoImpl.addElement()
-    runtime libraries["jaxen"]
+    // Needed for XPath operations in mock tests
+    testCompile libraries["jaxen"]
 
     // JSR 303 with Hibernate Validator, which is dragging in jboss logging
     compile libraries["validation-api"]
     runtime libraries["hibernate-validator"]
+    testCompile libraries["javax.el-api"]
+    testCompile libraries["javax.el"]
 
     compile "org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE"
 
