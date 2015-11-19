@@ -38,9 +38,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.springframework.http.HttpHeaders;
-import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.server.ncss.exception.NcssException;
 import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.VariableSimpleIF;
@@ -72,7 +72,7 @@ public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
 
         if (!isStream) {
             httpHeaders.set("Content-Location", datasetPath);
-            String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, ".xml");
+            String fileName = TdsPathUtils.getFileNameForResponse(datasetPath, ".xml");
             httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         }
 

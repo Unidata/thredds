@@ -53,6 +53,7 @@ import thredds.server.ncss.view.dsg.DsgSubsetWriter;
 import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import thredds.util.Constants;
 import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -192,7 +193,7 @@ public class NcssGridController extends AbstractNcssController {
     Random random = new Random(System.currentTimeMillis());
     int randomInt = random.nextInt();
 
-    String filename = NcssRequestUtils.getFileNameForResponse(requestPathInfo, version);
+    String filename = TdsPathUtils.getFileNameForResponse(requestPathInfo, version);
     String pathname = Integer.toString(randomInt) + "/" + filename;
     File ncFile = ncssDiskCache.getDiskCache().getCacheFile(pathname);
     if (ncFile == null)

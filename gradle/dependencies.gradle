@@ -144,11 +144,11 @@ libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
 
 libraries["guava"] = "com.google.guava:guava:18.0"
 
-libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.4.1"
+libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.1"
 
-libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.1"
+libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.4"
 
-libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.4.1"
+libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.1"
 
 // Immutable annotation
 libraries["jcip-annotations"] = "net.jcip:jcip-annotations:1.0"
@@ -167,7 +167,7 @@ libraries["jna"] = "net.java.dev.jna:jna:4.2.1"
 libraries["joda-time"] = "joda-time:joda-time:2.9.1"
 
 // HTML scraper
-libraries["jsoup"] = "org.jsoup:jsoup:1.7.2"
+libraries["jsoup"] = "org.jsoup:jsoup:1.8.3"
 
 // Nonnull annotation
 libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.0"
@@ -190,8 +190,6 @@ libraries["chronicle-map"] = "net.openhft:chronicle-map:2.3.9"
 
 // libraries["openhft-lang"] = "net.openhft:lang:6.6.4"
 
-libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.1.Final"
-
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
 libraries["jstl"] = "javax.servlet:jstl:1.2"
@@ -209,7 +207,14 @@ libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.7"
 
-libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
+/////////////////////////////////////////////////////////////////////////////////
+// Bean validation 1.1, used by TDS
+
+libraries["validation-api"] = "javax.validation:validation-api:1.1.0.Final"
+libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:5.2.2.Final"
+libraries["javax.el-api"] = "javax.el:javax.el-api:2.2.4"
+libraries["javax.el"] = "org.glassfish.web:javax.el:2.2.4"
+
 
 ////////////////////////////// not used? ///////////////////////////////////////////
 

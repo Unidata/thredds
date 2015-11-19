@@ -35,8 +35,8 @@ package thredds.server.ncss.view.dsg.station;
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.util.ContentType;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
@@ -93,7 +93,7 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
     public HttpHeaders getHttpHeaders(String datasetPath, boolean isStream) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, version);
+        String fileName = TdsPathUtils.getFileNameForResponse(datasetPath, version);
         String url = ncssDiskCache.getServletCachePath() + fileName;
 
         if (version == NetcdfFileWriter.Version.netcdf3) {

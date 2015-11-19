@@ -15,10 +15,7 @@ dependencies {
     compile libraries["guava"]
     compile libraries["jcommander"]
 
-    // TODO: Do we need this in CDM?
-    compile libraries["validation-api"]
-    // TODO: Make sure we still need this
-    compile libraries["jsr305"]
+    compile libraries["jsr305"]  // Nonnull
 
     compile libraries["slf4j-api"]
 
