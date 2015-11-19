@@ -9,7 +9,7 @@ import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 
 /**
- * Describe
+ * Test that restricted datasets fail when not authorized
  *
  * @author caron
  * @since 4/21/2015
