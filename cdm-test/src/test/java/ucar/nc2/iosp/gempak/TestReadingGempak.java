@@ -61,19 +61,17 @@ public class TestReadingGempak {
     System.out.printf("%nIn directory %s%n", dir.getPath());
     for (File child : dir.listFiles()) {
       if (child.isDirectory()) continue;
-      NetcdfFile ncfile = null;
-      try {
-        // if( child.startsWith( "air"))  continue;
-        System.out.printf("  Open File %s ", child.getPath());
-        long start = System.currentTimeMillis();
-        ncfile = NetcdfDataset.openFile(child.getPath(), null);
+      System.out.printf("  Open File %s ", child.getPath());
+      long start = System.currentTimeMillis();
+
+      try ( NetcdfFile ncfile = NetcdfDataset.openFile(child.getPath(), null)) {
         String ft = ncfile.findAttValueIgnoreCase(null, "featureType", "none");
         String iosp = ncfile.getIosp().getFileTypeId();
         System.out.printf(" iosp=%s ft=%s took =%d ms%n", iosp, ft, (System.currentTimeMillis() - start));
+
       } catch (Throwable t) {
         System.out.printf(" FAILED =%s%n", t.getMessage());
         t.printStackTrace();
-        if (ncfile != null) ncfile.close();
       }
     }
 

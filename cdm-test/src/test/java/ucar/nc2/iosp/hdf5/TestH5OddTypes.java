@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.hdf5;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Test;
 
 import org.junit.experimental.categories.Category;
@@ -85,17 +86,20 @@ public class TestH5OddTypes {
   @Category(NeedsCdmUnitTest.class)
   public void testEnum() throws InvalidRangeException, IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/enum.h5")) {
+      Assert.assertNotNull(ncfile);
       Variable v2 = ncfile.findVariable("enum");
-      assert v2 != null;
+      Assert.assertNotNull(v2);
 
       Array data = v2.read();
       assert data.getElementType() == int.class;
+    }
 
-      NetcdfDataset ncd = TestH5.openH5dataset("support/enum.h5");
-      v2 = ncd.findVariable("enum");
-      assert v2 != null;
+    try (NetcdfDataset ncd = TestH5.openH5dataset("support/enum.h5")) {
+      Assert.assertNotNull(ncd);
+      Variable v2 = ncd.findVariable("enum");
+      Assert.assertNotNull(v2);
 
-      data = v2.read();
+      Array data = v2.read();
       assert data.getElementType() == String.class;
     }
   }
@@ -120,7 +124,7 @@ public class TestH5OddTypes {
     try (NetcdfFile ncfile = TestH5.openH5("samples/bitfield.h5")) {
 
     }
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
   }
 
   // attribute vlen String
@@ -131,12 +135,12 @@ public class TestH5OddTypes {
     try (NetcdfFile ncfile = TestH5.openH5("support/vlstra.h5")) {
       System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     }
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-   public void testAttString() throws InvalidRangeException, IOException {
+  public void testAttString() throws InvalidRangeException, IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("support/attstr.h5")) {
     }
@@ -146,9 +150,9 @@ public class TestH5OddTypes {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testCompoundString() throws InvalidRangeException, IOException {
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     TestDir.readAll(TestH5.testDir + "support/cstr.h5");
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
   }
 
   @Test
@@ -167,18 +171,18 @@ public class TestH5OddTypes {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void misc() throws IOException {
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
 
     // bitfields, opaque
     try (NetcdfFile ncfile = TestH5.openH5("support/bitop.h5")) {
       System.out.println("\n" + ncfile);
     }
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl());
   }
 
   @Test
   public void testMisc() {
-    byte[] heapId = new byte[] { 0, 22, 32, 0, 0, 0, -19, 5};
+    byte[] heapId = new byte[]{0, 22, 32, 0, 0, 0, -19, 5};
     int offset = makeIntFromBytes(heapId, 1, 5);
     System.out.printf("%d%n", offset);
   }

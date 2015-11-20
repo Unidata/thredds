@@ -69,6 +69,10 @@ public class TestConventionFeatureTypes {
           Assert.assertTrue(f.getPath(), fd.getFeatureType().isCoverageFeatureType());
         else if (type == FeatureType.POINT)
           Assert.assertTrue(f.getPath(), fd.getFeatureType().isPointFeatureType());
+
+      } catch (Throwable t) {
+        System.out.printf("FAIL %s%n", f.getPath());
+        throw t;
       }
 
     }
