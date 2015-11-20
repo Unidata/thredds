@@ -33,8 +33,7 @@
 
 package ucar.nc2.iosp;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -61,6 +60,20 @@ import java.util.Arrays;
 @Category(NeedsCdmUnitTest.class)
 public class TestMiscIosp {
 
+  @BeforeClass
+  static public void startup() {
+    RandomAccessFile.setDebugLeaks(true);
+    RandomAccessFile.enableDefaultGlobalFileCache();
+  }
+
+  @AfterClass
+  static public void checkLeaks() {
+    FileCache.shutdown();
+    RandomAccessFile.setGlobalFileCache(null);
+    assert 0 == TestDir.checkLeaks();
+    RandomAccessFile.setDebugLeaks(false);
+  }
+
   @Test
   public void testFyiosp() throws IOException {
      //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed
@@ -79,7 +92,7 @@ public class TestMiscIosp {
 
        Variable v = ncf.findVariable("snow");
        assert v != null;
-       assert v.getDataType() == DataType.USHORT;
+       assert v.getDataType() == DataType.SHORT;
 
        Array data = v.read();
        assert Arrays.equals(data.getShape(), new int[]{1, 91, 181});
@@ -118,7 +131,6 @@ public class TestMiscIosp {
 
   @Test
   public void testGrads() throws IOException, InvalidRangeException {
-    RandomAccessFile.setDebugLeaks(true);
     String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
     try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
       System.out.printf("open %s %n", ncf.getLocation());
@@ -134,14 +146,10 @@ public class TestMiscIosp {
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
     }
-    TestDir.checkLeaks();
-    RandomAccessFile.setDebugLeaks(false);
   }
 
   @Test
   public void testGradsWithRAFCache() throws IOException, InvalidRangeException {
-    RandomAccessFile.setDebugLeaks(true);
-    RandomAccessFile.enableDefaultGlobalFileCache();
     String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
     try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
       System.out.printf("open %s %n", ncf.getLocation());
@@ -157,10 +165,6 @@ public class TestMiscIosp {
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
     }
-    FileCache.shutdown();
-    RandomAccessFile.setGlobalFileCache(null);
-    Assert.assertEquals(0, TestDir.checkLeaks());
-    RandomAccessFile.setDebugLeaks(false);
   }
 
   // @Test

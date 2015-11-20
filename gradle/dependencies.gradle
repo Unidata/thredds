@@ -38,7 +38,7 @@ ext {
 
 libraries["gretty"] = "org.akhikhl.gretty:gretty:1.2.0"
 
-libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.1"
+libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.2"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
 
@@ -128,7 +128,7 @@ libraries["equalsverifier"] = "nl.jqno.equalsverifier:equalsverifier:1.7.5"
 // These four are all for Spock.
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
 
-libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.1"
+libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.5"
 
 // In Spock, allows mocking of classes (in addition to interfaces).
 // 5503bcca74 is the most recent commit on the cglib master branch as of 2015-08-26.
