@@ -108,8 +108,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Debugging, do not use.
-   * Set counters to zero, set
+   * Debugging, do not use in production.
+   * Set counters to zero, set debugging on
    * @param b set true to track java.io.RandomAccessFile
    */
   static public void setDebugLeaks(boolean b) {
@@ -370,7 +370,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       int max = Math.max(openFiles.size(), maxOpenFiles.get());
       maxOpenFiles.set(max);
       count_openFiles.getAndIncrement();
-      if (showOpen) System.out.println("  open " + location);
+      if (showOpen) System.out.println(" DebugRAF open " + location);
       //if (openFiles.size() > 1000)
       //  System.out.println("RandomAccessFile debugLeaks");
     }

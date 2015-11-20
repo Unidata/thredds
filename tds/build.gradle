@@ -22,7 +22,8 @@ dependencies {
 
     // Server stuff
     provided libraries["javax.servlet-api"]
-    runtime libraries["jstl"]
+    runtime libraries["jstl-api"]
+    runtime libraries["jstl-impl"]
 
     // Apache httpclient libraries
     compile libraries["httpclient"]
@@ -85,10 +86,10 @@ dependencies {
 // Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
 apply plugin: 'org.akhikhl.gretty'
 
-test {
+//test {
     // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
-    exclude 'thredds/tds/**'
-}
+//    exclude 'thredds/tds/**'
+//}
 
 // Tests expect for test resources to be copied to the same directory as the test classes.
 processTestResources.destinationDir = compileTestJava.destinationDir

@@ -13,10 +13,8 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Category(NotJenkins.class)
-public class TestH5Iosp extends DapTestCommon
-{
+public class TestH5Iosp extends DapTestCommon {
     static protected final boolean DEBUG = false;
 
     static protected final boolean NCDUMP = true;

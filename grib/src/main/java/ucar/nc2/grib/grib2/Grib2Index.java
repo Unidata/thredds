@@ -268,6 +268,9 @@ public class Grib2Index extends GribIndex {
         rootBuilder.addRecords(makeRecordProto(r, index, r.getGDS().scanMode));
       }
 
+      if (records.isEmpty())
+        throw new RuntimeException("No GRIB1 records found in "+dataRaf.getLocation());
+
       Grib2IndexProto.Grib2Index index = rootBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(fout, b.length); // message size

@@ -113,20 +113,28 @@ public class CdmRemoteController implements LastModified {
 
     if (showReq)
       System.out.printf("CdmRemoteController req=%s%n", absPath + "?" + request.getQueryString());
-    if (debug) {
+    if (debug)
       System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
-    }
 
     // LOOK heres where we want the Dataset, not the netcdfFile (!)
     try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
       if (ncfile == null) return null;  // failed resource control
+      responseHeaders = new HttpHeaders();
+
+      // a request without a parameter is a test to see if this is a valid cdremote endpoint.
+      // just setHeader("Content-Description", "ncstream"), no body
+      // on client, see DatasetUrl.disambiguateHttp
+      if (req == null) {
+          response.setContentType(ContentType.binary.getContentHeader());
+          response.setHeader("Content-Description", "ncstream");
+          return new ResponseEntity<>(null, responseHeaders, HttpStatus.OK);
+        }
 
       switch (req.toLowerCase()) {
         case "form":    // ol
         case "cdl":
           ncfile.setLocation(datasetPath); // hide where the file is stored  LOOK
           String cdl = ncfile.toString();
-          responseHeaders = new HttpHeaders();
           responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
           return new ResponseEntity<>(cdl, responseHeaders, HttpStatus.OK);
 

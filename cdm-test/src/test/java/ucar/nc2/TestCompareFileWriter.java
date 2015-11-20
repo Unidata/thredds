@@ -79,13 +79,13 @@ public class TestCompareFileWriter {
     File fout = new File(TestDir.temporaryLocalDataDir+fin.getName()+".nc");
     System.out.printf("Write %s %n   to %s (%s %s)%n", fin.getAbsolutePath(), fout.getAbsolutePath(), fout.exists(), fout.getParentFile().exists());
 
-    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(fin.getPath(), null);
-    FileWriter2 fileWriter = new FileWriter2(ncfileIn, fout.getPath(), NetcdfFileWriter.Version.netcdf3, null);
-    NetcdfFile ncfileOut = fileWriter.write();
-    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(ncfileIn, ncfileOut) == same;
+    try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(fin.getPath(), null)) {
+      FileWriter2 fileWriter = new FileWriter2(ncfileIn, fout.getPath(), NetcdfFileWriter.Version.netcdf3, null);
 
-    ncfileIn.close();
-    ncfileOut.close();
+      try (NetcdfFile ncfileOut = fileWriter.write()) {
+        assert ucar.unidata.test.util.CompareNetcdf.compareFiles(ncfileIn, ncfileOut) == same;
+      }
+    }
     System.out.printf("%n");
   }
 

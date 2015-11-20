@@ -86,6 +86,7 @@ class CoordAxisHelper {
   // same contract as findCoordElement()
   private int findCoordElementRegular(double coordValue, boolean bounded) {
     int n = axis.getNcoords();
+    if (n == 1 && bounded) return 0;
 
     double distance = coordValue - axis.getStartValue();
     double exactNumSteps = distance / axis.getResolution();
