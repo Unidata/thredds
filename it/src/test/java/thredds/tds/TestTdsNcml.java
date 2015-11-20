@@ -32,7 +32,9 @@
  */
 package thredds.tds;
 
+import org.junit.Assert;
 import org.junit.Test;
+import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
@@ -88,12 +90,14 @@ public class TestTdsNcml {
     ncd.close();
   }
 
+  @Test
   public void testNcMLinDatasetScan() throws IOException {
     Catalog cat = TdsLocalCatalog.open(null);
 
     Dataset parent = cat.findDatasetByID("ModifyDatasetScan");
-    assert (parent != null) : "cant find dataset 'ModifyDatasetScan'";
-    Dataset ds = parent.findDatasetByName("example1.nc");
+    Assert.assertNotNull("cant find dataset by id 'ModifyDatasetScan'", parent);
+    Dataset ds = parent.findDatasetByName("example1.nc"); // LOOK not auto open catRef
+    Assert.assertNotNull("cant find dataset by name 'example1'", ds);
 
     assert ds.getFeatureType() == FeatureType.GRID : ds.getFeatureType();
 
@@ -125,9 +129,12 @@ public class TestTdsNcml {
     ncd.close();
   }
 
+  @Test
   public void testAggExisting() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfDataset.openFile("http://localhost:8080/thredds/dodsC/ExampleNcML/Agg.nc", null);
-    System.out.printf("%s%n", ncfile);
+    String endpoint = TestWithLocalServer.withPath("dodsC/ExampleNcML/Agg.nc");
+    System.out.printf("%s%n", endpoint);
+
+    NetcdfFile ncfile = NetcdfDataset.openFile(endpoint, null);
 
     Variable v = ncfile.findVariable("time");
     assert v != null;
@@ -159,59 +166,18 @@ public class TestTdsNcml {
     ncfile.close();
   }
 
-  public void testAggNew() throws IOException, InvalidRangeException {
-    NetcdfFile ncd = NetcdfDataset.openFile("http://localhost:8080/thredds/dodsC/aggNewTest/SUPER-NATIONAL_8km_WV.gini", null);
-    assert ncd != null;
+  @Test
+  public void testAddMetadataToScan() throws IOException, InvalidRangeException {
+    String endpoint = TestWithLocalServer.withPath("cdmremote/testGridScan/GFS_CONUS_80km_20120229_1200.grib1");
+    System.out.printf("%s%n", endpoint);
 
-    Variable v = ncd.findVariable("time");
-    assert v != null;
+    try (NetcdfFile ncd = NetcdfDataset.openFile(endpoint, null)) {
+      Assert.assertNotNull(ncd);
 
-    String testAtt = ncd.findAttValueIgnoreCase(v, "units", null);
-    assert testAtt != null;
-    assert testAtt.equals("minutes since 2000-6-16 6:00");
-
-    Array data = v.read();
-    assert data.getSize() == v.getSize();
-    assert data.getSize() == 12;
-
-    int count = 0;
-    int[] want = new int[]    {0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165};
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      int val = ii.getIntNext();
-      assert val == want[count++];
+      Attribute att = ncd.findGlobalAttribute("ncmlAdded");
+      Assert.assertNotNull(att);
+      Assert.assertEquals("stuff", att.getStringValue());
     }
-
-    // test strided access on an agg variable
-    v = ncd.findVariable("IR_WV");
-    assert v != null;
-
-    data = v.read("0:11:2,0,0");
-    assert data.getSize() == 6;
-
-    count = 0;
-    byte[] wantb = new byte[]    {-75, -74, -74, -73, -71, -72};
-    ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      byte val = ii.getByteNext();
-      assert val == wantb[count++];
-    }
-
-    data = v.read("1:10:2,1,0");
-    NCdumpW.printArray(data, null, System.out, null);
-    assert data.getSize() == 5;
-
-    count = 0;
-    wantb = new byte[] {-75, -74, -74, -73, -71};
-    ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      byte val = ii.getByteNext();
-      assert val == wantb[count] : count+": "+val+" != "+ wantb[count];
-      count++;
-    }
-
-
-    ncd.close();
   }
 
 }

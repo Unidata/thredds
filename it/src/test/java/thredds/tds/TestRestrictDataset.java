@@ -39,10 +39,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
-import ucar.httpservices.HTTPConstantProvider;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
+import ucar.httpservices.*;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.util.Arrays;
@@ -67,7 +64,7 @@ public class TestRestrictDataset {
 
             // restricted DatasetScan
             {"/dodsC/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc.html"},
-            {"/cdmremote/testRestrictedScan/GFS_CONUS_80km_20120229_1200.grib1?req=form"},
+            {"/cdmremote/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc?req=header"},
             {"/fileServer/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc"},
         //    {"/wms/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc?service=WMS&version=1.3.0&request=GetCapabilities"},
 
@@ -80,9 +77,9 @@ public class TestRestrictDataset {
 
     String path, query;
 
-    public TestRestrictDataset(String path)
-    {
-        this.path = path;
+    public TestRestrictDataset(String path) {
+      this.path = path;
+      HTTPCachingProvider.clearCache(); // clear for each test
     }
 
   @Test

@@ -123,7 +123,7 @@ public class TestWithLocalServer {
     System.out.printf("testOpenXml req = '%s'%n", endpoint);
 
     try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(AuthScope.ANY, provider);
+      session.setCredentialsProvider(endpoint, provider);
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
       Assert.assertEquals(200, statusCode);
