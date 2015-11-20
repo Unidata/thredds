@@ -59,30 +59,26 @@ import java.util.Arrays;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestMiscIosp {
+  private static int leaks;
 
   @BeforeClass
   static public void startup() {
     RandomAccessFile.setDebugLeaks(true);
     RandomAccessFile.enableDefaultGlobalFileCache();
+    leaks =  RandomAccessFile.getOpenFiles().size();
   }
 
   @AfterClass
   static public void checkLeaks() {
     FileCache.shutdown();
     RandomAccessFile.setGlobalFileCache(null);
-    assert 0 == TestDir.checkLeaks();
+    assert leaks == TestDir.checkLeaks();
     RandomAccessFile.setDebugLeaks(false);
   }
 
   @Test
   public void testFyiosp() throws IOException {
-     //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed
-     // String fileIn = "c:/data/image/gini/n0r_20041013_1852";
-
      String fileIn =  TestDir.cdmUnitTestDir + "formats/fysat/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010115.AWX";
-
-     //String fileIn = "E:/SATE_L3_F2C_VISSR_MWB_SNO_CNB/200801/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010815.AWX";
-     //ucar.nc2.NetcdfFile.registerIOProvider(ucar.nc2.iosp.fysat.Fysatiosp.class);
      try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
        System.out.printf("open %s %n", ncf.getLocation());
 
