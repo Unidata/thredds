@@ -376,7 +376,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       RuntimeSmoosher combined = already.combine(result);
       runtimes.set(index, combined);        // replace with combined one
       substCoords.put(runtime.getName(), combined.runtime.getName()); // track substitutes
-      System.out.printf("runtime smooch %s into %s%n", runtime.getName(), combined.runtime.getName());
+      // System.out.printf("runtime smooch %s into %s%n", runtime.getName(), combined.runtime.getName());
     }
   }
 
@@ -1078,7 +1078,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     for (CoverageCoordAxis axis : coordsSetAxes)
       if (axis.getAxisType() == AxisType.RunTime) hasruntime = true;
     if (!hasruntime)
-      System.out.printf("HEY no runtime%n");
+      logger.warn("HEY no runtime "+gribCollection.getName());
 
     List<CoverageCoordAxis> geoArrayAxes = new ArrayList<>(coordsSetAxes);  // for GeoReferencedArray
     geoArrayAxes.add(subsetCoordSys.getYAxis());

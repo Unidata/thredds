@@ -204,7 +204,7 @@ public class CFGridCoverageWriter2 {
       GeoReferencedArray array = gridOrg.readData(subsetParams);
 
       // test conform to whatever axis.getCoordsAsArray() returns
-      checkConformance(gridOrg, grid, array);
+      checkConformance(gridOrg, grid, array, gdsOrg.getName());
 
       Variable v = writer.findVariable(grid.getName());
       if (show) System.out.printf("CFGridCoverageWriter2 write grid %s%n", v.getNameAndDimensions());
@@ -317,13 +317,13 @@ public class CFGridCoverageWriter2 {
     }
   }
 
-  private void checkConformance(Coverage gridOrg, Coverage gridSubset, GeoReferencedArray geo) {
+  private void checkConformance(Coverage gridOrg, Coverage gridSubset, GeoReferencedArray geo, String where) {
     CoverageCoordSys csys = gridSubset.getCoordSys();
 
     CoverageCoordSys csysData = geo.getCoordSysForData();
 
-    System.out.printf("    csys=%s%n", csys);
-    System.out.printf("csysData=%s%n", csysData);
+    //System.out.printf("    csys=%s%n", csys);
+    //System.out.printf("csysData=%s%n", csysData);
 
     Section s = new Section(csys.getShape());
     Section so = new Section(csysData.getShape());
@@ -331,12 +331,12 @@ public class CFGridCoverageWriter2 {
     boolean ok = s.conformal(so);
 
     int[] dataShape = geo.getData().getShape();
-    System.out.printf("dataShape=%s%n", Misc.showInts(dataShape));
+    //System.out.printf("dataShape=%s%n", Misc.showInts(dataShape));
     Section sdata = new Section(dataShape);
     boolean ok2 = s.conformal(sdata);
 
     if (!ok || !ok2)
-      System.out.printf("CFGridCoverageWriter2 checkConformance fails%n");
+      logger.warn("CFGridCoverageWriter2 checkConformance fails " +where);
 
   }
 
