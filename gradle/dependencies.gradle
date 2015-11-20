@@ -123,6 +123,9 @@ libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfu
 
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 
+libraries["commons-io"] = "commons-io:commons-io:2.4"
+libraries["commons-compress"] = "org.apache.commons:commons-compress:1.8.1"
+
 libraries["equalsverifier"] = "nl.jqno.equalsverifier:equalsverifier:1.7.5"
 
 // These four are all for Spock.
@@ -136,6 +139,7 @@ libraries["cglib-nodep"] = "com.github.cglib.cglib:cglib-nodep:5503bcca74"
 
 // In Spock, allows mocking of classes without default constructor (together with CGLIB).
 libraries["objenesis"] = "org.objenesis:objenesis:2.2"
+
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 
@@ -166,7 +170,7 @@ libraries["jna"] = "net.java.dev.jna:jna:4.2.1"
 // replace by javax.time
 libraries["joda-time"] = "joda-time:joda-time:2.9.1"
 
-// HTML scraper
+// HTML scraper used in GRIB
 libraries["jsoup"] = "org.jsoup:jsoup:1.8.3"
 
 // Nonnull annotation
@@ -188,13 +192,10 @@ libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.10.11"
 
 libraries["chronicle-map"] = "net.openhft:chronicle-map:2.3.9"
 
-// libraries["openhft-lang"] = "net.openhft:lang:6.6.4"
-
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
 libraries["jstl-api"] = "org.apache.taglibs:taglibs-standard-spec:1.2.5"
 libraries["jstl-impl"] = "org.apache.taglibs:taglibs-standard-impl:1.2.5"
-//libraries["jstl"] = "org.glassfish.web:javax.servlet.jsp.jstl:1.2.4"
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
@@ -218,24 +219,20 @@ libraries["javax.el-api"] = "javax.el:javax.el-api:2.2.4"
 libraries["javax.el"] = "org.glassfish.web:javax.el:2.2.4"
 
 
-////////////////////////////// not used? ///////////////////////////////////////////
+////////////////////////////// Testing ///////////////////////////////////////////
 
-libraries["commons-fileupload"] = "commons-fileupload:commons-fileupload:1.2.2"
+//libraries["commons-fileupload"] = "commons-fileupload:commons-fileupload:1.2.2"
 
-libraries["commons-io"] = "commons-io:commons-io:2.4"
+//libraries["geoapi-pending"] = "org.opengis:geoapi-pending:3.1-M04"
 
-libraries["commons-compress"] = "org.apache.commons:commons-compress:1.8.1"
-
-libraries["geoapi-pending"] = "org.opengis:geoapi-pending:3.1-M04"
-
-libraries["oro"] = "oro:oro:2.0.8"
+//libraries["oro"] = "oro:oro:2.0.8"
 
 ////////////////////////////////////////// ToolsUI //////////////////////////////////////////
 
 libraries["bounce"] = "org.bounce:bounce:0.14"
 
 // Old and crufty. Only used by TdsMonitor in :ui. Can we switch to Guava caches?
-libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
+// libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
 
 libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"
 

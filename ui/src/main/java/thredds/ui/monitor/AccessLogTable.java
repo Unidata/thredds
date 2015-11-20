@@ -33,8 +33,8 @@
 
 package thredds.ui.monitor;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+//import net.sf.ehcache.Cache;
+//import net.sf.ehcache.Element;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import thredds.logs.AccessLogParser;
@@ -56,9 +56,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -73,7 +70,7 @@ import java.util.concurrent.Executors;
  */
 public class AccessLogTable extends JPanel {
   private PreferencesExt prefs;
-  private Cache dnsCache;
+  private DnsLookup dnsLookup;
 
   private ucar.util.prefs.ui.BeanTable logTable, userTable, datarootTable, serviceTable, clientTable;
   private JPanel timeSeriesPanel;
@@ -93,11 +90,11 @@ public class AccessLogTable extends JPanel {
 
   private JTextArea startDateField, endDateField;
 
-  public AccessLogTable(JTextArea startDateField, JTextArea endDateField, PreferencesExt prefs, Cache dnsCache) {
-    this.startDateField = startDateField;
+  public AccessLogTable(JTextArea startDateField, JTextArea endDateField, PreferencesExt prefs, DnsLookup dnsLookup) {
+      this.startDateField = startDateField;
     this.endDateField = endDateField;
     this.prefs = prefs;
-    this.dnsCache = dnsCache;
+    this.dnsLookup = dnsLookup;
     PopupMenu varPopup;
 
     logTable = new BeanTable(LogReader.Log.class, (PreferencesExt) prefs.node("Logs"), false);
@@ -125,7 +122,7 @@ public class AccessLogTable extends JPanel {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
         if (log == null) return;
         try {
-          infoTA.setText(log.getIp() + " = " + reverseDNS(log.getIp()));
+          infoTA.setText(log.getIp() + " = " + dnsLookup.reverseDNS(log.getIp()));
         } catch (Exception ee) {
           infoTA.setTextFromStackTrace(ee);
         }
@@ -484,7 +481,7 @@ public class AccessLogTable extends JPanel {
       if (name != null) return;
       try {
         long startElapsed = System.nanoTime();
-        name = reverseDNS(ip);
+        name = dnsLookup.reverseDNS(ip);
         long elapsedTime = System.nanoTime() - startElapsed;
         if (showDNStime) System.out.printf(" reverseDNS took=%f msecs %n", elapsedTime / (1000 * 1000.0));
       } catch (Throwable e) {
@@ -565,16 +562,6 @@ public class AccessLogTable extends JPanel {
     }
     long elapsedTime = System.nanoTime() - startElapsed;
     System.out.printf(" reverseDNS took=%f msecs ok=%s %n", elapsedTime / (1000 * 1000.0), ok);  */
-  }
-
-  String reverseDNS(String ip) throws UnknownHostException {
-    Element cacheElem = dnsCache.get(ip);
-    if (cacheElem == null) {
-      InetAddress addr = InetAddress.getByName(ip);
-      cacheElem = new Element(ip, addr.getHostName());
-      dnsCache.put(cacheElem);
-    }
-    return (String) cacheElem.getValue();
   }
 
   ////////////////////////////////////////////////
