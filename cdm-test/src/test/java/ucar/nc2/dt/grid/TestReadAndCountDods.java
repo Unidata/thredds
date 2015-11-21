@@ -114,7 +114,6 @@ public class TestReadAndCountDods {
 
   @Test
   public void testProblem() throws Exception {
-    TestReadandCount.doOne("thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/",
-            "catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
+    TestReadandCount.doOne(base, "catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
   }
 }

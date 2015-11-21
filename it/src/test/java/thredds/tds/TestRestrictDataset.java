@@ -182,9 +182,6 @@ public class TestRestrictDataset {
   // from 4.6
   @Test
   public void testRestriction() {
-    //String server = "http://thredds-test.unidata.ucar.edu/thredds/";
-    //String endpoint = server + path;
-
     String endpoint = TestWithLocalServer.withPath(path);
     System.out.printf("testRestriction req = '%s'%n", endpoint);
     try {

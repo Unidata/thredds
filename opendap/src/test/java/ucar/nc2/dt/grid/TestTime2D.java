@@ -52,7 +52,7 @@ public class TestTime2D {
 
   @Test
   public void testTime2D() throws Exception {
-    try (NetcdfFile dataset = NetcdfDataset.openDataset("dods://thredds-dev.unidata.ucar.edu/thredds/dodsC/grib/NCEP/GFS/Pacific_40km/TwoD")) {
+    try (NetcdfFile dataset = NetcdfDataset.openDataset("dods://thredds.unidata.ucar.edu/thredds/dodsC/grib/NCEP/GFS/Pacific_40km/TwoD")) {
       Variable v = dataset.findVariable(null, "Pressure_surface");
       assert null != v;
       assert v.getRank() == 4;
@@ -62,7 +62,7 @@ public class TestTime2D {
       // should be
       // float Pressure_surface(reftime1=478, time=41, y=300, x=369);
 
-      // dont rely on exact lengths - check check equals
+      // dont rely on exact lengths - check times are equals
       Dimension reftime = v.getDimension(0);
       Dimension time = v.getDimension(1);
       Assert.assertNotEquals(reftime.getLength(), time.getLength());

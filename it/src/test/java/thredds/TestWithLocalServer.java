@@ -61,6 +61,40 @@ public class TestWithLocalServer {
     return server + StringUtils.stripStart(path, "/\\");  // Remove leading slashes from path.
   }
 
+  public static byte[] getContent(String endpoint, int[] expectCodes, ContentType expectContentType) {
+    System.out.printf("req = '%s'%n", endpoint);
+    try (HTTPSession session = new HTTPSession(endpoint)) {
+      HTTPMethod method = HTTPFactory.Get(session);
+      int statusCode = method.execute();
+      if (statusCode != 200) {
+        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
+      }
+
+      if (expectCodes == null)
+        Assert.assertEquals(200, statusCode);
+      else {
+        boolean ok = false;
+        for (int expectCode : expectCodes)
+          if (expectCode == statusCode) ok = true;
+        Assert.assertTrue(ok);
+      }
+
+      if (statusCode == 200 && expectContentType != null) {
+        Header header = method.getResponseHeader(ContentType.HEADER);
+        Assert.assertEquals(expectContentType.getContentHeader().toLowerCase(), header.getValue().toLowerCase());
+      }
+
+      return (statusCode == 200) ? method.getResponseAsBytes() : null;
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      assert false;
+    }
+
+    return null;
+  }
+
+
   public static byte[] getContent(String endpoint, int expectCode, ContentType expectContentType) {
     System.out.printf("req = '%s'%n", endpoint);
     try (HTTPSession session = new HTTPSession(endpoint)) {
