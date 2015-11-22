@@ -75,7 +75,7 @@ import ucar.unidata.util.StringUtil2;
  * @since 7/8/2015
  */
 public class CoverageAsPoint {
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   private CoverageCollection gcd;
   private List<VarData> varData;

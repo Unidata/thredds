@@ -11,41 +11,42 @@
               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
               http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-  <!-- Resource mapping -->
-  <mvc:resources mapping="/**" location="/"/>
+    <!-- Resource mapping -->
+    <mvc:resources mapping="/**" location="/"/>
 
-  <!-- View resolvers common to most tds controllers and servlets -->
-  <bean id="viewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
-    <property name="cache" value="true"/>
-    <property name="order" value="1"/>
-    <property name="location" value="/WEB-INF/view.xml"/>
-  </bean>
+    <!-- View resolvers common to most tds controllers and servlets -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="cache" value="true"/>
+        <property name="order" value="1"/>
+        <property name="location" value="/WEB-INF/view.xml"/>
+    </bean>
 
-  <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
-    <property name="prefix" value="/WEB-INF/"/>
-    <property name="suffix" value=".html"/>
-    <property name="templateMode" value="HTML5"/>
-    <property name="cacheable" value="false"/>
-    <property name="characterEncoding" value="UTF-8" />
-  </bean>
+    <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+        <property name="prefix" value="/WEB-INF/"/>
+        <property name="suffix" value=".html"/>
+        <property name="templateMode" value="HTML5"/>
+        <property name="cacheable" value="false"/>
+        <property name="characterEncoding" value="UTF-8"/>
+    </bean>
 
-  <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
-    <property name="templateResolver" ref="templateResolver"/>
-  </bean>
+    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+        <property name="templateResolver" ref="templateResolver"/>
+    </bean>
 
-  <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
-    <property name="templateEngine" ref="templateEngine"/>
-    <property name="order" value="2"/>
-    <property name="viewNames" value="templates/*"/>
-    <property name="characterEncoding" value="UTF-8" />
-  </bean>
+    <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine"/>
+        <property name="order" value="2"/>
+        <property name="viewNames" value="templates/*"/>
+        <property name="characterEncoding" value="UTF-8"/>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+    </bean>
 
-  <!-- must be last in order -->
-  <bean id="jspResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-    <property name="order" value="9"/>
-    <property name="prefix" value="/WEB-INF/jsp/"/>
-    <property name="suffix" value=".jsp"/>
-  </bean>
+    <!-- must be last in order -->
+    <bean id="jspResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="order" value="9"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
 
 </beans>
