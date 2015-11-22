@@ -39,6 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.junit.Assert;
 import thredds.util.ContentType;
@@ -62,13 +63,24 @@ public class TestWithLocalServer {
   }
 
   public static byte[] getContent(String endpoint, int[] expectCodes, ContentType expectContentType) {
+    return getContent(null, endpoint, expectCodes, expectContentType);
+  }
+
+  public static byte[] getContent(String endpoint, int expectCode, ContentType expectContentType) {
+    return getContent(null, endpoint, new int[] {expectCode}, expectContentType);
+  }
+
+  public static byte[] getContent(Credentials cred, String endpoint, int[] expectCodes, ContentType expectContentType) {
     System.out.printf("req = '%s'%n", endpoint);
     try (HTTPSession session = new HTTPSession(endpoint)) {
+      if (cred != null) {
+        int pos = endpoint.indexOf("?");
+        String url = pos < 0 ? endpoint : endpoint.substring(0, pos);
+        session.setCredentialsProvider(url, new HTTPConstantProvider(cred));
+      }
+
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
-      if (statusCode != 200) {
-        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
-      }
 
       if (expectCodes == null)
         Assert.assertEquals(200, statusCode);
@@ -79,43 +91,17 @@ public class TestWithLocalServer {
         Assert.assertTrue(ok);
       }
 
-      if (statusCode == 200 && expectContentType != null) {
+      if (statusCode != 200) {
+        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
+        return null;
+      }
+
+      if (expectContentType != null) {
         Header header = method.getResponseHeader(ContentType.HEADER);
         Assert.assertEquals(expectContentType.getContentHeader().toLowerCase(), header.getValue().toLowerCase());
       }
 
-      return (statusCode == 200) ? method.getResponseAsBytes() : null;
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      assert false;
-    }
-
-    return null;
-  }
-
-
-  public static byte[] getContent(String endpoint, int expectCode, ContentType expectContentType) {
-    System.out.printf("req = '%s'%n", endpoint);
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
-      if (statusCode != 200) {
-        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
-        Assert.assertEquals(expectCode, statusCode);
-        return null;
-      }
-
-      Assert.assertEquals(expectCode, statusCode);
-
-      if (expectContentType != null) {
-        Header header = method.getResponseHeader(ContentType.HEADER);
-        Assert.assertEquals(expectContentType.getContentHeader(), header.getValue());
-      }
-
-      byte[] content = method.getResponseAsBytes();
-      // assert content.length > 0;
-      return content;
+      return method.getResponseAsBytes();
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -150,61 +136,6 @@ public class TestWithLocalServer {
       e.printStackTrace();
       assert false;
     }
-  }
-
-
-  public static String testWithHttpGet(CredentialsProvider provider, String endpoint, ContentType expectContentType) {
-    System.out.printf("testOpenXml req = '%s'%n", endpoint);
-
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(endpoint, provider);
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
-      Assert.assertEquals(200, statusCode);
-
-      String response = method.getResponseAsString();
-      assert response.length() > 0;
-
-      Header header = method.getResponseHeader(ContentType.HEADER);
-      Assert.assertEquals(expectContentType.getContentHeader(), header.getValue());
-
-      return response;
-
-    } catch (HTTPException e) {
-      e.printStackTrace();
-      assert false;
-    }
-
-    return null;
-  }
-
-  public static String testWithHttpGet(Credentials cred, String endpoint, int expectedStatus, ContentType expectContentType) {
-    System.out.printf("testOpenXml req = '%s'%n", endpoint);
-
-    int pos = endpoint.indexOf("?");
-    String url = pos < 0 ? endpoint : endpoint.substring(0, pos);
-
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentials(url, cred);
-      HTTPMethod method = HTTPFactory.Get(session);
-      int statusCode = method.execute();
-      Assert.assertEquals(expectedStatus, statusCode);
-      if (expectedStatus != 200) return "ok";
-
-      String response = method.getResponseAsString();
-      assert response.length() > 0;
-
-      Header header = method.getResponseHeader(ContentType.HEADER);
-      Assert.assertEquals(expectContentType.getContentHeader(), header.getValue());
-
-      return response;
-
-    } catch (HTTPException e) {
-      e.printStackTrace();
-      assert false;
-    }
-
-    return null;
   }
 
 }

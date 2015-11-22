@@ -43,7 +43,7 @@ import ucar.unidata.test.util.NeedsExternalResource;
 public class Test3dFromOpendap {
   @Test
   public void test3D() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
+    try (GridDataset dataset = GridDataset.open("dods://thredds.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
 
       GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
       assert null != grid;
