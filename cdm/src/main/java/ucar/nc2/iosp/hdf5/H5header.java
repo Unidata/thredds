@@ -1510,7 +1510,7 @@ public class H5header {
       v = new Structure(ncfile, g, s, name);
       makeVariableShapeAndType(v, mdt, null, vinfo, null);
       addMembersToStructure(g, (Structure) v, vinfo, mdt.base);
-      v.setElementSize(mdt.byteSize);
+      v.setElementSize(mdt.base.byteSize);
     } else {
       v = new Variable(ncfile, g, s, name);
       makeVariableShapeAndType(v, mdt, null, vinfo, null);

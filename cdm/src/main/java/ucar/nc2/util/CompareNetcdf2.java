@@ -612,7 +612,7 @@ public class CompareNetcdf2 {
       }
     } else if (dt == DataType.STRUCTURE) {
       while (iter1.hasNext() && iter2.hasNext()) {
-        compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next(), tol, justOne);
+        ok &= compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next(), tol, justOne);
       }
     }
 

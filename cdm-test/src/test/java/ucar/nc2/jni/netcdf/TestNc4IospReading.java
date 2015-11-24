@@ -5,10 +5,9 @@ import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileSubclass;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.iosp.hdf5.TestH5;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.DebugFlags;
@@ -18,8 +17,7 @@ import ucar.unidata.test.util.CompareNetcdf;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Formatter;
 
 /**
@@ -173,7 +171,7 @@ public class TestNc4IospReading {
     debugFlags.set("H5header/Variable", true);
     debugFlags.set("H5header/structure", true);
 
-    //H5iosp.setDebugFlags(debugFlags);
+    H5iosp.setDebugFlags(debugFlags);
   }
 
   @Test
@@ -184,19 +182,25 @@ public class TestNc4IospReading {
 
 
   private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData) throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(location);
-    NetcdfFile jni = openJni(location);
-    jni.setLocation(location+" (jni)");
-    //System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(), jni.getIosp().getClass().getName());
+    try (NetcdfFile ncfile = NetcdfFile.open(location); NetcdfFile jni = openJni(location)) {
+      jni.setLocation(location+" (jni)");
+      //System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(), jni.getIosp().getClass().getName());
 
-    Formatter f= new Formatter();
-    CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
-    boolean ok = tc.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter(), showCompare, showEach, compareData);
-    System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
-    if (!ok ||(showCompare && showCompareResults)) System.out.printf("%s%n=====================================%n", f);
-    ncfile.close();
-    jni.close();
-    return ok;
+      Formatter f= new Formatter();
+      CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
+      boolean ok = tc.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter(), showCompare, showEach, compareData);
+      System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
+      if (!ok ||(showCompare && showCompareResults)) System.out.printf("%s%n=====================================%n", f);
+
+      System.out.println("\n\n\n\n");
+      try (Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, CDM.utf8Charset))) {
+        NCdumpW.print(ncfile, writer, NCdumpW.WantValues.all, false, true, null, null);
+        System.out.println("\n\n");
+        NCdumpW.print(jni, writer, NCdumpW.WantValues.all, false, true, null, null);
+      }
+
+      return ok;
+    }
   }
 
   private NetcdfFile openJni(String location) throws IOException {
@@ -206,5 +210,4 @@ public class TestNc4IospReading {
     iosp.open(raf, ncfile, null);
     return ncfile;
   }
-
 }
