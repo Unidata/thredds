@@ -1,10 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = TDS Configuration file
-
-'''''
 
 The TDS configuration file
 `${tomcat_home}/content/thredds/threddsConfig.xml` allows the TDS
@@ -490,7 +487,6 @@ aggregated dataset. Valid values are **first, random, latest**, and
 The various cache directory locations are all under
 *\{tomcat_home}/content/thredds/* by default:
 
-_______________________________________________________________________________________________________________________________________________________________
 [width="100%",cols="34%,33%,33%",options="header",]
 |=======================================================================
 |cache |location |description
@@ -518,7 +514,6 @@ directory
 
 |WCS.dir |*cache/wcs/* |temporary files for WCS
 |=======================================================================
-_______________________________________________________________________________________________________________________________________________________________
 
 We recommend that you use these defaults, by not specifying them in the
 threddsConfig.xml file. If you need to move the cache location, move all
@@ -690,8 +685,6 @@ A good rule of thumb is that the index files will need disk space
 between 500 and 1000 times smaller than the size of the grib data files.
 So a 1 Terabyte collection of GRIB data will need up to 2 GB of indices.
 
-'''''
-
 == Object Caching
 
 The default settings will work well enough, and you should only tune
@@ -739,8 +732,6 @@ older items in the cache will be released, until only *minFiles* objects
 are left. The *scour* element uses any valid *_udunits_* time string,
 such as __*sec, min, hour, day*__. To disable the cache, set *maxFiles*
 to 0.
-
-'''''
 
 == Catalog Processing
 
@@ -821,10 +812,3 @@ other catalogs specified in a link:catalogRoots[catalogRoot element].
 * all catalogs are referenced in a *catalogRef* element in a root
 catalog, or you are using *catalogScan* from a root catalog.
 
- 
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by elves and
-was last updated July 2015. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

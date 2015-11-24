@@ -1,13 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Pluggable Authentication
-========================
-
 = Adding your own Authenticator for Restricting Access
-
-'''''
 
 == Overview
 
@@ -181,8 +175,6 @@ $**\{tomcat_home}/webapps/thredds/WEB-INF/lib** as a jar file, or to the
 class files. Remember that these directories are overwritten when you
 upgrade to a new verssion of the thredds.war file.
 
-'''''
-
 == Notes on using CAMS
 
 \1. We assume you already have a CAMS server running. Follow the
@@ -263,7 +255,7 @@ and comment out the default security constraint on /restrictedAccess/* :
 
 -----------------------------------------------------------------------
 
-==  +
+==
  Notes on using Jetty and Shibboleth (Pauline Mak) +
 
 I’ve managed to install THREDDS with Jetty, Apache and Shibboleth. If
@@ -273,17 +265,7 @@ anyone is interested, I have some documentation here:
   http://projects.arcs.org.au/trac/systems/wiki/DataServices/OPeNDAP-TDS-Install  
 ----------------------------------------------------------------------------------
 
-==  +
+==
  Notes on ESG and TDS Security
 
 https://wiki.ucar.edu/display/esgcet/Adding+ESG+security+to+a+TDS+server +
-
--
- 
--
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated April 2010. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

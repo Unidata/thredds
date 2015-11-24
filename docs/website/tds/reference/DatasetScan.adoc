@@ -1,13 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-TDS Configuration - datasetScan
-===============================
-
 = Configuring TDS with DatasetScan
-
-'''''
 
 The *datasetScan* element allows you to serve all files in a directory
 tree. The files must be homogenous enough that the same metadata can be
@@ -406,10 +400,6 @@ this dataset would end up as something like this: +
          urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/>
 --------------------------------------------------------------------------------------
 
- +
-
-'''''
-
 == Sample Config Files
 
 Basic catalog:
@@ -469,8 +459,3 @@ http://www.regular-expressions.info/[regular expressions]: +
 </catalog>
 ---------------------------------------------------------------------------------------------------------------
 
-'''''
-
-image:../thread.png[THREDDS]This document is maintained by Unidata and
-was last updated January, 2015. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

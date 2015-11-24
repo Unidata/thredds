@@ -1,15 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Remote Management
-=================
-
 = Enabling TDS Remote Management
 
-'''''
-
-== Introduction
+== Overview
 
 It’s very convenient to be able to remotely manage and administer the
 Tomcat web server, and to remotely configure and debug the Thredds Data
@@ -43,10 +37,9 @@ the link:TomcatSecurity.adoc[Tomcat/TDS Security guidelines], using the
 simplest Tomcat mechanism to do this should be safe.
 
 Edit **$\{tomcat_home}/conf/tomcat-users.xml**, adding roles
-``tdsConfig'', ``manager'', ``admin'', and users who have those roles,
+_tdsConfig_, _manager_, _admin_, and users who have those roles,
 e.g.:
 
-_______________________________________________________________________________________
 ---------------------------------------------------------------------------------------
 <?xml version='1.0' encoding='utf-8'?>
 <tomcat-users>
@@ -58,7 +51,6 @@ ________________________________________________________________________________
   <user username="yername" password="yerpassword" roles="tdsConfig"/>
 </tomcat-users>
 ---------------------------------------------------------------------------------------
-_______________________________________________________________________________________
 
 The __*manager*__, __*manager-gui*__, and _*admin*_ roles are used
 within Tomcat itself to allow the use of the manager and administrator
@@ -91,15 +83,12 @@ following:
 is not specified, it defaults to **$\{user_home}/.keystore**.
 2.  Create a certificate by executing the following command:
 +
-_______________________________________________________________________________________________________
 -------------------------------------------------------------------------------------------------------
 ${java_home}/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 365 -keystore ${keystore_filename}
 -------------------------------------------------------------------------------------------------------
-_______________________________________________________________________________________________________
 +
 You will then get a set of prompts:
 +
-_________________________________________________________________________________________________________________________________________
 -----------------------------------
 Enter keystore password: mypassword
 -----------------------------------
@@ -143,9 +132,8 @@ Enter key password for <tomcat>
 --------------------------------------
 (RETURN if same as keystore password):
 --------------------------------------
-_________________________________________________________________________________________________________________________________________
-+
-Its not obvious, but the ``first and last name'' must be the name of
+
+Its not obvious, but the _first and last name_ must be the name of
 your Tomcat server host machine (**www.mydomain.edu** in this example).
 Be sure to specify the same password for both the keystore and the
 <tomcat> key password (the default is **changeit**). Fill out the other
@@ -167,19 +155,17 @@ it, and modify it so it looks like:
                clientAuth="false" sslProtocol="TLS" keystoreFile="${keystore_filename}"
       keystorePass="mypassword"/>
 ---------------------------------------------------------------------------------------
-+
+
 This enables Tomcat to use port 8443 for the HTTPS protocol, which uses
 SSL. All sensitive accesses will get redirected to that port.
 
-___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 See
 http://java.sun.com/j2se/1.5.0/docs/tooldocs/index.html#security[keytool
 documentation] for full description of managing keystores. The
 http://jakarta.apache.org/tomcat/tomcat-7.0-doc/ssl-howto.html[Tomcat
 doc] is quite good, also.
-___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
-=== *Installing a Certificate from a Certificate Authority*
+=== Installing a Certificate from a Certificate Authority
 
 The use of SSL in this way prevents a network sniffer from getting your
 password. A more sophisticated (and more difficult to perform) attack is
@@ -217,7 +203,6 @@ To extract it, use:
 2.  Import the certificate into the JRE’s keystore. Be sure to use the
 same JRE that Tomcat will run under:
 
-_____________________________________________________________________________________________________________
 -------------------------------------------------------------------------------------------------------------
   keytool -import -alias tomcat -keypass changeit -file server.crt -keystore ${jre_home}/lib/security/cacerts
 -------------------------------------------------------------------------------------------------------------
@@ -228,7 +213,6 @@ If there are spaces, you need to quote the filename, eg:
  -keystore "C:/Program Files (x86)/Java/jdk1.7.0_04/jre/lib/security/cacerts"
   
 -----------------------------------------------------------------------------
-_____________________________________________________________________________________________________________
 
 If the certificate is not correctly installed (eg you put it in the
 wrong JRE), you will get an Exception like:
@@ -308,9 +292,3 @@ http://java.sun.com/j2se/1.5.0/docs/tooldocs/index.html#security[keytool]
 application
 * JA-SIG Central Authentication Service.
 (http://www.jasig.org/cas/[CAS])
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated Feb 2013. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

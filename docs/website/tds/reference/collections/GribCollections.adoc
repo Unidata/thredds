@@ -4,7 +4,7 @@
 
 = GRIB Feature Collections
 
-'''''
+== Overview
 
 GRIB Feature Collection Datasets are collections of GRIB records, which
 contain gridded data, typically from numeric model output. Because of
@@ -20,7 +20,7 @@ datasets.
 groups.
 * Interval time coordinates are fully supported.
 
-== Version 4.5
+=== Version 4.5
 
 The GRIB Collections framework has been rewritten in CDM version 4.5, in
 order to handle large collections efficiently. Version 4.5 requires Java
@@ -68,7 +68,7 @@ configure the TDS to only read and never write the indexes.
 * Collections in the millions of records are now feasible. Java 7 NIO2
 package is used to efficiently scan directories.
 
-== Version 4.6
+=== Version 4.6
 
 The GRIB Collections framework has been rewritten in CDM version 4.6, in
 order to handle very large collections efficiently. Oh wait we already
@@ -103,8 +103,6 @@ Also see:
 * link:GribCollectionFaq.adoc[GRIB Collection FAQs]
 * link:../../../netcdf-java/reference/formats/GribFiles.adoc[CDM GRIB
 Collection Processing]
-
-'''''
 
 == Example 1 (timePartition=``none''):
 
@@ -185,8 +183,6 @@ The simplified catalog is:
 The catalogRefs are links to virtual datasets, formed from the
 collection of records for the specified reference time, and independent
 of which file stores them.
-
-'''''
 
 == Example 2 (timePartition=``directory''):
 
@@ -287,9 +283,7 @@ So the datasets that are generated from a Time Partition with **name**,
 |path/__files__/filename
 |=======================================================================
 
-'''''
-
-== Example 3 (Multiple Groups) :
+== Example 3 (Multiple Groups)
 
 When a Grib Collection contains multiple horizontal domains (i.e.
 distinct Grid Definition Sections (GDS)), each domain gets placed into a
@@ -384,8 +378,6 @@ So the datasets that are generated from a Grib Collection with
 |individual files |path/groupName/__files/catalog.xml__ |filename
 |path/__files__/filename
 |=======================================================================
-
-'''''
 
 == Example 4 (Time Partition with Multiple Groups):
 

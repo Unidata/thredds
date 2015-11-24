@@ -1,7 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = THREDDS Client Catalog Specification
 
 A THREDDS catalog is a way to describe an inventory of available

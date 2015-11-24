@@ -1,13 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-THREDDS Catalogs
-================
-
 = THREDDS Catalogs
-
-'''''
 
 THREDDS Catalogs are logical directories of on-line data resources,
 encoded as http://www.w3.org/TR/REC-xml/[XML documents], which provide a
@@ -15,34 +9,26 @@ place for annotations and other metadata about the data resources to
 reside. This is how THREDDS-enabled data consumers find out what data is
 available from data providers.
 
-THREDDS Catalogs were originally designed for __client__s to use to
+THREDDS Catalogs were originally designed for _clients_ to use to
 access remote data. They have been extended to allow the TDS to use them
-for its own configuration. In this mode they are called __*TDS
-Configuration Catalog*__**_g_**_*s, or server-side Catalogs.*_ They
+for its own configuration. In this mode they are called *_TDS
+Configuration Catalogs_*, or *_server-side Catalogs_*. They
 contain information needed only on the server, which is removed when the
-TDS sends the catalog to the client, called the _*client-side*_ or
-__*client-view catalog*__.
+TDS sends the catalog to the client, called the *_client-side catalog_*.
 
 For client-side catalogs, see:
 
-* The link:InvCatalogSpec.adoc[Catalog specification] is an annotated
-XML Schema that explains the details of THREDDS Catalogs.
-* The XML Schema document:
-http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[Online
-catalog schema].
+* link:InvCatalogSpec.adoc[Catalog specification] is an annotated XML Schema that explains the details of THREDDS Catalogs.
+* The XML Schema document: http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[Online catalog schema].
 * link:../tutorial/CatalogPrimer.adoc[Catalog Primer]
-* The link:../../netcdf-java/documentation.htm[Java NetCDF library] has
-a complete package (thredds.client.catalog) to parse client-side
-catalogs.
-* link:#addLatest_Element[Syphon] is a python library that includdes
-catalog parsing.
+* The link:../../netcdf-java/documentation.adoc[Java NetCDF library] has a complete package (thredds.client.catalog) to parse client-side catalogs.
+* [Syphon] is a python library that includes catalog parsing.
 
 The TDS dynamically generates THREDDS catalogs based on the TDS
 configuration catalogs. For server-side catalogs, see:
 
 * link:InvCatalogServerSpec.adoc[Server-side Catalog Specification]
-* link:../tutorial/index.adoc[THREDDS Data Server Administration
-Tutorial]
+* link:../tutorial/index.adoc[THREDDS Data Server Administration Tutorial]
 
 '''''
 

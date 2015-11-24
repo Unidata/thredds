@@ -1,10 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = Configuring the NetCDF Subset Service
-
-'''''
 
 The Netcdf Subset Service (NCSS) is one of the ways that the TDS can
 serve data. It is an experimental REST protocol for returning subsets of

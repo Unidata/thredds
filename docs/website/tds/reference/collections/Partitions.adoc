@@ -1,13 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Partitions
-==========
-
 = Time Partitions
 
-'''''
+== Overview
 
 All of the GRIB records in all of the files that you specify constitute
 a _GRIB collection._ The CDM creates one or more _CDM datasets_ from
@@ -64,7 +60,6 @@ create nested partitions (eg year/month/day).
 time unit. The reference time must be encoded in the filenames. Thi is
 the only time you need to use a **dateFormatMark**.
 
-________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 === Directory Partition
 
 In order to use a directory partition, the directory structure must
@@ -108,7 +103,6 @@ different partition strategy if the collection exceeds 1M records. Even
 then, this option takes the longest when indexing, and other strategies
 are preferred especially if the collection is dynamic and must be
 reindexed often.
-________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 === Collection storage strategies
 
@@ -148,8 +142,6 @@ netCDF API for multidimensionsal arrays. The user cannot, using the
 netCDF API, access the metadata for individual GRIB records. Instead, we
 assume that the metadata is uniform in the collection, and expose it
 with variable and global attributes.
-
- 
 
 '''''
 

@@ -1,16 +1,11 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
+= HTTP Security Challenge
 
-HTTP Security Challenge
-=======================
+== Messages Example
 
-= HTTP Security Challenge Messages Example
-
-'''''
-
-*1. A request is made to a restricted access, in this case from a web
-browser:*
+*1. A request is made to a restricted access, in this case from a web browser:*
 
 --------------------------------------------------------------------------------------------------------------
 GET /thredds/dodsC/restrict/testData.nc.html HTTP/1.1

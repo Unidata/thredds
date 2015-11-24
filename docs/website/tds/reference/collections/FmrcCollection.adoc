@@ -1,13 +1,14 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = FMRC Collections
 
-A __*Forecast Model Run Collection (FMRC)*__ is a  __**collection of
-forecast model runs****,**__ which can be uniquely identified by the
-start of the model run, called the model__* run time*__, also called
-the __*analysis time *__or _*generating time,*_ or __*reference time*__.
+== Overview
+
+A *_Forecast Model Run Collection (FMRC)_* is a collection of
+forecast model runs which can be uniquely identified by the
+start of the model run, called the model *_run time_*, (also called
+the _analysis time_ or _generating time_ or _reference time_).
 Each model run has a series of forecast times. A collection of these
 runs therefore has two time coordinates, the run time and the forecast
 time. An FMRC creates a 2D time collection dataset, and then creates
@@ -15,13 +16,12 @@ various 1D time subsets out of it. See this
 http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[poster]
 for a detailed example.
 
-Previously this functionality was provided using
-link:../../../netcdf-java/ncml/FmrcAggregation.adoc[FMRC Aggregation]
-through NcML and the *<fmrcDataset>* element in the TDS configuration
+Previously this functionality was provided using _FMRC Aggregation_
+through NcML and the _<fmrcDataset>_ element in the TDS configuration
 catalog. As of TDS 4.2, that implementation is now deprecated and
-*<featureCollection>* elements are the correct way to provide this
-functionality. **As of 4.3, _one should only serve GRIB files with
-featureCollection=GRIB, eg not with FMRC._**____ Typically, FMRC is is
+*_<featureCollection>_* elements are the correct way to provide this
+functionality. As of 4.3, *_one should only serve GRIB files with
+featureCollection=GRIB, eg not with FMRC_* Typically, FMRC is is
 used for collections of model runs stored in netCDF/CF files.
 
 == Constraints on FMRC
@@ -55,8 +55,6 @@ the collection.
 Systems of the component files. One can use NcML to fix some problems in
 the component files.
 
-'''''
-
 == fmrcConfig element
 
 Defines options on feature collections with **featureType**=``FMRC''.
@@ -71,7 +69,6 @@ Defines options on feature collections with **featureType**=``FMRC''.
 </fmrcConfig>
 -------------------------------------------------------------------
 
-________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 where:
 
 1.  **regularize**: If true, then the runs for a given hour (from 0Z)
@@ -107,7 +104,6 @@ unique within the fmrcConfig element. Do not use ``best.ncd'',
 ``fmrc.ncd'', ``runs'', ``files'', ``forecast'', or ``offset''.
 * **offsetsGreaterEqual**: forecast offset hours (forecast time - run
 time) less than this value are excluded.
-________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 **Notes**:
 
@@ -116,8 +112,6 @@ __false__, and datasetTypes= "__TwoD Best Files Run__s". Specifying your
 own fmrcConfig completely overrides the datasetTypes default.
 * When using FMRC for gridded data that doesnt have 2D times, be sure to
 put *regularize* = false (or leave it off).
-
-'''''
 
 == Working with FMRC in ToolsUI
 
@@ -186,8 +180,6 @@ with them are deleted.
 
 ToolsUI collections tab allows you to delete database or individual
 elements.
-
-'''''
 
 == Conversion of <datasetFmrc> to <featureCollection>
 

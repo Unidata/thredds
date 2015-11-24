@@ -1,15 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Running The TDS Behind a Proxy Server
-=====================================
-
-= Running The TDS Behind a Proxy Server
+= Running TDS Behind a Proxy Server
 
 == About Reverse Proxies
-
-==== More Information
 
 View the http://en.wikipedia.org/wiki/Reverse_proxy[Wikipedia entry on
 Reverse Proxies] for more information on reverse proxies uses and types
@@ -37,10 +31,8 @@ Using Apache as a front-end proxy server for the TDS running on Tomcat
 is perhaps the easiest method for setting up a reverse proxy for the
 TDS. There are two methods to accomplish this:
 
-* Apache’s `           mod_proxy         ` in combination with Tomcat’s
-HTTP connector; or
-* the `           mod_jk         ` Apache module with the Tomcat AJP
-connector.
+* Apache's *_mod_proxy_* in combination with Tomcat’s HTTP connector; or
+* the *_mod_jk_* Apache module with the Tomcat AJP connector.
 
 *Warning!* It is important to carefully configure your proxy so that the
 existence of the proxy is transparent to the end-user/client. For

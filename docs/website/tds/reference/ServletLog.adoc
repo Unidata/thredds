@@ -1,13 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-TDS Logging
-===========
-
 = TDS Logging
-
-'''''
 
 All the TDS specific log files are located in the
 `${tomcat_home}/content/thredds/logs` directory.
@@ -18,8 +12,6 @@ TDS log files:
 * link:#serverStartup.log[Other log files]
 
 link:#Log4J[Log configuration]
-
-'''''
 
 == threddsServlet.log
 
@@ -139,8 +131,6 @@ collection.
 * The *cache.log* file shows cache initialization and scouring messages.
 Usually you dont need to look at these.
 
-'''''
-
 == Log4J
 
 TDS version 4.5+ uses the http://logging.apache.org/log4j/2.x/[Log4J2]
@@ -230,10 +220,3 @@ a|
 |host |req.getRemoteHost()
 |===============================================
 
- +
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated Oct 2013. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

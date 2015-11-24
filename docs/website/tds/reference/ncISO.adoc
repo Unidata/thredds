@@ -1,10 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = TDS and ncISO: Metadata Services
-
-'''''
 
 The TDS distribution includes the
 http://www.ngdc.noaa.gov/eds/tds/[ncISO package] from NOAA/NGDC (many
@@ -60,9 +57,3 @@ contained all three services listed above:
   <serviceName>all</serviceName>
 </dataset>
 ------------------------------------------------------------
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated October 2012. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

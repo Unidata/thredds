@@ -1,10 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = Restricting Access to Datasets in the TDS
 
-'''''
+There are two ways to restrict access to datasets.
 
 == 1. Restrict by URL using Tomcat +
 
@@ -68,8 +67,6 @@ Using Tomcat to provide restricted access works well when you want to
 restrict your entire site to a single set of users. When you want to
 give access to different datasets to different users, you must
 understand in some detail what the URLs look like.
-
-'''''
 
 == 2. Restrict by Dataset using TDS Catalog +
 

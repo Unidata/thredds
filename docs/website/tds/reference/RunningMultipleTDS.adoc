@@ -1,13 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-TDS Reference: Running Multiple TDS
-===================================
-
 = Running Multiple TDS in a Single Tomcat Installation
-
-'''''
 
 Deploying multiple TDS instances in a single Tomcat container is **NOT
 recommended**.
@@ -80,8 +74,6 @@ change the value of "`tds.content.path`" from "`thredds`" to
 **For TDS 3.17**:
 
 No extra steps are required for TDS 3.17.
-
-'''''
 
 == Web Application Containers and Java System Properties
 

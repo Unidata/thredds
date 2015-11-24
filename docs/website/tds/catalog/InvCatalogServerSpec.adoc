@@ -2,9 +2,7 @@
 [[threddsDocs]]
 
 
-= Server-side Catalog Specification +
-
-'''''
+= Server-side Catalog Specification
 
 The THREDDS Data Server (TDS) uses specialized catalogs to configure the
 server, called _server-side catalogs_ or __configuration catalogs__.
@@ -30,8 +28,6 @@ Also see:
 reference
 * http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.8.xsd[Catalog
 XML xsd] +
-
-'''''
 
 == The catalog element
 
@@ -60,7 +56,7 @@ datasets, i.e. in the __dataset substitution group)__.
 </xsd:element>
 ---------------------------------------------------------------------------
 
-== The datasetRoot Element +
+== The datasetRoot Element
 
 -----------------------------------------------------------------------
   <xsd:element name="datasetRoot">
@@ -77,7 +73,7 @@ directly in the catalog element. The *datasetRoots* are global to a TDS,
 they only need to be declared once; put them in a catalog that is
 proecessed before they are used, by convention, in the top catalog. +
 
-Example: +
+Example:
 
 ---------------------------------------------------------------------------------------------------------------
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="TDS configuration file" >
@@ -126,8 +122,6 @@ be a path reletive to *$\{tds.content.root.path}.*
 * **watch**: true or false, if you want to watch for changes in this
 directory and all subdirectories. (NOT IMPLEMENTED)
 
-'''''
-
 == The dataset element
 
 The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to
@@ -164,8 +158,6 @@ dataset. It is always inherited by all contained datasets.
 link:../tutorial/NcML.htm[modifies the dataset with NcML]. For
 link:#datasetScan_Element[datasetScan], it modifies all contained
 datasets.
-
-'''''
 
 == __The datasetScan__ Element
 
@@ -538,8 +530,6 @@ following timeCoverage element: +
   </timeCoverage>
 --------------------------------------
 
-'''''
-
 == Index +
 
 * link:#addLatest_Element[addLatest]: an element
@@ -553,8 +543,3 @@ local disk directory with a URL path +
 * link:#namer_Element[namer]: an element +
 * link:#sort_Element[sort]: an element
 
-'''''
-
-image:../thread.png[THREDDS]This document is maintained by Unidata and
-was last updated June 2015. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].
