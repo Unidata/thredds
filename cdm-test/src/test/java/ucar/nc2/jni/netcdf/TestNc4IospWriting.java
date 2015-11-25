@@ -165,7 +165,7 @@ public class TestNc4IospWriting {
 
     /////////////////////////////////////////////////
 
-    // Demonstrates GitHub issue #191. Unignore when we have a fix in place.
+    // Demonstrates GitHub issue #191.
     @Test
     public void writeEnumType() throws IOException {
         // NetcdfFile's 0-arg constructor is protected, so must use NetcdfFileSubclass
@@ -200,34 +200,25 @@ public class TestNc4IospWriting {
 
 
         File outFile = File.createTempFile("writeEnumType", ".nc");
-        //File outFile = new File("f:/git/thredds/writeEnumType.nc"); outFile.delete();
         try {
             FileWriter2 writer = new FileWriter2(
                     ncFile, outFile.getAbsolutePath(), NetcdfFileWriter.Version.netcdf4, new Nc4ChunkingStrategyNone());
-            String mem = null;
-            String disk = null;
+            String mem;
+            String disk;
             try (NetcdfFile ncFileOut = writer.write()) {
                 ncFileOut.setLocation("writeEnumType");
-                // For debugging. Delete this entire try block when done.
+
                 Writer out = new StringWriter();
                 NCdumpW.print(ncFile, out, WantValues.all, false, false, null, null);
                 out.close();
                 mem = out.toString();
+
                 out = new StringWriter();
                 NCdumpW.print(ncFileOut, out, WantValues.all, false, false, null, null);
                 out.close();
                 disk = out.toString();
-                System.out.println("-------------------In memory-------------------");
-                System.out.print(mem);
-                System.out.println("-------------------On disk-------------------");
-                System.out.print(disk);
             }
             String diffs = UnitTestCommon.compare("TestNc4IospWriting.writeEnumType", mem, disk);
-            if(diffs != null) {
-                System.out.println("-------------------Diffs-------------------");
-                System.err.println(diffs);
-                System.out.println("---------------------------------------------");
-            }
             Assert.assertTrue("Differences", diffs == null);
         } finally {
             ncFile.close();

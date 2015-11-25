@@ -33,60 +33,17 @@
 
 package ucar.nc2.ft.point.writer;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayStructureW;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.ACDD;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.CF;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants._Coordinate;
+import ucar.ma2.*;
+import ucar.nc2.*;
+import ucar.nc2.constants.*;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.ProfileFeature;
-import ucar.nc2.ft.ProfileFeatureCollection;
-import ucar.nc2.ft.TrajectoryProfileFeature;
-import ucar.nc2.ft.TrajectoryProfileFeatureCollection;
-import ucar.nc2.ft.StationProfileFeature;
-import ucar.nc2.ft.StationProfileFeatureCollection;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
-import ucar.nc2.ft.TrajectoryFeature;
-import ucar.nc2.ft.TrajectoryFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -96,6 +53,11 @@ import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Write Point Feature Collections into netcdf3/4 files in CF 1.6 point obs conventions.
@@ -514,7 +476,6 @@ public abstract class CFPointWriter implements Closeable {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, obsCoords);
       addDataVariablesExtended(obsData, coordNames);
-      record.calcElementSize();
       writer.create();
 
     } else {
@@ -539,7 +500,6 @@ public abstract class CFPointWriter implements Closeable {
       record = (Structure) writer.addVariable(null, recordName, DataType.STRUCTURE, recordDimName);
       addCoordinatesExtended(record, obsCoords);
       addDataVariablesExtended(obsData, coordNames);
-      record.calcElementSize();
       writer.create();
 
     } else {
@@ -626,7 +586,6 @@ public abstract class CFPointWriter implements Closeable {
       for (Attribute att : vs.getAttributes())
         member.addAttribute(att);
     }
-    parent.calcElementSize();
   }
 
    // added as variables with the unlimited (record) dimension

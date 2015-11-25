@@ -37,10 +37,10 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
@@ -1286,6 +1286,28 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         this.dims = edims;
         this.ndims++;
       }
+    }
+
+    @Override public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Field field = (Field) o;
+      return grpid == field.grpid &&
+             typeid == field.typeid &&
+             fldidx == field.fldidx &&
+             offset == field.offset &&
+             fldtypeid == field.fldtypeid &&
+             ndims == field.ndims &&
+             Objects.equals(name, field.name) &&
+             Arrays.equals(dims, field.dims);
+    }
+
+    @Override public int hashCode() {
+      return Objects.hash(grpid, typeid, fldidx, name, offset, fldtypeid, ndims, dims);
     }
 
     public String toString2() {
@@ -2580,7 +2602,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // keep track of the User Defined types
     UserType ut = new UserType(g4.grpid, typeid, name, size, 0, (long) fldidx, NC_COMPOUND);
     userTypes.put(typeid, ut);
-    ut.setFields(flds);
+    ut.setFields(flds);  // LOOK: These were already set in the UserType ctor.
   }
 
   private void createCompoundMemberAtts(int grpid, int varid, Structure s) throws IOException {

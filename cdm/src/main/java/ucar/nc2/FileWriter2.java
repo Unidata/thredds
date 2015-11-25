@@ -32,16 +32,16 @@
  */
 package ucar.nc2;
 
+import ucar.ma2.*;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.CancelTaskImpl;
+import ucar.nc2.write.Nc4Chunking;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import ucar.ma2.*;
-import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.CancelTaskImpl;
 
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
@@ -325,7 +325,7 @@ public class FileWriter2 {
       DataType newType = oldVar.getDataType();
       Variable v;
       if (newType == DataType.STRUCTURE) {
-        v = writer.addStructure(newGroup, (Structure) oldVar, oldVar.getShortName(), dims);
+        v = writer.addCopyOfStructure(newGroup, (Structure) oldVar, oldVar.getShortName(), dims);
       } else if(newType.isEnum()) {
         EnumTypedef en = oldVar.getEnumTypedef();
         v = writer.addVariable(newGroup, oldVar.getShortName(), newType, dims);
