@@ -717,7 +717,7 @@ public class TestServlet extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Junit test methods
-    @Test
+    // @Test
     public void testServlet()
         throws Exception
     {
