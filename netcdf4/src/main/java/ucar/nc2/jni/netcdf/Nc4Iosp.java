@@ -3028,6 +3028,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (debugCompound)
       System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
 
+    //IntByReference val = new IntByReference();
+    //int ret2 = nc4.nc_inq_var_fletcher32(grpid, varid, val);
+    //System.out.printf("%d = %d%n", ret2, val.getValue());
+
     // write the data
     // int ret = nc4.nc_put_var(grpid, varid, bbuff);
     int ret;
