@@ -207,10 +207,11 @@ public abstract class Grib2Drs {
   (13) The group length (L) is the number of values in a group.
   (14) The essence of the complex packing method is to subdivide a field of values into NG groups, where the values in each
   group have similar sizes. In this procedure, it is necessary to retain enough information to recover the group lengths upon
-  decoding. The NG group lengths for any given field can be described by Ln = ref + Kn x len_inc, n = 1, NG, where ref is
-  given by octets 38–41 and len_inc by octet 42. The NG values of K (the scaled group lengths) are stored in the data
-  section, each with the number of bits specified by octet 47. Since the last group is a special case which may not be able
-  to be specified by this relationship, the length of the last group is stored in octets 43–46.
+  decoding. The NG group lengths for any given field can be described by
+      Ln = ref + Kn x len_inc, n = 1, NG
+  where ref is given by octets 38–41 and len_inc by octet 42.
+  The NG values of K (the scaled group lengths) are stored in the data section, each with the number of bits specified by octet 47.
+  Since the last group is a special case which may not be able to be specified by this relationship, the length of the last group is stored in octets 43–46.
   (15) See data template 7.2 and associated Notes for complementary information.
 
   Code Table Code table 5.5 - Missing value management for complex packing (5.5)

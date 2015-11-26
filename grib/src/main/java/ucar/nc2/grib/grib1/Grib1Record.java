@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib1;
 
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribData;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
@@ -259,16 +260,11 @@ public class Grib1Record {
     if (bitmap == null) {
       info.ndataPoints = info.nPoints;
     } else {
-      int bits = 0;   // have to count the bits to see how many data values are stored
       byte[] bm = bitmap.getBitmap(raf);
       if (bm == null) {
         info.ndataPoints = info.nPoints;
-      } else {
-        for (byte b : bm) {
-          short s = DataType.unsignedByteToShort(b);
-          bits += Long.bitCount(s);
-        }
-        info.ndataPoints = bits;
+      } else { // have to count the bits to see how many data values are stored
+        info.ndataPoints = GribNumbers.countBits(bm);
       }
     }
 
