@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -31,31 +31,53 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.tds;
+package thredds.logs;
 
-import ucar.httpservices.*;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.EscapeStrings;
 
 import java.io.BufferedReader;
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * Read TDS access logs
+ * Read TDS access logs off of disk and replay the requests on a
+ * new server
  *
  * @author caron
  * @since Apr 10, 2008
  */
-public class ReadTdsLogs {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ReadTdsLogs.class);
+public class ReplayTdsLogs {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ReplayTdsLogs.class);
   private static AtomicInteger reqno = new AtomicInteger(0);
   private static Formatter out, out2;
-
+  private static final String USER_AGENT = "ReplayTdsLogs testing utility from toolsUI";
+  private static final String URI_DEFAULT_SCHEME_SPECIFIC_PART = "http://";
   ///////////////////////////////////////////////////////
   // multithreading
   final int nthreads = 2;
@@ -73,9 +95,9 @@ public class ReadTdsLogs {
   final String server;
   boolean dump = false;
 
-  ReadTdsLogs(String server) throws FileNotFoundException, HTTPException {
+  ReplayTdsLogs(String server) throws FileNotFoundException, HTTPException {
     this.server = server;
-    // httpClient = HttpClientManager.init(null, "ReadTdsLogs");
+    // httpClient = HttpClientManager.init(null, "ReplayTdsLogs");
 
     executor = Executors.newFixedThreadPool(nthreads); // number of threads
     //completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
@@ -127,21 +149,21 @@ public class ReadTdsLogs {
     }
 
     void send() throws IOException {
-        String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
-        //if (!unescapedForm.equals(log.path))
-        //  System.out.printf("org=%s unescaped=%s%n", log.path, unescapedForm);
-        String urlencoded = server + unescapedForm;
-        // String urlencoded = server + URLnaming.escapeQuery(unescapedForm);
-        try (HTTPMethod method = HTTPFactory.Get(urlencoded)) {  // escape the query part
+      String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
+      //if (!unescapedForm.equals(log.path))
+      //  System.out.printf("org=%s unescaped=%s%n", log.path, unescapedForm);
+      String urlencoded = server + unescapedForm;
+      // String urlencoded = server + URLnaming.escapeQuery(unescapedForm);
+      try (HTTPMethod method = HTTPFactory.Get(urlencoded)) {  // escape the query part
+        method.setRequestHeader(HTTPSession.HEADER_USERAGENT, USER_AGENT);
         //out2.format("send %s %n", method.getPath());
         statusCode = method.execute();
 
         InputStream is = method.getResponseBodyAsStream();
-        if (is != null)
+        if (is != null) {
           bytesRead = IO.copy2null(is, 10 * 1000); // read data and throw away
-
+        }
       }
-
     }
   }
 
@@ -196,7 +218,7 @@ public class ReadTdsLogs {
       if (serverLive == null) return true;
       try (HTTPMethod method = HTTPFactory.Get(serverLive + itask.log.path)) {
         out2.format("send %s %n", method.getPath());
-
+        method.setRequestHeader(HTTPSession.HEADER_USERAGENT, USER_AGENT);
         int statusCode = method.execute();
 
         InputStream is = method.getResponseBodyAsStream();
@@ -648,26 +670,104 @@ public class ReadTdsLogs {
     void run(String filename) throws IOException;
   }
 
-  static String serverLive = null; // "http://motherlode.ucar.edu:8080";
-  // static String serverTest = "http://thredds-test.unidata.ucar.edu";
-  static String serverTest = "http://thredds-dev.unidata.ucar.edu";
+  static String serverLive = null;
 
   public static void main(String args[]) throws IOException {
+    int EXIT_NORMAL = 0;
+    int USAGE_ERROR = 64;
+    int HOST_ERROR = 68;
+    int IO_ERROR = 74;
+
+    //todo out appears to be useless in terms of the utility of this class. look at removing
+    //  to clean up code.
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
     out2 = new Formatter(System.out);
 
+    // Basic usage message
+    List<String> message = Arrays.asList(" ",
+            "ReplayTdsLogs takes two arguments.%n",
+            "  The first argument is the URL of the server to test (e.g. http://my.thredds.edu)%n",
+            "  The second argument is the path of the directory which holds the log files you wish " +
+                    "to replay against the test server. (e.g. /my/testlogs/live/here)%n",
+            "%n",
+            "  Example usage:%n",
+            "java -classpath toolsUI.jar thredds.logs.ReplayTdsLogs http://my.thredds.edu /my/testlogs/live/here %n");
+
+    // Check command line arguments for basic issues (too many, to few, none)
+    if (args.length == 0) {
+      for (String line : message) {
+        System.out.format(line);
+      }
+      System.exit(EXIT_NORMAL);
+    } else if (args.length != 2) {
+      for (String line : message) {
+        System.err.format(line);
+      }
+      System.exit(USAGE_ERROR);
+    }
+
+    // The command line args for this should be strings
+    String serverToTest = args[0].toString();
+    String accessLogsToTestWith = args[1].toString();
+
+
+    // Check testServer url for potential issues with the first command line arg
+    if (!serverToTest.startsWith(URI_DEFAULT_SCHEME_SPECIFIC_PART)) {
+      serverToTest = URI_DEFAULT_SCHEME_SPECIFIC_PART + serverToTest;
+    }
+
+    try (HTTPMethod method = HTTPFactory.Head(serverToTest)) {
+      // Grab url string after it's been cleaned up by HTTPfactory.Head...the string verion of the
+      // url is used elsewhere in this code.
+      // todo - replace string version of the url with something more robust, like a URL object.
+      serverToTest =  method.getSession().getSessionURL();
+      method.setRequestHeader(HTTPSession.HEADER_USERAGENT, USER_AGENT);
+      method.execute();
+      method.close();
+    } catch (HTTPException httpe) {
+      String errorMessage = httpe.getLocalizedMessage();
+      System.err.format("Error related to test server %s:%n", serverToTest);
+      System.err.format("%n");
+      if (errorMessage.toLowerCase().contains("unknownhostexception")) {
+        System.err.format("The hostname %s is incorrect, or the host may be down.%n", serverToTest);
+        System.exit(HOST_ERROR);
+      } else {
+        System.err.format("%s%n", httpe.getMessage());
+      }
+      System.exit(USAGE_ERROR);
+    }
+
+    // use Path object to do more specific testing on second command line arg
+    Path pathToTestDir = Paths.get(accessLogsToTestWith);
+    try {
+      pathToTestDir = pathToTestDir.toRealPath();
+      if (!Files.isDirectory(pathToTestDir)) {
+        System.err.format("The second argument %s is not a directory.", pathToTestDir.toString());
+        System.exit(USAGE_ERROR);
+      }
+
+      try (DirectoryStream<Path> potential_log_files = Files.newDirectoryStream(pathToTestDir)) {
+        if (!potential_log_files.iterator().hasNext()) {
+          System.err.format("The directory %s appears to be empty.", pathToTestDir.toString());
+          System.exit(EXIT_NORMAL);
+        }
+      }
+    } catch (NoSuchFileException nsfe) {
+      System.err.format("The directory %s does not exists.", pathToTestDir.toString());
+      System.exit(EXIT_NORMAL);
+    } catch (IOException ioe) {
+      System.err.format("%s%n", ioe);
+      System.exit(IO_ERROR);
+    }
+
+
     // sendRequests
-    final ReadTdsLogs reader = new ReadTdsLogs(serverTest);
+    final ReplayTdsLogs reader = new ReplayTdsLogs(serverToTest);
     long startElapsed = System.nanoTime();
 
-    //String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\t   mp\\";
-    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\thredds.ucar.edu\\access\\readLogs\\";
-    //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8081\\access\\";
-    //  String accessLogs = "Q:/cdmUnitTest/tds/logs";
+    System.out.format("%ntest server=%s sending request for log files in the directory %s %n%n", serverToTest, accessLogsToTestWith);
 
-    System.out.printf("server=%s send files from %s %n", serverTest, accessLogs);
-
-    read(accessLogs, new MClosure() {
+    read(accessLogsToTestWith, new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }
@@ -676,10 +776,11 @@ public class ReadTdsLogs {
     reader.exit(24 * 3600); // 24 hours
 
     long elapsedTime = System.nanoTime() - startElapsed;
-    System.out.printf("elapsed= %d secs%n", elapsedTime / (1000 * 1000 * 1000));
+    System.out.format("elapsed= %d secs%n", elapsedTime / (1000 * 1000 * 1000));
 
     if (out != null) out.close();
     out2.close();
 
+    System.exit(EXIT_NORMAL);
   }
 }
