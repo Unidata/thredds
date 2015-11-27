@@ -199,7 +199,7 @@ public class Grib1Record {
     f.format("   dataLength = %d%n", info.dataLength);
 
     // octet 4, 1st half (packing flag)
-    f.format("    ----flag = %s%n", Long.toHexString(info.flag));
+    f.format("    ----flag = %s%n", Long.toBinaryString(info.flag));
     f.format("        data = %s%n", info.getGridPointS());
     f.format("     packing = %s%n", info.getPackingS());
     f.format("        type = %s%n", info.getDataTypeS());
@@ -208,6 +208,8 @@ public class Grib1Record {
     f.format("    decscale = %d%n", info.decimalScaleFactor);
     f.format("reference value = %f%n", info.referenceValue);
     f.format("      nbits = %d%n", info.numberOfBits);
+
+    Grib1DataReader.showInfo(f, raf, dataSection.getStartingPosition());
   }
 
   /**
