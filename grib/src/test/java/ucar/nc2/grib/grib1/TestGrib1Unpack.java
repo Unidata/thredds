@@ -21,26 +21,27 @@ public class TestGrib1Unpack {
   @Test
   public void testEcmwfExtendedComplexData() throws IOException {
     final String testfile = "../grib/src/test/data/complex_packing.grib1";
-    NetcdfFile nc = NetcdfFile.open(testfile);
+    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+      Variable var = nc.findVariable("Minimum_temperature_at_2_metres_in_the_last_6_hours_surface_6_Hour_2");
+      Array data = var.read();
+      float first = data.getFloat(0);
 
-    Variable var = nc.findVariable("Minimum_temperature_at_2_metres_in_the_last_6_hours_surface_6_Hour_2");
-    Array data = var.read();
-    float first = data.getFloat(0);
-
-    Assert.assertEquals(264.135559, first, 1e-6);
+      Assert.assertEquals(264.135559, first, 1e-6);
+    }
   }
 
   // Tests reading data with Ecmwf extended complex packing
   @Test
   public void testEcmwfExtendedComplexData2() throws IOException {
     final String testfile = "../grib/src/test/data/complex_packing2.grib1";
-    NetcdfFile nc = NetcdfFile.open(testfile);
+    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
 
-    Variable var = nc.findVariable("Snowfall_surface");
-    Array data = var.read();
-    float first = data.getFloat(0);
+      Variable var = nc.findVariable("Snowfall_surface");
+      Array data = var.read();
+      float first = data.getFloat(0);
 
-    Assert.assertEquals(.326607, first, 1e-6);
+      Assert.assertEquals(.326607, first, 1e-6);
+    }
   }
 
 }
