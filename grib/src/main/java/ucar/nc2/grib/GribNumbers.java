@@ -51,7 +51,19 @@ public final class GribNumbers {
    */
   public static final int UNDEFINED = -9999;
   public static final double UNDEFINEDD = -9999.0;
+
+
   public static final int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
+
+  // get mask for bit number used in the GRIB docs
+  // "If bit 8 of the extended flags" ...
+  public static int getMaskForBit(int gribBitNumber) {
+    return bitmask[gribBitNumber-1];
+  }
+
+  public static boolean testBitIsSet(int test, int gribBitNumber) {
+    return (test & GribNumbers.getMaskForBit(gribBitNumber)) != 0;
+  }
 
   /**
    * Grib uses this internally to mean missing
@@ -280,17 +292,6 @@ public final class GribNumbers {
   }
 
   /**
-   * Is the bit set in this octet
-   *
-   * @param value   octet as an integer
-   * @param bitMask bit mask
-   * @return true if the bit is not 0
-   */
-  public static boolean isBitSet(int value, int bitMask) {
-    return (value & bitMask) != 0;
-  }
-
-  /**
    * A signed byte has a sign bit then 1 15-bit value.
    * This is not twos complement (!)
    * @param v convert byte to signed int
@@ -305,6 +306,19 @@ public final class GribNumbers {
   public static int convertSignedByte2(byte v) {
     return (v >= 0) ? (int) v : -(128 + v);
   }
+
+  // count number of bits on in bitmap
+  public static int countBits(byte[] bitmap) {
+    int bits = 0;
+    for (byte b : bitmap) {
+      short s = DataType.unsignedByteToShort(b);
+      bits += Long.bitCount(s);
+    }
+    return bits;
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////
 
   public static void main(String[] args) {
     System.out.printf("byte == convertSignedByte == convertSignedByte2 == hex%n");
