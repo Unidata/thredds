@@ -1,6 +1,5 @@
 // Grib2 Index version 9 (gbx9)
 syntax = "proto3";
-
 option java_package = "ucar.nc2.grib.grib2";
 option java_outer_classname = "Grib2IndexProto";
 

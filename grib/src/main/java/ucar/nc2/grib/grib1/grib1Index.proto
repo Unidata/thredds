@@ -19,7 +19,6 @@ message Grib1Record {
   bytes pds = 7;
 
   uint64 bmsPos = 11;
-
   uint64 dataPos = 13;
   uint32 dataLen = 14;
 }
@@ -28,6 +27,7 @@ message Grib1Index {
   string filename = 1;
   repeated Grib1GdsSection gdsList = 2;  // GDS factored out
   repeated Grib1Record records = 3;
+  uint32 proto_version = 4; // added for proto3 in 5.0 (set to 3).
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java
