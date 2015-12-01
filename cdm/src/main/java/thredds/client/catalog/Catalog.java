@@ -90,6 +90,7 @@ public class Catalog extends DatasetNode {
     for (Dataset ds : datasets) {
       String id = ds.getIdOrPath();
       if (id != null) datasetMap.put(id, ds);
+      if (ds instanceof CatalogRef) continue; // dont recurse into catrefs
       addDatasetsToHash(ds.getDatasets(), datasetMap);
     }
   }

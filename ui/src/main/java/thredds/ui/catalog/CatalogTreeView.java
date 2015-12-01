@@ -37,6 +37,7 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.Optional;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -415,7 +416,7 @@ public class CatalogTreeView extends JPanel {
 
   // make an InvDataset into a TreeNode
   // defer opening catalogRefs
-  private class InvCatalogTreeNode implements javax.swing.tree.TreeNode, CatalogBuilder.Callback {
+  private class InvCatalogTreeNode implements javax.swing.tree.TreeNode {
     DatasetNode ds;
     private InvCatalogTreeNode parent;
     private ArrayList<InvCatalogTreeNode> children = null;
@@ -473,15 +474,14 @@ public class CatalogTreeView extends JPanel {
       if (debugRef) System.out.println("readCatref on ="+ds.getName()+" "+isReading);
       if (!isReading) {
         isReading = true;
-        CatalogBuilder builder = new CatalogBuilder();
         try {
-          Catalog cat = builder.buildFromCatref(catref);
-          if (builder.hasFatalError() || cat == null) {
-            javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, "Error reading catref " + catref.getName() + " err=" + builder.getErrorMessage());
+          Optional<DatasetNode> opt = catref.readCatref();
+          if (!opt.isPresent()) {
+            javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, opt.getErrorMessage());
             return;
           }
+          setCatalog(opt.get());
 
-          setCatalog(cat);
         } catch (IOException e) {
           javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, "Error reading catref " + catref.getName()+" err="+e.getMessage());
         }
@@ -505,7 +505,7 @@ public class CatalogTreeView extends JPanel {
 
     public String toString() { return ds.getName(); }
 
-    public void setCatalog(Catalog catalog) {
+    public void setCatalog(DatasetNode catalog) {
       children = new ArrayList<>();
       java.util.List<Dataset> datasets = catalog.getDatasets();
       if (datasets.size() == 1) {

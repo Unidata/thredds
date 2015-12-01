@@ -34,8 +34,10 @@ package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
+import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 
@@ -81,8 +83,7 @@ public class CatalogRef extends Dataset {
       Catalog parent = getParentCatalog();
       if (parent != null)
         return parent.resolveUri(xlink);
-    }
-    catch (java.net.URISyntaxException e) {
+    } catch (java.net.URISyntaxException e) {
       return null;
     }
     return null;
@@ -107,5 +108,42 @@ public class CatalogRef extends Dataset {
 
     return dataDir;
   }
+
+  //////////////////////////////////////////////////////////////////
+  private Catalog proxy = null;
+
+  @Override
+  public boolean hasNestedDatasets() {
+    return true;
+  }
+
+    @Override
+  public List<Dataset> getDatasets() {
+    try {
+      ucar.nc2.util.Optional<DatasetNode> opt = readCatref();
+      if (!opt.isPresent())
+        throw new RuntimeException(opt.getErrorMessage());
+
+      DatasetNode proxy = opt.get();
+      return proxy.getDatasets();
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public synchronized ucar.nc2.util.Optional<DatasetNode> readCatref() throws IOException {
+    if (proxy != null)
+      return ucar.nc2.util.Optional.of(proxy);
+
+    CatalogBuilder builder = new CatalogBuilder();
+    Catalog cat = builder.buildFromCatref(this);
+    if (builder.hasFatalError() || cat == null) {
+      return ucar.nc2.util.Optional.empty("Error reading catref " + getURI() + " err=" + builder.getErrorMessage());
+    }
+    this.proxy = cat;
+    return ucar.nc2.util.Optional.of(proxy);
+  }
+
 
 }

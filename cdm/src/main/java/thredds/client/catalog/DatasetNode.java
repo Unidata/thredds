@@ -82,10 +82,12 @@ public class DatasetNode {
     return datasets == null ? new ArrayList<>(0) : datasets;
   }
 
+  // Look though all datasets here or under here. do not go into catrefs
   public Dataset findDatasetByName(String name) {
     for (Dataset ds : getDatasets()) {
-      if (ds.getName().equals(name))
-        return ds;
+      if (ds.getName().equals(name)) return ds;
+      Dataset result = ds.findDatasetByName(name);
+      if (result != null) return result;
     }
     return null;
   }
