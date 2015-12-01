@@ -61,7 +61,7 @@ public class TestGribCoverageBuilding {
   @Test
   public void testScalarRuntimeCoordinate() throws IOException {
 
-    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1.ncx4";
     String gridName = "Pressure_surface";
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
@@ -84,7 +84,7 @@ public class TestGribCoverageBuilding {
 
   @Test
     public void test2DTimeCoordinates() throws IOException {
-      String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx3";
+      String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx4";
       String gridName = "Pressure_surface";
 
       try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
@@ -119,7 +119,7 @@ public class TestGribCoverageBuilding {
 
   @Test
   public void testBestTimeCoordinates() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx4";
     String gridName = "Pressure_surface";
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {

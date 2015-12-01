@@ -55,16 +55,16 @@ public class TestGribCoverageSubsetP {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1", "Pressure_surface",
             "2012-02-27T00:00:00Z", null, 42.0, null});   // projection, scalar reftime
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "Momentum_flux_u-component_surface_Mixed_intervals_Average",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Momentum_flux_u-component_surface_Mixed_intervals_Average",
             "2015-03-01T06:00:00Z", "2015-03-01T12:00:00Z", null, null});   // time
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "Momentum_flux_u-component_surface_Mixed_intervals_Average",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Momentum_flux_u-component_surface_Mixed_intervals_Average",
             "2015-03-01T06:00:00Z", null, 213.0, null});                 // time offset
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "Ozone_Mixing_Ratio_isobaric",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Ozone_Mixing_Ratio_isobaric",
             "2015-03-01T06:00:00Z", null, 213.0, null});   // all levels
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", "Ozone_Mixing_Ratio_isobaric",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Ozone_Mixing_Ratio_isobaric",
             "2015-03-01T06:00:00Z", null, 213.0, 10000.});   // specific level
 // */
     return result;

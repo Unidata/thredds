@@ -70,7 +70,7 @@ import java.util.*;
 public class Grib1ReportPanel extends ReportPanel {
 
   public static enum Report {
-    checkTables, showLocalParams, summary, rename, checkRename, showEncoding// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
+    checkTables, showLocalParams, summary, rename, checkRename, showEncoding, gribIndex
   }
 
   private Grib1Customizer cust = null;
@@ -107,6 +107,9 @@ public class Grib1ReportPanel extends ReportPanel {
       case showEncoding:
         doShowEncoding(f, dcm);
         break;
+      case gribIndex:
+        doGribIndex(f, dcm, eachFile);
+        break;
     }
   }
 
@@ -123,6 +126,42 @@ public class Grib1ReportPanel extends ReportPanel {
     return index;
   }
 
+  /////////////////////////////////////////////////////////////////
+
+  private void doGribIndex(Formatter f, MCollection dcm, boolean eachFile) throws IOException {
+    Counters counters = new Counters();
+    counters.add("GDS");
+    counters.add("GDShashes");
+
+    // must open collection again without gbx filtering
+    try (MCollection dcm2 = getCollectionUnfiltered(spec, f)) {
+
+      for (MFile mfile : dcm2.getFilesSorted()) {
+        String path = mfile.getPath();
+        f.format(" %s%n", path);
+        doGribIndex(f, mfile, counters, eachFile);
+      }
+    }
+
+    counters.show(f);
+  }
+
+  private void doGribIndex(Formatter fm, MFile ff, Counters counters, boolean eachFile) throws IOException {
+    String path = ff.getPath();
+    Grib1Index g1idx = new Grib1Index();
+    g1idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
+    counters.count("GDS", g1idx.getGds().size());
+
+    // count unique hash
+    Set<Integer> gdsHash = new HashSet<>();
+    for (Grib1SectionGridDefinition gdss : g1idx.getGds()) {
+      gdsHash.add(gdss.getGDS().hashCode());
+    }
+    counters.count("GDShashes", gdsHash.size());
+    if (eachFile) {
+      fm.format("   count=%d countHash=%d%n", g1idx.getGds().size(), gdsHash.size());
+    }
+  }
 
   ///////////////////////////////////////////////
 
@@ -132,7 +171,6 @@ public class Grib1ReportPanel extends ReportPanel {
 
     for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
-      if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format("%n %s%n", path);
       try {
         doCheckLocalParams(mfile, f, accum);
@@ -190,7 +228,6 @@ public class Grib1ReportPanel extends ReportPanel {
 
     for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
-      if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
       if (useIndex)
         doCheckTablesWithIndex(f, mfile, counters);
@@ -266,7 +303,6 @@ public class Grib1ReportPanel extends ReportPanel {
       Counters countersOneFile = countersAll.makeSubCounters();
 
       String path = mfile.getPath();
-      if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
       if (useIndex)
         doScanIssuesWithIndex(f, mfile, extraInfo, countersOneFile);

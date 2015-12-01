@@ -78,9 +78,9 @@ public class GribIndexCache {
    */
   static public File getExistingFileOrCache(String fileLocation) {
     File result =  getDiskCache2().getExistingFileOrCache(fileLocation);
-    if (result == null && GribIosp.debugGbxIndexOnly && fileLocation.endsWith(".gbx9.ncx3")) {
+    if (result == null && GribIosp.debugGbxIndexOnly && fileLocation.endsWith(".gbx9.ncx4")) { // might create only from gbx9 for debugging
       int length = fileLocation.length();
-      String maybeIndexAlreadyExists = fileLocation.substring(0, length-10)+".ncx3";
+      String maybeIndexAlreadyExists = fileLocation.substring(0, length-10)+".ncx4";
       result =  getDiskCache2().getExistingFileOrCache(maybeIndexAlreadyExists);
     }
     return result;

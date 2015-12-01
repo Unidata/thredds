@@ -76,9 +76,9 @@ public class DirectoryCollection extends CollectionAbstract {
    * @param dir directory for this
    * @return  standard collection name, to name the index file
    */
-  public static Path makeCollectionIndexPath(String topCollectionName, Path dir) {
+  public static Path makeCollectionIndexPath(String topCollectionName, Path dir, String suffix) {
     String collectionName = makeCollectionName(topCollectionName, dir);
-    return Paths.get(dir.toString(), collectionName + NCX_SUFFIX);
+    return Paths.get(dir.toString(), collectionName + suffix);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -109,9 +109,9 @@ public class DirectoryCollection extends CollectionAbstract {
   }
 
   @Override
-  public String getIndexFilename() {
-    if (isTop) return super.getIndexFilename();
-    Path indexPath = DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir);
+  public String getIndexFilename(String suffix) {
+    if (isTop) return super.getIndexFilename(suffix);
+    Path indexPath = DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir, suffix);
     return indexPath.toString();
   }
 

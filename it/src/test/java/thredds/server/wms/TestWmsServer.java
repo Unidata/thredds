@@ -61,6 +61,7 @@ public class TestWmsServer {
 
   private final Namespace NS_WMS = Namespace.getNamespace("wms", "http://www.opengis.net/wms");
 
+   @Ignore("NO WMS Server yet")
    @Test
    public void testCapabilites() throws IOException, JDOMException {
     String endpoint = TestWithLocalServer.withPath("/wms/scanCdmUnitTests/conventions/coards/sst.mnmean.nc?service=WMS&version=1.3.0&request=GetCapabilities");

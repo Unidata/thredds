@@ -923,7 +923,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testTPgribCollection() throws Exception {
-    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
+    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       GeoGrid grid = dataset.findGridByName("Pressure_surface");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();

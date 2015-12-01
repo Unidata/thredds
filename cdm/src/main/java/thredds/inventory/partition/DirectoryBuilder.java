@@ -33,7 +33,6 @@
 package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionAbstract;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -62,10 +61,10 @@ import java.util.List;
 public class DirectoryBuilder {
 
   // returns a DirectoryPartition or DirectoryCollection
-  static public MCollection factory(FeatureCollectionConfig config, Path topDir, boolean isTop, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
-    DirectoryBuilder builder = new DirectoryBuilder(config.collectionName, topDir.toString());
+  static public MCollection factory(FeatureCollectionConfig config, Path topDir, boolean isTop, IndexReader indexReader, String suffix, org.slf4j.Logger logger) throws IOException {
+    DirectoryBuilder builder = new DirectoryBuilder(config.collectionName, topDir.toString(), suffix);
 
-    DirectoryPartition dpart = new DirectoryPartition(config, topDir, isTop, indexReader, logger);
+    DirectoryPartition dpart = new DirectoryPartition(config, topDir, isTop, indexReader, suffix, logger);
     if (!builder.isLeaf(indexReader))  { // its a partition
       return dpart;
     }
@@ -80,11 +79,12 @@ public class DirectoryBuilder {
     }
   }
 
-  static private enum PartitionStatus {unknown, isDirectoryPartition, isLeaf}
+  private enum PartitionStatus {unknown, isDirectoryPartition, isLeaf}
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   private static final boolean debug = false;
+  private final String suffix;
   private final String topCollectionName;  // collection name
   private final String partitionName;      // partition name
   private final Path dir;                  // the directory
@@ -97,8 +97,8 @@ public class DirectoryBuilder {
   private List<DirectoryBuilder> children = new ArrayList<>(25);
   private PartitionStatus partitionStatus = PartitionStatus.unknown;
 
-  public DirectoryBuilder(String topCollectionName, String dirFilename) throws IOException {
-    this(topCollectionName, Paths.get(dirFilename), null);
+  public DirectoryBuilder(String topCollectionName, String dirFilename, String suffix) throws IOException {
+    this(topCollectionName, Paths.get(dirFilename), null, suffix);
   }
 
   /**
@@ -108,10 +108,11 @@ public class DirectoryBuilder {
    * @param attr file attributes, may be null
    * @throws IOException
    */
-  public DirectoryBuilder(String topCollectionName, Path dir, BasicFileAttributes attr) throws IOException {
+  public DirectoryBuilder(String topCollectionName, Path dir, BasicFileAttributes attr, String suffix) throws IOException {
     this.topCollectionName = topCollectionName;
     this.dir = dir;
     this.partitionName = DirectoryCollection.makeCollectionName(topCollectionName, dir);
+    this.suffix = suffix;
 
     if (attr == null)
       attr = Files.readAttributes(this.dir, BasicFileAttributes.class);
@@ -131,7 +132,7 @@ public class DirectoryBuilder {
    * @throws IOException
    */
   public boolean findIndex() throws IOException {
-    Path indexPath = Paths.get(dir.toString(), partitionName + CollectionAbstract.NCX_SUFFIX);
+    Path indexPath = Paths.get(dir.toString(), partitionName + suffix);
     if (Files.exists(indexPath)) {
       this.index = indexPath;
       BasicFileAttributes attr = Files.readAttributes(indexPath, BasicFileAttributes.class);
@@ -211,7 +212,7 @@ public class DirectoryBuilder {
   private class AddChild implements IndexReader.AddChildCallback {
     public void addChild(String dirName, String indexFilename, long lastModified) throws IOException {
       Path indexPath = Paths.get(indexFilename);
-      DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified);
+      DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified, suffix);
       children.add(child);
     }
   }
@@ -227,13 +228,13 @@ public class DirectoryBuilder {
         Path parent = index.getParent();
         indexPath = parent.resolve( indexFilename);
       }
-      DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified);
+      DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified, suffix);
       children.add(child);
     }
   }
 
   // coming in from the index reader
-  private DirectoryBuilder(String topCollectionName, Path indexFile, long indexLastModified) throws IOException {
+  private DirectoryBuilder(String topCollectionName, Path indexFile, long indexLastModified, String suffix) throws IOException {
     this.topCollectionName = topCollectionName;
     if (Files.exists(indexFile)) {
       this.index = indexFile;
@@ -247,6 +248,8 @@ public class DirectoryBuilder {
     if (!attr.isDirectory())
       throw new IllegalArgumentException("DirectoryPartition needs a directory");
     dirLastModified = attr.lastModifiedTime();
+
+    this.suffix = suffix;
   }
 
   /**
@@ -260,7 +263,7 @@ public class DirectoryBuilder {
       for (Path p : ds) {
         BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
         if (attr.isDirectory()) {
-          children.add(new DirectoryBuilder(topCollectionName, p, attr));
+          children.add(new DirectoryBuilder(topCollectionName, p, attr, suffix));
           if (debug && (++count % 10 == 0)) System.out.printf("%d ", count);
         }
       }

@@ -33,7 +33,7 @@
 
 package ucar.nc2.grib.collection;
 
-import com.google.protobuf.ExtensionRegistry;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.constants.CDM;
@@ -48,7 +48,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Superclass to read GribCollection From ncx2 Index file
+ * Superclass to read GribCollection From ncx file.
  *
  * @author caron
  * @since 2/20/14
@@ -59,16 +59,18 @@ abstract class GribCollectionBuilderFromIndex {
 
   protected GribCollectionMutable gc;
   protected final org.slf4j.Logger logger;
+  protected final FeatureCollectionConfig config;
   protected GribTables tables;
 
-  protected abstract void readGds(GribCollectionProto.Gds p);
+  protected abstract GribHorizCoordSystem readGds(GribCollectionProto.Gds p);
   protected abstract GribTables makeCustomizer() throws IOException;
   protected abstract String getLevelNameShort(int levelCode);
   protected abstract int getVersion();
   protected abstract int getMinVersion();
 
-  protected GribCollectionBuilderFromIndex(GribCollectionMutable gc, org.slf4j.Logger logger) {
+  protected GribCollectionBuilderFromIndex(GribCollectionMutable gc, FeatureCollectionConfig config, org.slf4j.Logger logger) {
     this.logger = logger;
+    this.config = config;
     this.gc = gc;
   }
 
@@ -137,9 +139,6 @@ abstract class GribCollectionBuilderFromIndex {
       }
        */
 
-      // see https://developers.google.com/protocol-buffers/docs/reference/java-generated#extension */
-      //ExtensionRegistry registry = ExtensionRegistry.newInstance();
-      //PartitionCollectionProto.registerAllExtensions(registry);
       GribCollectionProto.GribCollection proto = GribCollectionProto.GribCollection.parseFrom(m);
 
       // need to read this first to get this.tables initialized
@@ -175,10 +174,10 @@ abstract class GribCollectionBuilderFromIndex {
 
       gc.masterRuntime = (CoordinateRuntime) readCoord(proto.getMasterRuntime());
 
-      gc.horizCS = new ArrayList<>(proto.getGdsCount());
+      /* gc.horizCS = new ArrayList<>(proto.getGdsCount());
       for (int i = 0; i < proto.getGdsCount(); i++)
         readGds(proto.getGds(i));
-      gc.horizCS = Collections.unmodifiableList(gc.horizCS); // must be in order
+      gc.horizCS = Collections.unmodifiableList(gc.horizCS); // must be in order */
 
       gc.datasets = new ArrayList<>(proto.getDatasetCount());
       for (int i = 0; i < proto.getDatasetCount(); i++)
@@ -240,9 +239,7 @@ message Group {
   protected GribCollectionMutable.GroupGC readGroup(GribCollectionProto.Group p) {
     GribCollectionMutable.GroupGC group = gc.makeGroup();
 
-    int gdsIndex = p.getGdsIndex();
-    group.horizCoordSys = gc.getHorizCS(gdsIndex);
-    group.isTwoD = p.getIsTwod();
+    group.horizCoordSys = readGds( p.getGds());
 
     // read coords before variables
     group.coords = new ArrayList<>();
@@ -356,11 +353,10 @@ message Coord {
 }
  */
   private Coordinate readCoord(GribCollectionProto.Coord pc) {
-    int typei = pc.getType();
+    Coordinate.Type type = convertAxisType(pc.getAxisType());
     int code = pc.getCode();
     String unit = pc.getUnit();
     if (unit.length() == 0) unit = null; // LOOK may be null
-    Coordinate.Type type = Coordinate.Type.values()[typei];
 
     switch (type) {
       case runtime:
@@ -466,4 +462,41 @@ message Coord {
 
     return readVariableExtensions(group, pv, result);
   }
+
+  static public Coordinate.Type convertAxisType(GribCollectionProto.GribAxisType type) {
+    switch (type) {
+      case runtime:
+        return Coordinate.Type.runtime;
+      case time:
+        return Coordinate.Type.time;
+      case time2D:
+        return Coordinate.Type.time2D;
+      case timeIntv:
+        return Coordinate.Type.timeIntv;
+      case ens:
+        return Coordinate.Type.ens;
+      case vert:
+        return Coordinate.Type.vert;
+    }
+    throw new IllegalStateException("illegal axis type " + type);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // these objects are created from the ncx index. lame - should only be in the builder i think
+  private Set<String> hcsNames = new HashSet<>(5);
+
+  protected String makeHorizCoordSysName(GdsHorizCoordSys hcs) {
+    // default id
+    String base = hcs.makeId();
+    // ensure uniqueness
+    String tryit = base;
+    int count = 1;
+    while (hcsNames.contains(tryit)) {
+      count++;
+      tryit = base + "-" + count;
+    }
+    hcsNames.add(tryit);
+    return tryit;
+  }
+
 }

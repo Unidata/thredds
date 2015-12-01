@@ -80,7 +80,7 @@ public class Grib2Variable {
   }
 
   /**
-   * Used when building from ncx3 (full records)
+   * Used when building from ncx (full records)
    */
   public Grib2Variable(Grib2Customizer cust, int discipline, int center, int subcenter, Grib2Gds gds, Grib2Pds pds, boolean intvMerge, boolean useGenType) {
     this.cust = cust;
@@ -88,7 +88,7 @@ public class Grib2Variable {
     this.center = center;
     this.subcenter = subcenter;
     this.gds = gds;
-    this.gdsHash = gds.hashCode;             // this requires no overridden gds hashCodes have made it into the ncx3
+    this.gdsHash = gds.hashCode;             // LOOK this requires no overridden gds hashCodes have made it into the ncx
     this.pds = pds;
     this.intvMerge = intvMerge;
     this.useGenType = useGenType;

@@ -59,7 +59,7 @@ public class TestGribCollectionReading {
   @Test
   public void testReadTimeRange() throws IOException, InvalidRangeException {
     // read more than one time coordinate at a time in a TP (multiple runtimes, single offset) partition
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
+    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       Variable v = ds.findVariable(null, "Pressure_surface");
       assert v != null;
       Array data = v.read("0:1,50,50");
@@ -76,7 +76,7 @@ public class TestGribCollectionReading {
   @Test
   public void testReadTimeRangeWithSingleVerticalLevel() throws IOException, InvalidRangeException {
     // read more than one time coordinate at a time in a TP (multiple runtimes, single offset) partition
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
+    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       Variable v = ds.findVariable(null, "Relative_humidity_sigma");
       assert v != null;
       Array data = v.read("0:1, 0, 50, 50");
@@ -99,7 +99,7 @@ public class TestGribCollectionReading {
   @Test
   public void testReadTimeRangeWithMultipleVerticalLevel() throws IOException, InvalidRangeException {
     // read more than one time coordinate at a time in a TP (multiple runtimes, single offset) partition
-    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
+    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       Variable v = ds.findVariable(null, "Relative_humidity_isobaric");
       assert v != null;
       Array data = v.read("0:1, 10:20:2, 50, 50");

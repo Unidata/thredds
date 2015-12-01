@@ -39,7 +39,7 @@ package ucar.nc2.grib.collection;
  * @since 4/14/2015
  */
 public class GdsHashObject {
-  Object org;
+  Object org; // will be Grib1Gds or Grib2Gds
   int hashOverride = 0;
 
   public GdsHashObject(Object org, int hashOverride) {

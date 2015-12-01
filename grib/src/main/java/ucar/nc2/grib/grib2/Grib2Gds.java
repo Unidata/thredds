@@ -55,7 +55,7 @@ import java.util.Formatter;
  */
 public abstract class Grib2Gds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
-  public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
+  public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometimes miscoded
 
   public static Grib2Gds factory(int template, byte[] data) {
     Grib2Gds result;

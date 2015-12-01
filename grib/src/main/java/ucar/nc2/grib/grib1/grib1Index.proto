@@ -1,35 +1,35 @@
 // Grib1 Index version 9 (gbx9)
-syntax = "proto3";
+syntax = "proto2";
 option java_package = "ucar.nc2.grib.grib1";
 option java_outer_classname = "Grib1IndexProto";
 
 message Grib1GdsSection {
-  bytes gds = 2;
+  required bytes gds = 2;
 }
 
 message Grib1Record {
-  bytes header = 1;
+  required bytes header = 1;
 
   // indicator section
-  uint64 gribMessageStart = 15;
-  uint64 gribMessageLength = 2;
+  optional uint64 gribMessageStart = 15;
+  required uint64 gribMessageLength = 2;
 
   // other sections
-  uint32 gdsIdx = 6;  // index into gdsList
-  bytes pds = 7;
+  required uint32 gdsIdx = 6;  // index into gdsList
+  required bytes pds = 7;
 
-  uint64 bmsPos = 11;
-  uint64 dataPos = 13;
-  uint32 dataLen = 14;
+  optional uint64 bmsPos = 11;
+
+  required uint64 dataPos = 13;
+  required uint32 dataLen = 14;
 }
 
 message Grib1Index {
-  string filename = 1;
+  required string filename = 1;
   repeated Grib1GdsSection gdsList = 2;  // GDS factored out
   repeated Grib1Record records = 3;
-  uint32 proto_version = 4; // added for proto3 in 5.0 (set to 3).
+  optional uint32 version = 4; // added for proto3 in 5.0
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java
 //  protoc --proto_path=. --java_out=. ucar/nc2/grib/grib1/grib1Index.proto
-

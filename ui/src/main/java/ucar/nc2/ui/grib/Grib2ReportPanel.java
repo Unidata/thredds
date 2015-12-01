@@ -5,7 +5,6 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionAbstract;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -46,7 +45,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   public enum Report {
     checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsSummary, pdsSummary, pdsProblems, idProblems, timeCoord,
-    rename, renameCheck, copyCompress
+    rename, renameCheck, copyCompress, gribIndex
   }
 
   public Grib2ReportPanel(PreferencesExt prefs) {
@@ -100,6 +99,46 @@ public class Grib2ReportPanel extends ReportPanel {
       case copyCompress:
         doCopyCompress(f, dcm, useIndex, eachFile, extra);
         break;
+      case gribIndex:
+        doGribIndex(f, dcm, eachFile);
+        break;
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////
+
+  private void doGribIndex(Formatter f, MCollection dcm, boolean eachFile) throws IOException {
+    Counters counters = new Counters();
+    counters.add("GDS");
+    counters.add("GDShashes");
+
+    // must open collection again without gbx filtering
+    try (MCollection dcm2 = getCollectionUnfiltered(spec, f)) {
+
+      for (MFile mfile : dcm2.getFilesSorted()) {
+        String path = mfile.getPath();
+        f.format(" %s%n", path);
+        doGribIndex(f, mfile, counters, eachFile);
+      }
+    }
+
+    counters.show(f);
+  }
+
+  private void doGribIndex(Formatter fm, MFile ff, Counters counters, boolean eachFile) throws IOException {
+    String path = ff.getPath();
+    Grib2Index g2idx = new Grib2Index();
+    g2idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
+    counters.count("GDS", g2idx.getGds().size());
+
+    // count unique hash
+    Set<Integer> gdsHash = new HashSet<>();
+    for (Grib2SectionGridDefinition gdss : g2idx.getGds()) {
+      gdsHash.add(gdss.getGDS().hashCode());
+    }
+    counters.count("GDShashes", gdsHash.size());
+    if (eachFile) {
+      fm.format("   count=%d countHash=%d%n", g2idx.getGds().size(), gdsHash.size());
     }
   }
 
@@ -471,7 +510,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
     GridDataset ncfile = null;
     try {
-      ncfile = GridDataset.open(path + CollectionAbstract.NCX_SUFFIX);
+      ncfile = GridDataset.open(path + GribCdmIndex.NCX_SUFFIX);
       for (GridDatatype dt : ncfile.getGrids()) {
         String currName = dt.getName();
         total++;

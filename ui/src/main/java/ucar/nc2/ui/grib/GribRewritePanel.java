@@ -36,7 +36,6 @@ package ucar.nc2.ui.grib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionAbstract;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -419,7 +418,7 @@ public class GribRewritePanel extends JPanel {
     }
 
     public void countGribData2D(File f) throws IOException {
-      String indexFilename = f.getPath() + CollectionAbstract.NCX_SUFFIX;
+      String indexFilename = f.getPath() + GribCdmIndex.NCX_SUFFIX;
 
       FeatureCollectionConfig config = new FeatureCollectionConfig();
 

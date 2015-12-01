@@ -117,6 +117,10 @@ public class GdsHorizCoordSys {
     return starty + dy * (ny-1);
   }
 
+  public int getScanMode() {
+    return scanMode;
+  }
+
   public boolean isLatLon() {
     return proj instanceof LatLonProjection;
   }

@@ -301,9 +301,9 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     // the children must already exist
     public GribCollectionMutable makeGribCollection() throws IOException {
-      GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(), config, false, true, logger);
+      GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), config, false, true, logger);
       if (result == null) {
-        logger.error("Failed on openMutableGCFromIndex {}", dcm.getIndexFilename());
+        logger.error("Failed on openMutableGCFromIndex {}", dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
         return null;
       }
       lastModified = result.lastModified;
@@ -348,7 +348,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       this.directory = StringUtil2.replace(dcm.getRoot(), '\\', "/");
       this.partitionDate = dcm.getPartitionDate();
 
-      String indexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
+      String indexFilename = StringUtil2.replace(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), '\\', "/");
       if (partitionDate == null) {
         partitionDate = getDateExtractor().getCalendarDateFromPath(indexFilename);  // LOOK dicey
       }

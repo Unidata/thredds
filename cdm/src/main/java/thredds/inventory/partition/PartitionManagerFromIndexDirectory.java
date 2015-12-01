@@ -56,14 +56,14 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
   private List<File> partIndexFiles;
   private final FeatureCollectionConfig config;
 
-  public PartitionManagerFromIndexDirectory(String name, FeatureCollectionConfig config, File directory, org.slf4j.Logger logger) {
+  public PartitionManagerFromIndexDirectory(String name, FeatureCollectionConfig config, File directory, String suffix, org.slf4j.Logger logger) {
     super(name, logger);
     this.config = config;
     this.root = directory.getPath();
     this.partIndexFiles = new ArrayList<>();
 
     File[] files = directory.listFiles( new FilenameFilter() {
-      public boolean accept(File dir, String name) { return name.endsWith(CollectionAbstract.NCX_SUFFIX); }
+      public boolean accept(File dir, String name) { return name.endsWith(suffix); }
     });
     if (files != null) {
       Collections.addAll(partIndexFiles, files);

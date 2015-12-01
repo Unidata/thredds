@@ -150,7 +150,7 @@ public class TestCFWriter2 {
 
   @Test
   public void testSizeEstimateOnTP() throws Exception {
-    String fileIn = TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3";
+    String fileIn = TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4";
     System.out.printf("Open %s%n", fileIn);
 
     try (GridDataset dataset = GridDataset.open(fileIn)) {
@@ -175,7 +175,7 @@ public class TestCFWriter2 {
 
   @Test
   public void testWriteFileOnTP() throws Exception {
-    testFileSize( TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3", "Cloud_mixing_ratio_isobaric", "2015-03-26T06:00:00Z", null, null, true);
+    testFileSize( TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", "Cloud_mixing_ratio_isobaric", "2015-03-26T06:00:00Z", null, null, true);
   }
 
   // time_start=2014-10-01T21%3A00%3A00Z&time_end=2014-10-02T21%3A00%3A00Z
@@ -184,9 +184,9 @@ public class TestCFWriter2 {
   @Test
   public void testWriteFileOnNarr() throws Exception {
 
-    testFileSize( "B:/ncdc/0409/narr/Narr_A_fc.ncx3", "Accum_snow_surface", "2014-10-01T21:00:00Z", null, null, false);
-    testFileSize( "B:/ncdc/0409/narr/Narr_A_fc.ncx3", "Accum_snow_surface", "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", null, false);
-    testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx3", "Convective_cloud_cover_entire_atmosphere_3_Hour_Average",
+    testFileSize( "B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Accum_snow_surface", "2014-10-01T21:00:00Z", null, null, false);
+    testFileSize( "B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Accum_snow_surface", "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", null, false);
+    testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Convective_cloud_cover_entire_atmosphere_3_Hour_Average",
             "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", null, false);
   }
 
@@ -194,7 +194,7 @@ public class TestCFWriter2 {
   @Test
   public void testWriteFileOnNarr2() throws Exception {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx3", "Accum_snow_surface,Convective_cloud_cover_entire_atmosphere_3_Hour_Average",
+    testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Accum_snow_surface,Convective_cloud_cover_entire_atmosphere_3_Hour_Average",
             "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", null, true);
     GribIosp.setDebugFlags(new DebugFlagsImpl(""));
   }
@@ -204,7 +204,7 @@ public class TestCFWriter2 {
   public void testWriteFileOnNarr3() throws Exception {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     ProjectionRect rect = new ProjectionRect( new ProjectionPointImpl(-5645, -4626), 11329, 8992);
-    testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx3", "Accum_snow_surface,Convective_cloud_cover_entire_atmosphere_3_Hour_Average",
+    testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Accum_snow_surface,Convective_cloud_cover_entire_atmosphere_3_Hour_Average",
             "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", rect, true);
     GribIosp.setDebugFlags(new DebugFlagsImpl(""));
   }
@@ -214,7 +214,7 @@ public class TestCFWriter2 {
   public void testWriteFileOnNarr4() throws Exception {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     ProjectionRect rect = new ProjectionRect( new ProjectionPointImpl(-5645, -4626), 11329, 8992);
-    testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx3", "Convective_cloud_cover_entire_atmosphere_3_Hour_Average,Accum_snow_surface",
+    testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Convective_cloud_cover_entire_atmosphere_3_Hour_Average,Accum_snow_surface",
             "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", rect, true);
     GribIosp.setDebugFlags(new DebugFlagsImpl(""));
   }

@@ -56,22 +56,24 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
   private final String topCollection;            // config collection name,
   private final boolean isTop;                   // is this the top of the tree ?
   private final IndexReader indexReader;
+  private final String suffix;
 
-  public DirectoryPartition(FeatureCollectionConfig config, Path collectionDir, boolean isTop, IndexReader indexReader, org.slf4j.Logger logger) {
+  public DirectoryPartition(FeatureCollectionConfig config, Path collectionDir, boolean isTop, IndexReader indexReader, String suffix, org.slf4j.Logger logger) {
     super(null, logger);
     this.config = config;
     this.collectionDir = collectionDir;
     this.isTop = isTop;
     this.indexReader = indexReader;
+    this.suffix = suffix;
 
     this.topCollection = cleanName(config.collectionName);
     this.collectionName = isTop ? this.topCollection : DirectoryCollection.makeCollectionName(topCollection, collectionDir);
   }
 
   @Override
-  public String getIndexFilename() {
-    if (isTop) return super.getIndexFilename();
-    Path indexPath = DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir);
+  public String getIndexFilename(String suffix) {
+    if (isTop) return super.getIndexFilename(suffix);
+    Path indexPath = DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir, suffix);
     return indexPath.toString();
   }
 
@@ -80,14 +82,14 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     if (forceCollection == null)
       forceCollection = CollectionUpdateType.test;
 
-    DirectoryBuilder builder = new DirectoryBuilder(topCollection, collectionDir, null);
+    DirectoryBuilder builder = new DirectoryBuilder(topCollection, collectionDir, null, suffix);
     builder.constructChildren(indexReader, forceCollection);
 
     List<MCollection> result = new ArrayList<>();
     for (DirectoryBuilder child : builder.getChildren()) {
       MCollection dc = null;
       try {
-        dc = DirectoryBuilder.factory(config, child.getDir(), false, indexReader, logger);  // DirectoryPartitions or DirectoryCollections
+        dc = DirectoryBuilder.factory(config, child.getDir(), false, indexReader, suffix, logger);  // DirectoryPartitions or DirectoryCollections
         if (!wasRemoved( dc))
           result.add(dc);
         lastModified = Math.max(lastModified, dc.getLastModified());

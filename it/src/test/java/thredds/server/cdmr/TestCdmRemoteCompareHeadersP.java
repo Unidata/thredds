@@ -61,12 +61,14 @@ public class TestCdmRemoteCompareHeadersP {
     });
     addFromScan(result, contentRoot + "/grib1/", new FileFilter() {
       public boolean accept(File pathname) {
-        return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2") && !pathname.getPath().endsWith(".ncx3");
+        String name = pathname.getName();
+        return !name.contains(".gbx") && !name.contains(".ncx");
       }
     });
     addFromScan(result, contentRoot + "/grib2/", new FileFilter() {
       public boolean accept(File pathname) {
-        return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2") && !pathname.getPath().endsWith(".ncx3");
+        String name = pathname.getName();
+        return !name.contains(".gbx") && !name.contains(".ncx");
       }
     });
     addFromScan(result, contentRoot + "/gini/", new SuffixFileFilter(".gini"));

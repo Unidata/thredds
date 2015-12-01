@@ -30,7 +30,7 @@ public class TestCoverageHorizStride {
 
   @Test
   public void testBestStride() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Ozone_Mixing_Ratio_isobaric";
     System.out.printf("Test Dataset %s%n", endpoint);
 

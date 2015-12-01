@@ -49,7 +49,6 @@ import java.util.Set;
 
 import net.jcip.annotations.Immutable;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MFile;
 import ucar.coord.Coordinate;
 import ucar.coord.CoordinateRuntime;
@@ -92,7 +91,7 @@ public class GribCollectionMutable implements Closeable {
 
   static MFile makeIndexMFile(String collectionName, File directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return new GcMFile(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX, -1, -1, -1); // LOOK dont know lastMod, size. can it be added later?
+    return new GcMFile(directory, nameNoBlanks + GribCdmIndex.NCX_SUFFIX, -1, -1, -1); // LOOK dont know lastMod, size. can it be added later?
   }
 
   private static CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
@@ -116,7 +115,7 @@ public class GribCollectionMutable implements Closeable {
   public List<Parameter> params;          // not used
   protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
   protected List<Dataset> datasets;
-  protected List<GribHorizCoordSystem> horizCS; // one for each unique GDS
+  // protected List<GribHorizCoordSystem> horizCS; // one for each unique GDS
   protected CoordinateRuntime masterRuntime;
   protected GribTables cust;
   protected int indexVersion;
@@ -215,6 +214,7 @@ public class GribCollectionMutable implements Closeable {
     throw new IllegalStateException("GC.getDatasetCanonical failed on=" + name);
   }
 
+  /*
   public GribHorizCoordSystem getHorizCS(int index) {
     return horizCS.get(index);
   }
@@ -250,7 +250,7 @@ public class GribCollectionMutable implements Closeable {
     if (desc == null) desc = hcs.makeDescription(); // default desc
 
     horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHashObject, hcsName, desc, predefinedGridDefinition));
-  }
+  } */
 
   public void setFileMap(Map<Integer, MFile> fileMap) {
     this.fileMap = fileMap;
@@ -303,23 +303,6 @@ public class GribCollectionMutable implements Closeable {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // these objects are created from the ncx index. lame - should only be in the builder i think
-  private Set<String> hcsNames = new HashSet<>(5);
-
-  private String makeHorizCoordSysName(GdsHorizCoordSys hcs) {
-    // default id
-    String base = hcs.makeId();
-    // ensure uniqueness
-    String tryit = base;
-    int count = 1;
-    while (hcsNames.contains(tryit)) {
-      count++;
-      tryit = base + "-" + count;
-    }
-    hcsNames.add(tryit);
-    return tryit;
-  }
 
   public class Dataset {
     public GribCollectionImmutable.Type gctype;

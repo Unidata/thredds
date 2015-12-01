@@ -13,6 +13,7 @@ import thredds.inventory.partition.*;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib1Iosp;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.*;
@@ -258,7 +259,7 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
     Path rootPath = Paths.get(specp.getRootDir());
     boolean isGrib1 = config.type == FeatureCollectionType.GRIB1;
 
-    try (MCollection topCollection = DirectoryBuilder.factory(config, rootPath, true, null, logger)) {
+    try (MCollection topCollection = DirectoryBuilder.factory(config, rootPath, true, null, GribCdmIndex.NCX_SUFFIX, logger)) {
 
       if (topCollection instanceof DirectoryPartition) {
         DirectoryPartition dpart = (DirectoryPartition) topCollection;

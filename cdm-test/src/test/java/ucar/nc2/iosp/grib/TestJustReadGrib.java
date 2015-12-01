@@ -85,13 +85,9 @@ public class TestJustReadGrib  {
     @Override
     public boolean accept(File file) {
       if (file.isDirectory()) return false;
-      String path = file.getPath();
-      if (path.endsWith(".gbx")) return false;
-      if (path.endsWith(".gbx8")) return false;
-      if (path.endsWith(".gbx9")) return false;
-      if (path.endsWith(".ncx")) return false;
-      if (path.endsWith(".ncx2")) return false;
-      if (path.endsWith(".ncx3")) return false;
+      String name = file.getName();
+      if (name.contains(".gbx")) return false;
+      if (name.contains(".ncx")) return false;
       try {
         System.out.printf("opening %s%n", file.getCanonicalPath());
       } catch (IOException e) {

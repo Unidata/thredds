@@ -67,20 +67,21 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Utilities for creating GRIB CDM index (ncx3) files, both collections and partitions
+ * Utilities for creating GRIB CDM index (ncx) files, both collections and partitions
  *
  * @author John
  * @since 12/5/13
  */
 public class GribCdmIndex implements IndexReader {
   public enum GribCollectionType {GRIB1, GRIB2, Partition1, Partition2, none}
+  static public final String NCX_SUFFIX = ".ncx4";  // LOOK this will have to be generalized, so different collections (GRIB, BUFR, FMRC can use different suffix)
 
   static private final Logger classLogger = LoggerFactory.getLogger(GribCdmIndex.class);
 
 
   /////////////////////////////////////////////////////////////////////////////
 
-  // object cache for ncx3 files - these are opened only as GribCollection
+  // object cache for ncx files - these are opened only as GribCollection
   static public FileCacheIF gribCollectionCache;
 
   static public void initDefaultCollectionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
@@ -138,15 +139,15 @@ public class GribCdmIndex implements IndexReader {
 
   static File makeIndexFile(String collectionName, File directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return new File(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX);
+    return new File(directory, nameNoBlanks + NCX_SUFFIX);
   }
 
   static private String makeNameFromIndexFilename(String idxPathname) {
     idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
     int pos = idxPathname.lastIndexOf('/');
     String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
-    assert idxFilename.endsWith(CollectionAbstract.NCX_SUFFIX);
-    return idxFilename.substring(0, idxFilename.length() - CollectionAbstract.NCX_SUFFIX.length());
+    assert idxFilename.endsWith(NCX_SUFFIX);
+    return idxFilename.substring(0, idxFilename.length() - NCX_SUFFIX.length());
   }
 
   ///////////////////////////////////////////
@@ -331,7 +332,7 @@ public class GribCdmIndex implements IndexReader {
       // LOOK assume wantSubdirs makes it into a Partition. Isnt there something better ??
       if (specp.wantSubdirs()) {  // its a partition
 
-        try (DirectoryPartition dpart = new DirectoryPartition(config, rootPath, true, new GribCdmIndex(logger), logger)) {
+        try (DirectoryPartition dpart = new DirectoryPartition(config, rootPath, true, new GribCdmIndex(logger), NCX_SUFFIX, logger)) {
           dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
           changed = updateDirectoryCollectionRecurse(isGrib1, dpart, config, updateType, logger);
         }
@@ -351,7 +352,7 @@ public class GribCdmIndex implements IndexReader {
                                               Logger logger, Formatter errlog) throws IOException {
 
     if (debug) System.out.printf("GribCdmIndex.updateGribCollection %s %s%n", dcm.getCollectionName(), updateType);
-    if (!isUpdateNeeded(dcm.getIndexFilename(), updateType, (isGrib1 ? GribCollectionType.GRIB1 : GribCollectionType.GRIB2), logger)) return false;
+    if (!isUpdateNeeded(dcm.getIndexFilename(NCX_SUFFIX), updateType, (isGrib1 ? GribCollectionType.GRIB1 : GribCollectionType.GRIB2), logger)) return false;
 
     boolean changed;
     if (isGrib1) {  // existing case handles correctly - make seperate index for each runtime (OR) partition == runtime
@@ -383,7 +384,7 @@ public class GribCdmIndex implements IndexReader {
   static private boolean updateTimePartition(boolean isGrib1, TimePartition tp, CollectionUpdateType updateType, Logger logger) throws IOException {
 
     if (debug) System.out.printf("GribCdmIndex.updateTimePartition %s %s%n", tp.getRoot(), updateType);
-    if (!isUpdateNeeded(tp.getIndexFilename(), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger)) return false;
+    if (!isUpdateNeeded(tp.getIndexFilename(NCX_SUFFIX), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger)) return false;
 
     long start = System.currentTimeMillis();
     Formatter errlog = new Formatter();
@@ -450,7 +451,7 @@ public class GribCdmIndex implements IndexReader {
                                                           Logger logger) throws IOException {
 
     if (debug) System.out.printf("GribCdmIndex.updateDirectoryCollectionRecurse %s %s%n", dpart.getRoot(), updateType);
-    if (!isUpdateNeeded(dpart.getIndexFilename(), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger)) return false;
+    if (!isUpdateNeeded(dpart.getIndexFilename(NCX_SUFFIX), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger)) return false;
 
     long start = System.currentTimeMillis();
 
@@ -551,7 +552,7 @@ public class GribCdmIndex implements IndexReader {
         partition.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
 
       if (debug) System.out.printf("GribCdmIndex.updateFilePartition %s %s%n", partition.getCollectionName(), updateType);
-      if (!isUpdateNeeded(partition.getIndexFilename(), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger))
+      if (!isUpdateNeeded(partition.getIndexFilename(NCX_SUFFIX), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger))
         return false;
 
       final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
@@ -782,7 +783,7 @@ public class GribCdmIndex implements IndexReader {
     }
 
     // the index file should now exist, open it
-    GribCollectionImmutable result = openCdmIndex(dcm.getIndexFilename(), config, true, logger);
+    GribCollectionImmutable result = openCdmIndex(dcm.getIndexFilename(NCX_SUFFIX), config, true, logger);
     if (result != null) return result;
 
     // if open fails, force recreate the index
@@ -925,7 +926,7 @@ public class GribCdmIndex implements IndexReader {
 
   public static void main2(String[] args) throws IOException {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    PartitionManager partition = new PartitionManagerFromIndexDirectory("NCDC-gfs4_all", new FeatureCollectionConfig(), new File("B:/ncdc/gfs4_all/"), logger);
+    PartitionManager partition = new PartitionManagerFromIndexDirectory("NCDC-gfs4_all", new FeatureCollectionConfig(), new File("B:/ncdc/gfs4_all/"), NCX_SUFFIX, logger);
     Grib1PartitionBuilder builder = new Grib1PartitionBuilder("NCDC-gfs4_all", new File(partition.getRoot()), partition, logger);
     builder.createPartitionedIndex(CollectionUpdateType.nocheck, new Formatter());
   }

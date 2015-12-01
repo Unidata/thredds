@@ -46,7 +46,7 @@ public class TestCoverageSubsetTime {
 
   @Test  // there is no interval with offset value = 51
   public void testNoIntervalFound() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
     System.out.printf("test1Runtime1TimeOffset Dataset %s coverage %s%n", endpoint, covName);
@@ -75,7 +75,7 @@ public class TestCoverageSubsetTime {
 
   @Test  // 1 runtime, 1 timeOffset (Time2DCoordSys case 1a)
   public void test1Runtime1TimeOffset() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
     System.out.printf("test1Runtime1TimeOffset Dataset %s coverage %s%n", endpoint, covName);
@@ -105,7 +105,7 @@ public class TestCoverageSubsetTime {
   // Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)
   @Test  // 1 runtime, 1 time (Time2DCoordSys case 1b)
   public void test1Runtime1TimeIntervalEdge() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
     System.out.printf("test1Runtime1TimeInterval Dataset %s coverage %s%n", endpoint, covName);
@@ -138,7 +138,7 @@ public class TestCoverageSubsetTime {
   // Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T12:00:00Z (1) vert=0.000000 (-1)
   @Test  // 1 runtime, 1 time (Time2DCoordSys case 1b)
   public void test1Runtime1TimeInterval() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
     System.out.printf("test1Runtime1TimeInterval Dataset %s coverage %s%n", endpoint, covName);
@@ -170,7 +170,7 @@ public class TestCoverageSubsetTime {
   // Slice Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T12:00:00Z (2) vert=0.000000 (-1)
   @Test  // 1 runtime, 1 time (Time2DCoordSys case 1b)
   public void test1Runtime1Time() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Total_ozone_entire_atmosphere_single_layer";
 
     System.out.printf("test1Runtime1Time Dataset %s coverage %s%n", endpoint, covName);
@@ -201,7 +201,7 @@ public class TestCoverageSubsetTime {
 
   @Test  // 1 runtime, all times (Time2DCoordSys case 1c)
   public void testConstantRuntime() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
     System.out.printf("testConstantRuntime Dataset %s coverage %s%n", endpoint, covName);
@@ -242,7 +242,7 @@ public class TestCoverageSubsetTime {
 
   @Test  // all runtimes, 1 timeOffset (Time2DCoordSys case 2a)
   public void testConstantOffset() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
     System.out.printf("testConstantOffset Dataset %s coverage %s%n", endpoint, covName);
@@ -290,7 +290,7 @@ public class TestCoverageSubsetTime {
 
   @Test  // all runtimes, 1 time (Time2DCoordSys case 2a) not time interval
   public void testConstantForecast() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Pressure_convective_cloud_bottom";
 
     System.out.printf("testConstantForecast Dataset %s coverage %s%n", endpoint, covName);
@@ -387,7 +387,7 @@ public class TestCoverageSubsetTime {
 
   @Test
   public void testBestPresent() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Temperature_altitude_above_msl";
 
     System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
@@ -418,7 +418,7 @@ public class TestCoverageSubsetTime {
 
   @Test
   public void testBestTimeCoord() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Temperature_altitude_above_msl";
 
     System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
@@ -449,7 +449,7 @@ public class TestCoverageSubsetTime {
 
   @Test
   public void testBestTimeOffsetCoord() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Temperature_altitude_above_msl";
 
     System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);

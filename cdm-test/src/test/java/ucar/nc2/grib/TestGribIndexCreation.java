@@ -94,7 +94,7 @@ public class TestGribIndexCreation {
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
     // LOOK add check that records were combined
-    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx3", null)) {
+    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4", null)) {
       Group root = ncfile.getRootGroup();
       Assert.assertEquals(2, root.getGroups().size());
       Group twoD = root.findGroup("TwoD");
@@ -136,6 +136,17 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null,  null, "file", null);
 
     System.out.printf("===testGFSconus80 %n");
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void testGFSconus80ncss() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("GFS_CONUS_80km", "test/gfsConus80", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/.*grib1", null, null,  null, "file", null);
+
+    System.out.printf("===testGFSconus80ncss %n");
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);

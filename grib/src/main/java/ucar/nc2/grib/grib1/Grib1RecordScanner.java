@@ -171,7 +171,7 @@ public class Grib1RecordScanner {
        */
 
       // look for duplicate gds
-      long crc = gds.calcCRC(); // LOOK switch to hashCode ??
+      long crc = gds.calcCRC();
       Grib1SectionGridDefinition gdsCached = gdsMap.get(crc);
       if (gdsCached != null)
         gds = gdsCached;

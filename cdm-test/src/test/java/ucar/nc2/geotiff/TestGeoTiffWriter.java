@@ -74,10 +74,10 @@ public class TestGeoTiffWriter {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx3", FeatureType.GRID, "Temperature_sigma"});         // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3", FeatureType.FMRC, "Pressure_surface"});                                         // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.GRID, "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3", FeatureType.FMRC, "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4", FeatureType.GRID, "Temperature_sigma"});         // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", FeatureType.FMRC, "Pressure_surface"});                                         // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID, "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC, "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, "Temperature"});
 

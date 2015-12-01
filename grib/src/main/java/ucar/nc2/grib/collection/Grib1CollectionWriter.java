@@ -62,12 +62,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
   protected static final int minVersion = 1; // if less than this, force rewrite or at least do not read
   protected static final int version = 3;    // increment this as needed, must be backwards compatible through minVersion
 
-  protected final MCollection dcm; // may be null, when read in from index
-  protected final org.slf4j.Logger logger;
-
   protected Grib1CollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
-    this.dcm = dcm;
-    this.logger = logger;
+    super( dcm,  logger);
   }
 
   static class Group implements GribCollectionBuilder.Group {
@@ -166,6 +162,37 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       raf.writeLong(countBytes);
       raf.seek(pos); // back to the output.
 
+
+    /*
+    message GribCollection {
+      string name = 1;         // must be unique - index filename is name.ncx
+      string topDir = 2;       // MFile, Partition filenames are reletive to this
+      repeated MFile mfiles = 3;        // list of grib MFiles
+      repeated Dataset dataset = 4;
+      repeated Gds gds = 5;             // unique Gds, shared amongst datasets
+      Coord masterRuntime = 6;  // list of runtimes in this GC
+
+      // LOOK these are taken from first record; not storing variants (!)
+      int32 center = 7;      // these 4 fields are to get a GribCustomizer
+      int32 subcenter = 8;
+      int32 master = 9;
+      int32 local = 10;       // grib1 table Version
+
+      int32 genProcessType = 11;
+      int32 genProcessId = 12;
+      int32 backProcessId = 13;
+      int32 version = 14;     // >= 3 for proto3 (5.0+)
+
+      // repeated Parameter params = 20;      // not used
+      FcConfig config = 21;
+
+      // extensions
+      repeated Partition partitions = 100;
+      bool isPartitionOfPartitions = 101;
+      repeated uint32 run2part = 102 [packed=true];  // masterRuntime index to partition index
+    }
+     */
+
       GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(name);
       indexBuilder.setTopDir(dcm.getRoot());
@@ -191,12 +218,6 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
       // the GC dataset
       indexBuilder.addDataset( writeDatasetProto(type, groups));
-
-      /* int count = 0;
-      for (DatasetCollectionManager dcm : collections) {
-        indexBuilder.addParams(makeParamProto(new Parameter("spec" + count, dcm.())));
-        count++;
-      } */
 
       // what about just storing first ??
       Grib1SectionProductDefinition pds = first.getPDSsection();
@@ -225,22 +246,23 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
     /*
   message Record {
-    required uint32 fileno = 1;  // index into GribCollectionIndex.files
-    required uint64 pos = 2;     // offset in Grib file of the start of drs (grib2) or entire message (grib1)
-    optional uint64 bmsPos = 3 [default = 0]; // use alternate bms
+    uint32 fileno = 1;               // which GRIB file ? key into GC.fileMap
+    uint64 pos = 2;                  // offset in GRIB file of the start of entire message
+    uint64 bmsPos = 3;               // use alternate bms if non-zero (grib2 only)
+    uint32 drsOffset = 4;            // offset of drs from pos (grib2 only)
   }
 
-  // dont need SparseArray unless someone wants to read from the variable
+  // SparseArray only at the GCs (MRC and SRC) not at the Partitions
+  // dont need SparseArray in memory until someone wants to read from the variable
   message SparseArray {
-    required fixed32 cdmHash = 1; // which variable
-    repeated uint32 size = 2;     // multidim sizes
-    repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
-    repeated Record records = 4;  // List<Record>
+    repeated uint32 size = 2 [packed=true];     // multidim sizes = shape[]
+    repeated uint32 track = 3 [packed=true];    // 1-based index into record list, 0 == missing
+    repeated Record records = 4;                // List<Record>
+    uint32 ndups = 5;                           // duplicates found when creating
   }
    */
   private GribCollectionProto.SparseArray writeSparseArray(Grib1CollectionBuilder.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
-    b.setCdmHash(vb.gv.hashCode());
     SparseArray<Grib1Record> sa = vb.coordND.getSparseArray();
     for (int size : sa.getShape())
       b.addSize(size);
@@ -253,9 +275,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       br.setFileno(gr.getFile());
       fileSet.add(gr.getFile());
       Grib1SectionIndicator is = gr.getIs();
-      br.setPos(is.getStartPos()); // start of entire message
+      br.setStartPos(is.getStartPos()); // start of entire message
 
-      br.setScanMode(gr.getGDS().getScanMode()); // added 10/16/2015
       b.addRecords(br);
     }
 
@@ -263,9 +284,9 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     return b.build();
   }
 
-      /*
+  /*
   message Dataset {
-    required Type type = 1;
+    Type type = 1;
     repeated Group groups = 2;
    */
   private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type, List<Group> groups) throws IOException {
@@ -274,29 +295,24 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type.valueOf(type.toString());
     b.setType(ptype);
 
-    int count = 0 ;
     for (Group group : groups)
-      b.addGroups(writeGroupProto(group, count++));
+      b.addGroups( writeGroupProto(group));
 
     return b.build();
   }
 
     /*
   message Group {
-    required uint32 gdsIndex = 1;       // index into GribCollection.gds array
-    repeated Variable variables = 2;    // list of variables
-    repeated Coord coords = 3;          // list of coordinates
-    repeated int32 fileno = 4;          // the component files that are in this group, index into gc.mfiles
-
-    repeated Parameter params = 20;      // not used yet
-    extensions 100 to 199;
+    Gds gds = 1;                             // use this to build the HorizCoordSys
+    repeated Variable variables = 2;         // list of variables
+    repeated Coord coords = 3;               // list of coordinates
+    repeated int32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
   }
    */
-  protected GribCollectionProto.Group writeGroupProto(Group g, int groupIndex) throws IOException {
+  protected GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGdsIndex(groupIndex); // index into gds list
-    b.setIsTwod(true);         // LOOK
+    b.setGds( writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
 
     for (Grib1CollectionBuilder.VariableBag vbag : g.gribVars) {
       b.addVariables(writeVariableProto(vbag));
@@ -334,26 +350,22 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
   /*
   message Variable {
-     required uint32 discipline = 1;
-     required bytes pds = 2;          // raw pds
-     required fixed32 cdmHash = 3;
+     uint32 discipline = 1;
+     bytes pds = 2;                   // raw pds
+     repeated uint32 ids = 3 [packed=true];         // extra info not in pds; grib2 id section
 
-     required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
-     required uint32 recordsLen = 5;  // size of SparseArray message for this Variable
+     uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
+     uint32 recordsLen = 5;  // size of SparseArray message for this Variable
 
-     repeated uint32 coordIdx = 6;    // indexes into Group.coords
+     repeated uint32 coordIdx = 6 [packed=true];    // indexes into Group.coords
 
      // optionally keep stats
-     optional float density = 7;
-     optional uint32 ndups = 8;
-     optional uint32 nrecords = 9;
-     optional uint32 missing = 10;
+     uint32 ndups = 8;
+     uint32 nrecords = 9;
+     uint32 missing = 10;
 
-     repeated uint32 invCount = 15;      // for Coordinate TwoTimer, only 2D vars
-     repeated uint32 time2runtime = 16;  // time index to runtime index, only 1D vars
-     repeated Parameter params = 20;    // not used yet
-
-     extensions 100 to 199;
+     // partition only
+     repeated PartitionVariable partVariable = 100;
    }
    */
   private GribCollectionProto.Variable writeVariableProto(Grib1CollectionBuilder.VariableBag vb) throws IOException {

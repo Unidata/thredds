@@ -36,39 +36,44 @@ package ucar.nc2.grib.collection;
 import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
+import thredds.inventory.MCollection;
 import ucar.coord.*;
 import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
-import ucar.nc2.time.CalendarDate;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * Common superclass for writing Grib ncx3 files
+ * Common superclass for writing Grib ncx files
  *
  * @author caron
  * @since 2/20/14
  */
 class GribCollectionWriter {
   static public final int currentVersion = 1;
+
+  protected final MCollection dcm; // may be null, when read in from index
+  protected final org.slf4j.Logger logger;
+
+  protected GribCollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
+    this.dcm = dcm;
+    this.logger = logger;
+  }
+
   protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) throws IOException {
     return writeGdsProto(hcs.getRawGds(), hcs.getPredefinedGridDefinition());
   }
 
     /*
-  message Gds {
-    optional bytes gds = 1;             // all variables in the group use the same GDS
-    optional sint32 gdsHash = 2 [default = 0];
-    optional string nameOverride = 3;  // only when user overrides default name
-  }
+      message Gds {
+        bytes gds = 1;                        // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
+        uint32 predefinedGridDefinition = 2;  // only grib1; instead of gds raw bytes; need center, subcenter to interpret
+      }
    */
-  protected GribCollectionProto.Gds writeGdsProto(byte[] rawGds, int predefinedGridDefinition) throws IOException {
+  static GribCollectionProto.Gds writeGdsProto(byte[] rawGds, int predefinedGridDefinition) throws IOException {
     GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();
 
     if (predefinedGridDefinition >= 0)
@@ -82,16 +87,16 @@ class GribCollectionWriter {
 
     /*
   message Coord {
-    required int32 type = 1;   // Coordinate.Type.oridinal
-    required int32 code = 2;   // time unit; level type
-    required string unit = 3;
+    GribAxisType axisType = 1;
+    int32 code = 2;   // time unit; level type
+    string unit = 3;
     repeated float values = 4;
     repeated float bound = 5; // only used if interval, then = (value, bound)
     repeated int64 msecs = 6; // calendar date
    */
   protected GribCollectionProto.Coord writeCoordProto(CoordinateRuntime coord) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setType(coord.getType().ordinal());
+    b.setAxisType( convertAxisType (coord.getType()));
     b.setCode(coord.getCode());
     if (coord.getUnit() != null) b.setUnit(coord.getUnit());
 
@@ -104,7 +109,7 @@ class GribCollectionWriter {
 
   protected GribCollectionProto.Coord writeCoordProto(CoordinateTime coord) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setType(coord.getType().ordinal());
+    b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
     b.addMsecs(coord.getRefDate().getMillis());
@@ -121,7 +126,7 @@ class GribCollectionWriter {
 
   protected GribCollectionProto.Coord writeCoordProto(CoordinateTimeIntv coord) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setType(coord.getType().ordinal());
+    b.setAxisType( convertAxisType (coord.getType()));
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
     b.addMsecs(coord.getRefDate().getMillis());
@@ -141,7 +146,7 @@ class GribCollectionWriter {
 
   protected GribCollectionProto.Coord writeCoordProto(CoordinateVert coord) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setType(coord.getType().ordinal());
+    b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
 
     if (coord.getUnit() != null) b.setUnit(coord.getUnit());
@@ -158,7 +163,7 @@ class GribCollectionWriter {
 
   protected GribCollectionProto.Coord writeCoordProto(CoordinateEns coord) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setType(coord.getType().ordinal());
+    b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
 
     if (coord.getUnit() != null) b.setUnit(coord.getUnit());
@@ -171,7 +176,7 @@ class GribCollectionWriter {
 
   protected GribCollectionProto.Coord writeCoordProto(CoordinateTime2D coord) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setType(coord.getType().ordinal());
+    b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
     CoordinateRuntime runtimeCoord = coord.getRuntimeCoordinate();
@@ -191,6 +196,9 @@ class GribCollectionWriter {
 
     return b.build();
   }
+
+  ///////////////////////////////////////////////////////
+  // not currently used
 
   protected GribCollectionProto.FcConfig writeConfig(FeatureCollectionConfig config) throws IOException {
     GribCollectionProto.FcConfig.Builder b = GribCollectionProto.FcConfig.newBuilder();
@@ -287,6 +295,24 @@ class GribCollectionWriter {
       config.gribConfig.setUserTimeUnit(pconfig.getDateFormatMark());
 
     return config;
+  }
+
+  static public GribCollectionProto.GribAxisType convertAxisType(Coordinate.Type type) {
+    switch (type) {
+      case runtime:
+        return GribCollectionProto.GribAxisType.runtime;
+      case time:
+        return GribCollectionProto.GribAxisType.time;
+      case time2D:
+        return GribCollectionProto.GribAxisType.time2D;
+      case timeIntv:
+        return GribCollectionProto.GribAxisType.timeIntv;
+      case ens:
+        return GribCollectionProto.GribAxisType.ens;
+      case vert:
+        return GribCollectionProto.GribAxisType.vert;
+    }
+    throw new IllegalStateException("illegal axis type " + type);
   }
 
 

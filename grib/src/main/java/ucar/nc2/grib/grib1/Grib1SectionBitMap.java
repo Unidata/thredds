@@ -34,6 +34,8 @@
 package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -47,6 +49,8 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib1SectionBitMap {
+  static private final Logger logger = LoggerFactory.getLogger(Grib1SectionBitMap.class);
+
   private final long startingPosition;
 
   public Grib1SectionBitMap(RandomAccessFile raf) throws IOException {
@@ -79,18 +83,20 @@ public class Grib1SectionBitMap {
     // octet 1-3 (length of section)
     int length = GribNumbers.uint3(raf);
 
-    // seeing a -1, bail out
-    if (length <= 6 || length > 10e6) {   // look max  ??
-      return null;
-    }
-
     // octet 4 unused bits
     raf.read();   // unused
 
     // octets 5-6
     int bm = raf.readShort();
     if (bm != 0) {
-      throw new UnsupportedOperationException("Grib1 Bit map section pre-defined (provided by center)");
+      logger.warn("Grib1 Bit map section pre-defined (provided by center) bitmap number = {}", bm);
+      return null;
+    }
+
+    // not sure if length is set correctly when pre-define bitmap is used, so  wait until that to test
+    // seeing a -1, bail out
+    if (length <= 6 || length > 10e6) {   // look max  ??
+      return null;
     }
 
     // read the bits as integers

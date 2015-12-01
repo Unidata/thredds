@@ -33,7 +33,6 @@
 
 package ucar.nc2.grib.collection;
 
-
 import net.jcip.annotations.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.CoordsSet;
@@ -44,7 +43,6 @@ import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -126,7 +124,7 @@ public abstract class GribDataReader {
       if (GribIosp.debugRead)
         System.out.printf("GribIosp debugRead sourceIndex=%d resultIndex=%d record is null=%s%n", sourceIndex, resultIndex, record == null);
       if (record != null)
-        records.add( new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos, record.scanMode, vindex.group.getGdsHorizCoordSys()));
+        records.add( new DataRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys()));
       resultIndex++;
     }
 
@@ -200,7 +198,7 @@ public abstract class GribDataReader {
     for (Map<String, Object> coords : want) {
       GribCollectionImmutable.Record record = vindex.getRecordAt(coords);
       if (record != null) {
-        DataRecord dr = new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos, record.scanMode, vindex.group.getGdsHorizCoordSys());
+        DataRecord dr = new DataRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys());
         if (GribDataReader.validator != null) dr.validation = coords;
         records.add(dr);
       }
@@ -268,19 +266,20 @@ public abstract class GribDataReader {
           continue;
         }
 
-        if (dr.fileno != currFile) {
+        if (dr.record.fileno != currFile) {
           if (rafData != null) rafData.close();
-          rafData = gribCollection.getDataRaf(dr.fileno);
-          currFile = dr.fileno;
+          rafData = gribCollection.getDataRaf(dr.record.fileno);
+          currFile = dr.record.fileno;
         }
 
-        if (dr.dataPos == GribCollectionMutable.MISSING_RECORD) continue;
+        if (dr.record.pos == GribCollectionMutable.MISSING_RECORD) continue;
 
         if (GribDataReader.validator != null && dr.validation != null && rafData != null) {
-          GribDataReader.validator.validate(gribCollection.cust, rafData, dr.dataPos, dr.validation);
+          GribDataReader.validator.validate(gribCollection.cust, rafData, dr.record.pos + dr.record.drsOffset, dr.validation);
+
         } else if (show && rafData != null) { // for validation
           show( dr.validation);
-          show(rafData, dr.dataPos);
+          show(rafData, dr.record.pos + dr.record.drsOffset);
         }
 
         float[] data = readData(rafData, dr);
@@ -318,17 +317,17 @@ public abstract class GribDataReader {
 
         if ((rafData == null) || !drp.usesSameFile(lastRecord)) {
           if (rafData != null) rafData.close();
-          rafData = drp.usePartition.getRaf(drp.partno, dr.fileno);
+          rafData = drp.usePartition.getRaf(drp.partno, dr.record.fileno);
         }
         lastRecord = drp;
 
-        if (dr.dataPos == GribCollectionMutable.MISSING_RECORD) continue;
+        if (dr.record.pos == GribCollectionMutable.MISSING_RECORD) continue;
 
         if (GribDataReader.validator != null && dr.validation != null) {
-          GribDataReader.validator.validate(gribCollection.cust, rafData, dr.dataPos, dr.validation);
+          GribDataReader.validator.validate(gribCollection.cust, rafData, dr.record.pos + dr.record.drsOffset, dr.validation);
         } else if (show) { // for validation
           show( dr.validation);
-          show(rafData, dr.dataPos);
+          show(rafData, dr.record.pos + dr.record.drsOffset);
         }
 
         float[] data = readData(rafData, dr);
@@ -343,33 +342,27 @@ public abstract class GribDataReader {
 
   static public class DataRecord implements Comparable<DataRecord> {
     int resultIndex; // index into the result array
-    int fileno;
-    long dataPos;  // grib1 - start of GRIB record; grib2 - start of drs (data record)
-    long bmsPos;  // if non zero, use alternate bms
-    int scanMode;
+    GribCollectionImmutable.Record record;
     GdsHorizCoordSys hcs;
     Map<String, Object> validation;
 
-    DataRecord(int resultIndex, int fileno, long dataPos, long bmsPos, int scanMode, GdsHorizCoordSys hcs) {
+    DataRecord(int resultIndex, GribCollectionImmutable.Record record, GdsHorizCoordSys hcs) {
       this.resultIndex = resultIndex;
-      this.fileno = fileno;
-      this.dataPos = dataPos; // (dataPos == 0) && !isGrib1 ? GribCollection.MISSING_RECORD : dataPos; // 0 also means missing in Grib2
-      this.bmsPos = bmsPos;
-      this.scanMode = scanMode;
+      this.record = record;
       this.hcs = hcs;
     }
 
     @Override
     public int compareTo(DataRecord o) {
-      int r = Misc.compare(fileno, o.fileno);
+      int r = Misc.compare(record.fileno, o.record.fileno);
       if (r != 0) return r;
-      return Misc.compare(dataPos, o.dataPos);
+      return Misc.compare(record.pos, o.record.pos);
     }
 
     // debugging
     public void show(GribCollectionImmutable gribCollection) throws IOException {
-      String dataFilename = gribCollection.getFilename(fileno);
-      System.out.printf(" fileno=%d filename=%s datapos=%d%n", fileno, dataFilename, dataPos);
+      String dataFilename = gribCollection.getFilename(record.fileno);
+      System.out.printf(" fileno=%d filename=%s startPos=%d%n", record.fileno, dataFilename, record.pos);
     }
   }
 
@@ -471,8 +464,9 @@ public abstract class GribDataReader {
     @Override
     protected float[] readData(RandomAccessFile rafData, GribDataReader.DataRecord dr) throws IOException {
       GdsHorizCoordSys hcs = dr.hcs;
-      int scanMode = (dr.scanMode == Grib2Index.ScanModeMissing) ? hcs.scanMode : dr.scanMode;
-      return Grib2Record.readData(rafData, dr.dataPos, dr.bmsPos, hcs.gdsNumberPoints, scanMode,
+      long dataPos = dr.record.pos + dr.record.drsOffset;
+      long bmsPos = (dr.record.bmsOffset > 0) ? dr.record.pos + dr.record.bmsOffset : 0;
+      return Grib2Record.readData(rafData, dataPos, bmsPos, hcs.gdsNumberPoints, hcs.getScanMode(),
               hcs.nxRaw, hcs.nyRaw, hcs.nptsInLine);
     }
 
@@ -504,7 +498,7 @@ public abstract class GribDataReader {
 
     @Override
     protected float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException {
-      return Grib1Record.readData(rafData, dr.dataPos);
+      return Grib1Record.readData(rafData, dr.record.pos);
     }
 
     @Override

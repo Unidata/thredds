@@ -1,64 +1,68 @@
-syntax = "proto3";
+// "cdm index" for grib collections, using ncx4 suffix
 
+syntax = "proto3";
 option java_package = "ucar.nc2.grib.collection";
 option java_outer_classname = "GribCollectionProto";
 
 message Record {
   uint32 fileno = 1;               // which GRIB file ? key into GC.fileMap
-  uint64 pos = 2;                  // offset in Grib file of the start of drs (grib2) or entire message (grib1)
-  uint64 bmsPos = 3; // use alternate bms
-  oneof scanMode_present {
-    uint32 scanMode = 4; // proto2 [default = 9999];  // scanMode from each record's gds added 2/6/2014
-  }
+  uint64 startPos = 2;             // offset in GRIB file of the start of entire message
+  uint32 bmsOffset = 3;            // use alternate bms if non-zero (grib2 only). offset from start
+  uint32 drsOffset = 4;            // offset of drs from start (grib2 only)
 }
 
 // SparseArray only at the GCs (MRC and SRC) not at the Partitions
 // dont need SparseArray in memory until someone wants to read from the variable
 message SparseArray {
-  fixed32 cdmHash = 1; // which variable
-  repeated uint32 size = 2;     // multidim sizes = shape[]
-  repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
-  repeated Record records = 4;  // List<Record>
-  uint32 ndups = 5;    // duplicates found when creating
+  repeated uint32 size = 2 [packed=true];     // multidim sizes = shape[]
+  repeated uint32 track = 3 [packed=true];    // 1-based index into record list, 0 == missing
+  repeated Record records = 4;                // List<Record>
+  uint32 ndups = 5;                           // duplicates found when creating
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-// info to construct the ncfile metadata
 message Variable {
    uint32 discipline = 1;
-   bytes pds = 2;          // raw pds
-   repeated uint32 ids = 3;         // extra info not in pds; grib2 id section
+   bytes pds = 2;                   // raw pds
+   repeated uint32 ids = 3 [packed=true];         // extra info not in pds; grib2 id section
 
    uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
    uint32 recordsLen = 5;  // size of SparseArray message for this Variable
 
-   repeated uint32 coordIdx = 6;    // indexes into Group.coords
+   repeated uint32 coordIdx = 6 [packed=true];    // indexes into Group.coords
 
    // optionally keep stats
    uint32 ndups = 8;
    uint32 nrecords = 9;
    uint32 missing = 10;
 
-   repeated Parameter params = 20;    // not used yet
+   // partition only
+   repeated PartitionVariable partVariable = 100;
+ }
 
-   // extensions
-  repeated PartitionVariable partVariable = 100;
+ enum GribAxisType {  // same as ucar.coord.Coordinate.Type
+    runtime=0;
+    time=1;
+    timeIntv=2;
+    vert=3;
+    time2D=4;
+    ens=5;
  }
 
 message Coord {
-  int32 type = 1;   // Coordinate.Type.ordinal
+  GribAxisType axisType = 1;
   int32 code = 2;   // time unit; level type
   string unit = 3;
-  repeated float values = 4;
-  repeated float bound = 5; // only used if interval, then = (value, bound)
-  repeated int64 msecs = 6; // calendar date : runtime, time2D
+  repeated float values = 4 [packed=true];
+  repeated float bound = 5 [packed=true]; // only used if interval, then = (value, bound)
+  repeated int64 msecs = 6 [packed=true]; // calendar date : runtime, time2D
 
   repeated Coord times = 7; // time2D only
   bool isOrthogonal = 8; // time2D only
   bool isRegular = 9; // time2D only
 
-  repeated uint32 time2runtime = 10;  // time index to runtime index, only Best Time and TimeIntv
+  repeated uint32 time2runtime = 10 [packed=true];  // time index to runtime index, only Best Time and TimeIntv
 }
 
 message Parameter {
@@ -69,18 +73,14 @@ message Parameter {
 
 message Gds {
   bytes gds = 1;                        // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
-  uint32 predefinedGridDefinition = 2;  // only grib1; instead of gds raw bytes
+  uint32 predefinedGridDefinition = 2;  // only grib1; instead of gds raw bytes; need center, subcenter to interpret
 }
 
 message Group {
-  uint32 gdsIndex = 1;       // index into GribCollection.gds array
-  repeated Variable variables = 2;    // list of variables
-  repeated Coord coords = 3;          // list of coordinates
-  repeated int32 fileno = 4;          // the component files that are in this group, key into gc.mfiles
-  bool isTwod = 5;           // has 2 time dimensions  -- NOT USED
-
-  repeated Parameter params = 20;      // not used yet
-  // extensions 100 to 199;
+  Gds gds = 1;                             // use this to build the HorizCoordSys
+  repeated Variable variables = 2;         // list of variables
+  repeated Coord coords = 3;               // list of coordinates
+  repeated uint32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
 }
 
 message Dataset {
@@ -100,7 +100,6 @@ message Dataset {
   repeated Group groups = 2;
 }
 
-
 message MFile {
   string filename = 1;           // reletive to topDir
   uint64 lastModified = 2;
@@ -116,6 +115,7 @@ message GribCollection {
   repeated Gds gds = 5;             // unique Gds, shared amongst datasets
   Coord masterRuntime = 6;  // list of runtimes in this GC
 
+  // LOOK these are taken from first record; not storing variants (!)
   int32 center = 7;      // these 4 fields are to get a GribCustomizer
   int32 subcenter = 8;
   int32 master = 9;
@@ -126,21 +126,21 @@ message GribCollection {
   int32 backProcessId = 13;
   int32 version = 14;     // >= 3 for proto3 (5.0+)
 
-  repeated Parameter params = 20;      // not used
+  // repeated Parameter params = 20;      // not used
   FcConfig config = 21;
 
   // extensions
   repeated Partition partitions = 100;
   bool isPartitionOfPartitions = 101;
-  repeated uint32 run2part = 102;       // masterRuntime index to partition index
+  repeated uint32 run2part = 102 [packed=true];  // masterRuntime index to partition index
 }
 
 /////////////////////////
+// partition only
 
 message PartitionVariable {
   uint32 groupno = 1;
   uint32 varno = 2;
-  uint32 flag = 3;
   uint32 partno = 4;
 
   // optionally keep stats
@@ -151,14 +151,14 @@ message PartitionVariable {
 
 message Partition {
   string name = 1;       // name is used in TDS - eg the subdirectory when generated by TimePartitionCollections
-  string filename = 2;   // the gribCollection.ncx3 file, reletive to gc.
-  string directory = 3;  // top directory NOT USED
+  string filename = 2;   // the gribCollection.ncx file, reletive to gc.
   uint64 lastModified = 4;
   int64 length = 5;
   int64 partitionDate = 6;  // partition date added 11/25/14
 }
 
 //////////////////////////
+// configuration not really used
 
 message StringMap {
   string name = 1;
@@ -195,4 +195,4 @@ message FcConfig {
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java
-//  protoc --proto_path=. --java_out=. ucar/nc2/grib/collection/gribCollection2.proto
+//  protoc --proto_path=. --java_out=. ucar/nc2/grib/collection/gribCollection4.proto

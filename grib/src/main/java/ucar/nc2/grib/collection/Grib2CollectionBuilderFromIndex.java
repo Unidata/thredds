@@ -34,6 +34,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -88,7 +89,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
   protected Grib2Customizer cust; // gets created in readIndex, after center etc is read in
 
   protected Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
-    super( new GribCollectionMutable(name, null, config, false), logger);  // directory will be set in readFromIndex
+    super( new GribCollectionMutable(name, null, config, false), config, logger);  // directory will be set in readFromIndex
   }
 
   protected int getVersion() {
@@ -117,11 +118,21 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
 
   @Override
-  protected void readGds(GribCollectionProto.Gds p) {
+  protected GribHorizCoordSystem readGds(GribCollectionProto.Gds p) {
     byte[] rawGds = p.getGds().toByteArray();
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
     Grib2Gds gds = gdss.getGDS();
-    gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gds, -1);
+    GdsHorizCoordSys hcs = gds.makeHorizCoordSys();
+
+    String hcsName = makeHorizCoordSysName(hcs);
+
+    // check for user defined group names
+    String desc = null;
+    if (config.gribConfig.gdsNamer != null)
+      desc = config.gribConfig.gdsNamer.get(gds.hashCode());
+    if (desc == null) desc = hcs.makeDescription(); // default desc
+
+    return new GribHorizCoordSystem(hcs, rawGds, gds, hcsName, desc, -1);
   }
 
 }

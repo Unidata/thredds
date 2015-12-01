@@ -49,7 +49,7 @@ import java.util.Arrays;
 
 /**
  * Reads the data from one grib2 record.
- * Original code almost almost for sure came from GEMPAK, but the lineage is unknown.
+ * Original code almost for sure came from GEMPAK, but the lineage is unknown.
  * @see "https://raw.githubusercontent.com/Unidata/gempak/master/extlibs/NDFD/mdlg2dec/unpk_cmplx.f"
  * @see "http://slosh.nws.noaa.gov/svn/degrib/vendor/grib2_unpacker/current/unpksecdif.f"
  * @see "unpk_complex in wgrib2 code"

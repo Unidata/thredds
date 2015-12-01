@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Read Grib1Partition from ncx3 index
+ * Read Grib1Partition from ncx index
  *
  * @author caron
  * @since 2/21/14
@@ -143,6 +143,6 @@ message Partition {
   private PartitionCollectionMutable.Partition makePartition(GribCollectionProto.Partition proto) {
     long partitionDateMillisecs =  proto.getPartitionDate();
     CalendarDate partitionDate =  partitionDateMillisecs > 0 ? CalendarDate.of(partitionDateMillisecs) : null;
-    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(), proto.getDirectory(), partitionDate);
+    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(), null, partitionDate);
   }
 }

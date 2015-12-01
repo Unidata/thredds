@@ -60,7 +60,7 @@ public class TestCoverageFMRCnonOrthogonal {
 
   @Test
   public void testNonOrthogonalTime2D() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/NDFD-CONUS-5km.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/NDFD-CONUS-5km.ncx4";
     String gridName = "Maximum_temperature_height_above_ground_12_Hour_Maximum";
     System.out.printf("file %s coverage %s%n", filename, gridName);
 
