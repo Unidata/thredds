@@ -3,7 +3,8 @@ package thredds.client.catalog
 import spock.lang.Specification
 import spock.lang.Unroll
 import ucar.unidata.test.util.NeedsExternalResource
-import org.junit.experimental.categories.Category;
+import org.junit.experimental.categories.Category
+import ucar.unidata.test.util.TestDir;
 
 /**
  * @author cwardgar
@@ -17,7 +18,7 @@ class ClientCatalogBasicSpec extends Specification {
             testDatasets(ds);
 
         where:
-        catFrag << [ "enhancedCat.xml", "InvCatalogBadDTD.xml", "TestAlias.xml", "testMetadata.xml",
+        catFrag << [ "enhancedCat.xml", "TestAlias.xml", "testMetadata.xml",
                      "nestedServices.xml", "TestHarvest.xml", "TestFilter.xml" ]
     }
 
@@ -29,8 +30,8 @@ class ClientCatalogBasicSpec extends Specification {
             testDatasets(ds);
 
         where:
-        catFrag << ["http://thredds-test.unidata.ucar.edu/thredds/catalog.xml",
-                    "http://thredds-test.unidata.ucar.edu/thredds/catalog/nws/metar/ncdecoded/catalog.xml?" +
+        catFrag << ["http://"+ TestDir.threddsTestServer+"/thredds/catalog.xml",
+                    "http://"+ TestDir.threddsTestServer+"/thredds/catalog/nws/metar/ncdecoded/catalog.xml?" +
                             "dataset=nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr"]
     }
 

@@ -117,8 +117,8 @@ public class CatalogRef extends Dataset {
     return true;
   }
 
-    @Override
-  public List<Dataset> getDatasets() {
+  @Override
+  public List<Dataset> getDatasetsLogical() {
     try {
       ucar.nc2.util.Optional<DatasetNode> opt = readCatref();
       if (!opt.isPresent())

@@ -56,7 +56,7 @@ public class DatasetNode {
     if (datasetBuilders != null && datasetBuilders.size() > 0) {
       List<Dataset> datasets = new ArrayList<>(datasetBuilders.size());
       for (DatasetBuilder dsb : datasetBuilders)
-        datasets.add (dsb.makeDataset(this));
+        datasets.add(dsb.makeDataset(this));
       flds.put(Dataset.Datasets, Collections.unmodifiableList(datasets));
     }
   }
@@ -64,6 +64,7 @@ public class DatasetNode {
   public Iterable<Map.Entry<String, Object>> getFldIterator() {
     return flds.entrySet();
   }
+
   public Object get(String key) {
     return flds.get(key);
   }
@@ -76,10 +77,21 @@ public class DatasetNode {
     return name;
   }
 
-  // get the top level datasets
+  /*
+    Get top level datasets contained directly in this catalog.
+    Do not dereference catRefs.
+   */
   public List<Dataset> getDatasets() {
     List<Dataset> datasets = (List<Dataset>) flds.get(Dataset.Datasets);
     return datasets == null ? new ArrayList<>(0) : datasets;
+  }
+
+  /*
+    Get top level datasets logically contained in this catalog.
+    If this is a catalogRef, read it in.
+ */
+  public List<Dataset> getDatasetsLogical() {
+    return getDatasets();
   }
 
   // Look though all datasets here or under here. do not go into catrefs
@@ -106,7 +118,7 @@ public class DatasetNode {
   public Dataset getParentDataset() {
     if (parent == null) return null;
     return (parent instanceof Dataset) ? (Dataset) parent : null;
- }
+  }
 
   //////////////////////////////////////////////
   // Utilities
