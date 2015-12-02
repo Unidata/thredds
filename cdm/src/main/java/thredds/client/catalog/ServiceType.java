@@ -75,4 +75,11 @@ public enum ServiceType {
     }
     return null;
   }
+
+  public boolean isStandardTdsService() {
+    return this == Catalog || this == CdmRemote || this == CdmrFeature || this == DAP4 ||
+      this == DODS || this == File || this == HTTPServer || this == ISO || this == NCML ||
+      this == NetcdfSubset || this == OPENDAP || this == UDDC || this == WCS || this == WMS;
+  }
+
 }

@@ -58,15 +58,17 @@ import java.util.*;
 
 /**
  * Reads in the Config catalogs on startup, and if triggered.
+ * Spring managed auto-wired.
  *
  * @author caron
  * @since 3/21/2015
  */
 @Component
 public class ConfigCatalogInitialization {
-  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class.getName());
+  static private final org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogInitialization.class);
   static private final String ERROR = "*** ERROR: ";
   static private final boolean show = true;
+  static private final ReadMode defaultReadMode = ReadMode.check;
 
   @Autowired
   private TdsContext tdsContext;  // used for  getContentDirectory, contextPath
@@ -96,33 +98,29 @@ public class ConfigCatalogInitialization {
     }
   }
 
-  private long lastRead = -1;
-  private long trackerNumber = 1;
-  private ReadMode defaultReadMode = ReadMode.check;
   private PreferencesExt prefs;
-
-  private List<String> rootCatalogKeys;           // needed ??
-  private File contentRootPath;                   // ${tds.content.root.path}.
-  private String contextPath;                     // thredds
+  private long readNow;
+  private long trackerNumber = 1;
+  private long nextCatId = 0;
+  private int numberCatalogs = 10;
+  private File contentRootPath;    // ${tds.content.root.path}.
+  private String contextPath;      // thredds
+  private String trackerDir;       // the tracker "databases" are kept in this directory
+  private long maxDatasets;        // chronicle limit
 
    // on reread, construct new objects, so cant be spring beans
   private DataRootPathMatcher dataRootPathMatcher;
   private DataRootTracker dataRootTracker;
-  private CatalogTracker catalogTracker;  // catalogTracker is not shared with anyone else - used only during catalog reading / updating.
   private DatasetTracker datasetTracker;
 
-  private String trackerDir;              // the tracker "databases" are kept in this directory
-  private long maxDatasetsToTrack;              // the tracker "databases" are kept in this directory
-  private boolean isOutsideLoaded;
+  // temporary, discard after init
+  private CatalogTracker catalogTracker;
+  private Set<String> catPathMap;          // Hash of paths, to look for duplicate catalogs
+  private Map<String, String> fcNameMap;   // Hash of featureCollection ids, to look for duplicates
+  private List<String> rootCatalogKeys;    // needed ??
 
-  // debugging
+  // track stats
   private DatasetTracker.Callback callback;
-  private boolean exceedLimit = false;
-  private long countDatasets = 0;
-  private long maxDatasets; //  = 1000 * 1000;
-
-  Set<String> catPathMap;    // Hash of paths, to look for duplicate catalogPaths
-  Map<String, String> fcNameMap;         // Hash of ids, to look for duplicates
 
   public ConfigCatalogInitialization() {
   }
@@ -132,39 +130,17 @@ public class ConfigCatalogInitialization {
   }
 
   public void setMaxDatasetToTrack(long maxDatasets) {
-    this.maxDatasetsToTrack = maxDatasets;
-  }
-
-  // used from outside of tomcat/spring
-  public ConfigCatalogInitialization(ReadMode readMode, File contentRootPath, String trackerDir, DatasetTracker datasetTracker,
-                                     AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasets) throws IOException {
-    this.contentRootPath = contentRootPath;
-    this.contextPath = "/thredds";
-    this.trackerDir = trackerDir != null ? trackerDir : new File(contentRootPath, "cache/catalog").getPath();
-    this.datasetTracker = datasetTracker;
-    this.allowedServices = allowedServices;
-    this.callback = callback;
     this.maxDatasets = maxDatasets;
-    this.isOutsideLoaded = true;
-
-    File trackerFile = new File(this.trackerDir);
-    if (!trackerFile.exists()) {
-      boolean ok = trackerFile.mkdirs();
-      System.out.printf("ConfigCatalogInitialization make tracker directory '%s' make ok = %s%n", this.trackerDir, ok);
-    }
-
-    reread(readMode, true);
   }
 
-  // called from TdsInit
+  // called from TdsInit on spring-managed auto-wired bean
   public synchronized void init(ReadMode readMode, PreferencesExt prefs) {
     if (readMode == null)
       readMode = defaultReadMode;
     this.prefs = prefs;
-
-    lastRead = prefs.getLong("lastRead", 0);
     trackerNumber = prefs.getLong("trackerNumber", 1);
-    logCatalogInit.info("ConfigCatalogInitializion lastRead=" + CalendarDate.of(lastRead));
+    numberCatalogs = prefs.getInt("numberCatalogs", 10);
+    nextCatId = prefs.getLong("nextCatId", 0);
 
     makeDebugActions();
     this.contentRootPath = this.tdsContext.getThreddsDirectory();
@@ -175,15 +151,16 @@ public class ConfigCatalogInitialization {
 
   // called from init() and from trigger controller
   public synchronized boolean reread(ReadMode readMode, boolean isStartup) {
-    long start = System.currentTimeMillis();
-    logCatalogInit.info("ConfigCatalogInitializion readMode={} isStartup={}", readMode, isStartup);
+    readNow = System.currentTimeMillis();
+    logCatalogInit.info("=========================================================================================\n"+
+                    "ConfigCatalogInitialization readMode={} isStartup={}", readMode, isStartup);
     catPathMap = new HashSet<>();
     fcNameMap = new HashMap<>();
-    if (ccc != null) ccc.invalidateAll();
+    if (ccc != null) ccc.invalidateAll(); // remove anything in cache
 
     if (!isStartup && readMode == ReadMode.always) trackerNumber++;  // must write a new database if TDS is already running and rereading all
-    if (!isOutsideLoaded || this.datasetTracker == null)
-      this.datasetTracker = new DatasetTrackerChronicle(trackerDir, maxDatasetsToTrack, trackerNumber);
+    if (!isDebugMode || this.datasetTracker == null)
+      this.datasetTracker = new DatasetTrackerChronicle(trackerDir, maxDatasets, trackerNumber);
 
     boolean databaseAlreadyExists = datasetTracker.exists(); // detect if tracker database exists
     if (!databaseAlreadyExists) {
@@ -197,14 +174,14 @@ public class ConfigCatalogInitialization {
     switch (readMode) {
       case always:
         if (databaseAlreadyExists) this.datasetTracker.reinit();
-        this.catalogTracker = new CatalogTracker(trackerDir, true);
+        this.catalogTracker = new CatalogTracker(trackerDir, true, numberCatalogs, nextCatId);
         this.dataRootTracker = new DataRootTracker(trackerDir, true, callback);
         this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);  // starting over
         readRootCatalogs(readMode);
         break;
 
       case check:
-        this.catalogTracker = new CatalogTracker(trackerDir, false);        // use existing catalog list
+        this.catalogTracker = new CatalogTracker(trackerDir, false, numberCatalogs, nextCatId);        // use existing catalog list
         this.dataRootTracker = new DataRootTracker(trackerDir, false, callback);      // use existing data roots
         this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);
         readRootCatalogs(readMode);           // read just roots to get global services
@@ -212,17 +189,19 @@ public class ConfigCatalogInitialization {
         break;
 
       case triggerOnly:
-        this.catalogTracker = new CatalogTracker(trackerDir, false);               // use existing catalog list
+        this.catalogTracker = new CatalogTracker(trackerDir, false, numberCatalogs, nextCatId);               // use existing catalog list
         this.dataRootTracker = new DataRootTracker(trackerDir, false, callback);             // use existing data roots
         this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);
         readRootCatalogs(readMode);           // read just roots to get global services
         break;
     }
 
-    lastRead = System.currentTimeMillis();
+    numberCatalogs = catalogTracker.size();
+    nextCatId = catalogTracker.getNextCatId();
     if (prefs != null) {
-      prefs.putLong("lastRead", lastRead); // LOOK do we need to distinguish between lastReadAlways and lastReadCheck ??
       prefs.putLong("trackerNumber", trackerNumber);
+      prefs.putLong("nextCatId", nextCatId);
+      prefs.putInt("numberCatalogs", numberCatalogs);
     }
     callback.finish();
     logCatalogInit.info("\nConfigCatalogInitializion stats\n" + callback);
@@ -247,12 +226,13 @@ public class ConfigCatalogInitialization {
       DatasetTrackerChronicle.cleanupBefore(trackerDir, trackerNumber);
     }
 
-    long took = System.currentTimeMillis() - start;
+    long took = System.currentTimeMillis() - readNow;
     logCatalogInit.info("ConfigCatalogInitializion finished took={} msecs", took);
 
     // cleanup
     catPathMap = null;
     fcNameMap = null;
+    catalogTracker = null;
 
     return true; // ok
   }
@@ -270,7 +250,7 @@ public class ConfigCatalogInitialization {
       try {
         pathname = StringUtils.cleanPath(pathname);
         logCatalogInit.info( "Checking catalogRoot = " + pathname);
-        checkCatalogToRead(readMode, pathname, true);
+        checkCatalogToRead(readMode, pathname, true, 0);
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + pathname + "; " + e.getMessage(), e);
       }
@@ -285,15 +265,16 @@ public class ConfigCatalogInitialization {
       try {
         logCatalogInit.info("\n**************************************\nCatalog init " + pathname + "[" + CalendarDate.present() + "]");
         pathname = StringUtils.cleanPath(pathname);
-        checkCatalogToRead(readMode, pathname, catalogExt.isRoot());
+        checkCatalogToRead(readMode, pathname, catalogExt.isRoot(), catalogExt.getLastRead());
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + pathname + "; " + e.getMessage(), e);
       }
     }
   }
 
+  // decide if we need to read this catalog or not. if yes, follow any catrefs
   // catalogRelpath must be relative to rootDir
-  private void checkCatalogToRead(ReadMode readMode, String catalogRelPath, boolean isRoot) throws IOException {
+  private void checkCatalogToRead(ReadMode readMode, String catalogRelPath, boolean isRoot, long lastRead) throws IOException {
     if (exceedLimit) return;
 
     catalogRelPath = StringUtils.cleanPath(catalogRelPath);
@@ -308,7 +289,7 @@ public class ConfigCatalogInitialization {
     if (!isRoot && readMode == ReadMode.triggerOnly) return;                    // skip non-root catalogs for trigger only
     if (show) System.out.printf("initCatalog %s%n", catalogRelPath);
 
-    // make sure we dont already have it
+    // make sure we havent already read it
     if (catPathMap.contains(catalogRelPath)) {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + catalogRelPath + "] already seen, possible loop (skip).");
       return;
@@ -324,7 +305,7 @@ public class ConfigCatalogInitialization {
       logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + catalogFile.getPath() + ">.");
       return;
     }
-    catalogTracker.trackCatalog(new CatalogExt(0, catalogRelPath, isRoot));
+    long catId = catalogTracker.put(new CatalogExt(0, catalogRelPath, isRoot, readNow));
 
     if (isRoot) {
       if (ccc != null) ccc.put(catalogRelPath, cat);
@@ -338,7 +319,7 @@ public class ConfigCatalogInitialization {
     for (DatasetRootConfig p : cat.getDatasetRoots())
       dataRootPathMatcher.addRoot(p, catalogRelPath, readMode == ReadMode.always); // check for duplicates on complete reread
 
-    if (callback == null) {   // LOOK
+    if (callback == null) {   // LOOK WTF?
       List<String> disallowedServices = allowedServices.getDisallowedServices(cat.getServices());
       if (!disallowedServices.isEmpty()) {
         allowedServices.getDisallowedServices(cat.getServices());
@@ -352,7 +333,7 @@ public class ConfigCatalogInitialization {
     // get the directory path, reletive to the rootDir
     int pos = catalogRelPath.lastIndexOf("/");
     String dirPath = (pos > 0) ? catalogRelPath.substring(0, pos + 1) : "";
-    processDatasets(readMode, dirPath, cat.getDatasets(), idSet);     // recurse
+    processDatasets(catId, readMode, dirPath, cat.getDatasets(), idSet);     // recurse
 
     // look for catalogScans
     for (CatalogScan catScan : cat.getCatalogScans()) {
@@ -403,12 +384,12 @@ public class ConfigCatalogInitialization {
   }
 
   // dirPath = the directory path, reletive to the rootDir
-  private void processDatasets(ReadMode readMode, String dirPath, List<Dataset> datasets, Set<String> idMap) throws IOException {
+  private void processDatasets(long catId, ReadMode readMode, String dirPath, List<Dataset> datasets, Set<String> idMap) throws IOException {
     if (exceedLimit) return;
 
     for (Dataset ds : datasets) {
-      if (datasetTracker.trackDataset(ds, callback)) countDatasets++;
-      if (maxDatasets > 0 && countDatasets > maxDatasets) exceedLimit = true;
+      if (datasetTracker.trackDataset(catId, ds, callback)) countDatasets++;
+      if (maxDatasetsProcess > 0 && countDatasets > maxDatasetsProcess) exceedLimit = true;
 
       // look for duplicate ids
       String id = ds.getID();
@@ -448,12 +429,14 @@ public class ConfigCatalogInitialization {
             path = dirPath + href;  // reletive starting from current directory
           }
 
-          checkCatalogToRead(readMode, path, false);
+          CatalogExt ext = catalogTracker.get(path);
+          long lastRead = (ext == null) ? 0 : ext.getLastRead();
+          checkCatalogToRead(readMode, path, false, lastRead);
         }
 
       } else {
         // recurse through nested datasets
-        processDatasets(readMode, dirPath, ds.getDatasets(), idMap);
+        processDatasets(catId, readMode, dirPath, ds.getDatasets(), idMap);
       }
     }
   }
@@ -469,7 +452,10 @@ public class ConfigCatalogInitialization {
           // path must be relative to rootDir
           String filename = p.getFileName().toString();
           String path = dirPath.length() == 0 ? filename :  dirPath + "/" + filename;  // reletive starting from current directory
-          checkCatalogToRead(readMode, path, false);
+
+          CatalogExt ext = catalogTracker.get(path);
+          long lastRead = (ext == null) ? 0 : ext.getLastRead();
+          checkCatalogToRead(readMode, path, false, lastRead);
         }
       }
     }
@@ -493,13 +479,16 @@ public class ConfigCatalogInitialization {
 
      act = new DebugCommands.Action("showCatalogExt", "Show known catalogs") {
        public void doAction(DebugCommands.Event e) {
-         for (CatalogExt catExt : catalogTracker.getCatalogs()) {
-           e.pw.println(catExt.getCatRelLocation());
+         e.pw.printf("numberCatalogs=%d nextCatId=%d%n", numberCatalogs, nextCatId);
+         e.pw.printf("%nid  root  lastRead     path%n");
+
+         CatalogTracker catalogTracker = new CatalogTracker(trackerDir, false, numberCatalogs, 0);
+         for (CatalogExt cat : catalogTracker.getCatalogs()) {
+           e.pw.printf("%d: %5s %s %s%n", cat.getCatId(), cat.isRoot(), CalendarDate.of(cat.getLastRead()), cat.getCatRelLocation());
          }
        }
      };
      debugHandler.addAction(act);
-
 
     act = new DebugCommands.Action("showRoots", "Show root catalogs") {
       public void doAction(DebugCommands.Event e) {
@@ -557,9 +546,9 @@ public class ConfigCatalogInitialization {
       f.format("    catalogScan=%d%n", catalogScan);
       f.format("    datasetRoot=%d%n%n", datasetRoot);
 
-      f.format("DatasetExt.total_count %d%n", DatasetTrackerInfo.total_count);
-      f.format("DatasetExt.total_nbytes %d%n", DatasetTrackerInfo.total_nbytes);
-      float avg = DatasetTrackerInfo.total_count == 0 ? 0 : ((float) DatasetTrackerInfo.total_nbytes) / DatasetTrackerInfo.total_count;
+      f.format("DatasetExt.total_count %d%n", DatasetExt.total_count);
+      f.format("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
+      float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
       f.format("DatasetExt.avg_nbytes %5.0f%n", avg);
 
       counters.show(f);
@@ -648,5 +637,34 @@ public class ConfigCatalogInitialization {
       f.format("ConfigCatalogInitialization started %s took %f secs using readMode=%s%n", CalendarDate.of(start), took, readMode);
       return stat2.show(f);
     }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////
+  // debugging mode, to test outside of tomcat/spring
+
+  private boolean isDebugMode;
+  private long countDatasets = 0;
+  private long maxDatasetsProcess;
+  private boolean exceedLimit;
+
+  // used from outside of tomcat/spring for testing
+  public ConfigCatalogInitialization(ReadMode readMode, File contentRootPath, String trackerDir, DatasetTracker datasetTracker,
+                                     AllowedServices allowedServices, DatasetTracker.Callback callback, long maxDatasetsProcess) throws IOException {
+    this.contentRootPath = contentRootPath;
+    this.contextPath = "/thredds";
+    this.trackerDir = trackerDir != null ? trackerDir : new File(contentRootPath, "cache/catalog").getPath();
+    this.datasetTracker = datasetTracker;
+    this.allowedServices = allowedServices;
+    this.callback = callback;
+    this.maxDatasetsProcess = maxDatasetsProcess;
+    this.isDebugMode = true;
+
+    File trackerFile = new File(this.trackerDir);
+    if (!trackerFile.exists()) {
+      boolean ok = trackerFile.mkdirs();
+      System.out.printf("ConfigCatalogInitialization make tracker directory '%s' make ok = %s%n", this.trackerDir, ok);
+    }
+
+    reread(readMode, true);
   }
 }

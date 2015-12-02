@@ -99,11 +99,14 @@ public class ConfigCatalog extends Catalog {
     for (Access access : accesses)
       builder.addAccess(new AccessBuilder(builder, access));
 
-    for (Dataset nested : ds.getDatasets())
-      builder.addDataset( makeDatasetBuilder(builder, nested));
+    if (!(ds instanceof CatalogRef)) {
+      for (Dataset nested : ds.getDatasets())
+        builder.addDataset(makeDatasetBuilder(builder, nested));
+    }
 
     return builder;
   }
+
 
     /* static public ConfigCatalog makeCatalogWithServices(ConfigCatalog cc, List<Service> services) {
     Map<String, Object> flds = new HashMap<>();

@@ -158,7 +158,8 @@ public class DataRootPathMatcher {
 
   /**
    * Finds datasetScan, datasetFmrc
-   * Look for duplicate Ids (give message). Dont follow catRefs.
+   * Look for duplicate Ids (give message).
+   * Dont follow catRefs.
    *
    * @param dsList the list of Dataset
    */
@@ -167,11 +168,6 @@ public class DataRootPathMatcher {
     for (Dataset dataset : dsList) {
       if (dataset instanceof DatasetScan) {
         DatasetScan ds = (DatasetScan) dataset;
-        /* Service service = ds.getServiceDefault();
-        if (service == null) {
-          logCatalogInit.error(ERROR + "DatasetScan " + ds.getName() + " has no default Service - skipping");  // LOOK needed?
-          continue;
-        } */
         addRoot(ds, catalogRelPath, checkDups);
 
       } else if (dataset instanceof FeatureCollectionRef) {

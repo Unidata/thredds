@@ -196,7 +196,7 @@ public class DatasetHtmlWriter {
             case CdmrFeature:
               queryString = "req=form";
           }
-        out.format(" <li> <b>%s:</b>%s</li>%n", s.getServiceTypeName(), makeHref(urlString, queryString, null));
+        out.format(" <li> <b>%s: </b>%s</li>%n", s.getServiceTypeName(), makeHref(urlString, queryString, null));
       }
       out.format("</ol>%n");
     }

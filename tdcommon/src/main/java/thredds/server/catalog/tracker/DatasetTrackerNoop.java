@@ -14,7 +14,7 @@ import java.util.Formatter;
 public class DatasetTrackerNoop implements DatasetTracker {
 
   @Override
-  public boolean trackDataset(Dataset ds, Callback callback) {
+  public boolean trackDataset(long catId, Dataset ds, Callback callback) {
     if (callback == null) return false;
 
     callback.hasDataset(ds);

@@ -1,5 +1,8 @@
 package thredds.server.catalog.tracker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.util.*;
 
@@ -11,18 +14,25 @@ import java.util.*;
  * @since 6/22/2015
  */
 public class CatalogTracker {
+  static private final Logger logger = LoggerFactory.getLogger(CatalogTracker.class);
+
   private static final String dbname = "/catTracker.dat";
-  private String filepath;
-  private Set<CatalogExt> catalogs;
+  private final String filepath;
+  private final int expectedSize;
+  private long nextCatId;
+  private Map<String, CatalogExt> catalogs;
   private boolean changed;
 
-  public CatalogTracker(String pathname, boolean startOver) {
+  public CatalogTracker(String pathname, boolean startOver, int expectedSize, long nextCatId) {
     this.filepath = pathname + dbname;
+    this.expectedSize = expectedSize > 0 ? expectedSize : 100;
+    this.nextCatId = nextCatId;
+
     File file = new File(filepath);
     if (startOver) reinit();
     if (!file.exists() || startOver || readCatalogs() <= 0) {
       changed = true;
-      catalogs = new HashSet<>();
+      catalogs = new HashMap<>(2*expectedSize);
     }
   }
 
@@ -35,42 +45,49 @@ public class CatalogTracker {
        }
      }
     changed = true;
-    catalogs = new HashSet<>();
+    catalogs = new HashMap<>(2*expectedSize);
   }
 
-  // catalogs
-  public boolean trackCatalog(CatalogExt cat) {
+  public long put(CatalogExt cat) {
     changed = true;
-    return catalogs.add(cat);
+    cat.setCatId(nextCatId++);
+    catalogs.put(cat.getCatRelLocation(), cat);
+    return cat.getCatId();
   }
 
-  public boolean removeCatalog(String catPath) {
+  public CatalogExt get(String path) {
+    return catalogs.get(path);
+  }
+
+  public CatalogExt removeCatalog(String catPath) {
     changed = true;
-    return catalogs.remove( new CatalogExt(0, catPath, false));
+    return catalogs.remove( catPath);
   }
 
-  // return sorted catalogs
+    // return sorted catalogs
   public Iterable<? extends CatalogExt> getCatalogs() {
+    if (catalogs == null) readCatalogs();
+
     List<CatalogExt> result = new ArrayList<>();
-    for (CatalogExt ext : catalogs)
+    for (CatalogExt ext : catalogs.values())
       result.add(ext);
     Collections.sort(result, (o1, o2) -> o1.getCatRelLocation().compareTo(o2.getCatRelLocation()));    // java 8 lambda, baby
     return result;
   }
 
   private int readCatalogs() {
-    catalogs = new HashSet<>();
+    catalogs = new HashMap<>();
     int count = 0;
     try (DataInputStream in = new DataInputStream(new FileInputStream(filepath))) {
       while (in.available() > 0) {
         CatalogExt ext = new CatalogExt();
         ext.readExternal(in);
-        catalogs.add(ext);
+        put(ext);
         count++;
       }
 
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("read "+filepath, e);
       return 0;
     }
     return count;
@@ -79,10 +96,18 @@ public class CatalogTracker {
   public void save() throws IOException {
     if (!changed) return;
     try (DataOutputStream out = new DataOutputStream(new FileOutputStream(filepath))) {
-      for (CatalogExt ext : catalogs) {
+      for (CatalogExt ext : catalogs.values()) {
         ext.writeExternal(out);
       }
     }
     changed = false;
+  }
+
+  public int size() {
+    return catalogs.size();
+  }
+
+  public long getNextCatId() {
+    return nextCatId;
   }
 }

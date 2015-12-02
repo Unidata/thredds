@@ -7,7 +7,7 @@ import org.jdom2.output.XMLOutputter;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
-import thredds.server.catalog.tracker.DatasetTrackerInfo;
+import thredds.server.catalog.tracker.DatasetExt;
 
 import java.io.Externalizable;
 import java.io.File;
@@ -83,7 +83,7 @@ public class TestChronicleTracker {
               XMLOutputter xmlOut = new XMLOutputter();
               ncml = xmlOut.outputString(ncmlElem);
             }
-            DatasetTrackerInfo dsext = new DatasetTrackerInfo(0, dd.getRestrictAccess(), ncml);
+            DatasetExt dsext = new DatasetExt(0, dd.getRestrictAccess(), ncml);
             map.put(key, dsext);
           }
         }
@@ -118,12 +118,12 @@ public class TestChronicleTracker {
       System.out.printf("countCatref %d%n", countDs[1]);
       System.out.printf("map.size %d%n", map.size());
 
-      System.out.printf("DatasetExt.total_count %d%n", DatasetTrackerInfo.total_count);
-      System.out.printf("DatasetExt.total_nbytes %d%n", DatasetTrackerInfo.total_nbytes);
-      float avg = DatasetTrackerInfo.total_count == 0 ? 0 : ((float) DatasetTrackerInfo.total_nbytes) / DatasetTrackerInfo.total_count;
+      System.out.printf("DatasetExt.total_count %d%n", DatasetExt.total_count);
+      System.out.printf("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
+      float avg = DatasetExt.total_count == 0 ? 0 : ((float) DatasetExt.total_nbytes) / DatasetExt.total_count;
       System.out.printf("DatasetExt.avg_nbytes %5.0f%n", avg);
 
-      float avg_time = ((float)took) / DatasetTrackerInfo.total_count;
+      float avg_time = ((float)took) / DatasetExt.total_count;
       System.out.printf(" msecs / record %8.3f%n", avg_time);
 
       map.close();
