@@ -101,7 +101,7 @@ public class ConfigCatalogInitialization {
   private PreferencesExt prefs;
   private long readNow;
   private long trackerNumber = 1;
-  private long nextCatId = 0;
+  private long nextCatId = 1;
   private int numberCatalogs = 10;
   private File contentRootPath;    // ${tds.content.root.path}.
   private String contextPath;      // thredds
@@ -140,7 +140,7 @@ public class ConfigCatalogInitialization {
     this.prefs = prefs;
     trackerNumber = prefs.getLong("trackerNumber", 1);
     numberCatalogs = prefs.getInt("numberCatalogs", 10);
-    nextCatId = prefs.getLong("nextCatId", 0);
+    nextCatId = prefs.getLong("nextCatId", 1);
 
     makeDebugActions();
     this.contentRootPath = this.tdsContext.getThreddsDirectory();
@@ -484,7 +484,7 @@ public class ConfigCatalogInitialization {
 
          CatalogTracker catalogTracker = new CatalogTracker(trackerDir, false, numberCatalogs, 0);
          for (CatalogExt cat : catalogTracker.getCatalogs()) {
-           e.pw.printf("%d: %5s %s %s%n", cat.getCatId(), cat.isRoot(), CalendarDate.of(cat.getLastRead()), cat.getCatRelLocation());
+           e.pw.printf("%3d: %5s %s %s%n", cat.getCatId(), cat.isRoot(), CalendarDate.of(cat.getLastRead()), cat.getCatRelLocation());
          }
        }
      };

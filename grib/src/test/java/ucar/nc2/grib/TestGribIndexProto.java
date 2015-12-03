@@ -38,7 +38,7 @@ public class TestGribIndexProto {
   boolean isGrib1;
 
   public TestGribIndexProto(String ds, boolean isGrib1) {
-    this.filename = "C:\\dev\\github\\thredds46\\grib\\src\\test\\data\\index\\" + ds;
+    this.filename = "../grib/src/test/data/index/" + ds;
     this.isGrib1 = isGrib1;
   }
 

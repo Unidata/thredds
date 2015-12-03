@@ -50,7 +50,8 @@ public class CatalogTracker {
 
   public long put(CatalogExt cat) {
     changed = true;
-    cat.setCatId(nextCatId++);
+    if (cat.setCatId(nextCatId))
+      nextCatId++;
     catalogs.put(cat.getCatRelLocation(), cat);
     return cat.getCatId();
   }
@@ -82,7 +83,7 @@ public class CatalogTracker {
       while (in.available() > 0) {
         CatalogExt ext = new CatalogExt();
         ext.readExternal(in);
-        put(ext);
+        catalogs.put(ext.getCatRelLocation(), ext);
         count++;
       }
 

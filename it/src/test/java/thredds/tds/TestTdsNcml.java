@@ -96,6 +96,7 @@ public class TestTdsNcml {
 
     Dataset catref = cat.findDatasetByID("ModifyDatasetScan");
     Assert.assertNotNull("cant find dataset by id 'ModifyDatasetScan'", catref);
+    catref.getDatasetsLogical(); // reads in the referenced catalog
     Dataset ds = catref.findDatasetByName("example1.nc");
     Assert.assertNotNull("cant find dataset by name 'example1'", ds);
 

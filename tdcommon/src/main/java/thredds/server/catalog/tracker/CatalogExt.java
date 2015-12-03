@@ -36,9 +36,10 @@ public class CatalogExt {
     return catId;
   }
 
-  public void setCatId(long catId) {
-    if (this.catId == 0)
+  public boolean setCatId(long catId) {
+    if (this.catId == 0) //only assign to new catalogs
       this.catId = catId;
+    return this.catId == catId;
   }
 
   public long getLastRead() {
