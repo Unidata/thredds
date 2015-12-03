@@ -89,6 +89,22 @@ public class Grib2DataReader2 {
     this.dataLength = dataLength;
   }
 
+  /*
+  Code Table Code table 5.0 - Data representation template number (5.0)
+    0: Grid point data - simple packing
+    1: Matrix value at grid point - simple packing
+    2: Grid point data - complex packing
+    3: Grid point data - complex packing and spatial differencing
+    4: Grid point data - IEEE floating point data
+   40: Grid point data - JPEG 2000 code stream format
+   41: Grid point data - Portable Network Graphics (PNG)
+   50: Spectral data - simple packing
+   51: Spherical harmonics data - complex packing
+   61: Grid point data - simple packing with logarithm pre-processing
+  200: Run length packing with level values
+  65535: Missing
+   */
+
   public float[] getData(RandomAccessFile raf, Grib2SectionBitMap bitmapSection, Grib2Drs gdrs) throws IOException {
     this.bitmap = bitmapSection.getBitmap(raf);
     this.bitmapIndicator = bitmapSection.getBitMapIndicator();

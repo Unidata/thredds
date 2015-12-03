@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib1;
 
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribData;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
@@ -198,7 +199,7 @@ public class Grib1Record {
     f.format("   dataLength = %d%n", info.dataLength);
 
     // octet 4, 1st half (packing flag)
-    f.format("    ----flag = %s%n", Long.toHexString(info.flag));
+    f.format("    ----flag = %s%n", Long.toBinaryString(info.flag));
     f.format("        data = %s%n", info.getGridPointS());
     f.format("     packing = %s%n", info.getPackingS());
     f.format("        type = %s%n", info.getDataTypeS());
@@ -207,6 +208,8 @@ public class Grib1Record {
     f.format("    decscale = %d%n", info.decimalScaleFactor);
     f.format("reference value = %f%n", info.referenceValue);
     f.format("      nbits = %d%n", info.numberOfBits);
+
+    Grib1DataReader.showInfo(f, raf, dataSection.getStartingPosition());
   }
 
   /**
@@ -259,16 +262,11 @@ public class Grib1Record {
     if (bitmap == null) {
       info.ndataPoints = info.nPoints;
     } else {
-      int bits = 0;   // have to count the bits to see how many data values are stored
       byte[] bm = bitmap.getBitmap(raf);
       if (bm == null) {
         info.ndataPoints = info.nPoints;
-      } else {
-        for (byte b : bm) {
-          short s = DataType.unsignedByteToShort(b);
-          bits += Long.bitCount(s);
-        }
-        info.ndataPoints = bits;
+      } else { // have to count the bits to see how many data values are stored
+        info.ndataPoints = GribNumbers.countBits(bm);
       }
     }
 

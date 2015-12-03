@@ -10,9 +10,6 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
-/**
- * Created by snake on 2/28/2015.
- */
 @Category(NeedsCdmUnitTest.class)
 public class TestOpenInMemory {
 
