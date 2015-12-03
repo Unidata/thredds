@@ -4,7 +4,7 @@ sudo: false
 addons:
   artifacts:
     paths:
-      - build/reports/allTests
+      - $TRAVIS_UPLOAD_PATH
     target_paths: Travis/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
 
 env:
