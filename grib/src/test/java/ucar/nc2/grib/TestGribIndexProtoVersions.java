@@ -26,10 +26,10 @@ public class TestGribIndexProtoVersions {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
     result.add(new Object[]{"grib1.proto2.gbx9", true});
-    result.add(new Object[]{"grib1.proto3.gbx9", true});
+    //result.add(new Object[]{"grib1.proto3.gbx9", true});
     result.add(new Object[]{"grib1.proto3.syntax2.gbx9", true});
     result.add(new Object[]{"grib2.proto2.gbx9", false});
-    result.add(new Object[]{"grib2.proto3.gbx9", false});
+    //result.add(new Object[]{"grib2.proto3.gbx9", false});
     result.add(new Object[]{"grib2.proto3.syntax2.gbx9", false});
     return result;
   }
