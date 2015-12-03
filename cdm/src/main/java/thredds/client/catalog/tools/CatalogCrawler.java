@@ -135,7 +135,7 @@ public class CatalogCrawler {
    */
   public int crawl(Catalog cat, CancelTask task, PrintWriter out, Object context, Indent indent) throws IOException {
 
-    for (Dataset ds : cat.getDatasets()) {
+    for (Dataset ds : cat.getDatasetsLocal()) {
       crawlDataset(ds, true, task, out, context, indent);
       if ((task != null) && task.isCancel()) break;
     }
@@ -182,7 +182,7 @@ public class CatalogCrawler {
     }
 
     if (type == Type.all) {
-      for (Dataset dds : ds.getDatasets()) {
+      for (Dataset dds : ds.getDatasetsLocal()) {
         listen.getDataset(dds, context);
         crawlDataset(dds, false, task, out, context, indent.incr());
         indent.decr();
@@ -192,7 +192,7 @@ public class CatalogCrawler {
     } else {
 
       // get datasets with data access ("leaves")
-      List<Dataset> dlist = ds.getDatasets();
+      List<Dataset> dlist = ds.getDatasetsLocal();
       List<Dataset> leaves = new ArrayList<>();
       for (Dataset dds : dlist) {
         if (dds.hasAccess())

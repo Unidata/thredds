@@ -67,7 +67,7 @@ public class TestLongitudeNormalization {
     } else {
       if (show) System.out.printf("(%f from %f) = %f, diff = %f%n", lon, from, compute, compute - lon);
     }
-    String msg = String.format("(%f from %f) = %f", lon, from, compute);
+    String msg = String.format("(%f from %f) = %f%n", lon, from, compute);
     Assert.assertTrue(msg, compute >= from);
     Assert.assertTrue(msg, compute < from + 360);
   }

@@ -31,7 +31,7 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2;
+package thredds.server.fileserver;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -41,8 +41,12 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import thredds.TestWithLocalServer;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.unidata.io.http.HTTPRandomAccessFile;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
@@ -59,17 +63,17 @@ public class TestHttpOpen {
   @Parameterized.Parameters(name="{0}")
   public static Collection testUrls() {
       Object[][] data = new Object[][]{
-              {"http://"+ TestDir.threddsTestServer+"/thredds/fileServer/testdata/2004050412_eta_211.nc"},
-              {"http://"+TestDir.threddsTestServer+"/thredds/fileServer/testdata/2004050400_eta_211.nc"},
-              {"http://"+TestDir.threddsTestServer+"/thredds/fileServer/testdata/2004050312_eta_211.nc"},
-              {"http://"+TestDir.threddsTestServer+"/thredds/fileServer/testdata/2004050300_eta_211.nc"},
+              {"fileServer/scanLocal/2004050412_eta_211.nc"},
+              {"fileServer/scanLocal/1day.nc"},
+              {"fileServer/scanLocal/testWrite.nc"},
+              {"fileServer/scanLocal/fultrak.hd5"},
       };
       return Arrays.asList(data);
   }
 
   private final String url;
-  public TestHttpOpen(String url) {
-      this.url = url;
+  public TestHttpOpen(String path) {
+      this.url = TestWithLocalServer.withPath(path);
   }
 
   // HTTP = 4300 HTTP2 = 5500 msec 20-25% slower
@@ -101,6 +105,10 @@ public class TestHttpOpen {
     long totalBytes = 0;
 
     try (NetcdfFile ncfile = NetcdfFile.open(url)) {
+      Object mess = ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+      assert mess != null;
+      assert mess instanceof HTTPRandomAccessFile;
+
       totalBytes = readAllData(ncfile);
     } finally {
       System.out.printf("**testRad Data took= %d msecs %d kbytes%n", (System.currentTimeMillis() - start), totalBytes / 1000);

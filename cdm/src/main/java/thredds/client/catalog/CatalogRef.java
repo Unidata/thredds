@@ -118,6 +118,13 @@ public class CatalogRef extends Dataset {
   }
 
   @Override
+  public List<Dataset> getDatasets() {
+    if (proxy != null)
+      return proxy.getDatasets();
+    return super.getDatasets();
+  }
+
+  @Override
   public List<Dataset> getDatasetsLogical() {
     try {
       ucar.nc2.util.Optional<DatasetNode> opt = readCatref();

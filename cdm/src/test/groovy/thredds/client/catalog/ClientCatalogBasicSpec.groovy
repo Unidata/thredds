@@ -14,7 +14,7 @@ class ClientCatalogBasicSpec extends Specification {
     @Unroll
     def "test local catalog [#catFrag]"() {
         expect:
-        for (Dataset ds : TestClientCatalog.open(catFrag).getDatasets())
+        for (Dataset ds : TestClientCatalog.open(catFrag).getDatasetsLocal())
             testDatasets(ds);
 
         where:
@@ -26,7 +26,7 @@ class ClientCatalogBasicSpec extends Specification {
     @Category(NeedsExternalResource.class)
     def "test remote catalog [#catFrag]"() {
         expect:
-        for (Dataset ds : TestClientCatalog.open(catFrag).getDatasets())
+        for (Dataset ds : TestClientCatalog.open(catFrag).getDatasetsLocal())
             testDatasets(ds);
 
         where:
@@ -46,7 +46,7 @@ class ClientCatalogBasicSpec extends Specification {
         testPublishers(d);
         testVariables(d);
 
-        for (Dataset ds : d.getDatasets()) {
+        for (Dataset ds : d.getDatasetsLocal()) {
             testDatasets(ds);
         }
     }

@@ -299,7 +299,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsExternalResource.class)
   public void test3D() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://thredds-dev.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
+    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
       System.out.printf("%s%n", dataset.getLocation());
       //GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
 

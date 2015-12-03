@@ -77,16 +77,24 @@ public class DatasetNode {
     return name;
   }
 
-  /*
+  /**
     Get top level datasets contained directly in this catalog.
     Do not dereference catRefs.
    */
-  public List<Dataset> getDatasets() {
+  public List<Dataset> getDatasetsLocal() {
     List<Dataset> datasets = (List<Dataset>) flds.get(Dataset.Datasets);
     return datasets == null ? new ArrayList<>(0) : datasets;
   }
 
-  /*
+  /**
+    Get top level datasets contained in this catalog, or if its a catref,
+    get the datasets in the referenced catalog only if already read in.
+ */
+  public List<Dataset> getDatasets() {
+    return getDatasetsLocal();
+  }
+
+  /**
     Get top level datasets logically contained in this catalog.
     If this is a catalogRef, read it in.
  */

@@ -140,7 +140,7 @@ public class DataRootPathMatcher {
   private @Nonnull DataRoot readDataRootFromCatalog( DataRootExt dataRootExt) {
     try {
       ConfigCatalog cat = ccc.get(dataRootExt.getCatLocation());
-      extractDataRoots(dataRootExt.getCatLocation(), cat.getDatasets(), false, null);  // will create a new DataRootExt and replace this one in the map
+      extractDataRoots(dataRootExt.getCatLocation(), cat.getDatasetsLocal(), false, null);  // will create a new DataRootExt and replace this one in the map
       DataRootExt dataRootExtNew = map.get(dataRootExt.getPath());
       if (null == dataRootExtNew) {
         logger.error("Reading catalog " + dataRootExt.getCatLocation() + " failed to find dataRoot path=" + dataRootExt.getPath());
@@ -189,7 +189,7 @@ public class DataRootPathMatcher {
 
       if (!(dataset instanceof CatalogRef)) {
         // recurse
-        extractDataRoots(catalogRelPath, dataset.getDatasets(), checkDups, idMap);
+        extractDataRoots(catalogRelPath, dataset.getDatasetsLocal(), checkDups, idMap);
       }
     }
   }

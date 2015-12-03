@@ -77,8 +77,8 @@ public class TestWrite {
   }
 
   private void compare(Catalog cat, Catalog catR) {
-    List<Dataset> datasets = cat.getDatasets();
-    List<Dataset> datasetsR = catR.getDatasets();
+    List<Dataset> datasets = cat.getDatasetsLocal();
+    List<Dataset> datasetsR = catR.getDatasetsLocal();
 
     Assert.assertEquals("different number of datasets", datasets.size(), datasetsR.size());
 

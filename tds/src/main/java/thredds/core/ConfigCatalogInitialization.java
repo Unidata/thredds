@@ -328,12 +328,12 @@ public class ConfigCatalogInitialization {
     }
 
     // look for dataRoots in datasetScans and featureCollections
-    dataRootPathMatcher.extractDataRoots(catalogRelPath, cat.getDatasets(), readMode == ReadMode.always, fcNameMap);
+    dataRootPathMatcher.extractDataRoots(catalogRelPath, cat.getDatasetsLocal(), readMode == ReadMode.always, fcNameMap);
 
     // get the directory path, reletive to the rootDir
     int pos = catalogRelPath.lastIndexOf("/");
     String dirPath = (pos > 0) ? catalogRelPath.substring(0, pos + 1) : "";
-    processDatasets(catId, readMode, dirPath, cat.getDatasets(), idSet);     // recurse
+    processDatasets(catId, readMode, dirPath, cat.getDatasetsLocal(), idSet);     // recurse
 
     // look for catalogScans
     for (CatalogScan catScan : cat.getCatalogScans()) {
@@ -436,7 +436,7 @@ public class ConfigCatalogInitialization {
 
       } else {
         // recurse through nested datasets
-        processDatasets(catId, readMode, dirPath, ds.getDatasets(), idMap);
+        processDatasets(catId, readMode, dirPath, ds.getDatasetsLocal(), idMap);
       }
     }
   }

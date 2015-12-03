@@ -206,6 +206,8 @@ Affects FeatureDatasetFactoryManager.open(FeatureType wantFeatureType, ...)
 
 * All uses of classes in *thredds.catalog* are deprecated. If you still need these, you must add *legacy.jar* to your path.
 * TDS and CDM now use *thredds.server.catalog* and *thredds.client.catalog*
+* *thredds.client.DatasetNode* now has _getDatasetsLogical()_ and _getDatasetsLocal()_ that does or does not dereference a CatalogRef.
+You can also use _getDatasets()_ which uses a dereferenced catalog if it has already been read.
 
 ==== Catalog Schema changes
 

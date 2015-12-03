@@ -172,7 +172,7 @@ public class ConfigCatalogHtmlWriter {
     sb.append("</tr>");
 
     // Recursively render the datasets
-    doDatasets(cat, cat.getDatasets(), sb, false, 0, isLocalCatalog);
+    doDatasets(cat, cat.getDatasetsLocal(), sb, false, 0, isLocalCatalog);
 
     // Render the page footer
     sb.append("</table>\r\n");
@@ -354,7 +354,7 @@ public class ConfigCatalogHtmlWriter {
       sb.append("</tr>\r\n");
 
       if (!(ds instanceof CatalogRef)) {
-        shade = doDatasets(cat, ds.getDatasets(), sb, shade, level + 1, isLocalCatalog);
+        shade = doDatasets(cat, ds.getDatasetsLocal(), sb, shade, level + 1, isLocalCatalog);
       }
     }
 
