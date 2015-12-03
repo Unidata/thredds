@@ -3,6 +3,7 @@ sudo: false
 
 addons:
   artifacts:
+    bucket: unidata-tds-tests
     paths:
       - $TRAVIS_UPLOAD_PATH
     target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
