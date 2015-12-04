@@ -34,21 +34,17 @@ package ucar.nc2;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 
-public class TestRedefine extends TestCase {
-
-  public TestRedefine( String name) {
-    super(name);
-  }
-
+public class TestRedefine{
   String filename = TestLocal.temporaryDataDir + "testRedefine.nc";
   String filename2 = TestLocal.temporaryDataDir + "testRedefine2.nc";
 
+  @Test
   public void testRedefine() throws IOException, InvalidRangeException {
     NetcdfFileWriteable file;
     file = NetcdfFileWriteable.createNew(filename, true);
@@ -69,12 +65,7 @@ public class TestRedefine extends TestCase {
     file.addVariable("h", DataType.DOUBLE, dims);
     file.addVariableAttribute("h", "quantity", "Height");
     file.addVariableAttribute("h", "units", "m");
-    try {
-      file.create();
-    } catch (IOException e) {
-      e.printStackTrace(System.err);
-      fail("IOException on creation");
-    }
+    file.create();
 
     double td[] = {1.0, 2.0, 3.0, 4.0};
     double hd[] = {0.0, 0.1, 0.3, 0.9};
@@ -166,6 +157,7 @@ public class TestRedefine extends TestCase {
     file.close();
   }
 
+  @Test
   public void testRewriteHeader3() throws IOException, InvalidRangeException {
     NetcdfFileWriteable file;
     file = NetcdfFileWriteable.createNew(filename2, true);
