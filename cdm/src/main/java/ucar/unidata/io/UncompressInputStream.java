@@ -438,19 +438,17 @@ public class UncompressInputStream extends FilterInputStream {
 
   static public void uncompress( String fileInName, FileOutputStream out) throws IOException {
     long start = System.currentTimeMillis();
-
-    InputStream in = new UncompressInputStream(  new FileInputStream(fileInName));
-
     int total = 0;
-    byte[] buffer = new byte[100000];
-    while (true) {
-      int bytesRead = in.read(buffer);
-      if (bytesRead == -1) break;
-      out.write(buffer, 0, bytesRead);
-      total += bytesRead;
+
+    try (InputStream in = new UncompressInputStream(  new FileInputStream(fileInName))) {
+      byte[] buffer = new byte[100000];
+      while (true) {
+        int bytesRead = in.read(buffer);
+        if (bytesRead == -1) break;
+        out.write(buffer, 0, bytesRead);
+        total += bytesRead;
+      }
     }
-    in.close();
-    out.close();
 
     if (debugTiming) {
       long end = System.currentTimeMillis();

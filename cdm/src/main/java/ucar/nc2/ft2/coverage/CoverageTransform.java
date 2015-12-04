@@ -44,7 +44,8 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import java.util.Formatter;
 
 /**
- * Coverage Coordinate Transform
+ * Coverage Coordinate Transform.
+ * Immutable with lazy instantiation of projection
  *
  * @author caron
  * @since 7/11/2015
@@ -69,7 +70,9 @@ public class CoverageTransform implements AttributeContainer {
 
   public ProjectionImpl getProjection() {
     if (projection == null && isHoriz) {
-      projection = CoordTransBuilder.makeProjection(this, new Formatter());
+      synchronized (this) {
+        projection = CoordTransBuilder.makeProjection(this, new Formatter());
+      }
     }
     return projection;
   }

@@ -48,11 +48,12 @@ import java.util.List;
 
 /**
  * Coverage - aka Grid or GeoGrid.
+ * Immutable after setCoordSys() is called.
  *
  * @author caron
  * @since 7/11/2015
  */
-@Immutable
+// @Immutable
 public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   private final String name;
   private final DataType dataType;

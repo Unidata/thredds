@@ -626,7 +626,7 @@ public class Group extends CDMNode implements AttributeContainer {
    * @return this
    */
   public Group setImmutable() {
-    super.setImmutable(true);
+    super.setImmutable();
     variables = Collections.unmodifiableList(variables);
     dimensions = Collections.unmodifiableList(dimensions);
     groups = Collections.unmodifiableList(groups);

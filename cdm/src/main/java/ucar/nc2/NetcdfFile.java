@@ -609,10 +609,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
     if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
       // see if its locked - another thread is writing it
-      FileInputStream stream = null;
       FileLock lock = null;
-      try {
-        stream = new FileInputStream(uncompressedFile);
+      try (FileInputStream stream = new FileInputStream(uncompressedFile)) {
         // obtain the lock
         while (true) { // loop waiting for the lock
           try {
@@ -630,9 +628,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
         if (debugCompress) System.out.println("found uncompressed " + uncompressedFile + " for " + filename);
         return uncompressedFile.getPath();
+
       } finally {
         if (lock != null) lock.release();
-        if (stream != null) stream.close();
       }
     }
 

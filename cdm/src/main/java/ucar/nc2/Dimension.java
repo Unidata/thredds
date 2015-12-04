@@ -48,7 +48,7 @@ import java.util.StringTokenizer;
  * The Dimension length must be > 0, except for an unlimited dimension which may have length = 0, and a vlen
  * Dimension which has length = -1.
  * <p/>
- * <p> Immutable if setImmutable() was called, except for an Unlimited Dimension, whose size can change.
+ * <p> Immutable once setImmutable() is called, except for an Unlimited Dimension, whose size can change.
  *
  * @author caron
  */
@@ -472,8 +472,7 @@ public class Dimension extends CDMNode implements Comparable {
    * @return this
    */
   public Dimension setImmutable() {
-    immutable = true;
-    //coordVars = Collections.unmodifiableList(coordVars);
+    super.setImmutable();
     return this;
   }
 

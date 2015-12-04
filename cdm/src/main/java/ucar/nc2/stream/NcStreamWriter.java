@@ -112,6 +112,7 @@ public class NcStreamWriter {
 
     // version < 3
     if (v.getDataType() == DataType.SEQUENCE) {
+      assert (v instanceof Structure);
       int count = 0;
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
       //coverity[FB.BC_UNCONFIRMED_CAST]

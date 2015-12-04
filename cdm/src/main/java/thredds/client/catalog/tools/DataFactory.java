@@ -227,39 +227,46 @@ public class DataFactory {
   public DataFactory.Result openFeatureDataset(FeatureType wantFeatureType, Dataset ds, ucar.nc2.util.CancelTask task, Result result)
           throws IOException {
 
-    result.featureType = ds.getFeatureType();
-    if (result.featureType == null)
-      result.featureType = wantFeatureType;
-
-    // first choice would be remote FeatureDataset
-    Access access = findAccessByServiceType(ds.getAccess(), ServiceType.CdmrFeature);
-    if (access != null)
-      return openFeatureDataset(result.featureType, access, task, result);
-
-    // special handling for images
-    if (result.featureType == FeatureType.IMAGE) {
-      access = getImageAccess(ds, task, result);
-      if (access != null) {
-        return openFeatureDataset(result.featureType, access, task, result);
-      } else
-        result.fatalError = true;
-      return result;
-    }
-
-    // otherwise, open as a remote NetcdfDataset (cdmremote or opendap)
-    NetcdfDataset ncd = openDataset(ds, true, task, result);
-    if (null != ncd)
-      result.featureDataset = FeatureDatasetFactoryManager.wrap(result.featureType, ncd, task, result.errLog);
-
-    if (null == result.featureDataset)
-      result.fatalError = true;
-    else {
-      result.location = result.featureDataset.getLocation();
+    try {
+      result.featureType = ds.getFeatureType();
       if (result.featureType == null)
-        result.featureType = result.featureDataset.getFeatureType();
-    }
+        result.featureType = wantFeatureType;
 
-    return result;
+      // first choice would be remote FeatureDataset
+      Access access = findAccessByServiceType(ds.getAccess(), ServiceType.CdmrFeature);
+      if (access != null)
+        return openFeatureDataset(result.featureType, access, task, result);
+
+      // special handling for images
+      if (result.featureType == FeatureType.IMAGE) {
+        access = getImageAccess(ds, task, result);
+        if (access != null) {
+          return openFeatureDataset(result.featureType, access, task, result);
+        } else
+          result.fatalError = true;
+        return result;
+      }
+
+      // otherwise, open as a remote NetcdfDataset (cdmremote or opendap)
+      NetcdfDataset ncd = openDataset(ds, true, task, result);
+      if (null != ncd)
+        result.featureDataset = FeatureDatasetFactoryManager.wrap(result.featureType, ncd, task, result.errLog);
+
+      if (null == result.featureDataset)
+        result.fatalError = true;
+      else {
+        result.location = result.featureDataset.getLocation();
+        if (result.featureType == null)
+          result.featureType = result.featureDataset.getFeatureType();
+      }
+
+      return result;
+
+    } catch (Throwable t) {
+      result.close();
+      if (t instanceof IOException) throw (IOException) t;
+      throw new RuntimeException(t);
+    }
   }
 
   /**
