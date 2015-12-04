@@ -17,11 +17,3 @@ dependencies {
 }
 
 jar.manifest.attributes 'Main-Class': 'thredds.tdm.Tdm'
-
-task showClasspath << {
-    buildscript.configurations.classpath.each { println it }
-}
-
-task showMeCache << {
-    configurations.compile.each { println it }
-}

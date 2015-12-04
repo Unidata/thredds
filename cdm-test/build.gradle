@@ -23,3 +23,19 @@ dependencies {
 
     testCompile libraries["slf4j-api"]
 }
+
+task testIndexCreation(type: Test, dependsOn: [classes, testClasses], group: 'Verification',
+             description: 'Tests creation of Grib and collection indexes, which will be used by subsequent tests.') {
+    include 'ucar/nc2/grib/TestGribIndexCreation.class'
+}
+
+test {
+    dependsOn "testIndexCreation"
+
+    // In addition to preventing TestGribIndexCreation from running during cdm-test:test,
+    // this statement also excludes the results of TestGribIndexCreation from appearing in the cdm-test report:
+    // "/thredds/cdm-test/build/reports/tests/index.html". It's not easy to add them back in. Fortunately, those
+    // results will be included in the allTests aggregate report: "/thredds/build/reports/allTests/index.html".
+    // The should also still get picked up by Jenkins.
+    exclude 'ucar/nc2/grib/TestGribIndexCreation.class'
+}

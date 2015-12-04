@@ -83,7 +83,7 @@ ext {
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
-task releaseWebstart(dependsOn: jar) << {
+task releaseWebstart(dependsOn: jar, group: 'Release') << {
     if (project.hasProperty("webdir") && project.hasProperty("keystore")
             && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
         ant.delete(dir: webstartWorkingDir)
@@ -155,7 +155,7 @@ javadoc {
     source = source.plus(fileTree(dir: '../dap4/d4cdmclient/src/main/java', include: '**/*.java'))
 }
 
-task releaseDocs(dependsOn: javadoc) << {
+task releaseDocs(dependsOn: javadoc, group: 'Release') << {
     if (project.hasProperty("webdir")) {
         def releaseDir = webdir + "javadocAll"
 
@@ -173,12 +173,6 @@ task releaseDocs(dependsOn: javadoc) << {
 }
 
 ///////////////////////////////////////////////////////
-
-task showDependencies << {
-    for (file in configurations.runtime.resolve()) {
-        println " " + file
-    }
-}
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
