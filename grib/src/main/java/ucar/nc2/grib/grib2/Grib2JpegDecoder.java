@@ -271,7 +271,9 @@ public class Grib2JpegDecoder {
       ictransf = new InvCompTransf(converter, decSpec, depth, pl);
 
       // **** Color space mapping ****
-      if (ff.JP2FFUsed && pl.getParameter("nocolorspace").equals("off")) {
+      String p = pl.getParameter("nocolorspace");
+      boolean nocolorspace = (p != null) && p.equals("off"); // LOOK not sure what default is here
+      if (ff.JP2FFUsed && nocolorspace) {
         try {
           csMap = new ColorSpace(in, hd, pl);
           channels = hd.createChannelDefinitionMapper(ictransf, csMap);

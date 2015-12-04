@@ -345,7 +345,7 @@ public class URLDumpPane extends TextHistoryPane {
 
         String charset = m.getResponseCharSet();
         if (charset == null) charset = CDM.UTF8;
-        String contents;
+        String contents = null;
 
         // check for deflate and gzip compression
         Header h = m.getResponseHeader("content-encoding");
@@ -353,26 +353,32 @@ public class URLDumpPane extends TextHistoryPane {
 
         if (encoding != null && encoding.equals("deflate")) {
           byte[] body = m.getResponseAsBytes();
-          InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
-          contents = IO.readContents(is, charset);
-          double ratio = (double) contents.length() / body.length;
-          appendLine("  deflate encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+          if (body != null) {
+            InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
+            contents = IO.readContents(is, charset);
+            double ratio = (double) contents.length() / body.length;
+            appendLine("  deflate encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+          }
 
         } else if (encoding != null && encoding.equals("gzip")) {
           byte[] body = m.getResponseAsBytes();
-          InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
-          contents = IO.readContents(is, charset);
-          double ratio = (double) contents.length() / body.length;
-          appendLine("  gzip encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+          if (body != null) {
+            InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
+            contents = IO.readContents(is, charset);
+            double ratio = (double) contents.length() / body.length;
+            appendLine("  gzip encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
+          }
 
         } else {
           byte[] body = m.getResponseAsBytes(50 * 1000); // max 50 Kbytes
           contents = (body == null) ? "" : new String(body, charset);
         }
 
-        if (contents.length() > 50 * 1000)
-          contents = contents.substring(0, 50 * 1000);
-        appendLine(contents);
+        if (contents != null) {
+          if (contents.length() > 50 * 1000) // limit contents
+            contents = contents.substring(0, 50 * 1000);
+          appendLine(contents);
+        }
 
       } else if (cmd == Command.OPTIONS)
         printSet("AllowedMethods = ", HTTPMethod.getAllowedMethods());
@@ -513,7 +519,6 @@ public class URLDumpPane extends TextHistoryPane {
     }
     catch (IOException e) {
       e.printStackTrace();
-      System.err.println(e);
       appendLine(e.getMessage());
     }
   }

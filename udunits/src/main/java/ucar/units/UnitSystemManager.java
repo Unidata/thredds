@@ -41,6 +41,7 @@ import java.io.Serializable;
  */
 public final class UnitSystemManager implements Serializable {
 	private static final long	serialVersionUID	= 1L;
+
 	/**
 	 * The singleton instance of the system of units.
 	 * 

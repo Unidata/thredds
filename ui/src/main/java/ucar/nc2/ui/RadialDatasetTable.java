@@ -81,7 +81,7 @@ public class RadialDatasetTable extends JPanel {
     varTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        if (vb != null) setVariable( vb);
+        if (vb != null) setVariable(vb);
       }
     });
 
@@ -89,42 +89,43 @@ public class RadialDatasetTable extends JPanel {
 
     PopupMenu csPopup = new PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-         if (vb == null) return;
-         VariableSimpleIF v = radialDataset.getDataVariable( vb.getName());
-         infoTA.clear();
-         infoTA.appendLine( v.toString());
-         infoTA.gotoTop();
-         infoWindow.show();
-       }
-     });
+      public void actionPerformed(ActionEvent e) {
+        VariableBean vb = (VariableBean) varTable.getSelectedBean();
+        if (vb == null) return;
+        VariableSimpleIF v = radialDataset.getDataVariable(vb.getName());
+        if (v == null) return;
+        infoTA.clear();
+        infoTA.appendLine(v.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
     csPopup.addAction("Show Info", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          VariableBean vb = (VariableBean) varTable.getSelectedBean();
-          if (vb == null) return;
-          Formatter f = new Formatter();
-          showInfo(radialDataset, vb.getName(), f);
-          infoTA.clear();
-          infoTA.appendLine(f.toString());
-          infoTA.gotoTop();
-          infoWindow.show();
-        }
-      });
+      public void actionPerformed(ActionEvent e) {
+        VariableBean vb = (VariableBean) varTable.getSelectedBean();
+        if (vb == null) return;
+        Formatter f = new Formatter();
+        showInfo(radialDataset, vb.getName(), f);
+        infoTA.clear();
+        infoTA.appendLine(f.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage( "netcdfUI"), infoTA);
-    infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
+    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     sweepTable = new BeanTable(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
 
     ucar.nc2.ui.widget.PopupMenu sweepPopup = new PopupMenu(sweepTable.getJTable(), "Options");
     sweepPopup.addAction("Show Image", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         showImage(  (SweepBean) sweepTable.getSelectedBean());
-       }
-     });
+      public void actionPerformed(ActionEvent e) {
+        showImage((SweepBean) sweepTable.getSelectedBean());
+      }
+    });
 
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, sweepTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
@@ -133,7 +134,9 @@ public class RadialDatasetTable extends JPanel {
     add(split, BorderLayout.CENTER);
   }
 
-  public PreferencesExt getPrefs() { return prefs; }
+  public PreferencesExt getPrefs() {
+    return prefs;
+  }
 
   public void save() {
     varTable.saveState(false);
@@ -143,19 +146,21 @@ public class RadialDatasetTable extends JPanel {
   }
 
   public void clear() {
-    varTable.setBeans( new ArrayList());
-    sweepTable.setBeans( new ArrayList());
+    varTable.setBeans(new ArrayList());
+    sweepTable.setBeans(new ArrayList());
   }
 
   public void setDataset(RadialDatasetSweep rds) {
     this.radialDataset = rds;
     // dateUnit = rds.getTimeUnits();
 
-    varTable.setBeans( getVariableBeans(rds));
-    sweepTable.setBeans( new ArrayList());
+    varTable.setBeans(getVariableBeans(rds));
+    sweepTable.setBeans(new ArrayList());
   }
 
-  public RadialDatasetSweep getRadialDataset() { return radialDataset; }
+  public RadialDatasetSweep getRadialDataset() {
+    return radialDataset;
+  }
 
   public List<VariableBean> getVariableBeans(RadialDatasetSweep rds) {
     List<VariableBean> vlist = new ArrayList<>();
@@ -170,11 +175,11 @@ public class RadialDatasetTable extends JPanel {
   public void setVariable(VariableBean vb) {
     List<SweepBean> sweeps = new ArrayList<>();
     int n = vb.v.getNumSweeps();
-    for (int i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
       RadialDatasetSweep.Sweep sweep = vb.v.getSweep(i);
-      sweeps.add( new SweepBean( sweep));
+      sweeps.add(new SweepBean(sweep));
     }
-    sweepTable.setBeans( sweeps);
+    sweepTable.setBeans(sweeps);
   }
 
   private void showInfo(RadialDatasetSweep rds, String varName, Formatter f) {
@@ -189,6 +194,8 @@ public class RadialDatasetTable extends JPanel {
 
       /* radial variable */
     RadialDatasetSweep.RadialVariable v = (RadialDatasetSweep.RadialVariable) rds.getDataVariable(varName);
+    if (v == null) return;
+
     f.format("  info for variable = %s%n", varName);
     f.format("  number of sweeps = %d%n", v.getNumSweeps());
 
@@ -224,38 +231,59 @@ public class RadialDatasetTable extends JPanel {
     //private boolean isCoordVar, isRadial, axis;
 
     // no-arg constructor
-    public VariableBean() {}
+    public VariableBean() {
+    }
 
     // create from a dataset
-    public VariableBean( RadialDatasetSweep.RadialVariable v) {
+    public VariableBean(RadialDatasetSweep.RadialVariable v) {
       this.v = v;
 
-      setName( v.getShortName());
-      setDescription( v.getDescription());
-      setUnits( v.getUnitsString());
+      setName(v.getShortName());
+      setDescription(v.getDescription());
+      setUnits(v.getUnitsString());
       dataType = v.getDataType().toString();
 
-            // collect dimensions
+      // collect dimensions
       StringBuilder buff = new StringBuilder();
       int[] shape = v.getShape();
-      for (int j=0; j<shape.length; j++) {
-        if (j>0) buff.append(",");
+      for (int j = 0; j < shape.length; j++) {
+        if (j > 0) buff.append(",");
         buff.append(shape[j]);
       }
       dims = buff.toString();
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+      return name;
+    }
 
-    public String getDescription() { return desc; }
-    public void setDescription(String desc) { this.desc = desc; }
+    public void setName(String name) {
+      this.name = name;
+    }
 
-    public String getUnits() { return units; }
-    public void setUnits(String units) { this.units = units; }
+    public String getDescription() {
+      return desc;
+    }
 
-    public String getDataType() { return dataType; }
-    public String getDims() { return dims; }
+    public void setDescription(String desc) {
+      this.desc = desc;
+    }
+
+    public String getUnits() {
+      return units;
+    }
+
+    public void setUnits(String units) {
+      this.units = units;
+    }
+
+    public String getDataType() {
+      return dataType;
+    }
+
+    public String getDims() {
+      return dims;
+    }
 
   }
 
@@ -265,10 +293,11 @@ public class RadialDatasetTable extends JPanel {
     RadialDatasetSweep.Sweep sweep;
 
     // no-arg constructor
-    public SweepBean() {}
+    public SweepBean() {
+    }
 
     // create from a dataset
-    public SweepBean( RadialDatasetSweep.Sweep sweep) {
+    public SweepBean(RadialDatasetSweep.Sweep sweep) {
       this.sweep = sweep;
 
     }
@@ -324,26 +353,26 @@ public class RadialDatasetTable extends JPanel {
   private IndependentWindow imageWindow = null;
   private ImageViewPanel imageView = null;
 
-  private void showImage( SweepBean bean) {
+  private void showImage(SweepBean bean) {
     if (bean == null) return;
 
     if (imageWindow == null) {
-        imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("ImageData"));
-        imageView = new ImageViewPanel( null);
-        imageWindow.setComponent( new JScrollPane(imageView));
-        //imageWindow.setComponent( imageView);
-        Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
-        //System.out.println("bounds in = "+b);
-        imageWindow.setBounds( b);
-      }
+      imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("ImageData"));
+      imageView = new ImageViewPanel(null);
+      imageWindow.setComponent(new JScrollPane(imageView));
+      //imageWindow.setComponent( imageView);
+      Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
+      //System.out.println("bounds in = "+b);
+      imageWindow.setBounds(b);
+    }
 
     float[] data;
     try {
       data = bean.sweep.readData();
-      int[] shape = new int[] {bean.getNumRadial(), bean.getNumGates()};
-      Array arrData = Array.factory( DataType.FLOAT, shape, data);
+      int[] shape = new int[]{bean.getNumRadial(), bean.getNumGates()};
+      Array arrData = Array.factory(DataType.FLOAT, shape, data);
 
-      imageView.setImage( ImageArrayAdapter.makeGrayscaleImage(arrData, null));
+      imageView.setImage(ImageArrayAdapter.makeGrayscaleImage(arrData, null));
       imageWindow.show();
 
     } catch (IOException e) {

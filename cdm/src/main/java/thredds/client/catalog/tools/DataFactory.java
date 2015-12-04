@@ -364,8 +364,10 @@ public class DataFactory {
     Result result = new Result();
     NetcdfDataset ncd = openDataset(Dataset, acquire, task, result);
     if (log != null) log.format("%s", result.errLog);
-    if (result.fatalError && ncd != null)
-      ncd.close();
+    if (result.fatalError) {
+      result.close();
+      if (ncd != null) ncd.close();
+    }
     return (result.fatalError) ? null : ncd;
   }
 
