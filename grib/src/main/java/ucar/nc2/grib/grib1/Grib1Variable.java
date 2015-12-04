@@ -82,7 +82,7 @@ public class Grib1Variable {
   }
 
   /**
-   * Used when processing the ncx3 files
+   * Used when processing the ncx files
    *
    * @param cust              customizer
    * @param pds               pds section
@@ -95,7 +95,7 @@ public class Grib1Variable {
     this.cust = cust;
     this.pds = pds;
     this.gds = gds;
-    this.gdsHash = gds.hashCode();             // this assumes no overridden gds hashCodes have made it into the ncx3
+    this.gdsHash = gds.hashCode();             // LOOK this assumes no overridden gds hashCodes have made it into the ncx
     this.useTableVersion = useTableVersion;
     this.intvMerge = intvMerge;
     this.useCenter = useCenter;

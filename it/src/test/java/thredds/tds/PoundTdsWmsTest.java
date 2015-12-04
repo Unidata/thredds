@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
 
 import org.apache.http.client.HttpClient;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
@@ -14,6 +15,7 @@ import ucar.nc2.util.IO;
 import ucar.unidata.test.util.NeedsExternalResource;
 
 
+@Ignore("NO WMS Server yet")
 public class PoundTdsWmsTest
 {
   @Test

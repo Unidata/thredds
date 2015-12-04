@@ -1405,7 +1405,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @throws opendap.dap.parsers.ParseException if error parsing return
    * @throws opendap.dap.DAP2Exception          if you have otherwise been bad
    */
-  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parsers.ParseException, opendap.dap.DAP2Exception {
+  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.DAP2Exception {
     if (debugServerCall) System.out.println("DODSNetcdfFile.readDataDDSfromServer = <" + CE + ">");
 
     long start = 0;
@@ -1587,9 +1587,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       DodsV root = DodsV.parseDataDDS(dataDDS);
       DodsV want = root.children.get(0); // can only be one
       dataArray = convertD2N.convertTopVariable(v, section.getRanges(), want);
+
     } catch (DAP2Exception ex) {
       ex.printStackTrace();
       throw new IOException(ex.getMessage() + "; " + v.getShortName() + " -- " + section);
+
     } catch (ParseException ex) {
       ex.printStackTrace();
       throw new IOException(ex.getMessage());

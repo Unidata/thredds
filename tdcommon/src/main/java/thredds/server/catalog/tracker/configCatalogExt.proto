@@ -7,6 +7,7 @@ message Catalog {
   uint64 catId = 1;    // sequence no
   string catLocation = 2;
   bool isRoot = 3;
+  uint64 lastRead = 4;
 }
 
 enum DataRootType {  // same as DataRoot.Type

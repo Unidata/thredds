@@ -299,7 +299,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsExternalResource.class)
   public void test3D() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://thredds-dev.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
+    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
       System.out.printf("%s%n", dataset.getLocation());
       //GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
 
@@ -923,7 +923,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testTPgribCollection() throws Exception {
-    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
+    try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       GeoGrid grid = dataset.findGridByName("Pressure_surface");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();

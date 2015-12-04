@@ -24,7 +24,7 @@ public interface DatasetTracker extends Closeable {
   boolean reinit(); // throw out all and start again
 
   // datasets
-  boolean trackDataset(Dataset ds, Callback callback);
+  boolean trackDataset(long catId, Dataset ds, Callback callback);
   String findResourceControl(String path);
   String findNcml(String path);
 

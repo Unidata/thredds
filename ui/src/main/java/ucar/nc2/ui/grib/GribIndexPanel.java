@@ -1,17 +1,17 @@
 package ucar.nc2.ui.grib;
 
+import ucar.ma2.DataType;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib1.Grib1Index;
-import ucar.nc2.grib.grib1.Grib1Record;
-import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib2.Grib2Index;
-import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.grib.grib2.*;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 /**
  * Examine GRIB index (gbx9) files
@@ -32,10 +33,13 @@ import java.util.*;
 public class GribIndexPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTable recordTable;
+  private BeanTable recordTable, gds1Table, gds2Table;
+  private JSplitPane split;
 
   private TextHistoryPane infoPopup, detailTA;
   private IndependentWindow infoWindow, detailWindow;
+
+  private String indexFile;
 
   public GribIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -85,6 +89,42 @@ public class GribIndexPanel extends JPanel {
       }
     });
 
+    gds1Table = new BeanTable(Gds1Bean.class, (PreferencesExt) prefs.node("GdsRecordBean"), false);
+    PopupMenu varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
+
+    varPopup.addAction("Compare Raw GDS Bytes", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = gds1Table.getSelectedBeans();
+        if (list.size() == 2) {
+          Gds1Bean bean1 = (Gds1Bean) list.get(0);
+          Gds1Bean bean2 = (Gds1Bean) list.get(1);
+          Formatter f = new Formatter();
+          compareData(bean1, bean2, f);
+          infoPopup.setText(f.toString());
+          infoPopup.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
+
+    gds2Table = new BeanTable(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2RecordBean"), false);
+    varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
+
+    varPopup.addAction("Compare Raw GDS Bytes", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = gds2Table.getSelectedBeans();
+        if (list.size() == 2) {
+          Gds2Bean bean1 = (Gds2Bean) list.get(0);
+          Gds2Bean bean2 = (Gds2Bean) list.get(1);
+          Formatter f = new Formatter();
+          compareData(bean1, bean2, f);
+          infoPopup.setText(f.toString());
+          infoPopup.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
+
 
     /////////////////////////////////////////
     // the info windows
@@ -98,28 +138,21 @@ public class GribIndexPanel extends JPanel {
 
     setLayout(new BorderLayout());
 
-    /* split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, groupTable, varTable);
-    split3.setDividerLocation(prefs.getInt("splitPos3", 800));
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, recordTable, gds1Table);
+    split.setDividerLocation(prefs.getInt("splitPos", 500));
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split3, vertCoordTable);
-    split2.setDividerLocation(prefs.getInt("splitPos2", 800));
-
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, timeCoordTable);
-    split.setDividerLocation(prefs.getInt("splitPos", 500)); */
-
-    add(recordTable, BorderLayout.CENTER);
-
+    add(split, BorderLayout.CENTER);
   }
 
   Object gc = null;
 
   public void save() {
     recordTable.saveState(false);
-    /* prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    gds1Table.saveState(false);
+    gds2Table.saveState(false);
+    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("DetailWindowBounds", detailWindow.getBounds());
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation()); */
+    prefs.putInt("splitPos", split.getDividerLocation());
   }
 
   public void closeOpenFiles() throws IOException {
@@ -130,6 +163,9 @@ public class GribIndexPanel extends JPanel {
   ///////////////////////////////////////////////
   public void setIndexFile(String indexFile) throws IOException {
     closeOpenFiles();
+    this.indexFile = indexFile;
+    this.cust1 = null;
+    this.cust2 = null;
 
     try (RandomAccessFile raf = new RandomAccessFile(indexFile, "r")) {
       raf.seek(0);
@@ -153,6 +189,14 @@ public class GribIndexPanel extends JPanel {
       records.add(new RecordBean(gr));
     recordTable.setBeans(records);
     gc = g1idx;
+
+    java.util.List<Gds1Bean> gdsList = new ArrayList<>();
+    for (Grib1SectionGridDefinition gds : g1idx.getGds())
+      gdsList.add(new Gds1Bean(gds));
+    gds1Table.setBeans(gdsList);
+
+    split.setBottomComponent(gds1Table);
+    split.setDividerLocation(prefs.getInt("splitPos", 500));
   }
 
   public void readIndex2(String filename) throws IOException {
@@ -164,6 +208,14 @@ public class GribIndexPanel extends JPanel {
       records.add(new RecordBean(gr));
     recordTable.setBeans(records);
     gc = g2idx;
+
+    java.util.List<Gds2Bean> gdsList = new ArrayList<>();
+    for (Grib2SectionGridDefinition gds : g2idx.getGds())
+      gdsList.add(new Gds2Bean(gds));
+    gds2Table.setBeans(gdsList);
+
+    split.setBottomComponent(gds2Table);
+    split.setDividerLocation(prefs.getInt("splitPos", 500));
   }
 
   private void showIndex(Formatter f) {
@@ -178,9 +230,27 @@ public class GribIndexPanel extends JPanel {
 
   }
 
+  private void compareData(RecordBean bean1, RecordBean bean2, Formatter f) {
+    byte[]  data1 = bean1.gdsBytes();
+    byte[]  data2 = bean2.gdsBytes();
+    Misc.compare(data1, data2, f);
+  }
+
+  private void compareData(Gds1Bean bean1, Gds1Bean bean2, Formatter f) {
+    byte[]  data1 = bean1.gdss.getRawBytes();
+    byte[]  data2 = bean2.gdss.getRawBytes();
+    Misc.compare(data1, data2, f);
+  }
+
+  private void compareData(Gds2Bean bean1, Gds2Bean bean2, Formatter f) {
+    byte[]  data1 = bean1.gdss.getRawBytes();
+    byte[]  data2 = bean2.gdss.getRawBytes();
+    Misc.compare(data1, data2, f);
+  }
 
   ////////////////////////////////////////////////////////////////////////////
-
+  Grib1Customizer cust1;
+  Grib2Customizer cust2;
 
   public class RecordBean {
     Grib1Record gr1;
@@ -189,20 +259,38 @@ public class GribIndexPanel extends JPanel {
     public RecordBean() {
     }
 
-    public RecordBean(Grib2Record gr) {
+    public RecordBean(Grib2Record gr) throws IOException {
       this.gr2 = gr;
+      if (cust2 == null) cust2 = Grib2Customizer.factory(gr2);
     }
 
     public RecordBean(Grib1Record gr) {
       this.gr1 = gr;
+      if (cust1 == null) cust1 = Grib1Customizer.factory(gr1, null);
+    }
+
+    public byte[] gdsBytes() {
+      return (gr2 == null) ? gr1.getGDSsection().getRawBytes() : gr2.getGDSsection().getRawBytes();
     }
 
     public int getFile() {
       return (gr2 == null) ? gr1.getFile() : gr2.getFile();
     }
 
+    public long getGdsCRC() {
+      return (gr2 == null) ? gr1.getGDSsection().calcCRC() : gr2.getGDSsection().calcCRC();
+    }
+
+    public int getPredefinedGrid() {
+      return (gr2 == null) ? gr1.getGDSsection().getPredefinedGridDefinition() : -1;
+    }
+
     public String getReferenceDate() {
       return (gr2 == null) ? gr1.getReferenceDate().toString() : gr2.getReferenceDate().toString();
+    }
+
+    public String getVariable() {
+      return (gr2 == null) ? Integer.toString(gr1.getPDSsection().getParameterNumber()) : Grib2Utils.getVariableName(gr2);
     }
 
     public long getStart() {
@@ -219,13 +307,174 @@ public class GribIndexPanel extends JPanel {
     }
 
     private void show(Grib1Record gr1, Formatter f) {
-      Grib1SectionProductDefinition pds = gr1.getPDSsection();
-      Grib1Customizer cust = Grib1Customizer.factory(gr1, null);
-      pds.showPds(cust, f);
+      Grib1CollectionPanel.showCompleteRecord(cust1, gr1, indexFile, f);
     }
 
     private void show(Grib2Record gr2, Formatter f) {
-      gr2.show(f);
+      try {
+        Grib2CollectionPanel.showCompleteGribRecord(f, indexFile, gr2, cust2);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  public class Gds1Bean implements Comparable<Gds1Bean> {
+    Grib1SectionGridDefinition gdss;
+    Grib1Gds gds;
+
+    // no-arg constructor
+    public Gds1Bean() {
+    }
+
+    public Gds1Bean(Grib1SectionGridDefinition m) {
+      this.gdss = m;
+      gds = gdss.getGDS();
+    }
+
+    public int getHash() {
+      return gds.hashCode();
+    }
+
+    public long getCRC() {
+      return gdss.calcCRC();
+    }
+
+    public int getTemplate() {
+      return gdss.getGridTemplate();
+    }
+
+    public boolean isVertCoords() {
+      return gdss.hasVerticalCoordinateParameters();
+    }
+
+    public String getGridName() {
+      return gds.getNameShort();
+    }
+
+    public String getScanMode() {
+      return Long.toBinaryString(gds.getScanMode());
+    }
+
+    public String getResolution() {
+      return Long.toBinaryString(gds.getResolution());
+    }
+
+    public double getDx() {
+      return gds.getDx();
+    }
+
+    public double getDy() {
+      return gds.getDy();
+    }
+
+    public double getDxRaw() {
+      return gds.getDxRaw();
+    }
+
+    public double getDyRaw() {
+      return gds.getDyRaw();
+    }
+
+    public int getNx() {
+      return gds.getNx();
+    }
+
+    public int getNy() {
+      return gds.getNy();
+    }
+
+    public int getNxRaw() {
+      return gds.getNxRaw();
+    }
+
+    public int getNyRaw() {
+      return gds.getNyRaw();
+    }
+
+    @Override
+    public int compareTo(Gds1Bean o) {
+      return getGridName().compareTo(o.getGridName());
+    }
+  }
+
+  /////////////////////////////////////////////////////////
+
+  public class Gds2Bean implements Comparable<Gds2Bean> {
+    Grib2SectionGridDefinition gdss;
+    Grib2Gds gds;
+
+    // no-arg constructor
+
+    public Gds2Bean() {
+    }
+
+    public Gds2Bean(Grib2SectionGridDefinition m) {
+      this.gdss = m;
+      gds = gdss.getGDS();
+    }
+
+    public int getGDShash() {
+      return gds.hashCode();
+    }
+
+    public long getCRC() {
+      return gdss.calcCRC();
+    }
+
+    public int getTemplate() {
+      return gdss.getGDSTemplateNumber();
+    }
+
+    public String getGridName() {
+      return cust2.getTableValue("3.1", gdss.getGDSTemplateNumber());
+    }
+
+    public String getGroupName() {
+      return getGridName() + "-" + getNy() + "X" + getNx();
+    }
+
+    public int getNPoints() {
+      return gdss.getNumberPoints();
+    }
+
+    public int getNx() {
+      return gds.getNx();
+    }
+
+    public int getNy() {
+      return gds.getNy();
+    }
+
+    public String getScanMode() {
+      int scanMode = gds.getScanMode();
+      Formatter f = new Formatter();
+      f.format("0x%s=", Long.toHexString(scanMode));
+      if (!GribUtils.scanModeXisPositive(scanMode)) f.format(" Xneg");
+      if (GribUtils.scanModeYisPositive(scanMode)) f.format(" Ypos");
+      if (!GribUtils.scanModeXisConsecutive(scanMode)) f.format(" !XisConsecutive");
+      if (!GribUtils.scanModeSameDirection(scanMode)) f.format(" !SameDirection");
+      return f.toString();
+    }
+
+    @Override
+    public String toString() {
+      return getGridName() + " " + getTemplate() + " " + getNx() + " X " + getNy();
+    }
+
+    public void toRawGdsString(Formatter f) {
+      byte[] bytes = gds.getRawBytes();
+      int count = 1;
+      for (byte b : bytes) {
+        short s = DataType.unsignedByteToShort(b);
+        f.format(" %d : %d%n", count++, s);
+      }
+    }
+
+    @Override
+    public int compareTo(Gds2Bean o) {
+      return getGroupName().compareTo(o.getGroupName());
     }
   }
 

@@ -130,7 +130,7 @@ public class TestGrib2CoordsMatch {
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
-    String filename = "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx3";
+    String filename = "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
@@ -154,7 +154,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testDgexSRC() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2.ncx4");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 1009;
     assert count.nmiss == 0;
@@ -163,7 +163,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testDgexTP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx4");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 3140;
     assert count.nmiss == 0;
@@ -172,7 +172,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testDgexPofP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx4");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
     // 2015/03/11: These tests were commented out, causing this test to be a no-op. Why?
@@ -185,7 +185,7 @@ public class TestGrib2CoordsMatch {
   public void testCfsrSingleFile() throws IOException {
     // CFSR dataset: 0-6 hour forecasts  x 124 runtimes (4x31)
     // there are  2 groups, likely miscoded, the smaller group has duplicate 0 hour, probably miscoded
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/cfsr/cfrsAnalysis_46.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/cfsr/cfrsAnalysis_46.ncx4");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 868;
     assert count.nmiss == 0;
@@ -194,7 +194,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testGC() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     //assert count.nread == 22909;                                    // 0/2535/23229 or 150/2535/22909
@@ -209,7 +209,7 @@ public class TestGrib2CoordsMatch {
   @Test
   @Ignore("test takes 45 minutes on jenkins - turn off for now")
   public void testPofG() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4");
 
     // that took 2497 secs total, 26.835802 msecs per record total == 671/10296/93052
 
@@ -224,7 +224,7 @@ public class TestGrib2CoordsMatch {
   public void openFileProblem() throws IOException {
 
     long start = System.currentTimeMillis();
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx4";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Land_cover_land1_sea0_surface");
       assert gdt != null;

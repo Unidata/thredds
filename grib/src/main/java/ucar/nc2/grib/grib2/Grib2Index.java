@@ -199,10 +199,10 @@ public class Grib2Index extends GribIndex {
     boolean bmsReplaced = p.getBmsReplaced();
 
     int scanMode = p.getScanMode();
-    boolean isMissing = p.getScanModePresentCase() == Grib2IndexProto.Grib2Record.ScanModePresentCase.SCANMODEPRESENT_NOT_SET;
+    /* boolean isMissing = p.getScanModePresentCase() == Grib2IndexProto.Grib2Record.ScanModePresentCase.SCANMODEPRESENT_NOT_SET;
     if (isMissing) {
       scanMode = (isProto3) ? 0 : 9999;
-    }
+    } */
 
     return new Grib2Record(p.getHeader().toByteArray(), is, ids, lus, gds, pds, drs, bms, data, bmsReplaced, scanMode);
   }

@@ -589,9 +589,9 @@ public class DataFactory {
       return null;
     }
 
-    for (Dataset ds : catalog.getDatasets()) {
+    for (Dataset ds : catalog.getDatasetsLocal()) {
       if (ds.hasAccess()) return ds;
-      for (Dataset nested : ds.getDatasets())   // cant be more than one deep
+      for (Dataset nested : ds.getDatasetsLocal())   // cant be more than one deep
         if (nested.hasAccess()) return nested;
     }
 

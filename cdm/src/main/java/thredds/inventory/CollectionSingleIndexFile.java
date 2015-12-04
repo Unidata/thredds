@@ -49,7 +49,7 @@ public class CollectionSingleIndexFile extends CollectionSingleFile {
   }
 
   @Override
-  public String getIndexFilename() {
+  public String getIndexFilename(String suffix) {
     return mfiles.get(0).getPath();
   }
 }

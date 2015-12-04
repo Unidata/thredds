@@ -1,17 +1,10 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-TDM
-===
-
 = THREDDS Data Manager (TDM)
-
-'''''
 
 == Overview
 
-__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 The TDM creates indexes for GRIB featureCollections, in a process
 seperate from the TDS. This allows lengthy file scanning and reindexing
 to happen in the background. The TDS uses the existing indices until
@@ -29,15 +22,10 @@ TDS.
 2.  For dynamic datasets, the TDM should run continually, and can send
 messages to the TDS when a dataset changes.
 
- 
-__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
-
 == Installing the TDM
 
-Get the current jar
-ftp://ftp.unidata.ucar.edu/pub/thredds/4.5/current/tdm-4.5.jar[here].
+Get the current jar linked from the TDS link:../../TDS.adoc[Home Page]
 
-_______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 The TDM can be run from anywhere, but by convention we create a
 directory **\{tomcat}/content/tdm**, and run the TDM from there.
 
@@ -89,7 +77,6 @@ the data directories, so it can write the index files (OR)
 link:../ThreddsConfigXMLFile.adoc#GribIndexWriting[GRIB index
 redirection], the TDM must have read access to the data directories, and
 write access to the index directories.
-_______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 == Running the TDM:
 
@@ -116,7 +103,6 @@ bg
 
 == Sending triggers to the TDS
 
-_____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 The TDM scans the files in the feature Collection, and when it detects
 that the collection has changed, rewrites the index files. If enabled,
 it will send a trigger message to the TDS, and the TDS will reload that
@@ -145,13 +131,9 @@ catalog:
 ------------------------------------------
 <update startup="never" trigger="false" />
 ------------------------------------------
-_____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
-
-'''''
 
 == Catalog Configuration Examples
 
-____________________________________________________________________________________________________________________________________________________________________________
 Example configuration in the TDS configuration catalogs. Point the TDM
 to the content directory using *-Dtds.content.root.path=<content
 directory>* on the TDM command line.
@@ -207,38 +189,26 @@ in the dataset.
 when starting up, using the existing indices
 ** *trigger=``allow''* enables the TDS to recieve messages from the TDM
 when the dataset has changed
-____________________________________________________________________________________________________________________________________________________________________________
-
-'''''
 
 == TDM configuration (do not use)
 
 More complicated configuration can be done in the Spring configuration
 inside the jar file **/resources/application-config.xml**:
 
-* -----------------------------------------------------------------------------------------------------------------------------------
+----
 <?xml version="1.0" encoding="UTF-8"?>
  <beans xmlns="http://www.springframework.org/schema/beans"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xmlns:util="http://www.springframework.org/schema/util"
    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
------------------------------------------------------------------------------------------------------------------------------------
-+
-------------------------------------------------------------------------------------------------
  <bean id="executor" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
 1) <constructor-arg type="int" value="4"/>
  </bean>
-------------------------------------------------------------------------------------------------
-+
--------------------------------------------------------------------------------------
  <bean id="completionService" class="java.util.concurrent.ExecutorCompletionService">
    <constructor-arg type="java.util.concurrent.Executor" ref="executor"/>
    <constructor-arg type="java.util.concurrent.BlockingQueue" ref="completionQ"/>
  </bean>
--------------------------------------------------------------------------------------
-+
---------------------------------------------------------------------------
  <bean id="testDriver" class="thredds.tdm.TdmRunner">
    <property name="executor" ref="executor"/>
 2) <property name="catalog" value="classpath:/resources/indexNomads.xml"/>
@@ -249,11 +219,8 @@ inside the jar file **/resources/application-config.xml**:
     </list>
    </property>
  </bean>
---------------------------------------------------------------------------
-+
---------
 </beans>
---------
+----
 
 where:
 
@@ -261,10 +228,6 @@ where:
 speeds the indexing up, the tradeoff is the memory needed.
 2.  Default catalog to read in
 3.  Default TDS servers to notify.
-
- 
-
-'''''
 
 == GCPass1
 
@@ -309,24 +272,24 @@ Usage: thredds.tdm.GCpass1 [options]
 
 ==== Sample Output:
 
--------------------------------------------------------------------------------------------------------------------------------------
-1) FeatureCollectionConfig name= 'GCpass1' collectionName= 'GCpass1' type= 'GRIB1'
+----
+FeatureCollectionConfig name= 'GCpass1' collectionName= 'GCpass1' type= 'GRIB1' #<1>
         spec= 'B:/rdavm/ds083.2/grib1/**/.*grib1'
         timePartition= directory
 
                                                 #files  #records   #vars  #runtimes    #gds
-2) Directory B:\rdavm\ds083.2\grib1
-3)  Directory B:\rdavm\ds083.2\grib1\1999
-4) B:\rdavm\ds083.2\grib1\1999\1999.07 total       1      244       63        1        1 1999-07-30T18:00:00Z - 1999-07-30T18:00:00Z 
+ Directory B:\rdavm\ds083.2\grib1 #<2>
+  Directory B:\rdavm\ds083.2\grib1\1999 #<3>
+   B:\rdavm\ds083.2\grib1\1999\1999.07 total       1      244       63        1        1 1999-07-30T18:00:00Z - 1999-07-30T18:00:00Z  #<4>
    B:\rdavm\ds083.2\grib1\1999\1999.08 total     119    29046       66      119        1 1999-08-01T00:00:00Z - 1999-08-31T18:00:00Z 
    B:\rdavm\ds083.2\grib1\1999\1999.09 total      89    21755       66       89        1 1999-09-01T00:00:00Z - 1999-09-30T12:00:00Z 
    B:\rdavm\ds083.2\grib1\1999\1999.10 total      62    15128       63       62        1 1999-10-01T00:00:00Z - 1999-10-31T12:00:00Z 
    B:\rdavm\ds083.2\grib1\1999\1999.11 total      97    23816       66       97        1 1999-11-01T00:00:00Z - 1999-11-30T18:00:00Z 
    B:\rdavm\ds083.2\grib1\1999\1999.12 total     120    29512       66      120        1 1999-12-01T00:00:00Z - 1999-12-31T18:00:00Z 
-5)       B:\rdavm\ds083.2\grib1\1999   total     488   119501       66      488        1 1999-07-30T18:00:00Z - 1999-12-31T18:00:00Z 
+       B:\rdavm\ds083.2\grib1\1999   total     488   119501       66      488        1 1999-07-30T18:00:00Z - 1999-12-31T18:00:00Z  #<5>
 
-3) Directory B:\rdavm\ds083.2\grib1\2000
-4) B:\rdavm\ds083.2\grib1\2000\2000.01 total     124    30504       64      124        1 2000-01-01T00:00:00Z - 2000-01-31T18:00:00Z 
+ Directory B:\rdavm\ds083.2\grib1\2000 #<3>
+   B:\rdavm\ds083.2\grib1\2000\2000.01 total     124    30504       64      124        1 2000-01-01T00:00:00Z - 2000-01-31T18:00:00Z #<4>
    B:\rdavm\ds083.2\grib1\2000\2000.02 total     116    28536       64      116        1 2000-02-01T00:00:00Z - 2000-02-29T18:00:00Z 
    B:\rdavm\ds083.2\grib1\2000\2000.03 total     124    30504       64      124        1 2000-03-01T00:00:00Z - 2000-03-31T18:00:00Z 
    B:\rdavm\ds083.2\grib1\2000\2000.04 total     120    29520       64      120        1 2000-04-01T00:00:00Z - 2000-04-30T18:00:00Z 
@@ -334,77 +297,62 @@ Usage: thredds.tdm.GCpass1 [options]
   
   B:\rdavm\ds083.2\grib1\2014\2014.11 total     120    34560       76      120         1 2014-11-01T00:00:00Z - 2014-11-30T18:00:00Z 
   B:\rdavm\ds083.2\grib1\2014\2014.12 total      67    19296       76       67         1 2014-12-01T00:00:00Z - 2014-12-17T12:00:00Z 
-5)         B:\rdavm\ds083.2\grib1\2014 total    1403   444544      116     1403        1 2014-01-01T00:00:00Z - 2014-12-17T12:00:00Z 
-6)              B:\rdavm\ds083.2\grib1 total   22347  6546693      118    22347        1 1999-07-30T18:00:00Z - 2014-12-17T12:00:00Z 
+         B:\rdavm\ds083.2\grib1\2014 total    1403   444544      116     1403        1 2014-01-01T00:00:00Z - 2014-12-17T12:00:00Z  #<5>
+              B:\rdavm\ds083.2\grib1 total   22347  6546693      118    22347        1 1999-07-30T18:00:00Z - 2014-12-17T12:00:00Z  #<6>
 
                                           #files  #records   #vars  #runtimes    #gds
-6)                            grand total   22347  6546693      118    22347        1 
+                             grand total   22347  6546693      118    22347        1 #<6>
 
-7)
-referenceDate (22347)
+referenceDate (22347) #<7>
    1999-07-30T18:00:00Z - 2014-12-17T12:00:00Z: count = 22347
 
-8)
-table version (2)
+table version (2) #<8>
          7-0-1: count = 3188
          7-0-2: count = 6543505
 
-9)
-variable (118)
+variable (118) #<9>
     5-wave_geopotential_height_anomaly_isobaric_10: count = 22076
     5-wave_geopotential_height_isobaric_10: count = 22344
     Absolute_vorticity_isobaric_10: count = 581022
     Albedo_surface_Average: count = 6922
       ...
 
-10)
-gds (1)
+gds (1) #<10>
     1645598069: count = 6546693
 
-11)
-gdsTemplate (1)
+gdsTemplate (1) #<11>
              0: count = 6546693
 
-12)
-vertCoordInGDS (0)
+vertCoordInGDS (0) #<12>
 
-13)
-predefined (0)
+predefined (0) #<13>
 
-14)
-thin (0)
--------------------------------------------------------------------------------------------------------------------------------------
+thin (0) #<14>
+----
 
-where:
-
-1.  The Feature Collection configuration
-2.  The top level directory
-3.  Subdirectory
-4.  Partitions - in this case these are directories because this is a
-``directory partition''.
-1.  number of files in the partition
-2.  number of records in the partition
-3.  number of seperate variables in the partition. _Inhomogenous
+.  The Feature Collection configuration
+.  The top level directory
+.  Subdirectory
+.  Partitions - in this case these are directories because this is a _directory partition_. +
+..  number of files in the partition
+..  number of records in the partition
+..  number of seperate variables in the partition. _Inhomogenous
 partitions look more complex to the user._
-4.  number of runtimes in the partition
-5.  number of horizontal (GDS), which are turned into groups
-6.  the starting and ending runtime. _Look for overlapping partitions_
-5.  Sum of 4) subpartitions for this partition
-6.  Grand sum over all partitions
-7.  Summary (n, start/end) of run dates
-8.  list of all table versions found, count of number of records for
+..  number of runtimes in the partition
+..  number of horizontal (GDS), which are turned into groups
+..  the starting and ending runtime. _Look for overlapping partitions_
+.  Sum of subpartitions for this partition
+.  Grand sum over all partitions
+.  Summary (n, start/end) of run dates
+.  list of all table versions found, count of number of records for
 each. _Possibility that variables that should be seperated by table
 version._
-9.  list of all variables found, count of number of records for each.
-_Possibility that stray records are in the collection._
-10. list of all GDS hashes found, count of number of records for each.
-__Possibility of spurious differences with GDS hashes__.
-11. list of all GDS templates found, count of number of records for each
-12. count of records that have vertical coordinates in the GDS (GRIB1
-only)
-13. count of records that have predefined GDS (GRIB1 only) _Possibility
-of unknown predefined GDS._
-14. count of records that have ``Quasi/Thin'' Grid (GRIB1 only)
+.  list of all variables found, count of number of records for each. _Possibility that stray records are in the collection._
+. list of all GDS hashes found, count of number of records for each. __Possibility of spurious differences with GDS hashes__.
+. list of all GDS templates found, count of number of records for each
+. count of records that have vertical coordinates in the GDS (GRIB1 only)
+. count of records that have predefined GDS (GRIB1 only) _Possibility of unknown predefined GDS._
+. count of records that have _Quasi/Thin_ Grid (GRIB1 only)
 
 '''''
 

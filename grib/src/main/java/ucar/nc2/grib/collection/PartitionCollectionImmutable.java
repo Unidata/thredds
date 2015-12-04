@@ -155,7 +155,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     Dataset ds2d = getDatasetCanonical();
     if (ds2d == null) return null;
     for (GroupGC groupHcs : ds2d.getGroups())
-      if (groupHcs.horizCoordSys == hcs)
+      if (groupHcs.getGdsHash().equals(hcs.getGdsHash()))
         return (VariableIndexPartitioned) groupHcs.findVariableByHash(vi);
     return null;
   }
@@ -433,7 +433,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       }
 
       if (GribIosp.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
-      return new DataRecord(PartitionCollectionImmutable.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record.fileno, record.pos, record.bmsPos, record.scanMode);
+      return new DataRecord(PartitionCollectionImmutable.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record);
     }
 
     /**
@@ -470,9 +470,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // at this point, we need to instantiate the Partition and the vindex.records
 
       // the 2D vip for this variable
-      VariableIndexPartitioned vip =  isPartitionOfPartitions ?
-        getVariable2DByHash(group.horizCoordSys, this) :
-        this;
+      VariableIndexPartitioned vip =  isPartitionOfPartitions ? getVariable2DByHash(group.horizCoordSys, this) : this;
 
       if (vip == null)
         throw new IllegalStateException();
@@ -631,7 +629,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         return null;
 
       if (GribIosp.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
-      DataRecord dr = new DataRecord(PartitionCollectionImmutable.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record.fileno, record.pos, record.bmsPos, record.scanMode);
+      DataRecord dr = new DataRecord(PartitionCollectionImmutable.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record);
       if (GribDataReader.validator != null) dr.validation = coords;
       return dr;
     }
@@ -643,8 +641,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     final PartitionCollectionImmutable usePartition;
     final int partno; // partition index in usePartition
 
-    DataRecord(PartitionCollectionImmutable usePartition, int partno, GdsHorizCoordSys hcs, int fileno, long drsPos, long bmsPos, int scanMode) {
-      super(-1, fileno, drsPos, bmsPos, scanMode, hcs);
+    DataRecord(PartitionCollectionImmutable usePartition, int partno, GdsHorizCoordSys hcs, GribCollectionImmutable.Record record) {
+      super(-1, record, hcs);
       this.usePartition = usePartition;
       this.partno = partno;
     }
@@ -656,9 +654,9 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (rp != 0) return rp;
       int r = Misc.compare(partno, op.partno);
       if (r != 0) return r;
-      r = Misc.compare(fileno, o.fileno);
+      r = Misc.compare(record.fileno, o.record.fileno);
       if (r != 0) return r;
-      return Misc.compare(dataPos, o.dataPos);
+      return Misc.compare(record.pos, o.record.pos);
     }
 
     public boolean usesSameFile(DataRecord o) {
@@ -667,14 +665,14 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (rp != 0) return false;
       int r = Misc.compare(partno, o.partno);
       if (r != 0) return false;
-      r = Misc.compare(fileno, o.fileno);
+      r = Misc.compare(record.fileno, o.record.fileno);
       return r == 0;
     }
 
         //debugging
     public void show() throws IOException {
-      String dataFilename = usePartition.getFilename(partno, fileno);
-      System.out.printf(" **DataReader partno=%d fileno=%d filename=%s datapos=%d%n", partno, fileno, dataFilename, dataPos);
+      String dataFilename = usePartition.getFilename(partno, record.fileno);
+      System.out.printf(" **DataReader partno=%d fileno=%d filename=%s startPos=%d%n", partno, record.fileno, dataFilename, record.pos);
     }
   }
 }

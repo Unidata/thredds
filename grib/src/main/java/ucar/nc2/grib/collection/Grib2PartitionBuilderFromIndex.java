@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Read Grib2Partition From ncx3 Index,
+ * Read Grib2Partition From ncx Index,
  * Data file never opened.
  *
  * @author John
@@ -145,7 +145,7 @@ message Partition {
   private PartitionCollectionMutable.Partition makePartition(GribCollectionProto.Partition proto) {
     long partitionDateMillisecs =  proto.getPartitionDate();
     CalendarDate partitionDate =  partitionDateMillisecs > 0 ? CalendarDate.of(partitionDateMillisecs) : null;
-    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(), proto.getDirectory(), partitionDate);
+    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(), null, partitionDate);
   }
 
 }

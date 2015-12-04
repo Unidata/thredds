@@ -208,6 +208,7 @@ public class CatalogChooser extends JPanel {
           DatasetNode ds = tree.getSelectedDataset();
           if (ds == null)
             return;
+
           if (ds instanceof Dataset)
             showDatasetInfo((Dataset)ds);
 

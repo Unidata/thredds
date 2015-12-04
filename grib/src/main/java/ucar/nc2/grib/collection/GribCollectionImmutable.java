@@ -100,7 +100,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   protected final Info info;
 
   protected final List<Dataset> datasets;
-  protected final List<GribHorizCoordSystem> horizCS; // one for each unique GDS
+  // protected final List<GribHorizCoordSystem> horizCS; // one for each unique GDS
   protected final CoordinateRuntime masterRuntime;
 
   protected final Map<Integer, MFile> fileMap; // all the files used in the GC; key is the index in original collection, GC has subset of them
@@ -125,7 +125,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
     this.datasets = Collections.unmodifiableList(work);
 
-    this.horizCS = Collections.unmodifiableList(gc.horizCS);
+    // this.horizCS = Collections.unmodifiableList(gc.horizCS);
     this.masterRuntime = gc.masterRuntime;
     this.fileMap = gc.fileMap;
     this.cust = gc.cust;
@@ -500,16 +500,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
         /*
         message SparseArray {
-          required fixed32 cdmHash = 1; // which variable
-          repeated uint32 size = 2;     // multidim sizes
-          repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
-          repeated Record records = 4;  // List<Record>
+          repeated uint32 size = 2 [packed=true];     // multidim sizes = shape[]
+          repeated uint32 track = 3 [packed=true];    // 1-based index into record list, 0 == missing
+          repeated Record records = 4;                // List<Record>
+          uint32 ndups = 5;                           // duplicates found when creating
         }
        */
         GribCollectionProto.SparseArray proto = GribCollectionProto.SparseArray.parseFrom(b);
-        //int cdmHash = proto.getCdmHash();
-        //if (cdmHash != info.cdmHash)
-        //  throw new IllegalStateException("Corrupted index");
 
         int nsizes = proto.getSizeCount();
         int[] size = new int[nsizes];
@@ -525,16 +522,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         List<Record> records = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
           GribCollectionProto.Record pr = proto.getRecords(i);
-
-          // must account for change of default value in proto3
-          int scanMode = pr.getScanMode();
-          boolean isMissing = pr.getScanModePresentCase() == GribCollectionProto.Record.ScanModePresentCase.SCANMODEPRESENT_NOT_SET;
-          if (isMissing) {
-            boolean isProto3 = GribCollectionImmutable.this.info.version >= 3;
-            scanMode = (isProto3) ? 0 : 9999;
-          }
-
-          records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), scanMode));
+          records.add(new Record(pr.getFileno(), pr.getStartPos(), pr.getBmsOffset(), pr.getDrsOffset()));
         }
         int ndups = proto.getNdups();
         this.sa = new SparseArray<>(size, track, records, ndups);
@@ -657,12 +645,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     public Iterable<Integer> getCoordinateIndex() {
       return coordIndex;
     }
-
-    /* public Coordinate findCoordinate(String want) {
-      for (Coordinate coord : group.getCoordinates())
-        if (coord.getName().equals(want)) return coord;
-      return null;
-    } */
 
     public SparseArray<Record> getSparseArray() {
       return sa;
@@ -848,24 +830,24 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   @Immutable
   public static class Record {
     public final int fileno;    // which file
-    public final long pos;      // offset on file where data starts
-    public final long bmsPos;   // if non-zero, offset where bms starts
-    public final int scanMode;  // from gds
+    public final long pos;      // offset on file where message starts
+    public final int bmsOffset;   // if non-zero, offset where bms starts (grib2)
+    public final int drsOffset;   // if non-zero, offset where drs starts  (grib2)
 
-    public Record(int fileno, long pos, long bmsPos, int scanMode) {
+    public Record(int fileno, long pos, int bmsOffset, int drsOffset) { // }, int scanMode) {
       this.fileno = fileno;
       this.pos = pos;
-      this.bmsPos = bmsPos;
-      this.scanMode = scanMode;
+      this.bmsOffset = bmsOffset;
+      this.drsOffset = drsOffset;
     }
 
     @Override
     public String toString() {
       final StringBuilder sb = new StringBuilder("GribCollection.Record{");
       sb.append("fileno=").append(fileno);
-      sb.append(", pos=").append(pos);
-      sb.append(", bmsPos=").append(bmsPos);
-      sb.append(", scanMode=").append(scanMode);
+      sb.append(", startPos=").append(pos);
+      sb.append(", bmsOffset=").append(bmsOffset);
+      sb.append(", drsOffset=").append(drsOffset);
       sb.append('}');
       return sb.toString();
     }

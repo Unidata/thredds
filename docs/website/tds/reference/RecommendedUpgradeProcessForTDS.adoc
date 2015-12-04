@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Recommended Process for Upgrading a THREDDS Data Server (TDS)
-=============================================================
-
 = Recommended Process for Upgrading a TDS
 
 When upgrading a THREDDS Data Server (TDS), it is important to fully
@@ -18,14 +14,11 @@ So, here is the process we follow when we upgrade the TDS on our systems
 (we use Tomcat, but the process should be similar for other webapp
 containers):
 
-1.  Use the Tomcat manager app [link:#noteManagerUrl[2]] to undeploy the
-TDS
+1.  Use the Tomcat manager app [link:#noteManagerUrl[2]] to undeploy the TDS
 2.  Shutdown Tomcat [link:#noteStopStart[3]]
 3.  Clean up any log files [link:#noteLogCleanup[4]]
 4.  Startup Tomcat
 5.  Use the Tomcat manager to deploy the new TDS
-
-'''''
 
 == Notes
 
@@ -38,10 +31,5 @@ mentioned link:../tutorial/BasicTomcatAndTDSSecurity.adoc[here]
 * In $\{TOMCAT_HOME}/logs/*
 * In $\{TOMCAT_HOME}/content/thredds/logs/*
 +
-Where $\{TOMCAT_HOME} is the directory in which Tomcat is installed.
+where $\{TOMCAT_HOME} is the directory in which Tomcat is installed.
 
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata.
-Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS
-support].

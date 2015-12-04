@@ -35,6 +35,7 @@ package ucar.nc2.iosp;
 
 import ucar.unidata.io.RandomAccessFile;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 /**
@@ -186,7 +187,9 @@ public class BitReader {
 
   private byte nextByte() throws IOException {
     if (raf != null) {
-      return (byte) raf.read();
+      int result = raf.read();
+      if (result == -1) throw new EOFException();
+      return (byte) result;
     } else {
       return data[dataPos++];
     }

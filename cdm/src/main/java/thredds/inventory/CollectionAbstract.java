@@ -73,8 +73,6 @@ import java.util.*;
 public abstract class CollectionAbstract implements MCollection {
   static private org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
-  static public final String NCX_SUFFIX = ".ncx3";  // LOOK this will have to be generalized, so different collections (GRIB, BUFR, FMRC can use different suffix)
-
   static public final String CATALOG = "catalog:";
   static public final String DIR = "directory:";
   static public final String FILE = "file:";
@@ -135,8 +133,8 @@ public abstract class CollectionAbstract implements MCollection {
   }
 
   @Override
-  public String getIndexFilename() {
-    return getRoot() + "/" + collectionName + NCX_SUFFIX;
+  public String getIndexFilename(String suffix) {
+    return getRoot() + "/" + collectionName + suffix;
   }
 
   public void setStreamFilter(DirectoryStream.Filter<Path> filter) {

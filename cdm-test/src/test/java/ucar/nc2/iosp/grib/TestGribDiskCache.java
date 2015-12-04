@@ -71,16 +71,10 @@ public class TestGribDiskCache {
     File dd = new File(dataDir);
 
     for (File data : dd.listFiles()) {
-      if (data.getName().endsWith(".gbx8"))
-        data.delete();
-      if (data.getName().endsWith(".gbx9"))
-        data.delete();
-      if (data.getName().endsWith(".ncx"))
-        data.delete();
-      if (data.getName().endsWith(".ncx2"))
-        data.delete();
-      if (data.getName().endsWith(".ncx3"))
-        data.delete();   }
+      String name = data.getName();
+      if (name.contains(".gbx")) data.delete();
+      if (name.contains(".ncx")) data.delete();
+    }
 
     for (File data : dd.listFiles()) {
       System.out.printf("Open %s%n", data.getPath());
@@ -89,13 +83,11 @@ public class TestGribDiskCache {
     }
 
     for (File data : dd.listFiles()) {
-      assert !data.getName().endsWith(".gbx8");
-      assert !data.getName().endsWith(".gbx9");
-      assert !data.getName().endsWith(".ncx");
-      assert !data.getName().endsWith(".ncx2");
-      assert !data.getName().endsWith(".ncx3");
+      String name = data.getName();
+      assert !name.contains(".gbx");
+      assert !name.contains(".ncx");
       if (data.getName().endsWith(".grib1") || data.getName().endsWith(".grib2")) {
-        String index = data.getPath()+".ncx3";
+        String index = data.getPath()+".ncx4";
         File indexFile = cache.getCacheFile(index);
         assert indexFile != null;
         assert indexFile.exists() : indexFile.getPath() +" does not exist";

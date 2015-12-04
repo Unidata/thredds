@@ -6,17 +6,17 @@ import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.ServiceType;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
 
-import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Map;
 
 /**
- * Description
+ * DatasetTracker using ChronicleMap
  *
  * @author John
  * @since 6/8/2015
@@ -39,14 +39,12 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   }
 
   private boolean alreadyExists;
-  //private boolean changed;
-  //private String pathname;
+  private boolean changed;
   private File dbFile;
   private long maxDatasets;
-  private ChronicleMap<String, Externalizable> datasetMap;
+  private ChronicleMap<String, DatasetExt> datasetMap;
 
   public DatasetTrackerChronicle(String pathname, long maxDatasets, long number) {
-    // this.pathname = pathname;
     dbFile = new File(pathname + datasetName + "." + number);
     alreadyExists = dbFile.exists();
     this.maxDatasets = maxDatasets;
@@ -62,13 +60,11 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   }
 
   public void save() throws IOException {
-    /* LOOK just a guess
     if (changed) {
+      System.out.printf("datasetMap was saved%n");
       datasetMap.close();
-      ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
-              .averageValueSize(200).entries(maxDatasets);
-      datasetMap = builder.createPersistedTo(dbFile);
-    } */
+      open();
+    }
   }
 
   public void close() throws IOException {
@@ -104,12 +100,13 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   }
 
   private void open() throws IOException {
-    ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
+    ChronicleMapBuilder<String, DatasetExt> builder = ChronicleMapBuilder.of(String.class, DatasetExt.class)
             .averageValueSize(200).entries(maxDatasets);
     datasetMap = builder.createPersistedTo(dbFile);
+    changed = false;
   }
 
-  public boolean trackDataset(Dataset dataset, DatasetTracker.Callback callback) {
+  public boolean trackDataset(long catId, Dataset dataset, DatasetTracker.Callback callback) {
     if (callback != null) {
       callback.hasDataset(dataset);
       boolean track = false;
@@ -137,12 +134,20 @@ public class DatasetTrackerChronicle implements DatasetTracker {
 
     } else { // regular dataset
       for (Access access : dataset.getAccess()) {
+        ServiceType st = access.getService().getType();
+        if (st == null || !st.isStandardTdsService()) // skip non-TDS services
+          continue;
+
         String accessPath = access.getUrlPath();
-        if (accessPath == null)
-          catalogInitLog.debug("trackDataset {} access {} has null path", dataset, access);
+        if (accessPath == null) {
+          catalogInitLog.warn("trackDataset {} access {} has null path", dataset, access);
+          continue;
+        }
+
         if (path == null) path = accessPath;
-        else if (!path.equals(access.getUrlPath())) {
+        else if (!path.equals(accessPath)) { //LOOK must put all for restrict
           System.out.printf(" paths differ: %s%n %s%n%n", path, accessPath);
+          catalogInitLog.warn(" paths differ: {} != {}", path, accessPath);
         }
       }
     }
@@ -160,19 +165,20 @@ public class DatasetTrackerChronicle implements DatasetTracker {
     }
 
     // changed = true;
-    DatasetTrackerInfo dsext = new DatasetTrackerInfo(0, dataset.getRestrictAccess(), ncml);
+    DatasetExt dsext = new DatasetExt(catId, dataset.getRestrictAccess(), ncml);
     datasetMap.put(path, dsext);
+    changed = true;
     return true;
   }
 
   public String findResourceControl(String path) {
-    DatasetTrackerInfo dext = (DatasetTrackerInfo) datasetMap.get(path);
+    DatasetExt dext = datasetMap.get(path);
     if (dext == null) return null;
     return dext.getRestrictAccess();
   }
 
   public String findNcml(String path) {
-    DatasetTrackerInfo dext = (DatasetTrackerInfo) datasetMap.get(path);
+    DatasetExt dext = datasetMap.get(path);
     if (dext == null) return null;
     return dext.getNcml();
   }
@@ -180,8 +186,10 @@ public class DatasetTrackerChronicle implements DatasetTracker {
   @Override
   public void showDB(Formatter f) {
     f.format("ChronicleMap %s%n", dbFile.getPath());
-    for (Map.Entry<String, Externalizable> entry : datasetMap.entrySet()) {
-      f.format(" '%s' == %s%n", entry.getKey(), entry.getValue());
+    int count = 0;
+    for (Map.Entry<String, DatasetExt> entry : datasetMap.entrySet()) {
+      f.format("%4d: '%s' == %s%n", count++, entry.getKey(), entry.getValue());
+      if (count % 10 == 0) f.format("%n");
     }
   }
 

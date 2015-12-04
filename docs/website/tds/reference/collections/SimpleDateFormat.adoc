@@ -12,8 +12,6 @@ http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html[here]
 for full info. The following pattern letters are defined (all other
 characters from `'A'` to `'Z'` and from `'a'` to `'z'` are reserved):
 
-_________________________________________________________________________________________________________________________________________________________________________________________
---
 [cols=",,,",options="header",]
 |=======================================================================
 |Letter |Date or Time Component |Presentation |Examples
@@ -100,7 +98,6 @@ The following examples show how date and time patterns are interpreted
 in the U.S. locale. The given date and time are 2001-07-04 12:08:56
 local time in the U.S. Pacific Time time zone.
 
-__________________________________________________________________
 [cols=",",options="header",]
 |=================================================================
 |Date and Time Pattern |Result
@@ -113,7 +110,3 @@ __________________________________________________________________
 |`"EEE, d MMM yyyy HH:mm:ss Z"` |`Wed, 4 Jul 2001 12:08:56 -0700`
 |`"yyMMddHHmmssZ"` |`010704120856-0700`
 |=================================================================
-__________________________________________________________________
-
---
-_________________________________________________________________________________________________________________________________________________________________________________________

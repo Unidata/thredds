@@ -52,14 +52,14 @@ public interface MCollection extends Closeable {
    * The name of the collection
    * @return name of the collection
    */
-  public String getCollectionName();
+  String getCollectionName();
 
   /**
    * Get common root directory of all MFiles in the collection - may be null
    *
    * @return root directory name, or null.
    */
-  public String getRoot();
+  String getRoot();
 
   /**
    * Use the date extractor to extract the date from the filename.
@@ -68,40 +68,40 @@ public interface MCollection extends Closeable {
    * @param mfile extract from here
    * @return Date, or null if none
    */
-  public CalendarDate extractDate(MFile mfile);
+  CalendarDate extractDate(MFile mfile);
 
   /**
    * Does this CollectionManager have the ability to extract a date from the MFile ?
    * @return true if CollectionManager has a DateExtractor
    */
-  public boolean hasDateExtractor();
+  boolean hasDateExtractor();
 
   /**
    * The date to partition on, usually the starting date of the collection.
    * @return partition date of the collection, or null if unknown
    */
-  public CalendarDate getPartitionDate();
+  CalendarDate getPartitionDate();
 
   /**
    * Close and release any resources. Do not make further calls on this object.
    */
-  public void close();
+  void close();
 
   /**
    * Choose Proto dataset as index from [0..n-1], based on configuration.
    * @param n size to choose from
    * @return index within range [0..n-1]
    */
-  public int getProtoIndex(int n);
+  int getProtoIndex(int n);
 
   /**
    * last time this collection was modified
    * @return msess since epoch
    */
-  public long getLastModified();
+  long getLastModified();
 
   // not in cache
-  public String getIndexFilename();
+  String getIndexFilename(String suffix);
 
   //////////////////////////////////////////////////////////////////////////////////////
 
@@ -111,21 +111,21 @@ public interface MCollection extends Closeable {
    *
    * @return current collection of MFile as an Iterable.
    */
-  public Iterable<MFile> getFilesSorted() throws IOException;
+  Iterable<MFile> getFilesSorted() throws IOException;
 
   /**
    * Sorted filename
    * @return Sorted filename
    * @throws IOException
    */
-  public List<String> getFilenames() throws IOException;
+  List<String> getFilenames() throws IOException;
 
   /**
    * The latest file in the collection.
    * Only call if hasDateExtractor() == true.
    * @return latest file in the collection
    */
-  public MFile getLatestFile() throws IOException;
+  MFile getLatestFile() throws IOException;
 
   /**
    * Get the current collection of MFile, no guaranteed order.
@@ -139,13 +139,13 @@ public interface MCollection extends Closeable {
    * </pre>
    * @return current collection of MFile as an CloseableIterator.
    */
-  public CloseableIterator<MFile> getFileIterator() throws IOException;
+  CloseableIterator<MFile> getFileIterator() throws IOException;
 
 
   ////////////////////////////////////////////////////
   // ability to pass arbitrary information to users of the mcollection .
 
-  public Object getAuxInfo(String key);
-  public void putAuxInfo(String key, Object value);
+  Object getAuxInfo(String key);
+  void putAuxInfo(String key, Object value);
 
 }

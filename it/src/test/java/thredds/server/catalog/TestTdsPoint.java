@@ -24,9 +24,9 @@ public class TestTdsPoint {
     Catalog cat = TdsLocalCatalog.open(catalog);
     testCat(cat, 7, false, null, 0);
 
-    Dataset top = cat.getDatasets().get(0);
+    Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(!top.hasAccess());
-    for (Dataset ds : top.getDatasets()) {
+    for (Dataset ds : top.getDatasetsLocal()) {
       if (!(ds instanceof CatalogRef)) {
         Assert.assertTrue(ds.hasAccess());
 
@@ -45,9 +45,9 @@ public class TestTdsPoint {
     Catalog cat = TdsLocalCatalog.open(catalog);
     testCat(cat, 0, false, "opendapOnly", 1);
 
-    Dataset top = cat.getDatasets().get(0);
+    Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(!top.hasAccess());
-    for (Dataset ds : top.getDatasets()) {
+    for (Dataset ds : top.getDatasetsLocal()) {
       if (!(ds instanceof CatalogRef)) {
         Assert.assertTrue(ds.hasAccess());
 
@@ -72,9 +72,9 @@ public class TestTdsPoint {
     Assert.assertNull(cat.findService("Resolver"));
 
 
-    Dataset top = cat.getDatasets().get(0);
+    Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(!top.hasAccess());
-    for (Dataset ds : top.getDatasets()) {
+    for (Dataset ds : top.getDatasetsLocal()) {
       if (!(ds instanceof CatalogRef)) {
         Assert.assertTrue(ds.hasAccess());
 

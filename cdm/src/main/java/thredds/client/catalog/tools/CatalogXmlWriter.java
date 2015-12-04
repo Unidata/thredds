@@ -142,7 +142,7 @@ public class CatalogXmlWriter {
     }
 
     // datasets
-    iter = cat.getDatasets().iterator();
+    iter = cat.getDatasetsLocal().iterator();
     while (iter.hasNext()) {
       Dataset ds = (Dataset) iter.next();
       if (ds instanceof CatalogRef)
@@ -255,7 +255,7 @@ public class CatalogXmlWriter {
     if (!doNestedDatasets) return;
 
     // nested datasets
-    for (Dataset nested : ds.getDatasets()) {
+    for (Dataset nested : ds.getDatasetsLocal()) {
      // if (nested instanceof DatasetScan)
      //   dsElem.addContent(writeDatasetScan((DatasetScan) nested));
       if (nested instanceof CatalogRef)

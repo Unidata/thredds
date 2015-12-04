@@ -238,7 +238,8 @@ public class Grib1SectionGridDefinition {
     final Formatter sb = new Formatter();
     sb.format("Grib1SectionGridDefinition");
     sb.format("  gridTemplate=%d%n", gridTemplate);
-    sb.format("  predefinedGridDefinition=%d%n", predefinedGridDefinition);
+    if (predefinedGridDefinition >= 0)
+      sb.format("  predefinedGridDefinition=%d%n", predefinedGridDefinition);
     double[] verts = getVerticalCoordinateParameters();
     if (verts != null) {
       sb.format("  verticalPressureLevels (%d)=", verts.length);

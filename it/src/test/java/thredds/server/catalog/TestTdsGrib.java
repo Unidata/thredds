@@ -139,8 +139,8 @@ public class TestTdsGrib {
       ss.add(s.getName());
     }
 
-    Dataset top = cat.getDatasets().get(0);
-    for (Dataset ds : top.getDatasets()) {
+    Dataset top = cat.getDatasetsLocal().get(0);
+    for (Dataset ds : top.getDatasetsLocal()) {
       if (ds instanceof CatalogRef) {
         CatalogRef catref = (CatalogRef) ds;
         String name =  catref.getName();
@@ -154,9 +154,9 @@ public class TestTdsGrib {
   public void testOneFilePartition() throws IOException {
     String catalog = "/catalog/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);
-    Assert.assertEquals(1, cat.getDatasets().size());
+    Assert.assertEquals(1, cat.getDatasetsLocal().size());
 
-    Dataset top = cat.getDatasets().get(0);
+    Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(0 < top.getDataSize());
 
     DateType dt =  top.getLastModifiedDate();
@@ -180,7 +180,7 @@ public class TestTdsGrib {
   public void testTPanalyis() throws IOException {
     String catalog = "catalog/HRRR/analysis/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);
-    Assert.assertEquals(1, cat.getDatasets().size());
+    Assert.assertEquals(1, cat.getDatasetsLocal().size());
 
     Dataset full = cat.findDatasetByID("HRRR/analysis/TP");
     Assert.assertNotNull(full);
@@ -224,9 +224,9 @@ public class TestTdsGrib {
     Catalog cat = TdsLocalCatalog.open(catalog);
     testCat(cat, 9, true, null, 0);
 
-    Dataset top = cat.getDatasets().get(0);
+    Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(!top.hasAccess());
-    for (Dataset ds : top.getDatasets()) {
+    for (Dataset ds : top.getDatasetsLocal()) {
       if (!(ds instanceof CatalogRef)) {
         Assert.assertTrue(ds.hasAccess());
 
@@ -246,9 +246,9 @@ public class TestTdsGrib {
     Catalog cat = TdsLocalCatalog.open(catalog);
     testCat(cat, 10, true, null, 0);
 
-    Dataset top = cat.getDatasets().get(0);
+    Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(!top.hasAccess());
-    for (Dataset ds : top.getDatasets()) {
+    for (Dataset ds : top.getDatasetsLocal()) {
       if (!(ds instanceof CatalogRef)) {
         Assert.assertTrue(ds.hasAccess());
 
@@ -274,9 +274,9 @@ public class TestTdsGrib {
     Assert.assertNotNull(resolverService);
     Assert.assertEquals(ServiceType.Resolver, resolverService.getType());
 
-    Dataset top = cat.getDatasets().get(0);
+    Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(!top.hasAccess());
-    for (Dataset ds : top.getDatasets()) {
+    for (Dataset ds : top.getDatasetsLocal()) {
       if (!(ds instanceof CatalogRef)) {
         Assert.assertTrue(ds.hasAccess());
 

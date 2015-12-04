@@ -140,7 +140,7 @@ public class DataRootPathMatcher {
   private @Nonnull DataRoot readDataRootFromCatalog( DataRootExt dataRootExt) {
     try {
       ConfigCatalog cat = ccc.get(dataRootExt.getCatLocation());
-      extractDataRoots(dataRootExt.getCatLocation(), cat.getDatasets(), false, null);  // will create a new DataRootExt and replace this one in the map
+      extractDataRoots(dataRootExt.getCatLocation(), cat.getDatasetsLocal(), false, null);  // will create a new DataRootExt and replace this one in the map
       DataRootExt dataRootExtNew = map.get(dataRootExt.getPath());
       if (null == dataRootExtNew) {
         logger.error("Reading catalog " + dataRootExt.getCatLocation() + " failed to find dataRoot path=" + dataRootExt.getPath());
@@ -158,7 +158,8 @@ public class DataRootPathMatcher {
 
   /**
    * Finds datasetScan, datasetFmrc
-   * Look for duplicate Ids (give message). Dont follow catRefs.
+   * Look for duplicate Ids (give message).
+   * Dont follow catRefs.
    *
    * @param dsList the list of Dataset
    */
@@ -167,11 +168,6 @@ public class DataRootPathMatcher {
     for (Dataset dataset : dsList) {
       if (dataset instanceof DatasetScan) {
         DatasetScan ds = (DatasetScan) dataset;
-        /* Service service = ds.getServiceDefault();
-        if (service == null) {
-          logCatalogInit.error(ERROR + "DatasetScan " + ds.getName() + " has no default Service - skipping");  // LOOK needed?
-          continue;
-        } */
         addRoot(ds, catalogRelPath, checkDups);
 
       } else if (dataset instanceof FeatureCollectionRef) {
@@ -193,7 +189,7 @@ public class DataRootPathMatcher {
 
       if (!(dataset instanceof CatalogRef)) {
         // recurse
-        extractDataRoots(catalogRelPath, dataset.getDatasets(), checkDups, idMap);
+        extractDataRoots(catalogRelPath, dataset.getDatasetsLocal(), checkDups, idMap);
       }
     }
   }

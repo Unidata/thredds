@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.collection;
 
+import jdk.nashorn.internal.ir.annotations.Immutable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
@@ -65,6 +66,7 @@ abstract class GribCollectionBuilder {
   protected final org.slf4j.Logger logger;
   protected final boolean isGrib1;
   protected GribCollectionImmutable.Type type;
+  protected Map<Long, Integer> gdsTrack = new HashMap<>();
 
   protected String name;            // collection name
   protected File directory;         // top directory
@@ -86,7 +88,7 @@ abstract class GribCollectionBuilder {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(dcm.getIndexFilename());
+    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
     if (collectionIndexFile == null) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
@@ -241,18 +243,18 @@ abstract class GribCollectionBuilder {
     return ok;
   }
 
-
-  static public interface Group {
+  public interface Group {
     CalendarDate getRuntime();
     List<Coordinate> getCoordinates();
     Set<Long> getCoordinateRuntimes();
   }
 
+  @Immutable
   static protected class GroupAndRuntime {
-    Object gdsHashObject;
-    long runtime;
+    private final GdsHashObject gdsHashObject;
+    private final long runtime;
 
-    GroupAndRuntime(Object gdsHashObject, long runtime) {
+    GroupAndRuntime(GdsHashObject gdsHashObject, long runtime) {
       this.gdsHashObject = gdsHashObject;
       this.runtime = runtime;
     }
@@ -264,8 +266,7 @@ abstract class GribCollectionBuilder {
 
       GroupAndRuntime that = (GroupAndRuntime) o;
       if (!gdsHashObject.equals(that.gdsHashObject)) return false;
-      if (runtime != that.runtime) return false;
-      return true;
+      return runtime == that.runtime;
     }
 
     @Override

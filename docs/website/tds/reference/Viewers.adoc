@@ -4,8 +4,6 @@
 
 = TDS Dataset Viewer Links
 
-'''''
-
 The TDS adds _*Viewer Links*_ to datasets at the bottom of a dataset’s
 HTML web page, for example:
 
@@ -35,8 +33,6 @@ and what HTML fragment to include.
 3.  If your viewer link points to a JNLP file,
 link:#Returning_a_JNLP_file_[the TDS can generate the JNLP file] from a
 template file.
-
-'''''
 
 == 1. Adding viewer links with ``viewer'' property elements
 
@@ -176,8 +172,6 @@ looks something like:
 
 image:images/validateViewer.png[image]
 
-'''''
-
 == 2. Returning a JNLP file
 
 Viewer links can also support on the fly generation of JNLP files. This
@@ -265,8 +259,6 @@ The third from the last line would be replaced with
 
 Which passes the dataset access URL to the IDV as an argument.
 
-'''''
-
 == 3. Create a Viewer implementation Java class
 
 This method is available in TDS version 3.14+.
@@ -337,10 +329,8 @@ absolute URI
 Note that is has an href embedded in it, which will be displayed in this
 example as:
 +
-_____________________________________________________________________________________________________________________________________________________________________________________________________________
 http://motherlode.ucar.edu:8080/thredds/view/idv.jnlp?url=http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NDFD/CONUS_5km/NDFD_CONUS_5km_20061106_1200.grib2[Integrated
 Data Viewer (IDV) (webstart)]
-_____________________________________________________________________________________________________________________________________________________________________________________________________________
 
 === Referencing an external URL
 
@@ -382,8 +372,6 @@ the IDV implementation above we see it enforces two requirements:
 
 1.  the dataset must have an OPeNDAP (aka DODS) access URL and
 2.  the dataset must be gridded data.
-
-'''''
 
 == Embedding the ToolsUI viewers on your web page
 

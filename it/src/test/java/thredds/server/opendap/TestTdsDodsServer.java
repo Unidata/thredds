@@ -172,7 +172,7 @@ public class TestTdsDodsServer {
     final String urlPrefix = TestWithLocalServer.withPath("/dodsC/scanCdmUnitTests/tds/opendap/");
     final String dirName = TestDir.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
-    TestDir.actOnAll(dirName, new TestDir.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestDir.Act() {
+    TestDir.actOnAll(dirName, new TestDir.FileFilterNoWant(".gbx8 .gbx9 .ncx .ncx2 .ncx3"), new TestDir.Act() {
       public int doAct(String filename) throws IOException {
         filename = StringUtil2.replace(filename, '\\', "/");
         filename = StringUtil2.remove(filename, dirName);

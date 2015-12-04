@@ -1,16 +1,13 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Point Feature Collections
-=========================
-
 = Point Feature Collections
 
-A __*Point Feature Collection*__ is a collection of files which the CDM
+== Overview
+
+A *_Point Feature Collection_* is a collection of files which the CDM
 can recognize as containing
-link:../../../netcdf-java/reference/FeatureDatasets/PointFeatures.adoc[Point
-Features].
+link:../../../netcdf-java/reference/FeatureDatasets/PointFeatures.adoc[Point Features].
 
 === Constraints on Point Feature Collections
 
@@ -23,8 +20,6 @@ link:FeatureCollections.adoc#dateExtractor[DateExtractor].
 contain the same collection of variables and attributes, and they must
 be on the same horizontal and vertical grid. The component files can
 differ only in their time coordinates and the actual data values.
-
-'''''
 
 == Example Point Feature Collections
 
@@ -50,8 +45,6 @@ differ only in their time coordinates and the actual data values.
 </featureCollection>
 ---------------------------------------------------------------------------------------------------------------
 
-'''''
-
 === pointConfig element
 
 Defines options on feature collections with **featureType**=``POINT'' or
@@ -61,7 +54,6 @@ Defines options on feature collections with **featureType**=``POINT'' or
 1) <pointConfig datasetTypes="cdmrFeature Files" />
 ---------------------------------------------------
 
-___________________________________________________________________________________________________________________________________________
 where:
 
 1.  **datasetTypes**: list the dataset types that are exposed in the TDS
@@ -70,7 +62,6 @@ catalog. The possible values are:
 the files in the collection are treated as part of the same dataset.
 * __Files__: each component file of the collection is available
 seperately, as in a datasetScan. A ``latest'' file will be added.
-___________________________________________________________________________________________________________________________________________
 
 **Notes**:
 

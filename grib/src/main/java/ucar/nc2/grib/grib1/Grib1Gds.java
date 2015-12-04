@@ -148,7 +148,7 @@ public abstract class Grib1Gds {
 
   public int template;
   protected int nx, ny;
-  public int scanMode, resolution;    // LOOK problem is if these differ for records in the same collection, since we only store one Gds.
+  public int scanMode, resolution;
   protected int lastOctet;
 
   protected Grib1Gds(int template) {

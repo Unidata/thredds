@@ -264,9 +264,9 @@ public class Grib2RecordScanner {
   private boolean nextRepeating() throws IOException {
     raf.seek(repeatPos);
 
-    GribNumbers.int4(raf); // octets 1-4 (Length of GDS)
-    int section = raf.read();
-    raf.seek(repeatPos);
+    GribNumbers.int4(raf); // skip octets 1-4
+    int section = raf.read(); // find out what section this is
+    raf.seek(repeatPos); // back to beginning of section
 
     if (section == 2) {
       repeatRecord.setLus(new Grib2SectionLocalUse(raf));

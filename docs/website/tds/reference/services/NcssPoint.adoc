@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-:stylesheet: ../../tds_adoc.css
-:linkcss:
-:toc:
-
 = NCSS For Point Data
 
 == Subsetting Parameters for NCSS Point

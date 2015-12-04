@@ -110,7 +110,7 @@ public class TestGribCollections {
 
   @Test
   public void testGC_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_1200.grib2.ncx3");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_1200.grib2.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 29567 : count.nread;
@@ -120,7 +120,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofG_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 172166 : count.nread;
@@ -128,10 +128,10 @@ public class TestGribCollections {
     assert count.nerrs == 0;
   }
 
-  //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx3 has lots of missing records
+  //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx4 has lots of missing records
   @Test
   public void testGC_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_0000.grib1.ncx3");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_0000.grib1.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 7122 : count.nread;
@@ -141,7 +141,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofG_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx3");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 36216 : count.nread;
@@ -151,7 +151,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofP_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx3");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 50864 : count.nread;
@@ -163,8 +163,8 @@ public class TestGribCollections {
   public void problem() throws IOException {
 
     long start = System.currentTimeMillis();
-    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;
@@ -190,8 +190,8 @@ public class TestGribCollections {
   public void openFileProblem() throws IOException {
 
     long start = System.currentTimeMillis();
-    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
+    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;

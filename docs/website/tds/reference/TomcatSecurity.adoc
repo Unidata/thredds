@@ -1,20 +1,14 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Tomcat Security
-===============
-
 = Tomcat Security
-
-'''''
 
 We believe Tomcat to be secure enough for typical scientific uses. There
 are no known security exploits or weaknesses. However, the Internet is a
 wild place, and we are not security experts so __caveat emptor__. These
 are best practices for running Tomcat.
 
-Alos see:
+Also see:
 
 * link:../tutorial/AdditionalSecurityConfiguration.adoc[Tomcat Security
 in TDS Tutorial]
@@ -62,7 +56,7 @@ running Tomcat only standalone (e.g. only running the THREDDS data
 server) then disable port 8009 in *$\{tomcat_home}/conf/server.xml
 file.*
 
-== *Remove Default Tomcat Applications*
+== Remove Default Tomcat Applications
 
 Tomcat ships with several default web applications, found in the
 *$\{tomcat_home}/webapps* directory. These defaults depend on the
@@ -200,16 +194,14 @@ address. Here are several examples:
 * *allow=``128\.117\.140\.62,128\.117\.140\.63,128\.117\.140\.99''*
 * *allow=``128\.117\.140\..*''*
 
-Similarly, you can use the _*RemoteHostValve*_ to filter by host name.
+Similarly, you can use the _RemoteHostValve_ to filter by host name.
 Again, the value of the *allow* and *deny* attributes must be a comma
 separated list of regular expressions which will be used to match
 against the remote client’s host name. For instance:
 
-_____________________________________________________________________________________
 -------------------------------------------------------------------------------------
 <Valve className="org.apache.catalina.valves.RemoteHostValve" allow=".*\.ucar\.edu"/>
 -------------------------------------------------------------------------------------
-_____________________________________________________________________________________
 
 == Java Security Manager
 

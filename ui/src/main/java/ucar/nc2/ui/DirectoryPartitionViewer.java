@@ -96,7 +96,7 @@ public class DirectoryPartitionViewer extends JPanel {
             setDirectory(d);
           } else if (d.getName().endsWith(".xml")) {
             setCollectionFromConfig(d.getPath());
-          } else if (d.getName().endsWith(CollectionAbstract.NCX_SUFFIX)) {
+          } else if (d.getName().endsWith(GribCdmIndex.NCX_SUFFIX)) {
             setCollectionFromIndex(d.getPath());
           }
           cb.addItem(filename);
@@ -270,7 +270,7 @@ public class DirectoryPartitionViewer extends JPanel {
     // whats the bloody collection name?
     String name = indexFile.getName();
     String dirName = parentFile.getName();
-    name = StringUtil2.removeFromEnd(name, CollectionAbstract.NCX_SUFFIX);
+    name = StringUtil2.removeFromEnd(name, GribCdmIndex.NCX_SUFFIX);
     name = StringUtil2.removeFromEnd(name, dirName);
     name = StringUtil2.removeFromEnd(name, "-");
     this.collectionName = name;
@@ -326,10 +326,10 @@ public class DirectoryPartitionViewer extends JPanel {
        public void run() {
          Formatter out = new Formatter();
          GribCdmIndex indexReader = new GribCdmIndex(logger);
-         final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, true, indexReader, logger);
+         final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, true, indexReader, GribCdmIndex.NCX_SUFFIX, logger);
          dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
-         try (PartitionCollectionMutable tp = (PartitionCollectionMutable)  GribCdmIndex.openMutableGCFromIndex(dpart.getIndexFilename(), config, false, true, logger)) {
+         try (PartitionCollectionMutable tp = (PartitionCollectionMutable) GribCdmIndex.openMutableGCFromIndex(dpart.getIndexFilename(GribCdmIndex.NCX_SUFFIX), config, false, true, logger)) {
            if (tp == null) return;
 
            for (MCollection dcmp : dpart.makePartitions(null)) {
@@ -418,7 +418,7 @@ public class DirectoryPartitionViewer extends JPanel {
       this.dir = dir;
 
       try {
-        part = new DirectoryBuilder(collectionName, dir, null);
+        part = new DirectoryBuilder(collectionName, dir, null, GribCdmIndex.NCX_SUFFIX);
         hasIndex = part.getIndex() != null;
 
       } catch (IOException e) {

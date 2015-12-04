@@ -14,16 +14,18 @@ public class CatalogExt {
   static public long total_nbytes = 0;
 
   private boolean isRoot;
-  private long catId;         // LOOK not used
+  private long catId;
   private String catRelLocation;
+  private long lastRead;
 
   public CatalogExt() {
   }
 
-  public CatalogExt(long catId, String catRelLocation, boolean isRoot) {
+  public CatalogExt(long catId, String catRelLocation, boolean isRoot, long lastRead) {
     this.isRoot = isRoot;
     this.catId = catId;
     this.catRelLocation = catRelLocation;
+    this.lastRead = lastRead;
   }
 
   public String getCatRelLocation() {
@@ -34,21 +36,35 @@ public class CatalogExt {
     return catId;
   }
 
+  public boolean setCatId(long catId) {
+    if (this.catId == 0) //only assign to new catalogs
+      this.catId = catId;
+    return this.catId == catId;
+  }
+
+  public long getLastRead() {
+    return lastRead;
+  }
+
   public boolean isRoot() {
     return isRoot;
   }
 
-  /* message Catalog {
-    required uint64 catId = 1;    // sequence no
-    required string catLocation = 2;
-    optional bool isRoot = 3 [default = false];
-  } */
+  /*
+  message Catalog {
+    uint64 catId = 1;    // sequence no
+    string catLocation = 2;
+    bool isRoot = 3;
+    uint64 lastRead = 4;
+  }
+  */
 
   public void writeExternal(DataOutputStream out) throws IOException {
     ConfigCatalogExtProto.Catalog.Builder builder = ConfigCatalogExtProto.Catalog.newBuilder();
     builder.setCatId(catId);
     builder.setCatLocation(catRelLocation);
     builder.setIsRoot(isRoot);
+    builder.setLastRead(lastRead);
 
     ConfigCatalogExtProto.Catalog index = builder.build();
     byte[] b = index.toByteArray();
@@ -74,6 +90,7 @@ public class CatalogExt {
     this.catId = catp.getCatId();
     this.catRelLocation = catp.getCatLocation();
     this.isRoot = catp.getIsRoot();
+    this.lastRead = catp.getLastRead();
   }
 
   @Override

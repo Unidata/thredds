@@ -94,15 +94,16 @@ public class TestTdsNcml {
   public void testNcMLinDatasetScan() throws IOException {
     Catalog cat = TdsLocalCatalog.open(null);
 
-    Dataset parent = cat.findDatasetByID("ModifyDatasetScan");
-    Assert.assertNotNull("cant find dataset by id 'ModifyDatasetScan'", parent);
-    Dataset ds = parent.findDatasetByName("example1.nc"); // LOOK not auto open catRef
+    Dataset catref = cat.findDatasetByID("ModifyDatasetScan");
+    Assert.assertNotNull("cant find dataset by id 'ModifyDatasetScan'", catref);
+    catref.getDatasetsLogical(); // reads in the referenced catalog
+    Dataset ds = catref.findDatasetByName("example1.nc");
     Assert.assertNotNull("cant find dataset by name 'example1'", ds);
 
     assert ds.getFeatureType() == FeatureType.GRID : ds.getFeatureType();
 
     // ncml should not be sent to the client
-    //assert null == ds.getNcmlElement();
+    assert null == ds.getNcmlElement();
 
     DataFactory fac = new DataFactory();
     Formatter log = new Formatter();

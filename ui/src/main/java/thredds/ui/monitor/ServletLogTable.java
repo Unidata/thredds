@@ -33,8 +33,6 @@
 
 package thredds.ui.monitor;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import thredds.logs.LogReader;
 import thredds.logs.ServletLogParser;
 import ucar.nc2.ui.widget.BAMutil;
@@ -53,8 +51,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -67,7 +63,7 @@ import java.util.List;
  */
 public class ServletLogTable extends JPanel {
   private PreferencesExt prefs;
-  private Cache dnsCache;
+  private DnsLookup dnsLookup;
 
   private ucar.util.prefs.ui.BeanTable logTable, uptimeTable, mergeTable, undoneTable, miscTable;
   private ArrayList<ServletLogParser.ServletLog> completeLogs;
@@ -84,11 +80,11 @@ public class ServletLogTable extends JPanel {
   //private JLabel sizeLable;
   private JTextArea startDateField, endDateField;
 
-  public ServletLogTable(JTextArea startDateField, JTextArea endDateField, PreferencesExt prefs, Cache dnsCache) {
+  public ServletLogTable(JTextArea startDateField, JTextArea endDateField, PreferencesExt prefs, DnsLookup dnsLookup) {
     this.startDateField = startDateField;
     this.endDateField = endDateField;
     this.prefs = prefs;
-    this.dnsCache = dnsCache;
+    this.dnsLookup = dnsLookup;
 
     logTable = new BeanTable(ServletLogParser.ServletLog.class, (PreferencesExt) prefs.node("Logs"), false);
     logTable.addListSelectionListener(new ListSelectionListener() {
@@ -106,7 +102,7 @@ public class ServletLogTable extends JPanel {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
         if (log == null) return;
         try {
-          infoTA.setText(log.getIp() + " = " + reverseDNS(log.getIp()));
+          infoTA.setText(log.getIp() + " = " + dnsLookup.reverseDNS(log.getIp()));
         } catch (Exception ee) {
           infoTA.setTextFromStackTrace(ee);
         }
@@ -139,7 +135,7 @@ public class ServletLogTable extends JPanel {
         Merge m = (Merge) mergeTable.getSelectedBean();
         if (m == null) return;
         try {
-          infoTA.setText(m.getIp() + " = " + reverseDNS(m.getIp()));
+          infoTA.setText(m.getIp() + " = " + dnsLookup.reverseDNS(m.getIp()));
         } catch (Exception ee) {
           infoTA.setTextFromStackTrace(ee);
         }
@@ -709,18 +705,6 @@ public class ServletLogTable extends JPanel {
       map = null;
     }
 
-  }
-
-  ////////////////////////////////////////////////
-
-  String reverseDNS(String ip) throws UnknownHostException {
-    Element cacheElem = dnsCache.get(ip);
-    if (cacheElem == null) {
-      InetAddress addr = InetAddress.getByName(ip);
-      cacheElem = new Element(ip, addr.getHostName());
-      dnsCache.put(cacheElem);
-    }
-    return (String) cacheElem.getValue();
   }
 
   ////////////////////////////////////////////////

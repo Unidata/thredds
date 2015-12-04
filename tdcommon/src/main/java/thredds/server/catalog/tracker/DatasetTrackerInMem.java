@@ -36,7 +36,7 @@ public class DatasetTrackerInMem implements DatasetTracker {
     return true;
   }
 
-  public boolean trackDataset(Dataset dataset, Callback callback) {
+  public boolean trackDataset(long catId, Dataset dataset, Callback callback) {
     if (callback != null) callback.hasDataset(dataset);
 
     if (dataset.getRestrictAccess() != null) {

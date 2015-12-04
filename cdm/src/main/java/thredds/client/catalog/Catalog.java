@@ -80,7 +80,7 @@ public class Catalog extends DatasetNode {
     this.baseURI = baseURI;
 
     Map<String, Dataset> datasetMap = new HashMap<>();
-    addDatasetsToHash(getDatasets(), datasetMap);
+    addDatasetsToHash(getDatasetsLocal(), datasetMap);
     if (!datasetMap.isEmpty())
       flds.put(Catalog.DatasetHash, datasetMap);
   }
@@ -90,7 +90,8 @@ public class Catalog extends DatasetNode {
     for (Dataset ds : datasets) {
       String id = ds.getIdOrPath();
       if (id != null) datasetMap.put(id, ds);
-      addDatasetsToHash(ds.getDatasets(), datasetMap);
+      if (ds instanceof CatalogRef) continue; // dont recurse into catrefs
+      addDatasetsToHash(ds.getDatasetsLocal(), datasetMap);
     }
   }
 
@@ -153,8 +154,8 @@ public class Catalog extends DatasetNode {
   }
 
   private void addAll(DatasetNode node, List<Dataset> all) {
-    all.addAll(node.getDatasets());
-    for (DatasetNode nested : node.getDatasets())
+    all.addAll(node.getDatasetsLocal());
+    for (DatasetNode nested : node.getDatasetsLocal())
       addAll(nested, all);
   }
 

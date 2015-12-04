@@ -73,7 +73,7 @@ import java.util.zip.InflaterInputStream;
 
 public class URLDumpPane extends TextHistoryPane {
   private enum Library {
-    Commons, java
+    HTTPFactory, java
   }
 
   private enum Command {
@@ -163,8 +163,9 @@ public class URLDumpPane extends TextHistoryPane {
     //if (impl == Library.HttpClient) {
     // openClient(urlString, cmd);
     // } else 
-    if (impl == Library.Commons) {
+    if (impl == Library.HTTPFactory) {
       openURL2(urlString, cmd);
+
     } else if (impl == Library.java) {
       if (cmd == Command.GET)
         readURL(urlString);

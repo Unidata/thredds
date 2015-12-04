@@ -2,11 +2,6 @@
 :cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
 
-:stylesheet: ../../tds_adoc.css
-:linkcss:
-:cdmDocs: ../../../netcdf-java/reference/
-:toc:
-
 = NetCDF Subset Service (NCSS) Reference
 
 == Overview

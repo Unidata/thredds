@@ -1,28 +1,19 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Checklist
-=========
-
-= TDS Installation Checklist for Production Security (Reference)
+= TDS Installation Checklist for Production (Reference)
 
 == Initial Installation
 
 === Install Java
 
-1.  Download and install
-thehttp://www.oracle.com/technetwork/java/javase/downloads/index.html[latest
-version of JDK 1.7]
+1.  Download and install the http://www.oracle.com/technetwork/java/javase/downloads/index.html[latest version of Java 8+]
 
 === Tomcat Install
 
-Create a dedicated user and group for running Tomcat who does not have
-root privileges.
+Create a dedicated user and group for running Tomcat who does not have root privileges.
 
-As this user, download and install
-thehttp://tomcat.apache.org/download-70.cgi[latest version of Tomcat 7].
-**You must use a version of Tomcat >= 7.0.43**.
+As this user, download and install the http://tomcat.apache.org/[latest version of Tomcat 8+].
 
 In **$\{tomcat_home}/bin** create a *setenv.sh* shell script, and set
 the values of *JAVA_HOME,* and **CATALINA_BASE and CONTENT_ROOT**. These
@@ -56,8 +47,7 @@ CATALINA_OPTS="$NORMAL $CONTENT_ROOT $MAX_PERM_GEN $HEADLESS $JAVA_PREFS"
 export CATALINA_OPTS
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-(You can use JAVA_OPTS instead of CATALINA_OPTS, but JAVA_OPTS is used
-for any Java program, and CATALINA_OPTS is only used by Tomcat.)
+(You can use JAVA_OPTS instead of CATALINA_OPTS, but JAVA_OPTS is used for any Java program, and CATALINA_OPTS is only used by Tomcat.)
 
 Create the directory
 *$CATALINA_HOME/content/thredds/javaUtilPrefs/.systemPrefs* and make
@@ -131,20 +121,14 @@ link:../tutorial/BasicConfigCatalogs.adoc#exampleCatalog[example].
 Modify  **$\{tomcat_home}/content/thredds/threddsConfig.xml** for your
 site in the following manner:
 
-* Add the needed information to the
-link:../tutorial/BasicThreddsConfig_xml.adoc#serverInfo[`serverInformation`
-element]
-* link:../tutorial/AddingServices.adoc[Enable any other optional
-services] like WMS or WCS.
+* Add the needed information to the link:../tutorial/BasicThreddsConfig_xml.adoc#serverInfo[serverInformation element]
+* link:../tutorial/AddingServices.adoc[Enable any other optional services] like WMS or WCS.
 
 If needed, link:../tutorial/Security.adoc#access[limit access to the
 TDS] and create a robots.txt file in *$\{tomcat_home}/webapps/ROOT/* to
 restrict crawler activity.
 
  
-
-'''''
-
 == Maintenance and Upgrades
 
 === Maintenance
@@ -169,6 +153,5 @@ When installing a new thredds.war, everything in
 
 Use one of the following methods to deploying a new version of the TDS
 
-* link:../tutorial/GettingStarted.adoc#manager[Tomcat manager
-application]
+* link:../tutorial/GettingStarted.adoc#manager[Tomcat manager application]
 * link:../tutorial/GettingStarted.adoc#deploying[manual installation]

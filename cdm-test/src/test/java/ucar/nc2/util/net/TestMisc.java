@@ -101,7 +101,7 @@ public class TestMisc extends UnitTestCommon
     {
         pass = true;
 
-        String catalogName = "http://thredds-test.unidata.ucar.edu/thredds/catalog.xml";
+        String catalogName = "http://thredds.unidata.ucar.edu/thredds/catalog.xml";
 
         try (HTTPMethod m = HTTPFactory.Get(catalogName)) {
             int statusCode = m.execute();

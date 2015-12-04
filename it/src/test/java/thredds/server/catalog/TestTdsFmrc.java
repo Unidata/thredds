@@ -131,9 +131,9 @@ public class TestTdsFmrc {
   public void testFmrcCatRefs() throws IOException {
     String catalog = "/catalog/testNAMfmrc/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);
-    Dataset top = cat.getDatasets().get(0);
+    Dataset top = cat.getDatasetsLocal().get(0);
 
-    for (Dataset ds : top.getDatasets()) {
+    for (Dataset ds : top.getDatasetsLocal()) {
       if (ds instanceof CatalogRef) {
         CatalogRef catref = (CatalogRef) ds;
         String name =  catref.getName();

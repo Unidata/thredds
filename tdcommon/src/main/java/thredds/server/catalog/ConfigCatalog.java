@@ -68,7 +68,7 @@ public class ConfigCatalog extends Catalog {
 
   public List<CatalogScan> getCatalogScans() {
     List<CatalogScan> result = new ArrayList<>();
-    for (Dataset ds : getDatasets())
+    for (Dataset ds : getDatasetsLocal())
       if (ds instanceof CatalogScan)
         result.add((CatalogScan) ds);
     return result;
@@ -77,7 +77,7 @@ public class ConfigCatalog extends Catalog {
   // turn ConfigCatalog into a mutable CatalogBuilder so we can mutate
   public CatalogBuilder makeCatalogBuilder() {
     CatalogBuilder builder = new CatalogBuilder(this);
-    for (Dataset ds : getDatasets()) {
+    for (Dataset ds : getDatasetsLocal()) {
       builder.addDataset(makeDatasetBuilder(null, ds));
     }
     return builder;
@@ -99,11 +99,14 @@ public class ConfigCatalog extends Catalog {
     for (Access access : accesses)
       builder.addAccess(new AccessBuilder(builder, access));
 
-    for (Dataset nested : ds.getDatasets())
-      builder.addDataset( makeDatasetBuilder(builder, nested));
+    if (!(ds instanceof CatalogRef)) {
+      for (Dataset nested : ds.getDatasetsLocal())
+        builder.addDataset(makeDatasetBuilder(builder, nested));
+    }
 
     return builder;
   }
+
 
     /* static public ConfigCatalog makeCatalogWithServices(ConfigCatalog cc, List<Service> services) {
     Map<String, Object> flds = new HashMap<>();

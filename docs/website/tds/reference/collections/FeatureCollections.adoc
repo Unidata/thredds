@@ -26,11 +26,9 @@ A fair amount of the complexity of feature collections is managing the collectio
 and in managing collections that change. For high-performance servers, it is necessary to let a background process manage indexing, and the THREDDS
 Data Manager (link:TDM.adoc[TDM]) is now available for that purpose.
 
-===
-
 This document gives an overview of Feature Collections, as well as a complete syntax of allowed elements, using the current server catalog XML Schema 1.2. For Feature Type specific information, see:
 
-* link:FmrcCollection.adoc[FMRC Collections]http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[]
+* link:FmrcCollection.adoc[FMRC Collections] http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[poster]
 * link:PointFeatures.adoc[Point Collections]
 * link:GribCollections.adoc[GRIB Collections]
 * link:GribConfig.adoc[GRIB specific configuration]

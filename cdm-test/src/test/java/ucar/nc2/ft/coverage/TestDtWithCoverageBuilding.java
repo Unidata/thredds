@@ -39,7 +39,7 @@ public class TestDtWithCoverageBuilding {
   @Test
   public void testScalarRuntimeCoordinate() throws IOException {
 
-    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1.ncx4";
     try (DtCoverageDataset gds = DtCoverageDataset.open(filename)) {
       Assert.assertNotNull(filename, gds);
 
@@ -74,7 +74,7 @@ public class TestDtWithCoverageBuilding {
   @Test
   public void test2DRuntimeCoordinate() throws IOException {
 
-    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx4";
     try (DtCoverageDataset gds = DtCoverageDataset.open(filename)) {
       Assert.assertNotNull(filename, gds);
 
@@ -119,7 +119,7 @@ public class TestDtWithCoverageBuilding {
   @Test
   public void testBestRuntimeCoordinateDtvsGrib() throws IOException {
 
-    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx4";
     try (DtCoverageDataset gds = DtCoverageDataset.open(filename)) {
       Assert.assertNotNull(filename, gds);
 

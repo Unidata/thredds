@@ -318,7 +318,8 @@ public class DatasetUrl {
     if (result != null)
       return result;
 
-    try (HTTPMethod method = HTTPFactory.Head(location)) {
+    // cdmremote
+    try (HTTPMethod method = HTTPFactory.Head(location+"?req=header")) {
       int statusCode = method.execute();
       if (statusCode >= 300) {
         if (statusCode == 401)

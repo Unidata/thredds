@@ -150,6 +150,19 @@ public class Grib1DataTable extends JPanel {
       }
     });
 
+    varPopup.addAction("Show Data.Info", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          bean.showDataRecord(f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
     varPopup.addAction("Compare Grib1 Records", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List list = record1BeanTable.getSelectedBeans();
@@ -922,8 +935,8 @@ public class Grib1DataTable extends JPanel {
 
     public float getAvgBits() {
       float len = getDataLength();
-      int n = gdss.getNx() * gdss.getNy();
-      return (n == 0) ? 0 : len * 8 / n;
+      int npts = gdss.getNpts();
+      return (npts == 0) ? 0 : len * 8 / npts;
     }
 
     void showDataRecord(Formatter f) {

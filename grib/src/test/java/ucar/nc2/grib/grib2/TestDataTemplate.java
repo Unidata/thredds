@@ -44,25 +44,25 @@ public class TestDataTemplate {
     @Test
     public void testPng() throws IOException {
         final String testfile = "../grib/src/test/data/MRMS_LowLevelCompositeReflectivity_00.50_20141207-072038.grib2.gz";
-        NetcdfFile nc = NetcdfFile.open(testfile);
+        try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+            Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
+            float[] data = (float[]) var.read().get1DJavaArray(float.class);
 
-        Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
-        float[] data = (float[]) var.read().get1DJavaArray(float.class);
-
-        Assert.assertEquals(-99., data[15], 1e-6);
-        Assert.assertEquals(18.5, data[5602228], 1e-6);
+            Assert.assertEquals(-99., data[15], 1e-6);
+            Assert.assertEquals(18.5, data[5602228], 1e-6);
+        }
     }
 
     // Tests reading data using template 5.41 with a bitmap
     @Test
     public void testPngBitmap() throws IOException {
         final String testfile = "../grib/src/test/data/HLYA10";
-        NetcdfFile nc = NetcdfFile.open(testfile);
+        try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+            Variable var = nc.findVariable("VAR0-19-223_FROM_7-212--1_isobaric");
+            float[] data = (float[]) var.read().get1DJavaArray(float.class);
 
-        Variable var = nc.findVariable("VAR0-19-223_FROM_7-212--1_isobaric");
-        float[] data = (float[]) var.read().get1DJavaArray(float.class);
-
-        Assert.assertEquals(0.36976, data[13], 1e-5);
-        Assert.assertTrue(Double.isNaN(data[15]));
+            Assert.assertEquals(0.36976, data[13], 1e-5);
+            Assert.assertTrue(Double.isNaN(data[15]));
+        }
     }
 }

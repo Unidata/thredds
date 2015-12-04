@@ -1,13 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-DatasetSource
-=============
-
 = Dataset Source Plugin
-
-'''''
 
 In order for the TDS to serve data through any of the subsetting
 protocols like OPenDAP, WCS and the Netcdf Subsetting Service, it must
@@ -43,11 +37,9 @@ If the *getNetcdfFile* method gets an error processing the request, it
 should set the return code on the HttpResponse and return null. For
 example. +
 
-________________________________________________________________
 ----------------------------------------------------------------
  response.sendError(HttpServletResponse.SC_NOT_FOUND, message); 
 ----------------------------------------------------------------
-________________________________________________________________
 
 By returning null, the calling routine assumes that you have sent the
 response yourself, and will terminate processing without further action.
@@ -119,10 +111,3 @@ claim it, and will be required to return a *NetcdfFile* object.
 The value that you put into urlPath will be used by TDS clients. You can
 use anything you want, as long as your DatasetSource recognizes the path
 and correctly returns the corresponding NetcdfFile. +
-
-'''''
-
-* +
-*
-
-image:../thread.png[image]This document was last updated Oct 2014

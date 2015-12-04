@@ -1,13 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-:stylesheet: ../tds_adoc.css
-:linkcss:
+= TDS Configuration Catalogs
 
-TDS Configuration Catalogs
---------------------------
-
-'''''
+== Overview
 
 TDS is configured with _configuration catalogs_ that live in the directory *$\{content_root}/thredds/* and its subdirectories. These contain
 information needed only on the server, which is removed when the TDS sends the _client catalog_ to the requester.

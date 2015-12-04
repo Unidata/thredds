@@ -158,6 +158,11 @@ public final class ConfigCatalogExtProto {
      * <code>optional bool isRoot = 3;</code>
      */
     boolean getIsRoot();
+
+    /**
+     * <code>optional uint64 lastRead = 4;</code>
+     */
+    long getLastRead();
   }
   /**
    * Protobuf type {@code Catalog}
@@ -174,6 +179,7 @@ public final class ConfigCatalogExtProto {
       catId_ = 0L;
       catLocation_ = "";
       isRoot_ = false;
+      lastRead_ = 0L;
     }
 
     @java.lang.Override
@@ -214,6 +220,11 @@ public final class ConfigCatalogExtProto {
             case 24: {
 
               isRoot_ = input.readBool();
+              break;
+            }
+            case 32: {
+
+              lastRead_ = input.readUInt64();
               break;
             }
           }
@@ -296,6 +307,15 @@ public final class ConfigCatalogExtProto {
       return isRoot_;
     }
 
+    public static final int LASTREAD_FIELD_NUMBER = 4;
+    private long lastRead_;
+    /**
+     * <code>optional uint64 lastRead = 4;</code>
+     */
+    public long getLastRead() {
+      return lastRead_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -317,6 +337,9 @@ public final class ConfigCatalogExtProto {
       if (isRoot_ != false) {
         output.writeBool(3, isRoot_);
       }
+      if (lastRead_ != 0L) {
+        output.writeUInt64(4, lastRead_);
+      }
     }
 
     public int getSerializedSize() {
@@ -334,6 +357,10 @@ public final class ConfigCatalogExtProto {
       if (isRoot_ != false) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(3, isRoot_);
+      }
+      if (lastRead_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(4, lastRead_);
       }
       memoizedSize = size;
       return size;
@@ -452,6 +479,8 @@ public final class ConfigCatalogExtProto {
 
         isRoot_ = false;
 
+        lastRead_ = 0L;
+
         return this;
       }
 
@@ -477,6 +506,7 @@ public final class ConfigCatalogExtProto {
         result.catId_ = catId_;
         result.catLocation_ = catLocation_;
         result.isRoot_ = isRoot_;
+        result.lastRead_ = lastRead_;
         onBuilt();
         return result;
       }
@@ -501,6 +531,9 @@ public final class ConfigCatalogExtProto {
         }
         if (other.getIsRoot() != false) {
           setIsRoot(other.getIsRoot());
+        }
+        if (other.getLastRead() != 0L) {
+          setLastRead(other.getLastRead());
         }
         onChanged();
         return this;
@@ -657,6 +690,32 @@ public final class ConfigCatalogExtProto {
       public Builder clearIsRoot() {
         
         isRoot_ = false;
+        onChanged();
+        return this;
+      }
+
+      private long lastRead_ ;
+      /**
+       * <code>optional uint64 lastRead = 4;</code>
+       */
+      public long getLastRead() {
+        return lastRead_;
+      }
+      /**
+       * <code>optional uint64 lastRead = 4;</code>
+       */
+      public Builder setLastRead(long value) {
+        
+        lastRead_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint64 lastRead = 4;</code>
+       */
+      public Builder clearLastRead() {
+        
+        lastRead_ = 0L;
         onChanged();
         return this;
       }
@@ -5072,23 +5131,23 @@ public final class ConfigCatalogExtProto {
   static {
     java.lang.String[] descriptorData = {
       "\n5thredds/server/catalog/tracker/configC" +
-      "atalogExt.proto\"=\n\007Catalog\022\r\n\005catId\030\001 \001(" +
-      "\004\022\023\n\013catLocation\030\002 \001(\t\022\016\n\006isRoot\030\003 \001(\010\"\202" +
-      "\001\n\010DataRoot\022\017\n\007urlPath\030\001 \001(\t\022\023\n\013dirLocat" +
-      "ion\030\002 \001(\t\022\033\n\004type\030\003 \001(\0162\r.DataRootType\022\023" +
-      "\n\013catLocation\030\004 \001(\t\022\014\n\004name\030\005 \001(\t\022\020\n\010res" +
-      "trict\030\006 \001(\t\"\226\001\n\007Dataset\022\r\n\005catId\030\001 \001(\004\022\014" +
-      "\n\004name\030\002 \001(\t\022\014\n\004path\030\003 \001(\t\022\n\n\002id\030\004 \001(\t\022\020" +
-      "\n\010restrict\030\005 \001(\t\022\014\n\004ncml\030\006 \001(\t\022\027\n\006access" +
-      "\030\n \003(\0132\007.Access\022\033\n\010property\030\013 \003(\0132\t.Prop",
-      "erty\"U\n\006Access\022\023\n\013serviceName\030\001 \001(\t\022\017\n\007u" +
-      "rlPath\030\002 \001(\t\022\023\n\013dataFormatS\030\003 \001(\t\022\020\n\010dat" +
-      "aSize\030\004 \001(\004\"\'\n\010Property\022\014\n\004name\030\001 \001(\t\022\r\n" +
-      "\005value\030\002 \001(\t*b\n\014DataRootType\022\010\n\004defo\020\000\022\017" +
-      "\n\013datasetRoot\020\001\022\017\n\013datasetScan\020\002\022\017\n\013cata" +
-      "logScan\020\003\022\025\n\021featureCollection\020\004B7\n\036thre" +
-      "dds.server.catalog.trackerB\025ConfigCatalo" +
-      "gExtProtob\006proto3"
+      "atalogExt.proto\"O\n\007Catalog\022\r\n\005catId\030\001 \001(" +
+      "\004\022\023\n\013catLocation\030\002 \001(\t\022\016\n\006isRoot\030\003 \001(\010\022\020" +
+      "\n\010lastRead\030\004 \001(\004\"\202\001\n\010DataRoot\022\017\n\007urlPath" +
+      "\030\001 \001(\t\022\023\n\013dirLocation\030\002 \001(\t\022\033\n\004type\030\003 \001(" +
+      "\0162\r.DataRootType\022\023\n\013catLocation\030\004 \001(\t\022\014\n" +
+      "\004name\030\005 \001(\t\022\020\n\010restrict\030\006 \001(\t\"\226\001\n\007Datase" +
+      "t\022\r\n\005catId\030\001 \001(\004\022\014\n\004name\030\002 \001(\t\022\014\n\004path\030\003" +
+      " \001(\t\022\n\n\002id\030\004 \001(\t\022\020\n\010restrict\030\005 \001(\t\022\014\n\004nc" +
+      "ml\030\006 \001(\t\022\027\n\006access\030\n \003(\0132\007.Access\022\033\n\010pro",
+      "perty\030\013 \003(\0132\t.Property\"U\n\006Access\022\023\n\013serv" +
+      "iceName\030\001 \001(\t\022\017\n\007urlPath\030\002 \001(\t\022\023\n\013dataFo" +
+      "rmatS\030\003 \001(\t\022\020\n\010dataSize\030\004 \001(\004\"\'\n\010Propert" +
+      "y\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t*b\n\014DataRo" +
+      "otType\022\010\n\004defo\020\000\022\017\n\013datasetRoot\020\001\022\017\n\013dat" +
+      "asetScan\020\002\022\017\n\013catalogScan\020\003\022\025\n\021featureCo" +
+      "llection\020\004B7\n\036thredds.server.catalog.tra" +
+      "ckerB\025ConfigCatalogExtProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -5107,7 +5166,7 @@ public final class ConfigCatalogExtProto {
     internal_static_Catalog_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Catalog_descriptor,
-        new java.lang.String[] { "CatId", "CatLocation", "IsRoot", });
+        new java.lang.String[] { "CatId", "CatLocation", "IsRoot", "LastRead", });
     internal_static_DataRoot_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_DataRoot_fieldAccessorTable = new

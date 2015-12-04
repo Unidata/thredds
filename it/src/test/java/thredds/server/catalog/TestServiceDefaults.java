@@ -29,7 +29,7 @@ public class TestServiceDefaults {
     Assert.assertNotNull(localServices);
     Assert.assertEquals(ServiceType.OPENDAP, localServices.getType());
 
-    for (Dataset ds : cat.getDatasets()) {
+    for (Dataset ds : cat.getDatasetsLocal()) {
       if (!(ds instanceof CatalogRef)) {
         Assert.assertTrue(ds.hasAccess());
 

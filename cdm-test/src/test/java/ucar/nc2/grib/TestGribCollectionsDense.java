@@ -113,14 +113,14 @@ public class TestGribCollectionsDense {
 
   @Test
   public void testGC() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_1800.grib2.ncx3");
+    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_1800.grib2.ncx4");
     assert count.nread == 1009;
     assert count.nmiss == 0;
   }
 
   @Test
   public void testPofG() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx3");
+    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx4");
     assert count.nread == 3140;
     assert count.nmiss == 0;
   }
@@ -128,7 +128,7 @@ public class TestGribCollectionsDense {
   @Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx3");
+    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx4");
     TestDir.checkLeaks();
     assert count.nread == 5384;
     assert count.nmiss == 0;
@@ -136,8 +136,8 @@ public class TestGribCollectionsDense {
 
   @Test
   public void problem() throws IOException {
-    String filename = "gribCollections/dgex/dgex_46.ncx3";
-    //String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx3";
+    String filename = "gribCollections/dgex/dgex_46.ncx4";
+    //String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx4";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Total_precipitation_surface_6_Hour_Accumulation");
       assert gdt != null;

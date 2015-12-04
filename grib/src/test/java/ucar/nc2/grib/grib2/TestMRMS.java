@@ -45,16 +45,17 @@ public class TestMRMS {
 
     @Test
     public void checkVariable() throws IOException {
-        NetcdfFile nc = NetcdfFile.open(testfile);
-        Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
-        Assert.assertNotNull(var);
+        try( NetcdfFile nc = NetcdfFile.open(testfile)) {
+            Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
+            Assert.assertNotNull(var);
 
-        Attribute att = var.findAttribute("missing_value");
-        Assert.assertNotNull(att);
-        Assert.assertEquals(-99., att.getNumericValue().doubleValue(), 1e-6);
+            Attribute att = var.findAttribute("missing_value");
+            Assert.assertNotNull(att);
+            Assert.assertEquals(-99., att.getNumericValue().doubleValue(), 1e-6);
 
-        att = var.findAttribute("_FillValue");
-        Assert.assertNotNull(att);
-        Assert.assertEquals(-999., att.getNumericValue().doubleValue(), 1e-6);
+            att = var.findAttribute("_FillValue");
+            Assert.assertNotNull(att);
+            Assert.assertEquals(-999., att.getNumericValue().doubleValue(), 1e-6);
+        }
     }
 }

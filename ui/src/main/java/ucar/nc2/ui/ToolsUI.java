@@ -3180,8 +3180,7 @@ public class ToolsUI extends JPanel {
 
       AbstractAction useIndexButt = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          Boolean state = (Boolean) getValue(BAMutil.STATE);
-          useIndex = state;
+          useIndex = (Boolean) getValue(BAMutil.STATE);
         }
       };
       useIndexButt.putValue(BAMutil.STATE, useIndex);
@@ -3190,8 +3189,7 @@ public class ToolsUI extends JPanel {
 
       AbstractAction eachFileButt = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          Boolean state = (Boolean) getValue(BAMutil.STATE);
-          eachFile = state;
+          eachFile = (Boolean) getValue(BAMutil.STATE);
         }
       };
       eachFileButt.putValue(BAMutil.STATE, eachFile);
@@ -3200,8 +3198,7 @@ public class ToolsUI extends JPanel {
 
       AbstractAction extraButt = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          Boolean state = (Boolean) getValue(BAMutil.STATE);
-          extra = state;
+          extra = (Boolean) getValue(BAMutil.STATE);
         }
       };
       extraButt.putValue(BAMutil.STATE, extra);

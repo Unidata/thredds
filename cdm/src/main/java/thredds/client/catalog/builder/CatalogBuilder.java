@@ -70,10 +70,6 @@ import java.util.*;
 public class CatalogBuilder {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CatalogBuilder.class);
 
-  public interface Callback {
-    void setCatalog(Catalog cat);
-  }
-
   //////////////////////////////////////////////////////////////////////////////////
   // used when reading from XML
   private Map<String, Service> serviceMap = new HashMap<>(); // LOOK why not instead of services ?

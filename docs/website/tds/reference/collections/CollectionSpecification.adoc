@@ -1,13 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Collection Specification String
-===============================
-
 = Collection Specification String
 
-A _*collection specification string*_ creates a collection of files by
+A *_collection specification string_* creates a collection of files by
 scanning file directories and looking for matches. It can optionally
 extract a date from a filename. It has these parts:
 
@@ -64,24 +60,19 @@ subdirectories.
 Search the directory _/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km_
 and its subdirectories for files that match the regular expression:
 
-_______________________________
 -------------------------------
  GFS_Alaska_191km.........\.nc$
 -------------------------------
-_______________________________
 
-Remember that an unescaped ``.'' matches any character. An escaped
-``\.'' matches the literal ``.'' character.
+Remember that an unescaped ``.'' matches any character. An escaped ``\.'' matches the literal ``.'' character.
 
 From the filename, extract the date by applying the
 link:SimpleDateFormat.adoc[SimpleDateFormat] template _yyyyMMdd_HHmm_ to
 the portion of the filename after
 
-_________________
 -----------------
 GFS_Alaska_191km_
 -----------------
-_________________
 
 === Method for constructing collection specification Strings
 

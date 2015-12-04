@@ -49,7 +49,7 @@ public class TestTdsDatasetScan {
     Catalog cat = TdsLocalCatalog.open("catalog/scanCdmUnitTests/tds/ncep/catalog.xml");
 
     Dataset last = null;
-    for (Dataset ds : cat.getDatasets()) {
+    for (Dataset ds : cat.getDatasetsLocal()) {
       if (last != null)
         assert ds.getName().compareTo(last.getName()) > 0;
       last = ds;
@@ -62,11 +62,11 @@ public class TestTdsDatasetScan {
     Service latestService = parent.findService("Resolver");
     Assert.assertNotNull(latestService);
 
-    List<Dataset> topDatasets = parent.getDatasets();
+    List<Dataset> topDatasets = parent.getDatasetsLocal();
     Assert.assertEquals(1, topDatasets.size());
     Dataset topDataset = topDatasets.get(0);
 
-    List<Dataset> dss = topDataset.getDatasets();
+    List<Dataset> dss = topDataset.getDatasetsLocal();
     Assert.assertTrue(dss.size() > 0);
 
     Dataset latestDataset = topDataset.findDatasetByName("latest.xml");
@@ -80,12 +80,12 @@ public class TestTdsDatasetScan {
    public void testLatestResolver() throws IOException {
     Catalog cat = TdsLocalCatalog.open("catalog/testGridScan/latest.xml");
 
-    List<Dataset> dss = cat.getDatasets();
+    List<Dataset> dss = cat.getDatasetsLocal();
     assert (dss.size() == 1);
 
     Dataset ds = dss.get(0);
     assert ds.hasAccess();
-    assert ds.getDatasets().size() == 0;
+    assert ds.getDatasetsLocal().size() == 0;
 
     assert ds.getID() != null;
     assert ds.getDataSize() > 0.0;
@@ -96,13 +96,13 @@ public class TestTdsDatasetScan {
   public void testHarvest() throws IOException {
     Catalog cat = TdsLocalCatalog.open("catalog/testEnhanced/catalog.xml");
     assert cat != null;
-    List<Dataset> topList = cat.getDatasets();
+    List<Dataset> topList = cat.getDatasetsLocal();
     assert topList.size() == 1;
     Dataset top = topList.get(0);
     assert top != null;
     assert top.isHarvest();
 
-    List<Dataset> dss = top.getDatasets();
+    List<Dataset> dss = top.getDatasetsLocal();
     assert (dss.size() > 0);
     Dataset nested = dss.get(0);
     assert !nested.isHarvest();
@@ -117,11 +117,11 @@ public class TestTdsDatasetScan {
   public void testNestedDirs() throws IOException {
     Catalog cat = TdsLocalCatalog.open("catalog/station/profiler/wind/06min/catalog.xml");
 
-    List<Dataset> topList = cat.getDatasets();
+    List<Dataset> topList = cat.getDatasetsLocal();
     assert topList.size() == 1;
     Dataset top = topList.get(0);
     assert top != null;
-    List<Dataset> children = top.getDatasets();
+    List<Dataset> children = top.getDatasetsLocal();
     Assert.assertEquals(3, children.size()); // latest + 2
   }
 
@@ -161,11 +161,11 @@ public class TestTdsDatasetScan {
   public void testEncodingWithBlanks() throws IOException {
     Catalog cat = TdsLocalCatalog.open("catalog/scanCdmUnitTests/encoding/catalog.xml");
 
-    List<Dataset> ds = cat.getDatasets();
+    List<Dataset> ds = cat.getDatasetsLocal();
     assert ds.size() == 1;
     Dataset top = ds.get(0);
 
-    List<Dataset> children = top.getDatasets();
+    List<Dataset> children = top.getDatasetsLocal();
     assert children.size() == 3 : children.size();
   }
 
@@ -178,7 +178,7 @@ public class TestTdsDatasetScan {
     String catalog = "/catalog/testStationScan.v5/catalog.xml"; // serviceName ="all" from root catalog
     Catalog cat = TdsLocalCatalog.open(catalog);
 
-    Dataset top = cat.getDatasets().get(0);
+    Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(!top.hasAccess());
     Service orgServices = cat.findService("all");
     Assert.assertNotNull(orgServices);

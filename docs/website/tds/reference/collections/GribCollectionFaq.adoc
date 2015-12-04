@@ -1,17 +1,10 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-GRIB Feature Collections FAQ
-============================
-
 = GRIB Feature Collections FAQ
-
-'''''
 
 **Q: How do I control where the index files are written?**
 
-_________________________________________________________________________________________________________________________________________________________________________________
 In **$\{tomcat}/content/thredds/threddsConfig.xml**, add or change the
 *<GribIndex>* element:
 
@@ -23,7 +16,7 @@ In **$\{tomcat}/content/thredds/threddsConfig.xml**, add or change the
 -----------------------------
 
 This will make all indices be written to **/my/directory/**.
-http://www.unidata.ucar.edu/software/thredds/v4.6/tds/reference/ThreddsConfigXMLFile.html#GribIndexWriting[Details].
+link:../ThreddsConfigXMLFile.adoc#GribIndexWriting[Details].
 
 To do it from your Java program:
 
@@ -35,13 +28,11 @@ To do it from your Java program:
  ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
  GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
 -----------------------------------------------------------------
-_________________________________________________________________________________________________________________________________________________________________________________
 
 '''''
 
 **Q: How do I control the way the collection is divided up?**
 
-______________________________________________________________________________________________________________________________________________
 By default, the collection will be time partitioned by directory. To
 change this, add a *timePartition* attribute on the *collection*
 element:
@@ -67,23 +58,19 @@ given time unit.
 
 There are a number of requirements that you must understand for each
 type. link:Partitions.adoc[Details].
-______________________________________________________________________________________________________________________________________________
 
 '''''
 
 **Q: Can I use NcML inside a GRIB featureCollection?**
 
-____________________________________________________________________________
 Not currently, please send us your use cases so we can evaluate
 feasibility.
-____________________________________________________________________________
 
 '''''
 
 **Q: How do I get both the reference and the forecast time of the
 data?**
 
-______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 This information is available for versions 4.6.0+. Each variable has a
 _coordinates_ attribute that names both the *reference time* and the
 *forecast time* coordinate. If the variable needs only one time
@@ -170,7 +157,6 @@ double time(time=14);
 
 This is a _one-dimensional_ time variable, and we use a scalar to avoid
 introducing an unneeded dimension of length 1.
-______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 '''''
 

@@ -230,10 +230,6 @@ public class CollectionSpecParser {
 
 
   public static void main(String arg[]) {
-    /*
-    US058GMET-GR1mdl.0018_0056_00000F0..#yyyyMMddHH#_0102_000000-000000pres$
-    FNMOC_NAVGEM_0.5-degree_6-hourly_Pressure-201302.ncx3 */
-
     doit("/u00/FNMOC/NAVGEM/pressure/**/US058GMET-GR1mdl.0018_0056_00000F0..#yyyyMMddHH#_0102_000000-000000pres$", new Formatter());
 
     doit("/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#\\.grib1$", new Formatter());

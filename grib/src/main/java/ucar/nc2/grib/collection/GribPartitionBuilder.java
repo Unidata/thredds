@@ -44,7 +44,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
@@ -79,7 +78,7 @@ abstract class GribPartitionBuilder  {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(partitionManager.getIndexFilename());
+    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(partitionManager.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
     if (collectionIndexFile == null) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
@@ -93,7 +92,7 @@ abstract class GribPartitionBuilder  {
     long collectionLastModified = collectionIndexFile.lastModified();
     Set<String> newFileSet = new HashSet<>();
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
-      String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
+      String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), '\\', "/");
       File partitionIndexFile = GribIndexCache.getExistingFileOrCache(partitionIndexFilename);
       if (partitionIndexFile == null)                                 // make sure each partition has an index
         return true;
@@ -168,7 +167,7 @@ abstract class GribPartitionBuilder  {
     }
 
     // this finishes the 2D stuff
-    result.makeHorizCS();
+    // result.makeHorizCS();
 
     if (ds2D.gctype != GribCollectionImmutable.Type.TP)
       makeDatasetBest(ds2D, false);
@@ -541,14 +540,14 @@ abstract class GribPartitionBuilder  {
   GribCollectionIndex (sizeIndex bytes)
   */
   protected boolean writeIndex(PartitionCollectionMutable pc, Formatter f) throws IOException {
-    File idxFile = GribIndexCache.getFileOrCache(partitionManager.getIndexFilename());
+    File idxFile = GribIndexCache.getFileOrCache(partitionManager.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
     if (idxFile.exists()) {
       RandomAccessFile.eject(idxFile.getPath());
       if (!idxFile.delete())
         logger.error("gc2tp cant delete " + idxFile.getPath());
     }
 
-    writer = new GribCollectionWriter();
+    writer = new GribCollectionWriter(null, null);
 
     try (RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "rw")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -615,8 +614,8 @@ abstract class GribPartitionBuilder  {
       indexBuilder.setMasterRuntime(writer.writeCoordProto(pc.masterRuntime));
 
       //gds
-      for (GribHorizCoordSystem hcs : pc.horizCS)
-        indexBuilder.addGds(writer.writeGdsProto(hcs));
+      //for (GribHorizCoordSystem hcs : pc.horizCS)
+      //  indexBuilder.addGds(writer.writeGdsProto(hcs));
 
       // dataset
       for (GribCollectionMutable.Dataset ds : pc.datasets)
@@ -668,24 +667,17 @@ abstract class GribPartitionBuilder  {
   }
 
   /*
-   message Group {
-    required uint32 gdsIndex = 1;       // index into GribCollection.gds array
-    repeated Variable variables = 2;    // list of variables
-    repeated Coord coords = 3;          // list of coordinates
-    repeated int32 fileno = 4;          // the component files that are in this group, index into gc.mfiles
-
-    repeated Parameter params = 20;      // not used yet
-    extensions 100 to 199;
-   }
-    extend Group {
-      repeated uint32 run2part = 100;       // runtime index to partition index
-    }
+  message Group {
+    Gds gds = 1;                             // use this to build the HorizCoordSys
+    repeated Variable variables = 2;         // list of variables
+    repeated Coord coords = 3;               // list of coordinates
+    repeated uint32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
+  }
    */
   private GribCollectionProto.Group writeGroupProto(PartitionCollectionMutable pc, GribCollectionMutable.GroupGC g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGdsIndex(pc.findHorizCS(g.horizCoordSys));
-    b.setIsTwod(g.isTwoD);
+    b.setGds(GribCollectionWriter.writeGdsProto(g.horizCoordSys.getRawGds(), g.horizCoordSys.getPredefinedGridDefinition()));
 
     for (GribCollectionMutable.VariableIndex vb : g.variList) {
       b.addVariables(writeVariableProto((PartitionCollectionMutable.VariableIndexPartitioned) vb));
@@ -723,30 +715,23 @@ abstract class GribPartitionBuilder  {
 
   /*
   message Variable {
-     required uint32 discipline = 1;
-     required bytes pds = 2;          // raw pds
-     required fixed32 cdmHash = 3;
+   uint32 discipline = 1;
+   bytes pds = 2;                   // raw pds
+   repeated uint32 ids = 3 [packed=true];         // extra info not in pds; grib2 id section
 
-     required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
-     required uint32 recordsLen = 5;  // size of SparseArray message for this Variable
+   uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
+   uint32 recordsLen = 5;  // size of SparseArray message for this Variable
 
-     repeated uint32 coordIdx = 6;    // indexes into Group.coords
+   repeated uint32 coordIdx = 6 [packed=true];    // indexes into Group.coords
 
-     // optionally keep stats
-     optional float density = 7;
-     optional uint32 ndups = 8;
-     optional uint32 nrecords = 9;
-     optional uint32 missing = 10;
+   // optionally keep stats
+   uint32 ndups = 8;
+   uint32 nrecords = 9;
+   uint32 missing = 10;
 
-     repeated uint32 invCount = 15;      // for Coordinate TwoTimer, only 2D vars
-     repeated uint32 time2runtime = 16;  // time index to runtime index, only 1D vars
-     repeated Parameter params = 20;    // not used yet
-
-     extensions 100 to 199;
+   // partition only
+   repeated PartitionVariable partVariable = 100;
    }
-  extend Variable {
-    repeated PartitionVariable partition = 100;
-  }
    */
   private GribCollectionProto.Variable writeVariableProto(PartitionCollectionMutable.VariableIndexPartitioned vp) throws IOException {
 
@@ -790,16 +775,15 @@ abstract class GribPartitionBuilder  {
 
   /*
   message PartitionVariable {
-    required uint32 groupno = 1;
-    required uint32 varno = 2;
-    required uint32 flag = 3;
-    required uint32 partno = 4;
+    uint32 groupno = 1;
+    uint32 varno = 2;
+    uint32 flag = 3;
+    uint32 partno = 4;
 
     // optionally keep stats
-    optional float density = 7;
-    optional uint32 ndups = 8;
-    optional uint32 nrecords = 9;
-    optional uint32 missing = 10;
+    uint32 ndups = 8;
+    uint32 nrecords = 9;
+    uint32 missing = 10;
   }
    */
   private GribCollectionProto.PartitionVariable writePartitionVariableProto(int partno, int groupno, int varno, int nrecords, int ndups, int nmissing) throws IOException {
@@ -810,20 +794,18 @@ abstract class GribPartitionBuilder  {
     pb.setNdups(ndups);
     pb.setNrecords(nrecords);
     pb.setMissing(nmissing);
-    pb.setFlag(0); // ignored
 
     return pb.build();
   }
 
   /*
 message Partition {
-  required string name = 1;       // name is used in TDS - eg the subdirectory when generated by TimePartitionCollections
-  required string filename = 2;   // the gribCollection.ncx2 file
-  required string directory = 3;   // top directory
-  optional uint64 lastModified = 4;
-  optional int64 length = 5;
-  optional int64 partitionDate = 6;  // partition date added 11/25/14
-}
+  string name = 1;       // name is used in TDS - eg the subdirectory when generated by TimePartitionCollections
+  string filename = 2;   // the gribCollection.ncx file, reletive to gc.
+  string directory = 3;  // top directory NOT USED
+  uint64 lastModified = 4;
+  int64 length = 5;
+  int64 partitionDate = 6;  // partition date added 11/25/14
   }
    */
   private GribCollectionProto.Partition writePartitionProto(PartitionCollectionMutable pc, PartitionCollectionMutable.Partition p) throws IOException {
@@ -836,20 +818,6 @@ message Partition {
     b.setLength(p.fileSize);
     if (p.partitionDate != null)
       b.setPartitionDate(p.partitionDate.getMillis());  // LOOK what about calendar ??
-
-    return b.build();
-  }
-
-  protected GribCollectionProto.Parameter writeParamProto(Parameter param) throws IOException {
-    GribCollectionProto.Parameter.Builder b = GribCollectionProto.Parameter.newBuilder();
-
-    b.setName(param.getName());
-    if (param.isString())
-      b.setSdata(param.getStringValue());
-    else {
-      for (int i = 0; i < param.getLength(); i++)
-        b.addData(param.getNumericValue(i));
-    }
 
     return b.build();
   }

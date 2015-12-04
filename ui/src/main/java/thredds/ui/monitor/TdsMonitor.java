@@ -45,8 +45,6 @@ import ucar.util.prefs.ui.Debug;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
-//import org.apache.oro.io.GlobFilenameFilter;
-
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -55,10 +53,6 @@ import java.awt.*;
 import java.util.*;
 
 import javax.swing.*;
-
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Statistics;
 
 /**
  * Manage TDS logs
@@ -83,6 +77,7 @@ public class TdsMonitor extends JPanel {
   private JFrame parentFrame;
   private FileManager fileChooser;
   private ManageForm manage;
+  private DnsLookup dnsLookup = new DnsLookup();
 
   //private HTTPSession session;
   // private CredentialsProvider provider;
@@ -90,8 +85,6 @@ public class TdsMonitor extends JPanel {
   public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
-
-    makeCache();
 
     fileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FileManager"));
 
@@ -121,15 +114,6 @@ public class TdsMonitor extends JPanel {
   }
 
   public void exit() {
-    if (dnsCache != null) {
-      System.out.printf(" cache= %s%n", dnsCache.toString());
-      System.out.printf(" cache.size= %d%n", dnsCache.getSize());
-      System.out.printf(" cache.memorySize= %d%n", dnsCache.getMemoryStoreSize());
-      Statistics stats = dnsCache.getStatistics();
-      System.out.printf(" stats= %s%n", stats.toString());
-    }
-
-    cacheManager.shutdown();
     fileChooser.save();
     managePanel.save();
     accessLogPanel.save();
@@ -162,7 +146,7 @@ public class TdsMonitor extends JPanel {
 
   static private File ehLocation = LogLocalManager.getDirectory("cache", "dns");
 
-  //private static String ehLocation = "C:\\data\\ehcache";
+  /*private static String ehLocation = "C:\\data\\ehcache";
   //private static String ehLocation = "/machine/data/thredds/ehcache/";
   private static String config =
           "<ehcache>\n" +
@@ -197,7 +181,7 @@ public class TdsMonitor extends JPanel {
   void makeCache() {
     cacheManager = new CacheManager(new StringBufferInputStream(config));
     dnsCache = cacheManager.getCache("dns");
-  }
+  } */
 
   /////////////////////////
 
@@ -386,7 +370,7 @@ public class TdsMonitor extends JPanel {
 
     AccessLogPanel(PreferencesExt p) {
       super(p, true);
-      logTable = new AccessLogTable(startDateField, endDateField, p, dnsCache);
+      logTable = new AccessLogTable(startDateField, endDateField, p, dnsLookup);
       logTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
           if (e.getPropertyName().equals("UrlDump")) {
@@ -456,7 +440,7 @@ public class TdsMonitor extends JPanel {
 
     ServletLogPanel(PreferencesExt p) {
       super(p, false);
-      logTable = new ServletLogTable(startDateField, endDateField, p, dnsCache);
+      logTable = new ServletLogTable(startDateField, endDateField, p, dnsLookup);
       add(logTable, BorderLayout.CENTER);
     }
 

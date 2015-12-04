@@ -10,7 +10,7 @@ import java.util.Formatter;
  * @author caron
  * @since 3/28/2015
  */
-public class DatasetTrackerInfo implements Externalizable {
+public class DatasetExt implements Externalizable {
   static public int total_count = 0;
   static public long total_nbytes = 0;
 
@@ -29,10 +29,10 @@ public class DatasetTrackerInfo implements Externalizable {
     return restrictedAccess;
   }
 
-  public DatasetTrackerInfo() {
+  public DatasetExt() {
   }
 
-  public DatasetTrackerInfo(long catId, String restrictedAccess, String ncml) {
+  public DatasetExt(long catId, String restrictedAccess, String ncml) {
     this.catId = catId;
     this.restrictedAccess = restrictedAccess;
     this.ncml = ncml;

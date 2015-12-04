@@ -51,10 +51,10 @@ import ucar.unidata.test.util.NeedsExternalResource;
  */
 public class TestRemoteCoverage {
 
-  // @Test
+  @Test
   @Category(NeedsExternalResource.class)
   public void testCdmRemoteCoverage() throws Exception {
-    String ds = "http://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
+    String ds = "http://thredds-dev.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
 
     try (DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null)) {
       System.out.println("result errlog= " + result.errLog);
