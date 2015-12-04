@@ -22,7 +22,7 @@ public class TestGrib1Unpack {
   public void testEcmwfExtendedComplexData() throws IOException {
     final String testfile = "../grib/src/test/data/complex_packing.grib1";
     try (NetcdfFile nc = NetcdfFile.open(testfile)) {
-      Variable var = nc.findVariable("Minimum_temperature_at_2_metres_in_the_last_6_hours_surface_6_Hour_2");
+      Variable var = nc.findVariable("Minimum_temperature_at_2_metres_in_the_last_6_hours_surface_6_Hour");
       Array data = var.read();
       float first = data.getFloat(0);
 

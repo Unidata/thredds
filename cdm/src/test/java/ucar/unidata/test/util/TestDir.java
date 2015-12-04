@@ -94,8 +94,8 @@ public class TestDir {
 
   private static String threddsTestServerPropName = "threddstestserver";
 
-  //static public String threddsTestServer = "remotetest.unidata.ucar.edu";
-  static public String threddsTestServer = "thredds.ucar.edu";
+  static public String threddsTestServer = "remotetest.unidata.ucar.edu";
+  //static public String threddsTestServer = "thredds.ucar.edu";
 
   // DAP 2 Test server (for testing)
 
