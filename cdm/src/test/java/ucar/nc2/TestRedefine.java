@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import java.io.IOException;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
@@ -43,6 +44,7 @@ import ucar.nc2.constants.CDM;
 public class TestRedefine{
   String filename = TestLocal.temporaryDataDir + "testRedefine.nc";
   String filename2 = TestLocal.temporaryDataDir + "testRedefine2.nc";
+  String filename3 = TestLocal.temporaryDataDir + "testRedefine3.nc";
 
   @Test
   public void testRedefine() throws IOException, InvalidRangeException {
@@ -177,4 +179,27 @@ public class TestRedefine{
     file.close();
   }
 
+  @Test
+  public void testRedefineClose() throws IOException {
+    // Create a new file
+    try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3,
+            filename3)) {
+      Attribute attr = new Attribute("att", 5);
+      file.addGroupAttribute(null, attr);
+      file.create();
+    }
+
+    // Re-open file in redefine mode
+    try (NetcdfFileWriter file = NetcdfFileWriter.openExisting(filename3)) {
+      file.setRedefineMode(true);
+      Attribute attr = new Attribute("att2", "foobar");
+      file.addGroupAttribute(null, attr);
+    }
+
+    // Check that attribute is present
+    try (NetcdfFileWriter file = NetcdfFileWriter.openExisting(filename3)) {
+      Assert.assertNotNull(file.findGlobalAttribute("att"));
+      Assert.assertNotNull(file.findGlobalAttribute("att2"));
+    }
+  }
 }
