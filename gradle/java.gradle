@@ -11,12 +11,12 @@ configure(javaProjects) {
 
     // These will only run when we execute the "publish" task, NOT "assemble".
     // That'll save us from a lot of unnecessary build time in the common case.
-    task sourcesJar(type: Jar, dependsOn: classes) {
+    task sourcesJar(type: Jar, dependsOn: classes, group: 'Publishing') {
         classifier = 'sources'
         from sourceSets.main.allSource
     }
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
+    task javadocJar(type: Jar, dependsOn: javadoc, group: 'Publishing') {
         classifier = 'javadoc'
         from javadoc.destinationDir
     }
