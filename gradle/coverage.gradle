@@ -16,6 +16,8 @@ configure(javaProjects + rootProject) {
         // Include all Test tasks from this project and any subprojects.
         dependsOn allprojects*.tasks*.withType(Test)
 
+        group = 'Reports'
+
         List<SourceSet> mainSourceSets = javaProjects*.sourceSets*.main
         sourceDirectories = files(mainSourceSets*.allSource*.srcDirs)
         classDirectories = files(mainSourceSets*.output)
