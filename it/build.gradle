@@ -58,7 +58,7 @@ gretty {
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
-task integrationTest(type: Test) {
+task integrationTest(type: Test, group: 'Verification') {
     // isContentRootAvailable, isJenkins, and contentRootKey are defined on the root project in testing.gradle.
     if (!isContentRootAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
         logger.warn "Skipping all integration tests (task \'$path\'): " +
@@ -118,7 +118,7 @@ afterEvaluate {
         // (e.g. one of its onlyIf()s returns false), but those situations are rare.
         onlyIf {
             Task task = tasks.integrationTest
-            if (!task.enabled) {    // May have been disabled in testing.gradle.
+            if (!task.enabled) {    // May have been disabled above.
                 return false;
             }
 
