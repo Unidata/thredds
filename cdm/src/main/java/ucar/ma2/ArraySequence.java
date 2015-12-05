@@ -268,6 +268,7 @@ public class ArraySequence extends ArrayStructure {
           int i = 0;
           for (Byte d : result) da[i++] = d;
           dataArray = da;
+          break;
         }
 
         case USHORT:
@@ -286,6 +287,7 @@ public class ArraySequence extends ArrayStructure {
           int i = 0;
           for (Short d : result) da[i++] = d;
           dataArray = da;
+          break;
         }
 
         case UINT:
@@ -304,6 +306,7 @@ public class ArraySequence extends ArrayStructure {
           int i = 0;
           for (Integer d : result) da[i++] = d;
           dataArray = da;
+          break;
         }
 
         case ULONG:
@@ -320,6 +323,7 @@ public class ArraySequence extends ArrayStructure {
           int i = 0;
           for (Long d : result) da[i++] = d;
           dataArray = da;
+          break;
         }
 
         case CHAR: {
@@ -335,6 +339,7 @@ public class ArraySequence extends ArrayStructure {
           int i = 0;
           for (Character d : result) da[i++] = d;
           dataArray = da;
+          break;
         }
 
         case STRING: {
@@ -350,6 +355,7 @@ public class ArraySequence extends ArrayStructure {
           int i = 0;
           for (String d : result) da[i++] = d;
           dataArray = da;
+          break;
         }
 
         case STRUCTURE: {

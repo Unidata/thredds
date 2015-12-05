@@ -229,6 +229,20 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     public int compareTo(VariableBag o) {
       return Grib1Utils.extractParameterCode(first).compareTo(Grib1Utils.extractParameterCode(o.first));
     }
+
+    @Override
+    public String toString() {
+      return "VariableBag{" +
+              "first=" + first +
+              ", gv=" + gv +
+              ", atomList=" + atomList +
+              ", coordND=" + coordND +
+              ", timeUnit=" + timeUnit +
+              ", coordIndex=" + coordIndex +
+              ", pos=" + pos +
+              ", length=" + length +
+              '}';
+    }
   }
 
   // for a single group, create multidimensional (rectangular) variables

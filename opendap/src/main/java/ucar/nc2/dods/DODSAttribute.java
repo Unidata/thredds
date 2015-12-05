@@ -111,6 +111,7 @@ public class DODSAttribute extends ucar.nc2.Attribute {
       }
     }
     setValues(data);
+    setImmutable();
   }
 
   protected DODSAttribute(String dodsName, String val) {

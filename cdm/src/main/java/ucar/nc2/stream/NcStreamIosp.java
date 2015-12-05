@@ -134,8 +134,10 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       if (dataStorage.isVlen)
         return readVlenData(v, section, dataStorage);
 
-      if (dataStorage.sdata != null)
+      if (dataStorage.sdata != null) {
+        assert (v instanceof Structure);
         return readStructureData((Structure) v, section, dataStorage);
+      }
 
       if (dataStorage.section.intersects(section)) { // LOOK WRONG
         raf.seek(dataStorage.filePos);

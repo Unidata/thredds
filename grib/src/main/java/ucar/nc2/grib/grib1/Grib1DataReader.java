@@ -355,7 +355,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
       int bitmapSize = N1 - bitmapStart - 1;
       System.out.printf("bitmapSize=%d%n", bitmapSize);
       bitmap2 = new byte[bitmapSize];
-      raf.read(bitmap2);
+      raf.readFully(bitmap2);
       int bitson = GribNumbers.countBits(bitmap2);
       System.out.printf("bitson=%d%n", bitson);
     }

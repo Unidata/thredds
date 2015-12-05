@@ -55,7 +55,7 @@ import java.util.*;
  * @author John
  * @since 1/10/2015
  */
-@Immutable
+// @Immutable
 public class ThreddsMetadata implements ThreddsMetadataContainer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ThreddsMetadata.class);
   private final Map<String, Object> flds;

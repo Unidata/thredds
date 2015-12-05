@@ -93,11 +93,13 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
         if (!wasRemoved( dc))
           result.add(dc);
         lastModified = Math.max(lastModified, dc.getLastModified());
-      } catch (IOException ioe) {
+
+      } catch (Throwable ioe) {
         logger.warn("DirectoryBuilder on "+child.getDir()+" failed: skipping", ioe);
         if (dc != null) dc.close();
       }
     }
+
     // sort collection by name
     Collections.sort(result, new Comparator<MCollection>() {
       public int compare(MCollection o1, MCollection o2) {

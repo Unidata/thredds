@@ -131,13 +131,14 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     }
 
     GdsHorizCoordSys hcs = gds.makeHorizCoordSys();
-    String hcsName = makeHorizCoordSysName(hcs);
+    String hcsName = (hcs == null) ? gds.getClass().getName() :  makeHorizCoordSysName(hcs);
 
     // check for user defined group names
     String desc = null;
     if (config.gribConfig.gdsNamer != null)
       desc = config.gribConfig.gdsNamer.get(gds.hashCode());
-    if (desc == null) desc = hcs.makeDescription(); // default desc
+    if (desc == null)
+      desc = (hcs == null) ? hcsName : hcs.makeDescription(); // default desc
 
     return new GribHorizCoordSystem(hcs, rawGds, gds, hcsName, desc, predefined);
   }

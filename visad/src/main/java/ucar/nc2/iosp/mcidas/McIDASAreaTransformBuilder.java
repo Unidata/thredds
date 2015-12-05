@@ -72,6 +72,7 @@ public class McIDASAreaTransformBuilder extends AbstractTransformBuilder impleme
     if (ctv.findAttributeIgnoreCase(McIDASAreaProjection.ATTR_AUXBLOCK) != null) {
       aux = getIntArray(ctv, McIDASAreaProjection.ATTR_AUXBLOCK);
     }
+    // not clear if its ok if aux is null, coverity is complaining
 
     McIDASAreaProjection proj = new McIDASAreaProjection(area, nav, aux);
     return new ProjectionCT(ctv.getName(), "FGDC", proj);

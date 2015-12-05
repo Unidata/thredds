@@ -56,11 +56,12 @@ import java.util.List;
 
 /**
  * Coverage CoordAxis abstract superclass
+ * Immutable with (possible) lazy eval of values
  *
  * @author caron
  * @since 7/11/2015
  */
-@Immutable
+//@Immutable
 abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis> {
   static private final Logger logger = LoggerFactory.getLogger(CoverageCoordAxis.class);
 

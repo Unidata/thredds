@@ -1458,7 +1458,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @return this
    */
   public Variable setImmutable() {
-    super.setImmutable(true);
+    super.setImmutable();
     dimensions = Collections.unmodifiableList(dimensions);
     attributes.setImmutable();
     return this;

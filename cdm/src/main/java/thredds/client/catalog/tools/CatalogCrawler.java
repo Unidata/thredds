@@ -348,7 +348,7 @@ public class CatalogCrawler {
       }
     });
 
-    PrintWriter pw = new PrintWriter(System.out);
+    //PrintWriter pw = new PrintWriter(System.out, );
     int count = 0;
 
     //count += crawler.crawl("file:B:/esgf/ncar/esgcet/catalog.xml", null, null, null);
@@ -358,7 +358,7 @@ public class CatalogCrawler {
     Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
     count += crawler.crawlAllInDirectory(top, false, null, null, null); */
 
-    pw.flush();
+    //pw.flush();
 
     long took = System.currentTimeMillis() - start;
     System.out.printf("took %d msecs%n", took);

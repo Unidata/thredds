@@ -31,7 +31,7 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package thredds.server.catalog.tracker;
+package thredds.server.catalog;
 
 import net.openhft.chronicle.map.ChronicleMap;
 import net.openhft.chronicle.map.ChronicleMapBuilder;
@@ -66,8 +66,11 @@ public class DatasetTrackerTest implements Externalizable {
     datasetMap.close();
   }
 
-
   String value;
+
+  // Externalizable needs void constructor
+  public DatasetTrackerTest() {
+  }
 
   public DatasetTrackerTest(String value) {
     this.value = value;

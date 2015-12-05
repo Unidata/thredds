@@ -127,7 +127,9 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
   @Override
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
-    if (edges == null) edges = new Edges();
+    synchronized (this) {
+      if (edges == null) edges = new Edges();
+    }
     CoordReturn result = new CoordReturn();
     int[] index = new int[2];
     boolean ok = edges.findCoordElement(y, x, index);

@@ -109,6 +109,7 @@ public class NcStreamWriterChannel {
 
     // version < 3
     if (v.getDataType() == DataType.SEQUENCE) {
+      assert (v instanceof Structure);
       int count = 0;
       DataOutputStream os = new DataOutputStream(Channels.newOutputStream(wbc));
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS

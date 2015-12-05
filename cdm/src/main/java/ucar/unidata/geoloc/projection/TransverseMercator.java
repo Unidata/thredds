@@ -374,10 +374,10 @@ public class TransverseMercator extends ProjectionImpl {
     double lat = Math.toRadians(fromLat);
     double dlon = lon - lon0;
     double b = Math.cos(lat) * Math.sin(dlon);
-    // infinite projection
-    if ((Math.abs(Math.abs(b) - 1.0)) < TOLERANCE) {
-      toX = 0.0;
-      toY = 0.0;
+
+    if ((Math.abs(Math.abs(b) - 1.0)) < TOLERANCE) { // infinite projection
+      toX = Double.POSITIVE_INFINITY;
+      toY = Double.POSITIVE_INFINITY;
     } else {
       toX = scale * SpecialMathFunction.atanh(b);
       toY = scale * (Math.atan2(Math.tan(lat), Math.cos(dlon)) - lat0);
@@ -400,7 +400,6 @@ public class TransverseMercator extends ProjectionImpl {
     double toLat, toLon;
     double fromX = world.getX();
     double fromY = world.getY();
-
 
     double x = (fromX - falseEasting) / scale;
     double d = (fromY - falseNorthing) / scale + lat0;

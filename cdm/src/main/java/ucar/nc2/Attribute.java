@@ -32,7 +32,6 @@
  */
 package ucar.nc2;
 
-import net.jcip.annotations.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
@@ -50,12 +49,11 @@ import java.util.Map;
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
  * The value can be a one dimensional array of Strings or numeric values.
  * <p/>
- * Attributes are immutable.
+ * Attributes are immutable after setImmutable().
  *
  * @author caron
  */
 
-@Immutable
 public class Attribute extends CDMNode {
 
   /**
@@ -320,7 +318,7 @@ public class Attribute extends CDMNode {
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
-    setImmutable(true);
+    setImmutable();
   }
 
   /**
@@ -333,7 +331,7 @@ public class Attribute extends CDMNode {
     super(name);
     if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
     setStringValue(val);
-    setImmutable(true);
+    setImmutable();
   }
 
   /**
@@ -357,7 +355,7 @@ public class Attribute extends CDMNode {
     Index ima = vala.getIndex();
     vala.setDouble(ima.set0(0), val.doubleValue());
     setValues(vala);
-    setImmutable(true);
+    setImmutable();
   }
 
   /**
@@ -369,7 +367,7 @@ public class Attribute extends CDMNode {
   public Attribute(String name, Array values) {
     this(name);
     setValues(values);
-    setImmutable(true);
+    setImmutable();
   }
 
   /**
@@ -382,7 +380,7 @@ public class Attribute extends CDMNode {
     this(name);
     this.dataType = dataType == DataType.CHAR ? DataType.STRING : dataType;
     this.nelems = 0;
-    setImmutable(true);
+    setImmutable();
   }
 
   public Attribute(String name, List values) {
@@ -442,7 +440,7 @@ public class Attribute extends CDMNode {
     }
 
     setValues(Array.factory(dataType, new int[]{n}, pa));
-    setImmutable(true);
+    setImmutable();
   }
 
 
@@ -464,7 +462,7 @@ public class Attribute extends CDMNode {
       Array vala = Array.factory(DataType.DOUBLE, new int[]{n}, values);
       setValues(vala);
     }
-    setImmutable(true);
+    setImmutable();
   }
 
   /**

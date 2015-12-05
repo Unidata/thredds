@@ -31,10 +31,11 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package thredds.server.catalog.tracker;
+package thredds.server.catalog;
 
 import net.openhft.chronicle.map.ChronicleMap;
 import net.openhft.chronicle.map.ChronicleMapBuilder;
+import thredds.server.catalog.tracker.DatasetExt;
 
 import java.io.*;
 

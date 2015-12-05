@@ -174,8 +174,8 @@ public class HorizCoordSys {
     try {
       if (latlon != null) { // overrides other horiz subset params
         if (isProjection) {
-          if (xhelper == null) xhelper = new CoordAxisHelper(xaxis);
-          if (yhelper == null) yhelper = new CoordAxisHelper(yaxis);
+          CoordAxisHelper xhelper = new CoordAxisHelper(xaxis);
+          CoordAxisHelper yhelper = new CoordAxisHelper(yaxis);
 
           // we have to transform latlon to projection coordinates
           ProjectionImpl proj = transform.getProjection();
@@ -189,8 +189,8 @@ public class HorizCoordSys {
           else errMessages.format("yaxis: %s;%n", optb.getErrorMessage());
 
         } else {
-          if (xhelper == null) xhelper = new CoordAxisHelper(lonaxis);
-          if (yhelper == null) yhelper = new CoordAxisHelper(lataxis);
+          CoordAxisHelper xhelper = new CoordAxisHelper(lonaxis);
+          CoordAxisHelper yhelper = new CoordAxisHelper(lataxis);
 
           double lonNormal = LatLonPointImpl.lonNormalFrom(latlon.getLongitude(), lonaxis.getStartValue());
           optb = xhelper.subsetContaining(lonNormal);
@@ -444,10 +444,6 @@ public class HorizCoordSys {
     return lataxis2D;
   }
 
-  // try to optimize by keeping the helper classes
-  private CoordAxisHelper yhelper;
-  private CoordAxisHelper xhelper;
-
   public static class CoordReturn {
     public int x, y;
     public double xcoord, ycoord;
@@ -456,8 +452,8 @@ public class HorizCoordSys {
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
     CoordReturn result = new CoordReturn();
     if (isProjection) {
-      if (xhelper == null) xhelper = new CoordAxisHelper(xaxis);
-      if (yhelper == null) yhelper = new CoordAxisHelper(yaxis);
+      CoordAxisHelper xhelper = new CoordAxisHelper(xaxis);
+      CoordAxisHelper yhelper = new CoordAxisHelper(yaxis);
       result.x = xhelper.findCoordElement(x, false);
       result.y = yhelper.findCoordElement(y, false);
 
@@ -470,8 +466,8 @@ public class HorizCoordSys {
       }
 
     } else { // 1D lat lon case
-      if (xhelper == null) xhelper = new CoordAxisHelper(lonaxis);
-      if (yhelper == null) yhelper = new CoordAxisHelper(lataxis);
+      CoordAxisHelper xhelper = new CoordAxisHelper(lonaxis);
+      CoordAxisHelper yhelper = new CoordAxisHelper(lataxis);
       double lon = LatLonPointImpl.lonNormalFrom(x, lonaxis.getStartValue());
       result.x = xhelper.findCoordElement(lon, false);
       result.y = yhelper.findCoordElement(y, false);
