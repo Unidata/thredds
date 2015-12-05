@@ -52,9 +52,11 @@ public class TestProjections {
   int NTRIALS = 10000;
   double tolerence = 5.0e-4;
 
-  private void doOne(ProjectionImpl proj, double lat, double lon) {
+  private LatLonPoint doOne(ProjectionImpl proj, double lat, double lon, boolean show) {
     LatLonPointImpl startL = new LatLonPointImpl(lat, lon);
     ProjectionPoint p = proj.latLonToProj(startL);
+    if (Double.isNaN(p.getX()) || Double.isNaN(p.getY())) return LatLonPointImmutable.INVALID;
+    if (Double.isInfinite(p.getX()) || Double.isInfinite(p.getY())) return LatLonPointImmutable.INVALID;
     LatLonPointImpl endL = (LatLonPointImpl) proj.projToLatLon(p);
 
     if (show) {
@@ -62,6 +64,19 @@ public class TestProjections {
       System.out.println("projection point  = " + p.toString());
       System.out.println("end  = " + endL.toString(8));
     }
+    return endL;
+  }
+
+  @Test
+  //     java.lang.AssertionError: .072111263S 165.00490E expected:<-0.07211126381547306> but was:<39.99999999999999>
+  public void testTMproblem() {
+    double lat = -.072111263;
+    double lon = 165.00490;
+    LatLonPoint endL = doOne( new TransverseMercator(), lat, lon, true);
+    if (endL.equals(LatLonPointImmutable.INVALID)) return;
+    Assert.assertEquals(lat, endL.getLatitude(), tolerence);
+    Assert.assertEquals(lon, endL.getLongitude(), tolerence);
+
   }
 
   private void testProjection(ProjectionImpl proj) {
@@ -102,7 +117,7 @@ public class TestProjections {
     }
     if (show)
       System.out.printf("Tested %d, %d pts for projection %s %n", countT1,
-               countT2, proj.getClassName());
+              countT2, proj.getClassName());
   }
 
   // must have lon within +/- lonMax, lat within +/- latMax
@@ -174,7 +189,7 @@ public class TestProjections {
 
     if (show)
       System.out.println("Tested " + NTRIALS + " pts for projection " + proj
-               .getClassName());
+              .getClassName());
   }
 
   // must have x within +/- xMax, y within +/- yMax
@@ -323,7 +338,7 @@ public class TestProjections {
 
   @Test
   public void testMSG() {
-    doOne(new MSGnavigation(), 60, 60);
+    doOne(new MSGnavigation(), 60, 60, true);
     testProjection(new MSGnavigation());
 
     MSGnavigation m = new MSGnavigation();
@@ -358,7 +373,7 @@ public class TestProjections {
 
   @Test
   public void testSinusoidal() {
-    doOne(new Sinusoidal(0, 0, 0, 6371.007), 20, 40);
+    doOne(new Sinusoidal(0, 0, 0, 6371.007), 20, 40, true);
     testProjection(new Sinusoidal(0, 0, 0, 6371.007));
     Sinusoidal p = new Sinusoidal();
     Sinusoidal p2 = (Sinusoidal) p.constructCopy();
