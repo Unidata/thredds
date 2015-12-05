@@ -34,16 +34,17 @@ package ucar.nc2;
 
 import java.io.IOException;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 
-public class TestRedefine {
-
+public class TestRedefine{
   String filename = TestLocal.temporaryDataDir + "testRedefine.nc";
   String filename2 = TestLocal.temporaryDataDir + "testRedefine2.nc";
+  String filename3 = TestLocal.temporaryDataDir + "testRedefine3.nc";
 
   @Test
   public void testRedefine() throws IOException, InvalidRangeException {
@@ -61,10 +62,10 @@ public class TestRedefine {
       file.addVariableAttribute("time", "units", "s");
 
     /* Add a dependent variable */
-      file.addVariable("h", DataType.DOUBLE, "time");
-      file.addVariableAttribute("h", "quantity", "Height");
-      file.addVariableAttribute("h", "units", "m");
-      file.create();
+    file.addVariable("h", DataType.DOUBLE, dims);
+    file.addVariableAttribute("h", "quantity", "Height");
+    file.addVariableAttribute("h", "units", "m");
+    file.create();
 
       double td[] = {1.0, 2.0, 3.0, 4.0};
       double hd[] = {0.0, 0.1, 0.3, 0.9};
@@ -172,4 +173,27 @@ public class TestRedefine {
     }
   }
 
+  @Test
+  public void testRedefineClose() throws IOException {
+    // Create a new file
+    try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3,
+            filename3)) {
+      Attribute attr = new Attribute("att", 5);
+      file.addGroupAttribute(null, attr);
+      file.create();
+    }
+
+    // Re-open file in redefine mode
+    try (NetcdfFileWriter file = NetcdfFileWriter.openExisting(filename3)) {
+      file.setRedefineMode(true);
+      Attribute attr = new Attribute("att2", "foobar");
+      file.addGroupAttribute(null, attr);
+    }
+
+    // Check that attribute is present
+    try (NetcdfFileWriter file = NetcdfFileWriter.openExisting(filename3)) {
+      Assert.assertNotNull(file.findGlobalAttribute("att"));
+      Assert.assertNotNull(file.findGlobalAttribute("att2"));
+    }
+  }
 }

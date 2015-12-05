@@ -1105,6 +1105,7 @@ public class NetcdfFileWriter implements Closeable {
    */
   public synchronized void close() throws java.io.IOException {
     if (spiw != null) {
+      setRedefineMode(false);
       flush();
       spiw.close();
       spiw = null;

@@ -52,7 +52,7 @@ javadoc {
 }
 
 // TODO: Use the Sync task for this.
-task releaseDocs(dependsOn: javadoc) << {
+task releaseDocs(dependsOn: javadoc, group: 'Release') << {
     def releaseDir = webdir + "javadoc"
 
     ant.delete(dir: releaseDir)

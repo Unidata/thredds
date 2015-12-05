@@ -528,9 +528,7 @@ public class Stereographic extends ProjectionImpl {
               ? -fromY
               : fromY));
     } else {
-      lam = lont
-              + Math.atan2(fromX * sinc,
-              rho * coslatt * cosc - fromY * sinc * sinlatt);
+      lam = lont + Math.atan2(fromX * sinc, rho * coslatt * cosc - fromY * sinc * sinlatt);
     }
 
     toLon = Math.toDegrees(lam);
