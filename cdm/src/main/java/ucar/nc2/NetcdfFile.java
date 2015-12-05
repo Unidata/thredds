@@ -605,12 +605,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
             && !suffix.equalsIgnoreCase("gz") && !suffix.equalsIgnoreCase("bz2"))
       return null;
 
+    // coverity claims resource leak, but attempts to fix break. so beware
     // see if already decompressed, check in cache as needed
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
     if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
       // see if its locked - another thread is writing it
+      FileInputStream stream = null;
       FileLock lock = null;
-      try (FileInputStream stream = new FileInputStream(uncompressedFile)) {
+      try {
+        stream = new FileInputStream(uncompressedFile);
         // obtain the lock
         while (true) { // loop waiting for the lock
           try {
@@ -631,6 +634,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
       } finally {
         if (lock != null) lock.release();
+        if (stream != null) stream.close();
       }
     }
 
