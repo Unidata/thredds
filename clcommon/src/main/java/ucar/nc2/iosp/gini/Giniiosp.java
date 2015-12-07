@@ -272,49 +272,48 @@ public class Giniiosp extends AbstractIOServiceProvider {
     raf.readFully(data);
 
     // decompress the bytes
-    int resultLength;
-    int result = 0;
-    byte[] tmp;
-    int uncompLen;        /* length of decompress space    */
-    byte[] uncomp = new byte[nx * (ny + 1) + 4000];
-    Inflater inflater = new Inflater(false);
-
-    inflater.setInput(data, 0, data_size);
+    byte[] uncomp = new byte[nx * ny];
     int offset = 0;
-    int limit = nx * ny + nx;
 
-    while (inflater.getRemaining() > 0) {
+    Inflater inflater = new Inflater(false);
+    inflater.setInput(data);
+
+    // Loop while the inflater has data and we have space in final buffer
+    // This will end up ignoring the last few compressed bytes, which
+    // correspond to the end of file marker, which is a single row of pixels
+    // of alternating 0/255.
+    while (inflater.getRemaining() > 0 && offset < uncomp.length) {
+      // Try to decompress what's left, which ends up decompressing one block
       try {
-        resultLength = inflater.inflate(uncomp, offset, 4000);
+        offset += inflater.inflate(uncomp, offset, uncomp.length - offset);
       } catch (DataFormatException ex) {
         System.out.println("ERROR on inflation " + ex.getMessage());
         ex.printStackTrace();
         throw new IOException(ex.getMessage());
       }
-      offset = offset + resultLength;
-      result = result + resultLength;
-      if ((result) > limit) {
-        // when uncomp data larger then limit, the uncomp need to increase size
-        tmp = new byte[result];
-        System.arraycopy(uncomp, 0, tmp, 0, result);
-        uncompLen = result + 4000;
-        uncomp = new byte[uncompLen];
-        System.arraycopy(tmp, 0, uncomp, 0, result);
-      }
-      if (resultLength == 0) {
-        int tt = inflater.getRemaining();
-        byte[] b2 = new byte[2];
-        System.arraycopy(data, data_size - tt, b2, 0, 2);
-        if (isZlibHed(b2) == 0) {
-          System.arraycopy(data, data_size - tt, uncomp, result, tt);
-          break;
+
+      // If the last block finished...
+      if (inflater.finished()) {
+        // See if anything's left
+        int bytesLeft = inflater.getRemaining();
+        if (bytesLeft > 0) {
+          // Figure out where we are in the input data
+          int inputOffset = data_size - bytesLeft;
+
+          // Check if remaining data are zlib--if not copy out and bail
+          byte[] b2 = new byte[2];
+          System.arraycopy(data, inputOffset, b2, 0, b2.length);
+          if (isZlibHed(b2) == 0) {
+            System.arraycopy(data, inputOffset, uncomp, offset, bytesLeft);
+            break;
+          }
+
+          // Otherwise, set up for decompressing next block
+          inflater.reset();
+          inflater.setInput(data, inputOffset, bytesLeft);
         }
-        inflater.reset();
-        inflater.setInput(data, data_size - tt, tt);
       }
-
     }
-
     inflater.end();
 
     if (levels == null) {
