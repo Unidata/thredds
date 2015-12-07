@@ -1,5 +1,5 @@
-import org.gradle.api.internal.java.JavaLibrary
 import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
+import org.gradle.api.internal.java.JavaLibrary
 
 configure(javaProjects) {
     apply plugin: 'java'
@@ -22,16 +22,21 @@ configure(javaProjects) {
     }
 
 
-    JavaLibrary java = components.java
-    Set<PublishArtifact> componentArtifacts = java.usages.first().artifacts
+    // Add sources and javadoc jars to the set of components that will be published for each project, but only
+    // if this is a release (i.e. non-SNAPSHOT) version.
+    // It appears that Maven only publishes those artifacts for release versions as well:
+    // http://maven.40175.n5.nabble.com/Deploy-javadoc-sources-for-snapshots-td5472378.html
+    String version = rootProject.version as String
+    if (!version.endsWith('SNAPSHOT')) {
+        JavaLibrary java = components.java
+        Set<PublishArtifact> componentArtifacts = java.usages.first().artifacts
 
-    def sourcesArtifact = new DefaultPublishArtifact(tasks.sourcesJar.archiveName, 'jar', 'jar', 'sources', null,
-            tasks.sourcesJar.archivePath, tasks.sourcesJar)
-    componentArtifacts << sourcesArtifact
+        componentArtifacts << new DefaultPublishArtifact(tasks.sourcesJar.archiveName, 'jar', 'jar', 'sources', null,
+                                                         tasks.sourcesJar.archivePath, tasks.sourcesJar)
 
-    def javadocArtifact = new DefaultPublishArtifact(tasks.javadocJar.archiveName, 'jar', 'jar', 'javadoc', null,
-            tasks.javadocJar.archivePath, tasks.javadocJar)
-    componentArtifacts << javadocArtifact
+        componentArtifacts << new DefaultPublishArtifact(tasks.javadocJar.archiveName, 'jar', 'jar', 'javadoc', null,
+                                                         tasks.javadocJar.archivePath, tasks.javadocJar)
+    }
 
 
     // Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.

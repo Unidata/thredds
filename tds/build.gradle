@@ -15,7 +15,6 @@ dependencies {
     compile project(":tdcommon")
     runtime project(":visadCdm")
     compile project(":waterml")
-    compile project(":dap4:d4core")
     compile project(":dap4:d4servletshared")
 
     compile libraries["coverity-escapers"]
