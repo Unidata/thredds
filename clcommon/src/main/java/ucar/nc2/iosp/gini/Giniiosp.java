@@ -96,165 +96,90 @@ public class Giniiosp extends AbstractIOServiceProvider {
       return null;
   }
 
+  private float[] handleLevels(byte[] data,  int[] levels) {
+    int level = levels[0];
+    float[] a = new float[level];
+    float[] b = new float[level];
+    float[] fdata = new float[data.length];
+    int scale = 1;
+
+    for (int i = 0; i < level; i++) {
+      int numer = levels[1 + 5 * i] - levels[2 + 5 * i];
+      int denom = levels[3 + 5 * i] - levels[4 + 5 * i];
+      a[i] = (numer * 1.f) / (1.f * denom);
+      b[i] = levels[1 + 5 * i] - a[i] * levels[3 + 5 * i];
+    }
+
+    for (int i = 0; i < data.length; i++) {
+      int ival = convertUnsignedByte2Short(data[i]);
+      int k = -1;
+      for (int j = 0; j < level; j++) {
+        if (levels[3 + (j * 5)] <= ival && ival <= levels[4 + (j * 5)]) {
+          k = j;
+          scale = levels[5 + j * 5];
+        }
+      }
+
+      if (k >= 0)
+        fdata[i] = (a[k] * ival + b[k]) / scale;
+      else
+        fdata[i] = 0;
+
+    }
+    return fdata;
+  }
+
+  private Array makeArray(byte[] data, int[] levels, int[] shape)
+  {
+    // Default (if no level data) is to just return an array from the bytes.
+    Object store = data;
+    DataType dt = DataType.BYTE;
+
+    // If have levels, convert data to float and set-up to use that for array
+    if (levels != null) {
+      store = handleLevels(data, levels);
+      dt = DataType.FLOAT;
+    }
+
+    // Create array and return
+    return Array.factory(dt, shape, store);
+  }
+
   // all the work is here, so can be called recursively
   private Array readData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride,
                          int[] levels) throws IOException, InvalidRangeException {
-
-    long length = raf.length();
+    // Get to the proper offset and read in the data
     raf.seek(dataPos);
-
-    int data_size = (int) (length - dataPos);
+    int data_size = (int) (raf.length() - dataPos);
     byte[] data = new byte[data_size];
     raf.readFully(data);
 
-    if (levels == null) {
-      Array array = Array.factory(DataType.BYTE, v2.getShape(), data);
-
-      return array.sectionNoReduce(origin, shape, stride);
-    } else {
-      int level = levels[0];
-      float[] a = new float[level];
-      float[] b = new float[level];
-      float[] fdata = new float[data_size];
-      int scale = 1;
-
-      for (int i = 0; i < level; i++) {
-        int numer = levels[1 + 5 * i] - levels[2 + 5 * i];
-        int denom = levels[3 + 5 * i] - levels[4 + 5 * i];
-        a[i] = (numer * 1.f) / (1.f * denom);
-        b[i] = levels[1 + 5 * i] - a[i] * levels[3 + 5 * i];
-      }
-
-      int k;
-      for (int i = 0; i < data_size; i++) {
-        int ival = convertUnsignedByte2Short(data[i]);
-        k = -1;
-        for (int j = 0; j < level; j++) {
-          if (levels[3 + (j * 5)] <= ival && ival <= levels[4 + (j * 5)]) {
-            k = j;
-            scale = levels[5 + j * 5];
-          }
-        }
-
-        if (k >= 0)
-          fdata[i] = (a[k] * ival + b[k]) / scale;
-        else
-          fdata[i] = 0;
-
-      }
-      Array array = Array.factory(DataType.FLOAT, v2.getShape(), fdata);
-
-      return array.sectionNoReduce(origin, shape, stride);
-    }
-  }
-
-  public Array readDataOld(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride) throws IOException, InvalidRangeException {
-    int start_l, stride_l, stop_l;
-    int start_p, stride_p, stop_p;
-    if (origin == null) origin = new int[v2.getRank()];
-    if (shape == null) shape = v2.getShape();
-
-    Giniheader.Vinfo vinfo = (Giniheader.Vinfo) v2.getSPobject();
-
-    int nx = vinfo.nx;
-    int ny = vinfo.ny;
-    start_l = origin[0];
-    stride_l = stride[0];
-    stop_l = origin[0] + shape[0] - 1;
-    // Get data values from GINI
-    // Loop over number of lines (slower dimension) for actual data Array
-    start_p = origin[1];
-    stride_p = stride[1];
-    stop_p = origin[1] + shape[1] - 1;
-
-    if (start_l + stop_l + stride_l == 0) { //default lines
-      start_l = 0;
-      stride_l = 1;
-      stop_l = ny - 1;
-    }
-    if (start_p + stop_p + stride_p == 0) { //default pixels
-      start_p = 0;
-      stride_p = 1;
-    }
-
-    int Len = shape[1]; // length of pixels read each line
-    ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]}, false);
-    Index indx = adata.getIndex();
-    long doff = dataPos + start_p;
-    // initially no data conversion is needed.
-    for (int iline = start_l; iline <= stop_l; iline += stride_l) {
-      /* read 1D byte[] */
-      byte[] buf = getGiniLine(nx, ny, doff, iline, Len, stride_p);
-      /* write into 2D array */
-      for (int i = 0; i < Len; i++) {
-        adata.setByte(indx.set(iline - start_l, i), buf[i]);
-      }
-    }
-    return adata;
+    // Turn it into an array
+    Array array = makeArray(data, levels, v2.getShape());
+    return array.sectionNoReduce(origin, shape, stride);
   }
 
   // for the compressed data read all out into a array and then parse into requested
   public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int[] origin,
                                   int[] shape, int[] stride, int[] levels) throws IOException, InvalidRangeException {
-
-    long length = raf.length();
-
+    // Get to the proper offset and read in the rest of the compressed data
     raf.seek(dataPos);
-
-    int data_size = (int) (length - dataPos);
+    int data_size = (int) (raf.length() - dataPos);
     byte[] data = new byte[data_size];
     raf.readFully(data);
+
+    // Send the compressed data to ImageIO (to handle PNG)
     ByteArrayInputStream ios = new ByteArrayInputStream(data);
-
     BufferedImage image = javax.imageio.ImageIO.read(ios); // LOOK why ImageIO ??
-    Raster raster = image.getData();
-    DataBuffer db = raster.getDataBuffer();
+    DataBuffer db = image.getData().getDataBuffer();
 
+    // If the image had byte data, turn into an array
     if (db instanceof DataBufferByte) {
       DataBufferByte dbb = (DataBufferByte) db;
-      byte[] udata = dbb.getData();
-
-      if (levels == null) {
-        Array array = Array.factory(DataType.BYTE, v2.getShape(), udata);
+      Array array = makeArray(dbb.getData(), levels, v2.getShape());
+      if (levels == null)
         v2.setCachedData(array, false);
-        return array.sectionNoReduce(origin, shape, stride);
-      } else {
-        data_size = udata.length;
-        int level = levels[0];
-        float[] a = new float[level];
-        float[] b = new float[level];
-        float[] fdata = new float[data_size];
-        int scale = 1;
-
-        for (int i = 0; i < level; i++) {
-          int numer = levels[1 + 5 * i] - levels[2 + 5 * i];
-          int denom = levels[3 + 5 * i] - levels[4 + 5 * i];
-          a[i] = (numer * 1.f) / (1.f * denom);
-          b[i] = levels[1 + 5 * i] - a[i] * levels[3 + 5 * i];
-        }
-
-        int k;
-        for (int i = 0; i < data_size; i++) {
-          int ival = convertUnsignedByte2Short(udata[i]);
-          k = -1;
-          for (int j = 0; j < level; j++) {
-            if (levels[3 + (j * 5)] <= ival && ival <= levels[4 + (j * 5)]) {
-              k = j;
-              scale = levels[5 + j * 5];
-            }
-          }
-
-          if (k >= 0)
-            fdata[i] = (a[k] * ival + b[k]) / scale;
-          else
-            fdata[i] = 0;
-
-        }
-        Array array = Array.factory(DataType.FLOAT, v2.getShape(), fdata);
-
-        return array.sectionNoReduce(origin, shape, stride);
-      }
-
+      return array.sectionNoReduce(origin, shape, stride);
     }
 
     return null;
@@ -262,19 +187,17 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
   public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int[] origin,
                                   int[] shape, int[] stride, int[] levels) throws IOException, InvalidRangeException {
-
-    long length = raf.length();
-
+    // Get to the proper offset and read in the rest of the compressed data
     raf.seek(dataPos);
-
-    int data_size = (int) (length - dataPos);     //  or 5120 as read buffer size
+    int data_size = (int) (raf.length() - dataPos);     //  or 5120 as read buffer size
     byte[] data = new byte[data_size];
     raf.readFully(data);
 
-    // decompress the bytes
+    // Buffer for decompressing data
     byte[] uncomp = new byte[nx * ny];
     int offset = 0;
 
+    // Set-up zlib decompression (inflation)
     Inflater inflater = new Inflater(false);
     inflater.setInput(data);
 
@@ -316,48 +239,11 @@ public class Giniiosp extends AbstractIOServiceProvider {
     }
     inflater.end();
 
-    if (levels == null) {
-      Array array = Array.factory(DataType.BYTE, v2.getShape(), uncomp);
-      if (array.getSize() < Variable.defaultSizeToCache)
-        v2.setCachedData(array, false);
-      return array.sectionNoReduce(origin, shape, stride);
-    } else {
-      data_size = uncomp.length;
-      int level = levels[0];
-      float[] a = new float[level];
-      float[] b = new float[level];
-      float[] fdata = new float[data_size];
-      int scale = 1;
-
-      for (int i = 0; i < level; i++) {
-        int numer = levels[1 + 5 * i] - levels[2 + 5 * i];
-        int denom = levels[3 + 5 * i] - levels[4 + 5 * i];
-        a[i] = (numer * 1.f) / (1.f * denom);
-        b[i] = levels[1 + 5 * i] - a[i] * levels[3 + 5 * i];
-      }
-
-      int k;
-      for (int i = 0; i < data_size; i++) {
-        int ival = convertUnsignedByte2Short(uncomp[i]);
-        k = -1;
-        for (int j = 0; j < level; j++) {
-          if (levels[3 + (j * 5)] <= ival && ival <= levels[4 + (j * 5)]) {
-            k = j;
-            scale = levels[5 + j * 5];
-          }
-        }
-
-        if (k >= 0)
-          fdata[i] = (a[k] * ival + b[k]) / scale;
-        else
-          fdata[i] = 0;
-
-      }
-      Array array = Array.factory(DataType.FLOAT, v2.getShape(), fdata);
-
-      return array.sectionNoReduce(origin, shape, stride);
-    }
-
+    // Turn the decompressed data into an array, caching as appropriate
+    Array array = makeArray(uncomp, levels, v2.getShape());
+    if (levels == null && array.getSize() < Variable.defaultSizeToCache)
+      v2.setCachedData(array, false);
+    return array.sectionNoReduce(origin, shape, stride);
   }
 
   /*
