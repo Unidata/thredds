@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -52,12 +52,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
   final static int Z_DEFLATED = 8;
   final static int DEF_WBITS = 15;
-
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    throw new UnsupportedOperationException("Gini IOSP does not support nested variables");
-  }
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     Giniheader localHeader = new Giniheader();
@@ -245,78 +239,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
       v2.setCachedData(array, false);
     return array.sectionNoReduce(origin, shape, stride);
   }
-
-  /*
-  ** Name:       GetGiniLine
-  **
-  ** Purpose:    Extract a line of data from a GINI image
-  **
-  ** Parameters:
-  **             buf     - buffer containing image data
-  **
-  ** Returns:
-  **             SUCCESS == 1
-  **             FAILURE == 0
-  **
-  **
-  */
-  private byte[] getGiniLine(int nx, int ny, long doff, int lineNumber, int len, int stride) throws IOException {
-
-    byte[] data = new byte[len];
-
-    /*
-    ** checking image file and set location of first line in file
-    */
-    raf.seek(doff);
-
-    if (lineNumber >= ny)
-      throw new IOException("Try to access the file at line number= " + lineNumber + " larger then last line number = " + ny);
-
-    /*
-    ** Read in the requested line
-    */
-
-    int offset = lineNumber * nx + (int) doff;
-
-    //myRaf.seek ( offset );
-    for (int i = 0; i < len; i++) {
-      raf.seek(offset);
-      data[i] = raf.readByte();
-      offset = offset + stride;
-      //myRaf.seek(offset);
-    }
-    //myRaf.read( data, 0, len);
-
-    return data;
-
-  }
-
-  /*
-  ** Name:       IsZlibed
-  **
-  ** Purpose:    Check a two-byte sequence to see if it indicates the start of
-  **             a zlib-compressed buffer
-  **
-  ** Parameters:
-  **             buf     - buffer containing at least two bytes
-  **
-  ** Returns:
-  **             SUCCESS 1
-  **             FAILURE 0
-  **
-  *
-  int issZlibed(byte[] buf) {
-
-    if ((buf[0] & 0xf) == Z_DEFLATED) {
-      if ((buf[0] >> 4) + 8 <= DEF_WBITS) {
-        if ((((buf[0] << 8) + (buf[1])) % 31) == 0) {
-          return 1;
-        }
-      }
-    }
-
-    return 0;
-  }  */
 
   // get this to inline for performance
   private short convertUnsignedByte2Short(byte b) {
