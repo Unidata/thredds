@@ -309,7 +309,6 @@ class Giniheader {
     ** Get grid dimensions
     */
 
-    byte[] b3 = new byte[3];
     nx = bos.getShort();
     att = new Attribute("NX", nx);
     this.ncfile.addAttribute(null, att);
@@ -329,43 +328,23 @@ class Giniheader {
         */
 
         /* Latitude of first grid point */
-        bos.get(b3, 0, 3);
-        int nn = getInt(b3, 3);
-        lat1 = (double) nn / 10000.0;
-        Double nd = lat1;
-        att = new Attribute("Latitude0", nd);
+        lat1 = readScaledInt(bos);
+        att = new Attribute("Latitude0", lat1);
         this.ncfile.addAttribute(null, att);
 
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        int b33 = (b3[0] & (1 << 7));
-        //  if( b33 == 128)      //west longitude
-        //      nd = new Double(((double) nn) / 10000.0 * (-1));
-        //  else
-        nd = ((double) nn) / 10000.0;
-        lon1 = nd;
-        att = new Attribute("Longitude0", nd);
+        lon1 = readScaledInt(bos);
+        att = new Attribute("Longitude0", lon1);
         this.ncfile.addAttribute(null, att);
 
         /* Longitude of last grid point */
         bos.get(); /* skip one byte */
 
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        nd = ((double) nn) / 10000.0;
-        lat2 = nd;
-        att = new Attribute("LatitudeN", nd);
+        lat2 = readScaledInt(bos);
+        att = new Attribute("LatitudeN", lat2);
         this.ncfile.addAttribute(null, att);
 
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        b33 = (b3[0] & (1 << 7));
-        // if( b33 == 128)      //west longitude
-        //      nd = new Double(((double) nn) / 10000.0 * (-1));
-        //  else
-        nd = ((double) nn) / 10000.0;
-        lon2 = nd;
-        att = new Attribute("LongitudeN", nd);
+        lon2 = readScaledInt(bos);
+        att = new Attribute("LongitudeN", lon2);
         this.ncfile.addAttribute(null, att);
 
         /*
@@ -391,23 +370,11 @@ class Giniheader {
         bos.getInt(); /* skip 4 bytes */
         bos.get();    /* skip 1 byte */
 
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        nd = ((double) nn) / 10000.0;
-
         /* Latitude of proj cylinder intersects */
-        att = new Attribute("LatitudeX", nd);
-        latin = nd;
+        latin = readScaledInt(bos);
+        att = new Attribute("LatitudeX", latin);
         this.ncfile.addAttribute(null, att);
 
-        latt = 0.0; // this is not corrected  // jc 8/7/08 not used
-
-        // dyKm =  Math.cos( DEG_TO_RAD*latt);
-        // dxKm = DEG_TO_RAD * EARTH_RAD_KMETERS * Math.abs((lon_1-lon_2) / (nx-1));
-        //  double dy  =  EARTH_RAD_KMETERS * Math.cos(DEG_TO_RAD*latt) / (ny - 1);
-        //  dyKm = dy *( Math.log( Math.tan(DEG_TO_RAD*( (lat2-latt)/2.0 + 45.0 ) ) )
-        //                  -Math.log( Math.tan(DEG_TO_RAD*( (lat1-latt)/2.0 + 45.0 ) ) ) );
-        //  dxKm = DEG_TO_RAD * EARTH_RAD_KMETERS * Math.abs(lon1-lon2) / (ny-1);
         projection = new Mercator(lonv, latin);
         break;
 
@@ -416,50 +383,31 @@ class Giniheader {
         /*
         ** Get lat/lon of first grid point
         */
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        nd = ((double) nn) / 10000.0;
-        lat1 = nd;
-        //att = new Attribute( "Lat1", nd);
-        //this.ncfile.addAttribute(null, att);
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        nd = ((double) nn) / 10000.0;
-        lon1 = nd;
+        lat1 = readScaledInt(bos);
+        lon1 = readScaledInt(bos);
         /*
         ** Get Lov - the orientation of the grid; i.e. the east longitude of
         ** the meridian which is parallel to the y-aixs
         */
         bos.get(); /* skip one byte */
 
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        nd = ((double) nn) / 10000.0;
-        lonv = nd;
+        lonv = readScaledInt(bos);
         lonProjectionOrigin = lonv;
-        att = new Attribute("Lov", nd);
+        att = new Attribute("Lov", lonv);
         this.ncfile.addAttribute(null, att);
 
         /*
         ** Get distance increment of grid
         */
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        dxKm = ((double) nn) / 10000.0;
-
-        nd = ((double) nn) / 10000.;
-        att = new Attribute("DxKm", nd);
+        dxKm = readScaledInt(bos);
+        att = new Attribute("DxKm", dxKm);
         this.ncfile.addAttribute(null, att);
 
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        dyKm = ((double) nn) / 10000.0;
-
-        nd = ((double) nn) / 10000.;
-        att = new Attribute("DyKm", nd);
+        dyKm = readScaledInt(bos);
+        att = new Attribute("DyKm", dyKm);
         this.ncfile.addAttribute(null, att);
+
         /* calculate the lat2 and lon2 */
-
         if (proj == 5) {
           latt = 60.0;            /* Fixed for polar stereographic */
           imageScale = (1. + Math.sin(DEG_TO_RAD * latt)) / 2.;
@@ -467,11 +415,9 @@ class Giniheader {
 
         lat2 = lat1 + dyKm * (ny - 1) / 111.26;
 
-
         /* Convert to east longitude */
         if (lonv < 0.) lonv += 360.;
         if (lon1 < 0.) lon1 += 360.;
-
 
         lon2 = lon1 + dxKm * (nx - 1) / 111.26 * Math.cos(DEG_TO_RAD * lat1);
 
@@ -492,12 +438,8 @@ class Giniheader {
 
         bos.get(); /* skip one byte for Scanning mode */
 
-        bos.get(b3, 0, 3);
-        nn = getInt(b3, 3);
-        latin = (((double) nn) / 10000.);
-
-        nd = ((double) nn) / 10000.;
-        att = new Attribute("Latin", nd);
+        latin = readScaledInt(bos);
+        att = new Attribute("Latin", latin);
         this.ncfile.addAttribute(null, att);
 
         if (proj == 3)
@@ -1227,39 +1169,21 @@ class Giniheader {
 
   }
 
+  // Read a scaled, 3-byte integer from file and convert to double
+  private double readScaledInt(ByteBuffer buf) {
+    // Get the first two bytes
+    short s1 = buf.getShort();
 
-  /*
-  ** Name:       GetInt
-  **
-  ** Purpose:    Convert GINI 2 or 3-byte quantities to int
-  **
-  */
-  int getInt(byte[] b, int num) {
-    int base = 1;
-    int i;
-    int word = 0;
+    // And the last one as unsigned
+    short s2 = DataType.unsignedByteToShort(buf.get());
 
-    int bv[] = new int[num];
+    // Get the sign bit, converting from 0 or 2 to +/- 1.
+    int posneg = 1 - ((s1 & 0x8000) >> 14);
 
-    for (i = 0; i < num; i++) {
-      bv[i] = DataType.unsignedByteToShort(b[i]);
-    }
-
-    if (bv[0] > 127) {
-      bv[0] -= 128;
-      base = -1;
-    }
-      /*
-      ** Calculate the integer value of the byte sequence
-      */
-
-    for (i = num - 1; i >= 0; i--) {
-      word += base * bv[i];
-      base *= 256;
-    }
-
-    return word;
-
+    // Combine the first two bytes (without sign bit) with the last byte.
+    // Multiply by proper factor for +/-
+    int nn = (((s1 & 0x7FFF) << 8) | s2) * posneg;
+    return (double) nn / 10000.0;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
