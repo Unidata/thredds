@@ -57,12 +57,7 @@ import java.nio.*;
  */
 
 class Giniheader {
-  static final byte[] MAGIC = new byte[]{0x43, 0x44, 0x46, 0x01};
-  static final int MAGIC_DIM = 10;
-  static final int MAGIC_VAR = 11;
-  static final int MAGIC_ATT = 12;
-  private boolean debug = false, debugPos = false, debugString = false, debugHeaderSize = false;
-  private ucar.unidata.io.RandomAccessFile raf;
+  private boolean debug = false;
   private ucar.nc2.NetcdfFile ncfile;
   // private PrintStream out = System.out;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Giniheader.class);
@@ -70,7 +65,7 @@ class Giniheader {
   int recsize = 0; // size of each record (padded)
   int dataStart = 0; // where the data starts
   int recStart = 0; // where the record data starts
-  int GINI_PIB_LEN = 21;   // gini product indentification block
+  int GINI_PIB_LEN = 21;   // gini product identification block
   int GINI_PDB_LEN = 512;  // gini product description block
   int GINI_HED_LEN = 533;  // gini product header
   double DEG_TO_RAD = 0.017453292;
@@ -91,7 +86,6 @@ class Giniheader {
 
 
   boolean validatePIB(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    this.raf = raf;
     this.actualSize = raf.length();
     int pos = 0;
     raf.seek(pos);
@@ -116,7 +110,6 @@ class Giniheader {
 
 
   byte[] readPIB(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    this.raf = raf;
     this.actualSize = raf.length();
     int doff = 0;
     int pos = 0;
@@ -156,7 +149,7 @@ class Giniheader {
     int inflatedLen = 0;
     int pos1 = 0;
 
-    if (isZlibHed(b2) == 1) {
+    if (Giniiosp.isZlibHed(b2)) {
       Z_type = 1;
       inflater.setInput(b, pos, GINI_HED_LEN);
       try {
@@ -197,8 +190,7 @@ class Giniheader {
     return head;
   }
 
-  void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, PrintStream out) throws IOException {
-    this.raf = raf;
+  void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile) throws IOException {
     this.ncfile = ncfile;
     int proj;                        /* projection type indicator     */
                                             /* 1 - Mercator                  */
@@ -218,10 +210,9 @@ class Giniheader {
     int gminute;
     int gsecond;
     double lonv;                        /* meridian parallel to y-axis */
-    double diff_lon;
     double lon1 = 0.0, lon2 = 0.0;
     double lat1 = 0.0, lat2 = 0.0;
-    double latt = 0.0, lont = 0.0;
+    double latt;
     double imageScale = 0.0;
     //long       hoff = 0;
 
@@ -236,7 +227,6 @@ class Giniheader {
     this.ncfile.addAttribute(null, att);
 
     bos.position(0);
-    byte[] b2 = new byte[2];
 
     //sat_id = (int )( raf.readByte());
     Byte nv = bos.get();
@@ -320,17 +310,12 @@ class Giniheader {
     */
 
     byte[] b3 = new byte[3];
-    bos.get(b2, 0, 2);
-    nx = getInt(b2, 2);
-    Integer ni = nx;
-    att = new Attribute("NX", ni);
+    nx = bos.getShort();
+    att = new Attribute("NX", nx);
     this.ncfile.addAttribute(null, att);
 
-
-    bos.get(b2, 0, 2);
-    ny = getInt(b2, 2);
-    ni = ny;
-    att = new Attribute("NY", ni);
+    ny = bos.getShort();
+    att = new Attribute("NY", ny);
     this.ncfile.addAttribute(null, att);
 
     ProjectionImpl projection = null;
@@ -490,10 +475,6 @@ class Giniheader {
 
         lon2 = lon1 + dxKm * (nx - 1) / 111.26 * Math.cos(DEG_TO_RAD * lat1);
 
-        diff_lon = lonv - lon1;
-
-        if (diff_lon > 180.) diff_lon -= 360.;
-        if (diff_lon < -180.) diff_lon += 360.;
         /*
         ** Convert to normal longitude to McIDAS convention
         */
@@ -506,8 +487,7 @@ class Giniheader {
         nv = bos.get();
         pole = nv.intValue();
         pole = (pole > 127) ? -1 : 1;
-        ni = pole;
-        att = new Attribute("ProjCenter", ni);
+        att = new Attribute("ProjCenter", pole);
         this.ncfile.addAttribute(null, att);
 
         bos.get(); /* skip one byte for Scanning mode */
@@ -534,7 +514,6 @@ class Giniheader {
 
     }
 
-
     this.ncfile.addAttribute(null, new Attribute("title", gini_GetEntityID(ent_id)));
     this.ncfile.addAttribute(null, new Attribute("summary", getPhysElemSummary(phys_elem, ent_id)));
     this.ncfile.addAttribute(null, new Attribute("id", gini_GetSectorID(sec_id)));
@@ -545,10 +524,10 @@ class Giniheader {
     this.ncfile.addAttribute(null, new Attribute("creator_name", "UNIDATA"));
     this.ncfile.addAttribute(null, new Attribute("creator_url", "http://www.unidata.ucar.edu/"));
     this.ncfile.addAttribute(null, new Attribute("naming_authority", "UCAR/UOP"));
-    this.ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Float(lat1)));
-    this.ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Float(lat2)));
-    this.ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Float(lon1)));
-    this.ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Float(lon2)));
+    this.ncfile.addAttribute(null, new Attribute("geospatial_lat_min", lat1));
+    this.ncfile.addAttribute(null, new Attribute("geospatial_lat_max", lat2));
+    this.ncfile.addAttribute(null, new Attribute("geospatial_lon_min", lon1));
+    this.ncfile.addAttribute(null, new Attribute("geospatial_lon_max", lon2));
     //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
     //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
 
@@ -567,7 +546,7 @@ class Giniheader {
     att = new Attribute("compressionFlag", nv);
     this.ncfile.addAttribute(null, att);
 
-    if (convertunsignedByte2Short(nv) == 128) {
+    if (DataType.unsignedByteToShort(nv) == 128) {
       Z_type = 2;
       //out.println( "ReadNexrInfo:: This is a Z file ");
     }
@@ -575,7 +554,7 @@ class Giniheader {
    /* new 47 - 60 */
     bos.position(46);
     nv = bos.get();      /* Cal indicator */
-    int navcal = convertunsignedByte2Short(nv);
+    int navcal = DataType.unsignedByteToShort(nv);
     int[] calcods = null;
     if (navcal == 128)
       calcods = getCalibrationInfo(bos, phys_elem, ent_id);
@@ -589,7 +568,6 @@ class Giniheader {
     // var.addAttribute( new Attribute(CDM.MISSING_VALUE, new Byte((byte) 0))); // ??
 
     // get dimensions
-    int velems;
     List<Dimension> dims = new ArrayList<>();
 
     Dimension dimX = new Dimension("x", nx, true, false, false);
@@ -598,7 +576,6 @@ class Giniheader {
     ncfile.addDimension(null, dimY);
     ncfile.addDimension(null, dimX);
 
-    velems = dimX.getLength() * dimY.getLength();
     dims.add(dimT);
     dims.add(dimY);
     dims.add(dimX);
@@ -607,7 +584,7 @@ class Giniheader {
 
     // size and beginning data position in file
     long begin = dataStart;
-    if (debug) log.warn(" name= " + vname + " velems=" + velems + " begin= " + begin + "\n");
+    if (debug) log.warn(" name= " + vname + " velems=" + var.getSize() + " begin= " + begin + "\n");
     if (navcal == 128) {
       var.setDataType(DataType.FLOAT);
       var.setSPobject(new Vinfo(begin, nx, ny, calcods));
@@ -719,20 +696,19 @@ class Giniheader {
 
     bos.position(46);
     byte nv = bos.get();      /* Cal indicator */
-    int navcal = convertunsignedByte2Short(nv);
+    int navcal = DataType.unsignedByteToShort(nv);
     int[] calcods = null;
     if (navcal == 128) {    /* Unidata Cal block found; unpack values */
       int scale = 10000;
       int jscale = 100000000;
       byte[] unsb = new byte[8];
-      byte[] b4 = new byte[4];
       bos.get(unsb);
       String unitStr = new String(unsb, CDM.utf8Charset).toUpperCase();
       String iname;
       String iunit;
       bos.position(55);
       nv = bos.get();
-      int calcod = convertunsignedByte2Short(nv);
+      int calcod = DataType.unsignedByteToShort(nv);
 
       if (unitStr.contains("INCH")) {
         iname = "RAIN";
@@ -764,14 +740,10 @@ class Giniheader {
         for (int i = 0; i < calcod; i++) {
 
           bos.position(56 + i * 16);
-          bos.get(b4);
-          int minb = getInt(b4, 4) / 10000;        /* min brightness values         */
-          bos.get(b4);
-          int maxb = getInt(b4, 4) / 10000;       /* max brightness values         */
-          bos.get(b4);
-          int mind = getInt(b4, 4);               /* min data values               */
-          bos.get(b4);
-          int maxd = getInt(b4, 4);               /* max data values               */
+          int minb = bos.getInt() / 10000;        /* min brightness values         */
+          int maxb = bos.getInt() / 10000;       /* max brightness values         */
+          int mind = bos.getInt();               /* min data values               */
+          int maxd = bos.getInt();               /* max data values               */
 
           int idscal = 1;
           while (mind % idscal == 0 && maxd % idscal == 0) {
@@ -810,7 +782,6 @@ class Giniheader {
     }
 
     return calcods;
-
   }
 
 
@@ -1271,7 +1242,7 @@ class Giniheader {
     int bv[] = new int[num];
 
     for (i = 0; i < num; i++) {
-      bv[i] = convertunsignedByte2Short(b[i]);
+      bv[i] = DataType.unsignedByteToShort(b[i]);
     }
 
     if (bv[0] > 127) {
@@ -1289,50 +1260,6 @@ class Giniheader {
 
     return word;
 
-  }
-
-  public short convertunsignedByte2Short(byte b) {
-    return (short) ((b < 0) ? (short) b + 256 : (short) b);
-  }
-
-
-  // this converts a byte array to a wrapped primitive (Byte, Short, Integer, Double, Float, Long)
-  protected Object convert(byte[] barray, DataType dataType, int byteOrder) {
-
-    if (dataType == DataType.BYTE) {
-      return barray[0];
-    }
-
-    if (dataType == DataType.CHAR) {
-      return (char) barray[0];
-    }
-
-    ByteBuffer bbuff = ByteBuffer.wrap(barray);
-    if (byteOrder >= 0)
-      bbuff.order(byteOrder == ucar.unidata.io.RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-
-    if (dataType == DataType.SHORT) {
-      ShortBuffer tbuff = bbuff.asShortBuffer();
-      return tbuff.get();
-
-    } else if (dataType == DataType.INT) {
-      IntBuffer tbuff = bbuff.asIntBuffer();
-      return tbuff.get();
-
-    } else if (dataType == DataType.LONG) {
-      LongBuffer tbuff = bbuff.asLongBuffer();
-      return tbuff.get();
-
-    } else if (dataType == DataType.FLOAT) {
-      FloatBuffer tbuff = bbuff.asFloatBuffer();
-      return tbuff.get();
-
-    } else if (dataType == DataType.DOUBLE) {
-      DoubleBuffer tbuff = bbuff.asDoubleBuffer();
-      return tbuff.get();
-    }
-
-    throw new IllegalStateException();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1356,23 +1283,6 @@ class Giniheader {
       this.ny = y;
       this.levels = levels;
     }
-
-  }
-
-
-  int isZlibHed(byte[] buf) {
-    short b0 = convertunsignedByte2Short(buf[0]);
-    short b1 = convertunsignedByte2Short(buf[1]);
-
-    if ((b0 & 0xf) == Z_DEFLATED) {
-      if ((b0 >> 4) + 8 <= DEF_WBITS) {
-        if ((((b0 << 8) + b1) % 31) == 0) {
-          return 1;
-        }
-      }
-    }
-
-    return 0;
 
   }
 
