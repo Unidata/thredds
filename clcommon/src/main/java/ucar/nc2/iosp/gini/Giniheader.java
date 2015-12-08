@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -57,25 +57,17 @@ import java.nio.*;
  */
 
 class Giniheader {
+  static private final int GINI_PIB_LEN = 21;   // gini product identification block
+  static private final int GINI_PDB_LEN = 512;  // gini product description block
+  static private final int GINI_HED_LEN = GINI_PDB_LEN + GINI_PIB_LEN;  // gini product header
+  static private final double DEG_TO_RAD = 0.017453292;
   private boolean debug = false;
   private ucar.nc2.NetcdfFile ncfile;
-  // private PrintStream out = System.out;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Giniheader.class);
-  int numrecs = 0; // number of records written
-  int recsize = 0; // size of each record (padded)
   int dataStart = 0; // where the data starts
-  int recStart = 0; // where the record data starts
-  int GINI_PIB_LEN = 21;   // gini product identification block
-  int GINI_PDB_LEN = 512;  // gini product description block
-  int GINI_HED_LEN = 533;  // gini product header
-  double DEG_TO_RAD = 0.017453292;
-  double EARTH_RAD_KMETERS = 6371.200;
-  byte Z_DEFLATED = 8;
-  byte DEF_WBITS = 15;
-  private long actualSize, calcSize;
   protected int Z_type = 0;
 
-  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
+  static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     try {
       return validatePIB(raf);
     } catch (IOException e) {
@@ -84,16 +76,8 @@ class Giniheader {
     }
   }
 
-
-  boolean validatePIB(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    this.actualSize = raf.length();
-    int pos = 0;
-    raf.seek(pos);
-
-    // gini header process
-    String pib = raf.readString(GINI_PIB_LEN + GINI_HED_LEN);
-
-    pos = pib.indexOf("KNES");
+  static private int findWMOHeader(String pib) {
+    int pos = pib.indexOf("KNES");
     if (pos == -1) pos = pib.indexOf("CHIZ");
 
     if (pos != -1) {                    /* 'KNES' or 'CHIZ' found         */
@@ -103,15 +87,21 @@ class Giniheader {
       }
     } else {
       pos = 0;
-      return false;
     }
-    return true;
+    return pos;
   }
 
+  static boolean validatePIB(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+    int pos = 0;
+    raf.seek(pos);
+
+    // gini header process
+    String pib = raf.readString(GINI_PIB_LEN + GINI_HED_LEN);
+
+    return findWMOHeader(pib) != 0;
+  }
 
   byte[] readPIB(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    this.actualSize = raf.length();
-    int doff = 0;
     int pos = 0;
     raf.seek(pos);
 
@@ -123,58 +113,31 @@ class Giniheader {
     raf.readFully(b);
     String pib = new String(b, CDM.utf8Charset);
 
-    //if( !pib.startsWith("TICZ")) return (int)pos; // gini header start with TICZ 99....
-
-    pos = pib.indexOf("KNES");
-    if (pos == -1) pos = pib.indexOf("CHIZ");
-
-    if (pos != -1) {                    /* 'KNES' or 'CHIZ' found         */
-      pos = pib.indexOf("\r\r\n");    /* <<<<< UPC mod 20030710 >>>>>   */
-      if (pos != -1) {                 /* CR CR NL found             */
-        pos = pos + 3;
-      }
-    } else {
-      pos = 0;
-    }
-
+    pos = findWMOHeader(pib);
     dataStart = pos + GINI_PDB_LEN;
 
     // Test the next two bytes to see if the image portion looks like
     // it is zlib-compressed
-    byte[] b2 = new byte[2];
-    b2[0] = b[pos];
-    b2[1] = b[pos + 1];
-    Inflater inflater = new Inflater(false);
-    int resultLength = 0;
-    int inflatedLen = 0;
+    byte[] b2 = new byte[] {b[pos], b[pos + 1]};
     int pos1 = 0;
 
     if (Giniiosp.isZlibHed(b2)) {
       Z_type = 1;
+      Inflater inflater = new Inflater(false);
       inflater.setInput(b, pos, GINI_HED_LEN);
       try {
-        resultLength = inflater.inflate(buf, 0, GINI_HED_LEN);
+        int resultLength = inflater.inflate(buf, 0, GINI_HED_LEN);
+        if (resultLength != GINI_HED_LEN) log.warn("GINI: Zlib inflated image header size error");
       } catch (DataFormatException ex) {
-        log.warn("ERROR on inflation " + ex.getMessage());
+        log.error("ERROR on inflation " + ex.getMessage());
         ex.printStackTrace();
         throw new IOException(ex.getMessage());
       }
 
-      if (resultLength != GINI_HED_LEN) System.out.println("Zlib inflated image header size error");
-      inflatedLen = GINI_HED_LEN - inflater.getRemaining();
+      int inflatedLen = GINI_HED_LEN - inflater.getRemaining();
 
       String inf = new String(buf, CDM.utf8Charset);
-      pos1 = inf.indexOf("KNES");
-      if (pos1 == -1) pos1 = inf.indexOf("CHIZ");
-
-      if (pos1 != -1) {                    /* 'KNES' or 'CHIZ' found         */
-        pos1 = inf.indexOf("\r\r\n");    /* <<<<< UPC mod 20030710 >>>>>   */
-        if (pos1 != -1) {                 /* CR CR NL found             */
-          pos1 = pos1 + 3;
-        }
-      } else {
-        pos1 = 0;
-      }
+      pos1 = findWMOHeader(inf);
 
       System.arraycopy(buf, pos1, head, 0, GINI_PDB_LEN);
       dataStart = pos + inflatedLen;
@@ -214,14 +177,9 @@ class Giniheader {
     double lat1 = 0.0, lat2 = 0.0;
     double latt;
     double imageScale = 0.0;
-    //long       hoff = 0;
 
-
-    // long pos = GINI_PIB_LEN;
     byte[] head = readPIB(raf);
     ByteBuffer bos = ByteBuffer.wrap(head);
-    //if (out != null) this.out = out;
-    actualSize = raf.length();
 
     Attribute att = new Attribute(CDM.CONVENTIONS, "GRIB");
     this.ncfile.addAttribute(null, att);
@@ -251,7 +209,7 @@ class Giniheader {
     bos.position(bos.position() + 4);
 
     gyear = (int) (bos.get());
-    gyear += (gyear < 50) ? 2000 : 1900;
+    gyear += (gyear < 50) ? 2000 : 1900; //TODO: Find example where this hack is necessary
     gmonth = (int) (bos.get());
     gday = (int) (bos.get());
     ghour = (int) (bos.get());
@@ -357,7 +315,7 @@ class Giniheader {
         if (lon1 < 0) lon_1 += 360.0;
         if (lon2 < 0) lon_2 += 360.0;
 
-        lonv = lon_1 - (lon_1 - lon_2) / 2.0;
+        lonv = (lon_1 + lon_2) / 2.0;
 
         if (lonv > 180.0) lonv -= 360.0;
         if (lonv < -180.0) lonv += 360.0;
@@ -555,7 +513,7 @@ class Giniheader {
     // latin, lov, la1, lo1
 
     // we have to project in order to find the origin
-    ProjectionPointImpl start = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(lat1, lon1));
+    ProjectionPoint start = projection.latLonToProj(new LatLonPointImpl(lat1, lon1));
     if (debug) log.warn("start at proj coord " + start);
 
     double startx = start.getX();
@@ -578,7 +536,7 @@ class Giniheader {
 
       for (int i = 0; i < data.length; i++) {
         double ln = lon1 + i * dx;
-        ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(lat1, ln));
+        ProjectionPoint pt = projection.latLonToProj(new LatLonPointImpl(lat1, ln));
         data[i] = pt.getX();  // startx + i*dx;
       }
     } else {
@@ -602,7 +560,7 @@ class Giniheader {
       double dy = (lat2 - lat1) / (ny - 1);
       for (int i = 0; i < data.length; i++) {
         double la = lat2 - i * dy;
-        ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj(new LatLonPointImpl(la, lon1));
+        ProjectionPoint pt = projection.latLonToProj(new LatLonPointImpl(la, lon1));
         data[i] = pt.getY();  //endyy - i*dy;
       }
     } else {
