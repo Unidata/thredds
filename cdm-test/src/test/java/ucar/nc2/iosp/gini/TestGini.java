@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -32,241 +32,80 @@
  */
 package ucar.nc2.iosp.gini;
 
-import junit.framework.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
+@RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGini extends TestCase {
-  public static String compressGini = TestDir.cdmUnitTestDir + "formats/gini/n0r_20041013_1852-compress";
-  public static String uncompressGini = TestDir.cdmUnitTestDir + "formats/gini/n0r_20041013_1852-uncompress";
-  public static String compress_n1p = TestDir.cdmUnitTestDir + "formats/gini/n1p_20041206_2140";
-  public static String compress_ntp = TestDir.cdmUnitTestDir + "formats/gini/ntp_20041206_2154";
-  public static String satelliteAK_IR = TestDir.cdmUnitTestDir + "formats/gini/AK-NATIONAL_8km_IR_20050912_2345.gini";
-  public static String satellitePR_IR = TestDir.cdmUnitTestDir + "formats/gini/PR-REGIONAL_4km_12.0_20050922_0600.gini";
-  public static String satelliteHI10km_Sound = TestDir.cdmUnitTestDir + "formats/gini/HI-NATIONAL_10km_SOUND-6.51_20050918_1824.gini";
-  public static String satelliteHI14km_IR = TestDir.cdmUnitTestDir + "formats/gini/HI-NATIONAL_14km_IR_20050918_2000.gini";
-  public static String satelliteHI4km_IR = TestDir.cdmUnitTestDir + "formats/gini/HI-REGIONAL_4km_IR_20050919_1315.gini";
-  public static String satelliteSuper1km_PW = TestDir.cdmUnitTestDir + "formats/gini/SUPER-NATIONAL_1km_PW_20050923_1400.gini";
-  public static String satelliteSuper1km_SFT = TestDir.cdmUnitTestDir + "formats/gini/SUPER-NATIONAL_1km_SFC-T_20050912_1900.gini";
-  public static String satelliteSuper8km_IR = TestDir.cdmUnitTestDir + "formats/gini/SUPER-NATIONAL_8km_IR_20050911_2345.gini";
-  public static String satelliteEast_4km_12 = TestDir.cdmUnitTestDir + "formats/gini/EAST-CONUS_4km_12.0_20050912_0600.gini";
-  public static String satelliteEast_8km_13 = TestDir.cdmUnitTestDir + "formats/gini/EAST-CONUS_8km_13.3_20050912_2240.gini";
-  public static String satelliteWest_4km_39 = TestDir.cdmUnitTestDir + "formats/gini/WEST-CONUS_4km_3.9_20050912_2130.gini";
+public class TestGini{
 
-  public static boolean dumpFile = false;
+    @Parameterized.Parameters(name="{0}")
+    public static Collection giniFiles() {
+        Object[][] data = new Object[][] {
+                {"n0r_20041013_1852-compress", "Reflectivity"},
+                {"n0r_20041013_1852-uncompress", "Reflectivity"},
+                {"n1p_20041206_2140", "Precipitation"},
+                {"ntp_20041206_2154", "Precipitation"},
+                {"AK-NATIONAL_8km_IR_20050912_2345.gini", "IR"},
+                {"PR-REGIONAL_4km_12.0_20050922_0600.gini", "IR"},
+                {"HI-NATIONAL_10km_SOUND-6.51_20050918_1824.gini", "sounder_imagery"},
+                {"HI-NATIONAL_14km_IR_20050918_2000.gini", "IR"},
+                {"HI-REGIONAL_4km_IR_20050919_1315.gini", "IR"},
+                {"SUPER-NATIONAL_1km_PW_20050923_1400.gini", "PW"},
+                {"SUPER-NATIONAL_1km_SFC-T_20050912_1900.gini", "SFC_T"},
+                {"SUPER-NATIONAL_8km_IR_20050911_2345.gini", "IR"},
+                {"EAST-CONUS_4km_12.0_20050912_0600.gini", "IR"},
+                {"EAST-CONUS_8km_13.3_20050912_2240.gini", "IR"},
+                {"WEST-CONUS_4km_3.9_20050912_2130.gini", "IR"}
+        };
+        return Arrays.asList(data);
+    }
 
-  public void testGiniReadCompressed() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
+    String fname, varName;
 
-    System.out.println("**** Open " + compressGini);
-    ncfile = NetcdfFile.open(compressGini);
-    v = ncfile.findVariable("Reflectivity");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
+    public TestGini(String fname, String varName)
+    {
+        this.fname = fname;
+        this.varName = varName;
+    }
 
-    testReadData(v);
-    ncfile.close();
-  }
+    @Test
+    public void testGiniRead() throws IOException {
+        try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/gini/" + fname)) {
+            Variable v = ncfile.findVariable(varName);
 
-  public void testGiniReadUnCompressed() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + uncompressGini);
-    ncfile = NetcdfFile.open(uncompressGini);
-    v = ncfile.findVariable("Reflectivity");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
+            // Make sure we can get the expected variable and that it is 2D
+            Assert.assertNotNull(v);
+            Assert.assertNotNull(v.getDimension(0));
+            Assert.assertNotNull(v.getDimension(1));
 
-    testReadData(v);
-    ncfile.close();
-  }
+            // Read the array and check that its size matches the variable's
+            Array a = v.read();
+            Assert.assertNotNull(a);
+            Assert.assertEquals(v.getSize(), a.getSize());
 
-  public void testGiniReadCompress_n1p() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + compress_n1p);
-    ncfile = NetcdfFile.open(compress_n1p);
-    v = ncfile.findVariable("Precipitation");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadCompress_ntp() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + compress_ntp);
-    ncfile = NetcdfFile.open(compress_ntp);
-    v = ncfile.findVariable("Precipitation");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteAK_IR() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteAK_IR);
-    ncfile = NetcdfFile.open(satelliteAK_IR);
-    v = ncfile.findVariable("IR");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatellitePR_IR() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satellitePR_IR);
-    ncfile = NetcdfFile.open(satellitePR_IR);
-    v = ncfile.findVariable("IR");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteHI10km_Sound() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteHI10km_Sound);
-    ncfile = NetcdfFile.open(satelliteHI10km_Sound);
-    v = ncfile.findVariable("sounder_imagery");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteHI14km_IR() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteHI14km_IR);
-    ncfile = NetcdfFile.open(satelliteHI14km_IR);
-    v = ncfile.findVariable("IR");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteHI4km_IR() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteHI4km_IR);
-    ncfile = NetcdfFile.open(satelliteHI4km_IR);
-    v = ncfile.findVariable("IR");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteSuper1km_PW() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteSuper1km_PW);
-    ncfile = NetcdfFile.open(satelliteSuper1km_PW);
-    v = ncfile.findVariable("PW");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteSuper1km_SFT() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteSuper1km_SFT);
-    ncfile = NetcdfFile.open(satelliteSuper1km_SFT);
-    v = ncfile.findVariable("SFC_T");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteSuper8km_IR() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteSuper8km_IR);
-    ncfile = NetcdfFile.open(satelliteSuper8km_IR);
-    v = ncfile.findVariable("IR");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteEast_4km_12() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteEast_4km_12);
-    ncfile = NetcdfFile.open(satelliteEast_4km_12);
-    v = ncfile.findVariable("IR");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteEast_8km_13() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteEast_8km_13);
-    ncfile = NetcdfFile.open(satelliteEast_8km_13);
-    v = ncfile.findVariable("IR");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-    testReadData(v);
-    ncfile.close();
-  }
-
-  public void testGiniReadSatelliteWest_4km_39() throws IOException {
-    NetcdfFile ncfile;
-    Variable v = null;
-    System.out.println("**** Open " + satelliteWest_4km_39);
-    ncfile = NetcdfFile.open(satelliteWest_4km_39);
-    v = ncfile.findVariable("IR");
-    assert (null != v.getDimension(0));
-    assert (null != v.getDimension(1));
-    testReadData(v);
-    ncfile.close();
-  }
-
-  private void testReadData(Variable v) throws IOException {
-    assert (null != v);
-    assert (null != v.getDimension(0));
-    Array a = v.read();
-    assert (null != a);
-    assert (v.getSize() == a.getSize());
-    System.out.printf("Read %s%n", v);
-
-    if (v.getDataType() == DataType.BYTE)
-      assert v.findAttribute(CDM.UNSIGNED) != null;
-  }
+            // For byte data, make sure it is specified as unsigned and
+            // check that the actual number of bytes is proper
+            if (v.getDataType() == DataType.BYTE) {
+                byte[] arr = (byte[])a.getStorage();
+                Assert.assertEquals(v.getSize(), arr.length);
+                Assert.assertNotNull(v.findAttribute(CDM.UNSIGNED));
+            }
+        }
+    }
 }
-
-

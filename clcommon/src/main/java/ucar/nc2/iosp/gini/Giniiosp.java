@@ -96,56 +96,67 @@ public class Giniiosp extends AbstractIOServiceProvider {
       return null;
   }
 
+  private float[] handleLevels(byte[] data,  int[] levels) {
+    int level = levels[0];
+    float[] a = new float[level];
+    float[] b = new float[level];
+    float[] fdata = new float[data.length];
+    int scale = 1;
+
+    for (int i = 0; i < level; i++) {
+      int numer = levels[1 + 5 * i] - levels[2 + 5 * i];
+      int denom = levels[3 + 5 * i] - levels[4 + 5 * i];
+      a[i] = (numer * 1.f) / (1.f * denom);
+      b[i] = levels[1 + 5 * i] - a[i] * levels[3 + 5 * i];
+    }
+
+    for (int i = 0; i < data.length; i++) {
+      int ival = convertUnsignedByte2Short(data[i]);
+      int k = -1;
+      for (int j = 0; j < level; j++) {
+        if (levels[3 + (j * 5)] <= ival && ival <= levels[4 + (j * 5)]) {
+          k = j;
+          scale = levels[5 + j * 5];
+        }
+      }
+
+      if (k >= 0)
+        fdata[i] = (a[k] * ival + b[k]) / scale;
+      else
+        fdata[i] = 0;
+
+    }
+    return fdata;
+  }
+
+  private Array makeArray(byte[] data, int[] levels, int[] shape)
+  {
+    // Default (if no level data) is to just return an array from the bytes.
+    Object store = data;
+    Class dt = DataType.BYTE.getPrimitiveClassType();
+
+    // If have levels, convert data to float and set-up to use that for array
+    if (levels != null) {
+      store = handleLevels(data, levels);
+      dt = DataType.FLOAT.getPrimitiveClassType();
+    }
+
+    // Create array and return
+    return Array.factory(dt, shape, store);
+  }
+
   // all the work is here, so can be called recursively
   private Array readData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride,
                          int[] levels) throws IOException, InvalidRangeException {
-
-    long length = raf.length();
+    // Get to the proper offset and read in the data
     raf.seek(dataPos);
-
-    int data_size = (int) (length - dataPos);
+    int data_size = (int) (raf.length() - dataPos);
     byte[] data = new byte[data_size];
     raf.readFully(data);
 
-    if (levels == null) {
-      Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), data);
-
-      return array.sectionNoReduce(origin, shape, stride);
-    } else {
-      int level = levels[0];
-      float[] a = new float[level];
-      float[] b = new float[level];
-      float[] fdata = new float[data_size];
-      int scale = 1;
-
-      for (int i = 0; i < level; i++) {
-        int numer = levels[1 + 5 * i] - levels[2 + 5 * i];
-        int denom = levels[3 + 5 * i] - levels[4 + 5 * i];
-        a[i] = (numer * 1.f) / (1.f * denom);
-        b[i] = levels[1 + 5 * i] - a[i] * levels[3 + 5 * i];
-      }
-
-      int k;
-      for (int i = 0; i < data_size; i++) {
-        int ival = convertUnsignedByte2Short(data[i]);
-        k = -1;
-        for (int j = 0; j < level; j++) {
-          if (levels[3 + (j * 5)] <= ival && ival <= levels[4 + (j * 5)]) {
-            k = j;
-            scale = levels[5 + j * 5];
-          }
-        }
-
-        if (k >= 0)
-          fdata[i] = (a[k] * ival + b[k]) / scale;
-        else
-          fdata[i] = 0;
-
-      }
-      Array array = Array.factory(DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), fdata);
-
-      return array.sectionNoReduce(origin, shape, stride);
-    }
+    // Turn it into an array
+    Array array = makeArray(data, levels, v2.getShape());
+    return array.sectionNoReduce(origin, shape, stride);
   }
 
   public Array readDataOld(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride) throws IOException, InvalidRangeException {
@@ -196,65 +207,24 @@ public class Giniiosp extends AbstractIOServiceProvider {
   // for the compressed data read all out into a array and then parse into requested
   public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int[] origin,
                                   int[] shape, int[] stride, int[] levels) throws IOException, InvalidRangeException {
-
-    long length = raf.length();
-
+    // Get to the proper offset and read in the rest of the compressed data
     raf.seek(dataPos);
-
-    int data_size = (int) (length - dataPos);
+    int data_size = (int) (raf.length() - dataPos);
     byte[] data = new byte[data_size];
     raf.readFully(data);
+
+    // Send the compressed data to ImageIO (to handle PNG)
     ByteArrayInputStream ios = new ByteArrayInputStream(data);
-
     BufferedImage image = javax.imageio.ImageIO.read(ios); // LOOK why ImageIO ??
-    Raster raster = image.getData();
-    DataBuffer db = raster.getDataBuffer();
+    DataBuffer db = image.getData().getDataBuffer();
 
+    // If the image had byte data, turn into an array
     if (db instanceof DataBufferByte) {
       DataBufferByte dbb = (DataBufferByte) db;
-      byte[] udata = dbb.getData();
-
-      if (levels == null) {
-        Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), udata);
+      Array array = makeArray(dbb.getData(), levels, v2.getShape());
+      if (levels == null)
         v2.setCachedData(array, false);
-        return array.sectionNoReduce(origin, shape, stride);
-      } else {
-        data_size = udata.length;
-        int level = levels[0];
-        float[] a = new float[level];
-        float[] b = new float[level];
-        float[] fdata = new float[data_size];
-        int scale = 1;
-
-        for (int i = 0; i < level; i++) {
-          int numer = levels[1 + 5 * i] - levels[2 + 5 * i];
-          int denom = levels[3 + 5 * i] - levels[4 + 5 * i];
-          a[i] = (numer * 1.f) / (1.f * denom);
-          b[i] = levels[1 + 5 * i] - a[i] * levels[3 + 5 * i];
-        }
-
-        int k;
-        for (int i = 0; i < data_size; i++) {
-          int ival = convertUnsignedByte2Short(udata[i]);
-          k = -1;
-          for (int j = 0; j < level; j++) {
-            if (levels[3 + (j * 5)] <= ival && ival <= levels[4 + (j * 5)]) {
-              k = j;
-              scale = levels[5 + j * 5];
-            }
-          }
-
-          if (k >= 0)
-            fdata[i] = (a[k] * ival + b[k]) / scale;
-          else
-            fdata[i] = 0;
-
-        }
-        Array array = Array.factory(DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), fdata);
-
-        return array.sectionNoReduce(origin, shape, stride);
-      }
-
+      return array.sectionNoReduce(origin, shape, stride);
     }
 
     return null;
@@ -262,103 +232,63 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
   public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int[] origin,
                                   int[] shape, int[] stride, int[] levels) throws IOException, InvalidRangeException {
-
-    long length = raf.length();
-
+    // Get to the proper offset and read in the rest of the compressed data
     raf.seek(dataPos);
-
-    int data_size = (int) (length - dataPos);     //  or 5120 as read buffer size
+    int data_size = (int) (raf.length() - dataPos);     //  or 5120 as read buffer size
     byte[] data = new byte[data_size];
     raf.readFully(data);
 
-    // decompress the bytes
-    int resultLength;
-    int result = 0;
-    byte[] tmp;
-    int uncompLen;        /* length of decompress space    */
-    byte[] uncomp = new byte[nx * (ny + 1) + 4000];
-    Inflater inflater = new Inflater(false);
-
-    inflater.setInput(data, 0, data_size);
+    // Buffer for decompressing data
+    byte[] uncomp = new byte[nx * ny];
     int offset = 0;
-    int limit = nx * ny + nx;
 
-    while (inflater.getRemaining() > 0) {
+    // Set-up zlib decompression (inflation)
+    Inflater inflater = new Inflater(false);
+    inflater.setInput(data);
+
+    // Loop while the inflater has data and we have space in final buffer
+    // This will end up ignoring the last few compressed bytes, which
+    // correspond to the end of file marker, which is a single row of pixels
+    // of alternating 0/255.
+    while (inflater.getRemaining() > 0 && offset < uncomp.length) {
+      // Try to decompress what's left, which ends up decompressing one block
       try {
-        resultLength = inflater.inflate(uncomp, offset, 4000);
+        offset += inflater.inflate(uncomp, offset, uncomp.length - offset);
       } catch (DataFormatException ex) {
         System.out.println("ERROR on inflation " + ex.getMessage());
         ex.printStackTrace();
         throw new IOException(ex.getMessage());
       }
-      offset = offset + resultLength;
-      result = result + resultLength;
-      if ((result) > limit) {
-        // when uncomp data larger then limit, the uncomp need to increase size
-        tmp = new byte[result];
-        System.arraycopy(uncomp, 0, tmp, 0, result);
-        uncompLen = result + 4000;
-        uncomp = new byte[uncompLen];
-        System.arraycopy(tmp, 0, uncomp, 0, result);
-      }
-      if (resultLength == 0) {
-        int tt = inflater.getRemaining();
-        byte[] b2 = new byte[2];
-        System.arraycopy(data, data_size - tt, b2, 0, 2);
-        if (isZlibHed(b2) == 0) {
-          System.arraycopy(data, data_size - tt, uncomp, result, tt);
-          break;
+
+      // If the last block finished...
+      if (inflater.finished()) {
+        // See if anything's left
+        int bytesLeft = inflater.getRemaining();
+        if (bytesLeft > 0) {
+          // Figure out where we are in the input data
+          int inputOffset = data_size - bytesLeft;
+
+          // Check if remaining data are zlib--if not copy out and bail
+          byte[] b2 = new byte[2];
+          System.arraycopy(data, inputOffset, b2, 0, b2.length);
+          if (isZlibHed(b2) == 0) {
+            System.arraycopy(data, inputOffset, uncomp, offset, bytesLeft);
+            break;
+          }
+
+          // Otherwise, set up for decompressing next block
+          inflater.reset();
+          inflater.setInput(data, inputOffset, bytesLeft);
         }
-        inflater.reset();
-        inflater.setInput(data, data_size - tt, tt);
       }
-
     }
-
     inflater.end();
 
-    if (levels == null) {
-      Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), uncomp);
-      if (array.getSize() < Variable.defaultSizeToCache)
-        v2.setCachedData(array, false);
-      return array.sectionNoReduce(origin, shape, stride);
-    } else {
-      data_size = uncomp.length;
-      int level = levels[0];
-      float[] a = new float[level];
-      float[] b = new float[level];
-      float[] fdata = new float[data_size];
-      int scale = 1;
-
-      for (int i = 0; i < level; i++) {
-        int numer = levels[1 + 5 * i] - levels[2 + 5 * i];
-        int denom = levels[3 + 5 * i] - levels[4 + 5 * i];
-        a[i] = (numer * 1.f) / (1.f * denom);
-        b[i] = levels[1 + 5 * i] - a[i] * levels[3 + 5 * i];
-      }
-
-      int k;
-      for (int i = 0; i < data_size; i++) {
-        int ival = convertUnsignedByte2Short(uncomp[i]);
-        k = -1;
-        for (int j = 0; j < level; j++) {
-          if (levels[3 + (j * 5)] <= ival && ival <= levels[4 + (j * 5)]) {
-            k = j;
-            scale = levels[5 + j * 5];
-          }
-        }
-
-        if (k >= 0)
-          fdata[i] = (a[k] * ival + b[k]) / scale;
-        else
-          fdata[i] = 0;
-
-      }
-      Array array = Array.factory(DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), fdata);
-
-      return array.sectionNoReduce(origin, shape, stride);
-    }
-
+    // Turn the decompressed data into an array, caching as appropriate
+    Array array = makeArray(uncomp, levels, v2.getShape());
+    if (levels == null && array.getSize() < Variable.defaultSizeToCache)
+      v2.setCachedData(array, false);
+    return array.sectionNoReduce(origin, shape, stride);
   }
 
   /*
