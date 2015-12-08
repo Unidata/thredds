@@ -56,6 +56,7 @@ Deprecated classes and methods have been removed, and the module structure and t
 * see link:../netcdf-java/CDM/VariableLengthData.adoc
 
 === AutoCloseable
+
 *AutoCloseable* was introduced in Java 7, along with the _try-with-resources_ language feature. Use of this feature makes code more readable
 and more reliable in ensuring that resources (like file handles) are released when done. We strongly recommend that you modify your code to take advantage of it
 wherever possible, eg:
@@ -80,6 +81,7 @@ wherever possible, eg:
 ** *thredds.client.catalog.tools.DataFactory.Result*
 
 === Iterable
+
 *Iterable* was introduced in Java 7, along with the _foreach_ language feature, and makes code more readable with less boilerplate, eg:
 
 [source,java]
@@ -105,6 +107,7 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 ** *SectionFeatureCollection* implements _Iterable<SectionFeature>_ (replace _hasNext()_, _next()_, _finish()_, _resetIteration()_)
 
 === ucar.nc2.util.DiskCache2
+
 ** all instances of *DiskCache2* now have one cleanup thread
 ** The _DiskCache2.exit()_ method is now static and need only be called once when the application is exiting.
 ** _DiskCache2.setLogger()_ is removed.
@@ -113,6 +116,7 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 ** logging of routine cache cleanup is now at _DEBUG_ level
 
 ==== ucar.ma2.Range
+
 ** _Range.copy(String name)_ replaced by _Range.setName(String name)_
 ** _Range.getIterator()_ deprecated, use _Range.iterator()_
 ** Currently a Range is specified by _start:end:stride_
@@ -131,9 +135,11 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 ----
 
 === ucar.nc2.dataset
+
 ** CoordinateAxis2D.getMidpoints() was deprecated and now removed, use getCoordValuesArray()
 
 === ucar.nc2.ft.PointFeature
+
 * Added method `getTimeUnit()`. An implementation exists in `ucar.nc2.ft.point.PointFeatureImpl`, so if your
 `PointFeature` extends it, you shouldn't need to do any work.
 * Removed method `getObservationTimeAsDate()`. Instead, use `getObservationTimeAsCalendarDate().toDate()`.
@@ -141,6 +147,7 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 * Removed method `getData()`. Instead, use `getDataAll()`.
 
 === ucar.ma2.MAMath
+
 * Added method `equals(Array, Array)`. It is intended for use in `Object.equals()` implementations.
 This means, among other things, that corresponding floating-point elements must be exactly equal, not merely within
 some epsilon of each other.
@@ -201,6 +208,12 @@ The class *FeatureDatasetCoverage* replaces *GridDataset*.
 Previously, GRID was used as the general type, now it referes to a specific type of Coverage.
 Affects FeatureDatasetFactoryManager.open(FeatureType wantFeatureType, ...)
 
+=== Shared Dimensions
+
+* `Group.addDimension` and `Group.addDimensionIfNotExists` methods now throw an `IllegalArgumentException` if the
+dimension isn't shared.
+* `NetcdfFileWriter.addDimension` methods no longer have an `isShared` parameter. Such dimensions should always be
+shared and allowing them to be private is confusing and error-prone.
 
 === Catalogs
 

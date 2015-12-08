@@ -181,7 +181,7 @@ public class TestNc4Structures {
       try (NetcdfFileWriter ncFileWriter = NetcdfFileWriter.createNew(
               NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
         // Test passes if we do "isUnlimited == false".
-        Dimension dim = ncFileWriter.addDimension(null, "dim", 5, false, true /*false*/, false);
+        Dimension dim = ncFileWriter.addDimension(null, "dim", 5, true /*false*/, false);
 
         Structure struct = (Structure) ncFileWriter.addVariable(null, "struct", DataType.STRUCTURE, "dim");
         ncFileWriter.addStructureMember(struct, "foo", DataType.INT, null);

@@ -692,7 +692,7 @@ public abstract class CFPointWriter implements Closeable {
       String dimName = getSharedDimName(d);
 
       if (!writer.hasDimension(null, dimName)) {
-        Dimension newDim = writer.addDimension(null, dimName, d.getLength(), true, false, d.isVariableLength());
+        Dimension newDim = writer.addDimension(null, dimName, d.getLength(), false, d.isVariableLength());
         dimMap.put(dimName, newDim);
       }
     }

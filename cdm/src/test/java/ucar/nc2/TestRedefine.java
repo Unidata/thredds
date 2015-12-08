@@ -32,14 +32,14 @@
  */
 package ucar.nc2;
 
-import java.io.IOException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
+
+import java.io.IOException;
 
 public class TestRedefine{
   String filename = TestLocal.temporaryDataDir + "testRedefine.nc";
@@ -54,7 +54,7 @@ public class TestRedefine{
       file.addGlobalAttribute(CDM.HISTORY, "lava");
       file.addGlobalAttribute("att8", "12345678");
 
-      file.addDimension(null, "time", 4, true, false, false);
+      file.addDimension(null, "time", 4, false, false);
 
     /* Add time */
       file.addVariable("time", DataType.DOUBLE, "time");

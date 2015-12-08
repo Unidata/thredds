@@ -208,7 +208,7 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
-   * Get the Dimensions contained directly in this group.
+   * Get the shared Dimensions contained directly in this group.
    *
    * @return List of type Dimension; may be empty, not null.
    */
@@ -481,28 +481,49 @@ public class Group extends CDMNode implements AttributeContainer {
   }
 
   /**
-   * Add a shared Dimension
+   * Adds the specified shared dimension to this group.
    *
-   * @param d add this Dimension
+   * @param dim  the dimension to add.
+   * @throws IllegalStateException  if this dimension is {@link #setImmutable() immutable}.
+   * @throws IllegalArgumentException  if {@code dim} isn't shared or a dimension with {@code dim}'s name already
+   *                                   exists within the group.
    */
-  public void addDimension(Dimension d) {
+  public void addDimension(Dimension dim) {
     if (immutable) throw new IllegalStateException("Cant modify");
 
-    if (findDimensionLocal(d.getShortName()) != null)
-      throw new IllegalArgumentException("Dimension name (" + d.getShortName() + ") must be unique within Group " + getShortName());
+    if (!dim.isShared()) {
+      throw new IllegalArgumentException("Dimensions added to a group must be shared.");
+    }
 
-    dimensions.add(d);
-    d.setGroup(this);
+    if (findDimensionLocal(dim.getShortName()) != null)
+      throw new IllegalArgumentException("Dimension name (" + dim.getShortName() + ") must be unique within Group " + getShortName());
+
+    dimensions.add(dim);
+    dim.setGroup(this);
   }
 
-  public boolean addDimensionIfNotExists(Dimension d) {
+  /**
+   * Adds the specified shared dimension to this group, but only if another dimension with the same name doesn't
+   * already exist.
+   *
+   * @param dim  the dimension to add.
+   * @return {@code true} if {@code dim} was successfully added to the group. Otherwise, {@code false} will be returned,
+   *         meaning that a dimension with {@code dim}'s name already exists within the group.
+   * @throws IllegalStateException  if this dimension is {@link #setImmutable() immutable}.
+   * @throws IllegalArgumentException  if {@code dim} isn't shared.
+   */
+  public boolean addDimensionIfNotExists(Dimension dim) {
     if (immutable) throw new IllegalStateException("Cant modify");
 
-    if (findDimensionLocal(d.getShortName()) != null)
+    if (!dim.isShared()) {
+      throw new IllegalArgumentException("Dimensions added to a group must be shared.");
+    }
+
+    if (findDimensionLocal(dim.getShortName()) != null)
       return false;
 
-    dimensions.add(d);
-    d.setGroup(this);
+    dimensions.add(dim);
+    dim.setGroup(this);
     return true;
   }
 
