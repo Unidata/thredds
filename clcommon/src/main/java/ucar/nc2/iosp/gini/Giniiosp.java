@@ -73,7 +73,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     super.open(raf, ncfile, cancelTask);
 
     headerParser = new Giniheader();
-    headerParser.read(raf, ncfile, null);
+    headerParser.read(raf, ncfile);
 
     ncfile.finish();
   }
@@ -111,7 +111,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     }
 
     for (int i = 0; i < data.length; i++) {
-      int ival = convertUnsignedByte2Short(data[i]);
+      int ival = DataType.unsignedByteToShort(data[i]);
       int k = -1;
       for (int j = 0; j < level; j++) {
         if (levels[3 + (j * 5)] <= ival && ival <= levels[4 + (j * 5)]) {
@@ -271,7 +271,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
           // Check if remaining data are zlib--if not copy out and bail
           byte[] b2 = new byte[2];
           System.arraycopy(data, inputOffset, b2, 0, b2.length);
-          if (isZlibHed(b2) == 0) {
+          if (!isZlibHed(b2)) {
             System.arraycopy(data, inputOffset, uncomp, offset, bytesLeft);
             break;
           }
@@ -336,51 +336,19 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
   }
 
-  /*
-  ** Name:       IsZlibed
-  **
-  ** Purpose:    Check a two-byte sequence to see if it indicates the start of
-  **             a zlib-compressed buffer
-  **
-  ** Parameters:
-  **             buf     - buffer containing at least two bytes
-  **
-  ** Returns:
-  **             SUCCESS 1
-  **             FAILURE 0
-  **
-  *
-  int issZlibed(byte[] buf) {
-
-    if ((buf[0] & 0xf) == Z_DEFLATED) {
-      if ((buf[0] >> 4) + 8 <= DEF_WBITS) {
-        if ((((buf[0] << 8) + (buf[1])) % 31) == 0) {
-          return 1;
-        }
-      }
-    }
-
-    return 0;
-  }  */
-
-  // get this to inline for performance
-  private short convertUnsignedByte2Short(byte b) {
-    return (short) ((b < 0) ? (short) b + 256 : (short) b);
-  }
-
-  private int isZlibHed(byte[] buf) {
-    short b0 = convertUnsignedByte2Short(buf[0]);
-    short b1 = convertUnsignedByte2Short(buf[1]);
+  static boolean isZlibHed(byte[] buf) {
+    short b0 = DataType.unsignedByteToShort(buf[0]);
+    short b1 = DataType.unsignedByteToShort(buf[1]);
 
     if ((b0 & 0xf) == Z_DEFLATED) {
       if ((b0 >> 4) + 8 <= DEF_WBITS) {
         if ((((b0 << 8) + b1) % 31) == 0) {
-          return 1;
+          return true;
         }
       }
     }
 
-    return 0;
+    return false;
   }
 
   public String getFileTypeId() {
