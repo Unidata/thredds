@@ -39,6 +39,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import java.io.*;
 import java.awt.image.*;
+import java.util.List;
 import java.util.zip.Inflater;
 import java.util.zip.DataFormatException;
 
@@ -47,15 +48,11 @@ import java.util.zip.DataFormatException;
  */
 
 public class Giniiosp extends AbstractIOServiceProvider {
-
-  protected Giniheader headerParser;
-
   final static int Z_DEFLATED = 8;
   final static int DEF_WBITS = 15;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
-    Giniheader localHeader = new Giniheader();
-    return (localHeader.isValidFile(raf));
+    return Giniheader.isValidFile(raf);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -66,7 +63,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
     super.open(raf, ncfile, cancelTask);
 
-    headerParser = new Giniheader();
+    Giniheader headerParser = new Giniheader();
     headerParser.read(raf, ncfile);
 
     ncfile.finish();
@@ -74,18 +71,16 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
     // subset
-    int[] origin = section.getOrigin();
-    int[] shape = section.getShape();
-    int[] stride = section.getStride();
+    List<Range> ranges = Section.fill(section, v2.getShape()).getRanges();
     Giniheader.Vinfo vinfo = (Giniheader.Vinfo) v2.getSPobject();
     int[] levels = vinfo.levels;
 
-    if (headerParser.gini_GetCompressType() == 0)
-      return readData(v2, vinfo.begin, origin, shape, stride, levels);
-    else if (headerParser.gini_GetCompressType() == 2)
-      return readCompressedData(v2, vinfo.begin, origin, shape, stride, levels);
-    else if (headerParser.gini_GetCompressType() == 1)
-      return readCompressedZlib(v2, vinfo.begin, vinfo.nx, vinfo.ny, origin, shape, stride, levels);
+    if (vinfo.compression == 0)
+      return readData(v2, vinfo.begin, ranges, levels);
+    else if (vinfo.compression == 2)
+      return readCompressedData(v2, vinfo.begin, ranges, levels);
+    else if (vinfo.compression == 1)
+      return readCompressedZlib(v2, vinfo.begin, vinfo.nx, vinfo.ny, ranges, levels);
     else
       return null;
   }
@@ -140,7 +135,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
   }
 
   // all the work is here, so can be called recursively
-  private Array readData(ucar.nc2.Variable v2, long dataPos, int[] origin, int[] shape, int[] stride,
+  private Array readData(ucar.nc2.Variable v2, long dataPos, List<Range> ranges,
                          int[] levels) throws IOException, InvalidRangeException {
     // Get to the proper offset and read in the data
     raf.seek(dataPos);
@@ -150,12 +145,12 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
     // Turn it into an array
     Array array = makeArray(data, levels, v2.getShape());
-    return array.sectionNoReduce(origin, shape, stride);
+    return array.sectionNoReduce(ranges);
   }
 
   // for the compressed data read all out into a array and then parse into requested
-  public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int[] origin,
-                                  int[] shape, int[] stride, int[] levels) throws IOException, InvalidRangeException {
+  private Array readCompressedData(ucar.nc2.Variable v2, long dataPos, List<Range> ranges,
+                                   int[] levels) throws IOException, InvalidRangeException {
     // Get to the proper offset and read in the rest of the compressed data
     raf.seek(dataPos);
     int data_size = (int) (raf.length() - dataPos);
@@ -173,14 +168,14 @@ public class Giniiosp extends AbstractIOServiceProvider {
       Array array = makeArray(dbb.getData(), levels, v2.getShape());
       if (levels == null)
         v2.setCachedData(array, false);
-      return array.sectionNoReduce(origin, shape, stride);
+      return array.sectionNoReduce(ranges);
     }
 
     return null;
   }
 
-  public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int[] origin,
-                                  int[] shape, int[] stride, int[] levels) throws IOException, InvalidRangeException {
+  private Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny,
+                                   List<Range> ranges, int[] levels) throws IOException, InvalidRangeException {
     // Get to the proper offset and read in the rest of the compressed data
     raf.seek(dataPos);
     int data_size = (int) (raf.length() - dataPos);     //  or 5120 as read buffer size
@@ -237,7 +232,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     Array array = makeArray(uncomp, levels, v2.getShape());
     if (levels == null && array.getSize() < Variable.defaultSizeToCache)
       v2.setCachedData(array, false);
-    return array.sectionNoReduce(origin, shape, stride);
+    return array.sectionNoReduce(ranges);
   }
 
   static boolean isZlibHed(byte[] buf) {

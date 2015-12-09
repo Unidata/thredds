@@ -173,8 +173,7 @@ class Giniheader {
     int gminute;
     int gsecond;
     double lonv;                        /* meridian parallel to y-axis */
-    double lon1 = 0.0, lon2 = 0.0;
-    double lat1 = 0.0, lat2 = 0.0;
+    double lon1, lon2, lat1, lat2;
     double latt;
     double imageScale = 0.0;
 
@@ -275,7 +274,7 @@ class Giniheader {
     att = new Attribute("NY", ny);
     ncfile1.addAttribute(null, att);
 
-    ProjectionImpl projection = null;
+    ProjectionImpl projection;
     double dxKm = 0.0, dyKm = 0.0, latin, lonProjectionOrigin;
 
     switch (proj) {
@@ -484,7 +483,7 @@ class Giniheader {
     if (debug) log.warn(" name= " + vname + " velems=" + var.getSize() + " begin= " + begin + "\n");
     if (navcal == 128) {
       var.setDataType(DataType.FLOAT);
-      var.setSPobject(new Vinfo(begin, nx, ny, calcods));
+      var.setSPobject(new Vinfo(begin, nx, ny, Z_type, calcods));
      /*   var.addAttribute(new Attribute("_Unsigned", "true"));
         int numer = calcods[0] - calcods[1];
         int denom = calcods[2] - calcods[3];
@@ -499,7 +498,7 @@ class Giniheader {
       // var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
       var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) (1)));
       var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) (0)));
-      var.setSPobject(new Vinfo(begin, nx, ny));
+      var.setSPobject(new Vinfo(begin, nx, ny, Z_type));
     }
     String coordinates = "x y time";
     var.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
@@ -681,11 +680,6 @@ class Giniheader {
     return calcods;
   }
 
-
-  int gini_GetCompressType() {
-    return Z_type;
-  }
-
   // Return the string of entity ID for the GINI image file
 
   String gini_GetSectorID(int ent_id) {
@@ -731,8 +725,6 @@ class Giniheader {
     }
 
     return name;
-
-
   }
 
   // Return the channel ID for the GINI image file
@@ -780,8 +772,6 @@ class Giniheader {
     }
 
     return name;
-
-
   }
 
   // Return the channel ID for the GINI image file
@@ -892,8 +882,6 @@ class Giniheader {
     }
 
     return name;
-
-
   }
 
 
@@ -1121,7 +1109,6 @@ class Giniheader {
       default:
         return "unknown";
     }
-
   }
 
   // Read a scaled, 3-byte integer from file and convert to double
@@ -1149,17 +1136,20 @@ class Giniheader {
     int nx;
     int ny;
     int[] levels;
+    int compression;
 
-    Vinfo(long begin, int x, int y) {
+    Vinfo(long begin, int x, int y, int compression) {
       this.begin = begin;
       this.nx = x;
       this.ny = y;
+      this.compression = compression;
     }
 
-    Vinfo(long begin, int x, int y, int[] levels) {
+    Vinfo(long begin, int x, int y, int compression, int[] levels) {
       this.begin = begin;
       this.nx = x;
       this.ny = y;
+      this.compression = compression;
       this.levels = levels;
     }
 
