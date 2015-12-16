@@ -6,7 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
+import ucar.ma2.ArrayFloat;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.NCdumpW.WantValues;
 import ucar.nc2.util.CompareNetcdf2;
@@ -230,6 +232,42 @@ public class TestNc4IospWriting {
         } finally {
             ncFile.close();
             outFile.delete();
+        }
+    }
+
+
+    // Demonstrates GitHub issue #301--badly writing subsetted arrays
+    @Test
+    public void writeSubset() throws IOException, InvalidRangeException {
+        String fname = TestLocal.temporaryDataDir + "writeSubset.nc";
+        try (NetcdfFileWriter ncFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fname)) {
+            // Create shared, unlimited Dimension
+            ncFile.addDimension(null, "x", 5);
+
+            // Create a float Variable
+            Variable arr = ncFile.addVariable(null, "arr", DataType.FLOAT, "x");
+
+            // Create file and exit redefine
+            ncFile.create();
+
+            // Create an array of data and subset
+            float[] data = new float[]{1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f};
+            Array arrData = Array.factory(DataType.FLOAT, new int[]{10}, data);
+            Array subArr = arrData.sectionNoReduce(new int[]{1}, new int[]{5}, new int[]{2});
+
+            // Write data to file
+            ncFile.write(arr, subArr);
+        }
+
+        // Make sure file has what we expect
+        try (NetcdfFile ncFile = NetcdfFile.open(fname)) {
+            Variable arr = ncFile.findVariable(null, "arr");
+            Assert.assertEquals(5, arr.getSize());
+            Array arrData = arr.read();
+            float[] data = (float[])arrData.get1DJavaArray(Float.class);
+            Assert.assertEquals(5, data.length);
+            Assert.assertArrayEquals(new float[]{2.f, 4.f, 6.f, 8.f, 10.f},
+                    data, 1e-6f);
         }
     }
 }
