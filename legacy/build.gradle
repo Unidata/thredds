@@ -8,6 +8,7 @@ dependencies {
     compile project(":cdm")
     compile project(":opendap")
     compile libraries["aws-java-sdk-s3"]  // For CrawlableDatasetAmazonS3.
+    compile libraries["slf4j-api"]
 
     // These are all for Spock.
     testCompile libraries["spock-core"]
