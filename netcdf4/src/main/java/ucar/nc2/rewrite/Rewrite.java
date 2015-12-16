@@ -35,7 +35,6 @@ package ucar.nc2.rewrite;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +82,7 @@ public class Rewrite {
       newGroup.addAttribute(att);
 
     for (Dimension dim : oldGroup.getDimensions()) {
-      ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), true, dim.isUnlimited(), dim.isVariableLength());
+      ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), dim.isUnlimited(), dim.isVariableLength());
     }
 
     for (Variable v : oldGroup.getVariables()) {
@@ -95,7 +94,7 @@ public class Rewrite {
           dim.setName("anon"+anon);
           dim.setShared(true);
           anon++;
-          ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), true, dim.isUnlimited(), dim.isVariableLength());
+          ncOut.addDimension(newGroup, dim.getShortName(), dim.getLength(), dim.isUnlimited(), dim.isVariableLength());
         }
       }
 

@@ -32,20 +32,6 @@
  */
 package ucar.nc2.ncml;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -63,15 +49,15 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.EnumTypedef;
-import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.xml.Parse;
+
+import java.io.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Helper class to write NcML.
@@ -410,8 +396,9 @@ public class NcMLWriter {
       try {
         varElem.addContent(makeValuesElement(var, true));
       } catch (IOException e) {
-        String message = String.format("Couldn't read values for %s. Omitting <values> element.", var.getFullName());
-        log.warn(message, e);
+        String message = String.format("Couldn't read values for %s. Omitting <values> element.%n\t%s",
+                                       var.getFullName(), e.getMessage());
+        log.warn(message);
       }
     }
 

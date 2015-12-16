@@ -320,7 +320,7 @@ public class NetcdfFileWriter implements Closeable {
   //// use these calls in define mode
 
   public Dimension addDimension(String dimName, int length) {
-    return addDimension(null, dimName, length, true, false, false);
+    return addDimension(null, dimName, length, false, false);
   }
 
   /**
@@ -331,38 +331,37 @@ public class NetcdfFileWriter implements Closeable {
    * @return the created dimension
    */
   public Dimension addDimension(Group g, String dimName, int length) {
-    return addDimension(g, dimName, length, true, false, false);
+    return addDimension(g, dimName, length, false, false);
   }
 
   /**
-   * Add single unlimited dimension (classic model)
+   * Add single unlimited, shared dimension (classic model)
    * @param dimName name of dimension
    * @return Dimension object that was added
    */
   public Dimension addUnlimitedDimension(String dimName) {
-    return addDimension(null, dimName, 0, true, true, false);
+    return addDimension(null, dimName, 0, true, false);
   }
 
-  public Dimension addDimension(String dimName, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
-    return addDimension(null, dimName, length, isShared, isUnlimited, isVariableLength);
+  public Dimension addDimension(String dimName, int length, boolean isUnlimited, boolean isVariableLength) {
+    return addDimension(null, dimName, length, isUnlimited, isVariableLength);
   }
 
   /**
-   * Add a Dimension to the file. Must be in define mode.
+   * Add a shared Dimension to the file. Must be in define mode.
    *
    * @param dimName          name of dimension
    * @param length           size of dimension.
-   * @param isShared         if dimension is shared   LOOK what does it mean if false ??
    * @param isUnlimited      if dimension is unlimited
    * @param isVariableLength if dimension is variable length
    * @return the created dimension
    */
-  public Dimension addDimension(Group g, String dimName, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
+  public Dimension addDimension(Group g, String dimName, int length, boolean isUnlimited, boolean isVariableLength) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
     if (!isValidObjectName(dimName))
       throw new IllegalArgumentException("illegal dimension name " + dimName);
 
-    Dimension dim = new Dimension(dimName, length, isShared, isUnlimited, isVariableLength);
+    Dimension dim = new Dimension(dimName, length, true, isUnlimited, isVariableLength);
     ncfile.addDimension(g, dim);
     return dim;
   }
