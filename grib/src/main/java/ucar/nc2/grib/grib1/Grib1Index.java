@@ -56,6 +56,7 @@ import java.util.*;
       Grib1Index index = new Grib1Index();
       if (!index.readIndex(path))
         index.makeIndex(path);
+        index.makeIndex(path);
 
       for (Grib1SectionGridDefinition gds : index.getGds()) {
         if (gdsSet.get(gds.calcCRC()) == null)
@@ -166,10 +167,6 @@ public class Grib1Index extends GribIndex {
       return false;
 
     } catch (IOException e) {
-      //for (String fn : RandomAccessFile.getOpenFiles()) {
-      //  System.out.printf("  %s%n", fn);
-      //}
-
       logger.error("GribIndex failed on " + filename, e);
       return false;
 
@@ -260,9 +257,9 @@ public class Grib1Index extends GribIndex {
       boolean deleteOk = !idxFile.exists() || idxFile.delete();
       boolean renameOk = idxFileTmp.renameTo(idxFile);
       if (!deleteOk)
-        logger.error("  could not delete Grib2Index= {}", idxFile.getPath());
+        logger.error("  could not delete Grib1Index= {}", idxFile.getPath());
       if (!renameOk)
-        logger.error("  could not rename Grib2Index= {}", idxFile.getPath());
+        logger.error("  could not rename Grib1Index= {}", idxFile.getPath());
     }
   }
 

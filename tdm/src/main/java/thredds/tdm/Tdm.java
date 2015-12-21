@@ -469,7 +469,7 @@ public class Tdm {
 
   public static void main(String args[]) throws IOException, InterruptedException {
     try (FileSystemXmlApplicationContext springContext = new FileSystemXmlApplicationContext("classpath:resources/application-config.xml")) {
-      Tdm driver = (Tdm) springContext.getBean("testDriver2");
+      Tdm driver = (Tdm) springContext.getBean("TDM");
 
       Map<String, String> aliases = (Map<String, String>) springContext.getBean("dataRootLocationAliasExpanders");
       for (Map.Entry<String,String> entry : aliases.entrySet())
@@ -485,7 +485,7 @@ public class Tdm {
       driver.setContentDir(contentDir);
 
       RandomAccessFile.setDebugLeaks(true);
-      HTTPSession.setGlobalUserAgent("TDM v4.6");
+      HTTPSession.setGlobalUserAgent("TDM v5.0");
       // GribCollection.getDiskCache2().setNeverUseCache(true);
       String logLevel;
 

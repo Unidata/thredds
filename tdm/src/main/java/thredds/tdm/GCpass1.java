@@ -10,6 +10,7 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
+import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib1Iosp;
@@ -26,6 +27,7 @@ import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -103,8 +105,8 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
       public FeatureCollectionConfig(String name, String path, FeatureCollectionType fcType, String spec, String collectionName,
                                  String dateFormatMark, String olderThan, String timePartition, Element innerNcml)
      */
-    FeatureCollectionConfig config = new FeatureCollectionConfig("GCpass1", "GCpass1", cmdLine.getFeatureCollectionType(), cmdLine.spec, null,
-            null, null, cmdLine.partitionType.toString(), null);
+    FeatureCollectionConfig config = new FeatureCollectionConfig("GCpass1", "GCpass1", cmdLine.getFeatureCollectionType(),
+            cmdLine.spec, null, null, null, cmdLine.partitionType.toString(), null);
     FeatureCollectionConfig.GribConfig gribConfig = config.gribConfig;
     gribConfig.useTableVersion = cmdLine.useTableVersion;
 
@@ -116,21 +118,18 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
     pass1.scanAndReport();
   }
 
-  static class Accum {
+  public static class Accum {
     CalendarDate last = null;
-    int[] count;
-
-    Accum(int n) {
-      count = new int[n];
-    }
+    int nfiles;
+    int nrecords;
+    float fileSize;
+    float indexSize;
 
     void add(Accum a) {
-      for (int i = 0; i < count.length; i++)
-        count[i] += a.count[i];
-    }
-
-    void add(int idx, int val) {
-      count[idx] += val;
+      this.nfiles += a.nfiles;
+      this.nrecords += a.nrecords;
+      this.fileSize += a.fileSize;
+      this.indexSize += a.indexSize;
     }
   }
 
@@ -172,7 +171,7 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
   FeatureCollectionConfig.GribConfig gribConfig;
   Formatter fm;
   Counters countersAll;
-  Accum accumAll = new Accum(2);
+  Accum accumAll = new Accum();
 
   public GCpass1(FeatureCollectionConfig config, Formatter fm) {
     this.config = config;
@@ -197,9 +196,11 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
   public void reportAll(Indent indent, Formatter fm) {
     fm.format("%n");
     reportOneHeader(indent, fm);
-    fm.format("%s%40s", indent, "grand total");
-    fm.format("%8d ", accumAll.count[0]);
-    fm.format("%8d ", accumAll.count[1]);
+    fm.format("%s%60s", indent, "grand total");
+    fm.format("%8d ", accumAll.nfiles);
+    fm.format("%8d ", accumAll.nrecords);
+    fm.format("%8.0f ", accumAll.indexSize);
+    fm.format("%8.0f ", accumAll.fileSize);
     fm.format("%8d ", countersAll.get("variable").getUnique());
     fm.format("%8d ", countersAll.get("referenceDate").getUnique());
     fm.format("%8d ", countersAll.get("gds").getUnique());
@@ -209,13 +210,15 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
   }
 
   public void reportOneHeader(Indent indent, Formatter fm) {
-    fm.format("%s%40s #files  #records   #vars  #runtimes    #gds%n", indent, "");
+    fm.format("%s%60s #files   #records #idxSize #dataSize #vars  #runtimes    #gds%n", indent, "");
   }
 
   public CalendarDate reportOneDir(String dir, Accum accum, Counters countersOne, Indent indent, CalendarDate last) {
-    fm.format("%s%40s", indent, dir + " total");
-    fm.format("%8d ", accum.count[0]);
-    fm.format("%8d ", accum.count[1]);
+    fm.format("%s%60s", indent, dir + " total");
+    fm.format("%8d ", accum.nfiles);
+    fm.format("%8d ", accum.nrecords);
+    fm.format("%8.3f ", accum.indexSize);
+    fm.format("%8.3f ", accum.fileSize);
     fm.format("%8d ", countersOne.get("variable").getUnique());
     fm.format("%8d ", countersOne.get("referenceDate").getUnique());
     fm.format("%8d ", countersOne.get("gds").getUnique());
@@ -275,7 +278,6 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
     }
   }
 
-
   private Accum scanDirectoryPartitionRecurse(boolean isGrib1, DirectoryPartition dpart,
                                               FeatureCollectionConfig config,
                                               Counters countersParent,
@@ -284,7 +286,7 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
     fm.format("%n%sDirectory %s%n", indent, dpart.getRoot());
     indent.incr();
     Counters countersPart = countersParent.makeSubCounters();
-    Accum accum = new Accum(2);
+    Accum accum = new Accum();
 
     for (MCollection part : dpart.makePartitions(CollectionUpdateType.always)) {
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
@@ -308,79 +310,6 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
   }
 
   /**
-   * File Partition: each File is a collection of Grib records, and the collection of all files in the directory is a PartitionCollection.
-   * Rewrite the PartitionCollection and optionally its children
-   *
-   * @param config FeatureCollectionConfig
-   * @return true if partition was rewritten
-   * @throws IOException
-   *
-  private int scanFilePartition(final boolean isGrib1, final FeatureCollectionConfig config,
-  final Logger logger, Path dirPath, Formatter fm) throws IOException {
-  long start = System.currentTimeMillis();
-
-  final Formatter errlog = new Formatter();
-  CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
-  final CollectionUpdateType updateType = CollectionUpdateType.test;
-
-  FilePartition partition = new FilePartition(config.name, dirPath, config.olderThan, logger);
-  partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-  if (specp.getFilter() != null)
-  partition.setStreamFilter(new StreamFilter(specp.getFilter()));
-
-  final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
-
-  // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if advantage
-  if (updateType != CollectionUpdateType.never && updateType != CollectionUpdateType.testIndexOnly) {
-  partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
-  public void consume(MFile mfile) {
-  MCollection dcm = new CollectionSingleFile(mfile, logger);
-  dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-
-  if (isGrib1) {
-  Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-  try {
-  boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
-  if (changed) anyChange.set(true);
-  } catch (IOException e) {
-  e.printStackTrace();
-  }
-
-  } else {
-  Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-  try {
-  boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
-  if (changed) anyChange.set(true);
-  } catch (IOException e) {
-  e.printStackTrace();
-  }
-
-  }
-  }
-  });
-  }
-
-  // redo partition index if needed, will detect if children have changed
-  boolean recreated = false;
-  if (isGrib1) {
-  Grib1PartitionBuilder builder = new Grib1PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
-  if (anyChange.get() || builder.updateNeeded(updateType))
-  recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
-
-  } else {
-  Grib2PartitionBuilder builder = new Grib2PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
-  if (anyChange.get() || builder.updateNeeded(updateType))
-  recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
-  }
-
-  long took = System.currentTimeMillis() - start;
-  String collectionName = partition.getCollectionName();
-  if (recreated) logger.info("RewriteFilePartition {} took {} msecs", collectionName, took);
-
-  return 0;
-  } */
-
-  /**
    * Update all the grib indices in one directory, and the collection index for that directory
    *
    * @param config  FeatureCollectionConfig
@@ -396,7 +325,7 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
       reportOneFileHeader(indent, fm);
       fm.format("%sDirectory %s%n", indent, dirPath);
     }
-    Accum accum = new Accum(2);
+    Accum accum = new Accum();
     int nfiles = 0;
 
     Counters countersThisDir = parentCounters.makeSubCounters();
@@ -438,16 +367,27 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
           }
         }
 
-        accum.add(1, nrecords);
+        accum.nrecords += nrecords;
         countersThisDir.addTo(countersOneFile);
         if (config.ptype == FeatureCollectionConfig.PartitionType.file)
           reportOneFile(mfile, nrecords, countersOneFile, indent, fm);
         nfiles++;
+
+        // get file sizes
+        String path = mfile.getPath();
+        if (path.endsWith(GribIndex.GBX9_IDX)) {
+          accum.indexSize += ((float) mfile.getLength() / (1000 * 1000)); // mb
+        } else {
+          accum.fileSize += ((float) mfile.getLength() / (1000 * 1000)); // mb
+          File idxFile = GribIndexCache.getExistingFileOrCache(path + GribIndex.GBX9_IDX);
+          if (idxFile.exists())
+            accum.indexSize += ((float) idxFile.length() / (1000 * 1000)); // mb
+        }
       }
     }
 
     parentCounters.addTo(countersThisDir);
-    accum.add(0, nfiles);
+    accum.nfiles += nfiles;
     accum.last = reportOneDir(dirPath.toString(), accum, countersThisDir, indent, accum.last);
     return accum;
   }

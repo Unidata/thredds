@@ -47,38 +47,38 @@ public interface MFile extends Comparable<MFile> {
    * Get time of last modification at the time the MFile object was created
    * @return time of last modification in Unix time (msecs since reference), or -1 if unknown
    */
-  public long getLastModified();
+  long getLastModified();
 
   /**
    * Size of file in bytes
    * @return  Size of file in bytes or -1 if unknown
    */
-  public long getLength();
+  long getLength();
 
-  public boolean isDirectory();
+  boolean isDirectory();
 
   /**
    * Get full path name, replace \\ with /
    * @return full path name
    */
-  public String getPath();
+  String getPath();
 
   /**
    * The name is the <em>farthest</em> element from the root in the directory hierarchy.
    * @return the file name
    */
-  public String getName();
+  String getName();
 
   /**
    * Get the parent of this
    * @return  the parent or null
    * @throws IOException
    */
-  public MFile getParent() throws IOException;
+  MFile getParent() throws IOException;
 
-  public int compareTo(MFile o);
+  int compareTo(MFile o);
 
   // does not survive serialization ??
-  public Object getAuxInfo();
-  public void setAuxInfo(Object info);
+  Object getAuxInfo();
+  void setAuxInfo(Object info);
 }

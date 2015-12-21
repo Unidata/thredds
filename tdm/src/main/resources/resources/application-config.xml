@@ -18,19 +18,17 @@
     <constructor-arg type="java.util.concurrent.BlockingQueue" ref="completionQ"/>
   </bean>
 
-  <bean id="testDriver2" class="thredds.tdm.Tdm">
+  <bean id="TDM" class="thredds.tdm.Tdm">
     <property name="executor" ref="executor"/>
-    <!-- property name="catalog" value="classpath:/resources/indexNomads.xml"/>
-    <property name="serverNames">
-      <list>
-        <value>http://localhost:8080/</value>
-      </list>
-    </property -->
   </bean>
 
+  <bean id="GCsummary" class="thredds.tdm.GCsummary">
+    <property name="executor" ref="executor"/>
+    <property name="NThreads" value="2"/>
+  </bean>
 
   <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
-    <entry key="cdmUnitTest" value="Q:/cdmUnitTest"/>
+    <entry key="${cdmUnitTest}" value="D:/cdmUnitTest"/>
   </util:map>
 
   <bean id="fcTriggerEventBus" class="com.google.common.eventbus.AsyncEventBus">

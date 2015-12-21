@@ -51,14 +51,16 @@ import java.util.*;
  * @since 12/10/13
  */
 public class CoordinateUnionizer {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateUnionizer.class);
+  // static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateUnionizer.class);
 
   FeatureCollectionConfig.GribIntvFilter intvFilter;
+  org.slf4j.Logger logger;
   int varId;
 
-  public CoordinateUnionizer(int varId, FeatureCollectionConfig.GribIntvFilter intvFilter) {
-    this.intvFilter = intvFilter;
+  public CoordinateUnionizer(int varId, FeatureCollectionConfig.GribIntvFilter intvFilter, org.slf4j.Logger logger) {
     this.varId = varId;
+    this.intvFilter = intvFilter;
+    this.logger = logger;
   }
 
   List<Coordinate> unionCoords = new ArrayList<>();
@@ -92,7 +94,7 @@ public class CoordinateUnionizer {
           break;
         case time2D:
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
-          if (time2DBuilder == null) time2DBuilder = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), false);
+          if (time2DBuilder == null) time2DBuilder = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), false, logger);
           time2DBuilder.addAll(time2D);
 
           // debug

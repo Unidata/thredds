@@ -32,9 +32,7 @@
  */
 package ucar.coord;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -51,20 +49,23 @@ import java.util.*;
  * @since 11/22/2014
  */
 class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
-  static private final Logger logger = LoggerFactory.getLogger(CoordinateTime2DUnionizer.class);
+  // static private final Logger logger = LoggerFactory.getLogger(CoordinateTime2DUnionizer.class);
 
   boolean isTimeInterval;
   boolean makeVals;
   CalendarPeriod timeUnit;
   int code;
+  org.slf4j.Logger logger;
+
   SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
   boolean shown;
 
-  public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code,  boolean makeVals) {
+  public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code,  boolean makeVals, org.slf4j.Logger logger) {
     this.isTimeInterval = isTimeInterval;
     this.timeUnit = timeUnit;
     this.code = code;
     this.makeVals = makeVals;
+    this.logger = logger != null ? logger : LoggerFactory.getLogger(CoordinateTime2DUnionizer.class);
   }
 
   @Override
@@ -75,7 +76,8 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
       long runtime = coordT2D.getRuntime(runIdx);
       CoordinateTimeAbstract timesPrev = timeMap.get(runtime);
       if (timesPrev != null && !shown) {
-        logger.warn("CoordinateTime2DUnionizer duplicate runtimes from different partitions {}",
+        logger.warn("CoordinateTime2DUnionizer duplicate runtime {} from different partition \nprev={}\ncurrent={} \n{}",
+                CalendarDate.of(runtime), timesPrev, times,
                 Misc.stackTraceToString(Thread.currentThread().getStackTrace()));
         shown = true;
       }

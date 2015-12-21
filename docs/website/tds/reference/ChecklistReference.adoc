@@ -15,94 +15,79 @@ Create a dedicated user and group for running Tomcat who does not have root priv
 
 As this user, download and install the http://tomcat.apache.org/[latest version of Tomcat 8+].
 
-In **$\{tomcat_home}/bin** create a *setenv.sh* shell script, and set
-the values of *JAVA_HOME,* and **CATALINA_BASE and CONTENT_ROOT**. These
+In *$\{tomcat_home}/bin* create a *setenv.sh* shell script, and set
+the values of *JAVA_HOME* and *CATALINA_BASE* and *CATALINA_OPTS*. These
 each have to be customized to your installation. For example:
 
 -------------------------------------------------------------
 #!/bin/sh
-JAVA_HOME="/usr/local/tds/jdk1.7.0_60"  
+
+JAVA_HOME="/usr/local/jdk1.8.0_66"
 export JAVA_HOME
-          
-CATALINA_BASE="/usr/local/tds/apache-tomcat-7.0.42"  
+
+CATALINA_BASE="/usr/local/tomcat"
 export CATALINA_BASE
 
-CONTENT_ROOT= "-Dtds.content.root.path=/opt/tds-live/content"
--------------------------------------------------------------
-
-Also in *setenv.sh,* set **CATALINA_OPTS**, for example:
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------
-# modify these if you wish, or use as is
+CONTENT_DIR= "/opt/local/tds/content"
 NORMAL="-Xmx4g -Xms512m -server"
-
-# no longer needed in Java 8
-MAX_PERM_GEN="-XX:MaxPermSize=256m"
-
-# just use these as specified
 HEADLESS="-Djava.awt.headless=true"
-JAVA_PREFS="-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs"
+JAVA_PREFS="-Djava.util.prefs.systemRoot=$CONTENT_DIR/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CONTENT_DIR/thredds/javaUtilPrefs"
 
-CATALINA_OPTS="$NORMAL $CONTENT_ROOT $MAX_PERM_GEN $HEADLESS $JAVA_PREFS"
+# other Java options you might need
+JAVA_OPTS="-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+
+CATALINA_OPTS="$NORMAL -Dtds.content.root.path=$CONTENT_DIR/ $HEADLESS $JAVA_PREFS $JAVA_OPTS"
 export CATALINA_OPTS
---------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------
 
 (You can use JAVA_OPTS instead of CATALINA_OPTS, but JAVA_OPTS is used for any Java program, and CATALINA_OPTS is only used by Tomcat.)
 
 Create the directory
-*$CATALINA_HOME/content/thredds/javaUtilPrefs/.systemPrefs* and make
-sure it is writeable by the user running Tomcat
+*$CONTENT_DIR/thredds/javaUtilPrefs/.systemPrefs* and make sure it is writeable by the user running Tomcat
 (link:../faq.adoc#javaUtilPrefs[details]). +
 
-Purchase a real certificate from a
-http://en.wikipedia.org/wiki/Certificate_authority[certificate
-authority], so users are not confused and question the legitimacy of
-your web site.
+Purchase a real certificate from a http://en.wikipedia.org/wiki/Certificate_authority[certificate
+authority], so users are not confused and question the legitimacy of your web site.
 
-Make the following modifications to **$\{tomcat_home}/conf/server.xml**:
+1. *Make the following modifications to $\{tomcat_home}/conf/server.xml*:
 
-* link:../tutorial/Security.adoc#digested[Enable digest passwords] by
+. link:../tutorial/Security.adoc#digested[Enable digest passwords] by
 commenting out the *UserDatabaseRealm* and enabling the **MemoryRealm**.
-* link:../tutorial/Security.adoc#ssl[Enable SSL] by uncommenting the SSL
+. link:../tutorial/Security.adoc#ssl[Enable SSL] by uncommenting the SSL
 Connector listening on port 8443, and add the required *keystoreFile*
 and *keystorePass* attributes.
-* link:../reference/Performance.adoc#enableCompression[Enable
+. link:../reference/Performance.adoc#enableCompression[Enable
 compression] by adding *compression* and *compressableMimeType*
 attributes to 8080 Connector.
-* link:../tutorial/TDSMonitoringAndDebugging.adoc#access[Enable access
+. link:../tutorial/TDSMonitoringAndDebugging.adoc#access[Enable access
 logging] by uncommenting the *AccessLogValve* and change the *prefix*
 and *suffix* and *pattern* attributes.
 
-For each user, create a SHA1 password digest using the
+2. For each user, create a SHA1 password digest using the
 *$\{tomcat_home}/bin/digest.sh* script or an online service such as
 http://www.freeformatter.com/message-digest.html
 
-Make the following modifications to
-**$\{tomcat_home}/conf/tomcat-users.xml**:
+3. *Make the following modifications to $\{tomcat_home}/conf/tomcat-users.xml*:
 
-* Define the roles
-link:../tutorial/GettingStarted.adoc#grantingAccess[manager-gui] and
-link:../tutorial/examples/accessingTDSMonitoringAndDebuggingTools.adoc[tdsConfig]
-and
+. Define the roles
+link:../tutorial/GettingStarted.adoc#grantingAccess[manager-gui],
+link:../tutorial/examples/accessingTDSMonitoringAndDebuggingTools.adoc[tdsConfig] and (optionally)
 link:../tutorial/examples/accessingTDSMonitoringAndDebuggingTools.adoc[tdsMonitor].
-* link:../tutorial/GettingStarted.adoc#grantingAccess[Add yourself as a
+. link:../tutorial/GettingStarted.adoc#grantingAccess[Add yourself as a
 user] with the roles manager-gui and tdsConfig using your digest
 password your created in step #6 above.
 
-Make the following modifications to
-**$\{tomcat_home}/webapps/manager/WEB-INF/web.xml**:
+4. *Make the following modifications to $\{tomcat_home}/webapps/manager/WEB-INF/web.xml*:
 
-1.  Make sure the manager is only
-link:../tutorial/examples/tomcatManagerSSL.adoc[available via SSL] by
+.  Make sure the manager is only link:../tutorial/examples/tomcatManagerSSL.adoc[available via SSL] by
 adding a user-data-constraint with a transport-guarantee of CONFIDENTIAL
 inside the security-constraint element.
-2.  DO NOT ENABLE THE MANAGER WITHOUT RESTRICTING TO SSL ACCESS ONLY.
-(!)
+.  DO NOT ENABLE THE MANAGER WITHOUT RESTRICTING TO SSL ACCESS ONLY. (!)
 
-link:../tutorial/Security.adoc#unused[Remove any unused applications]
+5. link:../tutorial/Security.adoc#unused[Remove any unused applications]
 from $\{tomcat_home}/webapps.
 
-(optional) link:../../netcdf-java/reference/netcdf4Clibrary.adoc[Build
+6. (optional) link:../../netcdf-java/reference/netcdf4Clibrary.adoc[Build
 netCDF-C library] on your server. Standard install directory is
 */opt/netcdf.*
 

@@ -307,7 +307,7 @@ abstract class GribPartitionBuilder  {
 
       // overall set of unique coordinates
       boolean isDense = false; // (config != null) && "dense".equals(config.gribConfig.getParameter("CoordSys"));  // for now, assume non-dense
-      CoordinateSharer sharify = new CoordinateSharer(isDense);
+      CoordinateSharer sharify = new CoordinateSharer(isDense, logger);
 
       // for each variable, create union of coordinates across the partitions
       for (GribCollectionMutable.VariableIndex viResult : resultGroup.variList) {
@@ -315,7 +315,7 @@ abstract class GribPartitionBuilder  {
         vip.finish(); // create the SA, remove list LOOK, could do it differently
 
         // loop over partitions, make union coordinate; also time filter the intervals
-        CoordinateUnionizer unionizer = new CoordinateUnionizer(viResult.getVarid(), intvMap);
+        CoordinateUnionizer unionizer = new CoordinateUnionizer(viResult.getVarid(), intvMap, logger);
         for (int partno = 0; partno < npart; partno++) {
           GribCollectionMutable.GroupGC group = gp.componentGroups[partno];
           if (group == null) continue; // tolerate missing groups
