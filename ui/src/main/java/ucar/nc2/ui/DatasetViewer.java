@@ -593,12 +593,12 @@ public class DatasetViewer extends JPanel {
   private void writeData(BeanTable from) {
     Variable v = getCurrentVariable(from);
     if (v == null) return;
-    
-	String name = "C:/temp/file.bin";
-	
-	if (!System.getProperty("os.name").toLowerCase().contains("win")) {
-	  name = "/tmp/file.bin";
-	}
+
+    String name = "C:/temp/file.bin";
+
+    if (!System.getProperty("os.name").toLowerCase().contains("win")) {
+      name = "/tmp/file.bin";
+    }
 
     try (FileOutputStream stream = new FileOutputStream(name)) {
       WritableByteChannel channel = stream.getChannel();

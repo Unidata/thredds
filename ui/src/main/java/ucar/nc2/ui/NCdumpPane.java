@@ -165,12 +165,12 @@ public class NCdumpPane extends TextHistoryPane {
     }
 
     String name = "C:/temp/file.bin";
-	
-	if (!System.getProperty("os.name").toLowerCase().contains("win")) {
-	  name = "/tmp/file.bin";
-	}
-    
-	try (FileOutputStream stream = new FileOutputStream(name)) {
+
+    if (!System.getProperty("os.name").toLowerCase().contains("win")) {
+      name = "/tmp/file.bin";
+    }
+
+    try (FileOutputStream stream = new FileOutputStream(name)) {
       WritableByteChannel channel = stream.getChannel();
       cer.v.readToByteChannel(cer.section, channel);
       System.out.printf("Write ok to %s%n", name);
