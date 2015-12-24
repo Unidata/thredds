@@ -194,9 +194,9 @@ public class GCsummary {
     long tookAll = 0;
 
     Formatter f= new Formatter();
-    f.format("%40s,  type,     took,  nfiles, nrecords,  idx(MB), data(GB), data/idx, bytes/rec, variables, runtimes, gds %n", "Collection");
+    f.format("%40s,  type, ptype,    took,  nfiles, nrecords,  idx(MB), data(GB), data/idx, bytes/rec, variables, runtimes, gds %n", "Collection");
     for (GCsummaryTask task : fcMap.values()) {
-      f.format("%40s, %5s, %8d,", task.config.name, task.config.type, task.took);
+      f.format("%40s, %5s, %5s, %8d,", task.config.collectionName, task.config.type, task.config.ptype, task.took);
       GCpass1.Accum acc = task.pass1.accumAll;
       f.format("%8d, %8d, %8.3f, %8.3f, ", acc.nfiles, acc.nrecords, acc.indexSize, acc.fileSize/1000);
       f.format("%8.3f, %8.0f,", acc.fileSize/acc.indexSize, acc.indexSize*1000*1000/acc.nrecords);
@@ -212,7 +212,7 @@ public class GCsummary {
     }
 
     f.format("%n");
-    f.format("%40s, %5s, %8d,", "total", "", tookAll);
+    f.format("%40s, %5s, %5s, %8d,", "total", "", "", tookAll);
     f.format("%8d, %8d, %8.3f, %8.3f, ", all.nfiles, all.nrecords, all.indexSize, all.fileSize/1000);
     f.format("%8.3f, %8.0f", all.fileSize/all.indexSize, all.indexSize*1000*1000/all.nrecords);
     f.format("%n");

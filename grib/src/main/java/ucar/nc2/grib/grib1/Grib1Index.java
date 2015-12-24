@@ -56,7 +56,6 @@ import java.util.*;
       Grib1Index index = new Grib1Index();
       if (!index.readIndex(path))
         index.makeIndex(path);
-        index.makeIndex(path);
 
       for (Grib1SectionGridDefinition gds : index.getGds()) {
         if (gdsSet.get(gds.calcCRC()) == null)

@@ -99,7 +99,7 @@ public class Grib2DataPanel extends JPanel {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
         if (pb != null) {
           Formatter f = new Formatter();
-          Grib2CollectionPanel.showPdsTemplate(pb.gr.getPDSsection(), f, cust);
+          Grib2Show.showPdsTemplate(pb.gr.getPDSsection(), f, cust);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -154,7 +154,7 @@ public class Grib2DataPanel extends JPanel {
         if (bean != null) {
           Formatter f = new Formatter();
           try {
-            Grib2CollectionPanel.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
+            Grib2Show.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
           } catch (IOException ioe) {
             StringWriter sw = new StringWriter(10000);
             ioe.printStackTrace(new PrintWriter(sw));
@@ -1015,13 +1015,13 @@ public class Grib2DataPanel extends JPanel {
 
     public String toString() {
       Formatter f = new Formatter();
-      Grib2CollectionPanel.showPdsTemplate(gr.getPDSsection(), f, cust);
+      Grib2Show.showPdsTemplate(gr.getPDSsection(), f, cust);
       return f.toString();
     }
 
     public String toProcessedString() {
       Formatter f = new Formatter();
-      Grib2CollectionPanel.showProcessedPds(cust, pds, discipline, f);
+      Grib2Show.showProcessedPds(cust, pds, discipline, f);
       return f.toString();
     }
 

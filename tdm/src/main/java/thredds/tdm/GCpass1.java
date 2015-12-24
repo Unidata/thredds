@@ -31,7 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Formatter;
+import java.util.*;
 
 /**
  * GribCollection Building - pass1 : gather information, optionally make gbx9 files
@@ -207,6 +207,25 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
     fm.format("%n");
 
     countersAll.show(fm);
+
+    if (gds1set.size() > 1) {
+      fm.format("gds1%n");
+      for (Grib1Record gr1 : gds1set.values()) {
+        Grib1Gds gds = gr1.getGDS();
+        fm.format(" hash %s == %s%n", gds.hashCode(), gds);
+      }
+    }
+
+    if (gds2set.size() > 1) {
+      fm.format("gds2%n");
+      for (Integer key : gds2set.keySet()) {
+        Grib2Record gr2 = gds2set.get(key);
+        Grib2Gds gds = gr2.getGDS();
+        fm.format(" key = %d hash = %s%n", key, gds.hashCode());
+        Grib2Show.showGdsTemplate(gr2.getGDSsection(), fm, cust2);
+        fm.format("%n");
+      }
+    }
   }
 
   public void reportOneHeader(Indent indent, Formatter fm) {
@@ -410,7 +429,7 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
     int cdmHash = Grib1Variable.cdmVariableHash(cust1, gr, gdsHash, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
     String name = Grib1Iosp.makeVariableName(cust1, gribConfig, pds);
     counters.count("variable", new Variable(cdmHash, name));
-    counters.count("gds", gdsHash);
+    if (counters.count("gds", gdsHash)) storeGrib1Record(gdsHash, gr);
     counters.count("gdsTemplate", gdss.getGridTemplate());
 
     if (gdss.isThin()) {
@@ -449,7 +468,8 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
     int cdmHash = Grib2Variable.cdmVariableHash(cust2, gr, 0, gribConfig.intvMerge, gribConfig.useGenType);
     String name = GribUtils.makeNameFromDescription(cust2.getVariableName(gr));
     counters.count("variable", new Variable(cdmHash, name));
-    counters.count("gds", gr.getGDS().hashCode());
+    int gdsHash = gr.getGDS().hashCode();
+    if (counters.count("gds", gdsHash)) storeGrib2Record(gdsHash, gr);
     counters.count("gdsTemplate", gr.getGDSsection().getGDSTemplateNumber());
   }
 
@@ -484,6 +504,17 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
       }
     }
     return index;
+  }
+
+  Map<Integer, Grib1Record> gds1set = new HashMap<>();
+  private void storeGrib1Record( int hash, Grib1Record gr1) {
+    gds1set.put(hash, gr1);
+  }
+
+
+  Map<Integer, Grib2Record> gds2set = new HashMap<>();
+  private void storeGrib2Record( int hash, Grib2Record gr2) {
+    gds2set.put(hash, gr2);
   }
 
 }
