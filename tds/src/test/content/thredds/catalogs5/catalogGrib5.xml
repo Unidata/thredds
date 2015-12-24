@@ -5,6 +5,9 @@
 
   <service name="cdmremoteOnly" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
 
+  <datasetRoot path="rdavmWork" location="D:/work/rdavm/"/>
+
+
   <!-- test GRIB collections with no service elements  -->
   <featureCollection name="NDFD-CONUS-5km.v5" featureType="GRIB2" harvest="true" path="grib.v5/NDFD/CONUS_5km">
     <collection spec="${cdmUnitTest}/datasets/NDFD-CONUS-5km/.*grib2$" timePartition="file" />
@@ -35,5 +38,13 @@
     <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
   </featureCollection>
 
+  <featureCollection featureType="GRIB1" name="GFS_CONUS_80km_cdmremote.v5" path="cdmremote.v5/GFS_CONUS_80km">
+    <metadata inherited="true">
+      <serviceName>cdmremoteOnly</serviceName>
+    </metadata>
+    <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
+  </featureCollection>
+
+  <dataset name="Test Single Grib File" ID="testCdmrGrib" serviceName="all" urlPath="rdavmWork/yt.oper.an.sfc.regn400sc.10v_166.200805" dataType="Grid"/>
 
 </catalog>

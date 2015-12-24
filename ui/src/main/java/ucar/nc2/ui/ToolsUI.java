@@ -5814,7 +5814,7 @@ public class ToolsUI extends JPanel {
       }catch (HTTPException e) {
         log.error("Failed to set global credentials");
       }
-      HTTPSession.setGlobalUserAgent("ToolsUI v4.6");
+      HTTPSession.setGlobalUserAgent("ToolsUI v5.0");
 
       // set Authentication for accessing passsword protected services like TDS PUT
       java.net.Authenticator.setDefault(provider);

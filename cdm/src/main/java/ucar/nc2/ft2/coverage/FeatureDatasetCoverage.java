@@ -102,6 +102,10 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
   public List<CoverageCollection> getCoverageCollections() {
     return covCollections;
   }
+  public CoverageCollection getSingleCoverageCollection() {
+    if (covCollections.size() != 1) throw new RuntimeException("multiple collection in the dataset");
+    return covCollections.get(0);
+  }
 
   public CoverageCollection findCoverageDataset( FeatureType type) {
     for (CoverageCollection cd : covCollections)

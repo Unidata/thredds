@@ -259,8 +259,6 @@ public class NcStream {
     NcStreamProto.Section.Builder sbuilder = NcStreamProto.Section.newBuilder();
     for (Range r : section.getRanges()) {
       NcStreamProto.Range.Builder rbuilder = NcStreamProto.Range.newBuilder();
-      if (r.length() < 0)
-        System.out.printf("HEY%n");
       rbuilder.setStart(r.first());
       rbuilder.setSize(r.length());
       rbuilder.setStride(r.stride());
@@ -593,11 +591,11 @@ public class NcStream {
         long stride = pr.getStride();
         if (stride == 0) stride = 1; // default in protobuf2 was 1, but protobuf3 is 0, luckily 0 is illegal
         if (pr.getSize() == 0)
-          section.appendRange(Range.EMPTY); // used for scalars
-        else if (pr.getSize() < 0) //should not happen
-          throw new IllegalStateException("Proto Range size < 0");
-        else
-          section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1), (int) stride);
+          section.appendRange(Range.EMPTY); // used for scalars LOOK really used ??
+        else {
+          // this.last = first + (this.length-1) * stride;
+          section.appendRange((int) pr.getStart(), (int) (pr.getStart() + (pr.getSize() - 1) * stride), (int) stride);
+        }
 
       } catch (InvalidRangeException e) {
         throw new RuntimeException("Bad Section in ncstream", e);

@@ -60,8 +60,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static public final String PROTOCOL = "cdmremote";
   static public final String SCHEME = PROTOCOL+":";
 
-  // static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
-  static private boolean showRequest = true;
+  // static private org.slf4SCHEMEj.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
+  static private boolean showRequest = false;
+  static private boolean showUrl = false;
   static private boolean compress = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -112,7 +113,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     String url = remoteURI + "?req=header";
     try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
       method.setFollowRedirects(true);
-      if (showRequest) System.out.printf("CdmRemote request %s %n", url);
       int statusCode = method.execute();
 
       if (statusCode == 404)
@@ -128,12 +128,11 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
 
     long took = System.currentTimeMillis() - start;
-    if (showRequest) System.out.printf(" took %d msecs %n", took);
+    if (showRequest) System.out.printf(" CdmRemote request %s took %d msecs %n", url, took);
   }
 
   // Closes the input stream.
   public CdmRemote(InputStream is, String location ) throws IOException {
-    long start = System.currentTimeMillis();
     remoteURI = location;
 
     try {
@@ -144,8 +143,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     } finally {
       is.close();
     }
-    long took = System.currentTimeMillis() - start;
-    if (showRequest) System.out.printf(" took %d msecs %n", took);
   }
 
   @Override
@@ -177,7 +174,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       throw new RuntimeException(e);
     }
 
-    if (showRequest)
+    if (showUrl)
       System.out.printf("CdmRemote data request for variable: '%s' section=(%s)%n url='%s'%n esc='%s'%n",
               v.getFullName(), section, url, escapedURI);
 

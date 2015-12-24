@@ -272,7 +272,7 @@ public class CoverageRenderer {
       subset.set(SubsetParams.ensCoord, ensVal);
     }
     if (horizStride != 1)
-      subset.set(SubsetParams.horizStride, horizStride);
+      subset.setHorizStride( horizStride);
 
     try {
       dataH = dataState.grid.readData(subset);

@@ -59,14 +59,14 @@ import java.util.Iterator;
  */
 
 @Immutable
-public class Range implements RangeIterator  {
+public class Range implements RangeIterator {
   public static final Range EMPTY = new Range(); // used for unlimited dimension = 0
   public static final Range ONE = new Range(1);
   public static final Range VLEN = new Range(-1);
 
   public static Range make(String name, int len) {
     try {
-      return new Range(name, 0, len-1, 1);
+      return new Range(name, 0, len - 1, 1);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen if len > 0
     }
@@ -111,7 +111,7 @@ public class Range implements RangeIterator  {
     assert (length != 0);
     this.name = null;
     this.first = 0;
-    this.last = length-1;
+    this.last = length - 1;
     this.stride = 1;
     this.length = length;
   }
@@ -161,9 +161,9 @@ public class Range implements RangeIterator  {
     this.first = first;
     this.stride = stride;
     this.length = 1 + (last - first) / stride;
-    this.last = first + (this.length-1) * stride;
+    this.last = first + (this.length - 1) * stride;
     if (stride == 1)
-    assert this.last == last;
+      assert this.last == last;
     assert this.length != 0;
   }
 
@@ -229,7 +229,7 @@ public class Range implements RangeIterator  {
 
   /**
    * @return stride, must be >= 1 when evenly strided, -1 if not
-   // * @deprecated use iterator(), dont assume evenly strided
+   * // * @deprecated use iterator(), dont assume evenly strided
    */
   public int stride() {
     return stride;
@@ -535,6 +535,7 @@ public class Range implements RangeIterator  {
 
   /**
    * Iterate over Range index
+   *
    * @return Iterator over element indices
    * @deprecated use iterator() or foreach
    */
@@ -549,9 +550,11 @@ public class Range implements RangeIterator  {
 
   private class MyIterator implements java.util.Iterator<Integer> {
     private int current = 0;
+
     public boolean hasNext() {
       return current < length;
     }
+
     public Integer next() {
       return elementNC(current++);
     }

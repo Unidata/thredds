@@ -75,7 +75,7 @@ public class TestRemoteCoverage {
       Assert.assertNotNull("CoverageCoordSys", gcs);
       Assert.assertEquals("CoverageCoordSys rank", 5, gcs.getAxes().size());
 
-      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.horizStride, 3);
+      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).setHorizStride(3);
 
       GeoReferencedArray geo = grid.readData(params);
       CoverageCoordSys geoCoordsys = geo.getCoordSysForData();
