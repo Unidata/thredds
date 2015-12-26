@@ -439,7 +439,14 @@ public class DatasetViewer extends JPanel {
       });
       csPopup.addAction("Write binary Data to file", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          writeData(table);
+          File binaryFile = new File(System.getProperty("user.home"));
+          JFileChooser aFileChooser = new JFileChooser();
+          aFileChooser.setSelectedFile(new File("temp.bin"));
+          int choice = aFileChooser.showSaveDialog(null);
+          if (choice == JFileChooser.APPROVE_OPTION) {
+            binaryFile = aFileChooser.getSelectedFile();
+            writeData(table, binaryFile);
+          }
         }
       });
       if (level == 0) {
@@ -590,15 +597,9 @@ public class DatasetViewer extends JPanel {
     dumpWindow.show();
   }
 
-  private void writeData(BeanTable from) {
+  private void writeData(BeanTable from, File name) {
     Variable v = getCurrentVariable(from);
-    if (v == null) return;
-
-    String name = "C:/temp/file.bin";
-
-    if (!System.getProperty("os.name").toLowerCase().contains("win")) {
-      name = "/tmp/file.bin";
-    }
+    if (v == null || name == null) return;
 
     try (FileOutputStream stream = new FileOutputStream(name)) {
       WritableByteChannel channel = stream.getChannel();
