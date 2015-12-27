@@ -32,14 +32,15 @@
 
 package ucar.nc2.util.net;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.httpservices.*;
-import ucar.nc2.util.net.EchoService;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.HashMap;
@@ -58,12 +59,7 @@ public class TestFormBuilder extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static final boolean DEBUG = false;
-
-    static final int SIMPLEECHOPORT = 4444;
-    static final int MULTIECHOPORT = 4445;
-    static final String SIMPLEECHOURL = "http://localhost:" + SIMPLEECHOPORT;
-    static final String MULTIECHOURL = "http://localhost:" + MULTIECHOPORT;
+    static final boolean DEBUG = true;
 
     // Field values to use
     static final String DESCRIPTIONENTRY = "TestFormBuilder";
@@ -85,14 +81,12 @@ public class TestFormBuilder extends UnitTestCommon
     static final char QUOTE = '"';
     static final char COLON = ':';
 
+    // This needs to be a real site in order to get
+    // the request info
+    static final String NULLURL = "http://" + TestDir.threddsTestServer;
+
     //////////////////////////////////////////////////
     // Instance Variables
-
-    int passcount = 0;
-    int xfailcount = 0;
-    int failcount = 0;
-    boolean verbose = true;
-    boolean pass = false;
 
     protected String boundary = null;
 
@@ -105,6 +99,8 @@ public class TestFormBuilder extends UnitTestCommon
     {
         setTitle("HTTPFormBuilder test(s)");
         setSystemProperties();
+        // Turn on Session debugging
+        HTTPSession.debugHeaders(false);
     }
 
     @Test
@@ -112,22 +108,28 @@ public class TestFormBuilder extends UnitTestCommon
     testSimple()
             throws Exception
     {
-        pass = true;
+        HTTPSession.debugReset();
         try {
             HTTPFormBuilder builder = buildForm(false);
             HttpEntity content = builder.build();
-            String body = null;
-            try (
-                    EchoService echo = new EchoService(SIMPLEECHOPORT).startecho();
-                    HTTPMethod postMethod = HTTPFactory.Post(SIMPLEECHOURL)
-            ) {
+            try (HTTPMethod postMethod = HTTPFactory.Post(NULLURL)) {
                 postMethod.setRequestContent(content);
-                postMethod.execute();
-                int code = postMethod.getStatusCode();
-                if(code != 200)
-                    throw new IOException("Bad return code: " + code);
-                body = postMethod.getResponseAsString();
+                // Execute, but ignore any problems
+                try {
+                    postMethod.execute();
+                } catch (Exception e) {
+                    // ignore
+                }
             }
+            // Get the request that was used
+            HTTPUtil.InterceptRequest dbgreq = HTTPSession.debugRequestInterceptor();
+            Assert.assertTrue("Could not get debug request", dbgreq != null);
+            HttpEntity entity = dbgreq.getRequestEntity();
+            Assert.assertTrue("Could not get debug entity", entity != null);
+            // Extract the form info
+            Header ct = entity.getContentType();
+            String body = extract(entity, ct, false);
+            Assert.assertTrue("Malformed debug request", body != null);
             if(DEBUG || prop_visual)
                 visual("TestFormBuilder.testsimple.RAW", body);
             body = genericize(body, OSTEXT, null, null);
@@ -138,11 +140,11 @@ public class TestFormBuilder extends UnitTestCommon
                 System.err.println("TestFormBuilder.testsimple.diffs:\n" + diffs);
                 Assert.assertTrue("TestFormBuilder.testSimple: ***FAIL", false);
             }
-        } catch (Exception exc) {
-            exc.printStackTrace();
-            pass = false;
+        } catch (Exception e) {
+            Assert.assertTrue("***FAIL: " + e.getCause(), false);
+            if(DEBUG)
+                e.printStackTrace();
         }
-        Assert.assertTrue("TestFormBuilder.simple: failed", pass);
     }
 
     @Test
@@ -154,25 +156,32 @@ public class TestFormBuilder extends UnitTestCommon
         attach3file = HTTPUtil.fillTempFile("attach3.txt", ATTACHTEXT);
         attach3file.deleteOnExit();
 
-        pass = true;
+        HTTPSession.debugReset();
         try {
             HTTPFormBuilder builder = buildForm(true);
             HttpEntity content = builder.build();
-            String body = null;
-            try (
-                    EchoService echo = new EchoService(MULTIECHOPORT).startecho();
-                    HTTPMethod postMethod = HTTPFactory.Post(MULTIECHOURL)
-            ) {
+            try (HTTPMethod postMethod = HTTPFactory.Post(NULLURL)) {
                 postMethod.setRequestContent(content);
-                postMethod.execute();
-                int code = postMethod.getStatusCode();
-                if(code != 200)
-                    throw new IOException("Bad return code: " + code);
-                body = postMethod.getResponseAsString();
+                // Execute, but ignore any problems
+                try {
+                    postMethod.execute();
+                } catch (Exception e) {
+                    // ignore
+                }
             }
+            // Get the request that was used
+            HTTPUtil.InterceptRequest dbgreq = HTTPSession.debugRequestInterceptor();
+            Assert.assertTrue("Could not get debug request", dbgreq != null);
+            HttpEntity entity = dbgreq.getRequestEntity();
+            Assert.assertTrue("Could not get debug entity", entity != null);
+            // Extract the form info
+            Header ct = entity.getContentType();
+            String body = extract(entity, ct, true);
+            Assert.assertTrue("Malformed debug request", body != null);
             if(DEBUG || prop_visual)
                 visual("TestFormBuilder.testmultipart.RAW", body);
-            String boundary = getboundary(body);
+            // Get the contenttype boundary
+            String boundary = getboundary(ct);
             Assert.assertTrue("Missing boundary info", boundary != null);
             String attach3 = getattach(body, "attach3");
             Assert.assertTrue("Missing attach3 info", attach3 != null);
@@ -184,11 +193,11 @@ public class TestFormBuilder extends UnitTestCommon
                 System.err.println("TestFormBuilder.testmultipart.diffs:\n" + diffs);
                 Assert.assertTrue("TestFormBuilder.testmultipart: ***FAIL", false);
             }
-        } catch (Exception exc) {
-            exc.printStackTrace();
-            pass = false;
+        } catch (Exception e) {
+            Assert.assertTrue("***FAIL: " + e.getCause(), false);
+            if(DEBUG)
+                e.printStackTrace();
         }
-        Assert.assertTrue("TestFormBuilder.multipart: failed", pass);
     }
 
     protected HTTPFormBuilder buildForm(boolean multipart)
@@ -227,26 +236,21 @@ public class TestFormBuilder extends UnitTestCommon
         return builder;
     }
 
-    protected String getboundary(String text)
+    protected String getboundary(Header contentype)
             throws HTTPException
     {
-        // Ignore all the headers except the content-type for
-        // the multipart part.
-        String[] lines = text.split("[\n]");
-        int pos = -1;
+        Assert.assertTrue("No content header", contentype != null);
+        String[] pieces = contentype.getValue().split("[ ]*[;][ ]*");
         String boundary = null;
-        for(int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            line = line.replace("\r", "");
-            if(line.length() == 0)
+        for(String s : pieces) {
+            if(s.toLowerCase().startsWith("boundary")) {
+                pieces = s.split("[=]");
+                Assert.assertTrue("Bad boundary", pieces.length == 2);
+                boundary = pieces[1];
                 break;
-            Map<String, String> map = parseheaderline(line);
-            if(map == null) continue;
-            if(map.get("PREFIX").equals("content-type")) {
-                boundary = map.get("boundary");
-                Assert.assertTrue("Missing boundary", boundary != null);
             }
         }
+        Assert.assertTrue("Missing boundary", boundary != null);
         return boundary;
     }
 
@@ -273,48 +277,30 @@ public class TestFormBuilder extends UnitTestCommon
         return attach3;
     }
 
-    protected String genericize(String text, String os, String boundary, String attach3name)
+    protected String genericize(String body, String os, String boundary, String attach3name)
             throws HTTPException
     {
-        text = text.replace("\r", "");
-        // Ignore all the headers
-        String[] lines = text.split("[\n]");
-        int pos = -1;
-        for(int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            if(line.length() == 0) {
-                pos = i;
-                break;
-            }
-        }
-        if(pos < 0) return null;
-        StringBuilder newtext = new StringBuilder();
-        for(int i = pos + 1; i < lines.length; i++) {
-            String line = lines[i];
-            newtext.append(line);
-            newtext.append("\n");
-        }
-        text = newtext.toString();
+        body = body.replace("\r", "");
         // Generic os: Handle case with and without blank
-        text = text.replace(os, "<OSNAME>");
+        body = body.replace(os, "<OSNAME>");
         os = os.replace(' ', '+');
-        text = text.replace(os, "<OSNAME>");
+        body = body.replace(os, "<OSNAME>");
         if(boundary != null) {
             // Convert to generic 
-            text = text.replace(boundary, FAKEBOUNDARY);
+            body = body.replace(boundary, FAKEBOUNDARY);
         }
         if(attach3name != null) {
             // Convert to generic 
-            text = text.replace(attach3name, FAKEATTACH3);
+            body = body.replace(attach3name, FAKEATTACH3);
         }
-        return text;
+        return body;
     }
 
     protected Map<String, String>
     parseheaderline(String line)
     {
         Map<String, String> map = new HashMap<>();
-        map.put("PREFIX",""); // default
+        map.put("PREFIX", ""); // default
         if(line == null || line.length() == 0)
             return map;
         int i = line.indexOf(":");
@@ -446,5 +432,24 @@ public class TestFormBuilder extends UnitTestCommon
 
     static final String multipartbaseline =
             "--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"softwarePackage\"\n\nIDV\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"emailAddress\"\n\nidv@ucar.edu\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"os\"\n\n<OSNAME>\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"subject\"\n\nhello\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"attachmentTwo\"; filename=\"bundle.xidv\"\nContent-Type: application/octet-stream\n\nbundle\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"organization\"\n\nUCAR\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"fullName\"\n\nMr. Jones\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"description\"\n\nTestFormBuilder\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"attachmentThree\"; filename=\"attach3XXXXXXXXXXXXXXXXXXXX.txt\"\nContent-Type: application/octet-stream; charset=US-ASCII\n\narbitrary data\n\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"packageVersion\"\n\n1.0.1\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"attachmentOne\"; filename=\"extra.html\"\nContent-Type: application/octet-stream\n\nextra\n--XXXXXXXXXXXXXXXXXXXX\nContent-Disposition: form-data; name=\"hardware\"\n\nx86\n--XXXXXXXXXXXXXXXXXXXX--\n";
+
+    protected String extract(HttpEntity entity, Header ct, boolean multipart)
+    {
+        try {
+            if(multipart) {
+                String[] pieces = ct.getValue().split("[ ]*[;][ ]*");
+                Assert.assertTrue("Wrong content header", pieces[0].equalsIgnoreCase("multipart/form-data"));
+            } else {
+                Assert.assertTrue("Wrong content header", ct.getValue().equalsIgnoreCase("application/x-www-form-urlencoded"));
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream((int) entity.getContentLength());
+            entity.writeTo(out);
+            byte[] contents = out.toByteArray();
+            String result = new String(contents, HTTPUtil.UTF8);
+            return result;
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
 }
