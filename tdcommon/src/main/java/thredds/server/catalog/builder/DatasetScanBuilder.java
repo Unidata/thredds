@@ -58,9 +58,11 @@ public class DatasetScanBuilder extends DatasetBuilder {
 
   public DatasetScan makeDataset(DatasetNode parent) {
     String xlink = "/thredds/catalog/"+config.path+"/catalog.xml";   // LOOK hardcoded thredds, need context, or make it reletive ??
-    if (null == flds.get(Dataset.ServiceName))
-      logger.error("DatasetScan does not have serviceName "+name);
+    DatasetScan dscan = new DatasetScan(parent, name, xlink, flds, accessBuilders, datasetBuilders, config);
 
-    return new DatasetScan(parent, name, xlink, flds, accessBuilders, datasetBuilders, config);
+    if (null == dscan.getServiceNameDefault())
+      logger.error("DatasetScan "+name+" does not have a default serviceName");
+
+    return dscan;
   }
 }

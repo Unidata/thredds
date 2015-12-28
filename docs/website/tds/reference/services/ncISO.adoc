@@ -11,11 +11,9 @@ thanks to Dave Neufeld and Ted Habermann).
 
 ncISO supports three new services for datasets:
 
-* **NCML**: an NcML representation of the dataset’s structure and
-metadata;
+* **NCML**: an NcML representation ofthe dataset’s structure and metadata;
 * **ISO**: an ISO 19115 metadata representation of the dataset; and
-* **UDDC**: an evaluation of how well the metadata contained in the
-dataset conforms to the
+* **UDDC**: an evaluation of how well the metadata contained in the dataset conforms to the
 link:../../netcdf-java/metadata/DataDiscoveryAttConvention.adoc[NetCDF
 Attribute Convention for Data Discovery (NACDD)] (also see the
 https://geo-ide.noaa.gov/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery[NOAA/NGDC
@@ -49,7 +47,7 @@ base attribute values must be as follows:
 ---------------------------------------------------------------
 
 The dataset to be served must reference a containing compound service by
-the service name. For instance, if a compound service named ``all''
+the service name. For instance, if a compound service named _all_
 contained all three services listed above:
 
 ------------------------------------------------------------

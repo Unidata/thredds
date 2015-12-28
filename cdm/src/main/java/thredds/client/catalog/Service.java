@@ -33,9 +33,11 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.util.Indent;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -111,17 +113,37 @@ public class Service {            // (7)
     }
   }
 
+  protected String toString(Indent indent) {
+    Formatter f = new Formatter();
+    f.format("%sService{ name=%s, base=%s, typeS=%s", indent, name, base, typeS);
+    if (desc != null) f.format(",desc=%s", desc);
+    if (suffix != null) f.format(",suffix=%s", suffix);
+
+    if (properties != null) {
+      f.format("%n");
+      indent.incr();
+      for (Property p : properties)
+        f.format("%s%s%n", indent, p.toString());
+      indent.decr();
+      f.format("%n");
+    }
+
+    if (nestedServices != null) {
+      f.format("%n");
+      indent.incr();
+      for (Service nested : nestedServices)
+        f.format("%s%n", nested.toString(indent));
+      indent.decr();
+      f.format("}%n");
+    } else
+      f.format("}");
+
+    return f.toString();
+  }
+
   @Override
   public String toString() {
-    return "Service{" +
-            "name='" + name + '\'' +
-            ", base='" + base + '\'' +
-            ", typeS='" + typeS + '\'' +
-            ", desc='" + desc + '\'' +
-            ", suffix='" + suffix + '\'' +
-            ", nestedServices=" + nestedServices +
-            ", properties=" + properties +
-            '}';
+    return toString(new Indent(2));
   }
 
   @Override

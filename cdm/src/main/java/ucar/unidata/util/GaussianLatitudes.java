@@ -33,29 +33,44 @@
 
 package ucar.unidata.util;
 
+import net.jcip.annotations.Immutable;
+import ucar.nc2.util.HashMapLRU;
+
 /**
  * Calculate Gaussian Latitudes by finding the roots of the ordinary Legendre polynomial of degree
  * NLAT using Newton's iteration method.
+ * Moderately expensive to compute, so keep LRU cache.
  *
  * @author caron port to Java
  * @author Amy Solomon, 28 Jan 1991, via http://dss.ucar.edu/libraries/gridinterps/gaus-lats.f
  */
+@Immutable
 public class GaussianLatitudes {
   private static final double XLIM  = 1.0E-7;
+  private static final HashMapLRU<Integer, GaussianLatitudes> hash = new HashMapLRU<>(10, 20);
+
+  public static GaussianLatitudes factory(int nlats) {
+    GaussianLatitudes glats = hash.get(nlats);
+    if (glats == null) {
+      glats = new GaussianLatitudes(nlats);
+      hash.put(nlats, glats);
+    }
+    return glats;
+  }
 
   // all these have size nlat
-  public double[] cosc; // cos(colatitude) or sin(latitude)
-  public double[] colat; // the colatitudes in radians
-  public double[] gaussw; // the Gaussian weights
-  public double[] latd; // the latitudes in degrees
-  public double[] sinc; // sin(colatitude) or cos(latitude)
-  public double[] wos2; // Gaussian weight over sin**2(colatitude)
+  public final double[] cosc; // cos(colatitude) or sin(latitude)
+  public final double[] colat; // the colatitudes in radians
+  public final double[] gaussw; // the Gaussian weights
+  public final double[] latd; // the latitudes in degrees
+  public final double[] sinc; // sin(colatitude) or cos(latitude)
+  public final double[] wos2; // Gaussian weight over sin**2(colatitude)
 
   /**
    * Constructor
    * @param nlat the total number of latitudes from pole to pole (degree of the polynomial)
    */
-  public GaussianLatitudes(int nlat) {
+  private GaussianLatitudes(int nlat) {
     if (nlat == 0) throw new IllegalArgumentException("nlats may not be zero");
 
     // the number of latitudes between pole and equator

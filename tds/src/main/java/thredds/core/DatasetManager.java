@@ -54,11 +54,13 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.util.Optional;
 import ucar.nc2.util.cache.FileFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -317,13 +319,20 @@ public class DatasetManager implements InitializingBean {
 
   // return null means request has been handled, and calling routine should exit without further processing
   public CoverageCollection openCoverageDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
-    // first look for a feature collection
-    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
-    if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
-      // see if its under resource control
-      if (!resourceAuthorized(req, res, match.dataRoot.getRestrict()))
-        return null;
+    if (reqPath == null)
+      return null;
 
+    if (reqPath.startsWith("/"))
+      reqPath = reqPath.substring(1);
+
+    // see if its under resource control
+    if (!resourceControlOk(req, res, reqPath))
+      return null;
+
+    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
+
+    // first look for a feature collection
+    if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
       FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
 
@@ -333,13 +342,29 @@ public class DatasetManager implements InitializingBean {
       return gds;
     }
 
+    // otherwise assume its a local file
+
+    // try to open as a FeatureDatasetCoverage. This allows GRIB to be handle specially
+    String location = getLocationFromRequestPath(reqPath);
+    if (location == null)
+      throw new FileNotFoundException(reqPath);
+
+    Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(location);
+    if (!opt.isPresent())
+      throw new FileNotFoundException("Not a Grid Dataset " + reqPath + " err=" + opt.getErrorMessage());
+
+    if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection from file= " + location);
+    return opt.get().getSingleCoverageCollection(); // LOOK doesnt have to be single, then what is the URL?
+
     /* otherwise assume its a local file: LOOK GRIB
     CoverageCollection cc = CoverageDatasetFactory.open(matchPath);
     assert cc != null;
     assert cc.getCoverageDatasets().size() == 1;
-    return cc.getCoverageDatasets().get(0);  */
+    return cc.getCoverageDatasets().get(0);
 
     NetcdfFile ncfile = openNetcdfFile(req, res, reqPath);
+    if (ncfile == null) return null;
+
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     DtCoverageDataset gds = new DtCoverageDataset(ncd);
     if (gds.getGrids().size() > 0) {
@@ -351,9 +376,8 @@ public class DatasetManager implements InitializingBean {
     }
 
     gds.close();
-    throw new IllegalArgumentException("Not a Grid Dataset " + gds.getName());
+    throw new IllegalArgumentException("Not a Grid Dataset " + gds.getName()); */
   }
-
 
   /////////////////////////////////////////////////////////////////
   // Resource control

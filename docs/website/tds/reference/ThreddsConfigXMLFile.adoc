@@ -29,7 +29,7 @@ TDS global configuration options
 * link:#Server_Description[Server Information]
 * link:#Generated_HTML_Pages[Generated HTML Pages]
 * link:#catalogOutput[Controlling THREDDS catalog output] +
-* link:#catalogRoots[Extra Root Catalogs]
+* link:#catalogRoots[Hidden Root Catalogs]
 * link:#Viewers[Adding a Viewer]
 * link:#DatasetSource[Adding a Dataset Source]
 * link:#LogVersionInfo[Checking for updates]
@@ -166,6 +166,7 @@ it here to enable this feature.
 by default, it will output 4 significant digits, choosing units
 appropriately
 
+[[catalogRoots]]
 === Extra Catalog Roots
 
 ----------------------------------------------------------------
@@ -174,14 +175,13 @@ appropriately
 <catalogRoot>catgen/subdir/enhancedCatalog-1.0.xml</catalogRoot>
 ----------------------------------------------------------------
 
-These elements name your root catalogs that are not referenced from your
-main catalog ( **$\{tomcat_home}/content/thredds/catalog.xml**). On
-startup, the TDS reads the main catalog and any root catalogs you list
+These elements name _catalog roots_ that are not referenced from your
+default catalog root ( **$\{tomcat_home}/content/thredds/catalog.xml**).
+On startup, the TDS reads the default catalog root and any root catalogs you list
 here, plus any catalogs that are referenced by them in a **catalogRef**.
 Data roots and other needed information are found and cached. All the
-catalogs found in this way are called __static catalogs__, and all
-static catalogs must live within the *$\{tomcat_home}/content/thredds*
-directory tree.
+catalogs found in this way are called _static catalogs_, and all
+static catalogs must live within the *$\{tomcat_home}/content/thredds* directory tree.
 
 === Adding Viewers
 

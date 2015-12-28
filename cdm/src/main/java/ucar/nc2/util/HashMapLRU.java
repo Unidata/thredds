@@ -32,16 +32,21 @@
  */
 package ucar.nc2.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * A HashMap that removes the oldest member when it exceeds the maximum number of entries.
- *
+ * LOOK replace with something in guava?
  * @author caron
  * @see java.util.LinkedHashMap
  */
-public class HashMapLRU extends LinkedHashMap {
+public class HashMapLRU<K,V> extends LinkedHashMap<K,V> {
+  static private final Logger logger = LoggerFactory.getLogger(HashMapLRU.class);
+
   private int max_entries = 100;
 
   /**
@@ -57,6 +62,7 @@ public class HashMapLRU extends LinkedHashMap {
 
   @Override
   protected boolean removeEldestEntry(Map.Entry eldest) {
+    if (logger.isDebugEnabled() && size() > max_entries) logger.debug("HashMapLRU ejected entry, max_entries = {}", max_entries);
     return size() > max_entries;
   }
 

@@ -1,7 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = Server-side Catalog Specification
 
 The THREDDS Data Server (TDS) uses specialized catalogs to configure the
@@ -18,24 +17,23 @@ Server-side elements described in this document:
 * link:#catalog[catalog]
 * link:#catalogScan[catalogScan]
 * link:#dataset[dataset]
-* link:#datasetRoot_Element[datasetRoot]
-* link:#datasetScan_Element[datasetScan]
+* link:#datasetRoot[datasetRoot]
+* link:#datasetScan[datasetScan]
 
 Also see:
 
 * link:../reference/DatasetScan.adoc[DatasetScan] reference
-* link:../reference/collections/FeatureCollections.adoc[FeatureCollection]
-reference
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.8.xsd[Catalog
-XML xsd] +
+* link:../reference/collections/FeatureCollections.adoc[FeatureCollection] reference
+* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[Catalog XML Schema] +
 
+[[catalog]]
 == The catalog element
 
 In addition to all of the elements of a client catalog, a server catalog
-may have *datasetRoot* and *catalogScan* elements, and also *dataset*
-elements may be *datasetScan* or a *featureCollection* (because they
-datasets, i.e. in the __dataset substitution group)__.
+may have *datasetRoot* and *catalogScan* elements, and *dataset*
+elements may be *datasetScan* or a *featureCollection* elements. 
 
+[source,xml]
 ---------------------------------------------------------------------------
 <xsd:element name="catalog">
   <xsd:complexType>
@@ -43,7 +41,7 @@ datasets, i.e. in the __dataset substitution group)__.
       <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
-       <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
+      <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
       <xsd:element ref="catalogScan" minOccurs="0" maxOccurs="unbounded"/>
 
     </xsd:sequence>
@@ -51,13 +49,15 @@ datasets, i.e. in the __dataset substitution group)__.
     <xsd:attribute name="base" type="xsd:anyURI"/>
     <xsd:attribute name="name" type="xsd:string" />
     <xsd:attribute name="expires" type="dateType"/>
-    <xsd:attribute name="version" type="xsd:tatoken" default="1.2" />
+    <xsd:attribute name="version" type="xsd:token" default="1.2" />
   </xsd:complexType>
 </xsd:element>
 ---------------------------------------------------------------------------
 
+[[datasetRoot]]
 == The datasetRoot Element
 
+[source,xml]
 -----------------------------------------------------------------------
   <xsd:element name="datasetRoot">
     <xsd:complexType>
@@ -71,10 +71,11 @@ The _datasetRoot_ element associates a portion of the URL path with a
 directory on disk where the data files are stored. It must be contained
 directly in the catalog element. The *datasetRoots* are global to a TDS,
 they only need to be declared once; put them in a catalog that is
-proecessed before they are used, by convention, in the top catalog. +
+processed before they are used, by convention, in the top catalog. +
 
 Example:
 
+[source,xml]
 ---------------------------------------------------------------------------------------------------------------
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="TDS configuration file" >
  <datasetRoot path="dsR1" location="C:/data/mydata/" />
@@ -95,8 +96,10 @@ the longest match, so *dataset3* with URL **dsR1/sub2/dataset3.nc**,
 will be matched to the second datasetRoot, and so refers to the file
 **Q:/smaug/floober/dataset3.nc**.
 
+[[catalogScan]]
 == The catalogScan element
 
+[source,xml]
 ------------------------------------------------------
 <xsd:element name="catalogScan">
   <xsd:complexType>
@@ -113,7 +116,7 @@ A *catalogScan* element indicates a top directory to scan for catalogs
 the directory can be watched, and changes will be detected while the TDS
 is running. CatalogScan must be at the top level of the catalog (not
 nested in a dataset). If using this element, do not name any of your
-catalogs ``catalogScan.xml''.
+catalogs "catalogScan.xml".
 
 * *name:* the name to display in the catalog
 * **path**: the logical URL path
@@ -122,12 +125,13 @@ be a path reletive to *$\{tds.content.root.path}.*
 * **watch**: true or false, if you want to watch for changes in this
 directory and all subdirectories. (NOT IMPLEMENTED)
 
+[[dataset]]
 == The dataset element
 
-The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to
-server side catalogs, along with the
+The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to server side catalogs, along with the
 *link:../reference/RestrictedAccess.adoc[restrictAccess]* attribute:
 
+[source,xml]
 --------------------------------------------------------------------------------
 <xsd:element name="dataset" type="DatasetType" />
 <xsd:complexType name="DatasetType">
@@ -156,14 +160,14 @@ TDS to link:../reference/RestrictedAccess.adoc[restrict access] to this
 dataset. It is always inherited by all contained datasets.
 * The *ncml:netcdf* element is used only on the server, it
 link:../tutorial/NcML.htm[modifies the dataset with NcML]. For
-link:#datasetScan_Element[datasetScan], it modifies all contained
-datasets.
+link:#datasetScan[datasetScan], it modifies all contained datasets.
 
+[[datasetScan]]
 == __The datasetScan__ Element
 
 A _datasetScan_ can be used wherever a dataset element is allowed.
-However, do not put nested datasets inside a datasetScan element.
 
+[source,xml]
 ------------------------------------------------------------------------------------------------------------------
 <xsd:element name="datasetScan" substitutionGroup="dataset">
   <xsd:complexType>
@@ -172,9 +176,9 @@ However, do not put nested datasets inside a datasetScan element.
         <xsd:sequence>
           <xsd:element ref="filter" minOccurs="0" maxOccurs="1"/>
           <xsd:element ref="namer" minOccurs="0" maxOccurs="1"/>
-          <xsd:element ref="sort" minOccurs="0" maxOccurs="1"/>              <!-- deprecated, use filesSort -->
+          <xsd:element ref="sort" minOccurs="0" maxOccurs="1"/>              <!-- use filesSort -->
           <xsd:element name="addLatest" type="addLatestType" minOccurs="0"/>
-          <xsd:element ref="addProxies" minOccurs="0" maxOccurs="1"/>         <!-- deprecated, use addLatest -->
+          <xsd:element ref="addProxies" minOccurs="0" maxOccurs="1"/>         <!-- use addLatest -->
           <xsd:element ref="addTimeCoverage" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
 
@@ -188,13 +192,13 @@ However, do not put nested datasets inside a datasetScan element.
 ------------------------------------------------------------------------------------------------------------------
 
 The _datasetScan_ element generates nested THREDDS catalogs by scanning
-the directory named in the _*location*_ attribute, and creating a
+the directory named in the _location_ attribute, and creating a
 _dataset_ for each file found, and a _catalogRef_ for each subdirectory.
-The _*path*_ attribute is used to create the URL for these files and
-catalogs. The path must be globally unique over all paths for the TDS.
-Do not put leading or trailing slashes on the path. The location must be
-an absolute path. The *_addLatest_* attribute is the simplest possible
-way to add a _latest resolver service_ to a datasetScan. +
+The location must be an absolute path.
+The _path_ attribute is used to create the URL for these files and catalogs.
+The path must be globally unique over all paths for the TDS.
+Do not put leading or trailing slashes on the path.
+The *_addLatest_* attribute adds a _latest resolver service_ to the datasetScan.
 
 A _datasetScan_ element is in the dataset substitutionGroup, so it can
 be used wherever a _link:InvCatalogSpec.adoc#dataset[dataset]_ element
@@ -211,16 +215,9 @@ resulting _dataset_ or _catalogRef_ will be the name of the
 corresponding dataset. Any inherited metadata from the datasetScan will
 be added to all nested datasets. +
 
-The _datasetScan_ specific nested elements
-(link:#filter_Element[filter], link:#namer_Element[namer],
-link:#sort_Element[sort], link:#addLatest_Element[addLatest],
-link:#addProxies_Element[addProxies],
-link:#addDatasetSizeElement[addDatasetSize], and
-link:#addTimeCoverage_Element[addTimeCoverage]) can be used to modify
-the default behavior or add metadata. +
-
 Here is a very simple example:
 
+[source,xml]
 -----------------------------------------------------------------------
 <datasetScan name="GRIB2 Data" path="grib2" location="C:/data/grib2/" >
   <dataFormat>GRIB-2</dataFormat>
@@ -229,6 +226,7 @@ Here is a very simple example:
 
 The client view of the given datasetScan element would look like: +
 
+[source,xml]
 -----------------------------------------------------------------------------------------------
 <catalogRef name="" xlink:href="/thredds/catalog/grib2/catalog.xml" xlink:title="GRIB2 Data" />
 -----------------------------------------------------------------------------------------------
@@ -238,6 +236,7 @@ If the _C:/data/grib2/_ directory contained three files (`data1.wmo`,
 at the URL given in the above xlink:href attribute would look something
 like: +
 
+[source,xml]
 ----------------------------------------------------------------------------------------------------
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="WMO catalogs">
   <service name="myserv" ... />
@@ -253,8 +252,10 @@ like: +
 </catalog>
 ----------------------------------------------------------------------------------------------------
 
+[[filter]]
 == filter Element +
 
+[source,xml]
 -----------------------------------------------------------------------------
 <xsd:element name="filter">
   <xsd:complexType>
@@ -288,6 +289,7 @@ _collection_ attributes. +
 
 Expanding on the above example:
 
+[source,xml]
 -----------------------------------------------------------------------
 <datasetScan name="GRIB2 Data" path="grib2" location="C:/data/grib2/" >
   <dataFormat>GRIB-2</dataFormat>
@@ -299,6 +301,7 @@ Expanding on the above example:
 
 results in: +
 
+[source,xml]
 --------------------------------------------------------------------------------
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0">
   <service name="myserv" ... />
@@ -322,8 +325,10 @@ More examples are available in the
 link:../reference/DatasetScan.adoc#Including_Only_the_Desired_Files[TDS
 datasetsScan documentation]. +
 
+[[namer]]
 == namer Element +
 
+[source,xml]
 -----------------------------------------------------------------
 <xsd:element name="namer">
   <xsd:complexType>
@@ -335,6 +340,7 @@ datasetsScan documentation]. +
 </xsd:element>
 -----------------------------------------------------------------
 
+[source,xml]
 ---------------------------------------------------------
 <xsd:complexType name="NamerSelectorType">
   <xsd:attribute name="regExp" type="xsd:string"/>
@@ -362,14 +368,17 @@ A capturing group is a part of a regular expression enclosed in
 parenthesis. When a regular expression with a capturing group is applied
 to a string, the substring that matches the capturing group is saved for
 later use. The captured strings can then be substituted into another
-string in place of capturing group references,``$n'', where ``n'' is an
+string in place of capturing group references,"$n", where "n" is an
 integer indicating a particular capturing group. (The capturing groups
 are numbered according to the order in which they appear in the match
-string.) For example, the regular expression ``Hi (.*), how are (.*)?''
-when applied to the string ``Hi Fred, how are you?'' would capture the
-strings ``Fred'' and ``you''. Following that with a capturing group
-replacement in the string ``$2 are $1.'' would result in the string
-``you are Fred.''
+string.) For example, the regular expression
+
+   Hi (.*), how are (.*)?
+
+when applied to the string "Hi Fred, how are you?" would capture the
+strings "Fred" and "you". Following that with a capturing group
+replacement in the string "$2 are $1." would result in the string
+"you are Fred."
 
 Here’s an example namer:
 
@@ -382,33 +391,31 @@ Here’s an example namer:
 
 the regular expression has five capturing groups
 
-1.  The first capturing group, ``([0-9]\{4})'',  captures four digits,
-in this case the year. +
-2.  The second capturing group, ``([0-9]\{2})'', captures two digits, in
-this case the month. +
-3.  The third capturing group, ``([0-9]\{2})'', captures two digits, in
-this case the day of the month. +
-4.  The fourth capturing group, ``([0-9]\{2})'', captures two digits, in
-this case the hour of the day.
-5.  The fifth capturing group, ``([0-9]\{2})'', captures two digits, in
-this case the minutes of the hour.
+1.  The first capturing group, "([0-9]\{4})",  captures four digits, in this case the year. +
+2.  The second capturing group, "([0-9]\{2})", captures two digits, in this case the month. +
+3.  The third capturing group, "([0-9]\{2})", captures two digits, in this case the day of the month. +
+4.  The fourth capturing group, "([0-9]\{2})", captures two digits, in this case the hour of the day.
+5.  The fifth capturing group, "([0-9]\{2})", captures two digits, in this case the minutes of the hour.
 
 When applied to the dataset name
-``GFS_Alaska_191km_20051011_0000.grib1'',  the strings ``2005'', ``10'',
-``11'', ``00'', and ``00'' are captured. After replacing the capturing
+"GFS_Alaska_191km_20051011_0000.grib1",  the strings "2005", "10",
+"11", "00", and "00" are captured. After replacing the capturing
 group references in the replaceString attribute value, we get the name
-``NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT''. So, when cataloged,
+"NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT". So, when cataloged,
 this dataset would end up like this (note that only the name is
 affected, not the urlPath or ID) : +
 
+[source,xml]
 -----------------------------------------------------------------------------------
 <dataset name="NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT"
         ID="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"
       urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/>
 -----------------------------------------------------------------------------------
 
+[[sort]]
 == sort Element +
 
+[source,xml]
 ---------------------------------------------------------------
 <xsd:element name="sort">
   <xsd:complexType>
@@ -426,6 +433,7 @@ affected, not the urlPath or ID) : +
 By default, datasets at each collection level are listed in ascending
 order by filename. To do a reverse sort:
 
+[source,xml]
 --------------------------------------------
 <datasetScan>
   <sort>
@@ -434,8 +442,10 @@ order by filename. To do a reverse sort:
 </datasetScan>
 --------------------------------------------
 
+[[addLatest]]
 == addLatest Element +
 
+[source,xml]
 ------------------------------------------------------------------------------
 <xsd:complexType name="addLatestType">
   <xsd:attribute name="name" type="xsd:string"/>
@@ -450,7 +460,7 @@ the scan). The _name_ attribute will set the name of the proxy dataset,
 and the _top_ attribute indicates if the proxy dataset should appear at
 the top or bottom of the list of dataset in this collection. Default
 behavior in the TDS if any these attributes are missing is to name the
-dataset ``latest.xml'', and place the dataset at the top of the
+dataset "latest.xml", and place the dataset at the top of the
 collection. If _lastModifedLimit_ attribute is set, the TDS will exclude
 any dataset that was last modified within the number of minutes
 specified by the _lastModifedLimit_ attribute. +
@@ -459,11 +469,13 @@ An example is available in the
 link:../reference/DatasetScan.adoc#Adding_Proxy_Datasets[TDS
 datasetsScan documentation].
 
+[[addProxies]]
 == addProxies Element
 
 For backwards compatibility, addProxies can still be used, with the same
 functionality as addLatest:
 
+[source,xml]
 ---------------------------------------------------------------
 <!-- legacy -->
 <xsd:element name="addProxies">
@@ -476,8 +488,10 @@ functionality as addLatest:
 </xsd:element>
 ---------------------------------------------------------------
 
+[[addTimeCoverage]]
 == addTimeCoverage Element +
 
+[source,xml]
 ----------------------------------------------------------------------------
   <xsd:element name="addTimeCoverage">
     <xsd:complexType>
@@ -511,6 +525,7 @@ they are both given the datasetNameMatchPattern will be used. +
 
 Example: +
 
+[source,xml]
 ---------------------------------------------------------------------------------------------------
   <datasetScan name="My Data" path="myData" location="c:/my/data/">
     <serviceName>myserver</serviceName>
@@ -520,9 +535,10 @@ Example: +
   </datasetScan>
 ---------------------------------------------------------------------------------------------------
 
-for the dataset named ``2005071812_gfs_211.nc'', results in the
+for the dataset named "2005071812_gfs_211.nc", results in the
 following timeCoverage element: +
 
+[source,xml]
 --------------------------------------
   <timeCoverage>
     <start>2005-07-18T12:00:00</start>
@@ -530,16 +546,15 @@ following timeCoverage element: +
   </timeCoverage>
 --------------------------------------
 
+[[Index]]
 == Index +
 
-* link:#addLatest_Element[addLatest]: an element
-* link:#addProxies_Element[addProxies]: an element +
-* link:#addTimeCoverage_Element[addTimeCoverage]: an element +
-* link:#datasetScan_Element[datasetScan]: an element which creates
-nested catalogs by scanning directories.
-* link:#datasetRoot_Element[datasetRoot]: an element which associates a
-local disk directory with a URL path +
-* link:#filter_Element[filter]: an element
-* link:#namer_Element[namer]: an element +
-* link:#sort_Element[sort]: an element
+* link:#addLatest[addLatest]
+* link:#addProxies[addProxies]
+* link:#addTimeCoverage[addTimeCoverage]
+* link:#datasetScan[datasetScan]: creates nested catalogs by scanning directories.
+* link:#datasetRoot[datasetRoot]: associates a local disk directory with a URL path +
+* link:#filter[filter]
+* link:#namer[namer]
+* link:#sort[sort]
 

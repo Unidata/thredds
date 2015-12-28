@@ -3,85 +3,83 @@
 
 = THREDDS Client Catalog Specification
 
-A THREDDS catalog is a way to describe an inventory of available
-datasets. These catalogs provide a simple hierarchical structure for
-organizing a collection of datasets, an access method for each dataset,
-a human understandable name for each dataset, and a structure on which
-further descriptive information can be placed.
+== Overview
 
-This document specifies the semantics of a THREDDS catalog, as well as
-its representation as an XML document.
-its representation as an XML document.
+A THREDDS catalog is a way to describe an inventory of available datasets.
+These catalogs provide a simple hierarchical structure for organizing a collection of datasets, an access method for each dataset,
+a human understandable name for each dataset, and a structure on which further descriptive information can be placed.
 
-== Contents:
+This document specifies the semantics of a THREDDS catalog, as well as its representation as an XML document.
+It is written to help clients read and understand THREDDS catalogs recieved from a server.
 
-link:#baseElements[Base Catalog Elements]
+=== Contents
 
-* link:#catalog[catalog]
-* link:#service[service]
-* link:#dataset[dataset]
-* link:#access[access]
-* link:#catalogRef[catalogRef]
-* link:#XLink[XLink]
+* link:#baseElements[*Base Catalog Elements*:]
+** link:#catalog[catalog]
+** link:#service[service]
+** link:#dataset[dataset]
+** link:#access[access]
+** link:#catalogRef[catalogRef]
+** link:#XLink[XLink]
 
-link:#dlElements[Digital Library Metadata Elements]
+* link:#dlElements[*Digital Library Metadata Elements*:]
+** link:#threddsMetadataGroup[threddsMetadataGroup]
+** link:#documentation[documentation]
+** link:#metadataElement[metadata]
+** link:#property[property]
+** link:#sourceType[sourceType]
+** link:#contributor[contributor]
+** link:#geospatialCoverage[geospatialCoverage]
+** link:#timeCoverage[timeCoverage]
+** link:#dateType[dateType]
+** link:#dateTypeFormatted[dateTypeFormatted]
+** link:#durationType[duration]
+** link:#dataSize[dataSize]
+** link:#controlledVocabulary[controlledVocabulary]
+** link:#variablesType[variables]
 
-* link:#threddsMetadataGroup[threddsMetadataGroup]
-* link:#documentation[documentation]
-* link:#metadataElement[metadata]
-* link:#property[property]
-* link:#sourceType[sourceType]
-* link:#contributor[contributor]
-* link:#geospatialCoverage[geospatialCoverage]
-* link:#timeCoverage[timeCoverage]
-* link:#dateType[dateType]
-* link:#dateTypeFormatted[dateTypeFormatted]
-* link:#durationType[duration]
-* link:#dataSize[dataSize]
-* link:#controlledVocabulary[controlledVocabulary]
-* link:#variablesType[variables]
+* link:#Enumerations[Enumerations]
 
-link:#Enumerations[Enumerations]
+* link:#Dataset_Access_Methods[Dataset Access Methods]
 
-link:#Dataset_Access_Methods[Dataset Access Methods]
+* link:#constructingURLs[Constructing URLs]
 
-link:#constructingURLs[Constructing URLs]
+* link:#datasetClassification[Dataset Classification]
 
-link:#datasetClassification[Dataset Classification]
+* link:#webResources[Datasets as Web Resources]
 
-link:#webResources[Datasets as Web Resources]
+* link:#index[Index]
 
-link:#index[Index]
+=== Related resources:
 
-link:#changes[Change History]
+* Catalog link:../tutorial/CatalogPrimer.adoc[Primer]
 
-== Related resources:
+* Catalog link:Example1.0rc8.xml[Example]
 
-Catalog Tutorial link:../tutorial/CatalogPrimer.adoc[Primer]
+* Catalog XML Schema:
 
-link:Example1.0rc8.xml[Example] 1.0 Catalog
+** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[Version 1.2]
+** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[Version 1.0.7]
+** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd[Version 1.0.6]
+** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd[Version 1.0.5]
+** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.4.xsd[Version 1.0.4]
+** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.3.xsd[Version 1.0.3]
+** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd[Version 1.0.2]
+** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd[Version 1.0.1]
+** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd[Version 1.0]
 
-InvCatalog XML Schema:
+* link:../reference/DigitalLibraries.adoc[Writing metadata for Digital Libraries]
 
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[Version 1.0.7]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd[Version 1.0.6]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd[Version 1.0.5]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.4.xsd[Version 1.0.4]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.3.xsd[Version 1.0.3]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd[Version 1.0.2]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd[Version 1.0.1]
-* http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd[Version 1.0]
+* Java API to read catalogs in the http://www.unidata.ucar.edu/software/netcdf-java/[netCDF-Java library].
 
-link:../reference/DigitalLibraries.adoc[Writing metadata for Digital Libraries]
+* link:Changes.adoc[Changes] since version 1.0.1.
 
-Java API to read catalogs in the http://www.unidata.ucar.edu/software/netcdf-java/[netCDF-Java library].
+* link:InvCatalogServerSpec.adoc[Server-side catalog specification]
 
-link:Changes.adoc[Changes] since version 1.0.1.
-
-link:InvCatalogServerSpec.adoc[Server-side catalog specification]
-
+[[baseElements]]
 == Base Catalog Elements
 
+[[catalog]]
 === _catalog_ element
 
 [source,xml]
@@ -97,24 +95,19 @@ link:InvCatalogServerSpec.adoc[Server-side catalog specification]
     <xsd:attribute name="base" type="xsd:anyURI"/>
     <xsd:attribute name="name" type="xsd:string" />
     <xsd:attribute name="expires" type="dateType"/>
-    <xsd:attribute name="version" type="xsd:token" default="1.0.7" />
+    <xsd:attribute name="version" type="xsd:token" default="1.2" />
   </xsd:complexType>
 </xsd:element>
 ----
 
 The _catalog_ element is the top-level element. It may contain zero or
-more _link:#service[service]_ elements, followed by zero or more
-_link:InvCatalogServerSpec.adoc#datasetRoot_Element[datasetRoot]_
-elements, followed by zero or more _link:#property[property]_ elements,
+more _link:#service[service]_ elements, followed by zero or more _link:#property[property]_ elements,
 followed by one or more _link:#dataset[dataset]_ elements. The _base_ is
 used to resolve any reletive URLs in the catalog such as catalogRefs,
 services, etc. It is usually the URL of the catalog document itself.
-Optionally the catalog may have a display __name__. The _expires_
-element tells clients when this catalog should be reread, so they can
-cache the catalog information. The value of the _version_ attribute
-indicates the version of the InvCatalog specification to which the
-catalog conforms. The _version_ attribute is optional, but should be
-used to document which version of the schema was used.
+Optionally the catalog may have a display __name__. The optionl _expires_
+attribute indeicates when this catalog should be reread. If not present, assume you must reread each time.
+The value of the _version_ attribute indicates the version of the InvCatalog specification to which the catalog conforms.
 
 Example of simplest useful catalog. Note the necessary presence of the
 http://en.wikipedia.org/wiki/XML_namespace[xml namespace] attribute
@@ -131,6 +124,7 @@ on the catalog element.
  </catalog>
 ----
 
+[[service]]
 === _service_ element
 
 [source,xml]
@@ -162,21 +156,15 @@ refer to a specific service element. The mandatory _base_ attribute and
 the optional _suffix_ attribute are both used in the construction of the
 dataset URL (see link:#constructingURLs[constructing URLS]). The _base_
 may be an absolute URL or it may be relative to the catalog’s base URL.
-The _service_ element must have a _serviceType_ attribute whose value is
-one of the _link:#serviceTypes[serviceType]_ values. The optional _desc_
-attribute allows you to give a human-readable description of the
-service. +
+The _service_ element has a _serviceType_ attribute whose value is
+typically one of the _link:#serviceTypes[serviceType]_ values.
+The optional _desc_ attribute allows you to give a human-readable description of the service.
 
 A _service_ element may contain 0 or more _link:#property[property]_
-elements to allow for the encoding of additional information. One
-possible use is to encode additional information necessary for clients
-to be able to access datasets through this service.Though the intent is
-that the _serviceType_ (and possibly the _dataFormat_ attribute for bulk
-transport methods) should be sufficient to allow clients to access
-datasets.
+elements to allow for the encoding of additional, service-specific information.
 
 Only _service_ element with _serviceType="Compound"_ may have nested
-service elements. Use Compound services when you systematically offer
+service elements. Compound services are used when there is
 more than one way to access a dataset (e.g.__DODS__ and __FTP__), *and*
 the access URLs are the same except for the service base. Nested
 _service_ elements may also be used directly by _dataset_ or _access_
@@ -190,14 +178,14 @@ Example:
 ----
 
 Example with service base URL relative to catalog URL (see
-link:#constructingURLs[constructing URLS] for how the resolved URL is
-created):
+link:#constructingURLs[constructing URLS] for how the resolved URL is created):
 
 [source,xml]
 ----
- <service name="this" serviceType="DODS" base="dods/" />
+ <service name="this" serviceType="OPENDAP" base="/thredds/dodsC/" />
 ----
 
+[[dataset]]
 === __dataset__ element
 
 [source,xml]
@@ -314,6 +302,7 @@ logically replaces the alias dataset.
 </dataset>
 ----
 
+[[access]]
 === __access__ element
 
 [source,xml]
@@ -356,6 +345,7 @@ Example:
 The common case is that the access element is __implicit__, based on the
 dataset’s _serviceName_ and __urlPath__.
 
+[[catalogRef]]
 === _catalogRef_ element
 
 [source,xml]
@@ -404,7 +394,8 @@ Example:
 <catalogRef xlink:title="NCEP Model Data" xlink:href="http://yerserv/uniModels.xml"/>
 ----
 
-=== __XLink__ attributeGroup
+[[XLink]]
+=== _XLink_ attributeGroup
 
 [source,xml]
 ----
@@ -432,11 +423,13 @@ Example:
 <documentation xlink:href="http://cloud1.arc.nasa.gov/solve/" xlink:title="SOLVE home page"/>
 ----
 
+[[dlElements]]
 == THREDDS Metadata Elements
 
 These are catalog elements that are used in Digital Libraries entries,
 discovery centers, and for annotation and documentation of datasets.
 
+[[threddsMetadataGroup]]
 === _threddsMetadataGroup_ Model Group
 
 [source,xml]
@@ -559,6 +552,7 @@ Examples:
 <project vocabulary="DIF">NASA Earth Science Project Office, Ames Research Center</project>
 ----
 
+[[documentation]]
 === __documentation__ Type
 
 [source,xml]
@@ -596,6 +590,7 @@ Examples:
 <documentation>Used in doubled CO2 scenario</documentation>
 ----
 
+[[metadata]]
 === __metadata__ element
 
 [source,xml]
@@ -740,6 +735,7 @@ namespace:
 </cat:metadata>
 ----
 
+[[property]]
 === _property_ element
 
 [source,xml]
@@ -764,6 +760,7 @@ Example:
 <property name="Conventions" value="WRF" />
 ----
 
+[[source]]
 === __source__ Type
 
 [source,xml]
@@ -799,6 +796,7 @@ Example:
 </publisher>
 ----
 
+[[contributor]]
 === __contributor__ Element
 
 [source,xml]
@@ -826,6 +824,7 @@ Example:
 <contributor role="PI">Jane Doe</contributor>
 ----
 
+[[geospatialCoverage]]
 === __geospatialCoverage__ Element
 
 [source,xml]
@@ -907,6 +906,7 @@ Example:
   </geospatialCoverage>
 ----
 
+[[timeCoverage]]
 === __timeCoverage__ Type
 
 [source,xml]
@@ -951,6 +951,7 @@ Example:
 </timeCoverage>
 ----
 
+[[date]]
 === __date__ Type
 
 [source,xml]
@@ -1000,6 +1001,7 @@ Examples:
 <start>present</start>
 ----
 
+[[dateTypeFormatted]]
 === __dateTypeFormatted__ Type
 
 [source,xml]
@@ -1037,6 +1039,7 @@ _Example_Format_String___________Example_Text___________________
 "yyMMddHHmmssZ"                 010704120856-0700
 ----
 
+[[duration]]
 === __duration__ Type
 
 [source,xml]
@@ -1081,6 +1084,7 @@ Example:
 <duration>5 days</duration>
 ----
 
+[[dataSize]]
 === __dataSize__ Element
 
 [source,xml]
@@ -1106,6 +1110,7 @@ Example:
 <dataSize units="Kbytes">123</dataSize>
 ----
 
+[[controlledVocabulary]]
 === _controlledVocabulary_ Type
 
 [source,xml]
@@ -1130,6 +1135,7 @@ Example:
  <name vocabulary="DIF">UCAR/NCAR/CDP</name>
 ----
 
+[[variablesType]]
 === __variables__ Element
 
 [source,xml]
@@ -1198,7 +1204,7 @@ Examples:
 </variables>
 ----
 
-A _varibleMap_ should point to an XML document with a top-level
+A _variableMap_ should point to an XML document with a top-level
 _variables_ element with the THREDDS namespace declared:
 
 [source,xml]
@@ -1212,6 +1218,7 @@ _variables_ element with the THREDDS namespace declared:
 </variables>
 ----
 
+[[Enumerations]]
 == Other Enumerations
 
 The remaining definitions are all enumerations of "well-known" values.
@@ -1222,27 +1229,7 @@ if possible, and to submit new values to the
 mailto:thredds@unidata.ucar.edu[THREDDS mailgroup] for inclusion in
 future versions of this schema.
 
-=== collection types
-
-[source,xml]
-----
-<xsd:simpleType name="collectionTypes">
-  <xsd:union memberTypes="xsd:token">
-    <xsd:simpleType>
-      <xsd:restriction base="xsd:token">
-        <xsd:enumeration value="TimeSeries"/>
-        <xsd:enumeration value="Stations"/>
-        <xsd:enumeration value="ForecastModelRuns"/>
-      </xsd:restriction>
-    </xsd:simpleType>
-  </xsd:union>
-</xsd:simpleType>
-----
-
-These are the types of link:#coherentDataset[coherent dataset]
-collections, used in a dataset element. This will be elaborated in
-future versions.
-
+[[dataFormat]]
 === dataFormat types
 
 [source,xml]
@@ -1262,8 +1249,8 @@ future versions.
         <xsd:enumeration value="HDF5"/>
         <xsd:enumeration value="McIDAS-AREA"/>
         <xsd:enumeration value="NcML"/>
-          <xsd:enumeration value="NetCDF"/>
-         <xsd:enumeration value="NetCDF-4"/>
+        <xsd:enumeration value="NetCDF"/>
+        <xsd:enumeration value="NetCDF-4"/>
         <xsd:enumeration value="NEXRAD2"/>
         <xsd:enumeration value="NIDS"/>
 
@@ -1318,6 +1305,7 @@ Examples:
 <dataFormat>video/quicktime</dataFormat>
 ----
 
+[[dateType]]
 === dataType types
 
 [source,xml]
@@ -1344,6 +1332,7 @@ the link:../../netcdf-java/reference/FeatureDatasets/Overview.adoc[Feature
 Types] of the datasets, which are used by clients to know how to display
 the data.
 
+[[dateEnumTypes]]
 === date types
 
 [source,xml]
@@ -1374,6 +1363,7 @@ characters or tabs (they must be of the
 http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#token[xsd:token]
 data type).
 
+[[documentationEnumTypes]]
 === documentation types
 
 [source,xml]
@@ -1402,6 +1392,7 @@ characters or tabs (they must be of the
 http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#token[xsd:token]
 data type).
 
+[[metadataType]]
 === metadata types
 
 [source,xml]
@@ -1435,6 +1426,7 @@ characters or tabs (they must be of the
 http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#token[xsd:token]
 data type).
 
+[[serviceTypes]]
 === serviceTypes Type
 
 [source,xml]
@@ -1536,6 +1528,7 @@ and *Resolver* types return XML documents over HTTP. These are generally
 handled internally by THREDDS. A
 link:#compoundService[Compound Service] just indicates that the service is composed of other services.
 
+[[variableNameVocabulary]]
 === variableNameVocabulary types
 
 [source,xml]
@@ -1570,46 +1563,27 @@ file format defines a set of standard parameters.
 You can also use another vocabulary name; send it to us and we will add
 it to this list.
 
+[[Dataset_Access_Methods]]
 == Dataset Access Methods
 
 There are two ways a dataset’s access methods can be specified:
 
-1.  A _dataset_ element may include a _urlPath_ attribute. The value of
-the _urlPath_ attribute along with the _dataset_ element’s default
-service (see link:#Precedence_for_a_Datasets_Default[below]) specify one
-or more [link:#note_compoundService[*]] access methods.
-2.  A _dataset_ element may include child _access_ elements.
-Each _access_ element defines one or more link:#Access_Methods_and_Compound_Services_[access] methods(*).
+1.  A _dataset_ element may include a *_urlPath_* attribute.
+The value of the _urlPath_ attribute along with the dataset *_default service_* specify one or more access methods.
+2.  A _dataset_ element may include child *_access elements_*.
+Each _access_ element defines one or more access methods.
 The values of the _access_ element’s _urlPath_ and _serviceName_ attributes specify one or more access methods.
-If the _access_ element does not include a _serviceName_ attribute, the _dataset_ element’s default service
-(see link:#Precedence_for_a_Datasets_Default[below]) is used instead.
+If the _access_ element does not include a _serviceName_ attribute, the _dataset_ default service is used.
 
-(*) Multiple access methods are defined whenever the service element
-that is referenced is a compound service. More on this in the
-"link:#Access_Methods_and_Compound_Services_[Access Methods and Compound
-Services]" section below. +
+(*) Multiple access methods are defined whenever the service element is a compound service. More on this in the
+link:#compound[Access Methods and Compound Services] section below. +
 
-How a dataset access URL is constructed from the _service_ element and
-_urlPath_ attribute is discussed in the following section,
-"link:#constructingURLs[Constructing Dataset Access URLs]".
+=== Dataset Default Service
 
-=== Precedence for a Dataset’s Default Service
+A dataset may have a *_serviceName attribute_* or *_serviceName element_* directly in it.
+If not, then it may *_inherit_* a serviceName from a parent dataset.
 
-There are a number of ways a _service_ element can be referenced by a
-__dataset__. When multiple references come into play for a given
-dataset, the following is the precedence for deciding on the default
-service to use with access methods:
-
-1.  A child _serviceName_ element (XPath: _./serviceName_).
-2.  A child _serviceName_ element of a child _metadata_ element (XPath: _./metadata/serviceName_)
-3.  A dataset element’s serviceName attribute (XPath: _@serviceName_)
-4.  The _serviceName_ element in an inherited _metadata_ element of the
-closest ancestor _dataset_ (XPath: the first item in the set given by
-_ancestor::dataset/metadata[@inherited=true]/serviceName_)
-
-The _service_ with the highest precedence is the default service for that _dataset_ element.
-
-=== Examples
+==== Examples
 
 1. A _dataset_ element has a _urlPath_ attribute and inherits a
 _serviceName_ element from a parent/ancestor dataset. This is probably
@@ -1629,13 +1603,15 @@ refer to one service.
 </dataset>
 ----
 
-2. A _dataset_ element has a _urlPath_ attribute and directly contains a _serviceName_ element.
+2. A _dataset_ element has a _urlPath_ attribute and directly contains a _serviceName_ element or attribute.
 +
 [source,xml]
 ----
 <dataset name="my dataset" urlPath="myData.nc">
   <serviceName>myservice</serviceName>
 </dataset>
+
+<dataset name="my dataset" urlPath="myData.nc" serviceName="myservice">
 ----
 
 3. A _dataset_ element contains a child _access_ element. Example:
@@ -1646,28 +1622,13 @@ refer to one service.
   <access serviceName="myservice" urlPath="myData.nc" />
 </dataset>
 ----
-+
-There are several ways for a dataset to have more than one access
-method:
 
-4. An access method can reference a link:#compoundService[compound service]. More on access methods and compound service
-link:#Access_Methods_and_Compound_Services_[below].
 
-5. A dataset can contain multiple access elements. Example:
-+
-[source,xml]
-----
-<dataset name="my dataset">
-  <access serviceName="myservice" urlPath="myData.nc" />
-  <access serviceName="ftpservice" urlPath="mine/myData.nc" />
-</dataset>
-----
-
+[[compound]]
 === Access Methods and Compound Services
 
-Any link:#compoundService[compound service] (i.e., any _service_ element
-of type Compound) used in the construction of access methods results
-in one access method for each non-Compound, nested service.
+Any  _service_ element of type Compound used in the construction of access methods results
+in one access method for each nested service.
 
 For example:
 
@@ -1686,6 +1647,7 @@ results in two access methods for "cool data"; one using the "odap"
 _service_ element and the other using the "wcs" _service_ element,
 both using the _urlPath_ attribute value "cool/data.nc"
 
+[[constructingURLs]]
 == Constructing URLs
 
 A dataset access URL is constructed by concatenating the service base
@@ -1707,29 +1669,29 @@ server.
 When a service base is a
 http://www.webreference.com/html/tutorial2/3.html[relative URL], it is
 resolved against the catalog base URL. For example if the catalog base
-URL is __http://thredds.ucar.edu/thredds/dodsC/catalog.xml__, and a
-service base is __airtemp/__, then the resolved base is
-__http://thredds.ucar.edu/thredds/dodsC/airtemp/__. Note that if the
-service base is __/airtemp/__, the resolved URL is
-__http://thredds.ucar.edu/thredds/airtemp/__. The *java.net.URI* class
-in JDK 1.4+ will resolve relative URLs.
+URL is _\http://thredds.ucar.edu/thredds/dodsC/catalog.xml_, and a
+service base is _airtemp/_, then the resolved base is
+_\http://thredds.ucar.edu/thredds/dodsC/airtemp/_. Note that if the
+service base is _/airtemp/_, the resolved URL is
+_\http://thredds.ucar.edu/thredds/airtemp/_.
 
+[[datasetClassification]]
 == Dataset Classification
 
 THREDDS *_Dataset Inventory Catalogs_* organize and describe collections
 of data. A catalog can be thought of as a logical directory of data
 resources available via the Internet. A dataset may be a *_direct
 dataset_* (describes how to directly access data over the Internet), a
-*_collection dataset_* (contains other datasets) or a _*dynamic
-dataset*_ (content is generated by a call to a server).
+*_collection dataset_* (contains other datasets) or a *_dynamic
+dataset_* (content is generated by a call to a server).
 
-A _*direct dataset*_ has an access URL and a _*service type*_ like
-__FTP__, __DODS__, __ADDE__, etc. that allows a THREDDS-enabled
+[[directDataset]]
+A *_direct access dataset_* has an access URL and a *_service type_* (like
+__FTP__, __DODS__, _WMS_, etc.) that allows a THREDDS-enabled
 application to directly access its data, using the specified service’s
 protocol. It is represented simply by a *<dataset>* element.
 
-A _*collection dataset*_ is represented by a *<dataset>* with nested
-*<dataset>* elements. We distinguish two types:
+A *_collection dataset_* has nested *<dataset>* elements. We distinguish two types:
 
 * A *_heterogeneous collection dataset_* may have arbitrarily-deep
 nested datasets, and there are no constraints on how the datasets are
@@ -1737,16 +1699,10 @@ related.
 * A *_coherent collection dataset_* contains nested datasets which must
 be direct and coherently related. A coherent dataset should have a
 _collectionType_ attribute that describes the relationship of its nested
-datasets. Possible types are __TimeSeries__, __Stations__, etc. (OpenDAP
-calls this a collection of _inventory level_ datasets).
+datasets.
 
-Both direct datasets and coherent collections are datasets that an
-application might want to act on, e.g. visualize, so we’ll call them
-_*application datasets.*_
-
-A _*dynamic dataset*_ has an access URL and a service type __Catalog,
-Resolver__, or __QueryCapability__. Its contents are typically generated
-dynamically by making a call to a server, and describe datasets that are
+A *_dynamic dataset_* has an access URL and a service type _Catalog_, or _Resolver_.
+Its contents are generated dynamically by making a call to a server, and describe datasets that are
 constantly changing, and/or are too large to list exhaustively.
 
 * A *_query dataset_* is a dynamic dataset with service type
@@ -1759,17 +1715,12 @@ dataset, or a coherent collection dataset. It is typically used to
 implement a _*virtual*_ dataset like "latest model run" or "latest
 measurement" on a real time dataset, where the actual URL must be
 generated when the user requests it.
-* A _*DQC dataset*_ is a collection of query datasets. It has service
-type __QueryCapability__, and its URL points to an XML document called a
-Dataset Query Capability (DQC) document. That document describes in a
-compact way the set of possible queries to a server, or equivalently the
-set of query datasets contained in the DQC dataset.
 
 A query dataset looks a lot like a link:#catalogRef[catalogRef], since
 you dereference a URL and get a catalog back. However, a catalogRef is
-cacheable, but a query dataset is inherently dynamic, so is not
-cacheable.
+cacheable, but a query dataset is inherently dynamic, so is not cacheable.
 
+[[webResources]]
 == Datasets as Web Resources
 
 Its important to distinguish a THREDDS dataset from its access URL. A
@@ -1780,39 +1731,31 @@ the data pointed to by its access URL. In order to use the full power of
 THREDDS, you must work with the full dataset object, not just with its
 access URL.
 
-A THREDDS dataset is an abstract object, containing various properties
-and other objects, as described in this document, along with their
-semantics. One implementation of THREDDS datasets can be found in the
-link:../../netcdf-java[netCDF-Java library]. This document also
-describes one representation of THREDDS datasets using XML, and the
-catalog library does serialization between its dataset objects and their
-XML encoding.
-
-In order to make a dataset into a Web resource, it needs to have a URL
-which refers to it, different than its access URL(s). One way to do this
-is to use XPath to reference the dataset XML element inside the catalog.
-However, because of inheritence and other complexities, its not trivial
-to extract its complete XML representation seperated from the other
-datasets in a catalog. The THREDDS dataset subsetting service allows you
-to obtain a catalog that contains just a selected dataset (and nested
-objects), semantically equivilent to the original dataset. It currently
-requires that the selected dataset have an ID, but it can be generalized
-to handle any XPath expression. The syntax of that service is:
-
-----
-  http://<host>/thredds/catalogServices?cmd=subset&catalog=<catalog>&dataset=<ID>
-----
-
+One way to reference the dataset as a web resource is to use *_catalog.xml#datasetId_*,
+where _catalogURL_ is the URL of a THREDDS catalog, and _datasetId_ is the ID of a dataset inside of that catalog.
 Example:
 
 ----
- http://thredds.ucar.edu/thredds/catalogServices?cmd=subset&catalog=http://thredds.ucar.edu/thredds/idv/rt-models.1.0.xml&dataset=idd.model.nam_211
+http://server:8080/thredds/catalog/grib.v5/gfs_2p5deg/catalog.xml#grib.v5/gfs_2p5deg/TwoD
 ----
 
+The reference implementation of THREDDS datasets is the link:../../netcdf-java[netCDF-Java library],
+which accepts dataset URLS of the form *_thredds:catalog.xml#dataset_id_*,
+where the _thredds:_ prefix ensures that the URL is understood as a THREDDS catalog and dataset.
+
+In the context of a web browser, the dataset URL is *_catalog.html?dataset=datasetId_*, for example
+
+----
+http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.html?dataset=GFS_CONUS_80km/Best
+----
+
+This URL, when sent to a THREDDS Data Server, shows the metadata for the dataset with ID _GFS_CONUS_80km/Best_
+in the catalog _\http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.html_.
+
+
+[[Index]]
 == Index
 
-* link:#alias[alias] : an attribute of dataset; allows you to put the
-dataset in multiple places in the catalog heirarchy.
 * link:#access[access] element; defines a specific service and URL to
 access a dataset.
 * link:#authority[authority] : an element of a dataset; can also be

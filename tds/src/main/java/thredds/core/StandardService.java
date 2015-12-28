@@ -44,6 +44,7 @@ public enum StandardService {
   catalogRemote(ServiceType.Catalog, "/catalog/"),
   cdmRemote(ServiceType.CdmRemote, "/cdmremote/"),
   cdmrFeatureGrid(ServiceType.CdmrFeature, "/cdmrfeature/grid/"),
+  cdmrFeaturePoint(ServiceType.CdmrFeature, "/cdmrfeature/point/"),
   dap4(ServiceType.DAP4, "/dap4/"),
   httpServer(ServiceType.HTTPServer, "/fileServer/"),
   resolver(ServiceType.Resolver, ""),

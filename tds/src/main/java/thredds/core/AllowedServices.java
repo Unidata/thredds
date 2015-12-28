@@ -204,6 +204,10 @@ public class AllowedServices {
   ///////////////////////////////////////////////////////
   // manage global services - in the top catalog
 
+  public void clearGlobalServices() {
+    globalServices = new HashMap<>();
+  }
+
   public void addGlobalServices(List<Service> services) {
     for (Service s : services) {
       Service got = globalServices.get(s.getName());
@@ -211,6 +215,7 @@ public class AllowedServices {
         logCatalogInit.error("Already have a global service {} trying to add {}", got, s);
       } else {
         globalServices.put(s.getName(), s);
+        logCatalogInit.info("Added global service {}", s);
       }
     }
   }

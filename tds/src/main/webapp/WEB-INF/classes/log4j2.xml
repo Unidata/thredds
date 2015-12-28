@@ -7,7 +7,7 @@
 
   <Appenders>
 
-    <File name="serverStartupAppender" fileName="${tds.log.dir}/serverStartup.log" append="false">
+    <File name="serverStartup" fileName="${tds.log.dir}/serverStartup.log" append="false">
       <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p %c: %m%n"/>
     </File>
 
@@ -67,8 +67,12 @@
 
   <loggers>
 
+    <logger name="org.thymeleaf" level="serverStartupinfo" additivity="false">
+      <appender-ref ref="serverStartup"/>
+    </logger>
+
     <logger name="serverStartup" level="info" additivity="false">
-      <appender-ref ref="serverStartupAppender"/>
+      <appender-ref ref="serverStartup"/>
     </logger>
 
     <logger name="thredds.core.ConfigCatalogInitialization" level="debug" additivity="false">
@@ -189,15 +193,15 @@
     </logger>
 
     <logger name="org.springframework.beans.factory" level="info" additivity="false">
-      <appender-ref ref="serverStartupAppender"/>
+      <appender-ref ref="serverStartup"/>
     </logger>
 
     <logger name="org.springframework.web" level="info" additivity="false">
-      <appender-ref ref="serverStartupAppender"/>
+      <appender-ref ref="serverStartup"/>
     </logger>
 
     <logger name="org.springframework" level="info" additivity="false">
-      <appender-ref ref="serverStartupAppender"/>
+      <appender-ref ref="serverStartup"/>
     </logger>
 
     <!-- =========================================== -->

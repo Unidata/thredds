@@ -159,7 +159,7 @@ public class GdsHorizCoordSys {
     if (this.gaussLats != null) throw new RuntimeException("Cant modify GdsHorizCoordSys");
 
     int nlats = (2 * nparellels);
-    GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
+    GaussianLatitudes gaussLats = GaussianLatitudes.factory(nlats);
 
     int bestStartIndex = 0, bestEndIndex = 0;
     double bestStartDiff = Double.MAX_VALUE;
@@ -179,7 +179,7 @@ public class GdsHorizCoordSys {
     if (Math.abs(bestEndIndex - bestStartIndex + 1) != nyRaw) {
       //log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
       nlats = nyRaw;
-      gaussLats = new GaussianLatitudes(nlats);
+      gaussLats = GaussianLatitudes.factory(nlats);
       bestStartIndex = 0;
       bestEndIndex = nyRaw - 1;
     }
