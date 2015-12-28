@@ -33,11 +33,10 @@
 
 package ucar.nc2.util;
 
-import com.google.common.primitives.Floats;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -121,6 +120,15 @@ public class Misc
         return diff <= largest * maxRelDiff;
     }
 
+    public static boolean closeEnough(BigDecimal v1, BigDecimal v2, double maxRelDiff)
+    {
+        BigDecimal diff = v1.subtract(v2).abs();
+        BigDecimal largest = v1.abs().max(v2);
+        BigDecimal maxDiff = largest.multiply(BigDecimal.valueOf(maxRelDiff));
+        int comp = diff.compareTo(maxDiff);
+        return comp <= 0;
+    }
+
     /**
      * Check if numbers are equal with default tolerance
      *
@@ -129,6 +137,18 @@ public class Misc
      * @return true if within tolerance
      */
     public static boolean closeEnough(float v1, float v2)
+    {
+        return closeEnough(v1, v2, maxReletiveError);
+    }
+
+    /**
+     * Check if numbers are equal with default tolerance
+     *
+     * @param v1 first floating point number
+     * @param v2 second floating point number
+     * @return true if within tolerance
+     */
+    public static boolean closeEnough(BigDecimal v1, BigDecimal v2)
     {
         return closeEnough(v1, v2, maxReletiveError);
     }
@@ -149,6 +169,11 @@ public class Misc
     public static boolean closeEnoughAbs(float v1, float v2, float maxAbsDiff)
     {
         return Math.abs(v1 - v2) <= Math.abs(maxAbsDiff);
+    }
+
+    public static boolean closeEnoughAbs(BigDecimal v1, BigDecimal v2, BigDecimal maxAbsDiff)
+    {
+        return v1.subtract(v2).abs().compareTo(maxAbsDiff.abs()) <= 0;
     }
 
     static public String showInts(int[] inta)
