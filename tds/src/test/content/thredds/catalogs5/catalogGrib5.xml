@@ -45,6 +45,13 @@
     <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
   </featureCollection>
 
+  <featureCollection featureType="GRIB2" name="GFS_GLOBAL_2p5.v5" path="gribCollection.v5/GFS_GLOBAL_2p5">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+    <collection spec="${cdmUnitTest}/gribCollections/gfs_2p5deg/.*grib2$" timePartition="file"/>
+  </featureCollection>
+
   <dataset name="Test Single Grib File" ID="testCdmrGrib" serviceName="all" urlPath="rdavmWork/yt.oper.an.sfc.regn400sc.10v_166.200805" dataType="Grid"/>
 
 </catalog>
