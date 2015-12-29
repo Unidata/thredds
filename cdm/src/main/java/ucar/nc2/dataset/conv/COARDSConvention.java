@@ -32,12 +32,16 @@
  */
 package ucar.nc2.dataset.conv;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.util.CancelTask;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -74,6 +78,38 @@ public class COARDSConvention extends CoordSysBuilder {
     this.conventionName = "COARDS";
   }
 
+  protected boolean checkTimeVarForCalendar (Variable var) {
+    boolean hasChanged = false;
+    String unit = var.getUnitsString();
+    if (unit != null) {
+      unit = unit.trim();
+      if (SimpleUnit.isDateUnit(unit)) {
+        Attribute calAttr = var.findAttributeIgnoreCase(CF.CALENDAR);
+        if (calAttr == null) {
+          calAttr = new Attribute(CF.CALENDAR, Calendar.gregorian.toString());
+          var.addAttribute(calAttr);
+          hasChanged = true;
+        }
+      }
+    }
+    return hasChanged;
+  }
+
+  @Override
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    boolean hasChanged = false;
+    boolean hasChangedThisTime;
+    for (Variable var : ds.getVariables()) {
+      hasChangedThisTime = checkTimeVarForCalendar(var);
+      if (hasChangedThisTime) {
+        hasChanged = true;
+      }
+    }
+    if (hasChanged) {
+      ds.finish();
+    }
+  }
+
   protected boolean checkForMeter = true;
 
   // we assume that coordinate axes get identified by being coordinate variables
@@ -100,9 +136,9 @@ public class COARDSConvention extends CoordSysBuilder {
             unit.equalsIgnoreCase("degreeN"))
       return AxisType.Lat;
 
-    if (SimpleUnit.isDateUnit(unit)) // || SimpleUnit.isTimeUnit(unit)) removed dec 18, 2008
+    if (SimpleUnit.isDateUnit(unit)) {
       return AxisType.Time;
-
+    }
     // look for other z coordinate
     if (SimpleUnit.isCompatible("mbar", unit))
       return AxisType.Pressure;

@@ -173,7 +173,8 @@ class Giniheader {
     int gminute;
     int gsecond;
     double lonv;                        /* meridian parallel to y-axis */
-    double lon1, lon2, lat1, lat2;
+    double lon1 = 0.0, lon2 = 0.0;
+    double lat1 = 0.0, lat2 = 0.0;
     double latt;
     double imageScale = 0.0;
 
@@ -236,7 +237,7 @@ class Giniheader {
     taxis.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     double[] tdata = new double[1];
     tdata[0] = cal.getTimeInMillis();
-    Array dataA = Array.factory(DataType.DOUBLE, new int[]{1}, tdata);
+    Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{1}, tdata);
     taxis.setCachedData(dataA, false);
     DateFormatter formatter = new DateFormatter();
     taxis.addAttribute(new Attribute(CDM.UNITS, "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
@@ -274,7 +275,7 @@ class Giniheader {
     att = new Attribute("NY", ny);
     this.ncfile.addAttribute(null, att);
 
-    ProjectionImpl projection;
+    ProjectionImpl projection = null;
     double dxKm = 0.0, dyKm = 0.0, latin, lonProjectionOrigin;
 
     switch (proj) {
@@ -406,11 +407,8 @@ class Giniheader {
 
         break;
 
-      default: {
-        System.out.println();
-        throw new IllegalStateException("unimplemented projection " + proj);
-      }
-
+      default:
+        System.out.println("unimplemented projection");
     }
 
     this.ncfile.addAttribute(null, new Attribute("title", gini_GetEntityID(ent_id)));
@@ -486,7 +484,7 @@ class Giniheader {
     if (debug) log.warn(" name= " + vname + " velems=" + var.getSize() + " begin= " + begin + "\n");
     if (navcal == 128) {
       var.setDataType(DataType.FLOAT);
-      var.setSPobject(new Vinfo(begin, nx, ny, Z_type, calcods));
+      var.setSPobject(new Vinfo(begin, nx, ny, calcods));
      /*   var.addAttribute(new Attribute("_Unsigned", "true"));
         int numer = calcods[0] - calcods[1];
         int denom = calcods[2] - calcods[3];
@@ -496,12 +494,12 @@ class Giniheader {
         var.addAttribute( new Attribute("add_offset", new Float(b)));
       */
     } else {
-      var.setDataType(DataType.UBYTE);
-      //var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+      var.setDataType(DataType.BYTE);
+      var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
       // var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
       var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) (1)));
       var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) (0)));
-      var.setSPobject(new Vinfo(begin, nx, ny, Z_type));
+      var.setSPobject(new Vinfo(begin, nx, ny));
     }
     String coordinates = "x y time";
     var.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
@@ -543,7 +541,7 @@ class Giniheader {
         data[i] = startx + i * dxKm;
     }
 
-    dataA = Array.factory(DataType.DOUBLE, new int[]{nx}, data);
+    dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{nx}, data);
     xaxis.setCachedData(dataA, false);
     ncfile.addVariable(null, xaxis);
 
@@ -566,7 +564,7 @@ class Giniheader {
       for (int i = 0; i < data.length; i++)
         data[i] = endy - i * dyKm;
     }
-    dataA = Array.factory(DataType.DOUBLE, new int[]{ny}, data);
+    dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{ny}, data);
     yaxis.setCachedData(dataA, false);
     ncfile.addVariable(null, yaxis);
 
@@ -580,7 +578,7 @@ class Giniheader {
     ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
     ct.addAttribute(new Attribute(_Coordinate.Axes, "x y "));
     // fake data
-    dataA = Array.factory(DataType.CHAR, new int[]{});
+    dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[]{});
     dataA.setChar(dataA.getIndex(), ' ');
     ct.setCachedData(dataA, false);
 
@@ -683,6 +681,11 @@ class Giniheader {
     return calcods;
   }
 
+
+  int gini_GetCompressType() {
+    return Z_type;
+  }
+
   // Return the string of entity ID for the GINI image file
 
   String gini_GetSectorID(int ent_id) {
@@ -728,6 +731,8 @@ class Giniheader {
     }
 
     return name;
+
+
   }
 
   // Return the channel ID for the GINI image file
@@ -775,6 +780,8 @@ class Giniheader {
     }
 
     return name;
+
+
   }
 
   // Return the channel ID for the GINI image file
@@ -885,6 +892,8 @@ class Giniheader {
     }
 
     return name;
+
+
   }
 
 
@@ -1112,6 +1121,7 @@ class Giniheader {
       default:
         return "unknown";
     }
+
   }
 
   // Read a scaled, 3-byte integer from file and convert to double
@@ -1139,20 +1149,17 @@ class Giniheader {
     int nx;
     int ny;
     int[] levels;
-    int compression;
 
-    Vinfo(long begin, int x, int y, int compression) {
+    Vinfo(long begin, int x, int y) {
       this.begin = begin;
       this.nx = x;
       this.ny = y;
-      this.compression = compression;
     }
 
-    Vinfo(long begin, int x, int y, int compression, int[] levels) {
+    Vinfo(long begin, int x, int y, int[] levels) {
       this.begin = begin;
       this.nx = x;
       this.ny = y;
-      this.compression = compression;
       this.levels = levels;
     }
 
