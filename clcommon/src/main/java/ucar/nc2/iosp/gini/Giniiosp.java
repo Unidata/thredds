@@ -133,12 +133,12 @@ public class Giniiosp extends AbstractIOServiceProvider {
   {
     // Default (if no level data) is to just return an array from the bytes.
     Object store = data;
-    Class dt = DataType.BYTE.getPrimitiveClassType();
+    DataType dt = DataType.BYTE;
 
     // If have levels, convert data to float and set-up to use that for array
     if (levels != null) {
       store = handleLevels(data, levels);
-      dt = DataType.FLOAT.getPrimitiveClassType();
+      dt = DataType.FLOAT;
     }
 
     // Create array and return
@@ -189,7 +189,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     }
 
     int Len = shape[1]; // length of pixels read each line
-    ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]});
+    ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]}, v2.getDataType().isUnsigned());
     Index indx = adata.getIndex();
     long doff = dataPos + start_p;
     // initially no data conversion is needed.
