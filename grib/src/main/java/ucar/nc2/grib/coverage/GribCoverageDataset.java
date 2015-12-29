@@ -262,9 +262,19 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     if (isLatLon) {
       AttributeContainerHelper atts = new AttributeContainerHelper(CF.LATITUDE);
       atts.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
+
+      double[] values = null;
+      CoverageCoordAxis.Spacing spacing = CoverageCoordAxis.Spacing.regular;
+      Array glats = hcs.getGaussianLats();
+      if (glats != null) {
+        spacing = CoverageCoordAxis.Spacing.irregularPoint;
+        values = (double[]) glats.get1DJavaArray(DataType.DOUBLE);
+        atts.addAttribute(new Attribute(CDM.GAUSSIAN, "true"));
+      }
+
       result.add(new CoverageCoordAxis1D(new CoverageCoordAxisBuilder(CF.LATITUDE, CDM.LAT_UNITS, null, DataType.FLOAT, AxisType.Lat, atts,
-              CoverageCoordAxis.DependenceType.independent, null, CoverageCoordAxis.Spacing.regular,
-              hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, null, this, false)));
+              CoverageCoordAxis.DependenceType.independent, null, spacing,
+              hcs.ny, hcs.getStartY(), hcs.getEndY(), hcs.dy, values, this, false)));
 
       atts = new AttributeContainerHelper(CF.LONGITUDE);
       atts.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));

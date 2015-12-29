@@ -4519,6 +4519,7 @@ public class ToolsUI extends JPanel {
       }
 
       dsTable.setCollection( (FeatureDatasetCoverage) fd);
+      cb.addItem( fd.getLocation());
     }
 
     void closeOpenFiles() throws IOException {

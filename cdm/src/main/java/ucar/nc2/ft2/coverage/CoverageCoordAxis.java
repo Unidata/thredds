@@ -188,6 +188,10 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     return attributes.getAttributes();
   }
 
+  public Attribute findAttribute(String attName) {
+    return attributes.findAttribute(attName);
+  }
+
   public AttributeContainer getAttributeContainer() {
     return new AttributeContainerHelper(name, attributes.getAttributes());
   }
