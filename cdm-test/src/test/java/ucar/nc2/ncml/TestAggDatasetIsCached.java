@@ -3,6 +3,7 @@ package ucar.nc2.ncml;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.util.CompareNetcdf2;
@@ -29,12 +30,13 @@ public class TestAggDatasetIsCached {
     NetcdfDataset.initNetcdfFileCache(10, 20, -1);
 
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
     //String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
     boolean ok = true;
 
     System.out.printf("==========%n");
     for (int i=0; i<2; i++) {
-      NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null);
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null);
       NetcdfDataset ncd2 = NetcdfDataset.wrap(ncd, NetcdfDataset.getEnhanceAll());
       Formatter out = new Formatter();
       ok &= CompareNetcdf2.compareFiles(ncd, ncd2, out, false, false, false);
@@ -74,10 +76,11 @@ public class TestAggDatasetIsCached {
     NetcdfDataset.initNetcdfFileCache(10, 20, -1);
 
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";  // joinExisting
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
 
     for (int i=0; i<2; i++) {
       System.out.printf("%n=====Iteration %d =====%n", i+1);
-      NetcdfDataset nc1 = NetcdfDataset.acquireDataset(filename, null); // put/get in the cache
+      NetcdfDataset nc1 = NetcdfDataset.acquireDataset(durl, true, null); // put/get in the cache
       System.out.printf("-----------------------nc object == %d%n", nc1.hashCode());
 
       NetcdfDataset nc2 = new NetcdfDataset(nc1);

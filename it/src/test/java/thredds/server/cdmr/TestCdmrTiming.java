@@ -53,9 +53,9 @@ import java.io.IOException;
  * @since 12/24/2015.
  */
 public class TestCdmrTiming {
-  String local = CdmRemote.SCHEME + TestWithLocalServer.server + "cdmremote/rdavmWork/yt.oper.an.sfc.regn400sc.10v_166.200805";
+  String local = /* CdmRemote.SCHEME + */ TestWithLocalServer.server + "cdmremote/rdavmWork/yt.oper.an.sfc.regn400sc.10v_166.200805";
   String rdavm = "http://rdavm.ucar.edu:8080/thredds/cdmremote/files/e/ds629.1/yt.oper.an.sfc/2008/yt.oper.an.sfc.regn400sc.10v_166.200805";
-  String cdmUrl = rdavm;
+  String cdmUrl = local;
 
   @Test
   public void readIndexSpace() throws IOException, InvalidRangeException {
@@ -93,8 +93,8 @@ public class TestCdmrTiming {
   @Test
   public void readCoordSpace() throws IOException, InvalidRangeException {
     timeDataRead2(cdmUrl, 1);
-    timeDataRead2(cdmUrl, 2);
-    timeDataRead2(cdmUrl, 10);
+    //timeDataRead2(cdmUrl, 2);
+    //timeDataRead2(cdmUrl, 10);
   }
 
   static int timeDataRead2(String remote, int  stride) throws IOException, InvalidRangeException {

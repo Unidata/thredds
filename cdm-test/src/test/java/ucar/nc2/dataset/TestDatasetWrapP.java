@@ -68,19 +68,19 @@ public class TestDatasetWrapP {
     return result;
   }
 
-  String filename;
+  DatasetUrl durl;
 
   public TestDatasetWrapP(String filename) {
-    this.filename = filename;
+    durl = new DatasetUrl(null, filename);
   }
 
   @Test
   public void doOne() throws Exception {
-    try (NetcdfFile ncfile = NetcdfDataset.acquireFile(filename, null);
+    try (NetcdfFile ncfile = NetcdfDataset.acquireFile(durl, null);
          NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true)) {
 
-      NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null);
-      System.out.println(" dataset wraps= " + filename);
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null);
+      System.out.println(" dataset wraps= " + durl.trueurl);
 
       ucar.unidata.test.util.CompareNetcdf.compareFiles(ncd, ncWrap);
     }

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
 
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.radial.*;
@@ -147,14 +148,8 @@ public class TypedDatasetFactory {
    * @throws java.io.IOException on io error
    */
   static public TypedDataset open( FeatureType datatype, String location, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
-    /* special processing for thredds: datasets
-    if (location.startsWith("thredds:") && (datatype != null)) {
-      ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype( location, task);
-      errlog.append( result.errLog);
-      return (result.fatalError) ? null : result.tds;
-    } */
-
-    NetcdfDataset ncd = NetcdfDataset.acquireDataset( location, task);
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
+    NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, task);
     return open( datatype, ncd, task, errlog);
   }
 

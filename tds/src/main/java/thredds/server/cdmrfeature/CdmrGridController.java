@@ -210,7 +210,7 @@ public class CdmrGridController implements LastModified {
       out.flush();
 
     } catch (Throwable t) {
-      t.printStackTrace();
+      throw new RuntimeException("CdmrGridController on dataset "+datasetPath, t);
     }
 
     if (showReq)

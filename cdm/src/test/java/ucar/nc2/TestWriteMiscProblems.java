@@ -42,6 +42,7 @@ import java.util.List;
 
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.IO;
 import ucar.unidata.test.util.TestDir;
@@ -118,7 +119,8 @@ public class TestWriteMiscProblems extends TestCase {
       String inName = TestDir.cdmLocalTestDataDir + "testWrite.nc";
       String outName = TestLocal.temporaryDataDir + "testRemove.nc";
 
-      NetcdfDataset ncd = NetcdfDataset.acquireDataset(inName, null);
+      DatasetUrl durl = new DatasetUrl(null, inName);
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null);
       System.out.println(ncd);
       System.out.println(ncd.removeVariable(null, "temperature"));
       System.out.println(ncd);
@@ -130,7 +132,8 @@ public class TestWriteMiscProblems extends TestCase {
       ncdnew.close();
       ncd.close();
 
-      NetcdfDataset ncdnew2 = NetcdfDataset.acquireDataset(outName, null);
+      DatasetUrl durl2 = new DatasetUrl(null, outName);
+      NetcdfDataset ncdnew2 = NetcdfDataset.acquireDataset(durl2, true, null);
       assert ncdnew2.findVariable("temperature") == null;
       ncdnew2.close();
       

@@ -33,6 +33,7 @@
  */
 package ucar.nc2.dt.point;
 
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.PointObsDataset;
 import ucar.nc2.NetcdfFile;
@@ -65,7 +66,8 @@ public class PointObsDatasetFactory {
   static public PointObsDataset open( String location, ucar.nc2.util.CancelTask task, StringBuffer log) throws java.io.IOException {
 
     // otherwise open as netcdf and have a look. use NetcdfDataset in order to deal with scale/enhance, etc.
-    NetcdfDataset ncfile = NetcdfDataset.acquireDataset( location, task);
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
+    NetcdfDataset ncfile = NetcdfDataset.acquireDataset( durl, true, task);
 
     // add record variable if there is one.
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);

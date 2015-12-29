@@ -33,6 +33,7 @@
 
 package ucar.nc2.util.cache;
 
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
@@ -50,8 +51,8 @@ public interface FileCacheIF {
   void enable();
   void disable();
 
-  FileCacheable acquire(FileFactory factory, String location) throws IOException;
-  FileCacheable acquire(FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException;
+  FileCacheable acquire(FileFactory factory, DatasetUrl location) throws IOException;
+  FileCacheable acquire(FileFactory factory, Object hashKey, DatasetUrl location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException;
 
   boolean release(FileCacheable ncfile) throws IOException;
   void eject(Object hashKey);

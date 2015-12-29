@@ -134,9 +134,23 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
  }
 ----
 
+=== ucar.nc2.util.cache
+
+* *FileCache* and *FileFactory* take a `DatasetUrl` instead of a String location
+
 === ucar.nc2.dataset
 
-** CoordinateAxis2D.getMidpoints() was deprecated and now removed, use getCoordValuesArray()
+In order to disambiguate remote protocols, all using _http:_, the utility method *DatasetUrl.findDatasetUrl(location)*
+is used to determine the protocol and capture the result in a *DatasetUrl* object. Because this can be expensive, the
+DatasetUrl should be calculated once and kept for the duration of the dataset access. When the protocol is already known, the
+*DatasetUrl(ServiceType protocol, String location)* constructor may be used. The API is changed to allow/require the application
+to compute these DatasetUrls.
+
+* `NetcdfDataset.acquireDataset()` takes a DatasetUrl instead of a String location.
+* the general method of `NetcdfDataset.openDataset()` takes a DatasetUrl instead of a String location.
+Variants use a String location, and call `DatasetUrl.findDatasetUrl(location)`.
+
+* `CoordinateAxis2D.getMidpoints()` was deprecated and now removed, use `getCoordValuesArray()`
 
 === ucar.nc2.ft.PointFeature
 

@@ -47,6 +47,7 @@ import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -476,10 +477,10 @@ public class DataFactory {
     }
 
     // ready to open it through netcdf API
-    NetcdfDataset ncd;
+    DatasetUrl durl = new DatasetUrl(serviceType, datasetLocation);
+    NetcdfDataset ncd = acquire ? NetcdfDataset.acquireDataset(durl, true, task) : NetcdfDataset.openDataset(durl, null, -1, task, null);
 
-    // open DODS type
-    String prefix = null;
+    /* String prefix = null;
     if ((serviceType == ServiceType.OPENDAP)|| (serviceType == ServiceType.DODS))
         prefix = "dods:";
     else if(serviceType == ServiceType.DAP4)
@@ -511,7 +512,7 @@ public class DataFactory {
     else {
       // open through NetcdfDataset API
       ncd = acquire ? NetcdfDataset.acquireDataset(datasetLocation, enhanceMode, task) : NetcdfDataset.openDataset(datasetLocation, enhanceMode, task);
-    }
+    } */
 
     result.accessUsed = access;
     ncd.setId(datasetId);

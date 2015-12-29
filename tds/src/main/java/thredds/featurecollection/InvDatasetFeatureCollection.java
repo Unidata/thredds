@@ -45,6 +45,7 @@ import thredds.core.StandardService;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
 import thredds.server.catalog.FeatureCollectionRef;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -589,7 +590,9 @@ public abstract class InvDatasetFeatureCollection {
       String filename = new StringBuilder(topDirectory)
               .append(topDirectory.endsWith("/") ? "" : "/")
               .append(name).toString();
-      return NetcdfDataset.acquireDataset(null, filename, null, -1, null, null); // no enhancement
+      DatasetUrl durl = new DatasetUrl(null, filename);
+
+      return NetcdfDataset.acquireDataset(null, durl, null, -1, null, null); // no enhancement
     }
 
     GridDataset gds = getGridDataset(matchPath); // LOOK cant be right

@@ -123,7 +123,7 @@ public class TestDODScompareWithFiles {
 
   } */
 
-  // @Test
+  @Test
   public void problem() throws IOException {
     String filename = "conventions/coards/inittest24.QRIDV07200.ncml";
     String dodsUrl = TestWithLocalServer.withPath(path + filename);

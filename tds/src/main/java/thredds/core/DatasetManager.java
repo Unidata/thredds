@@ -38,6 +38,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import thredds.client.catalog.ServiceType;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.admin.DebugCommands;
@@ -50,6 +51,7 @@ import thredds.servlet.restrict.Authorizer;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -57,8 +59,6 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.Optional;
 import ucar.nc2.util.cache.FileFactory;
@@ -141,8 +141,8 @@ public class DatasetManager implements InitializingBean {
       this.ncml = ncml;
     }
 
-    public NetcdfFile open(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-      return NcMLReader.readNcML(new StringReader(ncml), cacheName, cancelTask);
+    public NetcdfFile open(DatasetUrl durl, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+      return NcMLReader.readNcML(new StringReader(ncml), durl.trueurl, cancelTask);
     }
   }
 
@@ -164,7 +164,7 @@ public class DatasetManager implements InitializingBean {
     // look for a dataset (non scan, non fmrc) that has an ncml element
     String ncml = datasetTracker.findNcml(reqPath);
     if (ncml != null) {
-      NetcdfFile ncfile = NetcdfDataset.acquireFile(new NcmlFileFactory(ncml), null, reqPath, -1, null, null);
+      NetcdfFile ncfile = NetcdfDataset.acquireFile(new NcmlFileFactory(ncml), null, DatasetUrl.findDatasetUrl(reqPath), -1, null, null);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
       return ncfile;
     }
@@ -193,7 +193,6 @@ public class DatasetManager implements InitializingBean {
 
     // common case - its a file
     if (match != null) {
-      boolean doCache = true; // hack in a "no cache" option
       org.jdom2.Element netcdfElem = null; // find ncml if it exists
       if (match.dataRoot != null) {
         DatasetScan dscan = match.dataRoot.getDatasetScan();
@@ -216,10 +215,8 @@ public class DatasetManager implements InitializingBean {
         return ncd;
       }
 
-      if (doCache)
-        ncfile = NetcdfDataset.acquireFile(location, null);
-      else
-        ncfile = NetcdfDataset.openFile(location, null);
+      DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
+      ncfile = NetcdfDataset.acquireFile(durl, null);
     }
 
     if (ncfile == null) throw new FileNotFoundException(reqPath);
@@ -413,7 +410,7 @@ public class DatasetManager implements InitializingBean {
     if (debugResourceControl) System.out.println("DatasetHandler request has resource control =" + rc + "\n"
             + ServletUtil.showRequestHeaders(req) + ServletUtil.showSecurity(req, rc));
 
-    Principal p = req.getUserPrincipal();
+    // Principal p = req.getUserPrincipal(); // debug
 
     try {
       if (!restrictedDatasetAuthorizer.authorize(req, res, rc)) {

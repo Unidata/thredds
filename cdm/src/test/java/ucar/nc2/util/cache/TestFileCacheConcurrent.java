@@ -33,6 +33,7 @@
 package ucar.nc2.util.cache;
 
 import org.junit.Test;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
@@ -55,7 +56,7 @@ public class TestFileCacheConcurrent {
   FileFactory factory = new MyFileFactory();
 
   class MyFileFactory implements FileFactory {
-    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+    public FileCacheable open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
     }
   }
@@ -158,8 +159,8 @@ public class TestFileCacheConcurrent {
 
     public void run() {
       try {
-        //System.out.printf("acquire %s%n", location);
-        FileCacheable fc = cache.acquire(factory, location);
+        DatasetUrl durl = new DatasetUrl(null, location);
+        FileCacheable fc = cache.acquire(factory, durl);
         NetcdfFile ncfile = (NetcdfFile) fc;
         //assert ncfile.isLocked();
         assert (null != ncfile.getIosp());
@@ -169,7 +170,7 @@ public class TestFileCacheConcurrent {
         if (d % PRINT_EVERY == 0) System.out.printf(" done %d%n", d);
 
       } catch (InterruptedException e) {
-        return;
+        System.out.println(" InterruptedException="+e.getMessage());
 
       } catch (Throwable e) {
         System.out.println(" fail="+e.getMessage());

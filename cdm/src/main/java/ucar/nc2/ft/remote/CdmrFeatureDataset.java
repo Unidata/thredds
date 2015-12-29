@@ -143,7 +143,7 @@ public class CdmrFeatureDataset {
     try {
       in = CdmRemote.sendQuery(null, endpoint, "req=capabilities");
       SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(in);  // closes in when done ??
+      doc = builder.build(in);  // LOOK closes in when done ??
 
     } catch (Throwable t) {
       throw new IOException(t);

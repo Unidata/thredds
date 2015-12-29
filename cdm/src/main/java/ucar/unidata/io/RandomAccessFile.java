@@ -35,6 +35,7 @@ package ucar.unidata.io;
 
 import net.jcip.annotations.NotThreadSafe;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -89,7 +90,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   static protected boolean debugLeaks = false;
   static protected boolean debugAccess = false;
   static protected Set<String> allFiles = null;
-  static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());   // could keep map on file hashcode
+  static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<>());   // could keep map on file hashcode
   static private AtomicLong count_openFiles = new AtomicLong();
   static private AtomicInteger maxOpenFiles = new AtomicInteger();
   static private AtomicInteger debug_nseeks = new AtomicInteger();
@@ -188,8 +189,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   // note read only
 
   static private final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
-    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      location = StringUtil2.replace(location, "\\", "/"); // canonicalize the name
+    public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      String location = StringUtil2.replace(durl.trueurl, "\\", "/"); // canonicalize the name
       RandomAccessFile result = new RandomAccessFile(location, "r", buffer_size);
       result.cacheState = 1;  // in use
       return result;
@@ -216,14 +217,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     if (cache == null)
       return new RandomAccessFile(location, "r");
     else
-      return (RandomAccessFile) cache.acquire(factory, location);
+      return (RandomAccessFile) cache.acquire(factory, new DatasetUrl(null, location));
   }
 
   static public RandomAccessFile acquire(String location, int buffer_size) throws IOException {
     if (cache == null)
       return new RandomAccessFile(location, "r", buffer_size);
     else
-      return (RandomAccessFile) cache.acquire(factory, location, location, buffer_size, null, null);
+      return (RandomAccessFile) cache.acquire(factory, location, new DatasetUrl(null, location), buffer_size, null, null);
   }
 
   static public void eject(String location) {

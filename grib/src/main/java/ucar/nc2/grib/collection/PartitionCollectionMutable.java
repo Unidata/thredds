@@ -36,6 +36,7 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MCollection;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.cache.SmartArrayInt;
@@ -296,7 +297,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       }
 
       // LOOK not cached
-      return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory.open(path, -1, null, this);
+      return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory.open(new DatasetUrl(null, path), -1, null, this);
     }
 
     // the children must already exist

@@ -52,6 +52,8 @@
     <collection spec="${cdmUnitTest}/gribCollections/gfs_2p5deg/.*grib2$" timePartition="file"/>
   </featureCollection>
 
-  <dataset name="Test Single Grib File" ID="testCdmrGrib" serviceName="all" urlPath="rdavmWork/yt.oper.an.sfc.regn400sc.10v_166.200805" dataType="Grid"/>
+  <dataset name="Test Single Grib File" ID="testCdmrGrib" serviceName="all" urlPath="rdavmWork/yt.oper.an.sfc.regn400sc.10v_166.200805" dataType="Grid">
+    <documentation>From ds629.1_an_sfc</documentation>
+  </dataset>
 
 </catalog>

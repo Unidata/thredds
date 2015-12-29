@@ -50,12 +50,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasetInfo;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -80,21 +75,26 @@ public class DtCoverageDataset implements Closeable {
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
   static public DtCoverageDataset open(String location) throws java.io.IOException {
-    return open(location, NetcdfDataset.getDefaultEnhanceMode());
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
+    return open(durl, NetcdfDataset.getDefaultEnhanceMode());
+  }
+
+  static public DtCoverageDataset open(DatasetUrl durl) throws java.io.IOException {
+    return open(durl, NetcdfDataset.getDefaultEnhanceMode());
   }
 
   /**
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
    * and turn into a DtCoverageDataset.
    *
-   * @param location    netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @param durl    netcdf dataset to open, using NetcdfDataset.acquireDataset().
    * @param enhanceMode open netcdf dataset with this enhanceMode
    * @return GridDataset
    * @throws java.io.IOException on read error
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
-  static public DtCoverageDataset open(String location, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
-    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, location, enhanceMode, -1, null, null);
+  static public DtCoverageDataset open(DatasetUrl durl, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
+    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, durl, enhanceMode, -1, null, null);
     return new DtCoverageDataset(ds, null);
   }
 
@@ -160,11 +160,7 @@ public class DtCoverageDataset implements Closeable {
       VariableEnhanced ve = (VariableEnhanced) v;
       List<CoordinateSystem> css = ve.getCoordinateSystems();
       if (css.size() == 0) continue;
-      Collections.sort(css, new Comparator<CoordinateSystem>() { // take one with most axes
-        public int compare(CoordinateSystem o1, CoordinateSystem o2) {
-          return o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size();
-        }
-      });
+      Collections.sort(css, (o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
       CoordinateSystem cs = css.get(0);    // the largest one
       Gridset cset = csHash.get(cs.getName());
       if (cset == null) continue;

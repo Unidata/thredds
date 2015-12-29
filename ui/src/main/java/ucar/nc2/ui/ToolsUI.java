@@ -45,10 +45,7 @@ import ucar.httpservices.HTTPSession;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordSysBuilder;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasetInfo;
-import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
@@ -1430,12 +1427,15 @@ public class ToolsUI extends JPanel {
 
 
   private NetcdfFile openFile(String location, boolean addCoords, CancelTask task) {
+
+
     NetcdfFile ncfile = null;
     try {
+      DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
       if (addCoords)
-        ncfile = NetcdfDataset.acquireDataset(location, task);
+        ncfile = NetcdfDataset.acquireDataset(durl, true, task);
       else
-        ncfile = NetcdfDataset.acquireFile(location, task);
+        ncfile = NetcdfDataset.acquireFile(durl, task);
 
       if (ncfile == null)
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location);
@@ -1520,7 +1520,7 @@ public class ToolsUI extends JPanel {
     AbstractButton coordButt = null;
     StopButton stopButton;
 
-    boolean addCoords, defer, busy;
+    boolean addCoords, busy;
     long lastEvent = -1;
     boolean eventOK = true;
 
@@ -1626,7 +1626,7 @@ public class ToolsUI extends JPanel {
 
       busy = true;
       if (process(command)) {
-        if (!defer) cb.addItem(command);
+        setSelectedItem(command);
       }
       busy = false;
     }
@@ -1714,7 +1714,6 @@ public class ToolsUI extends JPanel {
       task = new GetDataTask(this, filename, null);
       stopButton.startProgressMonitorTask(task);
 
-      //defer = true;
       return true;
     }
 
@@ -2753,7 +2752,7 @@ public class ToolsUI extends JPanel {
 
     void setCollection(String collection) {
       if (process(collection)) {
-        if (!defer) cb.addItem(collection);
+        cb.addItem(collection);
       }
     }
 
@@ -2835,7 +2834,7 @@ public class ToolsUI extends JPanel {
 
     void setCollection(String collection) {
       if (process(collection)) {
-        if (!defer) cb.addItem(collection);
+        cb.addItem(collection);
       }
     }
 
@@ -2905,7 +2904,7 @@ public class ToolsUI extends JPanel {
 
     void setCollection(String collection) {
       if (process(collection)) {
-        if (!defer) cb.addItem(collection);
+        cb.addItem(collection);
       }
     }
 
@@ -3126,7 +3125,7 @@ public class ToolsUI extends JPanel {
 
     void setCollection(String collection) {
       if (process(collection)) {
-        if (!defer) cb.addItem(collection);
+        cb.addItem(collection);
       }
     }
 
@@ -4519,7 +4518,7 @@ public class ToolsUI extends JPanel {
       }
 
       dsTable.setCollection( (FeatureDatasetCoverage) fd);
-      cb.addItem( fd.getLocation());
+      setSelectedItem(fd.getLocation());
     }
 
     void closeOpenFiles() throws IOException {

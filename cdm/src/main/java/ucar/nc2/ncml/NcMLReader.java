@@ -66,10 +66,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.SequenceDS;
-import ucar.nc2.dataset.StructureDS;
-import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.*;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
@@ -455,7 +452,7 @@ public class NcMLReader {
         //  String location, boolean enhance,              int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
         // (String location, EnumSet<Enhance> enhanceMode, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
-        refds = NetcdfDataset.openDataset(referencedDatasetUri, null, buffer_size, cancelTask, iospParam);
+        refds = NetcdfDataset.openDataset(referencedDatasetUri, false, buffer_size, cancelTask, iospParam);
         // refds.setEnhanceProcessed(false); // hasnt had enhance applied to it yet - wait till ncml mods have been applied
       }
     }
@@ -1559,7 +1556,8 @@ public class NcMLReader {
 
   private class NcmlElementReader implements ucar.nc2.util.cache.FileFactory {
     private Element netcdfElem;
-    private String ncmlLocation, location;
+    private String ncmlLocation;
+    private String location;
 
     NcmlElementReader(String ncmlLocation, String location, Element netcdfElem) {
       this.ncmlLocation = ncmlLocation;
@@ -1567,7 +1565,7 @@ public class NcMLReader {
       this.netcdfElem = netcdfElem;
     }
 
-    public NetcdfFile open(String cacheName, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
+    public NetcdfFile open(DatasetUrl cacheName, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
       if (debugAggDetail) System.out.println(" NcmlElementReader open nested dataset " + cacheName);
       NetcdfFile result = _readNcML(ncmlLocation, location, netcdfElem, cancelTask);
       result.setLocation(ncmlLocation + "#" + location);
@@ -1647,14 +1645,14 @@ public class NcMLReader {
 
   ///////////////////////////////////////////////////////////////////////////////////
 
-  /**
+  /*
    * Read an NcML file and write an equivalent NetcdfFile to a physical file, using Netcdf-3 file format.
    *
    * @param ncmlLocation read this NcML file
    * @param fileOutName  write to this local file
    * @throws IOException on write error
    * @see ucar.nc2.FileWriter2
-   */
+   *
   public static void writeNcMLToFile(String ncmlLocation, String fileOutName) throws IOException {
     NetcdfFile ncd = NetcdfDataset.acquireFile(ncmlLocation, null);
 
@@ -1662,7 +1660,7 @@ public class NcMLReader {
     NetcdfFile result = writer.write();
     result.close();
     ncd.close();
-  }
+  } */
 
   /**
    * Read an NcML and write an equivalent NetcdfFile to a physical file, using Netcdf-3 file format.

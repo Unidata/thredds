@@ -47,6 +47,7 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ProxyReader;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.units.DateFormatter;
@@ -605,13 +606,13 @@ public abstract class Aggregation {
    */
   public class Dataset implements Comparable {
     MFile mfile;
-    // protected final String location; // location attribute on the netcdf element
     protected String id; // id attribute on the netcdf element
 
     // deferred opening
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
     protected Set<NetcdfDataset.Enhance> enhance; // used by Fmrc to read enhanced datasets
+    protected DatasetUrl durl = null;
 
     /*
      * For subclasses.
@@ -678,7 +679,9 @@ public abstract class Aggregation {
       if (debugOpenFile) System.out.println(" try to acquire " + cacheLocation);
       long start = System.currentTimeMillis();
 
-      NetcdfFile ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
+      if (durl == null)
+        durl = DatasetUrl.findDatasetUrl(cacheLocation); // cache the ServiceType so we dont have to keep figuring it out
+      NetcdfFile ncfile = NetcdfDataset.acquireFile(reader, null, durl, -1, cancelTask, spiObject);
 
       // must merge NcML before enhancing
       if (mergeNcml != null)

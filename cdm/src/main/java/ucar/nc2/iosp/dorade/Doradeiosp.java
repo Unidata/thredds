@@ -142,7 +142,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
       int nc = mySweep.getNCells(j);
       Array data = Array.makeArray(DataType.FLOAT, nc,
           (double) mySweep.getRangeToFirstCell(j), (double) mySweep.getCellSpacing(j));
-      dist = (float[]) data.get1DJavaArray(Float.class);
+      dist = (float[]) data.get1DJavaArray(DataType.FLOAT);
       outputData = readData1(v2, section, dist);
 
     } else if (v2.isScalar()) {
