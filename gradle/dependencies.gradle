@@ -201,9 +201,11 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["oro"] = "oro:oro:2.0.6"
 
-libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:1.0.4"
+libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:1.0.5-SNAPSHOT"
 
-libraries["edal-cdm"] =  dependencies.create("uk.ac.rdg.resc:edal-cdm:1.0.4") {
+// the 1.0.4-ud artifact lives on the unidata nexus server - it has a critical bug fix
+// applied to it, and is temporary until the next edal-java release.
+libraries["edal-cdm"] =  dependencies.create("uk.ac.rdg.resc:edal-cdm:1.0.5-SNAPSHOT") {
     // These are dependencies that are included in edal-cdm, but are provided by
     // us already, so we will exclude these from the edal-cdm artifact.
     exclude group: 'edu.ucar', module: 'grib'
@@ -213,9 +215,11 @@ libraries["edal-cdm"] =  dependencies.create("uk.ac.rdg.resc:edal-cdm:1.0.4") {
     exclude group: 'oro', module: 'oro'
 }
 
-libraries["edal-wms"] = "uk.ac.rdg.resc:edal-wms:1.0.4"
+libraries["edal-wms"] = "uk.ac.rdg.resc:edal-wms:1.0.5-SNAPSHOT"
 
-libraries["edal-graphics"] = "uk.ac.rdg.resc:edal-graphics:1.0.4"
+libraries["edal-graphics"] = "uk.ac.rdg.resc:edal-graphics:1.0.5-SNAPSHOT"
+
+libraries["edal-godiva"] = "uk.ac.rdg.resc:edal-godiva:1.0.5-SNAPSHOT"
 
 libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
 

@@ -68,6 +68,7 @@ dependencies {
     compile libraries["edal-graphics"]
     compile libraries["edal-wms"]
     compile libraries["saxon-he"]
+    compile libraries["edal-godiva"]
 
     // JSR 303 with Hibernate Validator, which is dragging in jboss logging
     compile libraries["validation-api"]
