@@ -88,7 +88,7 @@ public class TestRestrictDataset
     @Test
     public void testRestriction()
     {
-        //String server = "http://thredds-test.unidata.ucar.edu/thredds/";
+        //String server = "http://"+TestDir.threddsTestServer+"/thredds/";
         //String endpoint = server + path;
 
         String endpoint = TestWithLocalServer.withPath(path);

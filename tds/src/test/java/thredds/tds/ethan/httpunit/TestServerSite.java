@@ -62,6 +62,7 @@ import org.xml.sax.SAXException;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * A description
@@ -78,7 +79,7 @@ public class TestServerSite extends TestCase
   private WebConversation wc;
 
   /** The TDS site to test. */
-  private String host = "thredds.ucar.edu:";
+  private String host = TestDir.threddsServer+":";
   /** The name of a user with tdsConfig role. */
   private String tdsConfigUser;
   private String tdsConfigWord;

@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * _more_
@@ -47,7 +48,7 @@ import ucar.unidata.test.util.NeedsExternalResource;
 public class TestTdsIddPing extends TestCase
 {
 
-  private String host = "thredds.ucar.edu";
+  private String host = TestDir.threddsServer;
   private String targetTdsUrl;
 
   public TestTdsIddPing( String name )

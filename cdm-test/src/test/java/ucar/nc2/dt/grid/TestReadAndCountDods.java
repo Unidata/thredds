@@ -40,13 +40,14 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /** Check opening dods datasets - latest dataset from thredds */
 
 @RunWith(Parameterized.class)
 @Category(NeedsExternalResource.class)
 public class TestReadAndCountDods {
-  static String base = "thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/";
+  static String base = "thredds:resolve:http://"+ TestDir.threddsTestServer+"/thredds/";
 
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
@@ -114,7 +115,7 @@ public class TestReadAndCountDods {
 
   //@Test
   public void testProblem() throws Exception {
-    TestReadandCount.doOne("thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/",
+    TestReadandCount.doOne("thredds:resolve:http://"+TestDir.threddsTestServer+"/thredds/",
             "catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
   }
 }

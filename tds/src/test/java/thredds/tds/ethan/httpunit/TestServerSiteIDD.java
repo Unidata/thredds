@@ -39,6 +39,7 @@ import com.meterware.httpunit.WebConversation;
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * A description
@@ -54,7 +55,7 @@ public class TestServerSiteIDD extends TestCase
   private WebConversation wc;
 
   /** The TDS site to test. */
-  private String host = "thredds.ucar.edu";
+  private String host = TestDir.threddsServer;
 
   private String targetUrl = "http://" + host + "/thredds/";
 

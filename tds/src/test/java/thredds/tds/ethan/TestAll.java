@@ -74,6 +74,7 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * _more_
@@ -143,7 +144,7 @@ public class TestAll extends TestCase
   private boolean showDebug;
   private boolean verbose;
 
-  private String host = "thredds.ucar.edu";
+  private String host = TestDir.threddsServer;
   private String[] catalogList;
 
   private String targetTdsUrl;
@@ -159,7 +160,7 @@ public class TestAll extends TestCase
     if ( null == System.getProperty( "thredds.tds.test.id"))
       System.setProperty( "thredds.tds.test.id", "crawl-newmlode-8080" );
     if ( null == System.getProperty( "thredds.tds.test.server" ) )
-      System.setProperty( "thredds.tds.test.server", "thredds.ucar.edu" );
+      System.setProperty( "thredds.tds.test.server", TestDir.threddsServer );
     if ( null == System.getProperty( "thredds.tds.test.level" ) )
       System.setProperty( "thredds.tds.test.level", "crawl-catalogs" );
     if ( null == System.getProperty( "thredds.tds.test.catalogs" ) )
@@ -780,7 +781,7 @@ public class TestAll extends TestCase
     for ( String curCat : catList )
     {
       gcsMsg.append( "********************\n<h4>" ).append( curCat ).append( "</h4>\n\n<pre>\n" );
-      curCat = "http://thredds.ucar.edu/thredds/catalog/" + curCat + "/files/catalog.xml";
+      curCat = "http://"+TestDir.threddsServer+"/thredds/catalog/" + curCat + "/files/catalog.xml";
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       PrintWriter out = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
       int numDs = 0;

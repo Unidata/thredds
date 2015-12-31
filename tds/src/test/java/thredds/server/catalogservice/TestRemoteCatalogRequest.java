@@ -37,6 +37,7 @@ import org.junit.experimental.categories.Category;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindingResult;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * _more_
@@ -58,7 +59,7 @@ public class TestRemoteCatalogRequest extends TestCase
   private String bindResultMsg;
   private RemoteCatalogRequest rcr;
 
-  private String catUriString = "http://thredds-test.unidata.ucar.edu/thredds/catalog.xml";
+  private String catUriString = "http://"+TestDir.threddsTestServer+"/thredds/catalog.xml";
   private String cmdShow = "show";
   private String cmdSubset = "subset";
   private String cmdValidate = "validate";

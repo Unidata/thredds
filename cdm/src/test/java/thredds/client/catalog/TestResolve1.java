@@ -41,6 +41,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /** Test reletive URL resolution. */
 
@@ -128,7 +129,7 @@ public class TestResolve1 {
   @Test
   @Category(NeedsExternalResource.class)
   public void testResolver() throws IOException {
-    String remoteDataset = "thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml";
+    String remoteDataset = "thredds:resolve:http://"+ TestDir.threddsTestServer+"/thredds/catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml";
     try {
       NetcdfFile ncd = NetcdfDataset.openFile(remoteDataset, null);
       List<Attribute> globalAttrs = ncd.getGlobalAttributes();
