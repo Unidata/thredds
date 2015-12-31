@@ -31,7 +31,7 @@ the viewer.
 creating a Java class] that tells the TDS what datasets are viewable,
 and what HTML fragment to include.
 3.  If your viewer link points to a JNLP file,
-<<#Returning_a_JNLP_file_,the TDS can generate the JNLP file>> from a
+link:#Returning_a_JNLP_file_[the TDS can generate the JNLP file] from a
 template file.
 
 == 1. Adding viewer links with ``viewer'' property elements
@@ -361,7 +361,7 @@ Then tell the TDS to load it by adding a line to the
 === Using a Generated JNLP File
 
 A Viewer implementation can still use the TDS JNLP template service
-(<<#Returning_a_JNLP_file_,see above>>). It just needs to return the
+(link:#Returning_a_JNLP_file_[see above]). It just needs to return the
 appropriate HTML link referencing an existing JNLP template file and
 giving the appropriate replacment URL query parameters. The IDV
 implementation above does just that.

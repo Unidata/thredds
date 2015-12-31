@@ -8,7 +8,7 @@
 
 === Install Java
 
-1.  <<images/fileIcon.jpg,Download and install>> the latest version of
+1.  link:images/fileIcon.jpg[Download and install] the latest version of
 JDK 1.7
 
 === Tomcat Install
@@ -19,7 +19,7 @@ Tomcat] who does not have root privileges.
 to allow this user access to only the necessary parts of the Tomcat
 installation.
 
-<<images/fileIcon.jpg,Download and install>> the latest version of
+link:images/fileIcon.jpg[Download and install] the latest version of
 Tomcat 7.
 
 In **$\{tomcat_home}/bin** link:GettingStarted.adoc#makeSetenv[create a

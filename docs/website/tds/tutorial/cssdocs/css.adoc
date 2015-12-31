@@ -8,117 +8,117 @@ TDS Tutorial: PAGE TITLE
 [width="100%",cols="34%,33%,33%",options="header",]
 |=======================================================================
 |Tag Name |Instances |Description
-|<<#h1,`h1`>> |1…1 |Page title.
+|link:#h1[`h1`] |1…1 |Page title.
 
-|<<#_section,`div#section `>> |1…* |Main sections of the page. Wraps a
+|link:#_section[`div#section `] |1…* |Main sections of the page. Wraps a
 box around the content it contains. There can be one or more sections to
 a page.
 
-|<<#section,`h2`>> |1…1 |Title of a section. There can only be one
+|link:#section[`h2`] |1…1 |Title of a section. There can only be one
 title to a section.
 
-|<<#_subsection,`div#subsection`>> |1…* |Subsections in a section.
+|link:#_subsection[`div#subsection`] |1…* |Subsections in a section.
 Indents the content it contains. There can be one or more subsections to
 a section.
 
-|<<#subsection,`h3`>> |1…1 |Title of a subsection. There can only be
+|link:#subsection[`h3`] |1…1 |Title of a subsection. There can only be
 one title to a subsection.
 
-|<<#subsectionp,`p`>> |0…* |Paragraph tag in a subsection. There can
+|link:#subsectionp[`p`] |0…* |Paragraph tag in a subsection. There can
 be zero or more paragraph tags in a subsection.
 
-|<<#subsectionol,`ol`>> |0…* |Ordered list in a subsection. There can
+|link:#subsectionol[`ol`] |0…* |Ordered list in a subsection. There can
 be zero or more ordered lists in a subsection.
 
-|<<#listp,`p`>> |0…* |Paragraph tag in an ordered list. There can be
+|link:#listp[`p`] |0…* |Paragraph tag in an ordered list. There can be
 zero or more paragraph tags in an ordered list.
 
-|<<#listpre,`pre`>> |0…* |Pre tag in an ordered list. There can be
+|link:#listpre[`pre`] |0…* |Pre tag in an ordered list. There can be
 zero or more pre tags in an ordered list.
 
-|<<#listx2,`ol`>> |0…* |Ordered list in an ordered list. There can be
+|link:#listx2[`ol`] |0…* |Ordered list in an ordered list. There can be
 zero or more ordered lists in an ordered list.
 
-|<<#listx2,`ul`>> |0…* |Unordered list in an ordered list. There can
+|link:#listx2[`ul`] |0…* |Unordered list in an ordered list. There can
 be zero or more unordered lists in an ordered list.
 
-|<<#listq,`div#expanded.question`>> |0…* |Question section in an
+|link:#listq[`div#expanded.question`] |0…* |Question section in an
 ordered list. There can be zero or more question section in an ordered
 list.
 
-|<<#listqp,`p`>> |1…1 |Paragraph tag in a question section. There can
+|link:#listqp[`p`] |1…1 |Paragraph tag in a question section. There can
 be only one paragraph tag to a questions section.
 
-|<<#subsectionul,`ul`>> |0…* |Unordered list in a subsection. There
+|link:#subsectionul[`ul`] |0…* |Unordered list in a subsection. There
 can be zero or more unordered lists in a subsection.
 
-|<<#listp,`p`>> |0…* |Paragraph tag in an unordered list. There can be
+|link:#listp[`p`] |0…* |Paragraph tag in an unordered list. There can be
 zero or more paragraph tags in an unordered list.
 
-|<<#listpre,`pre`>> |0…* |Pre tag in an unordered list. There can be
+|link:#listpre[`pre`] |0…* |Pre tag in an unordered list. There can be
 zero or more pre tags in an unordered list.
 
-|<<#listx2,`ol`>> |0…* |Ordered list in an unordered list. There can
+|link:#listx2[`ol`] |0…* |Ordered list in an unordered list. There can
 be zero or more ordered lists in an unordered list.
 
-|<<#listx2,`ul`>> |0…* |Unordered list in an unordered list. There can
+|link:#listx2[`ul`] |0…* |Unordered list in an unordered list. There can
 be zero or more unordered lists in an unordered list.
 
-|<<#listq,`div#expanded.question`>> |0…* |Question section in an
+|link:#listq[`div#expanded.question`] |0…* |Question section in an
 unordered list. There can be zero or more question section in an
 unordered list.
 
-|<<#listqp,`p`>> |1…1 |Paragraph tag in a question section. There can
+|link:#listqp[`p`] |1…1 |Paragraph tag in a question section. There can
 be only one paragraph tag to a questions section.
 
-|<<#_subsectionts,`div#expanded.troubleshooting`>> |0…*
+|link:#_subsectionts[`div#expanded.troubleshooting`] |0…*
 |Troubleshooting section in a subsection. There can be zero or more
 troubleshooting sections in a subsection.
 
-|<<#subsectionts,`h4`>> |1..1 |Title of a troubleshooting section.
+|link:#subsectionts[`h4`] |1..1 |Title of a troubleshooting section.
 There can be only one title in a troubleshooting section.
 
-|<<#tslist,`ul`>> |1..1 |Unordered list in a troubleshooting section.
+|link:#tslist[`ul`] |1..1 |Unordered list in a troubleshooting section.
 There can be only one unordered list in a troubleshooting section.
 
-|<<#_subsectionq,`div#expanded.question`>> |0…* |Question section in a
+|link:#_subsectionq[`div#expanded.question`] |0…* |Question section in a
 subsection. There can be zero or more question sections in a subsection.
 
-|<<#questionp,`p`>> |1…1 |Paragraph tag in a question section. There
+|link:#questionp[`p`] |1…1 |Paragraph tag in a question section. There
 can be only one paragraph tag to a questions section.
 
-|<<#_note,`div#note.(info|reminder|ahead)`>> |0…* |A Note section in a
+|link:#_note[`div#note.(info|reminder|ahead)`] |0…* |A Note section in a
 subsection. Note sections are positioned on the right side of a page.
-There are three types of note sections: <<#info,info>>,
-<<#reminder[reminder] and link:#ahead,ahead>>. There can be zero or
+There are three types of note sections: link:#info[info],
+link:#reminder[reminder] and link:#ahead[ahead]. There can be zero or
 more note sections in a subsection.
 
-|_<<#note,`div#note.ahead`>>_ | |Type of a note section.
+|_link:#note[`div#note.ahead`]_ | |Type of a note section.
 
-|_<<#info,`div#note.info`>>_ | |Type of a note section.
+|_link:#info[`div#note.info`]_ | |Type of a note section.
 
-|_<<#reminder,`div#note.reminder`>>_ | |Type of a note section.
+|_link:#reminder[`div#note.reminder`]_ | |Type of a note section.
 
-|<<#note,`h4`>> |1…1 |Title of a note section. There can be only one
+|link:#note[`h4`] |1…1 |Title of a note section. There can be only one
 title in note section.
 
-|<<#notep,`p`>> |0…* |Paragraph tag in a note section. There can be
+|link:#notep[`p`] |0…* |Paragraph tag in a note section. There can be
 zero or more paragraph tags in a note section.
 
-|<<#noteul,`ul`>> |0…* |Unordered list in a note section. There can be
+|link:#noteul[`ul`] |0…* |Unordered list in a note section. There can be
 zero or more unordered lists in a note section.
 
-|<<#_exercise,`div#subsection.exercise`>> |0…* |A type of subsection
+|link:#_exercise[`div#subsection.exercise`] |0…* |A type of subsection
 that denotes an exercise. Wraps a blur box around the content it
 contains There can be zero or more exercises to a section.
 
-|<<#exercise,`h3`>> |1…1 |Title of an exercise subsection. There can
+|link:#exercise[`h3`] |1…1 |Title of an exercise subsection. There can
 only be one title to an exercise subsection.
 
-|<<#code,`code`>> |0…* |Code tag. Formats the content it contains in
+|link:#code[`code`] |0…* |Code tag. Formats the content it contains in
 monotype font. Can appear anywhere, in any tags.
 
-|<<#code,`small`>> |1…1 |Small tags in Code tags. Reduces the size of
+|link:#code[`small`] |1…1 |Small tags in Code tags. Reduces the size of
 the content it contains. Only one set within the code tags.
 |=======================================================================
 

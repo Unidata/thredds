@@ -14,47 +14,47 @@ It is written to help clients read and understand THREDDS catalogs recieved from
 
 === Contents
 
-* <<#baseElements,*Base Catalog Elements*:>>
-** <<#catalog,catalog>>
-** <<#service,service>>
-** <<#dataset,dataset>>
-** <<#access,access>>
-** <<#catalogRef,catalogRef>>
-** <<#XLink,XLink>>
+* link:#baseElements[*Base Catalog Elements*:]
+** link:#catalog[catalog]
+** link:#service[service]
+** link:#dataset[dataset]
+** link:#access[access]
+** link:#catalogRef[catalogRef]
+** link:#XLink[XLink]
 
-* <<#dlElements,*Digital Library Metadata Elements*:>>
-** <<#threddsMetadataGroup,threddsMetadataGroup>>
-** <<#documentation,documentation>>
-** <<#metadataElement,metadata>>
-** <<#property,property>>
-** <<#sourceType,sourceType>>
-** <<#contributor,contributor>>
-** <<#geospatialCoverage,geospatialCoverage>>
-** <<#timeCoverage,timeCoverage>>
-** <<#dateType,dateType>>
-** <<#dateTypeFormatted,dateTypeFormatted>>
-** <<#durationType,duration>>
-** <<#dataSize,dataSize>>
-** <<#controlledVocabulary,controlledVocabulary>>
-** <<#variablesType,variables>>
+* link:#dlElements[*Digital Library Metadata Elements*:]
+** link:#threddsMetadataGroup[threddsMetadataGroup]
+** link:#documentation[documentation]
+** link:#metadataElement[metadata]
+** link:#property[property]
+** link:#sourceType[sourceType]
+** link:#contributor[contributor]
+** link:#geospatialCoverage[geospatialCoverage]
+** link:#timeCoverage[timeCoverage]
+** link:#dateType[dateType]
+** link:#dateTypeFormatted[dateTypeFormatted]
+** link:#durationType[duration]
+** link:#dataSize[dataSize]
+** link:#controlledVocabulary[controlledVocabulary]
+** link:#variablesType[variables]
 
-* <<#Enumerations,Enumerations>>
+* link:#Enumerations[Enumerations]
 
-* <<#Dataset_Access_Methods,Dataset Access Methods>>
+* link:#Dataset_Access_Methods[Dataset Access Methods]
 
-* <<#constructingURLs,Constructing URLs>>
+* link:#constructingURLs[Constructing URLs]
 
-* <<#datasetClassification,Dataset Classification>>
+* link:#datasetClassification[Dataset Classification]
 
-* <<#webResources,Datasets as Web Resources>>
+* link:#webResources[Datasets as Web Resources]
 
-* <<#index,Index>>
+* link:#index[Index]
 
 === Related resources:
 
 * Catalog <<../tutorial/CatalogPrimer.adoc,Primer>>
 
-* Catalog <<Example1.0rc8.xml,Example>>
+* Catalog link:Example1.0rc8.xml[Example]
 
 * Catalog XML Schema:
 
@@ -101,8 +101,8 @@ It is written to help clients read and understand THREDDS catalogs recieved from
 ----
 
 The _catalog_ element is the top-level element. It may contain zero or
-more _<<#service[service]_ elements, followed by zero or more _link:#property,property>>_ elements,
-followed by one or more _<<#dataset,dataset>>_ elements. The _base_ is
+more _link:#service[service]_ elements, followed by zero or more _link:#property[property]_ elements,
+followed by one or more _link:#dataset[dataset]_ elements. The _base_ is
 used to resolve any reletive URLs in the catalog such as catalogRefs,
 services, etc. It is usually the URL of the catalog document itself.
 Optionally the catalog may have a display __name__. The optionl _expires_
@@ -151,16 +151,16 @@ elements.
 
 The _name_ attribute is required and its value must be unique for all
 service elements within the catalog. These unique names are used in the
-definition of a <<#Dataset_Access_Methods,dataset access method>> to
+definition of a link:#Dataset_Access_Methods[dataset access method] to
 refer to a specific service element. The mandatory _base_ attribute and
 the optional _suffix_ attribute are both used in the construction of the
-dataset URL (see <<#constructingURLs,constructing URLS>>). The _base_
+dataset URL (see link:#constructingURLs[constructing URLS]). The _base_
 may be an absolute URL or it may be relative to the catalog’s base URL.
 The _service_ element has a _serviceType_ attribute whose value is
-typically one of the _<<#serviceTypes,serviceType>>_ values.
+typically one of the _link:#serviceTypes[serviceType]_ values.
 The optional _desc_ attribute allows you to give a human-readable description of the service.
 
-A _service_ element may contain 0 or more _<<#property,property>>_
+A _service_ element may contain 0 or more _link:#property[property]_
 elements to allow for the encoding of additional, service-specific information.
 
 Only _service_ element with _serviceType="Compound"_ may have nested
@@ -178,7 +178,7 @@ Example:
 ----
 
 Example with service base URL relative to catalog URL (see
-<<#constructingURLs,constructing URLS>> for how the resolved URL is created):
+link:#constructingURLs[constructing URLS] for how the resolved URL is created):
 
 [source,xml]
 ----
@@ -214,10 +214,10 @@ Example with service base URL relative to catalog URL (see
 
 A _dataset_ element represents a named, logical set of data at a level
 of granularity appropriate for presentation to a user. A dataset is
-*_<<#directDataset,direct>>_* if it contains at least one
-<<#Dataset_Access_Methods,dataset access method>>, otherwise it is
+*_link:#directDataset[direct]_* if it contains at least one
+link:#Dataset_Access_Methods[dataset access method], otherwise it is
 just a container for nested datasets, called a
-_*<<#collection,collection>>*_ dataset. The name of the dataset
+_*link:#collection[collection]*_ dataset. The name of the dataset
 element should be a human readable name that will be displayed to users.
 Multiple access methods specify different services for accessing the
 same dataset.
@@ -236,25 +236,25 @@ multiple catalogs, then the combination of its _authority_ and _ID_
 should be identical if possible.
 
 A _dataset_ element contains any number of elements from the
-<<#threddsMetadataGroup,threddsMetadataGroup>> in any order. These are
-followed by 0 or more _<<#access,access>>_ elements, followed by 0 or
+link:#threddsMetadataGroup[threddsMetadataGroup] in any order. These are
+followed by 0 or more _link:#access[access]_ elements, followed by 0 or
 more nested _dataset_ elements (actually you can use any element in the
 dataset substitution group: dataset or catalogRef). The data represented
 by a nested dataset element should be a subset, a specialization or in
 some other sense "contained" within the data represented by its parent
 dataset element.
 
-The _<<#collectionTypes,collectionType>>_ attribute is used to
+The _link:#collectionTypes[collectionType]_ attribute is used to
 indicate that the dataset is a link:#coherentDataset[coherent
 collection] and the type of the collections coherence. A datasets data
 type is very useful to clients so they know how to present the data to
-the user. (You can also use a <<#dataType_descrip,_dataType_>> element
+the user. (You can also use a link:#dataType_descrip[_dataType_] element
 which can be contained in a _dataset_ or _metadata_ element. This allows
 the data type to be inherited.) If the _harvest_ attribute is true, then
 this dataset is available to be placed into digital libraries or other
 discovery services. Note that the harvest attribute should be carefully
 placed to get the right level of granularity for digital library
-entries, and is typically placed on <<#collection,collection>>
+entries, and is typically placed on link:#collection[collection]
 datasets.
 
 If you want the same dataset to appear in multiple places in the same
@@ -271,10 +271,10 @@ favor of the _serviceName_ element which can be contained in a _dataset_
 or _metadata_ element. (The _access_ element’s _serviceName_ attribute
 is still necessary.) The urlPath attribute, in combination with the
 applicable serviceName, is used to specify
-<<#Dataset_Access_Methods,data access methods>>. When you have more
+link:#Dataset_Access_Methods[data access methods]. When you have more
 than one way to access a dataset, either explicitly define them using
-more than one nested <<#access,_access_>> elements, or use a
-<<#compoundService,compound service>>.
+more than one nested link:#access[_access_] elements, or use a
+link:#compoundService[compound service].
 
 Examples:
 
@@ -320,18 +320,18 @@ logically replaces the alias dataset.
 ----
 
 An _access_ element specifies how a dataset can be accessed through a
-data <<#service,_service_>>. It always refers to the dataset that it
+data link:#service[_service_]. It always refers to the dataset that it
 is immediately contained within.
 
 The _serviceName_ refers to the unique name of a service element. The
 _urlPath_ is appended to the service’s base to get the dataset URL (see
-<<#constructingURLs,constructing URLs>>). The
-_<<#dataFormatType,dataFormat>>_ is important when the
-<<#serviceTypes,_serviceType_>> is a bulk transport like _FTP_ or
+link:#constructingURLs[constructing URLs]). The
+_link:#dataFormatType[dataFormat]_ is important when the
+link:#serviceTypes[_serviceType_] is a bulk transport like _FTP_ or
 __HTTP__, as it specifies the format of the transferred file. It is not
 needed for client/server protocols like DODS or ADDE.
 
-An _access_ element may contain an optional <<#dataSize,_dataSize_>>
+An _access_ element may contain an optional link:#dataSize[_dataSize_]
 element to specify how large the dataset would be if it were to be
 copied to the client.
 
@@ -372,7 +372,7 @@ containing catalog, but remains a self-contained object. The referenced
 catalog must be a valid THREDDS catalog, but it does not have to match
 versions with the containing catalog.
 
-The <<#XLink,XLink attributeGroup>> allows you to add Xlink
+The link:#XLink[XLink attributeGroup] allows you to add Xlink
 attributes, a generalization of HTTP hrefs. The value of _xlink:href_ is
 the URL of the referenced catalog. It may be absolute or relative to the
 parent catalog URL. The value of _xlink:title_ is displayed as the name
@@ -461,58 +461,58 @@ discovery centers, and for annotation and documentation of datasets.
 ----
 
 The elements in the _threddsMetadataGroup_ may be used as nested
-elements of both _<<#dataset[dataset]_ and _link:#metadata,metadata>>_
+elements of both _link:#dataset[dataset]_ and _link:#metadata[metadata]_
 elements. There may be any number of them in any order, but more than
 one geospatialCoverage, timeCoverage, dataType, dataFormat, serviceName,
 or authority elements will be ignored.
 
-A _<<#documentationType,documentation>>_ element contains (or points
+A _link:#documentationType[documentation]_ element contains (or points
 to) _human-readable_ content. Documentation content may be displayed to
 users by THREDDS clients as appropriate for the situation. A
-_<<#metadataElement,metadata>>_ element is a container for
+_link:#metadataElement[metadata]_ element is a container for
 _machine-readable_ information structured in XML. A
-_<<#property,property>>_ element is an arbitrary name/value pair.
+_link:#property[property]_ element is an arbitrary name/value pair.
 
 The next group of elements are used primarily for use in Digital
-Libraries. A <<#contributorType,_contributor_>> element is typically a
+Libraries. A link:#contributorType[_contributor_] element is typically a
 person’s name with an optional _role_ attribute, documenting some
 person’s contribution to the dataset. A _creator_ element ____indicates
 who created the dataset. A _date_ element is used to document various
 dates associated with the dataset, using one of the
-<<#dateTypeEnum,date type enumerations>>. A _keyword_ element is used
+link:#dateTypeEnum[date type enumerations]. A _keyword_ element is used
 for library searches, while a _project_ element specifies what
 scientific project the dataset belongs to. Both have type
-<<#controlledVocabulary,controlledVocabulary>>, which allows an
+link:#controlledVocabulary[controlledVocabulary], which allows an
 optional vocabulary attribute to specify if you are using words from a
 restricted list, for example DIF. A _publisher_ element indicates who is
 responsible for serving the dataset. Both a contibutor and publisher
-element use the <<#sourceType,sourceType>> definition.
+element use the link:#sourceType[sourceType] definition.
 
 The next group of elements are used in search services. The
-_<<#geospatialCoverageType,geospatialCoverage>>_ element specifies a
+_link:#geospatialCoverageType[geospatialCoverage]_ element specifies a
 lat/lon bounding box for the data. The
-_<<#timeCoverageType,timeCoverage>>_ element specifies the range of
-dates that the dataset covers. The _<<#variablesType,variables>>_
+_link:#timeCoverageType[timeCoverage]_ element specifies the range of
+dates that the dataset covers. The _link:#variablesType[variables]_
 element specifies the names of variables contained in the datasets, and
 ways to map the names to standard vocabularies.
 
 The _dataType_ element is used to indicate the high-level semantic type
 of the dataset (e.g., grid, point, trajectory) and can be used by
 clients to decide how to display the data. The values come from the
-<<#dataType_types_,data type enumeration>> which are intended to map
+link:#dataType_types_[data type enumeration] which are intended to map
 to the scientific data types from
 the http://www.unidata.ucar.edu/software/netcdf/CDM/[Common Data Model
 (CDM)]. The _dataFormat_ element indicates the format of the data and is
 mainly used so clients can determine how to read data that is accessed
 using a bulk access method. The data format values come from the
-<<#dataFormatType,data format enumeration>>. The _serviceName_ element
+link:#dataFormatType[data format enumeration]. The _serviceName_ element
 is a reference to a _service_ element; its content must match the _name_
 of a _service_ element in the catalog. The service referenced by a
 dataset is used in the link:#constructingURLs[construction of access
 method URLs] for that dataset. (This element and the _serviceName_
 attribute of an _access_ element are both used in the same way.) The
 _authority_ element is used to further refine dataset IDs with the goal
-of allowing for <<#globally_unique_id,globally unique IDs>>. The
+of allowing for link:#globally_unique_id[globally unique IDs]. The
 _dataSize_ element can be used to specify how large the dataset would be
 if it were to be copied to a client.
 
@@ -570,7 +570,7 @@ Examples:
 
 The _documentation_ element may contain arbitrary plain text content, or
 XHTML.We call this kind of content "human readable" information. It
-has an optional <<#docTypeEnum,documentation type>> attribute, such as
+has an optional link:#docTypeEnum[documentation type] attribute, such as
 summary, funding, history, etc.
 
 The _documentation_ element may also contain an
@@ -578,7 +578,7 @@ http://www.w3.org/TR/xlink/[XLink] to an HTML or plain text web page.
 This allows you to point to external web references, and also allows you
 to factor out common documentation which can be referenced from multiple
 places. Note it should not link to an XML page (unless its XHTML), use
-the <<#metadata,metadata>> element instead.
+the link:#metadata[metadata] element instead.
 
 Examples:
 
@@ -615,12 +615,12 @@ describe, or search for the dataset.  We call this kind of content
 "machine readable" information.
 
 A _metadata_ element contains any number of elements from the
-<<#threddsMetadataGroup,threddsMetadataGroup>> in any order, OR it
+link:#threddsMetadataGroup[threddsMetadataGroup] in any order, OR it
 contains any other well-formed XML elements, as long as they are in a
 namespace other than the THREDDS namespace. It may also contain an XLink
 to another XML document, whose top-level element should be a valid
 metadata element (see example below). Note it should not link to an HTML
-page, use the <<#documentation,documentation>> element instead.
+page, use the link:#documentation[documentation] element instead.
 
 The _inherited_ attribute indicates whether the metadata is inherited by
 nested datasets. If true, the metadata element becomes logically part of
@@ -628,9 +628,9 @@ each nested dataset. (The metadata always applies to the containing
 dataset whether _inherited_ is true or not.)
 
 The _metadataType_ attribute may have any value, but the "well known"
-values are listed in the <<#metadataType,metadataType>> enumeration.
+values are listed in the link:#metadataType[metadataType] enumeration.
 To use metadata elements from the
-<<#threddsMetadataGroup,threddsMetadataGroup>>, do not include the
+link:#threddsMetadataGroup[threddsMetadataGroup], do not include the
 metada type attribute (or set it to "THREDDS"). To use your own
 elements, give it a metadata type, and add a namespace declaration (see
 example below).
@@ -749,7 +749,7 @@ namespace:
 ----
 
 Property elements are arbitrary name/value pairs to associate with a
-<<#catalog[catalog], <<#dataset,dataset>> or link:#service,service>>
+link:#catalog[catalog], link:#dataset[dataset] or link:#service[service]
 element. Properties on datasets are added as global attributes to the
 THREDDS data model objects.
 
@@ -778,11 +778,11 @@ Example:
 </xsd:complexType>
 ----
 
-This is used by the <<#creator,creator>> and
-<<#publisher,publisher>> elements to specify roles of responsibility
+This is used by the link:#creator[creator] and
+link:#publisher[publisher] elements to specify roles of responsibility
 for the dataset. It must have a _name_ and _contact_ element. The name
 element has an optional vocabulary attribute if it come from a
-<<#controlledVocabulary,controlled vocabulary>>. The _contact_ element
+link:#controlledVocabulary[controlled vocabulary]. The _contact_ element
 has attributes to specify a web _url_ and an _email_ address.
 
 Example:
@@ -925,8 +925,8 @@ Example:
 
 A timeCoverage element specifies a date range. The date range can be
 specified in three ways: 1) by giving both a _start_ and an _end_
-<<#dateType,date type>> element; 2) by specifying a _start_ element
-and a <<#durationType,_duration_>> element; or 3) by specifying an
+link:#dateType[date type] element; 2) by specifying a _start_ element
+and a link:#durationType[_duration_] element; or 3) by specifying an
 _end_ element and a _duration_ element. The optional resolution element
 should be used to indicate the data resolution for time series data.
 
@@ -1019,7 +1019,7 @@ Examples:
 A _*dateTypeFormatted*_ extends dateType by allowing an optional,
 user-defined _format_ attribute and an optional _type_ attribute. The
 *_format_* string follows the specification in
-**java.text.SimpleDateFormat**. The <<#dateTypeEnum,values>> of the
+**java.text.SimpleDateFormat**. The link:#dateTypeEnum[values] of the
 *_type_* attribute are taken from the Dublin Core date types.
 
 Example:
@@ -1281,8 +1281,8 @@ future versions of this schema.
 </xsd:simpleType>
 ----
 
-These describe the data formats, used in an <<#access,access>>
-attribute or <<#dataset,dataset>> element, when the service is a bulk
+These describe the data formats, used in an link:#access[access]
+attribute or link:#dataset[dataset] element, when the service is a bulk
 transport (like FTP) and the client has to know how to read the
 downloaded dataset file.
 
@@ -1354,7 +1354,7 @@ the data.
 ----
 
 The date type enumeration defines a basic set of types for a
-<<#date,date>> element. These values were taken from the Dublin Core
+link:#date[date] element. These values were taken from the Dublin Core
 metadata set.
 
 This set of values is not exclusive so other values are allowed.
@@ -1384,7 +1384,7 @@ data type).
 ----
 
 The documentation type enumeration defines a basic set of types used by
-the <<#documentation,documentation>> element.
+the link:#documentation[documentation] element.
 
 This set of values is not exclusive so other values are allowed.
 Alternate values must be strings that do not contain end-of-line
@@ -1418,7 +1418,7 @@ data type).
 ----
 
 The metadata type enumeration defines a basic set of types used by the
-<<#metadata,metadata>> element.
+link:#metadata[metadata] element.
 
 This set of values is not exclusive so other values are allowed.
 Alternate values must be strings that do not contain end-of-line
@@ -1478,12 +1478,12 @@ data type).
 </xsd:simpleType>
 ----
 
-These are the known service types, used in a <<#service,service>>
+These are the known service types, used in a link:#service[service]
 element, that indicate how to access a dataset. A serviceType is
 similar, but not generally the same as the
 http://www.iana.org/assignments/uri-schemes[scheme] of a URI, like
 __http:, ftp:, file:__, etc. In general, the combination of the
-*serviceType* and the <<#dataFormatType,dataFormat>> is intended to be
+*serviceType* and the link:#dataFormatType[dataFormat] is intended to be
 sufficient for a client to access and read the dataset. Additional
 information can be encoded in service properties.
 
@@ -1496,7 +1496,7 @@ seperate dataFormat attribute is needed. DODS is a synonym for
 **OpenDAP**; *OpenDAP-G* corresponds to OpenDAP over GridFTP.
 
 The next set of service types are all bulk transfer protocols, and you
-need to also specify the <<#dataFormatType,dataFormat>> for datasets
+need to also specify the link:#dataFormatType[dataFormat] for datasets
 that use these. *FTP* is the well-known File Transfer Protocol, and
 http://www.globus.org/grid_software/data/gridftp.php[*GridFTP*] is a
 variant of that used by the Globus Data Grid. The *File* service is for
@@ -1526,7 +1526,7 @@ dataFormatType.
 The last set of service types are THREDDS defined types. The *Catalog*
 and *Resolver* types return XML documents over HTTP. These are generally
 handled internally by THREDDS. A
-<<#compoundService,Compound Service>> just indicates that the service is composed of other services.
+link:#compoundService[Compound Service] just indicates that the service is composed of other services.
 
 [[variableNameVocabulary]]
 === variableNameVocabulary types
@@ -1548,7 +1548,7 @@ handled internally by THREDDS. A
 ----
 
 These are the known vocabularies for standard variable names, used in
-the <<#variables,variables>> element. *CF* refers to the
+the link:#variables[variables] element. *CF* refers to the
 http://cfconventions.org[Climate and Forecast Conventions] metadata
 conventions for netCDF; they have a list of
 http://cfconventions.org/standard-names.html[standard variable names].
@@ -1576,7 +1576,7 @@ The values of the _access_ element’s _urlPath_ and _serviceName_ attributes sp
 If the _access_ element does not include a _serviceName_ attribute, the _dataset_ default service is used.
 
 (*) Multiple access methods are defined whenever the service element is a compound service. More on this in the
-<<#compound,Access Methods and Compound Services>> section below. +
+link:#compound[Access Methods and Compound Services] section below. +
 
 === Dataset Default Service
 
@@ -1716,7 +1716,7 @@ implement a _*virtual*_ dataset like "latest model run" or "latest
 measurement" on a real time dataset, where the actual URL must be
 generated when the user requests it.
 
-A query dataset looks a lot like a <<#catalogRef,catalogRef>>, since
+A query dataset looks a lot like a link:#catalogRef[catalogRef], since
 you dereference a URL and get a catalog back. However, a catalogRef is
 cacheable, but a query dataset is inherently dynamic, so is not cacheable.
 
@@ -1739,7 +1739,7 @@ Example:
 http://server:8080/thredds/catalog/grib.v5/gfs_2p5deg/catalog.xml#grib.v5/gfs_2p5deg/TwoD
 ----
 
-The reference implementation of THREDDS datasets is the <<../../netcdf-java,netCDF-Java library>>,
+The reference implementation of THREDDS datasets is the link:../../netcdf-java[netCDF-Java library],
 which accepts dataset URLS of the form *_thredds:catalog.xml#dataset_id_*,
 where the _thredds:_ prefix ensures that the URL is understood as a THREDDS catalog and dataset.
 
@@ -1756,88 +1756,88 @@ in the catalog _\http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.ht
 [[Index]]
 == Index
 
-* <<#access,access>> element; defines a specific service and URL to
+* link:#access[access] element; defines a specific service and URL to
 access a dataset.
-* <<#authority,authority>> : an element of a dataset; can also be
+* link:#authority[authority] : an element of a dataset; can also be
 specified as an attribute; used for unique IDs.
-* <<#base,service@base>> : base URL is an attribute of a
-<<#service,service>> element ; dataset URLs can be reletive to it .
-* <<#catalog,catalog>> element; root XML element.
-* <<#catalogRef,catalogRef>> element; refers to a nested THREDDS
+* link:#base[service@base] : base URL is an attribute of a
+link:#service[service] element ; dataset URLs can be reletive to it .
+* link:#catalog[catalog] element; root XML element.
+* link:#catalogRef[catalogRef] element; refers to a nested THREDDS
 catalog.
-* <<#collectionTypes,collectionTypes>> enumeration, used by
-<<#collection,collection>> attribute of dataset.
-* <<#contact,contact>> : an attribute used by publisher and creator
+* link:#collectionTypes[collectionTypes] enumeration, used by
+link:#collection[collection] attribute of dataset.
+* link:#contact[contact] : an attribute used by publisher and creator
 elements.
-* <<#contributor,contributor>> element, used in
-<<#threddsMetadataGroup,threddsMetadataGroup.>>
-* <<#controlledVocabulary,controlledVocabulary>> adds an optional
+* link:#contributor[contributor] element, used in
+link:#threddsMetadataGroup[threddsMetadataGroup.]
+* link:#controlledVocabulary[controlledVocabulary] adds an optional
 vocabulary attribute to the string-valued element.
-* <<#creator,creator>> element, used in
-<<#threddsMetadataGroup,threddsMetadataGroup.>>
-* <<#dataFormatType,dataFormatTypes>> enumeration, used by
-<<#dataFormatType,dataFormat>> element, specifies the file format of
+* link:#creator[creator] element, used in
+link:#threddsMetadataGroup[threddsMetadataGroup.]
+* link:#dataFormatType[dataFormatTypes] enumeration, used by
+link:#dataFormatType[dataFormat] element, specifies the file format of
 the data.
-* <<#dataSize,dataSize>> element; size of the dataset in bytes.
-* <<#dataType,dataTypes>> enumeration, used by
-<<#dataType,dataType>> attribute of dataset element, specifies the
+* link:#dataSize[dataSize] element; size of the dataset in bytes.
+* link:#dataType[dataTypes] enumeration, used by
+link:#dataType[dataType] attribute of dataset element, specifies the
 kind of data in the dataset.
-* <<#dataset,dataset>> element; represents a coherent set of data.
-* <<#date,date>> element, used in
-<<#threddsMetadataGroup,threddsMetadataGroup.>>
-* <<#dateType,dateType>> is an attribute or element specifying a date.
-* <<#dateTypeFormatted,dateTypeFormatted>> is an element specifying a
+* link:#dataset[dataset] element; represents a coherent set of data.
+* link:#date[date] element, used in
+link:#threddsMetadataGroup[threddsMetadataGroup.]
+* link:#dateType[dateType] is an attribute or element specifying a date.
+* link:#dateTypeFormatted[dateTypeFormatted] is an element specifying a
 date, with optional formatting and type attributes.
-* <<#documentation,documentation>> contains human readable information
+* link:#documentation[documentation] contains human readable information
 about the dataset.
-* <<#durationType,duration>> a time range.
-* <<#expires,expires>> : attribute of catalog, indicates how long the
+* link:#durationType[duration] a time range.
+* link:#expires[expires] : attribute of catalog, indicates how long the
 information is valid.
-* <<#geospatialCoverage,geospatialCoverage>> element, defines the
+* link:#geospatialCoverage[geospatialCoverage] element, defines the
 spatial area that the data covers, using
-<<#geospatialCoverageType,geospatialCoverageType>>.
-* <<#harvest,harvest>>: an attribute of dataset, specifies that the
+link:#geospatialCoverageType[geospatialCoverageType].
+* link:#harvest[harvest]: an attribute of dataset, specifies that the
 dataset should be harvested into a Digital library record.
-* <<#keyword,keyword>> element, used in
-<<#threddsMetadataGroup,threddsMetadataGroup.>>
-* <<#metadata,metadata>> element is a container or a pointer to other
+* link:#keyword[keyword] element, used in
+link:#threddsMetadataGroup[threddsMetadataGroup.]
+* link:#metadata[metadata] element is a container or a pointer to other
 metadata elements.
-* <<#metadataType,metadataType>> values are the "well known" types
+* link:#metadataType[metadataType] values are the "well known" types
 of metadata records, used in a metadata element.
-* <<#project,project>> element, used in
-<<#threddsMetadataGroup,threddsMetadataGroup.>>
-* <<#property,property>> element, specifies name/value pairs.
-* <<#publisher,publisher>> element, used in
-<<#threddsMetadataGroup,threddsMetadataGroup.>>
-* <<#rights,rights>> : a specialized documentation element; what
+* link:#project[project] element, used in
+link:#threddsMetadataGroup[threddsMetadataGroup.]
+* link:#property[property] element, specifies name/value pairs.
+* link:#publisher[publisher] element, used in
+link:#threddsMetadataGroup[threddsMetadataGroup.]
+* link:#rights[rights] : a specialized documentation element; what
 restrictions are on the use of the dataset.
-* <<#service,service>> element defines how and where a dataset is
+* link:#service[service] element defines how and where a dataset is
 accessed.
-* <<#serviceTypes,serviceTypes>> enumeration, used by serviceType
-attribute of <<#service,service>>
-* <<#sourceType,sourceType>> is the type of a creator and publisher
+* link:#serviceTypes[serviceTypes] enumeration, used by serviceType
+attribute of link:#service[service]
+* link:#sourceType[sourceType] is the type of a creator and publisher
 element.
-* <<#spatialRange,spatialRange>> is a data type used in a
-<<#geospatialCoverageType,geospatialCoverage>> element.
-* <<#summary,summary>> : a specialized documentation element, a short
+* link:#spatialRange[spatialRange] is a data type used in a
+link:#geospatialCoverageType[geospatialCoverage] element.
+* link:#summary[summary] : a specialized documentation element, a short
 description or abstract of the dataset.
-* <<#timeCoverage,timeCoverage>> element, defines the time range that
-the data covers, using <<#timeCoverageType,timeCoverageType>>.
-* <<#threddsMetadataGroup,threddsMetadataGroup>> group of elements,
+* link:#timeCoverage[timeCoverage] element, defines the time range that
+the data covers, using link:#timeCoverageType[timeCoverageType].
+* link:#threddsMetadataGroup[threddsMetadataGroup] group of elements,
 used in dataset or metadata element.
-* <<#variablesType,variables>> element, used in
-<<#threddsMetadataGroup,threddsMetadataGroup,>> specifies the
+* link:#variablesType[variables] element, used in
+link:#threddsMetadataGroup[threddsMetadataGroup,] specifies the
 variables (aka _fields_ or __parameters__) available in the dataset.
-* <<#variableMap,variableMap>> element is used in
-<<#variables,variables>> to link to an external document specifying
+* link:#variableMap[variableMap] element is used in
+link:#variables[variables] to link to an external document specifying
 the variable names.
-* <<#variableNameVocabulary,variableNameVocabulary>> is an enumeration
+* link:#variableNameVocabulary[variableNameVocabulary] is an enumeration
 of known vocabularies for standard variable names, used in the
-<<#variables,variables>> element.
-* <<#XLink,XLink>> group of attributes; defines a link to another
+link:#variables[variables] element.
+* link:#XLink[XLink] group of attributes; defines a link to another
 document.
-* <<#zpositive,zpositive>> is an attribute of
-<<#geospatialCoverageType,geospatialCoverage>> element, indicating if
+* link:#zpositive[zpositive] is an attribute of
+link:#geospatialCoverageType[geospatialCoverage] element, indicating if
 the units of z goes up or down as z increases.
 
 '''''

@@ -8,7 +8,7 @@ Documentation for the THREDDS Data Server.
 
 //
 // Each line must follow the following format:
-// <indentation with .'s> <<<url>,text>>
+// <indentation with .'s> link:<url>[text]
 // No text may be outside of the square brackets.
 //
 // Getting Started (tutorial)

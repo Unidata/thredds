@@ -12,9 +12,9 @@ Free Monitoring and Debugging Tools
 This section covers various free, 3rd-party monitoring and debugging
 tools:
 
-* <<#logAnalyzers,Log Analyzers>>
-* <<#firefox,Firefox Add-Ons>>
-* <<#jdk,Tools that come with the JDK>>
+* link:#logAnalyzers[Log Analyzers]
+* link:#firefox[Firefox Add-Ons]
+* link:#jdk[Tools that come with the JDK]
 
 == Log Analyzers
 
@@ -60,6 +60,6 @@ the JVM:
 * monitor the garbage collector and perform memory and CPU profiling
 * browse and operate on MBeans
 
-<<images/TdsRemoteManager_top.png[image:images/TdsRemoteManager_top.png,JVisualVM]>>
+link:images/TdsRemoteManager_top.png[image:images/TdsRemoteManager_top.png[JVisualVM]]
 
-<<images/permgen3.png[image:images/permgen3.png,JConsole]>>
+link:images/permgen3.png[image:images/permgen3.png[JConsole]]

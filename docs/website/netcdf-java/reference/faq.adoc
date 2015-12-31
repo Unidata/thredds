@@ -4,15 +4,15 @@
 
 = NetCDF-Java FAQ
 
-* <<#Arrays,Arrays>>
-* <<#Caching,Caching>>
-* <<#IOSP,IOSP>>
-* <<#Logging,Logging>>
-* <<#Multithreading,Multithreading>>
-* <<#NcML,NcML>>
-* <<#Reading,Reading>>
-* <<#Writing,Writing>>
-* <<#Unsigned,Unsigned types>>
+* link:#Arrays[Arrays]
+* link:#Caching[Caching]
+* link:#IOSP[IOSP]
+* link:#Logging[Logging]
+* link:#Multithreading[Multithreading]
+* link:#NcML[NcML]
+* link:#Reading[Reading]
+* link:#Writing[Writing]
+* link:#Unsigned[Unsigned types]
 
 Miscellaneous
 

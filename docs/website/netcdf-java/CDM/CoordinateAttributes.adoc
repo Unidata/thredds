@@ -53,7 +53,7 @@ This attribute is used on a Coordinate Axis variable to specify that it
 is a space or time coordinate, such as lat, lon, altitude or time.
 This is the preferred way to make a Variable into a CoordinateAxis (the other way is to list the variable in a *_CoordinateAxes* attribute).
 
-The attribute value must be one of the valid <<#AxisTypes,Axis Types>>, for example:
+The attribute value must be one of the valid link:#AxisTypes[Axis Types], for example:
 
 -----------------------------
  _CoordinateAxisType = "Lat";
@@ -64,7 +64,7 @@ The attribute value must be one of the valid <<#AxisTypes,Axis Types>>, for exam
 This attribute is used on a Coordinate Transform variable to specify that the Transform applies to any Coordinate System
 with the specified list of Axis types.
 
-The attribute value must be a list of the valid <<#AxisTypes,Axis Types>>, for example:
+The attribute value must be a list of the valid link:#AxisTypes[Axis Types], for example:
 
 ------------------------------------
  _CoordinateAxisTypes = "GeoZ Time";

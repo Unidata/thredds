@@ -12,14 +12,14 @@ This section covers basic installation and configuration of Tomcat, Java JDK and
 
 image:images/gettingStartedContext.png[Getting Started Context]
 
-* <<#install,Installing Java and Tomcat>>
-* <<#tour,Tomcat Directory Structure: Quick Tour>>
-* <<#running,Running Tomcat>>
-* <<#logs,Tomcat Log Files>>
-* <<#files,Tomcat (Server-Level) Configuration Files>>
-* <<#deploying,Deploying the TDS>>
-* <<#manager,Tomcat `manager` Application>>
-* <<#next,Next Steps: Where To Go From Here>>
+* link:#install[Installing Java and Tomcat]
+* link:#tour[Tomcat Directory Structure: Quick Tour]
+* link:#running[Running Tomcat]
+* link:#logs[Tomcat Log Files]
+* link:#files[Tomcat (Server-Level) Configuration Files]
+* link:#deploying[Deploying the TDS]
+* link:#manager[Tomcat `manager` Application]
+* link:#next[Next Steps: Where To Go From Here]
 
 No prior knowledge of Tomcat, Java, or the TDS needed.
 

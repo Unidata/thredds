@@ -15,7 +15,7 @@
 
 * Introduction of Unidata staff
 * Review of schedule
-* Why use TDS? (<<TDSOverview.pptx[PPT])(link:TDSOverview.pdf,PDF>>)
+* Why use TDS? (link:TDSOverview.pptx[PPT])(link:TDSOverview.pdf[PDF])
 * TDS Resources: <<../TDS.adoc,Web page>>,
 <<../reference/index.adoc[Reference], link:../faq.adoc,FAQ>>
 * http://www.unidata.ucar.edu/community/surveys/2014training/survey.html[Feedback/Evaluation
@@ -94,7 +94,7 @@ Collections]
 * Issue Tracking with http://www.unidata.ucar.edu/jira/[JIRA]
 * Maven artifacts on
 https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
-* CDM/TDS Nightly Build/Test System (<<images/jenkins.png,Jenkins>>)
+* CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
 * Continuous Integration on
 https://travis-ci.org/Unidata/thredds[Travis]
 * Static code analysis on
@@ -148,7 +148,7 @@ http://localhost:8080/thredds/admin/debug[debug] page)
 
 === 9:45 Data Discovery (Sean)
 
-* Data discovery systems: (<<files/metadata_ncISO.pdf,pdf>>)
+* Data discovery systems: (link:files/metadata_ncISO.pdf[pdf])
 * <<../reference/ncISO.adoc,ncIso>>
 * exercise- how can we increase our ncISO score?
 * http://wiki.esipfed.org/index.php?title=Category:Attribute_Conventions_Dataset_Discovery[Attribute
@@ -159,7 +159,7 @@ Convention for Data Discovery] (Ethan)
 === 11:00 NcML modifications (John)
 
 * <<../../netcdf-java/ncml/Tutorial.adoc,Basic NcML tutorial>>
-* <<NcML.htm,Using NcML in the TDS>>
+* link:NcML.htm[Using NcML in the TDS]
 
 === 11:30 NcML Examples (Ryan)
 
@@ -179,7 +179,7 @@ Collections]
 * Netcdf Subset Service
 <<../reference/NetcdfSubsetServiceConfigure.adoc,configure>>,
 <<../reference/NetcdfSubsetServiceReference.adoc,reference>>
-(<<../reference/files/NCSS_4_3.pdf,pdf>>)
+(link:../reference/files/NCSS_4_3.pdf[pdf])
 * URL Builder
 
 === 1:45 (Sean) http://www.unidata.ucar.edu/software/rosetta/[Rosetta]
@@ -209,7 +209,7 @@ Participant feedback (Sean)
 * Issue Tracking with http://www.unidata.ucar.edu/jira/[JIRA]
 * Maven artifacts on
 https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
-* CDM/TDS Nightly Build/Test System (<<images/jenkins.png,Jenkins>>)
+* CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
 * Continuous Integration on
 https://travis-ci.org/Unidata/thredds[Travis]
 * Static code analysis on

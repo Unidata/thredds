@@ -19,7 +19,7 @@ applications.
 
 <<jarDiff.adoc,A complete list of all API changes>>
 
-<<APIchanges.txt,An overview of the most important changes>>
+link:APIchanges.txt[An overview of the most important changes]
 
 The following are a quick reference to changes that you are most likely
 to see.
@@ -75,6 +75,6 @@ replace it with:
 
 '''''
 
-<<../NetcdfUsers.htm[image:../nc.gif,image]>> This document is
+link:../NetcdfUsers.htm[image:../nc.gif[image]] This document is
 maintained by mailto:caron@unidata.ucar.edu[John Caron] and was last
 updated on Feb 10, 2009

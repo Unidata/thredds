@@ -48,8 +48,8 @@ file directly.
 
 == Exercise 1. Working with NcML files in ToolsUI
 
-Download <<examples/example1.nc,example1.nc>> and
-<<examples/exercise1.ncml,exercise1.ncml>> and place them in the same
+Download link:examples/example1.nc[example1.nc] and
+link:examples/exercise1.ncml[exercise1.ncml] and place them in the same
 directory. Open *exercise1.ncml* in the in the NcML tab:
 
 [source,xml]
@@ -190,7 +190,7 @@ This form is useful in aggregations but not for much else.
 In this example, we read in all of the metadata from the referenced
 dataset, and modify it through elements in the NcML.
 
-Download <<examples/exercise3.ncml,exercise3.ncml>> and place it in
+Download link:examples/exercise3.ncml[exercise3.ncml] and place it in
 the same directory as example1.nc. Open exercise3.ncml in the ToolsUI
 Viewer tab, and in the NcML tab.
 

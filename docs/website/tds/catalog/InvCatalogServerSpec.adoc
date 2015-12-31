@@ -14,11 +14,11 @@ catalog specification].
 
 Server-side elements described in this document:
 
-* <<#catalog,catalog>>
-* <<#catalogScan,catalogScan>>
-* <<#dataset,dataset>>
-* <<#datasetRoot,datasetRoot>>
-* <<#datasetScan,datasetScan>>
+* link:#catalog[catalog]
+* link:#catalogScan[catalogScan]
+* link:#dataset[dataset]
+* link:#datasetRoot[datasetRoot]
+* link:#datasetScan[datasetScan]
 
 Also see:
 
@@ -128,7 +128,7 @@ directory and all subdirectories. (NOT IMPLEMENTED)
 [[dataset]]
 == The dataset element
 
-The *<<../tutorial/NcML.htm,ncml:netcdf>>* element is specific to server side catalogs, along with the
+The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to server side catalogs, along with the
 *<<../reference/RestrictedAccess.adoc,restrictAccess>>* attribute:
 
 [source,xml]
@@ -159,8 +159,8 @@ The *<<../tutorial/NcML.htm,ncml:netcdf>>* element is specific to server side ca
 TDS to <<../reference/RestrictedAccess.adoc,restrict access>> to this
 dataset. It is always inherited by all contained datasets.
 * The *ncml:netcdf* element is used only on the server, it
-<<../tutorial/NcML.htm,modifies the dataset with NcML>>. For
-<<#datasetScan,datasetScan>>, it modifies all contained datasets.
+link:../tutorial/NcML.htm[modifies the dataset with NcML]. For
+link:#datasetScan[datasetScan], it modifies all contained datasets.
 
 [[datasetScan]]
 == __The datasetScan__ Element
@@ -514,7 +514,7 @@ _datasetNameMatchPattern_ attribute is used in a regular expression
 match on the dataset name. If the match succeeds, a capturing group
 replacement is performed on the _startTimeSubstitutionPattern_ attribute
 and the result is the start time string (see the _namer_ element
-description, <<#namer_Element,above>>, for more on regular expressions
+description, link:#namer_Element[above], for more on regular expressions
 and capturing groups). The time coverage duration is given by the
 _duration_ attribute.
 
@@ -549,12 +549,12 @@ following timeCoverage element: +
 [[Index]]
 == Index +
 
-* <<#addLatest,addLatest>>
-* <<#addProxies,addProxies>>
-* <<#addTimeCoverage,addTimeCoverage>>
-* <<#datasetScan,datasetScan>>: creates nested catalogs by scanning directories.
-* <<#datasetRoot,datasetRoot>>: associates a local disk directory with a URL path +
-* <<#filter,filter>>
-* <<#namer,namer>>
-* <<#sort,sort>>
+* link:#addLatest[addLatest]
+* link:#addProxies[addProxies]
+* link:#addTimeCoverage[addTimeCoverage]
+* link:#datasetScan[datasetScan]: creates nested catalogs by scanning directories.
+* link:#datasetRoot[datasetRoot]: associates a local disk directory with a URL path +
+* link:#filter[filter]
+* link:#namer[namer]
+* link:#sort[sort]
 

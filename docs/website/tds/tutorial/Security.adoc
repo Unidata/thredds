@@ -9,19 +9,19 @@
 Best practices and recommendations on securing a production TDS/Tomcat
 server:
 
-* <<#why,Why Is Security Important?>>
-* <<#versions,Keeping Software Versions Up-To-Date>>
+* link:#why[Why Is Security Important?]
+* link:#versions[Keeping Software Versions Up-To-Date]
 * link:#install[Tomcat Process User/Group and $CATALINA_HOME
 Permissions]
-* <<#unused,Removing Unused Web Applications>>
-* <<#digested,Using Digested Passwords>>
-* <<#ssl,Enabling TSL/SSL Encryption>>
-* <<#manager,Securing the Tomcat `manager` Application>>
-* <<#ports,Blocking Non-Essential Port Access At The Firewall>>
+* link:#unused[Removing Unused Web Applications]
+* link:#digested[Using Digested Passwords]
+* link:#ssl[Enabling TSL/SSL Encryption]
+* link:#manager[Securing the Tomcat `manager` Application]
+* link:#ports[Blocking Non-Essential Port Access At The Firewall]
 * link:#access[Restricting Access To The TDS By Remote IP Address Or
 Host]
-* <<#proxy,Reverse Proxy>>
-* <<#shutdown,Protecting the Tomcat `SHUTDOWN` Port>>
+* link:#proxy[Reverse Proxy]
+* link:#shutdown[Protecting the Tomcat `SHUTDOWN` Port]
 
 You should know how to do a <<GettingStarted.adoc,basic installation>>
 of Tomcat, Java, and the TDS; and be familiar with the

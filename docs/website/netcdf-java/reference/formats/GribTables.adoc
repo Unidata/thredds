@@ -198,7 +198,7 @@ incorrect dataset. Here are the ways that can be done:
 ==== Directly embed table in NcML
 
 You can directly embed the table in NcML, using the
-<<#DefineGrib1Params,XML Schema for declaring Grib-1 Parameters>>.
+link:#DefineGrib1Params[XML Schema for declaring Grib-1 Parameters].
 Place the table inside of a <iospParam> element. For example:
 
 [source,xml]
@@ -243,7 +243,7 @@ attribute of the netcdf element:
 
 ==== Reference to a Grib Parameter table lookup in NcML
 
-You can reference a <<#tableMap,table map>> in NcML by passing the
+You can reference a link:#tableMap[table map] in NcML by passing the
 string *"GribParameterTableLookup=<absolute file path to table map>"*
 in the iospParam attribute of the netcdf element:
 
@@ -267,7 +267,7 @@ following:
 ==== Directly embed table in featureCollection element of the TDS configuration catalog
 
 You can directly embed an XML table (use the
-<<#DefineGrib1Params,standard XML schema>>) in a featureCollection
+link:#DefineGrib1Params[standard XML schema]) in a featureCollection
 element of type GRIB in a TDS configuration catalog:
 
 [source,xml]

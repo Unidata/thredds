@@ -329,7 +329,7 @@ http://motherlode.ucar.edu:8080/thredds/cgi-bin/ZoneServer.pl?format=html&stn=CO
 
 '''''
 
-**_Go to: <</projects/THREDDS/,THREDDS Home Page>>_* or
+**_Go to: link:/projects/THREDDS/[THREDDS Home Page]_* or
 <<../index.adoc,_THREDDS Tech page_>>*
 
 *Comments to: mailto:rkambic@unidata.ucar.edu[Robb Kambic]*

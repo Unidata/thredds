@@ -147,7 +147,7 @@ On the TDS it will be
 
 *$\{tomcat_home}/content/thredds/cache/cdm*
 
-Clients of the CDM can change the GRIB caching behavior by configuring a <<#DiskCache2,DiskCache2>> and calling:
+Clients of the CDM can change the GRIB caching behavior by configuring a link:#DiskCache2[DiskCache2] and calling:
 *ucar.nc2.grib.GribCollection.setDiskCache2(DiskCache2 dc);*
 
 == Object Caching
