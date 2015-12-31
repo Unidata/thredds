@@ -474,6 +474,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       return new RuntimeSmoosher(this.runtime, start, end, this.resol, npts);
     }
 
+    // LOOK assumes regular
     // try to merge runtime that are close enough: start, end, npts within percentTolerence, must have same resolution
     public boolean closeEnough(RuntimeSmoosher that) {
       // must be regular
