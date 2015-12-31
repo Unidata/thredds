@@ -8,6 +8,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Compare variable names in  "FMRC Run" and "FMRC Raw File" datasets with matching timestamps.
@@ -20,7 +21,7 @@ import ucar.unidata.test.util.NeedsExternalResource;
 public class CompareGribVarNamesOnMotherlodeTds
 {
   private String modelId;
-  private String tdsUrl = "http://thredds.ucar.edu/thredds/";
+  private String tdsUrl = "http://"+ TestDir.threddsServer+"/thredds/";
 
   public CompareGribVarNamesOnMotherlodeTds( String modelId )
   {

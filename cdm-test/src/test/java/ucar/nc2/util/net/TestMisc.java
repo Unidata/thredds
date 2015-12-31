@@ -44,6 +44,7 @@ import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 public class TestMisc extends UnitTestCommon
 {
@@ -104,7 +105,7 @@ public class TestMisc extends UnitTestCommon
     {
         pass = true;
 
-        String catalogName = "http://thredds-test.unidata.ucar.edu/thredds/catalog.xml";
+        String catalogName = "http://"+ TestDir.remoteTestServer+"/thredds/catalog.xml";
 
         try (HTTPMethod m = HTTPFactory.Get(catalogName)) {
             int statusCode = m.execute();
@@ -144,7 +145,7 @@ public class TestMisc extends UnitTestCommon
     {
         String tag = "TestMisc.testGetProtocols";
         Assert.assertTrue(tag, protocheck("http://server/thredds/dodsC/", "http:"));
-        Assert.assertTrue(tag, protocheck("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best", "dods:"));
+        Assert.assertTrue(tag, protocheck("dods://"+TestDir.remoteTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best", "dods:"));
         Assert.assertTrue(tag, protocheck("dap4://ucar.edu:8080/x/y/z", "dap4:"));
         Assert.assertTrue(tag, protocheck("dap4:https://ucar.edu:8080/x/y/z", "dap4:https:"));
         Assert.assertTrue(tag, protocheck("file:///x/y/z", "file:"));

@@ -2329,9 +2329,6 @@ if(OLDGROUPCODE) {
 
     public static void main(String arg[])
     {
-        //String url = "http://eosdata.gsfc.nasa.gov/daac-bin/nph-hdf/DODS/catalog/health/modis/L3ocean/hdf/MO1DMWD2.sst4.ADD2000297.002.2000366024147.hdf";
-        //String url = (arg.length > 1) ? arg[0] : "http://thredds-test.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2003020200_sst-t.nc";
-        //String url = "http://thredds-test.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/example.nc";
         String url = "http://localhost:8080/thredds/dodsC/testContent/testData.nc.ascii?reftime[0:1:0]";
 
         // "http://ingrid.ldeo.columbia.edu/expert/SOURCES/.LEVITUS94/dods";

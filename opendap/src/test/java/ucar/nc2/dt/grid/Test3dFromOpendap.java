@@ -38,12 +38,13 @@ import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 @Category(NeedsExternalResource.class)
 public class Test3dFromOpendap {
   @Test
   public void test3D() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
+    try (GridDataset dataset = GridDataset.open("dods://"+ TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
 
       GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
       assert null != grid;

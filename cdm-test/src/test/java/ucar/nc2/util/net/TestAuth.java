@@ -260,7 +260,7 @@ public class TestAuth extends UnitTestCommon
     }
 
     protected AuthDataBasic[] basictests = {
-            new AuthDataBasic("http://" + TestDir.threddsTestServer + "/thredds/dodsC/restrict/testData.nc.dds",
+            new AuthDataBasic("http://" + TestDir.remoteTestServer + "/thredds/dodsC/restrict/testData.nc.dds",
                     "tiggeUser", "tigge"),
     };
 
@@ -390,7 +390,7 @@ public class TestAuth extends UnitTestCommon
     {
         boolean pass = true;
         System.err.println("*** Testing: Caron bug 1");
-        String url = "http://" + TestDir.threddsTestServer + "/thredds/dodsC/restrict/testData.nc.dds";
+        String url = "http://" + TestDir.remoteTestServer + "/thredds/dodsC/restrict/testData.nc.dds";
         try (HTTPSession session = HTTPFactory.newSession(url);
              HTTPMethod m = HTTPFactory.Get(url)) {
             CredentialsProvider cp = new CredentialsProvider()

@@ -41,6 +41,7 @@ import java.awt.*;
 
 import thredds.catalog.crawl.CatalogExtractor;
 import thredds.catalog.crawl.CatalogCrawler;
+import ucar.unidata.test.util.TestDir;
 
 import javax.swing.*;
 
@@ -86,7 +87,7 @@ public class TestMlodeThreaded implements Runnable {
 
   public static JPanel main;
   public static void main(String args[]) throws IOException {
-    String server = "http://thredds.ucar.edu/thredds";
+    String server = "http://"+ TestDir.threddsServer+"/thredds";
 
     // HEY LOOK
     //ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( true);

@@ -192,7 +192,7 @@ public class TestWcsServer {
 
   //@org.junit.Test
   public void testRoy() throws IOException {
-    String dataset = "http://thredds.ucar.edu/thredds/wcs/fmrc/NCEP/NAM/CONUS_80km/files/NAM_CONUS_80km_20080424_1200.grib1";
+    String dataset = "http://"+TestDir.threddsServer+"/thredds/wcs/fmrc/NCEP/NAM/CONUS_80km/files/NAM_CONUS_80km_20080424_1200.grib1";
     showGetCapabilities(dataset);
     String fld = "Total_precipitation";
     showDescribeCoverage(dataset, fld);
