@@ -76,7 +76,7 @@ TDM does background Indexing for GRIB and Point Feature Collections
 
 * <<../faq.adoc,TDS FAQ>>
 * <<../tutorial/index.adoc,TDS Tutorial>>
-* TDS Architecture <<TDSarchictecture.ppt,powerpoint>>
+* TDS Architecture link:TDSarchictecture.ppt[powerpoint]
 * <<Performance.adoc,TDS Performance>>
 // * https://wiki.ucar.edu/display/unidata/TDS+Servlets+Configuration+(4.4.0-alpha)[TDS Servlets Configuration]
 

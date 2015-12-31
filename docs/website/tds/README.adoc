@@ -19,7 +19,7 @@ Some of the technology in the TDS:
 1.  THREDDS <<catalog/index.adoc,Dataset Inventory Catalogs>> are used
 to provide virtual directories of available data and their associated
 metadata. These catalogs can be generated dynamically or statically.
-2.  The <<../netcdf-java/documentation.htm,Netcdf-Java/CDM library>>
+2.  The link:../netcdf-java/documentation.htm[Netcdf-Java/CDM library]
 reads NetCDF, OpenDAP, and HDF5 datasets, as well as other binary
 formats such as GRIB and NEXRAD into a Common Data Model (CDM),
 essentially an (extended) netCDF view of the data. Datasets that can be
@@ -95,13 +95,13 @@ security fixes. This is required for publically accessible servers!*
 *TDS 5.0 is the development release. It requires Tomcat 8 and Java 8.*
 
 * Download the latest development release:
-** <<ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war,thredds.war>>
-** <<ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.md5,MD5>>
-** <<ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.sha1,SHA1>>
-** <<https://github.com/Unidata/thredds,source on GitHub>>
-** <<https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/,artifacts in Unitdata’s maven repository>>
+** link:ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war[thredds.war]
+** link:ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.md5[MD5]
+** link:ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.sha1[SHA1]
+** link:https://github.com/Unidata/thredds[source on GitHub]
+** link:https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/[artifacts in Unitdata’s maven repository]
 The THREDDS Data Manager (TDM)
-** <<ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/tdm-5.0.jar,tdm.jar>>
+** link:ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/tdm-5.0.jar[tdm.jar]
 
 == TDS Services
 

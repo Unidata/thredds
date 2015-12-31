@@ -8,14 +8,14 @@ Below are useful command-line utilites that can be called from the CDM
 library. The easiest way to use these is to grab the latest
 *netcdfAll.jar* file.
 
-* <<#ncdump,ncdump>>: prints the textual representation of a dataset to standard output
-* <<#nccopy,nccopy>>: copies a CDM dataset to a netCDF-3 (default) or netCDF-4 file
-* <<#nccompare,nccompare>>: compares two CDM files for semantic equivilence
+* link:#ncdump[ncdump]: prints the textual representation of a dataset to standard output
+* link:#nccopy[nccopy]: copies a CDM dataset to a netCDF-3 (default) or netCDF-4 file
+* link:#nccompare[nccompare]: compares two CDM files for semantic equivilence
 
-* <<#BufrSplitter,BufrSplitter>>: copies a BUFR file’s messages into separate output files, depending on type
-* <<#CFPointWriter,CFPointWriter>>: copies a CDM point feature dataset to CF/NetCDF format
-* <<#GribCdmIndex,GribCdmIndex>>: write GRIB Collection Indexes
-* <<#FeatureScan,FeatureScan>>: scans a directory to find CDM datasets and determines their FeatureTypes
+* link:#BufrSplitter[BufrSplitter]: copies a BUFR file’s messages into separate output files, depending on type
+* link:#CFPointWriter[CFPointWriter]: copies a CDM point feature dataset to CF/NetCDF format
+* link:#GribCdmIndex[GribCdmIndex]: write GRIB Collection Indexes
+* link:#FeatureScan[FeatureScan]: scans a directory to find CDM datasets and determines their FeatureTypes
 
 [[ncdump]]
 == ncdump

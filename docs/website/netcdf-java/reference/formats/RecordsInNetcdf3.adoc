@@ -13,12 +13,12 @@ _last changed: June 21, 2005_
 
 === Contents:
 
-* <<#Structures,Structures and Record Variables>>
-* <<#Point,Using Records for Point Data>>
-* <<#Station,Using Records for Station Data>>
-* <<#Trajectory,Using Records for Trajectory Data>>
-* <<#Sounding,Using Records for Sounding Data>>
-* <<#Conclusions,Conclusions>>
+* link:#Structures[Structures and Record Variables]
+* link:#Point[Using Records for Point Data]
+* link:#Station[Using Records for Station Data]
+* link:#Trajectory[Using Records for Trajectory Data]
+* link:#Sounding[Using Records for Sounding Data]
+* link:#Conclusions[Conclusions]
 
 '''''
 
@@ -296,7 +296,7 @@ of observations for each station is constant.
 
 Trajectory data looks just like point data, except the points are
 assumed to be connected. The case where there is a single trajectory in
-the file therefore looks just like the <<#Point,Point Data>> case.
+the file therefore looks just like the link:#Point[Point Data] case.
 
 If you want to store multiple trajectories in the same file, however,
 then the file looks like station data, since you have to distinguish

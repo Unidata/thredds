@@ -50,12 +50,12 @@ my proxy server?]
 Aggregation dataset, but nothing has changed.]
 * link:#wmsLimitedCRS[What happened to the long list of CRSs in my WMS
 GetCapabilities documents?]
-* <<#forms,Why are TDS web forms not working?>>
+* link:#forms[Why are TDS web forms not working?]
 * link:#catalogCaching[What does the TDS do at startup to read the
 configuration catalogs? What gets cached? Does it have a way to know a
 referenced catalog is unchanged? When do referenced catalogs get
 scanned?]
-* <<#changeLogging,How do I change how the TDS logs?>>
+* link:#changeLogging[How do I change how the TDS logs?]
 
 == Caching
 
@@ -71,7 +71,7 @@ not exist and could not be created]
 * link:#rh5SymLinksAndContent[Why does the TDS fail to deploy in the
 Tomcat provided with RedHat 5 or 6?]
 * What does this error mean:
-** <<#listenerStart,SEVERE: Error listenerStart>>
+** link:#listenerStart[SEVERE: Error listenerStart]
 ** link:#log4jAppender[log4j:ERROR Attempted to append to closed
 appender named [foobar]]
 ** link:#javaUtilPrefs[Couldn’t flush system prefs:
@@ -90,17 +90,17 @@ heap space'' Whats up?]
 * link:#shutdownUnstoppedThreads[During shutdown I’m getting messages
 about threads (ThreadLocal) having to be shut down to prevent memory
 leaks. Whats up?]
-* <<#whoIsAccessing,Who is accessing my server?>>
+* link:#whoIsAccessing[Who is accessing my server?]
 * link:#preventAccess[How can I prevent someone from accessing my
 server?]
 * link:#controlWebCrawlers[How can I control whether I want Web crawlers
 to access my server?]
-* <<#removeServletAutodeploy,How do I remove Servlet Autodeploy?>>
+* link:#removeServletAutodeploy[How do I remove Servlet Autodeploy?]
 * link:#howRemovePort8009[How do I remove port 8009 when using tomcat in
 standalone mode?]
 * link:#SizeLimitExceededException[Manager fails to upload new
 thredds.war with SizeLimitExceededException]
-* <<#Logging,Logging is not working>>
+* link:#Logging[Logging is not working]
 
 '''''
 

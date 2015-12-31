@@ -85,7 +85,7 @@ prompted for the password for the *tdm* user password. This allows you
 to start up the TDM without putting the password into a startup script.
 Note that user *tdm* should be given only the role of **tdsTrigger**,
 which only gives rights to trigger collection reloading (see
-<<#trigger,below>>).
+link:#trigger[below]).
 2.  The TDM will write index files into the data directories or index
 directories. The index files will have extensions *gbx9* and **ncx2**.
 3.  For each featureCollection, a log file is created in the TDM working

@@ -9,7 +9,7 @@ IOSP Example 1
 
 '''''
 
-We will work on an example <<files/lightningData.txt,lightning data>>
+We will work on an example link:files/lightningData.txt[lightning data]
 test file, which looks like:
 
 _______________________________________________________
@@ -384,8 +384,8 @@ bounding box be specified as shown in global attributes.
 
 We now have not only a working IOSP, but a PointObsDataset that can be
 displayed and georeferenced! Working source code for this example is
-<<files/UspLightning1.java,here>>. Modify the main program to point to
-the <<files/lightningData.txt,data file>>, and try running it. Note
+link:files/UspLightning1.java[here]. Modify the main program to point to
+the link:files/lightningData.txt[data file], and try running it. Note
 that you need to link:../reference/RuntimeLoading.adoc[load your class
 at runtime], for example by calling:
 

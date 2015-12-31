@@ -14,8 +14,8 @@ This is the on-line, self-guided tutorial. Follow this link for the
 
 '''''
 
-=== TDS Overview (<<TDSOverview.pptx,ppt>>)
-(<<TDSOverview.pdf,pdf>>)
+=== TDS Overview (link:TDSOverview.pptx[ppt])
+(link:TDSOverview.pdf[pdf])
 
 === 1.Tomcat Configuration
 
@@ -60,7 +60,7 @@ manager application]
 
 * <<../../netcdf-java/ncml/Tutorial.adoc,Basic NcML tutorial>>
 * <<../../netcdf-java/ncml/Aggregation.adoc,NcML Aggregation>>
-* <<NcML.htm,Using NcML in the TDS>>
+* link:NcML.htm[Using NcML in the TDS]
 * <<NcMLExamples.adoc,NcML Example Problems>>
 * <<NcMLAggExamples.adoc,NcML Aggregation Example Problems>>
 

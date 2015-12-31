@@ -26,7 +26,7 @@ for collections of GRIB files.
 
 === Creating a GRIB Feature Collection
 
-Download <<files/catalogGribfc.xml,catalogGribfc.xml>>, place it in
+Download link:files/catalogGribfc.xml[catalogGribfc.xml], place it in
 *$\{tomcat_home}/content/thredds* directory and add a catalogRef to it
 from your main catalog. Heres the first feature collection in it:
 
@@ -169,7 +169,7 @@ various datasets.
 === GRIB Feature Collection with multiple GDS
 
 The second feature collection in
-<<files/catalogGribfc.xml,catalogGribfc.xml>> has:
+link:files/catalogGribfc.xml[catalogGribfc.xml] has:
 
 -------------------------------------------------------------------------------------------------
 1)<featureCollection name="ECMWF Data" featureType="GRIB1" path="gribfc/ecmwf" serviceName="all">
@@ -220,7 +220,7 @@ be done at any time, one just restarts the TDS for it to have affect.
 === GRIB Feature Collection with spurious GDS
 
 The third feature collection in
-<<files/catalogGribfc.xml,catalogGribfc.xml>> has:
+link:files/catalogGribfc.xml[catalogGribfc.xml] has:
 
 ---------------------------------------------------------------------------------------------------------------------
 1)<featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB" path="gribfc/ndfd">

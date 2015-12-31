@@ -9,19 +9,19 @@ Unidata | THREDDS Data Server (TDS)
 
 *Page menu:*
 
-* <<#home,THREDDS Data Server>>
+* link:#home[THREDDS Data Server]
 * <<TDS.adoc,Version History>>
 * <<faq.adoc,FAQs>>
 * <<TDS.adoc,Documentation>>
-* <</downloads/thredds/,Download>>
-* <<#help,Support>>
-* <</data/#tds,Data Available via the TDS>>
-* <<#developers,For Developers>>
+* link:/downloads/thredds/[Download]
+* link:#help[Support]
+* link:/data/#tds[Data Available via the TDS]
+* link:#developers[For Developers]
 * link:/software/thredds/steering/thredds_steering.inc[THREDDS Steering
 Team]
 * link:/software/thredds/steering/thredds-steering-team-latest.inc[Meeting
 notes]
-* <<#related_projects,Related Projects>>
+* link:#related_projects[Related Projects]
 
 == THREDDS Data Server (TDS)
 
@@ -61,13 +61,13 @@ support-thredds@unidata.ucar.edu
 Didn’t find a solution in the <<TDS.adoc,TDS documentation>>? Try the
 following:
 
-Use the *<</mailing_lists/archives/thredds/,TDS Mailing List>>* to
+Use the *link:/mailing_lists/archives/thredds/[TDS Mailing List]* to
 query experts in the Unidata community
 
 View *link:/support/help/MailArchives/thredds/maillist.adoc[Current
 Support Questions]* being asked of TDS developers
 
-*<</support/requestSupport.jsp,Request Support>>* from TDS developers,
+*link:/support/requestSupport.jsp[Request Support]* from TDS developers,
 or email: support-thredds@unidata.ucar.edu
 
 ===== Training and Tutorials
@@ -76,9 +76,9 @@ or email: support-thredds@unidata.ucar.edu
 Workshop]] Attend the annual TDS
 link:/events/index.adoc#training[training +
  workshop] at the <</about/index.adoc#visit,UPC>> in Boulder
-* <<tutorial/[image:/support/img/documentation-32x32.png,Tutorial]>>
+* link:tutorial/[image:/support/img/documentation-32x32.png[Tutorial]]
 Learn about TDS administration +
- from an online and <<tutorial/,in-depth tutorial>>
+ from an online and link:tutorial/[in-depth tutorial]
 * link:tutorial/workshop2013.adoc[image:/community/img/monitors-32x32.png[Training
 Workshop]] View the <<tutorial/workshop2013.adoc,workshop tutorial>>
 from +
@@ -107,7 +107,7 @@ Recipes]]**https://github.com/Unidata/git-recipes[Git Recipes]** +
 
 = Unidata Projects Involving the TDS
 
-Unidata embarks on <</projects/,new projects>> to help make its data
+Unidata embarks on link:/projects/[new projects] to help make its data
 and tools available to a broader, more diverse audience. The following
 are a list of THREDDS Data Server-related projects between the Unidata
 Program Center and external collaborators.
@@ -115,9 +115,9 @@ Program Center and external collaborators.
 ===== <</projects/index.adoc#cdm,Common Data Model>>
 
 image:/images/logos/cdm_only-75x75.png[Common Data Model] Unidata’s
-<</software/netcdf-java/CDM/,Common Data Model>>
-(<</software/netcdf-java/CDM/,CDM>>) is an abstract data model for
-scientific datasets. It merges the <</software/netcdf/,netCDF>>,
+link:/software/netcdf-java/CDM/[Common Data Model]
+(link:/software/netcdf-java/CDM/[CDM]) is an abstract data model for
+scientific datasets. It merges the link:/software/netcdf/[netCDF],
 http://www.opendap.org/[OPeNDAP], and
 http://www.hdfgroup.org/products/hdf5/[HDF5] data models to create a
 common API for many types of scientific data. The NetCDF Java library is

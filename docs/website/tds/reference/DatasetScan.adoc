@@ -131,7 +131,7 @@ directly, as above, or inherited).
 datasets, __*each path value MUST be unique across all config catalogs
 on a given TDS installation*__.
 
-[<<#sample1,Sample config catalog 1]>> +
+[link:#sample1[Sample config catalog 1]] +
 
 == Inherited Metadata
 
@@ -202,7 +202,7 @@ so that if stray files accidentally get into your data directories, they
 wont generate erroneous catalog entries. This is also known as
 __whitelisting__.
 
-[<<#sample2,Sample config catalog 2]>>
+[link:#sample2[Sample config catalog 2]]
 
 Complicated matching can be done with regular expressions, eg:
 
@@ -220,7 +220,7 @@ a literal "." character. Note that only one backslash is neeeded.
 (Inside a Java String, one needs to use "\\", but not here in the
 catalog).
 
-[<<#sample3,Sample config catalog 3]>>
+[link:#sample3[Sample config catalog 3]]
 
 == Sorting Datasets
 

@@ -267,7 +267,7 @@ a certificate in the keystore.
 * *sun.security.provider.certpath.SunCertPathBuilderException: unable to
 find valid certification path to requested target* : A 3rd party
 security system like CAS is trying to establish an SSL connection.
-<<#JRE_keystore,Install>> the remote host’s certificate into the JRE
+link:#JRE_keystore[Install] the remote host’s certificate into the JRE
 certificate store.
 * *What’s in the keystore?*
 ** Look at the

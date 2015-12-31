@@ -37,7 +37,7 @@ TDS. There are two methods to accomplish this:
 *Warning!* It is important to carefully configure your proxy so that the
 existence of the proxy is transparent to the end-user/client. For
 instance, when a web application (e.g., the TDS) on the backend server
-includes a <<#chgContextPath,self-referential URL>> in some response
+includes a link:#chgContextPath[self-referential URL] in some response
 content, it should use the proxy server’s name and port rather than
 those of the backend server.
 

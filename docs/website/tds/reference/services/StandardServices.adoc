@@ -3,22 +3,22 @@
 
 = TDS Services
 
-* <<#standard,Data Services>>
-* <<#available,List of all TDS Services>>
-** <<#serverInfo,Server Information Services>>
-** <<#catalogServices,Catalog Services>>
-** <<#metadataServices,Metadata Services>>
-*** <<#ISO,ISO>>
-*** <<#NCML,NCML>>
-*** <<#UDDC,UDDC>>
-** <<#dataAccessServices,Data Access Services>>
-*** <<#DAP2,OPeNDAP DAP 2.0>>
-*** <<#WCS,OGC WCS>>
-*** <<#WMS,OGC WMS>>
-*** <<#NCSS,NCSS>>
-*** <<#cdmremote,CDMRemote>>
-*** <<#HTTP,HTTP File Download>>
-* <<#tdsServiceElemRequirements,TDS Requirements for THREDDS Catalog service Elements>>
+* link:#standard[Data Services]
+* link:#available[List of all TDS Services]
+** link:#serverInfo[Server Information Services]
+** link:#catalogServices[Catalog Services]
+** link:#metadataServices[Metadata Services]
+*** link:#ISO[ISO]
+*** link:#NCML[NCML]
+*** link:#UDDC[UDDC]
+** link:#dataAccessServices[Data Access Services]
+*** link:#DAP2[OPeNDAP DAP 2.0]
+*** link:#WCS[OGC WCS]
+*** link:#WMS[OGC WMS]
+*** link:#NCSS[NCSS]
+*** link:#cdmremote[CDMRemote]
+*** link:#HTTP[HTTP File Download]
+* link:#tdsServiceElemRequirements[TDS Requirements for THREDDS Catalog service Elements]
 
 == Data Services (new in 5.0)
 
@@ -75,7 +75,7 @@ paths, services whose access is listed as a THREDDS Catalog *service*
 element must use the exact values listed below for the *serviceType* and
 service *base* URL. The value of the service _name_ attribute, on the
 other hand, is completely configurable. (See below for
-<<#tdsServiceElemRequirements,more details>>.)
+link:#tdsServiceElemRequirements[more details].)
 
 Notes:
 
@@ -83,7 +83,7 @@ Notes:
 independent of your servers hostname or port.
 * For a particular dataset, you can refer to an individual service, or
 use a compound service (__all__ in the example
-<<#compoundExample,below>>) which adds all the nested services to the
+link:#compoundExample[below]) which adds all the nested services to the
 dataset.
 
 === Server Information Services
@@ -200,7 +200,7 @@ Access Point
 `/thredds/iso/*`
 
 Catalog Service Configuration +
- (exact values <<#tdsServiceElemRequirements,required>>)
+ (exact values link:#tdsServiceElemRequirements[required])
 
 Service Type
 
@@ -230,7 +230,7 @@ Access Point
 `/thredds/ncml/*`
 
 Catalog Service Configuration +
- (exact values <<#tdsServiceElemRequirements,required>>)
+ (exact values link:#tdsServiceElemRequirements[required])
 
 Service Type
 
@@ -259,7 +259,7 @@ Access Point
 `/thredds/uddc/*`
 
 Catalog Service Configuration +
- (exact values <<#tdsServiceElemRequirements,required>>)
+ (exact values link:#tdsServiceElemRequirements[required])
 
 Service Type
 
@@ -299,7 +299,7 @@ Access Point
 `/thredds/dodsC/*`
 
 Catalog Service Configuration +
- (exact values <<#tdsServiceElemRequirements,required>>)
+ (exact values link:#tdsServiceElemRequirements[required])
 
 Service Type
 
@@ -327,7 +327,7 @@ Access Point
 `/thredds/ncss/*`
 
 Catalog Service Configuration +
- (exact values <<#tdsServiceElemRequirements,required>>)
+ (exact values link:#tdsServiceElemRequirements[required])
 
 Service Type
 
@@ -360,7 +360,7 @@ Access Point
 `/thredds/cdmremote/*`
 
 Catalog Service Configuration +
- (exact values <<#tdsServiceElemRequirements,required>>)
+ (exact values link:#tdsServiceElemRequirements[required])
 
 Service Type
 
@@ -390,7 +390,7 @@ Access Point
 `/thredds/wcs/*`
 
 Catalog Service Configuration +
- (exact values <<#tdsServiceElemRequirements,required>>)
+ (exact values link:#tdsServiceElemRequirements[required])
 
 Service Type
 
@@ -423,7 +423,7 @@ Access Point
 `/thredds/wms/*`
 
 Catalog Service Configuration +
- (exact values <<#tdsServiceElemRequirements,required>>)
+ (exact values link:#tdsServiceElemRequirements[required])
 
 Service Type
 
@@ -460,7 +460,7 @@ Access Point
 `/thredds/fileServer/*`
 
 Catalog Service Configuration +
- (exact values <<#tdsServiceElemRequirements,required>>)
+ (exact values link:#tdsServiceElemRequirements[required])
 
 Service Type
 

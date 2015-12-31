@@ -208,7 +208,7 @@ However, we recommend that you create a unique, immutable name for the dataset c
 element.
 <3>  *olderThan* (optional): Only files whose lastModified date is older than this are included. This is used to exclude files that are in the process
 of being written. However, it only applies to newly found files; that is, once a file is in the collection it is not removed because it was updated.
-<4>  *dateFormatMark* (optional): This defines a __<<#dateExtractor,DateExtractor>>__, which is applied to each file in the collection to assign it a
+<4>  *dateFormatMark* (optional): This defines a __link:#dateExtractor[DateExtractor]__, which is applied to each file in the collection to assign it a
 date, which is used for sorting, getting the latest file, and possibly for time partitioning. In this example, the string *WEST-CONUS_4km_3.9_* is
 located in each file path, then the <<SimpleDateFormat.adoc,SimpleDateFormat>> template *yyyyMMdd_HHmm* is applied to the next characters of the
 filename to create a date. A DateExtractor can also be defined in the <<CollectionSpecification.adoc,collection specification>> string, but in that
@@ -343,7 +343,7 @@ rescanned in a background task, and testsed to see if it has changed. This is ca
 (or person using a browser) sending an explicit "trigger" URL to the server. This URL is protected by HTTPS, so you must link:#trigger[enable
 triggers] for this to work. Set this to "false" to disable triggering.
 <4>  **startup**: [_never_ | _nocheck_ | _testIndexOnly_ | _test_ | _always_]. The collection is read on server startup, and tested whether
-it is up to date, depending on  the <<#collectionUpdateType,*_collectionUpdateType_*>>.
+it is up to date, depending on  the link:#collectionUpdateType[*_collectionUpdateType_*].
 
 For GRIB collections, dynamic updating of the collection by the TDS is no longer supported (use the TDM for this). Therefore _recheckAfter_ and
 _rescan_ are ignored on an _update_ element for a GRIB collection.
@@ -400,7 +400,7 @@ The XML Schema definition for the _tdm_ element:
  </xsd:complexType>
 ----
 
-<1>  **rewrite**: one of the <<#collectionUpdateType,collectionUpdateTypes>>, except for *_never_*. The most useful value is *_test_*.
+<1>  **rewrite**: one of the link:#collectionUpdateType[collectionUpdateTypes], except for *_never_*. The most useful value is *_test_*.
 <2>  **rescan**: uses a http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expression] to specify when the collection should be
 rescanned.
 
@@ -409,7 +409,7 @@ rescanned.
 .  You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page
 *\https://server/thredds/admin/debug?Collections/showCollection*
 .  The URL for the actual trigger is *\https://server/thredds/admin/collection/trigger?collection=_name_&trigger=_type_*, where _name_ is the collection
-name, and _type_ is a <<#collectionUpdateType,collectionUpdateType>>.
+name, and _type_ is a link:#collectionUpdateType[collectionUpdateType].
 .  You must give the role _tdsTrigger_ to any user who has the right to send a trigger.
 .  Triggering is password protected and uses SSH, see <<../RemoteManagement.adoc,enabling Remote Management>> to enable SSH.
 
@@ -463,7 +463,7 @@ If it occasionally changes, then you want to manually tell it when to rescan:
  <update startup ="nocheck" trigger="allow" />
 
 The dataset will be read in at startup time by using the existing indexes, and you manually tell it when to rebuild the index. You must
-<<#trigger,enable triggers>>.
+link:#trigger[enable triggers].
 
 === Changing Collection - Small or Rarely Used
 
@@ -490,7 +490,7 @@ To externally control when a collection is updated, use:
 
  <update trigger="allow" />
 
-You must <<#trigger,enable remote triggers>>, and when the dataset changes, send a message to a special URL in the TDS.
+You must link:#trigger[enable remote triggers], and when the dataset changes, send a message to a special URL in the TDS.
 
 == GRIB Collections Only
 

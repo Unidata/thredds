@@ -20,14 +20,14 @@ the NetCDF Java library and accessed through the CDM data model__.
 The Common Data Model has three layers, which build on top of each other
 to add successively richer semantics:
 
-1.  The *_<<#dataAccess,data access layer>>_*, also know as the
+1.  The *_link:#dataAccess[data access layer]_*, also know as the
 *_syntactic layer,_* handles data reading and writing.
-2.  The *_<<#CoordSys,coordinate system>>_* layer identifies the
+2.  The *_link:#CoordSys[coordinate system]_* layer identifies the
 coordinates of the data arrays. Coordinates are a completely general
 concept for scientific data; we also identify specialized
 *_georeferencing coordinate systems_*, which are important to the
 Earth Science community.
-3.  The *_<<#ScientificFeatureTypes,scientific feature type>>_* layer
+3.  The *_link:#ScientificFeatureTypes[scientific feature type]_* layer
 identifies specific types of data, such as __grids__, __radial__, and
 __point data__, adding specialized methods for each kind of data.
 
@@ -363,8 +363,8 @@ Feature Type definitions, APIs, and encodings are still under development, so ap
 * <<../reference/FeatureDatasets/Overview.adoc,FeatureDataset APIs>>
 * <<../reference/FeatureDatasets/PointFeatures.adoc,Point Feature APIs>>
 * {cf}#discrete-sampling-geometries[CF Discrete Sampling Geometries Conventions]
-* CDM Feature Types _draft_ <<CDMfeatures.doc,doc>>
-* CDM Point Feature Types _draft_ <<CDMpoints.doc,doc>>
+* CDM Feature Types _draft_ link:CDMfeatures.doc[doc]
+* CDM Point Feature Types _draft_ link:CDMpoints.doc[doc]
 
 '''''
 

@@ -20,15 +20,15 @@ are maintaining a TDS __server__, you will also need to add other
 information to the catalog, which is used only by the server and is not
 seen by the client.
 
-* <<#Basics,Basic Example>>
-* <<#Constructing_an_access_URL,Constructing an access URL>>
-* <<#Nested_datasets,Nested datasets>>
-* <<#Describing_datasets,Describing datasets>>
-* <<#Sharing_metadata,Sharing metadata>>
-* <<#Catalog_references,Catalog references>>
-* <<#Compound_service_elements,Compound `service` elements>>
-* <<#XML_validation,XML validation>>
-* <<#Using_ToolsUI,Using ToolsUI to view catalogs>>
+* link:#Basics[Basic Example]
+* link:#Constructing_an_access_URL[Constructing an access URL]
+* link:#Nested_datasets[Nested datasets]
+* link:#Describing_datasets[Describing datasets]
+* link:#Sharing_metadata[Sharing metadata]
+* link:#Catalog_references[Catalog references]
+* link:#Compound_service_elements[Compound `service` elements]
+* link:#XML_validation[XML validation]
+* link:#Using_ToolsUI[Using ToolsUI to view catalogs]
 
 == Basic Example
 
@@ -416,7 +416,7 @@ this is an XML document, not an HTML page!__). The catalog will be
 displayed in a tree widget on the left, and the selected dataset will be
 shown on the right, for example:
 
-<<images/TUIthreddsTab.png[image:images/TUIthreddsTab.png,ToolsUI]>>
+link:images/TUIthreddsTab.png[image:images/TUIthreddsTab.png[ToolsUI]]
 
 Once you get your catalog working in a TDS, you can enter the TDS URL
 directly, and view the datasets with the *Open* buttons.

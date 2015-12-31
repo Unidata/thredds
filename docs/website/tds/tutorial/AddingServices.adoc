@@ -288,7 +288,7 @@ section of all WMS accessible datasets. The
 http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/GodivaTwoUserGuide[Godiva2
 User Guide] is available from the ncWMS site.
 
-<<images/Godiva2_screenshot.png[image:images/Godiva2_screenshot_small.png,Godiva2]>>
+link:images/Godiva2_screenshot.png[image:images/Godiva2_screenshot_small.png[Godiva2]]
 
 === OWSLib (python client) example:
 

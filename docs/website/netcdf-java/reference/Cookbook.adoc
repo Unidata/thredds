@@ -3,8 +3,8 @@
 
 = Netcdf-Java Cookbook
 
-* <<#writeClassic,Write a dataset to a netCDF-3 format file>>
-* <<#readSequences,Reading from Sequences>>
+* link:#writeClassic[Write a dataset to a netCDF-3 format file]
+* link:#readSequences[Reading from Sequences]
 
 == Write a dataset to a netCDF-3 format file:
 

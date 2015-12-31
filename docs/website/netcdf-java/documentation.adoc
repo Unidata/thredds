@@ -68,7 +68,7 @@ is for the development branch of the IDV.
 Future changes to the API will attempt to remain backwards compatible
 with this API.
 * <<javadocAll/index.adoc,All javadoc>>. This is the javadoc for all packages and all methods except private. CAREFUL, much of this will change.
-* Try out the *4.6* version of ToolsUI application: <<webstart/netCDFtools.jnlp,launch from webstart>>.
+* Try out the *4.6* version of ToolsUI application: link:webstart/netCDFtools.jnlp[launch from webstart].
 * Unidata public https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/[Maven repository] for maven artifacts
 * All source is on https://github.com/Unidata/thredds[GitHub]
 
@@ -149,7 +149,7 @@ Working notes and documents on the *_Feature Type_* layer of the CDM:
 * <<CoverageFeatures.adoc,Coverage Dataset>>: Data in a multidimensional grid, eg model output, satellite data.
 * <<PointFeatures.adoc,Point Dataset>>: Discrete Sampling Geometry (DSG) datasets
 * <<reference/FeatureDatasets/CFpointImplement.adoc,CDM implementation of CF discrete sampling features>>
-* <<reference/FeatureDatasets/PointFeatureUML.svg,Point Feature UML>>
+* link:reference/FeatureDatasets/PointFeatureUML.svg[Point Feature UML]
 * Adding unstructured grids to the CDM
 http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_NetCDF_Java.pdf[statement of work]
 * <<{tdsDocs}/collections/FeatureCollections.adoc,Feature Collections in TDS>>
@@ -217,4 +217,4 @@ System (National Meteorological Center, CMA, Beijing, China)
 
 '''''
 
-<<NetcdfUsers.htm[image:nc.gif,image]>> This document is maintained by elves and was last updated Novenmber 2015
+link:NetcdfUsers.htm[image:nc.gif[image]] This document is maintained by elves and was last updated Novenmber 2015

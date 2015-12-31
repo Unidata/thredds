@@ -166,7 +166,7 @@ http://servername:8080/thredds/wms?dataset=datasetURL
 The URL must be a dataset readable by the NetCDF-Java library, typically
 an OPeNDAP dataset on another server. It must have gridded data with
 identifiable coordinate systems (see
-<<#Which_files_can_be_served_through_the,above>>). For example, an
+link:#Which_files_can_be_served_through_the[above]). For example, an
 OPeNDAP URL might be
 
 ----------------------------------------------------------------------------
