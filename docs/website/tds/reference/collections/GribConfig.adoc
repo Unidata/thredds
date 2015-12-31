@@ -474,15 +474,15 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[http://www.unid
 </xsd:simpleType>
 ----------------------------------------
 
-. link:#gdsHash[gdsHash]: Fix errors in GDS encoding
-. link:#gdsName[gdsName]: Set group names
-. link:#pdsHash[pdsHash]: Control how GRIB records are grouped into variables
-. link:#intvFilter[intvFilter]: control how time intervals are handled
+. <<#gdsHash,gdsHash>>: Fix errors in GDS encoding
+. <<#gdsName,gdsName>>: Set group names
+. <<#pdsHash,pdsHash>>: Control how GRIB records are grouped into variables
+. <<#intvFilter,intvFilter>>: control how time intervals are handled
 . timeUnitConvert: do not use
-. link:#parameter[parameter]: set miscellaneous values
-. link:#gdsName[latestName]: Rename the latest file dataset
-. link:#bestNamer[bestNamer]: Rename the best file dataset
-. link:#datasetTypes[datasetTypes]: which datasets appear in the TDS catalog:
+. <<#parameter,parameter>>: set miscellaneous values
+. <<#gdsName,latestName>>: Rename the latest file dataset
+. <<#bestNamer,bestNamer>>: Rename the best file dataset
+. <<#datasetTypes,datasetTypes>>: which datasets appear in the TDS catalog:
 
 1.  *TwoD:* the full dataset with two time dimensions, reference time
 and forecast time.

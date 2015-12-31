@@ -217,7 +217,7 @@ instead of the exact comparison done by `equals(Array, Array)`.
 * Completely new package *ucar.nc2.ft2.coverage* that replaces *ucar.nc2.dt.grid*.
 The class *FeatureDatasetCoverage* replaces *GridDataset*.
 * Uses of classes in *ucar.nc2.dt.grid* are deprecated, though the code is still in the core jar file for now.
-* For new API see link:../netcdf-java/reference/FeatureDatasets/CoverageFeatures.adoc[CoverageFeatures]
+* For new API see <<../netcdf-java/reference/FeatureDatasets/CoverageFeatures.adoc,CoverageFeatures>>
 * *FeatureType.COVERAGE* is the general term for *GRID, FMRC, SWATH, CURVILINEAR* types.
 Previously, GRID was used as the general type, now it referes to a specific type of Coverage.
 Affects FeatureDatasetFactoryManager.open(FeatureType wantFeatureType, ...)
@@ -267,11 +267,11 @@ Schema version is now 1.2.
 * With **addLatest**, the *service* name is no longer used, it is always __Resolver__, and the correct service is automatically added. Use *addLatest*
 attribute for simple case.
 * *fileSort:* by default, datasets at each collection level are listed in increasing order by filename. To change to decreasing order, use the
-_link:reference/DatasetScan.adoc#filesSort[filesSort]_ element.
+_<<reference/DatasetScan.adoc#filesSort,filesSort>>_ element.
 * *sort:* deprecated in favor of *filesSort*
 * *User pluggable classes implementing UserImplType* (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl,
 crawlableDatasetSorterImpl) are no longer supported. (This was never officially released or documented).
-* DatasetScan details are link:catalog/InvCatalogServerSpec.adoc[here]
+* DatasetScan details are <<catalog/InvCatalogServerSpec.adoc,here>>
 
 ==== Standard Services
 
@@ -280,13 +280,13 @@ crawlableDatasetSorterImpl) are no longer supported. (This was never officially 
 * User defined services in non-root catalogs are local to that catalog and override (by name) any global services.
 * All services are enabled unless explicitly disabled
 ** Except for remote catalog services
-* Standard service details are link:reference/Services.adoc[here]
+* Standard service details are <<reference/Services.adoc,here>>
 
 ==== FeatureCollections
 
-* The *link:reference/collections/FeatureCollections.adoc#update[update]* element default is now __startup="never"__, meaning do not update collection
+* The *<<reference/collections/FeatureCollections.adoc#update,update>>* element default is now __startup="never"__, meaning do not update collection
 on startup, and use existing indices when the collection is accessed.
-* The *link:reference/collections/FeatureCollections.adoc#filesSort[fileSort]* element is now inside the *featureCollection* itself, so it can be
+* The *<<reference/collections/FeatureCollections.adoc#filesSort,fileSort>>* element is now inside the *featureCollection* itself, so it can be
 processed uniformly for all types of feature collections. When a collection shows a list of files, the files will be sorted by increasing name. To use
 a decreasing sort, use the element *<filesSort increasing="false" />* inside the *featureCollection* element. This supercedes the old way of placing
 that element in the *<gribConfig>* element, or the older verbose *lexigraphicByName* element:
@@ -297,7 +297,7 @@ that element in the *<gribConfig>* element, or the older verbose *lexigraphicByN
     <lexigraphicByName increasing="false" />  // deprecated
   </filesSort>
 -----------------------------------------------------------
-* Feature Collection details are link:reference/collections/FeatureCollections.adoc[here]
+* Feature Collection details are <<reference/collections/FeatureCollections.adoc,here>>
 
 ==== Recommendations for 5.0 catalogs
 
@@ -310,7 +310,7 @@ that element in the *<gribConfig>* element, or the older verbose *lexigraphicByN
 === Netcdf Subset Service (NCSS)
 
 NCSS queries and responses have been improved and clarified. Generally the previous queries are backwards compatible. See
-link:reference/services/NetcdfSubsetServiceReference.adoc[NCSS Reference] for details.
+<<reference/services/NetcdfSubsetServiceReference.adoc,NCSS Reference>> for details.
 
 * New functionality:
 . 2D time can now be handled for gridded datasets, with addition of _runtime_ and _timeOffset_ parameters.
@@ -333,7 +333,7 @@ A new TDS service has been added for remote access to CDM Feature Datasets.
 === ThreddsConfig.xml
 
 * You no longer turn catalog caching on or off, but you can control how many catalogs are cached (see
-link:reference/ThreddsConfigXMLFile.adoc#CatalogCaching[here] for the new syntax). So the following is no longer used:
+<<reference/ThreddsConfigXMLFile.adoc#CatalogCaching,here>> for the new syntax). So the following is no longer used:
 
 [source,xml]
 ----------------------
@@ -346,10 +346,10 @@ link:reference/ThreddsConfigXMLFile.adoc#CatalogCaching[here] for the new syntax
 == Recommendations for ESGF
 
 You must determine the number of datasets that are contained in all of your catalogs. To get a report, enable
-link:reference/RemoteManagement.adoc[Remote Management], and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__. This may
+<<reference/RemoteManagement.adoc,Remote Management>>, and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__. This may
 take 5-20 minutes, depending on the numbers of catalogs.
 
-Add the link:reference/ThreddsConfigXMLFile.adoc#CatalogCaching[ConfigCatalog] element to threddsConfig.xml:
+Add the <<reference/ThreddsConfigXMLFile.adoc#CatalogCaching,ConfigCatalog>> element to threddsConfig.xml:
 
 [source,xml]
 --------------------------------------------------------
@@ -374,7 +374,7 @@ Here are some additional, optional changes you can make to increase maintainabil
 1.  Place all *datasetRoot* elements in the top catalog
 2.  Place all *service* elements in the root catalog (__catalog.xml__). These can be referencced from any catalog.
 3.  Remove *service* selements from non-root catalogs.
-4.  Add a *link:catalog/InvCatalogServerSpec.adoc#catalogScan[catalogScan]* element to the root catalog, replacing the list of catalogRefs listing all
+4.  Add a *<<catalog/InvCatalogServerSpec.adoc#catalogScan,catalogScan>>* element to the root catalog, replacing the list of catalogRefs listing all
 the other catalogs.
 * This assumes that other catalogs live in a subdirectory under the root, for example **$\{tds.content.root.path}/thredds/esgcet/**.
 

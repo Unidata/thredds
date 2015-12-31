@@ -32,7 +32,7 @@ session.
 A session is encapsulated in an instance of the class __HTTPSession__.
 The encapsulation is with respect to a specific url. This means that
 once a session is specified, it is tied permanently to that url and
-link:#URLManagement[``compatible''] urls.
+<<#URLManagement,``compatible''>> urls.
 
 It is important to note that Session objects do NOT correspond with the
 HttpClient objects of the Apache httpclient library. Each Session does,
@@ -42,7 +42,7 @@ It is possible to create a session with a null url, in which case, the
 session can be used generally. For this, an _HTTPSession_ constructor
 with no arguments is provided. If used, then (1) the session is tied to
 no specific url, and (2) method creation must specify a url (see
-link:#HTTPMethod[HTTPMethod]).
+<<#HTTPMethod,HTTPMethod>>).
 
 === HTTPMethod
 
@@ -67,7 +67,7 @@ HTTPMethod m = HTTPMethod.Get(session,url);
 -------------------------------------------
 
 Note that any URL must be compatible (See the Section on
-link:#URLManagement[URL Management]).
+<<#URLManagement,URL Management>>).
 
 === HTTPMethodStream
 
@@ -328,7 +328,7 @@ the server authenticates to the client and then the client authenticates
 to the server.
 
 The credentials provider (see
-link:#HTTPSSLProvider.API[HTTPSSLProvider]) is used in a non-standard
+<<#HTTPSSLProvider.API,HTTPSSLProvider>>) is used in a non-standard
 way and it contains the following information.
 
 * The path to the keystore file
@@ -423,10 +423,10 @@ firewall controlling access to the ``outside world''.
 Specifying the host plus port can be done in either of two ways.
 
 1.  Programmatically by called the procedure
-link:#setGlobalProxy[HTTPSession.setGlobalProxy()].
+<<#setGlobalProxy,HTTPSession.setGlobalProxy()>>.
 2.  Global command line parameters: ``-Dhttp.proxyHost'' and
 ``-Dhttp.proxyPort''; note that this is equivalent to calling
-link:#setGlobalProxy[setGlobalProxy()] with the values of the
+<<#setGlobalProxy,setGlobalProxy()>> with the values of the
 http.proxyhost and the http.proxyport command line parameters
 
 For authentication, the authentication database is consulted to try to
@@ -525,7 +525,7 @@ the java -D flag) are used for initialization. There are two such cases.
 
 1.  Simple Proxies: If defined, the values of the flags
 ``-Dhttp.proxyHost'' and ``-Dhttp.proxyPort'' are used as arguments to
-the link:#setGlobalProxy[setGlobalProxy()"] method to establish a
+the <<#setGlobalProxy,setGlobalProxy()">> method to establish a
 global, simple (i.e. non-authenticating) proxy.
 2.  SSL: If defined, the values of the flags ``-Dkeystore'',
 ``-Dkeystorepassword'' and ``-Dtruststore'', ``-Dtruststorepassword''

@@ -24,7 +24,7 @@ messages to the TDS when a dataset changes.
 
 == Installing the TDM
 
-Get the current jar linked from the TDS link:../../TDS.adoc[Home Page]
+Get the current jar linked from the TDS <<../../TDS.adoc,Home Page>>
 
 The TDM can be run from anywhere, but by convention we create a
 directory **\{tomcat}/content/tdm**, and run the TDM from there.
@@ -85,7 +85,7 @@ prompted for the password for the *tdm* user password. This allows you
 to start up the TDM without putting the password into a startup script.
 Note that user *tdm* should be given only the role of **tdsTrigger**,
 which only gives rights to trigger collection reloading (see
-link:#trigger[below]).
+<<#trigger,below>>).
 2.  The TDM will write index files into the data directories or index
 directories. The index files will have extensions *gbx9* and **ncx2**.
 3.  For each featureCollection, a log file is created in the TDM working

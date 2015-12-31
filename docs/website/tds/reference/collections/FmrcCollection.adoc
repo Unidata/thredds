@@ -40,7 +40,7 @@ their time and runtime coordinates and the actual data values.
 
 * Its best if the reference time is part of the filename, in a way that
 can be extracted with a
-link:FeatureCollections.adoc#dateExtractor[DateExtractor].
+<<FeatureCollections.adoc#dateExtractor,DateExtractor>>.
 * If there is a serviceType=``HTTPServer'' for the Feature Collection,
 it is removed from the virtual datasets (all except the _Files_
 datasets).
@@ -131,7 +131,7 @@ debug);* +
 
 The collection may be one of:
 
-1.  link:CollectionSpecification.adoc[collection specification] string
+1.  <<CollectionSpecification.adoc,collection specification>> string
 2.  __catalog__:catalogURL
 3.  filename.ncml
 

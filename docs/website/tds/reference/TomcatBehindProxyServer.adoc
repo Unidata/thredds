@@ -37,7 +37,7 @@ TDS. There are two methods to accomplish this:
 *Warning!* It is important to carefully configure your proxy so that the
 existence of the proxy is transparent to the end-user/client. For
 instance, when a web application (e.g., the TDS) on the backend server
-includes a link:#chgContextPath[self-referential URL] in some response
+includes a <<#chgContextPath,self-referential URL>> in some response
 content, it should use the proxy server’s name and port rather than
 those of the backend server.
 
@@ -95,7 +95,7 @@ matches the requested URL.
 Check that the Data Access URL in the OPeNDAP Data Access Form matches
 the requested URL (minus the ``.html'' suffix).
 
-If you have link:RemoteManagement.adoc[TDS Remote Management]
+If you have <<RemoteManagement.adoc,TDS Remote Management>>
 configured, go to the TDS debug page (e.g.,
 `http://localhost:8080/thredds/admin/debug`) and follow the ``Show HTTP
 Request info'' link. Once there, check that the values listed for server

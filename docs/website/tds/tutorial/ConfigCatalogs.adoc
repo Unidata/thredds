@@ -504,7 +504,7 @@ roots'']
 
 A `datasetScan` element can specify which files and directories it will
 include with a `filter` element (see
-link:../catalog/InvCatalogServerSpec.adoc#filter_Element[spec] for more
+<<../catalog/InvCatalogServerSpec.adoc#filter_Element,spec>> for more
 details). When no `filter` element is given, all files and directories
 are included in the generated catalog(s). Adding a `filter` element to
 your `datasetScan` element allows you to include (and/or exclude) the
@@ -701,7 +701,7 @@ how to determine the time coverage for each datasets in the collection.
 Currently, the `addTimeCoverage` element can only construct
 start/duration `timeCoverage` elements and uses the dataset name to
 determine the start time. As described in the
-link:#Naming_Datasets[``Naming Datasets'' section] above, the
+<<#Naming_Datasets,``Naming Datasets'' section>> above, the
 addTimeCoverage element applies a
 http://www.regular-expressions.info/[regular expression] match to the
 dataset name. If the match succeeds, any regular expression

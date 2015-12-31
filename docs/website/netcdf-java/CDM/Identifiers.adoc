@@ -18,11 +18,11 @@ This document summarizes the various encodings. To transform between
 them, translate from <form1> to Unicode with <form1> unescaping as needed,
 then from Unicode to <form2> with <form2> escaping as needed.
 
-* link:#netCDF[netCDF file format]
-* link:#CDL[CDL]
-* link:#NcML[NcML]
-* link:#CDM[CDM]
-* link:#OPeNDAP[OPeNDAP]
+* <<#netCDF,netCDF file format>>
+* <<#CDL,CDL>>
+* <<#NcML,NcML>>
+* <<#CDM,CDM>>
+* <<#OPeNDAP,OPeNDAP>>
 
 == *netCDF-3 and netCDF-4 file format Identifiers*
 

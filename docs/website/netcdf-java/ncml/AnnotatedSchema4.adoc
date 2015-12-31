@@ -25,7 +25,7 @@ model.
 
 *_NcML Schema-2.2_* is written in the http://www.w3.org/XML/Schema[W3C XML Schema] language, and
  represents the netCDF-Java / CDM data model, which schematically looks like this in
-link:../CDM/CDM-UML.png[UML]:
+<<../CDM/CDM-UML.png,UML>>:
 
 image:CDM-UML.png[image]
 
@@ -293,7 +293,7 @@ is set to a constant.
 7.  The mandatory _*name*_ attribute must be unique among variables
 within its containing _*group, variable,* or_ *_netcdf_* element.
 8.  The _*type*_ attribute is one of the enumerated
-link:#DataType[DataTypes].
+<<#DataType,DataTypes>>.
 9.  The typedef is the name of an enumerated Typedef. Can be used only
 for *_type=enum1, enum2_* or **_enum4_**.
 10. The _*shape*_ attribute lists the names of the dimensions the
@@ -365,7 +365,7 @@ _*value*_ attribute or in the element content**.**
 1.  The mandatory _*name*_ attribute must be unique among attributes
 within its containing _*group, variable,*_ or *_netcdf_* element.
 2.  The _*type*_ attribute may be **String, byte, short, int, long,
-float, double**link:#DataType[]. If not specified, it defaults to a
+float, double**<<#DataType,>>. If not specified, it defaults to a
 String.
 3.  The _value_ attribute contains the actual data of the _attribute_
 element. In the most common case of single-valued attributes, a single
@@ -640,15 +640,15 @@ the aggregation, before it is aggregated. Elements _*outside*_ the
 must be explicitly listed in a _*variableAgg*_ element.
 3.  Optionally specify global attributes to promote to a variable (outer
 aggregations only) with a
-link:#promoteGlobalAttribute[promoteGlobalAttribute] element.
+<<#promoteGlobalAttribute,promoteGlobalAttribute>> element.
 4.  Specify which variables should be cached (outer aggregation only)
-with a link:#cacheVariable[cacheVariable] element.
+with a <<#cacheVariable,cacheVariable>> element.
 5.  Nested *netcdf* datasets can be explicitly listed.
 6.  Nested netcdf datasets can be implicitly specified with a *scan*
 element.
 7.  The scan directory **location**.
 8.  If you specify a **regExp**, only files with whose full pathnames
-match the link:#regexp[regular expression] will be included.
+match the <<#regexp,regular expression>> will be included.
 9.  If you specify a **suffix**, only files with that ending will be
 included. A *regExp* attribute will override, that is, you cant specify
 both.
@@ -662,7 +662,7 @@ min" or "1 hour".
 12. A *dateFormatMark* is used on *_joinNew_* types to create date
 coordinate values out of the filename. It consists of a section of text,
 a `#' marking character, then a
-link:#SimpleDateFormat[java.text.SimpleDateFormat] string. The number of
+<<#SimpleDateFormat,java.text.SimpleDateFormat>> string. The number of
 characters before the # is skipped in the filename, then the next part
 of the filename must match the SimpleDateFormat string. You can ignore
 trailing text. For example:
@@ -680,12 +680,12 @@ is a single time in each file of the aggregation, in which case the
 coordinate values of the time can be created from the filename, instead
 of having to open each file and read it.
 13. You can optionally specify that the files should be opened in
-link:#enhance[enhanced mode] (default is
+<<#enhance,enhanced mode>> (default is
 __NetcdfDataset.EnhanceMode.None__). Generally you should do this if the
 ncml needs to operate on the dataset after the CoordSysBuilder has
 augmented it. Otherwise, you should not enhance.
 14. A specialized scanFmrc element can be used for a
-_*link:FmrcAggregation.adoc#forecastModelRunSingleCollection[forecastModelRunSingleCollection]*_
+_*<<FmrcAggregation.adoc#forecastModelRunSingleCollection,forecastModelRunSingleCollection>>*_
 aggregation, where forecast model run data is stored in multiple files,
 with one forecast time per file.
 15. For scanFmrc, the run date and the forecast date is extracted from
@@ -695,7 +695,7 @@ these require matching a specific string in the file’s pathname and then
 matching a date or hour offset immediately before or after the match.
 The match is specified by placing it between `#' marking characters. The
 *runDateMatcher* and *forecastDateMatcher* has a
-link:#SimpleDateFormat[java.text.SimpleDateFormat] string before or
+<<#SimpleDateFormat,java.text.SimpleDateFormat>> string before or
 after the match, while a *forecastOffsetMatcher* counts the number of
 `H' characters, and extracts an hour offset from the run date. For
 example:

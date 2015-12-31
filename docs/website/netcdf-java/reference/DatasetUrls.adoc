@@ -23,7 +23,7 @@ to prevent the "C:" from being misinterpreted as a URL schema.
 
 === 2. Remote Files
 
-*NetcdfFile* can open *HTTP remote files*, link:HTTPservice.adoc[served over HTTP], for example:
+*NetcdfFile* can open *HTTP remote files*, <<HTTPservice.adoc,served over HTTP>>, for example:
 
 * _\http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc_
 
@@ -47,7 +47,7 @@ library will uncompress/unzip and write a new file without the suffix,
 then read from the uncompressed file. Generally it prefers to place the
 uncompressed file in the same directory as the original file. If it does
 not have write permission on that directory, it will use the
-link:Caching.adoc[cache directory] defined by *ucar.nc2.util.DiskCache.*
+<<Caching.adoc,cache directory>> defined by *ucar.nc2.util.DiskCache.*
 
 == ucar.nc2.dataset.NetcdfDataset.openFile(String location)
 
@@ -119,7 +119,7 @@ NetcdfDataset will read the catalog, extract the THREDDS dataset, and open it as
 
 === 5. CdmRemote Datasets
 
-NetcdfDataset can open *_link:stream/CdmRemote.adoc[CDM Remote]_* datasets, with the form
+NetcdfDataset can open *_<<stream/CdmRemote.adoc,CDM Remote>>_* datasets, with the form
 
   cdmremote:cdmRemoteURL
 
@@ -144,7 +144,7 @@ suffixes, e.g. __.dmr, .dap, .dst__, etc.
 
 == ucar.nc2.ft.FeatureDatasetFactoryManager.open()
 
-FeatureDatasetFactory creates link:FeatureDatasets/Overview.adoc[Feature Datasets] for Coverages (Grids),
+FeatureDatasetFactory creates <<FeatureDatasets/Overview.adoc,Feature Datasets>> for Coverages (Grids),
 Discrete Sampling Geometry (Point) Datasets, Radial Datasets, etc. These may be based on
 local files, or they may use remote access protocols.
 
@@ -152,7 +152,7 @@ _FeatureDatasetFactoryManager_ can open the same URLs that NetcdfDataset and Net
 
 === 1. CdmrFeature Datasets
 
-FeatureDatasetFactoryManager can open *_link:stream/CdmrFeature.adoc[CdmRemote Feature Datasets]_*, which have the form
+FeatureDatasetFactoryManager can open *_<<stream/CdmrFeature.adoc,CdmRemote Feature Datasets>>_*, which have the form
 
   cdmrFeature:cdmrFeatureURL
 

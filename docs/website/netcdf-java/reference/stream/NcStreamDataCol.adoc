@@ -92,7 +92,7 @@ Variable-length data has a *variable length dimension* in its outermost (fastest
 * The fixed shape of the data is specified by _section_.
 * The length of each variable-length array is stored in _vlens_. There will be _shape.size()_ of them.
 * The sum of the _vlens_ is equal to _nelems_.
-* see link:../../CDM/VariableLengthData.adoc[vlen data]
+* see <<../../CDM/VariableLengthData.adoc,vlen data>>
 
 Examples:
 

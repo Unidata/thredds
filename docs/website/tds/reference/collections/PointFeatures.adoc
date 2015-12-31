@@ -7,7 +7,7 @@
 
 A *_Point Feature Collection_* is a collection of files which the CDM
 can recognize as containing
-link:../../../netcdf-java/reference/FeatureDatasets/PointFeatures.adoc[Point Features].
+<<../../../netcdf-java/reference/FeatureDatasets/PointFeatures.adoc,Point Features>>.
 
 === Constraints on Point Feature Collections
 
@@ -15,7 +15,7 @@ link:../../../netcdf-java/reference/FeatureDatasets/PointFeatures.adoc[Point Fea
 _*Point*_ or _*Station*_ Feature type by the CDM software.
 * The component files must be partitioned by time. The starting time
 must be part of the filename, in a way that can be extracted with a
-link:FeatureCollections.adoc#dateExtractor[DateExtractor].
+<<FeatureCollections.adoc#dateExtractor,DateExtractor>>.
 * The component files are assumed to be homogenous, that is, they
 contain the same collection of variables and attributes, and they must
 be on the same horizontal and vertical grid. The component files can

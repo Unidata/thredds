@@ -23,14 +23,14 @@ __________________________________________________________
 *http://servername:8080/thredds/ncss/grid/\{path/dataset}*
 __________________________________________________________
 
-Typically the user wants a link:#subset[subset] of the dataset.This is
+Typically the user wants a <<#subset,subset>> of the dataset.This is
 considered a _view_ of a resource, rather than a separate resource:
 
 _______________________________________________________________
 *http://servername:8080/thredds/ncss/\{path/dataset}?\{subset}*
 _______________________________________________________________
 
-A desired _link:#representation[representation]_ of the resource is
+A desired _<<#representation,representation>>_ of the resource is
 specified using the *accept* parameter. Again, different representations
 are not considered separate resources. Following the *Accept* HTTP
 header, accept takes a comma delimited list of mime-types (or aliases),
@@ -45,7 +45,7 @@ ________________________________________________________________________________
 The dataset itself has two representations:
 
 an XML file describing the dataset, called the
-link:#DatasetDescription[Dataset Description]
+<<#DatasetDescription,Dataset Description>>
 
 * *http://servername:8080/thredds/ncss/\{path/dataset}/dataset.xml*
 

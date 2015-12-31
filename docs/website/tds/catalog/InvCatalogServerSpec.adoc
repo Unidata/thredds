@@ -14,16 +14,16 @@ catalog specification].
 
 Server-side elements described in this document:
 
-* link:#catalog[catalog]
-* link:#catalogScan[catalogScan]
-* link:#dataset[dataset]
-* link:#datasetRoot[datasetRoot]
-* link:#datasetScan[datasetScan]
+* <<#catalog,catalog>>
+* <<#catalogScan,catalogScan>>
+* <<#dataset,dataset>>
+* <<#datasetRoot,datasetRoot>>
+* <<#datasetScan,datasetScan>>
 
 Also see:
 
-* link:../reference/DatasetScan.adoc[DatasetScan] reference
-* link:../reference/collections/FeatureCollections.adoc[FeatureCollection] reference
+* <<../reference/DatasetScan.adoc,DatasetScan>> reference
+* <<../reference/collections/FeatureCollections.adoc,FeatureCollection>> reference
 * http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[Catalog XML Schema] +
 
 [[catalog]]
@@ -128,8 +128,8 @@ directory and all subdirectories. (NOT IMPLEMENTED)
 [[dataset]]
 == The dataset element
 
-The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to server side catalogs, along with the
-*link:../reference/RestrictedAccess.adoc[restrictAccess]* attribute:
+The *<<../tutorial/NcML.htm,ncml:netcdf>>* element is specific to server side catalogs, along with the
+*<<../reference/RestrictedAccess.adoc,restrictAccess>>* attribute:
 
 [source,xml]
 --------------------------------------------------------------------------------
@@ -156,11 +156,11 @@ The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to server side 
 --------------------------------------------------------------------------------
 
 * The *restrictAccess* attribute is a server-side option that tells the
-TDS to link:../reference/RestrictedAccess.adoc[restrict access] to this
+TDS to <<../reference/RestrictedAccess.adoc,restrict access>> to this
 dataset. It is always inherited by all contained datasets.
 * The *ncml:netcdf* element is used only on the server, it
-link:../tutorial/NcML.htm[modifies the dataset with NcML]. For
-link:#datasetScan[datasetScan], it modifies all contained datasets.
+<<../tutorial/NcML.htm,modifies the dataset with NcML>>. For
+<<#datasetScan,datasetScan>>, it modifies all contained datasets.
 
 [[datasetScan]]
 == __The datasetScan__ Element
@@ -201,7 +201,7 @@ Do not put leading or trailing slashes on the path.
 The *_addLatest_* attribute adds a _latest resolver service_ to the datasetScan.
 
 A _datasetScan_ element is in the dataset substitutionGroup, so it can
-be used wherever a _link:InvCatalogSpec.adoc#dataset[dataset]_ element
+be used wherever a _<<InvCatalogSpec.adoc#dataset,dataset>>_ element
 can be used. It is an extension of a DatasetType, so any of dataset’s
 nested elements and attributes can be used in it. This allows you to add
 enhanced metadata to a datasetScan. However you should not add nested
@@ -514,7 +514,7 @@ _datasetNameMatchPattern_ attribute is used in a regular expression
 match on the dataset name. If the match succeeds, a capturing group
 replacement is performed on the _startTimeSubstitutionPattern_ attribute
 and the result is the start time string (see the _namer_ element
-description, link:#namer_Element[above], for more on regular expressions
+description, <<#namer_Element,above>>, for more on regular expressions
 and capturing groups). The time coverage duration is given by the
 _duration_ attribute.
 
@@ -549,12 +549,12 @@ following timeCoverage element: +
 [[Index]]
 == Index +
 
-* link:#addLatest[addLatest]
-* link:#addProxies[addProxies]
-* link:#addTimeCoverage[addTimeCoverage]
-* link:#datasetScan[datasetScan]: creates nested catalogs by scanning directories.
-* link:#datasetRoot[datasetRoot]: associates a local disk directory with a URL path +
-* link:#filter[filter]
-* link:#namer[namer]
-* link:#sort[sort]
+* <<#addLatest,addLatest>>
+* <<#addProxies,addProxies>>
+* <<#addTimeCoverage,addTimeCoverage>>
+* <<#datasetScan,datasetScan>>: creates nested catalogs by scanning directories.
+* <<#datasetRoot,datasetRoot>>: associates a local disk directory with a URL path +
+* <<#filter,filter>>
+* <<#namer,namer>>
+* <<#sort,sort>>
 

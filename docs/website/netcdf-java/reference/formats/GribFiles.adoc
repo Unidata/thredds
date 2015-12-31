@@ -16,7 +16,7 @@ The CDM can only read GRIB files, it cannot write them. It can, however,
 rewrite GRIB into netCDF using CF Conventions. Before version 4.3.13, it
 can only write netCDF-3 format files, which are typically 4-20 times
 larger than GRIB. As of 4.3.13, the CDM can
-link:../netcdf4Clibrary.adoc[write to netCDF-4] format, with file sizes
+<<../netcdf4Clibrary.adoc,write to netCDF-4>> format, with file sizes
 comparable to GRIB, typically within a factor of two.
 
 A GRIB collection must follow these __homogeneity constraints__:
@@ -106,13 +106,13 @@ http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html[wgrib] (NCEP)
 and http://www.ecmwf.int/products/data/software/grib.html[gribex]
 (ECMWF).
 
-The CDM has a link:GribTables.adoc[number of ways] to allow you to use
+The CDM has a <<GribTables.adoc,number of ways>> to allow you to use
 new tables or override incorrect ones globally or by dataset. The good
 news is that if users contribute these fixes back to the CDM, everyone
 can take advantage of them and the set of ``correct'' datasets will
 grow. The WMO has greatly improved the process of using the standard
 tables, and hopefully GRIB data producers will continue to
-link:GribTables.adoc[improve methods for writing GRIB]and maintaining
+<<GribTables.adoc,improve methods for writing GRIB>>and maintaining
 local tables.
 
 == Opening a GRIB Collection in the CDM
@@ -147,7 +147,7 @@ data files, its best to recreate the index files.
 
 === Creating a GRIB Collection Index
 
-You can use a link:../manPages.adoc#GribCdmIndex[command line tool] that
+You can use a <<../manPages.adoc#GribCdmIndex,command line tool>> that
 uses a complete
 link:../../../tds/reference/collections/GribCollections.adoc[GRIB
 <featureCollection> element] to define the GRIB Collection, and
@@ -197,7 +197,7 @@ Collection Configuration] for a description of all of the options.
 
 Note that you cannot use NcML to open a collection of GRIB files. You
 must generate the Grib Collection index file in a
-link:#Creating[seperate step].
+<<#Creating,seperate step>>.
 
 == Mapping a GRIB Collection into Multidimensional Variables
 

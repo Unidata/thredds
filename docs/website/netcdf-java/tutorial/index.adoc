@@ -9,56 +9,56 @@ Netcdf Java Tutorial
 
 === 1. Overview
 
-* The link:../CDM/index.adoc[Common Data Model]
-* link:SourceCodeBuild.adoc[Building from source]
+* The <<../CDM/index.adoc,Common Data Model>>
+* <<SourceCodeBuild.adoc,Building from source>>
 
 === 2. Working with CDM datasets
 
-* link:NetcdfFile.adoc[NetcdfFile]: reading CDM files
-* link:NetcdfDataset.adoc[NetcdfDataset]: enhanced files, coordinate
+* <<NetcdfFile.adoc,NetcdfFile>>: reading CDM files
+* <<NetcdfDataset.adoc,NetcdfDataset>>: enhanced files, coordinate
 systems
-* link:NetcdfFileWriteable.adoc[NetcdfFileWriteable]: writing netCDF-3
+* <<NetcdfFileWriteable.adoc,NetcdfFileWriteable>>: writing netCDF-3
 Files (CDM 4.2)
-* link:NetcdfWriting.adoc[Writing netCDF files]: writing netCDF-3 and
+* <<NetcdfWriting.adoc,Writing netCDF files>>: writing netCDF-3 and
 netCDF-4 Files (CDM 4.3+)
 
 === 3. NcML
 
-* link:../ncml/Tutorial.adoc[Modifying existing files]
-* link:../ncml/Aggregation.adoc[Aggregation]
+* <<../ncml/Tutorial.adoc,Modifying existing files>>
+* <<../ncml/Aggregation.adoc,Aggregation>>
 
 === 4. Writing an I/O Service Provider
 
-* link:IOSPoverview4.adoc[Implementing an IOSP : Overview]
-* link:IOSPexample1.adoc[Example]: Lightning data
-* link:IospDmsp.adoc[Example]: DMSP data
-* link:IOSPdetails.adoc[IOSP details]
-* link:IOSPbackground.adoc[Other Classes Needed when writing an IOSP]
+* <<IOSPoverview4.adoc,Implementing an IOSP : Overview>>
+* <<IOSPexample1.adoc,Example>>: Lightning data
+* <<IospDmsp.adoc,Example>>: DMSP data
+* <<IOSPdetails.adoc,IOSP details>>
+* <<IOSPbackground.adoc,Other Classes Needed when writing an IOSP>>
 
 === 5. Coordinate Systems
 
-* _Coordinate Attribute link:CoordinateAttributes.adoc[Examples]
-* link:CoordSysBuilder.adoc[Writing a Coordinate System Builder]:
+* _Coordinate Attribute <<CoordinateAttributes.adoc,Examples>>
+* <<CoordSysBuilder.adoc,Writing a Coordinate System Builder>>:
 recognizing Coordinate Systems.
-* link:CoordTransBuilder.adoc[Writing a Coordinate Transform]:
+* <<CoordTransBuilder.adoc,Writing a Coordinate Transform>>:
 implementing Projections and Vertical Transforms
 
 === 6. Scientific Feature Types
 
 * link:../reference/FeatureDatasets/Overview.adoc[Feature Dataset
 Overview]
-* link:GridDatatype.adoc[Grid Datasets]
-* link:RadialDatatype.adoc[Radial Datatype]
+* <<GridDatatype.adoc,Grid Datasets>>
+* <<RadialDatatype.adoc,Radial Datatype>>
 * link:../reference/FeatureDatasets/PointFeatures.adoc[Point Feature
 Datasets] (aka Discrete Sampling Geometry datasets)
 
 === 7. Runtime Loading
 
-* link:../reference/RuntimeLoading.adoc[Runtime Loading Summary]
+* <<../reference/RuntimeLoading.adoc,Runtime Loading Summary>>
 
 === 8. Reference
 
-* link:../reference/index.adoc[Reference Docs]
+* <<../reference/index.adoc,Reference Docs>>
 
 '''''
 

@@ -92,7 +92,7 @@ and end with "__*.nc*__". The run data is extracted from the filename.
 
 The contained datasets include the resulting 2D time dimension dataset,
 as well as 1D time views described
-link:../reference/collections/FmrcCollection.adoc#fmrcConfig[here], as
+<<../reference/collections/FmrcCollection.adoc#fmrcConfig,here>>, as
 seen in the resulting HTML page for that dataset:
 
 image:images/FmrcExample1.png[image]
@@ -136,7 +136,7 @@ case, the _`#'_ characters delineate a *substring match* on the entire
 pathname (so there had better only be one place where the string
 "**workshop/bom/**" appears). _Immediately_ following the match comes
 the date extractor string. See
-link:../reference/collections/FeatureCollections.adoc#dateExtractor[here]
+<<../reference/collections/FeatureCollections.adoc#dateExtractor,here>>
 for more details.
 
 \2. The second way to specify the run time is to add a global attribute
@@ -214,4 +214,4 @@ server load. _Don’t use both of them on the same dataset on a real
 production server._
 
 More details are in the
-link:../reference/collections/FeatureCollections.adoc[reference doc].
+<<../reference/collections/FeatureCollections.adoc,reference doc>>.

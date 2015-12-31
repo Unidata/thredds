@@ -281,11 +281,11 @@ RootController
 ModelAndView *-> InvCatalogXmlView* (xml)
 void (write HTML directly to output)
 |CdmRemoteController |*/cdmremote* |/\{path}?\{cdmr query}
-(link:../../netcdf-java/reference/stream/CdmRemote.adoc[ref]) | 
+(<<../../netcdf-java/reference/stream/CdmRemote.adoc,ref>>) | 
 |ResponseEntity<String>, void
 
 |CdmrGridController |*/cdmrfeature/grid* |/\{path}?\{cdmrf query}
-(link:../../netcdf-java/reference/stream/CdmrFeature.adoc[ref]) |  | 
+(<<../../netcdf-java/reference/stream/CdmrFeature.adoc,ref>>) |  | 
 
 |Dap4Servlet |/dap4 |/\{path}?\{dap4 query} |TODO (dennis) | 
 
@@ -303,14 +303,14 @@ _thredds/server/serverinfo/serverInfo_html_
 |ResponseEntity<String>
 
 |NcssGridController |*/ncss/grid* |/\{path}?\{ncss query}
-(link:../reference/services/NetcdfSubsetServiceReference.adoc[ref]) +
+(<<../reference/services/NetcdfSubsetServiceReference.adoc,ref>>) +
  **/dataset.[html|xml]  +
  **/pointDataset.[html\|xml] +
  **/datasetBoundaries.xml + |
 may be able to redirect cdmrfeature
 
 |NcssPointController |*/ncss/point* |/\{path}?\{ncss query}
-(link:../reference/services/NetcdfSubsetServiceReference.adoc[ref]) +
+(<<../reference/services/NetcdfSubsetServiceReference.adoc,ref>>) +
  **/dataset.[html\|xml]  +
  **/pointDataset.[html\|xml] +
  **/station.xml |  |

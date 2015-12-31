@@ -8,18 +8,18 @@
 
 === Install Java
 
-1.  link:images/fileIcon.jpg[Download and install] the latest version of
+1.  <<images/fileIcon.jpg,Download and install>> the latest version of
 JDK 1.7
 
 === Tomcat Install
 
 Create a link:Security.adoc#install[dedicated user and group for running
 Tomcat] who does not have root privileges.
-link:Security.adoc#install[Modify the permissions] in *$\{tomcat_home}*
+<<Security.adoc#install,Modify the permissions>> in *$\{tomcat_home}*
 to allow this user access to only the necessary parts of the Tomcat
 installation.
 
-link:images/fileIcon.jpg[Download and install] the latest version of
+<<images/fileIcon.jpg,Download and install>> the latest version of
 Tomcat 7.
 
 In **$\{tomcat_home}/bin** link:GettingStarted.adoc#makeSetenv[create a
@@ -45,30 +45,30 @@ your web site.
 
 Make the following modifications to **$\{tomcat_home}/conf/server.xml**:
 
-* link:Security.adoc#digested[Enable digest passwords] by commenting out
+* <<Security.adoc#digested,Enable digest passwords>> by commenting out
 the *UserDatabaseRealm* and enabling the **MemoryRealm**.
-* link:Security.adoc#ssl[Enable SSL] by uncommenting the SSL Connector
+* <<Security.adoc#ssl,Enable SSL>> by uncommenting the SSL Connector
 listening on port 8443, and add the required *keystoreFile* and
 *keystorePass* attributes.
 * link:../reference/Performance.adoc#enableCompression[Enable
 compression] by adding *compression* and *compressableMimeType*
 attributes to 8080 Connector.
-* link:TDSMonitoringAndDebugging.adoc#access[Enable access logging] by
+* <<TDSMonitoringAndDebugging.adoc#access,Enable access logging>> by
 uncommenting the *AccessLogValve* and change the *prefix* and *suffix*
 and *pattern* attributes.
 
-link:Security.adoc#digested[Create a password digest] using the
+<<Security.adoc#digested,Create a password digest>> using the
 *$\{tomcat_home}/bin/digest.sh* script.
 
 Make the following modifications to
 **$\{tomcat_home}/conf/tomcat-users.xml**:
 
-* Define the roles link:GettingStarted.adoc#grantingAccess[manager-gui]
+* Define the roles <<GettingStarted.adoc#grantingAccess,manager-gui>>
 and
-link:examples/accessingTDSMonitoringAndDebuggingTools.adoc[tdsConfig]
+<<examples/accessingTDSMonitoringAndDebuggingTools.adoc,tdsConfig>>
 and
-link:examples/accessingTDSMonitoringAndDebuggingTools.adoc[tdsMonitor].
-* link:GettingStarted.adoc#grantingAccess[Add yourself as a user] with
+<<examples/accessingTDSMonitoringAndDebuggingTools.adoc,tdsMonitor>>.
+* <<GettingStarted.adoc#grantingAccess,Add yourself as a user>> with
 the roles manager-gui and tdsConfig using your digest password your
 created in step #6 above.
 
@@ -76,33 +76,33 @@ Make the following modifications to
 **$\{tomcat_home}/webapps/manager/WEB-INF/web.xml**:
 
 1.  Make sure the manager is only
-link:examples/tomcatManagerSSL.adoc[available via SSL] by adding a
+<<examples/tomcatManagerSSL.adoc,available via SSL>> by adding a
 user-data-constraint with a transport-guarantee of CONFIDENTIAL inside
 the security-constraint element.
 
-link:Security.adoc#unused[Remove any unused applications] from
+<<Security.adoc#unused,Remove any unused applications>> from
 $\{tomcat_home}/webapps.
 
 === TDS Install
 
-link:GettingStarted.adoc#deploying[Download] the latest thredds.war
+<<GettingStarted.adoc#deploying,Download>> the latest thredds.war
 file, and put it into **$\{tomcat_home}/webapps**.
 
 Start/restart Tomcat so that it has a chance to create initial files in
 **$\{tomcat_home}/content/thredds**.
 
 Modify *$\{tomcat_home}/content/thredds/catalog.xml* for your site, as
-in this link:BasicConfigCatalogs.adoc#exampleCatalog[example].
+in this <<BasicConfigCatalogs.adoc#exampleCatalog,example>>.
 
 Modify  **$\{tomcat_home}/content/thredds/threddsConfig.xml** for your
 site in the following manner:
 
 * Add the needed information to the
-link:BasicThreddsConfig_xml.adoc#serverInfo[`serverInformation` element]
-* link:AddingServices.adoc[Enable any other optional services] like WMS
+<<BasicThreddsConfig_xml.adoc#serverInfo,`serverInformation` element>>
+* <<AddingServices.adoc,Enable any other optional services>> like WMS
 or WCS.
 
-If needed, link:Security.adoc#access[limit access to the TDS] and create
+If needed, <<Security.adoc#access,limit access to the TDS>> and create
 a robots.txt file in *$\{tomcat_home}/webapps/ROOT/* to restrict crawler
 activity.
 
@@ -111,10 +111,10 @@ activity.
 === Maintenance
 
 *Be sure to periodically check to make sure you are running the
-link:Security.adoc#versions[latest versions] of Java, Tomcat and the
+<<Security.adoc#versions,latest versions>> of Java, Tomcat and the
 TDS.*
 
-* If you have enabled link:TomcatAndTDSLogs.adoc#access[access logging]
+* If you have enabled <<TomcatAndTDSLogs.adoc#access,access logging>>
 (and you should), zip up the unused access logs in
 *$\{tomcat_home}/logs/* and archive them off to another directory.
 * Likewise, zip up the unused link:TomcatAndTDSLogs.adoc#tds[TDS servlet
@@ -129,5 +129,5 @@ When installing a new thredds.war, everything in
 
 Use one of the following methods to deploying a new version of the TDS
 
-* link:GettingStarted.adoc#manager[Tomcat manager application]
-* link:GettingStarted.adoc#deploying[manual installation]
+* <<GettingStarted.adoc#manager,Tomcat manager application>>
+* <<GettingStarted.adoc#deploying,manual installation>>

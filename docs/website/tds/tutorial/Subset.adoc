@@ -22,11 +22,11 @@ http://remotetest.unidata.ucar.edu/thredds
 
 == What this presentation covers
 
-* link:#ClientServer[Client Server Architecture]
-* link:#Subsetting[What is Dataset Subsetting?]
-* link:#NcSS[The NetCDF Subset Service (NcSS) Protocol]
-* link:#Opendap[The DAP2 and DAP4 Protocol]
-* link:#CDMRemote[The CDM Remote Protocol]
+* <<#ClientServer,Client Server Architecture>>
+* <<#Subsetting,What is Dataset Subsetting?>>
+* <<#NcSS,The NetCDF Subset Service (NcSS) Protocol>>
+* <<#Opendap,The DAP2 and DAP4 Protocol>>
+* <<#CDMRemote,The CDM Remote Protocol>>
 
 == Client Server Architecture
 

@@ -11,8 +11,8 @@ image:../images/CoordSys.png[image]
 
 See also:
 
-* link:../tutorial/CoordinateAttributes.adoc[Tutorial Examples]
-* link:../CDM/index.adoc#CoordSys[CDM Coordinate System Object Model]
+* <<../tutorial/CoordinateAttributes.adoc,Tutorial Examples>>
+* <<../CDM/index.adoc#CoordSys,CDM Coordinate System Object Model>>
 
 There are many attribute conventions for encoding coordinate information into scientific datasets. While the CF
 Conventions are recommended in netCDF files intended for public use, the CDM also uses *_Coordinate attributes* for
@@ -53,7 +53,7 @@ This attribute is used on a Coordinate Axis variable to specify that it
 is a space or time coordinate, such as lat, lon, altitude or time.
 This is the preferred way to make a Variable into a CoordinateAxis (the other way is to list the variable in a *_CoordinateAxes* attribute).
 
-The attribute value must be one of the valid link:#AxisTypes[Axis Types], for example:
+The attribute value must be one of the valid <<#AxisTypes,Axis Types>>, for example:
 
 -----------------------------
  _CoordinateAxisType = "Lat";
@@ -64,7 +64,7 @@ The attribute value must be one of the valid link:#AxisTypes[Axis Types], for ex
 This attribute is used on a Coordinate Transform variable to specify that the Transform applies to any Coordinate System
 with the specified list of Axis types.
 
-The attribute value must be a list of the valid link:#AxisTypes[Axis Types], for example:
+The attribute value must be a list of the valid <<#AxisTypes,Axis Types>>, for example:
 
 ------------------------------------
  _CoordinateAxisTypes = "GeoZ Time";
@@ -125,7 +125,7 @@ Variables, its value is a space-separated list of names of Coordinate Transform 
 --------------------------------------------------------------------------
 
 This is a general mechanism for any transformation a file writer wants to define.
-The Netcdf-Java library has a link:StandardCoordinateTransforms.adoc[set of transforms that it recognizes], mostly based on the CF Conventions.
+The Netcdf-Java library has a <<StandardCoordinateTransforms.adoc,set of transforms that it recognizes>>, mostly based on the CF Conventions.
 
 === _CoordinateTransformType
 
@@ -157,7 +157,7 @@ _Height_ or _Pressure_ for the vertical axis. A _projection transform_ maps coor
 while a _vertical transform_ maps coordinates to/from Height or Pressure.
 
 A Transform is defined by creating a *_Coordinate Transform Variable_* (see
-link:../tutorial/CoordinateAttributes.adoc#Example4[Example]. The attributes of the
+<<../tutorial/CoordinateAttributes.adoc#Example4,Example>>. The attributes of the
 Coordinate Transform Variable become the parameters of the transform. A
 variable is a Coordinate Transform Variable if one (or both) of these is true:
 

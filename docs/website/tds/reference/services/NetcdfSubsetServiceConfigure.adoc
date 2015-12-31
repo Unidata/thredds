@@ -6,13 +6,13 @@
 The Netcdf Subset Service (NCSS) is one of the ways that the TDS can
 serve data. It is an experimental REST protocol for returning subsets of
 CDM datasets. We want to eventually serve all
-link:../../netcdf-java/CDM/index.adoc[CDM]-compatible datasets through
-NCSS, but right now there are some link:#restrictions[restrictions] on
+<<../../netcdf-java/CDM/index.adoc,CDM>>-compatible datasets through
+NCSS, but right now there are some <<#restrictions,restrictions>> on
 the types of datasets that are supported.
 
 This documentation is for TDS administrators. If you are a client
 wanting to access data through the Netcdf Subset Service, look at
-link:NetcdfSubsetServiceReference.adoc[NetCDF Subset Service Reference].
+<<NetcdfSubsetServiceReference.adoc,NetCDF Subset Service Reference>>.
 
 == Enabling the Netcdf Subset Service in the TDS
 
@@ -27,7 +27,7 @@ configuration file before it can be used. This is done by adding an
 -----------------------
 
 Note: Details on other configuration options for NCSS are available in
-the link:ThreddsConfigXMLFile.adoc#ncss[threddsConfig.xml] docs.
+the <<ThreddsConfigXMLFile.adoc#ncss,threddsConfig.xml>> docs.
 
 == Serving Datasets with the Netcdf Subset Service
 

@@ -24,12 +24,12 @@ requiring some configuration before they are available.
 
 * link:../reference/Services.adoc#serverInfo[Server Information
 Services]
-* link:../reference/Services.adoc#catalogServices[Catalog Services]
-* link:../reference/Services.adoc#metadataServices[Metadata Services]
+* <<../reference/Services.adoc#catalogServices,Catalog Services>>
+* <<../reference/Services.adoc#metadataServices,Metadata Services>>
 * link:../reference/Services.adoc#dataAccessServices[Data Access
 Services]
 
-Let’s try it out. A quick link:AddingServices.adoc[exercise].
+Let’s try it out. A quick <<AddingServices.adoc,exercise>>.
 
 === Writing netCDF-4 files
 
@@ -38,7 +38,7 @@ written to a netCDF-4 file. This capability depends on the netCDF-C
 library and requires configuring the TDS with information about the
 location of the netCDF-C library. This configuration is done in the
 `threddsConfig.xml` file and is described
-link:../reference/ThreddsConfigXMLFile.adoc#netcdfCLibrary[here].
+<<../reference/ThreddsConfigXMLFile.adoc#netcdfCLibrary,here>>.
 
 === Configuration of Caching
 
@@ -62,6 +62,6 @@ Loading of Plug-ins]
 * link:../reference/ThreddsConfigXMLFile.adoc#DatasetSource[Adding
 DatasetSource Implementations]
 * Adding Dataset Viewer Links in HTML pages (covered later by John). +
-Various methods are described link:../reference/Viewers.adoc[here]
-including link:../reference/ThreddsConfigXMLFile.adoc#Viewers[one] that
+Various methods are described <<../reference/Viewers.adoc,here>>
+including <<../reference/ThreddsConfigXMLFile.adoc#Viewers,one>> that
 involves changes to the `threddsConfig.xml` file.

@@ -110,7 +110,7 @@ configuration file].
 ** set a Java property on the command line:
 `-Djna.library.path=/path/to/library`
 ** set the library path and name in the
-link:RuntimeLoading.adoc#XML[runtime configuration file]
+<<RuntimeLoading.adoc#XML,runtime configuration file>>
 ** directly call
 http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/javadocAll/ucar/nc2/jni/netcdf/Nc4Iosp.html#setLibraryAndPath(java.lang.String,%20java.lang.String)[Nc4Iosp.setLibraryAndPath()]
 from your Java program
@@ -140,7 +140,7 @@ system library path.
 
 == Writing NetCDF-4 files
 
-* From the command line: see link:manPages.adoc#nccopy[nccopy man page]
+* From the command line: see <<manPages.adoc#nccopy,nccopy man page>>
 * From ToolsUI: in *Viewer* tab, bring up the file to copy, then click
 "Write netCDF file" button to get dialog.
 * From TDS NetCDF Subset Service: choose *netcdf-4* output type.

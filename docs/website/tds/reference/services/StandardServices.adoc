@@ -3,22 +3,22 @@
 
 = TDS Services
 
-* link:#standard[Data Services]
-* link:#available[List of all TDS Services]
-** link:#serverInfo[Server Information Services]
-** link:#catalogServices[Catalog Services]
-** link:#metadataServices[Metadata Services]
-*** link:#ISO[ISO]
-*** link:#NCML[NCML]
-*** link:#UDDC[UDDC]
-** link:#dataAccessServices[Data Access Services]
-*** link:#DAP2[OPeNDAP DAP 2.0]
-*** link:#WCS[OGC WCS]
-*** link:#WMS[OGC WMS]
-*** link:#NCSS[NCSS]
-*** link:#cdmremote[CDMRemote]
-*** link:#HTTP[HTTP File Download]
-* link:#tdsServiceElemRequirements[TDS Requirements for THREDDS Catalog service Elements]
+* <<#standard,Data Services>>
+* <<#available,List of all TDS Services>>
+** <<#serverInfo,Server Information Services>>
+** <<#catalogServices,Catalog Services>>
+** <<#metadataServices,Metadata Services>>
+*** <<#ISO,ISO>>
+*** <<#NCML,NCML>>
+*** <<#UDDC,UDDC>>
+** <<#dataAccessServices,Data Access Services>>
+*** <<#DAP2,OPeNDAP DAP 2.0>>
+*** <<#WCS,OGC WCS>>
+*** <<#WMS,OGC WMS>>
+*** <<#NCSS,NCSS>>
+*** <<#cdmremote,CDMRemote>>
+*** <<#HTTP,HTTP File Download>>
+* <<#tdsServiceElemRequirements,TDS Requirements for THREDDS Catalog service Elements>>
 
 == Data Services (new in 5.0)
 
@@ -75,7 +75,7 @@ paths, services whose access is listed as a THREDDS Catalog *service*
 element must use the exact values listed below for the *serviceType* and
 service *base* URL. The value of the service _name_ attribute, on the
 other hand, is completely configurable. (See below for
-link:#tdsServiceElemRequirements[more details].)
+<<#tdsServiceElemRequirements,more details>>.)
 
 Notes:
 
@@ -83,7 +83,7 @@ Notes:
 independent of your servers hostname or port.
 * For a particular dataset, you can refer to an individual service, or
 use a compound service (__all__ in the example
-link:#compoundExample[below]) which adds all the nested services to the
+<<#compoundExample,below>>) which adds all the nested services to the
 dataset.
 
 === Server Information Services
@@ -163,9 +163,9 @@ Catalogs served by the TDS can be subset and/or viewed as HTML. Remote
 catalogs, if allowed/enabled, can be validated, displayed as HTML, or
 subset.
 
-* More details are available link:CatalogService.adoc[here].
+* More details are available <<CatalogService.adoc,here>>.
 * Services for remote catalogs can be enabled with the TDS Configuration
-File (link:ThreddsConfigXMLFile.adoc#Remote[threddsConfig.xml]).
+File (<<ThreddsConfigXMLFile.adoc#Remote,threddsConfig.xml>>).
 
 Remote THREDDS Catalog Service
 
@@ -200,7 +200,7 @@ Access Point
 `/thredds/iso/*`
 
 Catalog Service Configuration +
- (exact values link:#tdsServiceElemRequirements[required])
+ (exact values <<#tdsServiceElemRequirements,required>>)
 
 Service Type
 
@@ -213,9 +213,9 @@ Service Base URL
 Provide ISO 19115 metadata representation of a dataset’s structure and
 metadata
 
-* More details are available link:ncISO.adoc[here].
+* More details are available <<ncISO.adoc,here>>.
 * Enable ncISO with the TDS Configuration File
-(link:ThreddsConfigXMLFile.adoc#ncISO[threddsConfig.xml]).
+(<<ThreddsConfigXMLFile.adoc#ncISO,threddsConfig.xml>>).
 
 NCML
 
@@ -230,7 +230,7 @@ Access Point
 `/thredds/ncml/*`
 
 Catalog Service Configuration +
- (exact values link:#tdsServiceElemRequirements[required])
+ (exact values <<#tdsServiceElemRequirements,required>>)
 
 Service Type
 
@@ -242,9 +242,9 @@ Service Base URL
 
 Provide NCML representation of a dataset
 
-* More details are available link:ncISO.adoc[here].
+* More details are available <<ncISO.adoc,here>>.
 * Enable ncISO with the TDS Configuration File
-(link:ThreddsConfigXMLFile.adoc#ncISO[threddsConfig.xml]).
+(<<ThreddsConfigXMLFile.adoc#ncISO,threddsConfig.xml>>).
 
 UDDC
 
@@ -259,7 +259,7 @@ Access Point
 `/thredds/uddc/*`
 
 Catalog Service Configuration +
- (exact values link:#tdsServiceElemRequirements[required])
+ (exact values <<#tdsServiceElemRequirements,required>>)
 
 Service Type
 
@@ -274,9 +274,9 @@ conforms to the
 http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discovery[NetCDF
 Attribute Convention for Data Discovery (NACDD)]
 
-* More details are available link:ncISO.adoc[here].
+* More details are available <<ncISO.adoc,here>>.
 * Enable ncISO with the TDS Configuration File
-(link:ThreddsConfigXMLFile.adoc#ncISO[threddsConfig.xml]).
+(<<ThreddsConfigXMLFile.adoc#ncISO,threddsConfig.xml>>).
 
 === Data Access Services
 
@@ -299,7 +299,7 @@ Access Point
 `/thredds/dodsC/*`
 
 Catalog Service Configuration +
- (exact values link:#tdsServiceElemRequirements[required])
+ (exact values <<#tdsServiceElemRequirements,required>>)
 
 Service Type
 
@@ -312,7 +312,7 @@ Service Base URL
 OPeNDAP DAP2 data access protocol.
 
 * Several configuration options are available
-(link:../reference/ThreddsConfigXMLFile.adoc#opendap[details]).
+(<<../reference/ThreddsConfigXMLFile.adoc#opendap,details>>).
 
 NetCDF Subset Service
 
@@ -327,7 +327,7 @@ Access Point
 `/thredds/ncss/*`
 
 Catalog Service Configuration +
- (exact values link:#tdsServiceElemRequirements[required])
+ (exact values <<#tdsServiceElemRequirements,required>>)
 
 Service Type
 
@@ -340,12 +340,12 @@ Service Base URL
 NetCDF Subset Service: a data access protocol.
 
 * More details are available
-link:NetcdfSubsetServiceReference.adoc[here].
+<<NetcdfSubsetServiceReference.adoc,here>>.
 * Enable NCSS and set other configuration options with the TDS
 Configuration File
-(link:ThreddsConfigXMLFile.adoc#ncss[threddsConfig.xml]). More setup and
+(<<ThreddsConfigXMLFile.adoc#ncss,threddsConfig.xml>>). More setup and
 configuration details are available
-link:NetcdfSubsetServiceConfigure.adoc[here].
+<<NetcdfSubsetServiceConfigure.adoc,here>>.
 
 CDM Remote
 
@@ -360,7 +360,7 @@ Access Point
 `/thredds/cdmremote/*`
 
 Catalog Service Configuration +
- (exact values link:#tdsServiceElemRequirements[required])
+ (exact values <<#tdsServiceElemRequirements,required>>)
 
 Service Type
 
@@ -375,7 +375,7 @@ default. It is automatically enabled when an appropriate
 FeatureCollection is used.
 
 * More details are available
-link:../../netcdf-java/reference/stream/CdmRemote.adoc[here].
+<<../../netcdf-java/reference/stream/CdmRemote.adoc,here>>.
 
 OGC Web Coverage Service (WCS)
 
@@ -390,7 +390,7 @@ Access Point
 `/thredds/wcs/*`
 
 Catalog Service Configuration +
- (exact values link:#tdsServiceElemRequirements[required])
+ (exact values <<#tdsServiceElemRequirements,required>>)
 
 Service Type
 
@@ -406,9 +406,9 @@ OGC WCS supports access to geospatial data as ``coverages''.
 http://www.opengeospatial.org/standards/wcs[here].
 * Enable OGC WCS and set other configuration options with the TDS
 Configuration File
-(link:ThreddsConfigXMLFile.adoc#wcs[threddsConfig.xml]). More setup,
+(<<ThreddsConfigXMLFile.adoc#wcs,threddsConfig.xml>>). More setup,
 configuration, and implementation details for the TDS’s OGC WCS
-implementation are available link:WCS.adoc[here].
+implementation are available <<WCS.adoc,here>>.
 
 OGC Web Map Service (WMS)
 
@@ -423,7 +423,7 @@ Access Point
 `/thredds/wms/*`
 
 Catalog Service Configuration +
- (exact values link:#tdsServiceElemRequirements[required])
+ (exact values <<#tdsServiceElemRequirements,required>>)
 
 Service Type
 
@@ -440,9 +440,9 @@ datasets.
 http://www.opengeospatial.org/standards/wms[here].
 * Enable OGC WMS and set other configuration options with the TDS
 Configuration File
-(link:ThreddsConfigXMLFile.adoc#wms[threddsConfig.xml]). More setup,
+(<<ThreddsConfigXMLFile.adoc#wms,threddsConfig.xml>>). More setup,
 configuration, and implementation details for the TDS’s OGC WMS
-implementation are available link:WMS.adoc[here]. Including a link to
+implementation are available <<WMS.adoc,here>>. Including a link to
 configuration information for the underlying WMS implementation (ncWMS:
 "http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[Detailed
 ncWMS Configuration]")
@@ -460,7 +460,7 @@ Access Point
 `/thredds/fileServer/*`
 
 Catalog Service Configuration +
- (exact values link:#tdsServiceElemRequirements[required])
+ (exact values <<#tdsServiceElemRequirements,required>>)
 
 Service Type
 
@@ -475,7 +475,7 @@ HTTP File Download (HTTP byte ranges are supported)
 * Files accessed through the HTTP file download have their file handles
 cached by default. Configuration settings for this caching can be set
 with the TDS Configuration File
-(link:ThreddsConfigXMLFile.adoc#FileCache[threddsConfig.xml]).
+(<<ThreddsConfigXMLFile.adoc#FileCache,threddsConfig.xml>>).
 
 '''''
 

@@ -12,14 +12,14 @@ This section covers basic installation and configuration of Tomcat, Java JDK and
 
 image:images/gettingStartedContext.png[Getting Started Context]
 
-* link:#install[Installing Java and Tomcat]
-* link:#tour[Tomcat Directory Structure: Quick Tour]
-* link:#running[Running Tomcat]
-* link:#logs[Tomcat Log Files]
-* link:#files[Tomcat (Server-Level) Configuration Files]
-* link:#deploying[Deploying the TDS]
-* link:#manager[Tomcat `manager` Application]
-* link:#next[Next Steps: Where To Go From Here]
+* <<#install,Installing Java and Tomcat>>
+* <<#tour,Tomcat Directory Structure: Quick Tour>>
+* <<#running,Running Tomcat>>
+* <<#logs,Tomcat Log Files>>
+* <<#files,Tomcat (Server-Level) Configuration Files>>
+* <<#deploying,Deploying the TDS>>
+* <<#manager,Tomcat `manager` Application>>
+* <<#next,Next Steps: Where To Go From Here>>
 
 No prior knowledge of Tomcat, Java, or the TDS needed.
 
@@ -351,7 +351,7 @@ is deployed.
 
 ==== Upgrading the TDS
 
-A link:Checklist.adoc[maintenance checklist] and contains helpful
+A <<Checklist.adoc,maintenance checklist>> and contains helpful
 information about upgrading the TDS.
 http://www.unidata.ucar.edu/software/thredds/current/tds/UpgradingTo4.6.html[New
 features] and
@@ -552,14 +552,14 @@ well-formed and without error.
 
 ==== TDS Monitoring & Debugging Tools
 
-You will need to enable link:Security.adoc#ssl[Enable SSL encryption] to
+You will need to enable <<Security.adoc#ssl,Enable SSL encryption>> to
 access a couple of TDS monitoring and debugging tools.
 
 * If you plan to deploy the TDS in a _production environment_ you will
 need to follow the best practices outlined in the
-link:Security.adoc[Production server overview] section of the tutorial
+<<Security.adoc,Production server overview>> section of the tutorial
 to finish hardening your server environment.
-* The link:BasicThreddsConfig_xml.adoc[Basic TDS Configuration] and
-link:ConfigCatalogs.adoc[TDS Configuration Catalogs] sections of this
+* The <<BasicThreddsConfig_xml.adoc,Basic TDS Configuration>> and
+<<ConfigCatalogs.adoc,TDS Configuration Catalogs>> sections of this
 tutorial covers the TDS configuration files, configuration options and
 TDS catalog structure.

@@ -143,7 +143,7 @@ parameters, or else the file will fail to open.
 
 You can set strictMode programatically via
 *ucar.nc2.grib.grib1.tables.Grib1StandardTables.setStrict(true);* or in
-the link:../RuntimeLoading.adoc#XML[RunTime configuration file] by
+the <<../RuntimeLoading.adoc#XML,RunTime configuration file>> by
 adding
 
 ---------------------------
@@ -174,7 +174,7 @@ version that a GRIB file uses, you must track down the corrrect table
 and add it to the CDM at runtime. (Also, send it to us so we can include
 it in the next release). To add a table at runtime:
 
-1.  Use link:../RuntimeLoading.adoc[Runtime Loading] to add your own
+1.  Use <<../RuntimeLoading.adoc,Runtime Loading>> to add your own
 table programmatically within your application, or by using the Runtime
 configuration file.
 2.  Tables that are added at runtime take precedence over the standard
@@ -198,7 +198,7 @@ incorrect dataset. Here are the ways that can be done:
 ==== Directly embed table in NcML
 
 You can directly embed the table in NcML, using the
-link:#DefineGrib1Params[XML Schema for declaring Grib-1 Parameters].
+<<#DefineGrib1Params,XML Schema for declaring Grib-1 Parameters>>.
 Place the table inside of a <iospParam> element. For example:
 
 [source,xml]
@@ -243,7 +243,7 @@ attribute of the netcdf element:
 
 ==== Reference to a Grib Parameter table lookup in NcML
 
-You can reference a link:#tableMap[table map] in NcML by passing the
+You can reference a <<#tableMap,table map>> in NcML by passing the
 string *"GribParameterTableLookup=<absolute file path to table map>"*
 in the iospParam attribute of the netcdf element:
 
@@ -267,7 +267,7 @@ following:
 ==== Directly embed table in featureCollection element of the TDS configuration catalog
 
 You can directly embed an XML table (use the
-link:#DefineGrib1Params[standard XML schema]) in a featureCollection
+<<#DefineGrib1Params,standard XML schema>>) in a featureCollection
 element of type GRIB in a TDS configuration catalog:
 
 [source,xml]

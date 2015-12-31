@@ -15,10 +15,10 @@ the _FileWriter2_ class. If you just want to copy an existing CDM
 dataset, you can use the link:../reference/manPages.adoc#nccopy[CDM
 nccopy application]. By combining nccopy and NcML, you can copy just
 parts of an existing dataset, as well as
-link:../ncml/index.htm#modify[make modifications to it with NcML].
+<<../ncml/index.htm#modify,make modifications to it with NcML>>.
 
 Writing netCDF-4 files requires that you
-link:../reference/netcdf4Clibrary.adoc[install the netCDF-4 C library]
+<<../reference/netcdf4Clibrary.adoc,install the netCDF-4 C library>>
 on your machine.
 
 == Using NetcdfFileWriter
@@ -343,7 +343,7 @@ have origin 0.
 
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 To write to netCDF-4, you must
-link:../reference/netcdf4Clibrary.adoc[install the netCDF-4 C library]
+<<../reference/netcdf4Clibrary.adoc,install the netCDF-4 C library>>
 on your machine.
 
 The main use of netCDF-4 is to get the performance benefits from
@@ -366,7 +366,7 @@ ncfileOut.close();
 
 --------------------------------------------------------------------------------------------
 
-See link:../reference/netcdf4Clibrary.adoc#writing[here] for more
+See <<../reference/netcdf4Clibrary.adoc#writing,here>> for more
 details on Nc4Chunking.
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 

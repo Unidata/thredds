@@ -15,7 +15,7 @@ NOAA/FSL, as well as METAR, upper air, buoy, and SAO station data.
 
 == Data Available through Unidata’s IDD system
 
-link:/data/data.general.adoc[Breakdown of Available Current Data]
+<</data/data.general.adoc,Breakdown of Available Current Data>>
 
 link:/data/data.detail.adoc[Detailed Information on Data, Data Stream
 Products and Systems]
@@ -329,8 +329,8 @@ http://motherlode.ucar.edu:8080/thredds/cgi-bin/ZoneServer.pl?format=html&stn=CO
 
 '''''
 
-**_Go to: link:/projects/THREDDS/[THREDDS Home Page]_* or
-link:../index.adoc[_THREDDS Tech page_]*
+**_Go to: <</projects/THREDDS/,THREDDS Home Page>>_* or
+<<../index.adoc,_THREDDS Tech page_>>*
 
 *Comments to: mailto:rkambic@unidata.ucar.edu[Robb Kambic]*
 

@@ -5,7 +5,7 @@
 
 == Version 3
 
-See link:NcStream.adoc[NcStream Overview].
+See <<NcStream.adoc,NcStream Overview>>.
 
 An *_ncstream_* is an ordered sequence of one or more messages:
 
@@ -49,8 +49,8 @@ These are compiled by the protobuf compiler into Java, Python, and C code that d
 
 Version 1 (MAGIC_DATA) data messages are used by TDS < 5.0, and Version 2 (MAGIC_DATA2) data messages are used by TDS >= 5.0.
 
-* see link:NcStreamData.adoc[Version 1]
-* see link:NcStreamDataCol.adoc[Version 2]
+* see <<NcStreamData.adoc,Version 1>>
+* see <<NcStreamDataCol.adoc,Version 2>>
 
 == Ncstream messages in a file
 

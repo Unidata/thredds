@@ -50,7 +50,7 @@ the HTTP protocol, but the application layer must be responsible for
 supplying the _credentials_ that authenticate the user. *If you want to
 access restricted datasets with the Netcdf-Java library, you must
 plug-in a _CredentialsProvider_ object* (see
-link:#CredentialProvider[below]).
+<<#CredentialProvider,below>>).
 
 === Authentication
 
@@ -89,7 +89,7 @@ to the server. The ssl scheme is usually part of an SSL connection where
 the server authenticates to the client and then the client authenticates
 to the server.
 
-See the file link:./Session.html#Credentials[Session.adoc] for details.
+See the file <<./Session.html#Credentials,Session.adoc>> for details.
 
 === Authorization
 

@@ -22,12 +22,12 @@ coordinate units (km) |min < max |
 
 |*horizStride* |no |Take only every nth point (both x and y) | |1
 
-|*time* |no |Time as a link:{w3cDate}[W3C date] or _present_ (the time
+|*time* |no |Time as a <<{w3cDate},W3C date>> or _present_ (the time
 slice closest to the requested time is returned) or _all_ (all times are
 returned) |Must be a time within the dataset time range |_present_
 
 |*time_start, time_end, time_duration* |no |Used to specify a time range
-(two of these must be present). Times may be a link:#W3Cdate[W3C date]
+(two of these must be present). Times may be a <<#W3Cdate,W3C date>>
 or __present__. Duration is a udunit time or link:{w3cDuration}[W3C time
 duration] |The requested time range must intersect the dataset time
 range |
@@ -35,7 +35,7 @@ range |
 |*timeStride* |no |Take only every nth time in the available series
 |Used with time_range or _all_ |1
 
-|*runtime* |no |Time as a link:{w3cDate}[W3C date] or _latest_ (restrict
+|*runtime* |no |Time as a <<{w3cDate},W3C date>> or _latest_ (restrict
 to that runtime) or __all__. |Used only if there is an independent
 runtime coordinate. |_latest_
 
@@ -87,8 +87,8 @@ Temporal subsetting::
   (__timeStride__ is used if present). All other time parameters are
   ignored.
   * time duration: 1) udunit time unit string or 2)
-  link:{w3cDuration}[W3C time duration]
-  * datetime: link:{w3cDate}[W3C date] or _present_
+  <<{w3cDuration},W3C time duration>>
+  * datetime: <<{w3cDate},W3C date>> or _present_
   * The dataset determines what Calendar is used, so you must use that
   calendar. There can only be one calendar per dataset.
   * If no time range or time point, a timeOffset can be used to specify
