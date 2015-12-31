@@ -35,7 +35,6 @@ package thredds.inventory;
 
 import net.jcip.annotations.ThreadSafe;
 import thredds.client.catalog.Access;
-import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
@@ -100,10 +99,10 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
   public boolean scan(boolean sendEvent) throws IOException {
     mfiles = new ArrayList<>(100);
 
-    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.Type.all_direct, 0, null, this);
+    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.Type.all_direct, 0, null, this, null, null, null);
     long start = System.currentTimeMillis();
     try {
-      crawler.crawl(catalogUrl, null, null, null);
+      crawler.crawl(catalogUrl);
     } finally {
       long took = (System.currentTimeMillis() - start);
       if (debug) System.out.format("***Done " + catalogUrl + " took = " + took + " msecs%n");
@@ -115,7 +114,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
   @Override
   public Iterable<MFile> getFilesSorted() {
-    return mfiles == null ? new ArrayList<MFile>() : mfiles;
+    return mfiles == null ? new ArrayList<>() : mfiles;
   }
 
   private static class MFileRemote implements MFile {
@@ -138,7 +137,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
     @Override
     public long getLength() {
-      return (long) access.getDataSize();
+      return access.getDataSize();
     }
 
     @Override
@@ -191,12 +190,6 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
       mfiles.add(mfile);
       if (debug) System.out.format("add %s %n", mfile.getPath());
     }
-  }
-
-
-  @Override
-  public boolean getCatalogRef(CatalogRef dd, Object context) {
-    return true;
   }
 
 

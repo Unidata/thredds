@@ -345,38 +345,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // return sb.toString();
     }
 
-    /* public void show(Formatter f) {
-
-      if (time2runtime != null) {
-        Coordinate run = getCoordinate(Coordinate.Type.runtime);
-        Coordinate tcoord = getCoordinate(Coordinate.Type.time);
-        if (tcoord == null) tcoord = getCoordinate(Coordinate.Type.timeIntv);
-        CoordinateTimeAbstract time = (CoordinateTimeAbstract) tcoord;
-        CalendarDate ref = time.getRefDate();
-        CalendarPeriod.Field unit = time.getTimeUnit().getField();
-
-        f.format("time2runtime: %n");
-        int count = 0;
-        for (int i=0; i<time2runtime.getN(); i++) {
-          int idx = time2runtime.get(i);
-          if (idx == 0) {
-            f.format(" %2d: MISSING%n", count);
-            count++;
-            continue;
-          }
-          Object val = time.getValue(count);
-          f.format(" %2d: %s -> %2d (%s)", count, val, idx-1, run.getValue(idx-1));
-          if (val instanceof Integer) {
-            int valI = (Integer) val;
-            f.format(" == %s ", ref.add((double) valI, unit));
-          }
-          f.format(" %n");
-          count++;
-        }
-        f.format("%n");
-      }
-    } */
-
     ///////////////////////////////////////////////////////////////////
 
     /**

@@ -580,6 +580,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
               }
               break;
             }
+            CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+            // the OneTime case
+            if (coord2D.getNtimes() == 1) {
+              idx = 0;
+              break;
+            }
             throw new IllegalStateException("time2D must have timeOffsetCoord");
 
           case vert:

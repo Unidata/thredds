@@ -33,13 +33,13 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Show info in GRIB ncx3 index files.
+ * Show info in GRIB ncx index files.
  *
  * @author John
  * @since 12/5/13
  */
-public class CdmIndex3Panel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndex3Panel.class);
+public class CdmIndexPanel extends JPanel {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndexPanel.class);
 
   private PreferencesExt prefs;
 
@@ -50,7 +50,7 @@ public class CdmIndex3Panel extends JPanel {
   private IndependentWindow infoWindow;
   private MFileTable fileTable;
 
-  public CdmIndex3Panel(PreferencesExt prefs, JPanel buttPanel) {
+  public CdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     if (buttPanel != null) {
@@ -206,12 +206,13 @@ public class CdmIndex3Panel extends JPanel {
       }
     });
 
-    varPopup.addAction("Test Time2D isRegular", new AbstractAction() {
+    varPopup.addAction("Test Time2D isOrthogonal/isRegular", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CoordBean bean = (CoordBean) coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           testOrthogonal(f, bean.coord);
+          f.format("%n");
           testRegular(f, bean.coord);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
@@ -624,7 +625,6 @@ public class CdmIndex3Panel extends JPanel {
     Set<Object> allCoords = new HashSet<>(100);
     for (CoordinateTimeAbstract coord : times) {
       max = Math.max(max, coord.getSize());
-
       for (Object val : coord.getValues())
         allCoords.add(val);
     }
@@ -632,7 +632,10 @@ public class CdmIndex3Panel extends JPanel {
     // is the set of all values the same as the component times?
     int totalMax = allCoords.size();
     boolean isOrthogonal = (totalMax == max);
-    f.format("isOrthogonal %s : totalMax = %d max=%d %n%n", isOrthogonal, totalMax, max);
+    f.format("isOrthogonal %s : allCoords.size = %d max of coords=%d%nAllCoords=%n", isOrthogonal, totalMax, max);
+    for (Object coord : allCoords) {
+      f.format("  %s%n", coord);
+    }
     return isOrthogonal;
   }
 

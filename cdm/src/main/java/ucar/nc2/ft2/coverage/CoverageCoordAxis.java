@@ -255,9 +255,9 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     return isSubset;
   }
 
-  public boolean isTime2D() {
-     return false;
-   }
+  //public boolean isTime2D() {
+  //   return false;
+  // }
 
   public boolean isInterval() {
     return spacing == Spacing.contiguousInterval ||  spacing == Spacing.discontiguousInterval;

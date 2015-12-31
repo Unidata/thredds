@@ -57,7 +57,7 @@ public class TestCompareFileWriter {
     result.add(new Object[]{"formats/dmsp/F14200307192230.n.OIS", true});
     result.add(new Object[]{"formats/gempak/grid/dgex_le.gem", true});
     result.add(new Object[]{"formats/gempak/surface/19580807_sao.gem", false});
-    result.add(new Object[]{"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", false});
+    result.add(new Object[]{"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", true});
     result.add(new Object[]{"formats/grib1/radar_national.grib", true});
     result.add(new Object[]{"formats/grib2/200508041200.ngrid_gfs", true});
     // result.add(new Object[]{"formats/hdf4/17766010.hdf"});

@@ -87,6 +87,8 @@ public class CoverageDatasetFactory {
       // check if its GRIB collection
       Optional<FeatureDatasetCoverage> opt = openGrib(endpoint);
       if (opt.isPresent()) return opt;
+      if (opt.getErrorMessage() == null)
+        return Optional.empty("Unknown error opening grib coverage dataset");
       if (!opt.getErrorMessage().startsWith(CoverageDatasetFactory.NOT_GRIB_FILE) &&
               !opt.getErrorMessage().startsWith(CoverageDatasetFactory.NO_GRIB_CLASS)) {
         return opt;  // its a GRIB file with an error

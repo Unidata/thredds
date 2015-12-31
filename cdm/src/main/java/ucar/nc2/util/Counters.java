@@ -37,7 +37,8 @@ import java.util.*;
 
 /**
  * Count number of times a value appears.
- * value may be any Comparable; equals() is used for uniqueness.
+ * value may be any Comparable;
+ * equals() is used for uniqueness.
  *
  * @author caron
  * @since 11/15/2014
@@ -99,12 +100,16 @@ public class Counters {
 
     int getUnique();
 
+    // lowest value
     Comparable getFirst();
 
+    // highest value added
     Comparable getLast();
 
+    // mode of the dist: value with highest count
     Comparable getMode();
 
+    // total number of values
     int getTotal();
 
     Counter setShowRange(boolean showRange);
@@ -237,206 +242,4 @@ public class Counters {
     }
   }
 
-  /* a counter whose keys are ints
-  public static class CounterOfInt extends CounterAbstract {
-    private Map<Integer, Integer> set = new HashMap<>();
-
-    public CounterOfInt(String name) {
-      this.name = name;
-    }
-
-    public void reset() {
-      set = new HashMap<>();
-    }
-
-    public void count(int value) {
-      Integer count = set.get(value);
-      if (count == null)
-        set.put(value, 1);
-      else
-        set.put(value, count + 1);
-    }
-
-    public void addTo(Counter sub) {
-      CounterOfInt subi = (CounterOfInt) sub;
-      for (Map.Entry<Integer, Integer> entry : subi.set.entrySet()) {
-        Integer count = this.set.get(entry.getKey());
-        if (count == null)
-          count = 0;
-        set.put(entry.getKey(), count + entry.getValue());
-      }
-    }
-
-    @Override
-    public int getUnique() {
-      return set.size();
-    }
-
-    @Override
-    public int getTotal() {
-      int total = 0;
-      for (Map.Entry<Integer, Integer> entry : set.entrySet()) {
-        total += entry.getValue();
-      }
-      return total;
-    }
-
-    public void show(Formatter f) {
-      f.format("%n%s%n", name);
-      java.util.List<Integer> list = new ArrayList<>(set.keySet());
-      Collections.sort(list);
-      for (int template : list) {
-        int count = set.get(template);
-        f.format("   %3d: count = %d%n", template, count);
-      }
-    }
-  }
-
-  // a counter whose keys are strings
-  public static class CounterOfString extends CounterAbstract {
-    private Map<String, Integer> set = new HashMap<>();
-    private String range;
-
-    public String getName() {
-      return name;
-    }
-
-    public CounterOfString(String name) {
-      this.name = name;
-    }
-
-    public void count(String value) {
-      Integer count = set.get(value);
-      if (count == null)
-        set.put(value, 1);
-      else
-        set.put(value, count + 1);
-    }
-
-    public void addTo(Counter sub) {
-      CounterOfString subs = (CounterOfString) sub;
-      for (Map.Entry<String, Integer> entry : subs.set.entrySet()) {
-        Integer count = this.set.get(entry.getKey());
-        if (count == null)
-          count = 0;
-        set.put(entry.getKey(), count + entry.getValue());
-      }
-    }
-
-    public void show(Formatter f) {
-      f.format("%n%s%n", name);
-      java.util.List<String> list = new ArrayList<>(set.keySet());
-      Collections.sort(list);
-      if (showRange) {
-        int n = list.size();
-        f.format("   %10s - %10s: count = %d%n", list.get(0), list.get(n-1), getUnique());
-
-      } else {
-        for (String key : list) {
-          int count = set.get(key);
-          f.format("   %10s: count = %d%n", key, count);
-        }
-      }
-    }
-
-    public String showRange() {
-      if (range == null) {
-        java.util.List<String> list = new ArrayList<>(set.keySet());
-        Collections.sort(list);
-        int n = list.size();
-        Formatter f = new Formatter();
-        f.format("%10s - %10s", list.get(0), list.get(n - 1));
-        range = f.toString();
-      }
-      return range;
-    }
-
-     @Override
-    public int getUnique() {
-      return set.size();
-    }
-
-    @Override
-    public int getTotal() {
-      int total = 0;
-      for (Map.Entry<String, Integer> entry : set.entrySet()) {
-        total += entry.getValue();
-      }
-      return total;
-    }
-  }
-
-    // a counter whose keys are Comparable objects
-  public static class CounterOfObject extends CounterAbstract {
-    private Map<Comparable, Integer> set = new HashMap<>();
-    private String range;
-
-    public String getName() {
-      return name;
-    }
-
-    public CounterOfObject(String name) {
-      this.name = name;
-    }
-
-    public void count(Comparable value) {
-      Integer count = set.get(value);
-      if (count == null)
-        set.put(value, 1);
-      else
-        set.put(value, count + 1);
-    }
-
-    public void addTo(Counter sub) {
-      CounterOfObject subs = (CounterOfObject) sub;
-      for (Map.Entry<Comparable, Integer> entry : subs.set.entrySet()) {
-        Integer count = this.set.get(entry.getKey());
-        if (count == null)
-          count = 0;
-        set.put(entry.getKey(), count + entry.getValue());
-      }
-    }
-
-    public void show(Formatter f) {
-      java.util.List<Comparable> list = new ArrayList<>(set.keySet());
-      f.format("%n%s (%d)%n", name, list.size());
-      Collections.sort(list);
-      if (showRange) {
-        int n = list.size();
-        f.format("   %10s - %10s: count = %d%n", list.get(0), list.get(n-1), getUnique());
-
-      } else {
-        for (Object key : list) {
-          int count = set.get(key);
-          f.format("   %10s: count = %d%n", key, count);
-        }
-      }
-    }
-
-    public String showRange() {
-      if (range == null) {
-        java.util.List<Comparable> list = new ArrayList<>(set.keySet());
-        Collections.sort(list);
-        int n = list.size();
-        Formatter f = new Formatter();
-        f.format("%10s - %10s", list.get(0), list.get(n - 1));
-        range = f.toString();
-      }
-      return range;
-    }
-
-     @Override
-    public int getUnique() {
-      return set.size();
-    }
-
-    @Override
-    public int getTotal() {
-      int total = 0;
-      for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
-        total += entry.getValue();
-      }
-      return total;
-    }
-  }  */
 }

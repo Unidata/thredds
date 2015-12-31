@@ -109,6 +109,7 @@ public class DatasetScan extends CatalogRef {
       fileFilters = null;
       dirFilters = null;
     }
+
   }
 
   private void makeFilter(DatasetScanConfig.Filter cfilter) {

@@ -61,7 +61,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   // does this really describe all subset possibilities? what about RangeScatter, composite ??
   // protected final int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
   // protected final int stride = 1;
-  protected final boolean isTime2D;
+  // protected final boolean isTime2D;
   protected final Range range;            // for subset, tracks the indexes in the original
   protected final RangeComposite crange;
 
@@ -81,13 +81,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     this.crange = builder.crange;
 
     // LOOK this is fishy
-    this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
+    //this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
   }
 
-  @Override
-  public boolean isTime2D() {
-    return isTime2D;
-  }
+  //@Override
+  //public boolean isTime2D() {
+  //  return isTime2D;
+  //}
 
   @Override
   public RangeIterator getRangeIterator() {
@@ -102,7 +102,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s range=%s isTime2D=%s isSubset=%s", indent, range, isTime2D(), isSubset());
+    f.format("%s range=%s isSubset=%s", indent, range, isSubset());
     f.format("%n");
   }
 

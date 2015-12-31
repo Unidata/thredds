@@ -11,7 +11,7 @@ import ucar.coord.Coordinate;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionMutable;
 import ucar.nc2.grib.collection.PartitionCollectionMutable;
-import ucar.nc2.ui.grib.CdmIndex3Panel;
+import ucar.nc2.ui.grib.CdmIndexPanel;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.util.StringUtil2;
@@ -57,7 +57,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private FeatureCollectionConfig config;
   private String collectionName;
-  private CdmIndex3Panel cdmIndexTables;
+  private CdmIndexPanel cdmIndexTables;
   private PartitionsTable partitionsTable;
 
   private JPanel tablePanel;
@@ -77,7 +77,7 @@ public class DirectoryPartitionViewer extends JPanel {
     partitionTreeBrowser = new PartitionTreeBrowser();
     partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
 
-    cdmIndexTables = new CdmIndex3Panel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
+    cdmIndexTables = new CdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
     cdmIndexTables.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
         firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
