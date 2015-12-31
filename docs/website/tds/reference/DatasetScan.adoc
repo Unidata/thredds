@@ -7,7 +7,7 @@ The *datasetScan* element allows you to serve all files in a directory
 tree. The files must be homogenous enough that the same metadata can be
 applied to all of them.
 
-See link:../catalog/InvCatalogServerSpec.adoc#datasetScan[Server Catalog Spec] for formal definition of the XML.
+See <<../catalog/InvCatalogServerSpec.adoc#datasetScan,Server Catalog Spec>> for formal definition of the XML.
 
 == Example
 
@@ -131,7 +131,7 @@ directly, as above, or inherited).
 datasets, __*each path value MUST be unique across all config catalogs
 on a given TDS installation*__.
 
-[link:#sample1[Sample config catalog 1]] +
+[<<#sample1,Sample config catalog 1]>> +
 
 == Inherited Metadata
 
@@ -160,7 +160,7 @@ for example:
 
 A _datasetScan_ element can specify which files and directories it will
 include with a _filter_ element (also see
-link:../catalog/InvCatalogServerSpec.adoc[server catalog spec] for
+<<../catalog/InvCatalogServerSpec.adoc,server catalog spec>> for
 details). When no filter element is given, all files and directories are
 included in the generated catalog(s). Adding a *filter* element to your
 datasetScan element allows you to include (and/or exclude) the files and
@@ -202,7 +202,7 @@ so that if stray files accidentally get into your data directories, they
 wont generate erroneous catalog entries. This is also known as
 __whitelisting__.
 
-[link:#sample2[Sample config catalog 2]]
+[<<#sample2,Sample config catalog 2]>>
 
 Complicated matching can be done with regular expressions, eg:
 
@@ -220,7 +220,7 @@ a literal "." character. Note that only one backslash is neeeded.
 (Inside a Java String, one needs to use "\\", but not here in the
 catalog).
 
-[link:#sample3[Sample config catalog 3]]
+[<<#sample3,Sample config catalog 3]>>
 
 == Sorting Datasets
 

@@ -10,38 +10,38 @@ THREDDS Data Server Administration Tutorial
 '''''
 
 This is the on-line, self-guided tutorial. Follow this link for the
-link:workshop2015.adoc[2015 TDS Workshop schedule]
+<<workshop2015.adoc,2015 TDS Workshop schedule>>
 
 '''''
 
-=== TDS Overview (link:TDSOverview.pptx[ppt])
-(link:TDSOverview.pdf[pdf])
+=== TDS Overview (<<TDSOverview.pptx,ppt>>)
+(<<TDSOverview.pdf,pdf>>)
 
 === 1.Tomcat Configuration
 
 * link:GettingStarted.adoc[Getting Started With the TDS: Local Test
 Server Setup]
-* link:Security.adoc[Security Overview]
+* <<Security.adoc,Security Overview>>
 
 === 2. TDS Configuration
 
-* link:CatalogPrimer.adoc[Client Catalog Primer]
-* link:BasicConfigCatalogs.adoc[Basic TDS Configuration Catalogs]
-* link:ConfigCatalogs.adoc[TDS Configuration Catalogs]
-* link:BasicThreddsConfig_xml.adoc[Basic threddsConfig.xml]
-* link:AddingServices.adoc[Adding OGC/ISO Services]
-* link:../reference/WMS.adoc[Detailed WMS Configuration]
+* <<CatalogPrimer.adoc,Client Catalog Primer>>
+* <<BasicConfigCatalogs.adoc,Basic TDS Configuration Catalogs>>
+* <<ConfigCatalogs.adoc,TDS Configuration Catalogs>>
+* <<BasicThreddsConfig_xml.adoc,Basic threddsConfig.xml>>
+* <<AddingServices.adoc,Adding OGC/ISO Services>>
+* <<../reference/WMS.adoc,Detailed WMS Configuration>>
 * Netcdf Subset Service:
-link:../reference/NetcdfSubsetServiceConfigure.adoc[configure],
-link:../reference/NetcdfSubsetServiceReference.adoc[reference]
+<<../reference/NetcdfSubsetServiceConfigure.adoc,configure>>,
+<<../reference/NetcdfSubsetServiceReference.adoc,reference>>
 * threddsConfig.xml
-link:../reference/ThreddsConfigXMLFile.adoc[reference]
+<<../reference/ThreddsConfigXMLFile.adoc,reference>>
 
 === 4. TDS Monitoring and Debugging
 
-* link:TDSMonitoringAndDebugging.adoc[TDS Monitoring and Debugging]
-* link:TomcatAndTDSLogs.adoc[Tomcat and TDS Logs]
-* link:tdsMonitor.adoc[Using the TdsMonitor tool]
+* <<TDSMonitoringAndDebugging.adoc,TDS Monitoring and Debugging>>
+* <<TomcatAndTDSLogs.adoc,Tomcat and TDS Logs>>
+* <<tdsMonitor.adoc,Using the TdsMonitor tool>>
 * There are also various free, 3rd-party monitoring and debugging tools:
 ** http://www.google.com/search?btnG=1&pws=0&q=log+analyzers[Log
 analyzers]
@@ -58,11 +58,11 @@ manager application]
 
 === 5. Using NcML in TDS
 
-* link:../../netcdf-java/ncml/Tutorial.adoc[Basic NcML tutorial]
-* link:../../netcdf-java/ncml/Aggregation.adoc[NcML Aggregation]
-* link:NcML.htm[Using NcML in the TDS]
-* link:NcMLExamples.adoc[NcML Example Problems]
-* link:NcMLAggExamples.adoc[NcML Aggregation Example Problems]
+* <<../../netcdf-java/ncml/Tutorial.adoc,Basic NcML tutorial>>
+* <<../../netcdf-java/ncml/Aggregation.adoc,NcML Aggregation>>
+* <<NcML.htm,Using NcML in the TDS>>
+* <<NcMLExamples.adoc,NcML Example Problems>>
+* <<NcMLAggExamples.adoc,NcML Aggregation Example Problems>>
 
 === 6. Feature Collections
 
@@ -74,7 +74,7 @@ Collections]
 Tutoria]l
 * link:../reference/collections/FmrcCollection.adoc[FMRC (Forecast Model
 Run Collections)]
-* link:FmrcFeatureCollectionsTutorial.adoc[FMRC Tutorial]
+* <<FmrcFeatureCollectionsTutorial.adoc,FMRC Tutorial>>
 * link:../../netcdf-java/reference/formats/GribFiles.adoc[GRIB Files in
 CDM]
 * link:../../netcdf-java/reference/formats/GribTables.adoc[GRIB Tables
@@ -82,23 +82,23 @@ in CDM]
 
 === 7. Other Advanced Features
 
-* link:../reference/RestrictedAccess.adoc[Restricting dataset access]
-* link:../reference/Viewers.adoc[Viewer Links]
+* <<../reference/RestrictedAccess.adoc,Restricting dataset access>>
+* <<../reference/Viewers.adoc,Viewer Links>>
 
 === 8. Metadata
 
-* link:Metadata.adoc[THREDDS Metadata]
-* link:../reference/ncISO.adoc[ISO metadata generation: (ncIso)]
+* <<Metadata.adoc,THREDDS Metadata>>
+* <<../reference/ncISO.adoc,ISO metadata generation: (ncIso)>>
 
 === 9. Production Servers
 
-* link:Checklist.adoc[Installation Checklist for Production]
-* link:TroubleShooting.adoc[TroubleShooting Problems]
+* <<Checklist.adoc,Installation Checklist for Production>>
+* <<TroubleShooting.adoc,TroubleShooting Problems>>
 * link:../reference/Performance.adoc[Performance
-Tips]link:TroubleShooting.adoc[]
-* link:../UpgradingTo4.5.adoc[Upgrading to 4.5]
+Tips]<<TroubleShooting.adoc,>>
+* <<../UpgradingTo4.5.adoc,Upgrading to 4.5>>
 
 === Other Resources:
 
-* link:../reference/index.adoc[Reference documentation]
-* link:../faq.adoc[FAQ]
+* <<../reference/index.adoc,Reference documentation>>
+* <<../faq.adoc,FAQ>>

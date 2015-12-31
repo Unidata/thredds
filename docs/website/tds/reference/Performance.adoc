@@ -50,7 +50,7 @@ check this value on Unix, use:
 -----------
 
 If you are using the default
-link:ThreddsConfigXMLFile.adoc#FileCache[TDS configuration values], this
+<<ThreddsConfigXMLFile.adoc#FileCache,TDS configuration values>>, this
 value should be 1024 or greater. Otherwise you can tune this number
 based on your own settings. For example, to set this value to 2048 in
 the _*tomcat startup.sh*_ script:
@@ -171,7 +171,7 @@ The TDS caches file handles to minimize OS overhead. Currently the
 defaults assume that the tomcat process is limited to 1024 file handles.
 If you can allow more, you can increase the sizes of the FileCaches for
 more performance. You can change these settings in the
-link:ThreddsConfigXMLFile.adoc#FileCache[threddsConfig.xml] file.
+<<ThreddsConfigXMLFile.adoc#FileCache,threddsConfig.xml>> file.
 
 These numbers limit performance, but not functionality. For example, the
 number of files in an aggregation is not limited by these file handle
@@ -211,9 +211,9 @@ If you are serving GRIB files through any of the subsetting services
 (OPENDAP, WCS, etc), the CDM must write indices the first time it tries
 to read it. This can take several minutes for very large GRIB files. For
 large aggregations and
-link:collections/FeatureCollections.adoc[collections], this can take
+<<collections/FeatureCollections.adoc,collections>>, this can take
 hours or even days. By indexing GRIB files before they are accessed with
-the link:collections/TDM.adoc[TDM], users get much faster response time.
+the <<collections/TDM.adoc,TDM>>, users get much faster response time.
 As of TDS 4.6+ f these collections change, you must use the TDM to
 detect those changes, the TDS will no longer update GRIB collections on
 the fly.

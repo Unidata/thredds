@@ -23,7 +23,7 @@ The main issue:
 * The TDS uses the values of certain Java system properties for some
 internal and user configurable settings. However, Tomcat does not
 support per webapp Java system properties (see
-link:#GlobalJavaSystemProperties[below]). This means the settings for
+<<#GlobalJavaSystemProperties,below>>). This means the settings for
 one TDS may interfere with the settings of another TDS running in the
 same Tomcat container.
 

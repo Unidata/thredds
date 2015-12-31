@@ -29,15 +29,15 @@ which has a very good discussion of the issues in datetime handling software.
 The CDM library allows datetime coordinates to be specified in the
 following forms:
 
-1.  *link:#udunit[udunit coordinate]:* Variables of any numeric type
+1.  *<<#udunit,udunit coordinate>>:* Variables of any numeric type
 (__byte, short, int, long, float, double__) with a _*units*_ attribute
 that is a udunit date string, eg "hours since 1930-01-01". This is the
 only form that conforms to the {cf}#time-coordinate[current CF spec].
-2.  *link:#calendar_field[calendar field coordinate]:* Variables of any
+2.  *<<#calendar_field,calendar field coordinate>>:* Variables of any
 integer type (__byte, short, int, long__) with a _*units*_ attribute
 that is a udunit date string but with "calendar" added, eg "calendar
 months since 1930-01-01".
-3.  *link:#ISO_String[ISO String coordinate]:* Variables of type
+3.  *<<#ISO_String,ISO String coordinate>>:* Variables of type
 _String_ or _char_ in which the values follow (a slightly extended
 version of) the W3C profile of ISO 8601.
 

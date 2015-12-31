@@ -95,7 +95,7 @@ FeatureDataset FeatureDatasetFactoryManager.open( FeatureType want, String endpo
 ----
 
 where _endpoint_ is a remote dataset represented as a URL (eg using *_cdmrFeature_*, *_cdmremote_*, or *_OPeNDAP_* protocols) or a local file pathname
-(see link:../DatasetUrls.adoc#FeatureDataset[here] for details).
+(see <<../DatasetUrls.adoc#FeatureDataset,here>> for details).
 
 or if you already have an opened NetcdfDataset:
 
@@ -191,11 +191,11 @@ NOTE: The catalog API is significantly changed in version 5.0.
 
 == Resources
 
-* link:PointFeatures.adoc[Point Dataset]: Discrete Sampling Geometry (DSG) datasets
-* link:CoverageFeatures.adoc[Coverage Dataset]: Data in a multidimensional grid, eg model output, satellite data
-* link:FMRC.adoc[Forecast Model Run Collection (FMRC)]: Gridded data with two time coordinates, _Run Time_ (aka _Reference Time_)
+* <<PointFeatures.adoc,Point Dataset>>: Discrete Sampling Geometry (DSG) datasets
+* <<CoverageFeatures.adoc,Coverage Dataset>>: Data in a multidimensional grid, eg model output, satellite data
+* <<FMRC.adoc,Forecast Model Run Collection (FMRC)>>: Gridded data with two time coordinates, _Run Time_ (aka _Reference Time_)
 and _Forecast Time_ (aka _Valid Time_)
-* link:../../tutorial/RadialDatatype.adoc[Radial Dataset]: uses polar coordinates (elevation, azimuth, distance), for example scanning radars, lidars. +
+* <<../../tutorial/RadialDatatype.adoc,Radial Dataset>>: uses polar coordinates (elevation, azimuth, distance), for example scanning radars, lidars. +
 
 '''''
 

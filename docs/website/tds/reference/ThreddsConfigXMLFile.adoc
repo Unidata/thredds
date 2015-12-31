@@ -18,7 +18,7 @@ When changing `threddsConfig.xml`, you must restart the thredds webapp
 (e.g., through the Tomcat manager application) for them to take effect.
 
 Here is an annotated example
-link:threddsConfig.xml.txt[threddsConfig.xml].
+<<threddsConfig.xml.txt,threddsConfig.xml>>.
 
 '''''
 
@@ -26,45 +26,45 @@ link:threddsConfig.xml.txt[threddsConfig.xml].
 
 TDS global configuration options
 
-* link:#Server_Description[Server Information]
-* link:#Generated_HTML_Pages[Generated HTML Pages]
-* link:#catalogOutput[Controlling THREDDS catalog output] +
-* link:#catalogRoots[Hidden Root Catalogs]
-* link:#Viewers[Adding a Viewer]
-* link:#DatasetSource[Adding a Dataset Source]
-* link:#LogVersionInfo[Checking for updates]
+* <<#Server_Description,Server Information>>
+* <<#Generated_HTML_Pages,Generated HTML Pages>>
+* <<#catalogOutput,Controlling THREDDS catalog output>> +
+* <<#catalogRoots,Hidden Root Catalogs>>
+* <<#Viewers,Adding a Viewer>>
+* <<#DatasetSource,Adding a Dataset Source>>
+* <<#LogVersionInfo,Checking for updates>>
 
 Controlling Data Services
 
-* link:#Remote[Remote Catalog Services]
-* link:#opendap[OPeNDAP]
-* link:#WCS[WCS]
-* link:#WMS[WMS]
-* link:#ncss[NetCDF Subset Service] +
-* link:#ncISO[ncISO] +
+* <<#Remote,Remote Catalog Services>>
+* <<#opendap,OPeNDAP>>
+* <<#WCS,WCS>>
+* <<#WMS,WMS>>
+* <<#ncss,NetCDF Subset Service>> +
+* <<#ncISO,ncISO>> +
 
 CDM Configuration
 
-* link:#Aggregation[Aggregation]
-* link:#FeatureCollections[Feature Collections]
-* link:#netcdfCLibrary[Netcdf-4 C Library Loading]
-* link:#runtime[NetCDF-Java runtime Loading]
+* <<#Aggregation,Aggregation>>
+* <<#FeatureCollections,Feature Collections>>
+* <<#netcdfCLibrary,Netcdf-4 C Library Loading>>
+* <<#runtime,NetCDF-Java runtime Loading>>
 
 Disk Caching
 
-* link:#DiskCache[CDM Disk cache]
-* link:#AggregationCache[Aggregation Cache]
-* link:#FeatureCollectionCache[FMRC cache]
-* link:#GribIndexWriting[Grib Index redirection]
+* <<#DiskCache,CDM Disk cache>>
+* <<#AggregationCache,Aggregation Cache>>
+* <<#FeatureCollectionCache,FMRC cache>>
+* <<#GribIndexWriting,Grib Index redirection>>
 
 Object caching
 
-* link:#RafCache[File Handles]
-* link:#FileCache[NetcdfFile Object]
+* <<#RafCache,File Handles>>
+* <<#FileCache,NetcdfFile Object>>
 
 Catalog Processing
 
-* link:#CatalogCaching[Config Catalog caching] +
+* <<#CatalogCaching,Config Catalog caching>> +
 
 '''''
 
@@ -105,7 +105,7 @@ The information provided in the `serverInformation` element is used in:
 * the headers of all generated HTML pages (they contain the names and
 logos of the server and host institution)
 * the Server section of the WMS GetCapabilities response
-* the server information documents (link:#Server_Info_Docs[see below])
+* the server information documents (<<#Server_Info_Docs,see below>>)
 * the Server section of the WCS GetCapabilities response
 * all generated THREDDS catalogs that don’t override this information
 
@@ -123,7 +123,7 @@ The TDS supports the following requests for server information:
 
 * `/thredds/serverInfo.html` (link:images/ServerInfo_html.png[sample
 response])
-* `/thredds/serverInfo.xml` (link:files/serverInfo.xml[sample response])
+* `/thredds/serverInfo.xml` (<<files/serverInfo.xml,sample response>>)
 * `/thredds/serverVersion.txt` (link:files/serverVersion.txt[sample
 response])
 
@@ -190,7 +190,7 @@ static catalogs must live within the *$\{tomcat_home}/content/thredds* directory
 ------------------------------------
 
 You can place a link to your own _*Viewer*_ on the TDS HTML page, by
-loading a link:Viewers.adoc[viewer] at runtime. This line is needed in
+loading a <<Viewers.adoc,viewer>> at runtime. This line is needed in
 the config file only if you are writing your own Java class.
 
 === Adding Dataset Sources
@@ -260,7 +260,7 @@ Header on all OPeNDAP responses.
 === WCS Service
 
 The OGC WCS service provided as part of the TDS is described in more
-detail link:WCS.adoc[here]. By default this service is enabled, and can
+detail <<WCS.adoc,here>>. By default this service is enabled, and can
 be disabled by including the following in the `threddsConfig.xml` file:
 
 ----------------------
@@ -300,7 +300,7 @@ successful download. Do not set to <= 0.
 === WMS Service
 
 The OGC WMS service provided as part of the TDS is described in more
-detail link:WMS.adoc[here]. By default this service is enabled, and can
+detail <<WMS.adoc,here>>. By default this service is enabled, and can
 be disabled by including the following in the `threddsConfig.xml` file:
 
 ----------------------
@@ -344,7 +344,7 @@ service will return.
 === NetCDF Subset Service (NCSS)
 
 The NetCDF Subset Service provided as part of the TDS is described in
-more detail link:NetcdfSubsetServiceReference.adoc[here]. By default
+more detail <<NetcdfSubsetServiceReference.adoc,here>>. By default
 this service is enabled, and can be disabled by including the following
 in the `threddsConfig.xml` file:
 
@@ -374,7 +374,7 @@ options:
 
 1.  **allow**: a value of ``false'' disables the NetCDF Subset Service.
 2.  **dir**: the working directory for creating files for download (see
-link:#Cache_Locations[choosing a cache directory]). If not otherwise
+<<#Cache_Locations,choosing a cache directory>>). If not otherwise
 set, the TDS will use the *$\{tomcat_home}/content/thredds/cache/ncss/*
 directory. We recommend that you do not specify a
 *NetcdfSubsetService.dir* element, and use the default.
@@ -402,7 +402,7 @@ the following in the `threddsConfig.xml` file:
 
 Each of the *allow* elements above enables the corresponding ncISO
 service (NCML, UDDC, and ISO). The ncISO services are described in more
-detail on the link:ncISO.adoc[ncISO page].
+detail on the <<ncISO.adoc,ncISO page>>.
 
 '''''
 
@@ -552,7 +552,7 @@ These elements control where the _*CDM/NetCDF-Java*_ library writes
 temporary files, for example when it needs to unzip files, or write GRIB
 index files, etc. If *alwaysUse* is true, these temporary files will
 always be written to the _cache directory_ specified by *dir*
-(link:#Cache_Locations[choosing a cache directory]). If *alwaysUse* is
+(<<#Cache_Locations,choosing a cache directory>>). If *alwaysUse* is
 false, TDS will try to write them to the same directory as the original
 file, and if the TDS doesnt have write permission it will then write the
 files to the cache directory. Write permission will be determined by
@@ -587,7 +587,7 @@ you use this default, by not specifying the *DiskCache.dir* element.
 
 If you have *joinExisting* Aggregations, coordinate information will be
 written to a cache directory specified by *dir*
-(link:#Cache_Locations[choosing a cache directory]). If not otherwise
+(<<#Cache_Locations,choosing a cache directory>>). If not otherwise
 set, the TDS will use the *$\{tomcat_home}/content/thredds/cache/agg/*
 directory. We recommend that you use this default, by not specifying a
 **AggregationCache**.*dir* element.
@@ -778,7 +778,7 @@ thus > 7M datastes), and so Linux is preferred for large installations.
 
 === User Triggering
 
-You must have link:RemoteManagement.adoc[Remote Managenment] enabled
+You must have <<RemoteManagement.adoc,Remote Managenment>> enabled
 (enable SSL in Tomcat, and login as a user with the *tdsConfig*
 user-role).
 
@@ -808,7 +808,7 @@ To use this mode, the following conditions must be met:
 
 * all *dataRoot* elements must be in a root catalog. A root catalog is
 the top catalog (__$tomcat/content/thredds/catalog.xml__), plus any
-other catalogs specified in a link:catalogRoots[catalogRoot element].
+other catalogs specified in a <<catalogRoots,catalogRoot element>>.
 * all catalogs are referenced in a *catalogRef* element in a root
 catalog, or you are using *catalogScan* from a root catalog.
 

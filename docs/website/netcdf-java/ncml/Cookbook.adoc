@@ -91,7 +91,7 @@ dimensions, variables, and attributes not wanted (leave just the ones
 that you want)
 3.  Use the ToolsUI NcML "Write Netcdf File" button to copy just those variables to a new netCDF file.
 4.  (or) Save the NcML file and use the
-link:../reference/Cookbook.adoc#writeClassic[command line copy]. One can
+<<../reference/Cookbook.adoc#writeClassic,command line copy>>. One can
 generate the NcML from a script and automate the process.
 
 == Logical Views
@@ -149,7 +149,7 @@ Create union of all datasets ending in _mean.nc_ located in the directory _nc_ r
 </netcdf>
 ----
 
-See link:../reference/DatasetUrls.adoc#NcmlScan[Dataset URLS] for more information on the location attribute.
+See <<../reference/DatasetUrls.adoc#NcmlScan,Dataset URLS>> for more information on the location attribute.
 
 == JoinNew Aggregation
 
@@ -214,7 +214,7 @@ spaced, and they must be in alphabetic order.
 
 Scan directory, assign date coordinate value from filename. The date
 coordinate must be derivable from the filename, using the
-link:Aggregation.adoc#dateFormatMark[dateFormatMark] attribute. +
+<<Aggregation.adoc#dateFormatMark,dateFormatMark>> attribute. +
 
 [source,xml]
 ----
@@ -267,7 +267,7 @@ Overrides existing coordinate variable, if any.
 
 *Scan directory, assign date coordinate value from filename.*
 Each file must have exactly one time slice. The date coordinate must be derivable from the filename, using the
-link:Aggregation.adoc#dateFormatMark[dateFormatMark] attribute. +
+<<Aggregation.adoc#dateFormatMark,dateFormatMark>> attribute. +
 
 [source,xml]
 ----

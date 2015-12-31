@@ -16,59 +16,59 @@
 
 === 9:00 - 9:30 Welcome and Logistics / TDS Motivation and Technology Overview (Ethan)
  * Review of schedule
- * Why use TDS? (link:TDSOverview.pptx[PPT])(link:TDSOverview.pdf[PDF])
- * TDS Resources: link:../TDS.adoc[Web page],
-   link:../reference/index.adoc[Reference], link:../faq.adoc[FAQ]
+ * Why use TDS? (<<TDSOverview.pptx[PPT])(link:TDSOverview.pdf,PDF>>)
+ * TDS Resources: <<../TDS.adoc,Web page>>,
+   <<../reference/index.adoc[Reference], link:../faq.adoc,FAQ>>
  * link:http://www.unidata.ucar.edu/community/surveys/2015training/survey.html[Feedback/Evaluation
 Form] (Repeated submissions encouraged)
- * link:https://etherpad.net/p/TdsWorkshop2015[Etherpad] for real-time feedback!
+ * <<https://etherpad.net/p/TdsWorkshop2015,Etherpad>> for real-time feedback!
 
 === 9:30 - 10:15 TDS with Docker (Sean)
- * Using the TDS and link:https://registry.hub.docker.com/u/unidata/tds-workshop/[Docker]
- * link:GettingStarted.adoc#tour[Tomcat Directory Structure: Quick Tour]
- * link:GettingStarted.adoc#logs[Tomcat Log Files]
- * link:GettingStarted.adoc#manager[Tomcat `manager` Application]
- * link:http://www.unidata.ucar.edu/software/thredds/current/tds/tutorial/BasicThreddsConfig_xml.html[Exercise]:
+ * Using the TDS and <<https://registry.hub.docker.com/u/unidata/tds-workshop/,Docker>>
+ * <<GettingStarted.adoc#tour,Tomcat Directory Structure: Quick Tour>>
+ * <<GettingStarted.adoc#logs,Tomcat Log Files>>
+ * <<GettingStarted.adoc#manager,Tomcat `manager` Application>>
+ * <<http://www.unidata.ucar.edu/software/thredds/current/tds/tutorial/BasicThreddsConfig_xml.html,Exercise>>:
        edit threddsConfig.xml to add local information
 
 === 10:15 - 10:30 Break
 
 === 10:30 - 11:45 TDS Server Configuration
  * TDS Refresher (all default catalogs, no modifications)
- ** link:CatalogPrimer.adoc[TDS Client Catalog Overview] (Ryan)
- ** link:BasicConfigCatalogs.adoc[TDS Configuration Catalogs - Basic] (Ryan)
- ** link:ConfigCatalogs.adoc[TDS Configuration Catalogs - Intermediate] (Ryan)
+ ** <<CatalogPrimer.adoc,TDS Client Catalog Overview>> (Ryan)
+ ** <<BasicConfigCatalogs.adoc,TDS Configuration Catalogs - Basic>> (Ryan)
+ ** <<ConfigCatalogs.adoc,TDS Configuration Catalogs - Intermediate>> (Ryan)
  *** Unidata's https://github.com/Unidata/TdsConfig[TDS Server catalogs]
- * link:../reference/ThreddsConfigXMLFile.adoc[threddsConfig.xml Reference] (Christian)
- * URL Construction (link:CatalogPrimer.adoc#Constructing_an_access_URL[tutorial])
-   (link:../catalog/InvCatalogSpec.adoc#constructingURLs[reference]) (Christian)
+ * <<../reference/ThreddsConfigXMLFile.adoc,threddsConfig.xml Reference>> (Christian)
+ * URL Construction (<<CatalogPrimer.adoc#Constructing_an_access_URL,tutorial>>)
+   (<<../catalog/InvCatalogSpec.adoc#constructingURLs,reference>>) (Christian)
 
 === 11:45 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis, Christian)
  * General Overview (Christian)
- ** link:../reference/Services.adoc[Available services]
+ ** <<../reference/Services.adoc,Available services>>
  *** `serviceType` and `base` attributes are not configurable
  *** `HTTPServer` requires physical files, not virtual ones
  ** Using compound services
- ** Example: link:../reference/ThreddsConfigXMLFile.adoc#ncss[Turn on NCSS in threddsConfig.xml]
- *** link:../../netcdf-java/reference/netcdf4Clibrary.adoc[Enabling NetCDF4] for NCSS: Compression!
- * Dataset Subsetting Services (Dennis) (link:Subset.adoc[presentation])
- ** Netcdf Subset Service (link:../reference/NetcdfSubsetServiceConfigure.adoc[configure])(link:../reference/NetcdfSubsetServiceReference.adoc[reference])
+ ** Example: <<../reference/ThreddsConfigXMLFile.adoc#ncss,Turn on NCSS in threddsConfig.xml>>
+ *** <<../../netcdf-java/reference/netcdf4Clibrary.adoc,Enabling NetCDF4>> for NCSS: Compression!
+ * Dataset Subsetting Services (Dennis) (<<Subset.adoc,presentation>>)
+ ** Netcdf Subset Service (<<../reference/NetcdfSubsetServiceConfigure.adoc[configure])(link:../reference/NetcdfSubsetServiceReference.adoc,reference>>)
  ** OPeNDAP Services: DAP2 and DAP4 Protocols
  ** Other Services (Not covered) 
- *** Catalog Service (link:../reference/CatalogService.adoc[reference])
- *** WCS (link:../reference/WCS.adoc[reference])
- *** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:../reference/WMS.adoc[reference])
- *** ncIso (link:AddingServices.adoc#Setup[configure])(link:../reference/ncISO.adoc[reference])
+ *** Catalog Service (<<../reference/CatalogService.adoc,reference>>)
+ *** WCS (<<../reference/WCS.adoc,reference>>)
+ *** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(<<../reference/WMS.adoc,reference>>)
+ *** ncIso (<<AddingServices.adoc#Setup[configure])(link:../reference/ncISO.adoc,reference>>)
 
 === 12:30 - 2:00 Lunch
 
 === 2:00 - 2:30 Accessing TDS data services with python (Ryan)
-** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/matplotlib-and-cartopy.ipynb[OPeNDAP]
-** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/SIPHON_NCSS_Example.ipynb[Netcdf Subset Service]
-** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/wms_sample.ipynb[ncWMS]
+** <<http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/matplotlib-and-cartopy.ipynb,OPeNDAP>>
+** <<http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/SIPHON_NCSS_Example.ipynb,Netcdf Subset Service>>
+** <<http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/wms_sample.ipynb,ncWMS>>
 
 === 2:30 - 3:00 Using ToolsUI (Christian)
- * Running link:../../netcdf-java/reference/ToolsUI/ToolsUI.adoc[ToolsUI]
+ * Running <<../../netcdf-java/reference/ToolsUI/ToolsUI.adoc,ToolsUI>>
  * Use Case: Using ToolsUI to serve new data
  ** Access local and remote TDS servers in ToolsUI
  * IOSPs and FeatureTypes
@@ -77,20 +77,20 @@ Form] (Repeated submissions encouraged)
 
 === 3:15 - 3:45 TDS Monitoring, Debugging, Logs (Sean)
  * Looking at logs while logged into the server (good for when things won't start!)
- ** link:TomcatAndTDSLogs.adoc#access[Tomcat]
- ** link:TomcatAndTDSLogs.adoc#tds[TDS]
+ ** <<TomcatAndTDSLogs.adoc#access,Tomcat>>
+ ** <<TomcatAndTDSLogs.adoc#tds,TDS>>
  * Looking at logs 'remotely' (good for when things do start):
- ** via http and the link:../reference/RemoteManagement.adoc[debug] page
- ** using the link:tdsMonitor.adoc[TdsMonitor] Desktop tool
- * link:TroubleShooting.adoc[Troubleshooting] Configuration Catalogs
+ ** via http and the <<../reference/RemoteManagement.adoc,debug>> page
+ ** using the <<tdsMonitor.adoc,TdsMonitor>> Desktop tool
+ * <<TroubleShooting.adoc,Troubleshooting>> Configuration Catalogs
 
 === 3:45 - 4:30 Software Engineering and Contributing (Christian)
  * Source code on https://github.com/Unidata/thredds[GitHub]
- ** Exercise: link:../../netcdf-java/tutorial/SourceCodeBuild.adoc[Build THREDDS from source code]
- ** Exercise: link:../../netcdf-java/tutorial/Contributing.adoc[Submit a pull request]
+ ** Exercise: <<../../netcdf-java/tutorial/SourceCodeBuild.adoc,Build THREDDS from source code>>
+ ** Exercise: <<../../netcdf-java/tutorial/Contributing.adoc,Submit a pull request>>
  * Maven artifacts on https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
- ** link:../../netcdf-java/reference/BuildDependencies.adoc[How to use them in your project]
- * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
+ ** <<../../netcdf-java/reference/BuildDependencies.adoc,How to use them in your project>>
+ * CDM/TDS Nightly Build/Test System (<<images/jenkins.png,Jenkins>>)
  * Continuous Integration on https://travis-ci.org/Unidata/thredds[Travis]
  * Static code analysis on https://scan.coverity.com/projects/388?tab=overview[Coverity]
  * Issue Tracking with http://www.unidata.ucar.edu/jira/[JIRA]
@@ -101,18 +101,18 @@ Form] (Repeated submissions encouraged)
 
 === Day One Finish
 
-=== Dinner 6:00 at link:http://fatebrewingcompany.com/[Fate Brewing] (link:https://www.google.com/maps/place/FATE+Brewing+Company/@40.015095,-105.245735,17z/data=!4m2!3m1!1s0x0000000000000000:0xcb92fb30bcd7297b[directions]) 
+=== Dinner 6:00 at <<http://fatebrewingcompany.com/[Fate Brewing] (link:https://www.google.com/maps/place/FATE+Brewing+Company/@40.015095,-105.245735,17z/data=!4m2!3m1!1s0x0000000000000000:0xcb92fb30bcd7297b,directions>>) 
 
 == 24 July 2015 : July 2015: Advanced Uses of TDS
 
 === 8:00 - 8:30 Coffee and continental breakfast
 
 === 8:30 - 9:30 Advanced TDS Configuration (John)
- * link:../reference/collections/FeatureCollections.adoc[FeatureCollections]
- * link:FmrcFeatureCollectionsTutorial.adoc[FMRC Tutorial]
- * link:../reference/collections/PointFeatures.adoc[Point Feature Collections]
+ * <<../reference/collections/FeatureCollections.adoc,FeatureCollections>>
+ * <<FmrcFeatureCollectionsTutorial.adoc,FMRC Tutorial>>
+ * <<../reference/collections/PointFeatures.adoc,Point Feature Collections>>
  * GRIB Feature Collections (after lunch)
- * link:../UpgradingTo4.6.adoc[Upgrading to 4.6]
+ * <<../UpgradingTo4.6.adoc,Upgrading to 4.6>>
 
 === 9:30 - 11:30 Open Exploration, 1-on-1
 After looking over the workshop schedule, please consider topics you'd like
@@ -136,30 +136,30 @@ to explore/discuss during this time. Potential topics include:
 === 12:00 - 1:30 Lunch
 
 === 1:30 - 2:00 An ode to GRIB (Sean)
- * What is link:https://i.imgflip.com/omj0i.jpg[GRIB]?
+ * What is <<https://i.imgflip.com/omj0i.jpg,GRIB>>?
  * Grib1 vs Grib2
- ** link:http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/Introduction_GRIB1-GRIB2.pdf[WMO]
+ ** <<http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/Introduction_GRIB1-GRIB2.pdf,WMO>>
  * Where can I learn more?
- ** link:http://www.nco.ncep.noaa.gov/pmb/docs/on388/[NCEP GRIB Holy Book]
- ** link:http://www.wmo.int/pages/prog/www/WMOCodes.html[WMO]
- *** link:http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html[WMO GRIB-1]
- *** link:http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf[WMO GRIB-2]
- * link:http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[On the suitability of BUFR and GRIB for archiving data] (link:http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib[tl;dr;])
+ ** <<http://www.nco.ncep.noaa.gov/pmb/docs/on388/,NCEP GRIB Holy Book>>
+ ** <<http://www.wmo.int/pages/prog/www/WMOCodes.html,WMO>>
+ *** <<http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html,WMO GRIB-1>>
+ *** <<http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf,WMO GRIB-2>>
+ * <<http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[On the suitability of BUFR and GRIB for archiving data] (link:http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib,tl;dr;>>)
 
 === 2:00 - 2:30 Reading GRIB data with the CDM (Sean)
  * General overview of tools for GRIB
  ** Specific to NCEP:
- *** link:http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html[wgrib]
- *** link:http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/[wgrib2]
- *** link:https://github.com/jswhit/pygrib[pygrib] (via ECMWF GRIB-API software)
+ *** <<http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html,wgrib>>
+ *** <<http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/,wgrib2>>
+ *** <<https://github.com/jswhit/pygrib,pygrib>> (via ECMWF GRIB-API software)
  ** Specific to ECMWF:
- *** link:https://software.ecmwf.int/wiki/display/GRIB/Home[GRIB-API]
- *** link:https://software.ecmwf.int/wiki/display/GRIB/Python+package+gribapi[grib-api] (python bindings)
- *** link:https://github.com/jswhit/pygrib[pygrib] (python bindings)
+ *** <<https://software.ecmwf.int/wiki/display/GRIB/Home,GRIB-API>>
+ *** <<https://software.ecmwf.int/wiki/display/GRIB/Python+package+gribapi,grib-api>> (python bindings)
+ *** <<https://github.com/jswhit/pygrib,pygrib>> (python bindings)
  ** Other:
  *** Some random table on some random dev's hard drive combined with (likely) wgrib(2)
  ** General GRIB file readers:
- *** link:http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm[netCDF-Java] (and thus the TDS)
+ *** <<http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm,netCDF-Java>> (and thus the TDS)
  * Using ToolsUI with GRIB
  ** Viewer
  ** IOSP
@@ -169,10 +169,10 @@ to explore/discuss during this time. Potential topics include:
 
 === 2:45 - 4:00 GRIB Feature Collections (John)
  * cache, index files, partition types (architecture background) (https://docs.google.com/presentation/d/18Kj9FzRQBwSoVYbd1zbx-IUWH7weT3FOV4MRZxWHe0E/edit#slide=id.g3b75fa140_2_15[slides])
- * link:GRIBFeatureCollectionTutorial.adoc[GRIB Feature Collection Tutorial]
- * Using the THREDDS Data Manager (TDM) link:../reference/collections/TDM.adoc[TDM]
- * link:GribCollectionExamples.adoc[GRIB Collection Examples]
- * link:../reference/ThreddsConfigXMLFile.adoc#GribIndexWriting[GRIB Index redirection]
- * GRIB link:../reference/collections/GribCollectionFaq.adoc[FAQ]
+ * <<GRIBFeatureCollectionTutorial.adoc,GRIB Feature Collection Tutorial>>
+ * Using the THREDDS Data Manager (TDM) <<../reference/collections/TDM.adoc,TDM>>
+ * <<GribCollectionExamples.adoc,GRIB Collection Examples>>
+ * <<../reference/ThreddsConfigXMLFile.adoc#GribIndexWriting,GRIB Index redirection>>
+ * GRIB <<../reference/collections/GribCollectionFaq.adoc,FAQ>>
 
 === Day Two Finish

@@ -18,7 +18,7 @@ indicating to use the deflate compression algorithm.
 
 === _field_atts
 
-Allows attributes on individual fields in a Compound type in a NetCDF4 file. See link:Netcdf4CompoundAttributes.adoc[Details]
+Allows attributes on individual fields in a Compound type in a NetCDF4 file. See <<Netcdf4CompoundAttributes.adoc,Details>>
 
 '''''
 

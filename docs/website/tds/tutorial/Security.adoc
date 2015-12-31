@@ -9,25 +9,25 @@
 Best practices and recommendations on securing a production TDS/Tomcat
 server:
 
-* link:#why[Why Is Security Important?]
-* link:#versions[Keeping Software Versions Up-To-Date]
+* <<#why,Why Is Security Important?>>
+* <<#versions,Keeping Software Versions Up-To-Date>>
 * link:#install[Tomcat Process User/Group and $CATALINA_HOME
 Permissions]
-* link:#unused[Removing Unused Web Applications]
-* link:#digested[Using Digested Passwords]
-* link:#ssl[Enabling TSL/SSL Encryption]
-* link:#manager[Securing the Tomcat `manager` Application]
-* link:#ports[Blocking Non-Essential Port Access At The Firewall]
+* <<#unused,Removing Unused Web Applications>>
+* <<#digested,Using Digested Passwords>>
+* <<#ssl,Enabling TSL/SSL Encryption>>
+* <<#manager,Securing the Tomcat `manager` Application>>
+* <<#ports,Blocking Non-Essential Port Access At The Firewall>>
 * link:#access[Restricting Access To The TDS By Remote IP Address Or
 Host]
-* link:#proxy[Reverse Proxy]
-* link:#shutdown[Protecting the Tomcat `SHUTDOWN` Port]
+* <<#proxy,Reverse Proxy>>
+* <<#shutdown,Protecting the Tomcat `SHUTDOWN` Port>>
 
-You should know how to do a link:GettingStarted.adoc[basic installation]
+You should know how to do a <<GettingStarted.adoc,basic installation>>
 of Tomcat, Java, and the TDS; and be familiar with the
-link:GettingStarted.adoc#tour[Tomcat directory structure];
-link:GettingStarted.adoc#files[Tomcat server configuration]; and the
-link:GettingStarted.adoc#manager[Tomcat manager application].
+<<GettingStarted.adoc#tour,Tomcat directory structure>>;
+<<GettingStarted.adoc#files,Tomcat server configuration>>; and the
+<<GettingStarted.adoc#manager,Tomcat manager application>>.
 
 == Why Is Security Important?
 
@@ -425,7 +425,7 @@ error: `java.io.IOException: Cannot recover key`.
 Other than the compelling security reasons, you will want to enable
 TSL/SSL to take advantage of a couple of monitoring and debugging tools:
 the http://localhost:8080/thredds/admin/debug[TDS Remote Management
-Tool], and the link:tdsMonitor.adoc[TdsMonitor Tool] – both of which
+Tool], and the <<tdsMonitor.adoc,TdsMonitor Tool>> – both of which
 (out-of-the-box) require TSL/SSL to access.
 
 The web application deployment descriptor, aka `web.xml`, specifies if
@@ -441,7 +441,7 @@ container-managed security constraints upon application deployment.
 _The TDS has been pre-configured to require that TSL/SSL encryption is
 enabled in order to access the both the
 http://localhost:8080/thredds/admin/debug[TDS Remote Management Tool],
-and the link:tdsMonitor.adoc[TdsMonitor Tool]._
+and the <<tdsMonitor.adoc,TdsMonitor Tool>>._
 
 `web.xml` from the TDS Remote Management Tool:
 
@@ -496,7 +496,7 @@ constrained requests on any connection, including an unprotected one.
 Other than the compelling security reasons, you will want to enable
 TSL/SSL to take advantage of a couple of monitoring and debugging tools:
 the http://localhost:8080/thredds/admin/debug[TDS Remote Management
-Tool], and the link:tdsMonitor.adoc[TdsMonitor Tool] – both of which
+Tool], and the <<tdsMonitor.adoc,TdsMonitor Tool>> – both of which
 (out-of-the-box) require TSL/SSL to access.
 
 Enable TSL/SSL in Tomcat

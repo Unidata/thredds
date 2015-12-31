@@ -8,24 +8,24 @@
 Multiple CDM datasets can be aggregated into a single, logical dataset.
 This is done with the *_aggregation_* NcML element. There are several types of aggregation:
 
-1.  **link:#Union[Union]**: The union of all the dimensions, attributes,
+1.  **<<#Union,Union>>**: The union of all the dimensions, attributes,
 and variables in multiple NetCDF files.
-2.  **link:#joinExisting[JoinExisting]**: Variables of the same name (in
+2.  **<<#joinExisting,JoinExisting>>**: Variables of the same name (in
 different files) are connected along their existing, outer dimension,
 called the __aggregation dimension__. A coordinate variable must exist
 for the dimension.
-3.  **link:#joinNew[JoinNew]**: Variables of the same name (in different
+3.  **<<#joinNew,JoinNew>>**: Variables of the same name (in different
 files) are connected along a new outer dimension. Each file becomes one
 . A new coordinate variable is created for the dimension.
-4.  link:FmrcAggregation.adoc[*ForecastModelRunCollection*] (FMRC): A
+4.  <<FmrcAggregation.adoc,*ForecastModelRunCollection*>> (FMRC): A
 collection of forecast model runs with two time coordinates: a _*run
 time*_ and a __*forecast time*__.
 
 == Exercise 1: Union of NetCDF files
 
-Download link:examples/aggUnionSimple.ncml[aggUnionSimple.ncml],
-link:examples/cldc.mean.nc[cldc.mean.nc]
-and link:examples/lflx.mean.nc[lflx.mean.nc] and place them together in a
+Download <<examples/aggUnionSimple.ncml,aggUnionSimple.ncml>>,
+<<examples/cldc.mean.nc,cldc.mean.nc>>
+and <<examples/lflx.mean.nc,lflx.mean.nc>> and place them together in a
 single directory. In the ToolsUI **NcML Tab**, open
 *aggUnionSimple.ncml* and examine it:
 
@@ -115,8 +115,8 @@ files._*
 
 == Exercise 2: Aggregation on an existing dimension
 
-Download link:examples/aggExisting.ncml[aggExisting.ncml],
-link:examples/jan.nc[jan.nc] and link:examples/feb.nc[feb.nc] and place
+Download <<examples/aggExisting.ncml,aggExisting.ncml>>,
+<<examples/jan.nc[jan.nc] and link:examples/feb.nc,feb.nc>> and place
 them together in a single directory. In the ToolsUI **NcML Tab**, open
 *aggExisting.ncml* and examine it:
 
@@ -280,9 +280,9 @@ of space-delimited coordinate values, eg:
 </aggregation>
 ----
 4.  If there is exactly one time slice in each file of the
-*JoinExisting* aggregation, and you are using a link:#scan[scan] element
+*JoinExisting* aggregation, and you are using a <<#scan,scan>> element
 to dynamically scan the files in a directory, then you can use the
-link:#dateFormatMark[dateFormatMark] attribute to derive the date from
+<<#dateFormatMark,dateFormatMark>> attribute to derive the date from
 the filename.
 5.  If you do not specify a coordinate variable, one must exist in each
 of the nested datasets, and the coordinate values will be read from it,
@@ -312,9 +312,9 @@ e.g. **humidity(3,:,:,:)**). The following NcML joins variables from
 three separate files into a single variable, by creating a new dimension
 of length 3:
 
-Download link:examples/aggNew.ncml[aggNew.ncml],
-link:examples/time0.nc[time0.nc,] link:examples/time1.nc[time1.nc]
-and link:examples/time2.nc[time2.nc] and place them together in a single
+Download <<examples/aggNew.ncml,aggNew.ncml>>,
+<<examples/time0.nc[time0.nc,] link:examples/time1.nc,time1.nc>>
+and <<examples/time2.nc,time2.nc>> and place them together in a single
 directory. In the ToolsUI **NcML Tab**, open *aggNew.ncml* and examine
 it:
 
@@ -393,7 +393,7 @@ the above example, one was automatically created with type double, to
 match the coordValues specified on the netcdf elements. However, it has
 no units or other attributes. To specify attributes on the coordinate
 system, you can use the following (download
-link:examples/aggNewCoord.ncml[aggNewCoord.ncml]):
+<<examples/aggNewCoord.ncml,aggNewCoord.ncml>>):
 
 [source,xml]
 ----
@@ -491,7 +491,7 @@ slow if there are a large number of files. In the case where you specify
 the files individually, you could add the *ncoords* attribute for speed.
 In the THREDDS Data Server, the information is cached, so that
 subsequent requests do not need to open each file until data is
-requested. However, see the section on link:#caching[caching].
+requested. However, see the section on <<#caching,caching>>.
 
 A *joinNew* type aggregation does not incur this expense, since there is
 always exactly one step per file:
@@ -543,8 +543,8 @@ and you don’t need to know the number of files:
 
 For the common case that the filename contains date information from
 which you can derive a time coordinate, you can use the *dateFormatMark*
-attribute (download link:examples/aggDateFormat.ncml[aggDateFormat.ncml]
-and link:examples/cg.zip[cg.zip], unzip the latter and place in your
+attribute (download <<examples/aggDateFormat.ncml,aggDateFormat.ncml>>
+and <<examples/cg.zip,cg.zip>>, unzip the latter and place in your
 data directory). In the ToolsUI **NcML Tab**, open *aggDateFormat.ncml*
 and change the scan location to point to your data directory, and then
 save it image:images/saveButt.png[image]:
@@ -563,7 +563,7 @@ The *_dateFormatMark_* attribute is used on *joinNew* aggregation, as
 well as *joinExisting* if there is only one time slice in each file, to
 create date coordinate values out of the filename. It consists of a
 section of text, a `#' marking character, then a
-link:AnnotatedSchema4.adoc#SimpleDateFormat[*java.text.SimpleDateFormat*]
+<<AnnotatedSchema4.adoc#SimpleDateFormat,*java.text.SimpleDateFormat*>>
 string. The number of characters before the # is skipped in the
 filename, then the next part of the filename must match the
 SimpleDateFormat string, then it ignores any trailing text. For example:
@@ -715,7 +715,7 @@ One can nest netcdf elements in aggregation, for example:
 </netcdf>
 ----
 
-See also: link:AnnotatedSchema4.adoc[Annotated NcML Schema]
+See also: <<AnnotatedSchema4.adoc,Annotated NcML Schema>>
 
 '''''
 

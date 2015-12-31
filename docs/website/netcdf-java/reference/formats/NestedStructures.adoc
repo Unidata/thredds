@@ -11,9 +11,9 @@ _John Caron_
 
 _last changed: Jun 04, 2005_
 
-* link:#Station[Using Structures for Station Data]
-* link:#Sounding[Using Nested Structures for Sounding Data]
-* link:#Trajectory[Using Structures for Trajectory Data]
+* <<#Station,Using Structures for Station Data>>
+* <<#Sounding,Using Nested Structures for Sounding Data>>
+* <<#Trajectory,Using Structures for Trajectory Data>>
 
 '''''
 

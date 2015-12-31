@@ -8,10 +8,10 @@ All the TDS specific log files are located in the
 
 TDS log files:
 
-* link:#threddsServlet.log[threddsServlet.log]
-* link:#serverStartup.log[Other log files]
+* <<#threddsServlet.log,threddsServlet.log>>
+* <<#serverStartup.log,Other log files>>
 
-link:#Log4J[Log configuration]
+<<#Log4J,Log configuration>>
 
 == threddsServlet.log
 
@@ -138,7 +138,7 @@ library, and the http://www.slf4j.org/[SLF4J] logging facade to route
 all log messages to Log4J2. (Users of the TDS can ignore the SLF4J
 facade).
 
-The link:files/log4j2.xml[default log4j2 configuration file] is shipped
+The <<files/log4j2.xml,default log4j2 configuration file>> is shipped
 inside the TDS war file. Once the thredds.war file is expanded, you can
 find it at *$\{tomcat_home}/webapps/thredds/WEB-INF/classes/log4j2.xml.*
 You can modify this if you want and restart the TDS to have it take

@@ -4,19 +4,19 @@
 
 = NetCDF-Java FAQ
 
-* link:#Arrays[Arrays]
-* link:#Caching[Caching]
-* link:#IOSP[IOSP]
-* link:#Logging[Logging]
-* link:#Multithreading[Multithreading]
-* link:#NcML[NcML]
-* link:#Reading[Reading]
-* link:#Writing[Writing]
-* link:#Unsigned[Unsigned types]
+* <<#Arrays,Arrays>>
+* <<#Caching,Caching>>
+* <<#IOSP,IOSP>>
+* <<#Logging,Logging>>
+* <<#Multithreading,Multithreading>>
+* <<#NcML,NcML>>
+* <<#Reading,Reading>>
+* <<#Writing,Writing>>
+* <<#Unsigned,Unsigned types>>
 
 Miscellaneous
 
-* link:../tutorial/SourceCodeBuild.adoc[How do I build from source or contribute to the NetCDF Java Library?]
+* <<../tutorial/SourceCodeBuild.adoc,How do I build from source or contribute to the NetCDF Java Library?>>
 
 [[Arrays]]
 == Arrays
@@ -108,7 +108,7 @@ application.
 
 **Q: How do I control where temporary files are placed (Disk Caching)**?
 
-See link:Caching.adoc[Disk Caching].
+See <<Caching.adoc,Disk Caching>>.
 
 [[IOSP]]
 == I/O Service Provider
@@ -177,11 +177,11 @@ best. You might find the code at *ucar.nc2.FileWriter2* useful to examine.
 
 The netCDF-Java library currently uses http://www.slf4j.org[SLF4J
 logging]. This allows you to switch what logging implementation is used.
-Read more link:BuildDependencies.adoc#_logging[here].
+Read more <<BuildDependencies.adoc#_logging,here>>.
 
 *Q: Im using the default logger in the JDK. How do I control it?*
 
-See link:BuildDependencies.adoc#_logging[here].
+See <<BuildDependencies.adoc#_logging,here>>.
 
 
 *Q: Im using the http://logging.apache.org/log4j/2.x/[log4j] logging package. How do I get rid of the message
@@ -232,7 +232,7 @@ The Netcdf Markup Language (NcML) is an XML representation of netCDF metadata,
 (approximately) the header information one gets from a netCDF file with the "ncdump -h" command.
 NcML is similar to netCDF CDL (network Common data form Description Language), except, of course, it uses XML syntax.
 
-Most are interested in NcML because one can also use it to modify and combine existing datasets. link:../ncml/index.adoc[Details].
+Most are interested in NcML because one can also use it to modify and combine existing datasets. <<../ncml/index.adoc,Details>>.
 
 *Q: The NcML in my TDS is not working. What should I do?*
 
@@ -276,12 +276,12 @@ You should see the same results as in steps 2 and 3.
 
 *Q: What files can the library read?*
 
-See link:formats/FileTypes.adoc[File Types].
+See <<formats/FileTypes.adoc,File Types>>.
 
 *Q: How do I read a file of type X?*
 
-In general, you link:../tutorial/index.adoc[open any CDM file] in the same way, and access it through the
-link:../CDM/index.adoc#dataAccess[CDM data model]. The whole point of the CDM is to hide the details of the file format.
+In general, you <<../tutorial/index.adoc,open any CDM file>> in the same way, and access it through the
+<<../CDM/index.adoc#dataAccess,CDM data model>>. The whole point of the CDM is to hide the details of the file format.
 However, some file type may require special handling:
 
 * GRIB and BUFR files may require special tables that the CDM doesn’t
@@ -290,7 +290,7 @@ have. Open the file as above and see
 .. if any of the variables have "Unknown" in their name
 .. if the data looks wrong.
 
-If any of those happen, prepare to enter link:formats/GribTables.adoc[GRIB table hell realm]. (BUFR is arguably
+If any of those happen, prepare to enter <<formats/GribTables.adoc,GRIB table hell realm>>. (BUFR is arguably
 worse, but there’s nothing yet that you can do about it).
 
 *Q: Can files be compressed and still be read? How does that work?*
@@ -311,7 +311,7 @@ without the suffix, then read from the uncompressed file. Generally it
 prefers to place the uncompressed file in the same directory as the
 original file.
 If it does not have write permission on that directory, it will use
-the link:Caching.adoc[cache directory] defined by *ucar.nc2.util.DiskCache*.
+the <<Caching.adoc,cache directory>> defined by *ucar.nc2.util.DiskCache*.
 
 [[Writing]]
 == Writing
@@ -322,11 +322,11 @@ Netcdf-Java library supports writing netCDF-3 file format using the
 http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2[classic
 data model]. Writing to the netCDF-4 file format is supported using a
 http://en.wikipedia.org/wiki/Java_Native_Interface[JNI] interface to
-the link:netcdf4Clibrary.adoc[netCDF C library.] See:
+the <<netcdf4Clibrary.adoc,netCDF C library.>> See:
 
-* Program with complete control: *ucar.nc2.NetcdfFileWriter* javadoc and link:../tutorial/NetcdfWriting.adoc[NetCDF File Writing tutorial].
+* Program with complete control: *ucar.nc2.NetcdfFileWriter* javadoc and <<../tutorial/NetcdfWriting.adoc,NetCDF File Writing tutorial>>.
 * Copy complete files from a program: *ucar.nc2.FileWriter2* writes CDM files to netCDF-3 or netCDF-4 format.
-* Command line file copying: See link:manPages.adoc#nccopy[here] for details.
+* Command line file copying: See <<manPages.adoc#nccopy,here>> for details.
 
 *Q: What is the relationship of NetCDF with HDF5?*
 
@@ -339,7 +339,7 @@ http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3[Par
 
 HDF5 is a very complicated format, and we do not plan to write a pure
 Java version for _writing_ netCDF4 files (Netcdf-Java is a pure Java version for _reading_ both HDF5 and netCDF-4).
-You must use the JNI interfacce to the link:netcdf4Clibrary.adoc[netCDF C library].
+You must use the JNI interfacce to the <<netcdf4Clibrary.adoc,netCDF C library>>.
 
 *Q: Can I stream a NetcdfFile object to a client?*
 
@@ -350,8 +350,8 @@ file to the client. For performance, you can try copying to a solid
 state disk.
 
 We are working on an experimental streaming format for NetCDF, called
-link:stream/NcStream.adoc[ncstream], and a remote access protocol called
-link:stream/CdmRemote.adoc[CdmRemote]. These are fully functional, but are still evolving and should only be used if you
+<<stream/NcStream.adoc,ncstream>>, and a remote access protocol called
+<<stream/CdmRemote.adoc,CdmRemote>>. These are fully functional, but are still evolving and should only be used if you
 can tolerate non-stable APIs and formats.
 
 *Q: What kind of information should I put into my netCDF file to help others read it?*
@@ -434,7 +434,7 @@ probably more like what you want.
 
 *Q: I want to convert a GRIB file to netCDF. How do I do that?*
 
-If you are converting the entire file, you can do it on the link:manPages.adoc#nccopy[command line].
+If you are converting the entire file, you can do it on the <<manPages.adoc#nccopy,command line>>.
 
 You can do it from a Java program like this:
 
@@ -460,7 +460,7 @@ void convert(String datasetIn, String filenameOut, boolean wantNetcdf4) throws I
 Note that this can be used for any
 https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Classic-Model-Format.html#NetCDF_002d4-Classic-Model-Format[classic
 model] CDM dataset, not just GRIB. So _datasetIn_ above can refer to an NcML file, an OPeNDAP URL, any of these
-link:formats/FileTypes.adoc[File Types], etc.
+<<formats/FileTypes.adoc,File Types>>, etc.
 
 [[Unsigned]]
 == Unsigned Types

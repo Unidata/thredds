@@ -16,7 +16,7 @@ sections for each of these services.
 
 ==== WCS Configuration
 
-To enable the link:../reference/WCS.adoc[WCS service] for locally served
+To enable the <<../reference/WCS.adoc,WCS service>> for locally served
 datasets, you will need the following in your `threddsConfig.xml` file:
 
 ---------------------
@@ -27,13 +27,13 @@ datasets, you will need the following in your `threddsConfig.xml` file:
 
 Additional WCS configuration options can be set in the
 `threddsConfig.xml` file, more details are available in the
-link:../reference/ThreddsConfigXMLFile.adoc#WCS[WCS section] of the
+<<../reference/ThreddsConfigXMLFile.adoc#WCS,WCS section>> of the
 `threddsConfig.xml` file documentation.
 
 [[wms_configuration]]
 ==== WMS Configuration
 
-To enable the link:../reference/WMS.adoc[WMS service] for locally served
+To enable the <<../reference/WMS.adoc,WMS service>> for locally served
 datasets, you will need the following in your `threddsConfig.xml` file:
 
 ---------------------
@@ -44,12 +44,12 @@ datasets, you will need the following in your `threddsConfig.xml` file:
 
 Additional WMS configuration options can be set in the
 `threddsConfig.xml` file, more details are available in the
-link:../reference/ThreddsConfigXMLFile.adoc#WMS[WMS section] of the
+<<../reference/ThreddsConfigXMLFile.adoc#WMS,WMS section>> of the
 `threddsConfig.xml` file documentation.
 
 ==== ncISO Configuration
 
-To enable the link:../reference/ncISO.adoc[ncISO services] for locally
+To enable the <<../reference/ncISO.adoc,ncISO services>> for locally
 served datasets, you will need the following in your `threddsConfig.xml`
 file:
 
@@ -288,7 +288,7 @@ section of all WMS accessible datasets. The
 http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/GodivaTwoUserGuide[Godiva2
 User Guide] is available from the ncWMS site.
 
-link:images/Godiva2_screenshot.png[image:images/Godiva2_screenshot_small.png[Godiva2]]
+<<images/Godiva2_screenshot.png[image:images/Godiva2_screenshot_small.png,Godiva2]>>
 
 === OWSLib (python client) example:
 

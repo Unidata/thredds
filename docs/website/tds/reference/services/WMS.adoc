@@ -60,7 +60,7 @@ separate search services (e.g., OGC catalog services).
 
 Additional WMS configuration options can be set in the
 `threddsConfig.xml` file. More details on these options are available
-link:ThreddsConfigXMLFile.adoc#WMS[here].
+<<ThreddsConfigXMLFile.adoc#WMS,here>>.
 
 Further WMS configuration properties are set in the `wmsConfig.xml`
 file. These properties are mainly related with styling of WMS images.
@@ -82,7 +82,7 @@ have to copy the default file from
 
 The number of CRS listed in the WMS GetCapabilities documents has been
 reduced between TDS 4.1 and 4.2. More information is available at
-link:../faq.adoc#wmsLimitedCRS[this FAQ entry].
+<<../faq.adoc#wmsLimitedCRS,this FAQ entry>>.
 
 == Add a JVM Option to Avoid an X Server Bug
 
@@ -138,7 +138,7 @@ java.util.prefs code will use the given directory to persist the system
 (as opposed to user) preferences.
 
 More information on the issue can be found on the
-link:../faq.adoc#javaUtilPrefs[TDS FAQ page].
+<<../faq.adoc#javaUtilPrefs,TDS FAQ page>>.
 
 == Serving Remote Datasets
 
@@ -166,7 +166,7 @@ http://servername:8080/thredds/wms?dataset=datasetURL
 The URL must be a dataset readable by the NetCDF-Java library, typically
 an OPeNDAP dataset on another server. It must have gridded data with
 identifiable coordinate systems (see
-link:#Which_files_can_be_served_through_the[above]). For example, an
+<<#Which_files_can_be_served_through_the,above>>). For example, an
 OPeNDAP URL might be
 
 ----------------------------------------------------------------------------

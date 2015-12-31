@@ -16,7 +16,7 @@ In **$\{tomcat}/content/thredds/threddsConfig.xml**, add or change the
 -----------------------------
 
 This will make all indices be written to **/my/directory/**.
-link:../ThreddsConfigXMLFile.adoc#GribIndexWriting[Details].
+<<../ThreddsConfigXMLFile.adoc#GribIndexWriting,Details>>.
 
 To do it from your Java program:
 
@@ -57,7 +57,7 @@ is built.
 given time unit.
 
 There are a number of requirements that you must understand for each
-type. link:Partitions.adoc[Details].
+type. <<Partitions.adoc,Details>>.
 
 '''''
 

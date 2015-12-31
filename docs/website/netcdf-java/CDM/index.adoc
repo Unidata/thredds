@@ -13,21 +13,21 @@ http://www.opendap.org/[OPeNDAP], and
 http://www.hdfgroup.org/products/hdf5/[HDF5] data models to create a
 common API for many types of scientific data. The NetCDF Java library is
 an implementation of the CDM which can read many
-link:../reference/formats/FileTypes.adoc[file formats] besides netCDF.
+<<../reference/formats/FileTypes.adoc,file formats>> besides netCDF.
 We call these *_CDM files,_* a shorthand for __files that can be read by
 the NetCDF Java library and accessed through the CDM data model__.
 
 The Common Data Model has three layers, which build on top of each other
 to add successively richer semantics:
 
-1.  The *_link:#dataAccess[data access layer]_*, also know as the
+1.  The *_<<#dataAccess,data access layer>>_*, also know as the
 *_syntactic layer,_* handles data reading and writing.
-2.  The *_link:#CoordSys[coordinate system]_* layer identifies the
+2.  The *_<<#CoordSys,coordinate system>>_* layer identifies the
 coordinates of the data arrays. Coordinates are a completely general
 concept for scientific data; we also identify specialized
 *_georeferencing coordinate systems_*, which are important to the
 Earth Science community.
-3.  The *_link:#ScientificFeatureTypes[scientific feature type]_* layer
+3.  The *_<<#ScientificFeatureTypes,scientific feature type>>_* layer
 identifies specific types of data, such as __grids__, __radial__, and
 __point data__, adding specialized methods for each kind of data.
 
@@ -58,7 +58,7 @@ _shared_ among Variables, which provides a simple yet powerful way of
 associating Variables. When a Dimension is shared, it has a unique name
 within the Group. If __unlimited__, a Dimension’s length may increase.
 If _variableLength_, then the actual length is data dependent, and can
-only be found by reading the data. A link:VariableLengthData.adoc[variable length Dimension] cannot be
+only be found by reading the data. A <<VariableLengthData.adoc,variable length Dimension>> cannot be
 shared or unlimited, and can only be the innermost (fastest varying) dimension.
 
 An *Attribute* has a name and a value, and associates arbitrary metadata
@@ -93,7 +93,7 @@ An *ArrayStructure* is a subclass of Array that holds the data for
 Structure Variables. Essentially it is an array of *StructureData*
 objects.
 
-*link:DataType.adoc[DataType]* describes the possible types of data:
+*<<DataType.adoc,DataType>>* describes the possible types of data:
 
 * The *primitive numeric* types are *_byte, short, int, long, float_* and
 *_double_*. The integer types (8-bit byte, 16-bit short, 32-bit int,
@@ -159,7 +159,7 @@ a _EnumTypedef_ which holds the (enum, String) map.
 ** A NetCDF-4 _Opaque_ type is a CDM _opaque_ type, but the length of
 the data cannot be found until you read the variable.
 
-See link:Netcdf4.adoc[here] for detailed mapping between the NetCDF-4
+See <<Netcdf4.adoc,here>> for detailed mapping between the NetCDF-4
 and CDM data models.
 
 === Comparision to OPeNDAP (DAP 2)
@@ -176,7 +176,7 @@ Grids, or between Arrays.
 * OPeNDAP Sequences map to CDM Sequences, but CDM does not support
 relational constraints at this layer.
 
-See link:Opendap.adoc[here] for more details on OPeNDAP processing.
+See <<Opendap.adoc,here>> for more details on OPeNDAP processing.
 
 === Comparision to HDF-5
 
@@ -225,7 +225,7 @@ A *_CoordinateAxis_* is a subtype of Variable, and is optionally classified acco
 A *_CoordinateTransform_* abstractly represents a transformation between
 CoordinateSystems, and  is either a *Projection* or a **Vertical Transform**.
 
-The link:CoordinateAttributes.adoc#AxisTypes[*_AxisType_*] enumerations are specific to the case of georeferencing
+The <<CoordinateAttributes.adoc#AxisTypes,*_AxisType_*>> enumerations are specific to the case of georeferencing
 coordinate systems. _Time_ refers to the real date/time of the dataset.
 _Latitude_ and _Longitude_ identify standard horizontal coordinates.
 _Height_ and _Pressure_ identify the vertical coordinate. _GeoX_ and
@@ -247,7 +247,7 @@ This allows _shared Dimension joins_ between data and coordinate Variables. This
 type _char_ with a non-shared dimension representing the string length.
 .. *CF Discrete Sampling Geometry* representations of point data, allows explicit *_joins_*
 that relax the rules for implicit _shared Dimension joins_.
-See link:../reference/FeatureDatasets/CFpointImplement.adoc[CF point data]
+See <<../reference/FeatureDatasets/CFpointImplement.adoc,CF point data>>
 .  *Structures and nested Structures*: When a variable is part of a
 Structure, the dimensions used by the parent Structure(s) are considered
 to be part of the nested Variable. Therefore, all dimensions used by the
@@ -285,7 +285,7 @@ Structure {
 } station(*)
 ----
 
-Also see: link:CoordinateAttributes.adoc#CoordSysBuilder[Coordinate System Building].
+Also see: <<CoordinateAttributes.adoc#CoordSysBuilder,Coordinate System Building>>.
 
 === Mathematical formalism for Coordinate Systems
 
@@ -335,7 +335,7 @@ common case is that all the Variables in a dataset use the same Coordinate Syste
 
 The *ucar.nc2.dataset* layer reads various Conventions and extracts the Coordinate Systems using the *CoordSysBuilder* framework.
 We often use a set of internal attributes called the
-link:../reference/CoordinateAttributes.adoc[underscore Coordinate]
+<<../reference/CoordinateAttributes.adoc,underscore Coordinate>>
 attributes as a way to standardize the Coordinate System infomation.
 Although these work when used with the Netcdf-Java library, we do not recommend them as a substitute for conventions such as CF.
 
@@ -360,11 +360,11 @@ With these Feature Types objects, mapping into data models like ISO/OGC becomes 
 
 Feature Type definitions, APIs, and encodings are still under development, so applications using these must be able to evolve along with the APIs.
 
-* link:../reference/FeatureDatasets/Overview.adoc[FeatureDataset APIs]
-* link:../reference/FeatureDatasets/PointFeatures.adoc[Point Feature APIs]
+* <<../reference/FeatureDatasets/Overview.adoc,FeatureDataset APIs>>
+* <<../reference/FeatureDatasets/PointFeatures.adoc,Point Feature APIs>>
 * {cf}#discrete-sampling-geometries[CF Discrete Sampling Geometries Conventions]
-* CDM Feature Types _draft_ link:CDMfeatures.doc[doc]
-* CDM Point Feature Types _draft_ link:CDMpoints.doc[doc]
+* CDM Feature Types _draft_ <<CDMfeatures.doc,doc>>
+* CDM Point Feature Types _draft_ <<CDMpoints.doc,doc>>
 
 '''''
 

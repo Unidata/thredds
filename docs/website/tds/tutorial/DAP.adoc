@@ -22,16 +22,16 @@ http://remotetest.unidata.ucar.edu/thredds
 
 == What this tutorial covers
 
-* link:#ClientServer[Client Server Architecture]
-* link:#TDSClientServer[TDS as Client-Server]
-* link:#Opendap[What are OPenDAP and DAP]
-* link:#URLS[Specifying a DAP Data Source]
-* link:#Exercise1[Exercise: Examine A Dataset in Three Ways]
-* link:#Response[Components of a DAP Response]
+* <<#ClientServer,Client Server Architecture>>
+* <<#TDSClientServer,TDS as Client-Server>>
+* <<#Opendap,What are OPenDAP and DAP>>
+* <<#URLS,Specifying a DAP Data Source>>
+* <<#Exercise1,Exercise: Examine A Dataset in Three Ways>>
+* <<#Response,Components of a DAP Response>>
 * link:#Exercise2[Exercise: Examine The Components of DAP2 and DAP4
 Responses]
-* link:#DAP2Constraints[DAP2 Constraints]
-* link:#DAP4Constraints[DAP4 Constraints]
+* <<#DAP2Constraints,DAP2 Constraints>>
+* <<#DAP4Constraints,DAP4 Constraints>>
 
 == Client Server Architecture
 

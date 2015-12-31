@@ -1,12 +1,12 @@
 CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using
-link:NcStream.adoc[ncstream] as the on-the-wire protocol.
+<<NcStream.adoc,ncstream>> as the on-the-wire protocol.
 It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are two levels of services:
 
-.  *link:CdmRemote.adoc[CDM Remote]* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
+.  *<<CdmRemote.adoc,CDM Remote>>* provides index subsetting on remote CDM datasets, with the same functionality that *NetcdfFile* provides for
 CDM local datasets and *DODSNetcdfFile* provides for remote OPeNDAP datasets. CdmRemote supports the full CDM data model.
-.  *link:CdmrFeatureGrid.adoc[CDM Remote Feature for Coverage/Grid Data]* provides coordinate subsetting on remote CDM Coverage (Grid) Feature Datasets, with similar functionality to WCS and
-Unidata's link:{tdsDocs}/NetcdfSubsetServiceReference.adoc[NetCDF Subset Service] (NCSS).
-.  *link:CdmrFeaturePoint.adoc[CDM Remote Feature for Point Data]* provides coordinate subsetting on remote CDM Point (DSG) Feature Datasets, with similar functionality to
-Unidata's link:{tdsDocs}/NetcdfSubsetServiceReference.adoc[NetCDF Subset Service] (NCSS).
+.  *<<CdmrFeatureGrid.adoc,CDM Remote Feature for Coverage/Grid Data>>* provides coordinate subsetting on remote CDM Coverage (Grid) Feature Datasets, with similar functionality to WCS and
+Unidata's <<{tdsDocs}/NetcdfSubsetServiceReference.adoc,NetCDF Subset Service>> (NCSS).
+.  *<<CdmrFeaturePoint.adoc,CDM Remote Feature for Point Data>>* provides coordinate subsetting on remote CDM Point (DSG) Feature Datasets, with similar functionality to
+Unidata's <<{tdsDocs}/NetcdfSubsetServiceReference.adoc,NetCDF Subset Service>> (NCSS).
 
 This API and protocol is available in TDS/CDM version >= 5.0.

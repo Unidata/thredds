@@ -22,7 +22,7 @@ Make sure you have access logging enabled.
 
 * Open `${tomcat_home}/conf/server.xml` and uncomment the
 `AccessLogValve` in the `Host`. Modify the `pattern` attribute as per
-these link:TDSMonitoringAndDebugging.adoc#access[instructions].
+these <<TDSMonitoringAndDebugging.adoc#access,instructions>>.
 * http://localhost:8080/thredds/catalog.html[Browse your installation of
 the TDS] to generate some entries in the access logs.
 
@@ -83,7 +83,7 @@ image:images/httpChallenge.png[image]
 4.  Type in your username and password.
 5.  You should see messages showing up in the text area:
 
-link:images/tdsMonitorDownload.png[image:images/tdsMonitorDownload_small.png[image]]
+<<images/tdsMonitorDownload.png[image:images/tdsMonitorDownload_small.png,image]>>
 
 The files will be stored in `$USER_HOME/tdsMonitor/localhost%3A8080`.
 For production servers, you will need to manage the large number of logs
@@ -100,7 +100,7 @@ make the `Start Date` and `End Date` fields get filled out. Press the
 `get logs` button image:images/getlogsButt.png[image], and the logs in
 the selected time range are read in:
 
-link:images/AccessLogs.png[image:images/AccessLogs_small.png[image]]
+<<images/AccessLogs.png[image:images/AccessLogs_small.png,image]>>
 
 Each log entry in the access logs is a row in the table. You can
 rearrange the columns by dragging on the column headers. You can sort by
@@ -111,7 +111,7 @@ Select a row, and right click to bring up the context menu. Choose
 and the URL will be resent to the server, and the results shown in the
 text area:
 
-link:images/UrlDump.png[image:images/UrlDump_small.png[image]]
+<<images/UrlDump.png[image:images/UrlDump_small.png,image]>>
 
 Go to the User tab, and reverse sort by count (click on `count` column
 header twice), to see a summary of log access records by IP address.
@@ -119,7 +119,7 @@ Press the lookup DNS button image:images/dns.png[image] to do reverse
 DNS lookup on the IP address (this is very slow, and you have to scroll
 the table to force a refresh).
 
-link:images/Users.png[image:images/Users_small.png[image]]
+<<images/Users.png[image:images/Users_small.png,image]>>
 
 Select a user, then right click to get the context menu. Select ``User
 requests'', which takes you back to the LogTable screen, but only shows
@@ -139,7 +139,7 @@ You should refresh it whenever the data roots change on your server.
 
 Go to the TimeSeries tab:
 
-link:images/timeSeries.png[image:images/timeSeries_small.png[image]]
+<<images/timeSeries.png[image:images/timeSeries_small.png,image]>>
 
 This gives a summary of activity on your server for the selected time
 period, using 5 minute intervals. The total number of requests, total
@@ -156,13 +156,13 @@ make the `Start Date` and `End Date` fields get filled out. Press the
 `get logs` button image:images/getlogsButt.png[image], and the logs in
 the selected time range are read in:
 
-link:images/ServletLogs.png[image:images/ServletLogs_small.png[image]]
+<<images/ServletLogs.png[image:images/ServletLogs_small.png,image]>>
 
 The LogTable shows the raw data. You almost always want to look just at
 the Merged logs, by choosing the `Merge` tab. For illustration purposes,
 we have switched to a larger set of logs from motherlode server:
 
-link:images/Merge.png[image:images/Merge_small.png[image]]
+<<images/Merge.png[image:images/Merge_small.png,image]>>
 
 The top table shows groups of logs which are continuous in their
 `reqSeq` numbers, so each group indicates that the TDS web application
@@ -174,12 +174,12 @@ As with the access log tables, you can rearrange and sort on the
 columns. Reverse sort on the `extra` column (by clicking on it twice) to
 show the logs that have extra information. In this example:
 
-link:images/extra.png[image:images/extra_small.png[image]]
+<<images/extra.png[image:images/extra_small.png,image]>>
 
 Select one of the rows with extra information, and click on it to bring
 up the information about that request:
 
-link:images/extraInfo.png[image:images/extraInfo_small.png[image]]
+<<images/extraInfo.png[image:images/extraInfo_small.png,image]>>
 
 This shows all the information about request 294. The first line shows
 the information when the request first arrived at the server:

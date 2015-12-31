@@ -23,7 +23,7 @@ https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCD
 application, use the NcML tab to open a NetCDF dataset, and the NcML will be displayed.
 You can edit and then save the NcML with the _Save NcML_ button.
 2.  In the NetCDF-Java library, use *NetcdfFile.writeNcML()* or *NcMLWriter().writeXML()*
-3.  Use the NetCDF-Java library link:../reference/manPages.adoc#ncdump[ncdump application], eg:
+3.  Use the NetCDF-Java library <<../reference/manPages.adoc#ncdump,ncdump application>>, eg:
 +
 -------------------------------------------------------------------------
  java -classpath netcdfAll.jar ucar.nc2.NCdumpW <NetCDF-3 filename> -ncml
@@ -53,9 +53,9 @@ modifications in it.
 .  Using a text or XML editor, create the NcML file with an "xml" or
 "ncml" file extension. Reference the existing file using the
 _location_ attribute, and add, change or delete metadata in the NcML as
-in this link:Tutorial.adoc#modify[example].
+in this <<Tutorial.adoc#modify,example>>.
 .  Write the new file as a netCDF-3 format file:
-..  Use the NetCDF-Java library link:../reference/manPages.adoc#nccopy[nccopy application] to write the new file, eg:
+..  Use the NetCDF-Java library <<../reference/manPages.adoc#nccopy,nccopy application>> to write the new file, eg:
 +
 ------------------------------------------------------------------------------------------------------
 java -Xmx1g -classpath netcdfAll-4.3.jar ucar.nc2.dataset.NetcdfDataset -in myFile.ncml -out myFile.nc
@@ -71,10 +71,10 @@ A more advanced use is to modify existing NetCDF files, as well as to
 create "virtual" NetCDF datasets, for example through aggregation. In
 that case, you’ll have to read more:
 
-* link:Tutorial.adoc[Tutorial]
-* link:Aggregation.adoc[Aggregation]
-* link:Cookbook.adoc[Cookbook Examples]
-* link:AnnotatedSchema4.adoc[Annotated Schema for Netcdf-Java 4]
+* <<Tutorial.adoc,Tutorial>>
+* <<Aggregation.adoc,Aggregation>>
+* <<Cookbook.adoc,Cookbook Examples>>
+* <<AnnotatedSchema4.adoc,Annotated Schema for Netcdf-Java 4>>
 
 == *Acknowledgments and History*
 
@@ -97,7 +97,7 @@ georeferencing coordinate systems
 3.  *_NcML Dataset_* extended NcML Core Schema to use NcML to define a netCDF file, similar to the *ncgen* command line tool,
 as well as to redefine, aggregate, and subset existing netCDF files.
 
-*_NcML Core Schema_* and *_NcML Dataset_* have now been combined into a single _link:AnnotatedSchema4.adoc[NcML Schema]_
+*_NcML Core Schema_* and *_NcML Dataset_* have now been combined into a single _<<AnnotatedSchema4.adoc,NcML Schema>>_
 
 *_NcML Coordinate System_* is now superceded by *_NcML-GML_*.
 http://www.ogcnetwork.net/node/214[NcML-GML] is an extension of ncML core schema, based on GML grammar.

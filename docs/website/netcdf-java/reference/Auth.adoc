@@ -36,9 +36,9 @@ approach is to provide various kinds of authorization credentials
 (broadly construed) to servers by clients.
 
 Before reading this document, the reader should have read the
-link:./Session.html[Session.adoc] and the HTTPauthentication.html
+<<./Session.html,Session.adoc>> and the HTTPauthentication.html
 documents to understand the context in which the authorization
-mechanisms operate. The section link:#Status[Status] should also be read
+mechanisms operate. The section <<#Status,Status>> should also be read
 to get important information about the current state of this code.
 
 The authorization schemes currently supported are as follows.
@@ -91,7 +91,7 @@ ANY_URL).
 3.  creds of type
 __org.apache.commons.httpclient.auth.CredentialsProvider__.
 
-The _HTTPAuthStore_ link:#HTTPAuthStore.API[API] itself provides
+The _HTTPAuthStore_ <<#HTTPAuthStore.API,API>> itself provides
 operations to insert and delete rows, and to search for rows matching
 specified criteria.
 
@@ -102,7 +102,7 @@ specified criteria.
 Note that any typical implementation of the _CredentialsProvider_
 interface may be used for an _HTTPAuthStore_ database row. As a special
 case and when the scheme is SSL, then the user should use the provided
-_HTTPSSLProvider_ link:#HTTPSSLProvider.API[class] for this field. Its
+_HTTPSSLProvider_ <<#HTTPSSLProvider.API,class>> for this field. Its
 constructor requires arguments for the client side keystore plus
 password and the client side truststore plus password. The keystore and
 truststore arguments are absolute paths.
@@ -114,7 +114,7 @@ self-signed certificates).
 === HTTPAuthScheme
 
 The scheme field is assumed to store an instance of the enum type
-link:#HTTPAuthScheme.API[HTTPAuthScheme]. The elements of the enum are
+<<#HTTPAuthScheme.API,HTTPAuthScheme>>. The elements of the enum are
 as follows:
 
 * BASIC
@@ -222,7 +222,7 @@ Comparison is by ==; wildcard is specified by ANY_SCHEME.
 a|
 URL
 
-Comparison is as defined link:#url.match[above].
+Comparison is as defined <<#url.match,above>>.
 
 |========================================================
 

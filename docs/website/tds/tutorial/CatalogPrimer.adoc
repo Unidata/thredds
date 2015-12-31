@@ -8,7 +8,7 @@
 
 === Reference documentation
 
-The link:../catalog/InvCatalogSpec.adoc[catalog specification] is the
+The <<../catalog/InvCatalogSpec.adoc,catalog specification>> is the
 best complete description of THREDDS catalogs.
 
 A _*THREDDS Catalog*_ describes what datasets a server has, and how they
@@ -20,15 +20,15 @@ are maintaining a TDS __server__, you will also need to add other
 information to the catalog, which is used only by the server and is not
 seen by the client.
 
-* link:#Basics[Basic Example]
-* link:#Constructing_an_access_URL[Constructing an access URL]
-* link:#Nested_datasets[Nested datasets]
-* link:#Describing_datasets[Describing datasets]
-* link:#Sharing_metadata[Sharing metadata]
-* link:#Catalog_references[Catalog references]
-* link:#Compound_service_elements[Compound `service` elements]
-* link:#XML_validation[XML validation]
-* link:#Using_ToolsUI[Using ToolsUI to view catalogs]
+* <<#Basics,Basic Example>>
+* <<#Constructing_an_access_URL,Constructing an access URL>>
+* <<#Nested_datasets,Nested datasets>>
+* <<#Describing_datasets,Describing datasets>>
+* <<#Sharing_metadata,Sharing metadata>>
+* <<#Catalog_references,Catalog references>>
+* <<#Compound_service_elements,Compound `service` elements>>
+* <<#XML_validation,XML validation>>
+* <<#Using_ToolsUI,Using ToolsUI to view catalogs>>
 
 == Basic Example
 
@@ -157,7 +157,7 @@ You can add any level of nesting you want, e.g.:
 === Reference documentation
 
 A complete listing of available properties can be found in the
-link:../catalog/InvCatalogSpec.adoc#dataset[catalog specification].
+<<../catalog/InvCatalogSpec.adoc#dataset,catalog specification>>.
 
 So far, we’ve used the `name`, `serviceName`, and `urlPath` attributes
 to tell THREDDS how to treat our datasets. However, there are a lot of
@@ -191,7 +191,7 @@ is especially important to add the `ID` attribute to your datasets.
 === Reference documentation
 
 A complete listing of necessary attributes can be found
-link:../reference/DLexport.adoc[here].
+<<../reference/DLexport.adoc,here>>.
 
 === Exporting THREDDS datasets to digital libraries
 
@@ -313,7 +313,7 @@ stand-alone in that sense.
 === Reference documentation
 
 A complete listing of recognized service types can be found in the
-link:../catalog/InvCatalogSpec.adoc#serviceTypes[catalog specification].
+<<../catalog/InvCatalogSpec.adoc#serviceTypes,catalog specification>>.
 
 Datasets can be made available through more than one access method by
 defining and then referencing a *compound* `service` element. The
@@ -388,7 +388,7 @@ location like so:
 The schema referenced in the example can be found
 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd[here].
 However, you’ll probably want to study the
-link:../catalog/InvCatalogSpec.adoc[catalog specification] instead, as
+<<../catalog/InvCatalogSpec.adoc,catalog specification>> instead, as
 it is much more digestable.
 
 * The first bolded line declares the schema-instance namespace. Just
@@ -416,7 +416,7 @@ this is an XML document, not an HTML page!__). The catalog will be
 displayed in a tree widget on the left, and the selected dataset will be
 shown on the right, for example:
 
-link:images/TUIthreddsTab.png[image:images/TUIthreddsTab.png[ToolsUI]]
+<<images/TUIthreddsTab.png[image:images/TUIthreddsTab.png,ToolsUI]>>
 
 Once you get your catalog working in a TDS, you can enter the TDS URL
 directly, and view the datasets with the *Open* buttons.
