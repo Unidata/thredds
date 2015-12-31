@@ -45,16 +45,18 @@ import java.util.*;
  * @since 1/4/14
  */
 public class CoordinateSharer<T> {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateSharer.class);
+  // static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateSharer.class);
 
   //////////////////////////////////////////
   boolean isRuntimeUnion;
+  org.slf4j.Logger logger;
 
   /**
    * @param isRuntimeUnion if true, make union of runtimes, otherwise keep separate runtimes if distinct
    */
-  public CoordinateSharer(boolean isRuntimeUnion) {
+  public CoordinateSharer(boolean isRuntimeUnion, org.slf4j.Logger logger) {
     this.isRuntimeUnion = false; // isRuntimeUnion; LOOK turn this off until we can fix it
+    this.logger = logger;
   }
 
   Set<Coordinate> runtimeBuilders = new HashSet<>();
@@ -130,10 +132,10 @@ public class CoordinateSharer<T> {
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           if (isRuntimeUnion) {               // make union of all coordsz
             if (time2D.isTimeInterval()) {
-              if (timeIntv2DUnionizer == null) timeIntv2DUnionizer = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), true);
+              if (timeIntv2DUnionizer == null) timeIntv2DUnionizer = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), true, logger);
               timeIntv2DUnionizer.addAll(time2D);
             } else {
-              if (time2DUnionizer == null) time2DUnionizer = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), true);
+              if (time2DUnionizer == null) time2DUnionizer = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), true, logger);
               time2DUnionizer.addAll(time2D);
             }
             //if (time2DAllBuilder == null)     // boolean isTimeInterval, Grib2Customizer cust, CalendarPeriod timeUnit, int code
@@ -184,7 +186,7 @@ public class CoordinateSharer<T> {
       HashSet<CoordinateTime2D> coord2Dset = new HashSet<>();
       for (Coordinate coord : time2DBuilders) {
         CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-        CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(coord2D.isTimeInterval(), coord2D.getTimeUnit(), coord2D.getCode(), true);
+        CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(coord2D.isTimeInterval(), coord2D.getTimeUnit(), coord2D.getCode(), true, logger);
         unionizer.addAll(coord2D);
         unionizer.finish();
         CoordinateTime2D result = (CoordinateTime2D) unionizer.getCoordinate();  // this tests for orthogonal and regular

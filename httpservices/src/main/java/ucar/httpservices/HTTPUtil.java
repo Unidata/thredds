@@ -77,9 +77,9 @@ abstract public class HTTPUtil
             response = null;
         }
 
-        synchronized public HttpResponse getRequest()
+        synchronized public HttpRequest getRequest()
         {
-            return this.response;
+            return this.request;
         }
 
         synchronized public HttpResponse getResponse()
@@ -91,6 +91,23 @@ abstract public class HTTPUtil
         {
             return this.context;
         }
+
+	synchronized public HttpEntity getRequestEntity()
+        {
+	    if(this.request != null
+		&& this.request instanceof HttpEntityEnclosingRequest) {
+		return ((HttpEntityEnclosingRequest)this.request).getEntity();
+	    } else
+	        return null;
+	}
+
+	synchronized public HttpEntity getResponseEntity()
+	{
+	    if(this.response != null) {
+		return this.response.getEntity();
+	    } else
+	        return null;
+	}
 
         synchronized public List<Header> getHeaders(String key)
         {
@@ -153,22 +170,20 @@ abstract public class HTTPUtil
     static public class InterceptRequest extends InterceptCommon
             implements HttpRequestInterceptor
     {
-        HttpRequest req = null;
-
         synchronized public void
         process(HttpRequest request, HttpContext context)
                 throws HttpException, IOException
         {
-            this.req = request;
+            this.request = request;
             this.context = context;
             if(this.printheaders)
                 printHeaders();
-            else if(this.req != null) {
-                Header[] hdrs = this.req.getAllHeaders();
+            else if(this.request != null) {
+                Header[] hdrs = this.request.getAllHeaders();
                 for(int i = 0; i < hdrs.length; i++) {
                     headers.add(hdrs[i]);
                 }
-            }
+	    }
         }
     }
 

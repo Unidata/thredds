@@ -17,7 +17,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import thredds.client.catalog.ServiceType;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
@@ -103,12 +105,13 @@ public class TestNcmlWriteAndCompareShared {
   boolean showFiles = true;
   boolean compareData = false;
 
-  public TestNcmlWriteAndCompareShared(String location, boolean compareData) {
-    this.location = StringUtil2.replace(location, '\\', "/");
+  public TestNcmlWriteAndCompareShared(String location, boolean compareData) throws IOException {
+    this.durl = DatasetUrl.findDatasetUrl(location);
     this.compareData = compareData;
   }
 
-  String location;
+  //String location;
+  DatasetUrl durl;
 
   int fail = 0;
   int success = 0;
@@ -127,21 +130,21 @@ public class TestNcmlWriteAndCompareShared {
 
     if (showFiles) {
       System.out.println("-----------");
-      System.out.println("  input filename= " + location);
+      System.out.println("  input filename= " + durl.trueurl);
     }
 
     NetcdfFile org;
     if (openDataset)
-      org = NetcdfDataset.openDataset(location, false, null);
+      org = NetcdfDataset.openDataset(durl.trueurl, false, null);
     else
-      org  = NetcdfDataset.acquireFile(location, null);
+      org  = NetcdfDataset.acquireFile(durl, null);
 
     if (useRecords)
       org.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // create a file and write it out
-    int pos = location.lastIndexOf("/");
-    String filenameTmp = location.substring(pos + 1);
+    int pos = durl.trueurl.lastIndexOf("/");
+    String filenameTmp = durl.trueurl.substring(pos + 1);
     String ncmlOut = TestDir.temporaryLocalDataDir + filenameTmp + ".ncml";
     if (showFiles) System.out.println(" output filename= " + ncmlOut);
     try {
@@ -165,7 +168,7 @@ public class TestNcmlWriteAndCompareShared {
     if (openDataset)
       copy = NetcdfDataset.openDataset(ncmlOut, false, null);
     else
-      copy = NetcdfDataset.acquireFile(ncmlOut, null);
+      copy = NetcdfDataset.acquireFile(DatasetUrl.findDatasetUrl(ncmlOut), null);
 
     if (useRecords)
       copy.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -176,13 +179,13 @@ public class TestNcmlWriteAndCompareShared {
       boolean ok = mind.compare(org, copy, new CompareNetcdf2.Netcdf4ObjectFilter(), false, false, compareData);
       if (!ok) {
         fail++;
-        System.out.printf("--Compare %s, useRecords=%s explicit=%s openDataset=%s compareData=%s %n", location, useRecords, explicit, openDataset, compareData);
+        System.out.printf("--Compare %s, useRecords=%s explicit=%s openDataset=%s compareData=%s %n", durl.trueurl, useRecords, explicit, openDataset, compareData);
         System.out.printf("  %s%n", f);
       } else {
-        System.out.printf("--Compare %s is OK (useRecords=%s explicit=%s openDataset=%s compareData=%s)%n", location, useRecords, explicit, openDataset, compareData);
+        System.out.printf("--Compare %s is OK (useRecords=%s explicit=%s openDataset=%s compareData=%s)%n", durl.trueurl, useRecords, explicit, openDataset, compareData);
         success++;
       }
-      Assert.assertTrue(location, ok);
+      Assert.assertTrue(durl.trueurl, ok);
     } finally {
       org.close();
       copy.close();

@@ -305,16 +305,16 @@ public class CatalogXmlWriter {
     if (gc.getUpDownRange() != null)
       writeGeospatialRange(elem, new Element("updown", Catalog.defNS), gc.getUpDownRange());
 
-    // serialize isGlobal
+    /* serialize isGlobal
     java.util.List<ThreddsMetadata.Vocab> names = gc.getNames();
     ThreddsMetadata.Vocab global = new ThreddsMetadata.Vocab("global", null);
     if (gc.isGlobal() && !names.contains(global)) {
       names.add(global);
     } else if (!gc.isGlobal() && names.contains(global)) {
       names.remove(global);
-    }
+    } */
 
-    for (ThreddsMetadata.Vocab name : names) {
+    for (ThreddsMetadata.Vocab name : gc.getNames()) {
       elem.addContent(writeControlledVocabulary(name, "name"));
     }
 

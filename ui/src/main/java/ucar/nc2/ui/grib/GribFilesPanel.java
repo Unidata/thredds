@@ -431,7 +431,7 @@ public class GribFilesPanel extends JPanel {
 
     void showComplete(Formatter f) {
       try {
-        Grib2CollectionPanel.showCompleteGribRecord(f, m.getPath(), first, tables);
+        Grib2Show.showCompleteGribRecord(f, m.getPath(), first, tables);
       } catch (IOException e) {
         e.printStackTrace();
         StringWriter sw = new StringWriter(10000);

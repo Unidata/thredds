@@ -262,8 +262,7 @@ public class DatasetUrl {
 
 
   /*
- * Attempt to map a lead url protocol url to a service type
- * (see thredds.catalog.ServiceType).
+ * Attempt to map a leading url protocol url to a service type (see thredds.catalog.ServiceType).
  * Possible service types should include at least the following.
  * <ol>
  * <li> OPENDAP (DAP2 protocol)
@@ -294,6 +293,8 @@ public class DatasetUrl {
     return null;
   }
 
+  //////////////////////////////////////////////////////////////////
+
   /**
    * If the URL alone is not sufficient to disambiguate the location,
    * then this method will attempt to do a specific kind of request on
@@ -307,19 +308,50 @@ public class DatasetUrl {
    */
   @Urlencoded
   static private ServiceType disambiguateHttp(String location) throws IOException {
-    // aggregation cache files are of form
-    // http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis2.dailyavgs/pressure/air.1981.nc#320092027
+    boolean checkDap2 = false, checkDap4 = false, checkCdmr = false;
 
-    ServiceType result = checkIfDods(location); // dods
-    if (result != null)
-      return result;
+    // some TDS specific tests
+    if (location.contains("cdmremote")) {
+      ServiceType result = checkIfCdmr(location);
+      if (result != null) return result;
+      checkCdmr = true;
+    }
+    if (location.contains("dodsC")) {
+      ServiceType result = checkIfDods(location);
+      if (result != null) return result;
+      checkDap2 = true;
+    }
 
-    result = checkIfDap4(location); // dap4
-    if (result != null)
-      return result;
+    if (location.contains("dap4")) {
+      ServiceType result = checkIfDap4(location);
+      if (result != null) return result;
+      checkDap4 = true;
+    }
 
-    // cdmremote
-    try (HTTPMethod method = HTTPFactory.Head(location+"?req=header")) {
+    if (!checkDap2) {
+      ServiceType result = checkIfDods(location);
+      if (result != null)
+        return result;
+    }
+
+    if (!checkDap4) {
+      ServiceType result = checkIfDap4(location);
+      if (result != null)
+        return result;
+    }
+
+    if (!checkCdmr) {
+      ServiceType result = checkIfCdmr(location);
+      if (result != null)
+        return result;
+    }
+    return null;
+  }
+
+  // cdmremote
+  static private ServiceType checkIfCdmr(String location) throws IOException {
+
+    try (HTTPMethod method = HTTPFactory.Head(location + "?req=header")) {
       int statusCode = method.execute();
       if (statusCode >= 300) {
         if (statusCode == 401)
@@ -334,9 +366,8 @@ public class DatasetUrl {
         if (v.equalsIgnoreCase("ncstream"))
           return ServiceType.CdmRemote;
       }
-
-      return null;
     }
+    return null;
   }
 
   // not sure what other opendap servers do, so fall back on check for dds

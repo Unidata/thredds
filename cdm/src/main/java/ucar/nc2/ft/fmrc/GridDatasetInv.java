@@ -37,6 +37,7 @@ import thredds.inventory.CollectionManagerAbstract;
 import thredds.inventory.MCollection;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -120,7 +121,7 @@ public class GridDatasetInv {
         gds = GridDataset.open( mfile.getPath());
 
       } else {
-        NetcdfFile nc = NetcdfDataset.acquireFile(mfile.getPath(), null);
+        NetcdfFile nc = NetcdfDataset.acquireFile(new DatasetUrl(null, mfile.getPath()), null);
         NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
         ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
         gds = new GridDataset(ncd);
@@ -159,7 +160,7 @@ public class GridDatasetInv {
     this.runDate = runDate;
 
     NetcdfFile ncfile = gds.getNetcdfFile();
-    if (this.runDate == null) {
+    if (ncfile != null && this.runDate == null) {
       runTimeString = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelBaseDate, null);
       if (runTimeString == null)
         runTimeString = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);

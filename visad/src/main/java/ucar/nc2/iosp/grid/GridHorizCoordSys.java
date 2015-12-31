@@ -412,7 +412,7 @@ public class GridHorizCoordSys {
     double endLat = gds.getDouble(GridDefRecord.LA2);
 
     int nlats = (int) (2 * np);
-    GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
+    GaussianLatitudes gaussLats = GaussianLatitudes.factory(nlats);
 
     int bestStartIndex = 0, bestEndIndex = 0;
     double bestStartDiff = Double.MAX_VALUE;
@@ -433,7 +433,7 @@ public class GridHorizCoordSys {
     if (Math.abs(bestEndIndex - bestStartIndex + 1) != ny) {
       log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
       nlats = ny;
-      gaussLats = new GaussianLatitudes(nlats);
+      gaussLats = GaussianLatitudes.factory(nlats);
       bestStartIndex = 0;
       bestEndIndex = ny-1;
     }

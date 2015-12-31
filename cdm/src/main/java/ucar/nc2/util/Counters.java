@@ -67,20 +67,11 @@ public class Counters {
     return map.get(name);
   }
 
-  public void count(String name, Comparable value) {
+  // return true if its a new value, not seen before
+  public boolean count(String name, Comparable value) {
     CounterImpl counter = (CounterImpl) map.get(name);
-    counter.count(value);
+    return counter.count(value);
   }
-
-/*  public void countS(String name, String value) {
-     CounterOfString counter = (CounterOfString) map.get(name);
-     counter.count(value);
-   }
-
-  public void countO(String name, Comparable value) {
-     CounterOfObject counter = (CounterOfObject) map.get(name);
-     counter.count(value);
-   }  */
 
   public void addTo(Counters sub) {
     for (Counter subC : sub.counters) {
@@ -146,12 +137,15 @@ public class Counters {
       this.name = name;
     }
 
-    public void count(Comparable value) {
+    public boolean count(Comparable value) {
       Integer count = set.get(value);
-      if (count == null)
+      if (count == null) {
         set.put(value, 1);
-      else
+        return true;
+      } else {
         set.put(value, count + 1);
+        return false;
+      }
     }
 
     public void addTo(Counter sub) {

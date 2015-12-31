@@ -37,6 +37,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import thredds.client.catalog.ServiceType;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -99,7 +100,8 @@ public class TestVerticalTransformWithUnitsConversion {
 	@Test
 	public void shouldGetSameVerticalProfile() throws IOException, InvalidRangeException{
 		System.out.printf("Open %s%n", sameUnitsFile);
-		NetcdfDataset dsGood = NetcdfDataset.acquireDataset(sameUnitsFile, null);
+		DatasetUrl durl = DatasetUrl.findDatasetUrl(sameUnitsFile);
+		NetcdfDataset dsGood = NetcdfDataset.acquireDataset(durl, true, null);
 		GridDataset gdsGood = new GridDataset(dsGood);
 
 		GeoGrid gridGood =  gdsGood.findGridByName(var);		
@@ -108,7 +110,7 @@ public class TestVerticalTransformWithUnitsConversion {
 				
 		double[] dataGood = getVertTransformationForPoint(pp, 0, gridGood);
 		
-		NetcdfDataset dsDiff = NetcdfDataset.acquireDataset(sameUnitsFile, null);
+		NetcdfDataset dsDiff = NetcdfDataset.acquireDataset(durl, true, null);
 		GridDataset gdsDiff = new GridDataset(dsDiff);
 
 		GeoGrid gridDiff =  gdsDiff.findGridByName(var);		

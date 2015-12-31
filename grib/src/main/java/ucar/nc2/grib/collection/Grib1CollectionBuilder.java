@@ -319,7 +319,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       }
 
       // make shared coordinates across variables
-      CoordinateSharer<Grib1Record> sharify = new CoordinateSharer<>(config.unionRuntimeCoord);
+      CoordinateSharer<Grib1Record> sharify = new CoordinateSharer<>(config.unionRuntimeCoord, logger);
       for (VariableBag vb : gribvars) {
         sharify.addCoords(vb.coordND.getCoordinates());
       }

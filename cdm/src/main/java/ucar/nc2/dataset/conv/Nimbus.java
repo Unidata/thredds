@@ -63,6 +63,7 @@ public class Nimbus extends COARDSConvention {
     this.conventionName = "NCAR-RAF/nimbus";
   }
 
+  @Override
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     ds.addAttribute(null, new Attribute("cdm_data_type", ucar.nc2.constants.FeatureType.TRAJECTORY.name()));  // deprecated
     ds.addAttribute(null, new Attribute(CF.FEATURE_TYPE, ucar.nc2.constants.FeatureType.TRAJECTORY.name()));

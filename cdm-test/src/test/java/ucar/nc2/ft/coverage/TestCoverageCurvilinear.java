@@ -221,7 +221,7 @@ public class TestCoverageCurvilinear {
 
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(43.489, -8.5353), new LatLonPointImpl(43.371, -8.2420));
 
-      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.latlonBB, bbox);
+      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).setLatLonBoundingBox(bbox);
       GeoReferencedArray geo = coverage.readData(params);
       System.out.printf("geoCs shape=%s%n", Misc.showInts(geo.getCoordSysForData().getShape()));
 

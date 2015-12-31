@@ -399,7 +399,7 @@ public class TestStandardVar extends TestCase {
 
   public void readDoubleMissing() throws Exception {
     VariableDS v = null;
-    assert(null != (v = (VariableDS) dsRead.findVariable("m1")));
+    assert( null != (v = (VariableDS) dsRead.findVariable("m1")));
     assert( v.getDataType() == DataType.DOUBLE);
 
     Array A = v.read();
@@ -421,10 +421,12 @@ public class TestStandardVar extends TestCase {
   }
 
   public void testEnhanceDefer() throws IOException {
-    NetcdfDataset ncd = NetcdfDataset.openDataset(filename, EnumSet.of(NetcdfDataset.Enhance.ScaleMissing), -1, null, null);
+    DatasetUrl durl = new DatasetUrl(null, filename);
+
+    NetcdfDataset ncd = NetcdfDataset.openDataset(durl, EnumSet.of(NetcdfDataset.Enhance.ScaleMissing), -1, null, null);
     VariableDS enhancedVar = (VariableDS) ncd.findVariable("t1");
 
-    NetcdfDataset ncdefer = NetcdfDataset.openDataset(filename, EnumSet.of(NetcdfDataset.Enhance.ScaleMissingDefer), -1, null, null);
+    NetcdfDataset ncdefer = NetcdfDataset.openDataset(durl, EnumSet.of(NetcdfDataset.Enhance.ScaleMissingDefer), -1, null, null);
     VariableDS deferVar = (VariableDS) ncdefer.findVariable("t1");
 
     Array data = enhancedVar.read();

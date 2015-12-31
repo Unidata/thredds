@@ -502,8 +502,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     double dx = 0.0, dy = 0.0;
     if (gdsCoordSys.isLatLon()) {
-      dx = gdsCoordSys.dx;
-      dy = gdsCoordSys.dy;
+      dx = Math.abs(gdsCoordSys.dx);
+      dy = Math.abs(gdsCoordSys.dy);
     }
 
     return new ThreddsMetadata.GeospatialCoverage(llbb, null, dx, dy);

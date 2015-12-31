@@ -72,6 +72,17 @@ public class JmaTables extends Grib1Customizer {
     boolean isInterval = false;
 
     switch (timeRangeIndicator) {
+      /*
+      Monthly-diurnal (ds628.5/fcst_phy2m125_diurnal)
+      Average over the days of the month.
+      128: Average of N forecast products with a valid time ranging between reference time + P1 and reference time + P2;
+        products have reference times at Intervals of 24 hours, beginning at the given reference time.
+       */
+      case 128:
+        isInterval = true;
+        start = p1;
+        end = p2;
+        break;
 
       /* 129: Temporal variance of N forecasts; each product has valid time ranging between reference time + P1 and reference time + P2;
          products have reference times at intervals of 24 hours, beginning at the given reference time;
@@ -121,6 +132,8 @@ public class JmaTables extends Grib1Customizer {
   @Override
   public String getTimeTypeName(int timeRangeIndicator) {
     switch (timeRangeIndicator) {
+      case 128:
+        return "Average over the days in the month";
       case 129:
         return "Temporal variance of N forecasts at 24 hour intervals";
       case 130:
@@ -138,6 +151,7 @@ public class JmaTables extends Grib1Customizer {
   @Override
   public GribStatType getStatType(int timeRangeIndicator) {
     switch (timeRangeIndicator) {
+      case 128:
       case 130:
         return GribStatType.Average;
 

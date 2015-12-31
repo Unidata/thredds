@@ -2841,7 +2841,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     boolean isUnsigned = isUnsigned(typeid);
     int sectionLen = (int) section.computeSize();
 
-    Object data = values.getStorage();
+    Object data = values.get1DJavaArray(values.getDataType());
 
     switch (typeid) {
 

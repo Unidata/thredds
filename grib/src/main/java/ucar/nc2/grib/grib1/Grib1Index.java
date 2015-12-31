@@ -124,7 +124,7 @@ public class Grib1Index extends GribIndex {
     try (FileInputStream fin = new FileInputStream(idxFile)) {
       //// check header is ok
       if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(CDM.utf8Charset))) {
-        logger.info("Bad magic number of grib index, on file" + idxFile);
+        logger.info("Bad magic number of grib index, on file = {}", idxFile);
         return false;
       }
 
@@ -166,10 +166,6 @@ public class Grib1Index extends GribIndex {
       return false;
 
     } catch (IOException e) {
-      //for (String fn : RandomAccessFile.getOpenFiles()) {
-      //  System.out.printf("  %s%n", fn);
-      //}
-
       logger.error("GribIndex failed on " + filename, e);
       return false;
 
@@ -260,9 +256,9 @@ public class Grib1Index extends GribIndex {
       boolean deleteOk = !idxFile.exists() || idxFile.delete();
       boolean renameOk = idxFileTmp.renameTo(idxFile);
       if (!deleteOk)
-        logger.error("  could not delete Grib2Index= {}", idxFile.getPath());
+        logger.error("  could not delete Grib1Index= {}", idxFile.getPath());
       if (!renameOk)
-        logger.error("  could not rename Grib2Index= {}", idxFile.getPath());
+        logger.error("  could not rename Grib1Index= {}", idxFile.getPath());
     }
   }
 

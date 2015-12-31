@@ -33,6 +33,7 @@
 package ucar.nc2.thredds;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
@@ -500,24 +501,24 @@ public class ThreddsDataFactory {
       } else if (curl.startsWith("https:")) {
           curl =  prefix + curl.substring(6);
       }
-      ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(curl), enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
     // open CdmRemote
     else if (serviceType == ServiceType.CdmRemote) {
       String curl = CdmRemote.canonicalURL(datasetLocation);
-      ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(curl), enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
     // open CdmRemote
     else if ((serviceType == ServiceType.HTTP) || (serviceType == ServiceType.HTTPServer)) {
       String curl =  (datasetLocation.startsWith("http:")) ? "httpserver::" + datasetLocation.substring(5) : datasetLocation;
-      ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(curl), enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
     else {
       // open through NetcdfDataset API
-      ds = acquire ? NetcdfDataset.acquireDataset(datasetLocation, enhanceMode, task) : NetcdfDataset.openDataset(datasetLocation, enhanceMode, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(datasetLocation), enhanceMode, task) : NetcdfDataset.openDataset(datasetLocation, enhanceMode, task);
     }
 
     result.accessUsed = access;

@@ -41,7 +41,6 @@ import thredds.client.catalog.Catalog;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.*;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -69,6 +68,7 @@ public class Grib1ParamTableReader {
   private int version;
   private String name;  // name of the table
   private String path; // path of filename containing this table
+  private String desc; // optional desc from within the file
   private Map<Integer, Grib1Parameter> parameters; // param number -> param
   private boolean useName;
 
@@ -131,6 +131,11 @@ public class Grib1ParamTableReader {
     return name;
   }
 
+  public String getDesc() {
+    return desc;
+  }
+
+  // whether to use the param name or description in the variable name
   public boolean useParamName() {
     return useName;
   }
@@ -145,7 +150,7 @@ public class Grib1ParamTableReader {
 
   public Map<Integer, Grib1Parameter> getParameters() {
     if (parameters == null)
-      readParameterTable();
+      parameters = readParameterTable();
     return parameters;
   }
 
@@ -161,7 +166,7 @@ public class Grib1ParamTableReader {
    */
   public Grib1Parameter getParameter(int id) {
     if (parameters == null)
-      readParameterTable();
+      parameters = readParameterTable();
 
     return parameters.get(id);
   }
@@ -174,7 +179,7 @@ public class Grib1ParamTableReader {
    */
   public Grib1Parameter getLocalParameter(int id) {
     if (parameters == null)
-      readParameterTable();
+      parameters = readParameterTable();
     return parameters.get(id);
   }
 
@@ -192,26 +197,33 @@ public class Grib1ParamTableReader {
   //////////////////////////////////////////////////////////////////////////////////////
   // reading
 
-  private Map<Integer, Grib1Parameter> readParameterTable() {
-    if (name.startsWith("table_2_") || name.startsWith("local_table_2_"))
-      readParameterTableEcmwf(); // ecmwf
-    else if (name.startsWith("US058"))
-      readParameterTableXml(new FnmocParser());// FNMOC
-    else if (name.endsWith(".tab"))
-      readParameterTableTab();                               // wgrib format
-    else if (name.endsWith(".wrf"))
-      readParameterTableSplit("\\|", new int[]{0, 3, 1, 2}); // WRF AMPS
-    else if (name.endsWith(".h"))
-      readParameterTableNcl(); // NCL
-    else if (name.endsWith(".dss"))
-      readParameterTableSplit("\t", new int[]{0, -1, 1, 2}); // NCAR DSS
-    else if (name.endsWith(".xml"))
-      readParameterTableXml(new DssParser(Namespace.NO_NAMESPACE));// NCAR DSS XML format
-    else if (name.startsWith("2.98"))
-      readParameterTableEcmwfGribApi(); // ecmwf from grib api package
-    else
-      logger.warn("Dont know how to read " + name + " file=" + path);
-    return parameters;
+  private synchronized Map<Integer, Grib1Parameter> readParameterTable() {
+    if (path == null) throw new IllegalStateException(name);
+
+    try {
+      if (name.startsWith("table_2_") || name.startsWith("local_table_2_"))
+        return readParameterTableEcmwf(); // ecmwf
+      else if (name.startsWith("US058"))
+        return readParameterTableXml(new FnmocParser());// FNMOC
+      else if (name.endsWith(".tab"))
+        return readParameterTableTab();                               // wgrib format
+      else if (name.endsWith(".wrf"))
+        return readParameterTableSplit("\\|", new int[]{0, 3, 1, 2}); // WRF AMPS
+      else if (name.endsWith(".h"))
+        return readParameterTableNcl(); // NCL
+      else if (name.endsWith(".dss"))
+        return readParameterTableSplit("\t", new int[]{0, -1, 1, 2}); // NCAR DSS
+      else if (name.endsWith(".xml"))
+        return readParameterTableXml(new DssParser(Namespace.NO_NAMESPACE));// NCAR DSS XML format
+      else if (name.startsWith("2.98"))
+        return readParameterTableEcmwfGribApi(); // ecmwf from grib api package
+      else
+        throw new RuntimeException("Grib1ParamTableReader: Dont know how to read " + name + " file=" + path);
+
+    } catch (IOException ioError) {
+      logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table {}:{}", path, ioError.getMessage());
+      throw new RuntimeException(ioError);
+    }
   }
 
 /*
@@ -234,11 +246,11 @@ TBLE2 cptec_254_params[] = {
 
   static private final Pattern nclPattern = Pattern.compile("\\{(\\d*)\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\".*");
 
-  private boolean readParameterTableNcl() {
+  private Map<Integer, Grib1Parameter> readParameterTableNcl() throws IOException {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) return false;
+      if (is == null) throw new FileNotFoundException(path);
 
       BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
 
@@ -276,13 +288,7 @@ TBLE2 cptec_254_params[] = {
         if (debug) System.out.printf(" %s%n", parameter);
       }
 
-      parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
-      return true;
-
-    } catch (IOException ioError) {
-      logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table "
-              + path + " : " + ioError);
-      return false;
+      return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
 
   }
@@ -334,22 +340,16 @@ TBLE2 cptec_254_params[] = {
   m
    */
 
-  private boolean readParameterTableEcmwf() {
+  private Map<Integer, Grib1Parameter> readParameterTableEcmwf() throws IOException {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant open " + path);
-        return false;
-      }
+      if (is == null) throw new FileNotFoundException(path);
 
       BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
       String line = br.readLine();
-      if (line == null) {
-        logger.error("File is empty " + path);
-        return false;
-      }
-      if (!line.startsWith("...")) name = line; // maybe ??
+      if (line == null) throw new FileNotFoundException(path+" is empty");
+      if (!line.startsWith("...")) this.desc = line; // maybe ??
 
       while (line != null && !line.startsWith("..."))
         line = br.readLine(); // skip
@@ -387,13 +387,7 @@ TBLE2 cptec_254_params[] = {
         if (debug) System.out.printf(" %s (%s)%n", parameter, notes);
       }
 
-      parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
-      return true;
-
-    } catch (IOException ioError) {
-      logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table "
-              + path + " : " + ioError);
-      return false;
+      return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
 
   }
@@ -402,42 +396,36 @@ TBLE2 cptec_254_params[] = {
    * This method will read in ECMWF grib1 tables. Note that these tables
    * are generated locally by Unidata, and come directly from the ECMWF GRIB-API
    * package localConcepts files. They are generated by:
-   * <p/>
+   * <p>
    * ucar.nc2.grib.grib1.tables.EcmwfLocalConcepts
-   * <p/>
+   * <p>
    * The original localConcepts files are located in:
-   * <p/>
+   * <p>
    * grib/src/main/sources/ecmwfGribApi/
-   * <p/>
+   * <p>
    * Since we write the table file that are ultimately read by CDM, the
    * format is controled and is the following:
-   * <p/>
+   * <p>
    * paramNum shortName [description] (units)
-   * <p/>
+   * <p>
    * for example,
-   * <p/>
+   * <p>
    * 251 atte [Adiabatic tendency of temperature] (K)
    */
-  private boolean readParameterTableEcmwfGribApi() {
+  private Map<Integer, Grib1Parameter> readParameterTableEcmwfGribApi() throws IOException {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-
-      if (is == null) {
-        logger.error("Cant open " + path);
-        return false;
-      }
+      if (is == null) throw new FileNotFoundException(path);
 
       BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
       String line = br.readLine();
-      if (line == null) {
-        logger.error("File is empty " + path);
-        return false;
-      }
+      if (line == null) throw new FileNotFoundException(path+" is empty");
+
       // create table name from file name
       String[] splitPath = path.split("/");
       String tableNum = splitPath[splitPath.length - 1].replace(".table", "");
-      name = "ECMWF GRIB API TABLE " + tableNum;
+      this.desc = "ECMWF GRIB API TABLE " + tableNum;
 
       // skip header
       while (line != null && !line.startsWith("#"))
@@ -487,33 +475,21 @@ TBLE2 cptec_254_params[] = {
         if (debug) System.out.printf(" %s%n", parameter);
       }
 
-      parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
-      return true;
-    } catch (IOException ioError) {
-      logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table for "
-              + path + " : " + ioError);
-      return false;
+      return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
   }
 
-  private boolean readParameterTableXml(XmlTableParser parser) {
+  private Map<Integer, Grib1Parameter> readParameterTableXml(XmlTableParser parser) throws IOException {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-
-      if (is == null) return false;
+      if (is == null) throw new FileNotFoundException(path);
 
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
-      parameters = parser.parseXml(root);  // all at once - thread safe
-      return true;
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      return false;
+      return parser.parseXml(root);  // all at once - thread safe
 
     } catch (JDOMException e) {
-      e.printStackTrace();
-      return false;
+      throw new IOException(e);
     }
   }
 
@@ -604,12 +580,11 @@ TBLE2 cptec_254_params[] = {
   }
 
   // order: num, name, desc, unit
-  private boolean readParameterTableSplit(String regexp, int[] order) {
+  private Map<Integer, Grib1Parameter> readParameterTableSplit(String regexp, int[] order) throws IOException {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-
-      if (is == null) return false;
+      if (is == null) throw new FileNotFoundException(path);
 
       BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
 
@@ -631,27 +606,17 @@ TBLE2 cptec_254_params[] = {
         if (debug) System.out.printf(" %s%n", parameter);
       }
 
-      parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
-      return true;
+      return Collections.unmodifiableMap(result);  // all at once - thread safe
 
-    } catch (IOException ioError) {
-      logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table "
-              + path + " : " + ioError);
-      return false;
     }
 
   }
 
-  private boolean readParameterTableTab() {
-    if (path == null) {
-      logger.error("Grib1ParamTable: unknown path for " + this);
-      return false;
-    }
+  private Map<Integer, Grib1Parameter> readParameterTableTab() throws IOException {
+
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Grib1ParamTable: error getInputStream on " + this);
-        return false;
-      }
+      if (is == null) throw new FileNotFoundException(path);
+
       BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
       br.readLine(); // skip a line
 
@@ -683,12 +648,7 @@ TBLE2 cptec_254_params[] = {
           System.out.println(parameter.getNumber() + " " + parameter.getDescription() + " " + parameter.getUnit());
       }
 
-      parameters =  Collections.unmodifiableMap(params);  // all at once - thread safe
-      return true;
-
-    } catch (IOException ioError) {
-      logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table " + path + " : " + ioError);
-      return false;
+      return Collections.unmodifiableMap(params);  // all at once - thread safe
     }
 
   }

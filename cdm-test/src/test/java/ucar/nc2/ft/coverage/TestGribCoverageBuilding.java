@@ -34,15 +34,20 @@
 package ucar.nc2.ft.coverage;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
+import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft2.coverage.adapter.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
@@ -182,6 +187,67 @@ public class TestGribCoverageBuilding {
       Assert.assertEquals(CoverageCoordAxis.Spacing.regular, runtime.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.scalar, runtime.getDependenceType());
       Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(0));
+    }
+  }
+
+  @Test
+  public void testGaussianLats() throws IOException {
+
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/cfs.wmo";
+
+    try (DtCoverageDataset gds = DtCoverageDataset.open(filename)) {
+      Assert.assertNotNull(filename, gds);
+      String gridName =  "Albedo_surface_1_Month_Average";
+
+      DtCoverage grid = gds.findGridByShortName(gridName);
+      Assert.assertNotNull(gridName, grid);
+
+      DtCoverageCS gcs = grid.getCoordinateSystem();
+      Assert.assertNotNull(gridName+" cs", gcs);
+      Assert.assertEquals("ucar.nc2.ft2.coverage.adapter.GridCS", gcs.getClass().getName());
+      GridCS gridCS = (GridCS) gcs;
+
+      CoordinateAxis1D latAxis = gridCS.getYHorizAxis();
+      Assert.assertNotNull("latAxis axis", latAxis);
+      Assert.assertTrue(!latAxis.isRegular());
+      Attribute att = latAxis.findAttribute(CDM.GAUSSIAN);
+      Assert.assertNotNull(att);
+      Assert.assertEquals("true", att.getStringValue());
+
+      Formatter errlog = new Formatter();
+      try (FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog)) {
+        Assert.assertNotNull(filename, cc);
+        Assert.assertEquals(1, cc.getCoverageCollections().size());
+        CoverageCollection cd = cc.getCoverageCollections().get(0);
+        Coverage cov = cd.findCoverage(gridName);
+        Assert.assertNotNull(gridName, cov);
+
+        CoverageCoordAxis cca = cd.findCoordAxis(latAxis.getShortName());
+        Assert.assertNotNull(latAxis.getShortName(), cca);
+        Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, cca.getSpacing());
+      }
+    }
+
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
+      Assert.assertNotNull(filename, cc);
+      String gridName =  "Albedo_surface_Average";
+
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection cd = cc.getCoverageCollections().get(0);
+      Coverage cov = cd.findCoverage(gridName);
+      Assert.assertNotNull(gridName, cov);
+      CoverageCoordSys csys = cov.getCoordSys();
+      Assert.assertNotNull("CoverageCoordSys", csys);
+
+      CoverageCoordAxis latAxis = csys.getAxis(AxisType.Lat);
+      Assert.assertNotNull(AxisType.RunTime.toString(), latAxis);
+      Assert.assertTrue(latAxis.getClass().getName(), latAxis instanceof CoverageCoordAxis1D);
+      Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, latAxis.getSpacing());
+      Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, latAxis.getDependenceType());
+
+      Attribute att = latAxis.findAttribute(CDM.GAUSSIAN);
+      Assert.assertNotNull(att);
+      Assert.assertEquals("true", att.getStringValue());
     }
   }
 

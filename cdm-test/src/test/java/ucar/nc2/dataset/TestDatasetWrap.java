@@ -58,10 +58,10 @@ public class TestDatasetWrap {
   }
 
   private void doOne(String filename) throws Exception {
-    try (NetcdfFile ncfile = NetcdfDataset.acquireFile(filename, null);
+    try (NetcdfFile ncfile = NetcdfDataset.acquireFile(new DatasetUrl(null, filename), null);
          NetcdfDataset ncWrap = new NetcdfDataset(ncfile, true)) {
 
-      NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null);
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(new DatasetUrl(null, filename), true , null);
       System.out.println(" dataset wraps= " + filename);
 
       ucar.unidata.test.util.CompareNetcdf.compareFiles(ncd, ncWrap);

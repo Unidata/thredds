@@ -34,6 +34,7 @@
 package ucar.nc2.util.cache;
 
 import net.jcip.annotations.ThreadSafe;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
@@ -47,40 +48,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Keep cache of open FileCacheable objects, for example NetcdfFile.
- * The FileCacheable object typically contains a RandomAccessFile object that wraps a system resource like a file handle.
- * These are left open when the FileCacheable is in the cache. The maximum number of these is bounded, though not strictly.
- * A cleanup routine reduces cache size to a minimum number. This cleanup is called periodically in a background thread,
- * and also when the maximum cache size is reached.
- * <ol>
- * <li>The FileCacheable object must not be modified.
- * <li>The hashKey must uniquely define the FileCacheable object.
- * <li>The location must be usable in a FileFactory.open().
- * <li>If the FileCacheable is acquired from the cache (ie already open), getLastModified() is used to see if it has changed,
- *     and is discarded if so.
- * <li>Make sure you call shutdown() when exiting the program, in order to shut down the cleanup thread.
- * </ol>
- * <p/>
- * Normal usage is through the NetcdfDataset interface:
- * <pre>
- * NetcdfDataset.initNetcdfFileCache(...); // on application startup
- * ...
- * NetcdfFile ncfile = null;
- * try {
- *   ncfile = NetcdfDataset.acquireFile(location, cancelTask);
- *   ...
- * } finally {
- *   if (ncfile != null) ncfile.close();
- * }
- * ...
- * NetcdfDataset.shutdown();  // when terminating the application
- * </pre>
- * All methods are thread safe.
- * Cleanup is done automatically in a background thread, using LRU algorithm.
- *
- *
- * @author caron
- * @since 10/28/2014
+  ARC cach algorithm
+ not complete.
  */
 @ThreadSafe
 public class FileCacheARC implements FileCacheIF {
@@ -161,8 +130,8 @@ public class FileCacheARC implements FileCacheIF {
    * @throws IOException on error
    */
   @Override
-  public FileCacheable acquire(FileFactory factory, String location) throws IOException {
-    return acquire(factory, location, location, -1, null, null);
+  public FileCacheable acquire(FileFactory factory, DatasetUrl location) throws IOException {
+    return acquire(factory, location.trueurl, location, -1, null, null);
   }
 
   /**
@@ -184,10 +153,10 @@ public class FileCacheARC implements FileCacheIF {
    * @throws IOException on error
    */
   @Override
-  public FileCacheable acquire(FileFactory factory, Object hashKey, String location,
+  public FileCacheable acquire(FileFactory factory, Object hashKey, DatasetUrl location,
                                int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
 
-    if (null == hashKey) hashKey = location;
+    if (null == hashKey) hashKey = location.trueurl;
     if (null == hashKey) throw new IllegalArgumentException();
 
     Tracker t = null;

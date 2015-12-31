@@ -246,10 +246,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       Variable cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "lat", DataType.FLOAT, "lat"));
       cv.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
-      if (hcs.getGaussianLats() != null)
+      if (hcs.getGaussianLats() != null) {
         cv.setCachedData(hcs.getGaussianLats());
-      else
+        cv.addAttribute(new Attribute(CDM.GAUSSIAN, "true"));
+      } else {
         cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
+      }
 
       cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "lon", DataType.FLOAT, "lon"));
       cv.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));

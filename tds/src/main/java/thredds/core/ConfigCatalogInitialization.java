@@ -171,6 +171,9 @@ public class ConfigCatalogInitialization {
     if (this.callback == null)
       this.callback = new StatCallback(readMode);
 
+    // going to reread global services
+    allowedServices.clearGlobalServices();
+
     switch (readMode) {
       case always:
         if (databaseAlreadyExists) this.datasetTracker.reinit();

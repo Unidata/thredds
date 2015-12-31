@@ -100,8 +100,9 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
     }
 
     if (showRequest)
-      System.out.printf("CdmrFeature data request for gridCoverage: %s%n url=%s%n", coverage.getName(), f);
+      System.out.printf("CdmrFeature data request for gridCoverage: %s%n url=%s", coverage.getName(), f);
 
+    long start = System.currentTimeMillis();
     try (HTTPMethod method = HTTPFactory.Get(httpClient, f.toString())) {
       int statusCode = method.execute();
 
@@ -135,6 +136,10 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
       List<GeoReferencedArray> geoArrays = dataResponse.arrayResponse;
       assert geoArrays.size() == 1; // LOOK maybe need readData(List<names>) returns List<GeoArray> ?
+
+      if (showRequest)
+        System.out.printf(" took %d msecs%n", System.currentTimeMillis()-start);
+
       return geoArrays.get(0);
     }
   }

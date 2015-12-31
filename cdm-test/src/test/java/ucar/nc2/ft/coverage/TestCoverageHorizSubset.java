@@ -199,7 +199,7 @@ public class TestCoverageHorizSubset {
     System.out.printf(" coverage llbb = %s width=%f%n", gcs.getLatlonBoundingBox().toString2(), gcs.getLatlonBoundingBox().getWidth());
     System.out.printf(" constrain bbox= %s width=%f%n", bbox.toString2(), bbox.getWidth());
 
-    SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox).set(SubsetParams.timePresent, true);
+    SubsetParams params = new SubsetParams().setLatLonBoundingBox(bbox).setTimePresent();
     GeoReferencedArray geo = coverage.readData(params);
     CoverageCoordSys gcs2 = geo.getCoordSysForData();
     Assert.assertNotNull("CoordSysForData", gcs2);

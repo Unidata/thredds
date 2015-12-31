@@ -94,7 +94,7 @@ public class CoverageDatasetFactory {
     }
 
     // adapt a DtCoverageDataset (forked from ucar.nc2.dt.GridDataset), eg a local file
-    DtCoverageDataset gds = DtCoverageDataset.open(endpoint);
+    DtCoverageDataset gds = DtCoverageDataset.open(durl);
     if (gds.getGrids().size() > 0) {
       Formatter errlog = new Formatter();
       FeatureDatasetCoverage result = DtCoverageAdapter.factory(gds, errlog);

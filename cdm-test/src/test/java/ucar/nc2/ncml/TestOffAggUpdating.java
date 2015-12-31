@@ -35,9 +35,11 @@ package ucar.nc2.ncml;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import thredds.client.catalog.ServiceType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCacheable;
@@ -134,8 +136,10 @@ public class TestOffAggUpdating {
      // make sure that the extra file is not in the agg
     move(extraFile);
 
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
+
     // open the agg
-    NetcdfFile ncfile = NetcdfDataset.acquireDataset(new NcmlStringFileFactory(), location, null, -1, null, null);
+    NetcdfFile ncfile = NetcdfDataset.acquireDataset(new NcmlStringFileFactory(), durl, null, -1, null, null);
 
     check(ncfile, 12);
 
@@ -163,8 +167,8 @@ public class TestOffAggUpdating {
   private class NcmlStringFileFactory implements ucar.nc2.util.cache.FileFactory {
 
     @Override
-    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      return NcMLReader.readNcML(new StringReader(ncml), location, null);
+    public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      return NcMLReader.readNcML(new StringReader(ncml), durl.trueurl, null);
     }
   }
 

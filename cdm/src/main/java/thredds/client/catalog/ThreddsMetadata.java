@@ -255,10 +255,11 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
         this.eastwest = new GeospatialRange(llpt.getLongitude(), bb.getWidth(), dX, CDM.LON_UNITS);
         this.northsouth = new GeospatialRange(llpt.getLatitude(), height, dY, CDM.LAT_UNITS);
 
-        if ((bb.getWidth() > 358) && (height > 178)) { // LOOK 178 ??
+        if ((bb.getWidth() >= (360-dX)) && (height >= (180-dY))) {
           this.isGlobal = true;
+          // serialize isGlobal
           this.names = new ArrayList<>();
-          this.names.add(new Vocab("global", "thredds"));
+          this.names.add(new Vocab("global", null));
         } else {
           this.isGlobal = false;
           this.names = null;

@@ -42,6 +42,7 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dataset.conv.*;
 import ucar.ma2.DataType;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.io.IOException;
 import java.util.*;
@@ -354,7 +355,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @throws java.io.IOException on io error
    * @see ucar.nc2.dataset.NetcdfDataset#enhance
    */
-  static public CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  static public @Nonnull
+  CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
@@ -459,7 +461,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         builder = (CoordSysBuilderIF) convClass.newInstance();
       } catch (Exception e) {
         log.error("failed on CoordSysBuilderIF for " + convClass.getName(), e);
-        return null;
+        throw new RuntimeException(e);
       }
     }
 
@@ -1368,13 +1370,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     VariableDS v = CoordTransBuilder.makeDummyTransformVariable(ds, ct);
     parseInfo.format("  made CoordinateTransformVariable: %s%n", ct.getName());
     return v;
-  }
-
-  /**
-   * @deprecated use CoordTransBuilder.makeDummyTransformVariable
-   */
-  static public VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
-    return CoordTransBuilder.makeDummyTransformVariable(ds, ct);
   }
 
 }

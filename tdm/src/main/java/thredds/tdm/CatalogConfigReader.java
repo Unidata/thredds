@@ -81,8 +81,8 @@ public class CatalogConfigReader {
             CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
             Path rootPath = Paths.get(specp.getRootDir());
             if (!Files.exists(rootPath)) {
-              System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.collectionName, catFile.getPath());
-              log.error("Root path {} does not exist fc='{}' from catalog={}", rootPath.getFileName(), config.collectionName, catFile.getPath());
+              System.out.printf("Root path '%s' does not exist fc='%s' from catalog=%s %n", rootPath.toString(), config.collectionName, catFile.getPath());
+              log.error("Root path '{}' does not exist fc='{}' from catalog={}", rootPath.toString(), config.collectionName, catFile.getPath());
               continue;
             }
 

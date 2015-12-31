@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.coord.*;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
@@ -65,14 +66,14 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   static public int countPC;   // debug
 
   static final ucar.nc2.util.cache.FileFactory partitionCollectionFactory = new FileFactory() {
-    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+    public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
 
-      try (RandomAccessFile raf = RandomAccessFile.acquire(location)) {
+      try (RandomAccessFile raf = RandomAccessFile.acquire(durl.trueurl)) {
         Partition p = (Partition) iospMessage;
         return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), p.getLogger()); // do we know its a partition ?
 
       } catch (Throwable t) {
-        RandomAccessFile.eject(location);
+        RandomAccessFile.eject(durl.trueurl);
         throw t;
       }
     }
@@ -607,6 +608,10 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       CalendarDate runtime = (CalendarDate) coords.get(CoordsSet.runDate);
       int masterIdx = masterRuntime.getIndex(runtime.getMillis());
       // LOOK ok to use Best like this (see other getDataRecord) ?
+
+      if (masterIdx < 0) { // means that the runtie is not in the masterRuntime list
+        throw new RuntimeException("masterRuntime does not contain runtime "+runtime);
+      }
 
       // each runtime is mapped to a partition
       int partno = run2part[masterIdx];

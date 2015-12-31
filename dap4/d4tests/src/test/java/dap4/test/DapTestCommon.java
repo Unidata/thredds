@@ -35,6 +35,7 @@ import thredds.server.dap4.Dap4Controller;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
 
@@ -482,7 +483,9 @@ public class DapTestCommon
     static public NetcdfDataset openDataset(String url)
             throws IOException
     {
-        return NetcdfDataset.acquireDataset(null, url, ENHANCEMENT, -1, null, null);
+        DatasetUrl durl = DatasetUrl.findDatasetUrl(url);
+
+        return NetcdfDataset.acquireDataset(null, durl, ENHANCEMENT, -1, null, null);
     }
 
     // Fix up a filename reference in a string

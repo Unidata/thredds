@@ -1,7 +1,6 @@
 package ucar.nc2.ncml;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -16,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
@@ -65,11 +65,13 @@ public class TestNcmlWriteAndCompareLocal {
   boolean showFiles = true;
   boolean compareData = false;
 
-  public TestNcmlWriteAndCompareLocal(String location) {
+  public TestNcmlWriteAndCompareLocal(String location) throws IOException {
     this.location = StringUtil2.replace(location, '\\', "/");
+    this.durl = DatasetUrl.findDatasetUrl(location);
   }
 
   String location;
+  DatasetUrl durl;
 
   int fail = 0;
   int success = 0;
@@ -95,7 +97,7 @@ public class TestNcmlWriteAndCompareLocal {
     if (openDataset)
       org = NetcdfDataset.openDataset(location, false, null);
     else
-      org = NetcdfDataset.acquireFile(location, null);
+      org = NetcdfDataset.acquireFile(durl, null);
 
     if (useRecords)
       org.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -126,7 +128,7 @@ public class TestNcmlWriteAndCompareLocal {
     if (openDataset)
       copy = NetcdfDataset.openDataset(ncmlOut, false, null);
     else
-      copy = NetcdfDataset.acquireFile(ncmlOut, null);
+      copy = NetcdfDataset.acquireFile(durl, null);
 
     if (useRecords)
       copy.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);

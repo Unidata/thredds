@@ -44,7 +44,7 @@ public class TestCoverageHorizStride {
       int[] csysShape =  csys.getShape();
       System.out.printf("csys shape = %s%n", Misc.showInts(csysShape));
 
-      SubsetParams params = new SubsetParams().set(SubsetParams.horizStride, 2);
+      SubsetParams params = new SubsetParams().setHorizStride(2);
       Optional<CoverageCoordSys> opt = csys.subset(params);
       if (!opt.isPresent()) {
         System.out.printf("err=%s%n", opt.getErrorMessage());
@@ -87,7 +87,7 @@ public class TestCoverageHorizStride {
       int[] csysShape =  csys.getShape();
       System.out.printf("csys shape = %s%n", Misc.showInts(csysShape));
 
-      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.horizStride, 2);
+      SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).setHorizStride(2);
       Optional<CoverageCoordSys> opt = csys.subset(params);
       if (!opt.isPresent()) {
         System.out.printf("err=%s%n", opt.getErrorMessage());

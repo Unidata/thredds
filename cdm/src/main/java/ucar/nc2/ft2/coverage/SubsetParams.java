@@ -127,12 +127,15 @@ public class SubsetParams {
   }
 
   public boolean hasTimeParam() {
-    return get(timeRange) != null || get(time) != null ||get(timeStride) != null ||get(timePresent) != null;
+    return get(timeRange) != null || get(time) != null || get(timeStride) != null || get(timePresent) != null;
   }
 
   public boolean hasTimeOffsetParam() {
     return get(timeOffset) != null || get(timeOffsetFirst) != null;
   }
+
+  public SubsetParams setHorizStride(int stride) {  set(horizStride, stride); return this; }
+
 
   public LatLonRect getLatLonBoundingBox() { return (LatLonRect) get(latlonBB);}
   public SubsetParams setLatLonBoundingBox(LatLonRect llbb) {  set(latlonBB, llbb); return this; }
@@ -146,6 +149,7 @@ public class SubsetParams {
   public SubsetParams setVariables(List<String> vars) { set(variables, vars); return this; }
 
   public CalendarDate getTime() { return (CalendarDate) get(time);}
+  public SubsetParams setTimePresent() {  set(timePresent, true); return this; }
 
   public CalendarDateRange getTimeRange() { return (CalendarDateRange) get(timeRange);}
 

@@ -33,6 +33,7 @@
 
 package ucar.nc2;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -55,10 +56,10 @@ public class TestUnsigned {
   public void testSigned() throws IOException {
     NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWrite.nc");
 
-    Variable v = null;
-    assert(null != (v = ncfile.findVariable("bvar")));
-    assert !v.getDataType().isUnsigned();
-    assert v.getDataType() == DataType.BYTE;
+    Variable v = ncfile.findVariable("bvar");
+    Assert.assertNotNull(v);
+    Assert.assertTrue(!v.getDataType().isUnsigned());
+    Assert.assertEquals(DataType.BYTE, v.getDataType());
 
     boolean hasSigned = false;
     Array data = v.read();
@@ -75,9 +76,9 @@ public class TestUnsigned {
   public void testUnsigned() throws IOException {
     NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testUnsignedByte.ncml");
 
-    Variable v = null;
-    assert(null != (v = ncfile.findVariable("bvar")));
-    assert v.getDataType() == DataType.FLOAT;
+    Variable v = ncfile.findVariable("bvar");
+    Assert.assertNotNull(v);
+    Assert.assertEquals(DataType.FLOAT, v.getDataType()); // has float scale_factor
 
     boolean hasSigned = false;
     Array data = v.read();
@@ -85,7 +86,7 @@ public class TestUnsigned {
       float b = data.nextFloat();
       if (b < 0) hasSigned = true;
     }
-    assert !hasSigned;
+    Assert.assertTrue(!hasSigned);
 
     ncfile.close();
   }
@@ -104,8 +105,8 @@ public class TestUnsigned {
     NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
 
     Variable v = ncd.findVariable("bvar");
-    assert(null != v);
-    assert v.getDataType() == DataType.FLOAT;
+    Assert.assertNotNull(v);
+    Assert.assertEquals(DataType.FLOAT, v.getDataType());
 
     boolean hasSigned = false;
     Array data = v.read();
@@ -113,7 +114,7 @@ public class TestUnsigned {
       float b = data.nextFloat();
       if (b < 0) hasSigned = true;
     }
-    assert !hasSigned;
+    Assert.assertTrue(!hasSigned);
 
     ncd.close();
   }

@@ -346,8 +346,7 @@ public class DatasetHtmlWriter {
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
     if (gc != null) {
       out.format("<h3>GeospatialCoverage:</h3>%n<ul>%n");
-      if (gc.isGlobal())
-        out.format(" <li><em> Global </em>%n");
+      // if (gc.isGlobal()) out.format(" <li><em> Global </em>%n");
 
       out.format(" <li><em> Longitude: </em> %s</li>%n", rangeString(gc.getEastWestRange()));
       out.format(" <li><em> Latitude: </em> %s</li>%n", rangeString(gc.getNorthSouthRange()));

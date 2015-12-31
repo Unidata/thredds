@@ -37,6 +37,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheStats;
 import com.google.common.cache.LoadingCache;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
@@ -82,16 +83,18 @@ public class FileCacheGuava implements FileCacheIF {
   }
 
   @Override
-  public FileCacheable acquire(FileFactory factory, String location) throws IOException {
-    return acquire(factory, location, location, -1, null, null);
+  public FileCacheable acquire(FileFactory factory, DatasetUrl durl) throws IOException {
+    return acquire(factory, durl.trueurl, durl, -1, null, null);
   }
 
   @Override
-  public FileCacheable acquire(final FileFactory factory, final Object hashKey, final String location, final int buffer_size, final CancelTask cancelTask, final Object spiObject) throws IOException {
+  public FileCacheable acquire(final FileFactory factory, Object hashKey, final DatasetUrl durl, final int buffer_size, final CancelTask cancelTask, final Object spiObject) throws IOException {
+    if (null == hashKey) hashKey = durl.trueurl;
+    if (null == hashKey) throw new IllegalArgumentException();
+
     try {
-      // If the key wasn't in the "easy to compute" group, we need to
-      // do things the hard way.
-      return cache.get(location, () -> factory.open(location, buffer_size, cancelTask, spiObject));
+      // If the key wasn't in the "easy to compute" group, we need to use the factory.
+      return cache.get((String)hashKey, () -> factory.open(durl, buffer_size, cancelTask, spiObject));
     } catch (ExecutionException e) {
       throw new RuntimeException(e.getCause());
     }

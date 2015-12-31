@@ -44,6 +44,7 @@ import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
@@ -102,14 +103,15 @@ public class GribCdmIndex implements IndexReader {
   // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionImmutable acquireGribCollection(FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
     FileCacheable result;
+    DatasetUrl durl = new DatasetUrl(null, location);
 
     if (gribCollectionCache != null) {
       // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject
-      result = GribCdmIndex.gribCollectionCache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
+      result = GribCdmIndex.gribCollectionCache.acquire(factory, hashKey, durl, buffer_size, cancelTask, spiObject);
 
     } else {
       // String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage
-      result = factory.open(location, buffer_size, cancelTask, spiObject);
+      result = factory.open(durl, buffer_size, cancelTask, spiObject);
     }
 
     return (GribCollectionImmutable) result;

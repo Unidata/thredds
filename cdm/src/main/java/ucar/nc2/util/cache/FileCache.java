@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.io.IOException;
 
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
@@ -206,18 +207,18 @@ public class FileCache implements FileCacheIF {
    * call FileCacheable.close when done.
    *
    * @param factory    use this factory to open the file; may not be null
-   * @param location   file location, also used as the cache name, will be passed to the NetcdfFileFactory
+   * @param durl   file location, also used as the cache name, will be passed to the NetcdfFileFactory
    * @param cancelTask user can cancel, ok to be null.
    * @return NetcdfFile corresponding to location.
    * @throws IOException on error
    */
-  public FileCacheable acquire(FileFactory factory, String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    return acquire(factory, location, location, -1, cancelTask, null);
+  public FileCacheable acquire(FileFactory factory, DatasetUrl durl, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    return acquire(factory, durl.trueurl, durl, -1, cancelTask, null);
   }
 
   @Override
-  public FileCacheable acquire(FileFactory factory, String location) throws IOException {
-    return acquire(factory, location, location, -1, null, null);
+  public FileCacheable acquire(FileFactory factory, DatasetUrl durl) throws IOException {
+    return acquire(factory, durl.trueurl, durl, -1, null, null);
   }
 
   /**
@@ -239,10 +240,10 @@ public class FileCache implements FileCacheIF {
    * @throws IOException on error
    */
   @Override
-  public FileCacheable acquire(FileFactory factory, Object hashKey, String location,
+  public FileCacheable acquire(FileFactory factory, Object hashKey, DatasetUrl location,
                                int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
 
-    if (null == hashKey) hashKey = location;
+    if (null == hashKey) hashKey = location.trueurl;
     if (null == hashKey) throw new IllegalArgumentException();
 
     Tracker t = null;

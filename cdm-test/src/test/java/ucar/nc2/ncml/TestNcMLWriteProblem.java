@@ -53,7 +53,7 @@ public class TestNcMLWriteProblem {
 
   @Test
   public void problem() throws IOException {
-    String location = TestDir.cdmUnitTestDir + "conventions/nuwg/ocean.nc";
+    String location = "file:" + TestDir.cdmUnitTestDir + "conventions/nuwg/ocean.nc";
     TestNcmlWriteAndCompareShared test = new TestNcmlWriteAndCompareShared(location, true);
     test.compareNcML(false, false, false);
   }

@@ -7,8 +7,7 @@ The *datasetScan* element allows you to serve all files in a directory
 tree. The files must be homogenous enough that the same metadata can be
 applied to all of them.
 
-See link:../catalog/InvCatalogServerSpec.adoc#datasetScan_Element[Server
-Catalog Spec] for formal definition of the XML.
+See link:../catalog/InvCatalogServerSpec.adoc#datasetScan[Server Catalog Spec] for formal definition of the XML.
 
 == Example
 
@@ -114,9 +113,9 @@ Note that:
 into nested *catalogRef* elements.
 2.  All the catalog URLs are relative. If the original catalog URL is
 *http://server:8080/thredds/catalog.xml* then the first catalogRef
-xlink:href value of ``/thredds/catalog/ncep/catalog.xml'' resolves to
+xlink:href value of "/thredds/catalog/ncep/catalog.xml" resolves to
 **http://server:8080/thredds/catalog/ncep/catalog.xml**. From that
-catalog, the catalogRef xlink:href value of ``GFS/catalog.xml'' resolves
+catalog, the catalogRef xlink:href value of "GFS/catalog.xml" resolves
 to **http://server:8080/thredds/catalog/ncep/GFS/catalog.xml**.
 3.  The dataset access URLs are built from the service base attribute
 and the dataset urlPath attribute (see the
@@ -166,8 +165,8 @@ details). When no filter element is given, all files and directories are
 included in the generated catalog(s). Adding a *filter* element to your
 datasetScan element allows you to include (and/or exclude) the files and
 directories as you desire. For instance, the following filter and
-selector elements will only include files that end in ``.grib1'' and
-exclude any file that ends with ``*_0000.grib1''.
+selector elements will only include files that end in ".grib1" and
+exclude any file that ends with "*_0000.grib1".
 
 ------------------------------------
 <filter>
@@ -186,7 +185,7 @@ regular files (atomic datasets). You can specify that they apply to
 directories (collection datasets) as well by using the _*atomic*_ and
 _*collection*_ attributes. For instance, the additional selector in this
 filter element means that only directories that don’t start with
-``CONUS'' will be cataloged (since the default value of *atomic* is
+"CONUS" will be cataloged (since the default value of *atomic* is
 true, we have to explicitly set it to false if we only want to filter
 directories):
 
@@ -215,10 +214,10 @@ Complicated matching can be done with regular expressions, eg:
 
 A few gotchas to remember:
 
-* to match any number of characters, use ``.*'', not ``*''
-* in the above, we use a ``\'' to escape the ``.'' character, to require
-a literal ``.'' character. Note that only one backslash is neeeded.
-(Inside a Java String, one needs to use ``\\'', but not here in the
+* to match any number of characters, use ".*", not "*"
+* in the above, we use a "\" to escape the "." character, to require
+a literal "." character. Note that only one backslash is neeeded.
+(Inside a Java String, one needs to use "\\", but not here in the
 catalog).
 
 [link:#sample3[Sample config catalog 3]]
@@ -234,16 +233,16 @@ To specify that they are to be sorted in reverse order:
 
 Note that the sort is done before renaming.
 
-== Adding a Link to the ``Latest'' Dataset
+== Adding a Link to the "Latest" Dataset
 
-You may want to have a special link that points to the ``latest'' data
+You may want to have a special link that points to the "latest" data
 in the collection, especially for data that is constantly being updated,
 eg real-time data. Here, _latest_ means the last filename in a list
 sorted by name (so its only the latest if the time stamp is in the
 filename and the name sorts correctly by time).
 
 The simplest way to enable this is to add the attribute
-_addLatest=``true''_ to the *datasetScan* element. The _latest resolver
+_addLatest="true"_ to the *datasetScan* element. The _latest resolver
 service_ will be automatically added to the catalog.
 
 ---------------------------------------------------------------------------------------------------------------
@@ -264,7 +263,7 @@ latest service:
 where the attributes mean:
 
 1.  **name**: the name of the dataset in the catalog (default
-``latest'')
+"latest")
 2.  **top**: place link on top (try) or bottom (false) of the
 catalogScan (default true)
 3.  **lastModifiedLimit**: files whose last modified date is less than
@@ -283,7 +282,7 @@ determine the time coverage for each datasets in the collection.
 
 Currently, the addTimeCoverage element can only construct start/duration
 timeCoverage elements and uses the dataset name to determine the start
-time. As described in the link:#Naming_Datasets[``Naming Datasets''
+time. As described in the link:#Naming_Datasets["Naming Datasets"
 section] above, the addTimeCoverage element applies a
 http://www.regular-expressions.info/[regular expression] match to the
 dataset name. If the match succeeds, any regular expression
@@ -300,7 +299,7 @@ http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#cg[capturi
 groups] which allow the match to save substrings from the dataset
 name. +
 2.  The _*startTimeSubstitutionPattern*_ attribute value has all capture
-group references (``$n'') replaced by the corresponding substring that
+group references ("$n") replaced by the corresponding substring that
 was captured during the match. The resulting string is used as the start
 value of the resulting *timeCoverage* element.
 3.  The *duration* attribute value is used as the duration value of the
@@ -337,7 +336,7 @@ attribute takes precedence.
 If no namer element is specified, all datasets are named with the
 corresponding file name. By adding a namer element, you can specify more
 human readable dataset names. The following namer looks for datasets
-named ``GFS'' or ``NCEP'' and renames them with the corresponding
+named "GFS" or "NCEP" and renames them with the corresponding
 replace string: +
 
 -------------------------------------------------------------------
@@ -357,14 +356,14 @@ A capturing group is a part of a regular expression enclosed in
 parenthesis. When a regular expression with a capturing group is applied
 to a string, the substring that matches the capturing group is saved for
 later use. The captured strings can then be substituted into another
-string in place of capturing group references,``$n'', where ``n'' is an
+string in place of capturing group references,"$n", where "n" is an
 integer indicating a particular capturing group. (The capturing groups
 are numbered according to the order in which they appear in the match
-string.) For example, the regular expression ``Hi (.*), how are (.*)?''
-when applied to the string ``Hi Fred, how are you?'' would capture the
-strings ``Fred'' and ``you''. Following that with a capturing group
-replacement in the string ``$2 are $1.'' would result in the string
-``you are Fred.''
+string.) For example, the regular expression "Hi (.*), how are (.*)?"
+when applied to the string "Hi Fred, how are you?" would capture the
+strings "Fred" and "you". Following that with a capturing group
+replacement in the string "$2 are $1." would result in the string
+"you are Fred."
 
 Here’s an example namer:
 
@@ -377,22 +376,22 @@ Here’s an example namer:
 
 the regular expression has five capturing groups
 
-1.  The first capturing group, ``([0-9]\{4})'',  captures four digits,
+1.  The first capturing group, "([0-9]\{4})",  captures four digits,
 in this case the year. +
-2.  The second capturing group, ``([0-9]\{2})'', captures two digits, in
+2.  The second capturing group, "([0-9]\{2})", captures two digits, in
 this case the month. +
-3.  The third capturing group, ``([0-9]\{2})'', captures two digits, in
+3.  The third capturing group, "([0-9]\{2})", captures two digits, in
 this case the day of the month. +
-4.  The fourth capturing group, ``([0-9]\{2})'', captures two digits, in
+4.  The fourth capturing group, "([0-9]\{2})", captures two digits, in
 this case the hour of the day.
-5.  The fifth capturing group, ``([0-9]\{2})'', captures two digits, in
+5.  The fifth capturing group, "([0-9]\{2})", captures two digits, in
 this case the minutes of the hour.
 
 When applied to the dataset name
-``GFS_Alaska_191km_20051011_0000.grib1'',  the strings ``2005'', ``10'',
-``11'', ``00'', and ``00'' are captured. After replacing the capturing
+"GFS_Alaska_191km_20051011_0000.grib1",  the strings "2005", "10",
+"11", "00", and "00" are captured. After replacing the capturing
 group references in the replaceString attribute value, we get the name
-``NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT''. So, when cataloged,
+"NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT". So, when cataloged,
 this dataset would end up as something like this: +
 
 --------------------------------------------------------------------------------------
@@ -400,7 +399,7 @@ this dataset would end up as something like this: +
          urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/>
 --------------------------------------------------------------------------------------
 
-== Sample Config Files
+== Examples
 
 Basic catalog:
 

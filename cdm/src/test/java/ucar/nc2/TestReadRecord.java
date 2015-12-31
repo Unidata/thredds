@@ -35,6 +35,7 @@ package ucar.nc2;
 import junit.framework.*;
 
 import ucar.ma2.*;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.util.Misc;
@@ -247,7 +248,9 @@ public class TestReadRecord extends TestCase {
 
 
   public void testDatasetAddRecord() throws InvalidRangeException, IOException {
-    NetcdfDataset nc = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc", NetcdfDataset.getDefaultEnhanceMode(),
+    String location = TestDir.cdmLocalTestDataDir + "testWriteRecord.nc";
+    DatasetUrl durl = new DatasetUrl(null, location);
+    NetcdfDataset nc = NetcdfDataset.openDataset(durl, NetcdfDataset.getDefaultEnhanceMode(),
         -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // record variable

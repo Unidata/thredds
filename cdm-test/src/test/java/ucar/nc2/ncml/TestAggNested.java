@@ -35,6 +35,7 @@ package ucar.nc2.ncml;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -55,7 +56,7 @@ public class TestAggNested {
   public void TestNotCached() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ncml/nestedAgg/test.ncml";
 
-    try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null)) {
+    try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), true ,null)) {
       Variable time = ncd.findVariable("time");
       assert time != null;
       assert time.getSize() == 19723 : time.getSize();
@@ -68,7 +69,7 @@ public class TestAggNested {
     NetcdfDataset.initNetcdfFileCache(10, 20, -1);
 
     String filename = TestDir.cdmUnitTestDir + "ncml/nestedAgg/test.ncml";
-    try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null)) {
+    try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), true , null)) {
       Variable time = ncd.findVariable("time");
       assert time != null;
       assert time.getSize() == 19723 : time.getSize();

@@ -35,11 +35,13 @@ package thredds.server.cdmr;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import thredds.TestWithLocalServer;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.server.catalog.TdsLocalCatalog;
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
@@ -136,8 +138,51 @@ public class TestCdmRemoteServer2 {
     }
 
     DataFactory fac = new DataFactory();
-    DataFactory.Result dataResult = fac.openFeatureDataset( access, null);
+    DataFactory.Result dataResult = fac.openFeatureDataset(access, null);
     System.out.println("DataFactory.Result= "+dataResult);
+  }
+
+  @Test
+  public void testCdmRemoteOnly() throws IOException {
+    Catalog cat = TdsLocalCatalog.open("catalog/cdmremote.v5/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/catalog.xml");
+
+    Dataset ds = cat.findDatasetByID("cdmremote.v5/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1");
+    assert (ds != null) : "cant find dataset";
+    assert ds.getFeatureType() == FeatureType.GRID;
+
+    DataFactory fac = new DataFactory();
+    try (DataFactory.Result dataResult = fac.openFeatureDataset( ds, null)) {
+
+      if (dataResult.fatalError) {
+        System.out.printf("fatalError= %s%n", dataResult.errLog);
+        assert false;
+      }
+      assert dataResult.featureDataset != null;
+
+      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      String gridName = "Pressure_surface";
+      VariableSimpleIF vs = gds.getDataVariable(gridName);
+      Assert.assertNotNull(gridName, vs);
+
+      Assert.assertEquals(1, gds.getCoverageCollections().size());
+      CoverageCollection cc = gds.getCoverageCollections().get(0);
+      Coverage grid = cc.findCoverage(gridName);
+      Assert.assertNotNull(gridName, grid);
+
+      CoverageCoordSys gcs = grid.getCoordSys();
+      Assert.assertNotNull(gcs);
+      assert null == gcs.getZAxis();
+
+      CoverageCoordAxis time = gcs.getTimeAxis();
+      Assert.assertNotNull("time axis", time);
+      Assert.assertEquals(36, time.getNcoords());
+
+      SubsetParams params  = new SubsetParams().setTimePresent().setHorizStride(2);
+      GeoReferencedArray geo = grid.readData(params);
+
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+    }
   }
 
 }
