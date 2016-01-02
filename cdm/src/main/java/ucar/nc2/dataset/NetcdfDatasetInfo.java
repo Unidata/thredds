@@ -33,23 +33,24 @@
 
 package ucar.nc2.dataset;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.grid.GridCoordSys;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.Variable;
-
-import org.jdom2.*;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.output.Format;
+import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.util.Parameter;
 
+import java.io.Closeable;
 import java.io.File;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Formatter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Formatter;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Helper class for obtaining information about a NetcdfDataset.
@@ -57,7 +58,7 @@ import java.io.OutputStream;
  *
  * @author john caron
  */
-public class NetcdfDatasetInfo implements AutoCloseable {
+public class NetcdfDatasetInfo implements Closeable {
   private NetcdfDataset ds;
   private CoordSysBuilderIF builder;
 

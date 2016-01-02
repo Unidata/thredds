@@ -32,36 +32,7 @@
  */
 package ucar.nc2;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URL;
-import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
-import java.nio.channels.WritableByteChannel;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.StringTokenizer;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.ma2.StructureDataIterator;
+import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
@@ -69,16 +40,23 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.DiskCache;
-import ucar.nc2.util.EscapeStrings;
-import ucar.nc2.util.IO;
-import ucar.nc2.util.Indent;
+import ucar.nc2.util.*;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.util.StringUtil2;
+
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+import java.nio.channels.WritableByteChannel;
+import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
@@ -108,7 +86,7 @@ import ucar.unidata.util.StringUtil2;
  * @author caron
  */
 
-public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoCloseable {
+public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable {
   static public final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   static public final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
   static public final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";

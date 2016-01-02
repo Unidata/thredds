@@ -54,6 +54,7 @@ import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -67,7 +68,7 @@ import java.util.*;
  * @author caron
  * @since 4/11/12
  */
-public abstract class CFPointWriter implements AutoCloseable {
+public abstract class CFPointWriter implements Closeable {
   static private final Logger logger = LoggerFactory.getLogger(CFPointWriter.class);
 
   public static final String recordName = "obs";

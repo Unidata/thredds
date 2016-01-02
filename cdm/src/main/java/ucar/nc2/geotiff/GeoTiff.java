@@ -45,7 +45,7 @@ import java.util.*;
  * @author John Caron
  * @author Yuan Ho
  */
-public class GeoTiff implements AutoCloseable {
+public class GeoTiff implements Closeable {
   static final private boolean showBytes = false, debugRead = false, debugReadGeoKey = false;
   static final private boolean showHeaderBytes = false;
 

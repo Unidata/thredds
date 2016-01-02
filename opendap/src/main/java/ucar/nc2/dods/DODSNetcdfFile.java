@@ -59,7 +59,7 @@ import java.nio.channels.WritableByteChannel;
  * @see ucar.nc2.NetcdfFile
  */
 @NotThreadSafe
-public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements AutoCloseable
+public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
 {
     // temporary flag to control usegroup changes
     static boolean OLDGROUPCODE = false;
