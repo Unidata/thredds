@@ -33,30 +33,29 @@
 
 package ucar.nc2.ncml;
 
+import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.inventory.MFile;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.DatasetConstructor;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.DatasetConstructor;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
+import ucar.nc2.util.CancelTask;
 
 import java.io.*;
-import java.util.*;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
-
-import org.jdom2.Element;
+import java.util.*;
 
 /**
  * JoinExisting Aggregation.
@@ -169,6 +168,8 @@ public class AggregationExisting extends AggregationOuterDimension {
     typicalDataset.close( typical);
 
     if (debugInvocation) System.out.println(ncDataset.getLocation()+" invocation count = "+AggregationOuterDimension.invocation);
+
+    ncDataset.finish();
   }
 
   protected void rebuildDataset() throws IOException {
