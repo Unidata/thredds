@@ -6,8 +6,8 @@
   </variable>
 
   <aggregation dimName="time" type="joinExisting">
-    <netcdf location="file:src/test/data/ncml/nc/jan.nc"/>
-    <netcdf location="file:src/test/data/ncml/nc/feb.nc"/>
+    <netcdf location="nc/jan.nc"/>
+    <netcdf location="nc/feb.nc"/>
   </aggregation>
 	
 </netcdf>

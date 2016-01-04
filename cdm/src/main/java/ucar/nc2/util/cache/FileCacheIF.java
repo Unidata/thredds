@@ -46,21 +46,20 @@ import java.util.List;
  * @since 10/28/2014
  */
 public interface FileCacheIF {
+  void enable();
+  void disable();
 
-  public void enable();
-  public void disable();
+  FileCacheable acquire(FileFactory factory, String location) throws IOException;
+  FileCacheable acquire(FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException;
 
-  public FileCacheable acquire(FileFactory factory, String location) throws IOException;
-  public FileCacheable acquire(FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException;
-
-  public boolean release(FileCacheable ncfile) throws IOException;
-  public void eject(Object hashKey);
-  public void clearCache(boolean force);
+  boolean release(FileCacheable ncfile) throws IOException;
+  void eject(Object hashKey);
+  void clearCache(boolean force);
 
   // debugging
-  public void resetTracking();
-  public void showTracking(Formatter format);
-  public void showCache(Formatter format);
-  public void showStats(Formatter format);
-  public List<String> showCache();
+  void resetTracking();
+  void showTracking(Formatter format);
+  void showCache(Formatter format);
+  void showStats(Formatter format);
+  List<String> showCache();
 }

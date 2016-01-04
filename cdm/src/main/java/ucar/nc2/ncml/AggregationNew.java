@@ -129,6 +129,8 @@ public class AggregationNew extends AggregationOuterDimension {
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);
     typicalDataset.close( typical); // close it because we use DatasetProxyReader to acquire
+
+    ncDataset.finish();
   }
 
   /**

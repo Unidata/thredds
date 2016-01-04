@@ -36,6 +36,7 @@ package thredds.inventory;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 
@@ -45,7 +46,7 @@ import java.util.List;
  * @author caron
  * @since 11/11/13
  */
-public interface MCollection extends AutoCloseable {
+public interface MCollection extends Closeable {
 
   /**
    * The name of the collection

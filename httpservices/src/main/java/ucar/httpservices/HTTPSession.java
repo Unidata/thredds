@@ -57,9 +57,13 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
 import javax.net.ssl.SSLException;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.net.*;
+import java.net.ConnectException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +112,7 @@ import static org.apache.http.auth.AuthScope.*;
  */
 
 @NotThreadSafe
-public class HTTPSession implements AutoCloseable
+public class HTTPSession implements Closeable
 {
     //////////////////////////////////////////////////
     // Constants

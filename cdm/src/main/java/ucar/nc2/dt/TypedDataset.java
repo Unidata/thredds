@@ -33,10 +33,12 @@
 
 package ucar.nc2.dt;
 
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
 
-import java.util.*;
+import java.io.Closeable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Superclass for "scientific type" datasets.
@@ -49,7 +51,7 @@ import java.util.*;
  * @author caron
  */
 
-public interface TypedDataset extends AutoCloseable {
+public interface TypedDataset extends Closeable {
 
   /** @return Title of the dataset. */
   public String getTitle();
