@@ -33,24 +33,14 @@
 
 package opendap.test;
 
-import junit.framework.TestCase;
-import org.apache.http.HttpRequest;
-import ucar.nc2.util.EscapeStrings;
+import org.junit.Test;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
+import ucar.nc2.util.EscapeStrings;
 
-public class TestEncode extends TestCase {
-  final String TITLE = "URL Encode Tests";
-
-  public TestEncode(String name, String testdir) {
-    super(name);
-  }
-
-  public TestEncode(String name) {
-    super(name);
-  }
-
-public void testURLEncode() throws Exception {
+public class TestEncode {
+  @Test
+  public void testURLEncode() throws Exception {
     String legal = "";
     String illegal = "";
     // Check for url legal/illegal characters
@@ -69,6 +59,7 @@ public void testURLEncode() throws Exception {
       System.out.println("illegal url characters = |"+illegal+"|");
   }
 
+  @Test
   public void testQueryEncode() throws Exception {
     String legal = "";
     String illegal = "";
@@ -88,10 +79,10 @@ public void testURLEncode() throws Exception {
       System.out.println("illegal query characters = |"+illegal+"|");
     }
 
+  @Test
   public void testOGC() {
       EscapeStrings.testOGC();
   }
-
 
   public static void testB(String x) {
     System.out.printf("org ==   %s%n", x);
@@ -100,7 +91,7 @@ public void testURLEncode() throws Exception {
     assert x.equals(EscapeStrings.backslashUnescape(EscapeStrings.backslashEscape(x, ".\\")));
   }
 
-
+  @Test
   public void testBackslashEscape() {
     testB("var.name");
     testB("var..name");
@@ -108,12 +99,4 @@ public void testURLEncode() throws Exception {
     testB(".var..na\\me");
     testB(".var.\\.na\\me");
   }
-
-  public static void main(String args[]) throws Exception {
-    TestEncode test = new TestEncode("TestEncode");
-    //test.testEncode();
-    test.testOGC();
-  }
-
 }
-
