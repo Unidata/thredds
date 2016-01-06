@@ -1,14 +1,16 @@
 package dap4.test;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsExternalResource;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Assert;
-import org.junit.experimental.categories.Category;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.NeedsExternalResource;
 
 /**
  * Test at the NetcdfDataset level
@@ -90,24 +92,9 @@ public class TestConstraints extends DapTestCommon
     String sourceurl = null;
 
     //////////////////////////////////////////////////
-    // Constructor(s)
 
-    public TestConstraints()
-            throws Exception
-    {
-        this("TestConstraints");
-    }
-
-    public TestConstraints(String name)
-            throws Exception
-    {
-        this(name, null);
-    }
-
-    public TestConstraints(String name, String[] argv)
-            throws Exception
-    {
-        super(name);
+    @Before
+    public void setup() throws Exception {
         this.root = getDAP4Root();
         if(this.root == null)
             throw new Exception("dap4 root cannot be located");
@@ -158,6 +145,7 @@ public class TestConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test method
     @Category(NeedsExternalResource.class)
+    @Test
     public void testConstraints()
             throws Exception
     {
