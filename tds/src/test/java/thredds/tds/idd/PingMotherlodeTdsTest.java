@@ -9,6 +9,7 @@ import org.junit.runners.Parameterized;
 import thredds.client.catalog.Catalog;
 import thredds.tds.ethan.TestAll;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -22,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 @Category(NeedsExternalResource.class)
 public class PingMotherlodeTdsTest
 {
-  private String tdsUrl = "http://thredds.ucar.edu/thredds/";
+  private String tdsUrl = "http://"+ TestDir.threddsServer+"/thredds/";
 
   private String catUrl;
 

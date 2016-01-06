@@ -57,6 +57,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Run through the named catalogs, open a random dataset from each collection
@@ -64,7 +65,7 @@ import ucar.unidata.test.util.NeedsExternalResource;
 @RunWith(Parameterized.class)
 @Category(NeedsExternalResource.class)
 public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
-  public static String server = "http://thredds-test.unidata.ucar.edu/thredds";
+  public static String server = "http://"+TestDir.threddsTestServer+"/thredds";
 
   @Parameterized.Parameters(name="{0}")
  	public static Collection<Object[]> getTestParameters() {

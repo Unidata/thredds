@@ -40,6 +40,7 @@ import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.io.RandomAccessFile;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -48,7 +49,7 @@ import java.io.IOException;
  * @author caron
  * @since 8/4/2014
  */
-public class Grib2NetcdfWriter implements AutoCloseable {
+public class Grib2NetcdfWriter implements Closeable {
   String fileIn;
   NetcdfFileWriter writer;
 

@@ -42,6 +42,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * _more_
@@ -63,7 +64,7 @@ public class CrawlRandomDatasetsOnMotherlodeTds
 
     @Parameterized.Parameters(name="{0}")
     public static Collection<Object[]> getDatasetUrls() throws IOException {
-        String tdsUrl = "http://thredds.ucar.edu/thredds/";
+        String tdsUrl = "http://"+ TestDir.threddsServer+"/thredds/";
         StringBuilder log = new StringBuilder();
 
         List<String> catalogUrls = new ArrayList<>();

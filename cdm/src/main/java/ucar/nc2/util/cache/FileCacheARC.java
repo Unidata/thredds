@@ -249,8 +249,10 @@ public class FileCacheARC implements FileCacheIF {
 
     // check if modified, remove if so
     if (want.ncfile != null) {
-      long lastModified = want.ncfile.getLastModified();
-      if (lastModified != wantCacheElem.lastModified.get()) { // underlying file was modified
+      long lastModified = want.ncfile.getLastModified();  // Will be 0 if ncfile is closed.
+      boolean changed = lastModified != 0 && lastModified != wantCacheElem.lastModified.get();
+
+      if (changed) { // underlying file was modified
         if (cacheLog.isDebugEnabled())
           cacheLog.debug("FileCacheARC " + name + ": acquire from cache " + hashKey + " " + want.ncfile.getLocation() + " was changed; discard");
 

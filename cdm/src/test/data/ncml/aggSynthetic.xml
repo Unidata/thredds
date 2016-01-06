@@ -7,9 +7,9 @@
 
   <aggregation  dimName="time" type="joinNew">
     <variableAgg name="T"/>
-    <netcdf location="file:src/test/data/ncml/nc/time0.nc" coordValue="0"/>
-    <netcdf location="file:src/test/data/ncml/nc/time1.nc" coordValue="10"/>
-    <netcdf location="file:src/test/data/ncml/nc/time2.nc" coordValue="99"/>
+    <netcdf location="nc/time0.nc" coordValue="0"/>
+    <netcdf location="nc/time1.nc" coordValue="10"/>
+    <netcdf location="nc/time2.nc" coordValue="99"/>
   </aggregation>
 
 </netcdf>

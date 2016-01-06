@@ -34,6 +34,7 @@ package ucar.nc2.thredds.server;
 
 import thredds.client.catalog.writer.CrawlingUtils;
 import ucar.nc2.ui.widget.StopButton;
+import ucar.unidata.test.util.TestDir;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class TestTDSdataset {
     String dataset;
 
     //String dataset = "http://motherlode.ucar.edu:9080/thredds/dodsC/fmrc/NCEP/NDFD/CONUS_5km/files/NDFD_CONUS_5km_20070502_1200.grib2";
-    dataset = "thredds:resolve:http://thredds-dev.unidata.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.xml";
+    dataset = "thredds:resolve:http://"+ TestDir.threddsDevServer+"/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.xml";
     //String dataset = "http://www.gomoos.org/cgi-bin/dods/nph-dods/buoy/dods/A01/A01.accelerometer.historical.nc";
     //dataset="dods://dataportal.ucar.edu:9191/dods/cam3_aquaplanet/run1";  // prob GRADS
     //dataset= "http://ingrid.ldeo.columbia.edu/SOURCES/.CAC/dods";

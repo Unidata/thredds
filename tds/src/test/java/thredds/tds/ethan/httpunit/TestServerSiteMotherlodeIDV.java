@@ -45,6 +45,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * A description
@@ -60,7 +61,7 @@ public class TestServerSiteMotherlodeIDV extends TestCase
   private WebConversation wc;
 
   /** The TDS site to test. */
-  private String host = "thredds.ucar.edu";
+  private String host = TestDir.threddsServer;
 
   String latestString = "dqc/latestModel-InvCat1.0";
   String latestOldString = "dqc/latestModel-InvCat0.6";

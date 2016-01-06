@@ -33,14 +33,6 @@
 
 package ucar.httpservices;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.*;
-
 import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.methods.*;
@@ -48,6 +40,16 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import static ucar.httpservices.HTTPSession.*;
 
@@ -149,7 +151,7 @@ import static ucar.httpservices.HTTPSession.*;
  * </ul>
  */
 
-public class HTTPMethod implements AutoCloseable
+public class HTTPMethod implements Closeable
 {
     //////////////////////////////////////////////////
     // Instance fields

@@ -48,6 +48,7 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Describe
@@ -59,7 +60,7 @@ import ucar.unidata.test.util.NeedsExternalResource;
 public class TestStream {
   @Test
   public void testStream1() throws URISyntaxException {
-    String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
+    String catalogName = "http://"+ TestDir.threddsServer+"/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
     try {
@@ -83,7 +84,7 @@ public class TestStream {
 
   @Test
   public void testString() throws URISyntaxException {
-    String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
+    String catalogName = "http://"+TestDir.threddsServer+"/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
     try {

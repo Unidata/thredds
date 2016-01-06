@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.util.IO;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * _more_
@@ -216,8 +217,8 @@ public class PoundTdsWmsTest
                   "2010-11-02T21:00:00.000Z",
                   "2010-11-03T00:00:00.000Z"
           };
-  private static String ml8081GfsHalfDegreeBestWmsGetCapUrl = "http://thredds.ucar.edu/thredds/wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?service=WMS&version=1.3.0&request=GetCapabilities";
-  private static String ml8081GfsHalfDegreeBestWmsGetMapBaseUrl = "http://thredds.ucar.edu/thredds/wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?service=WMS&version=1.3.0&request=GetMap&TRANSPARENT=true&STYLES=boxfill%2Frainbow&CRS=EPSG%3A4326&COLORSCALERANGE=0.2%2C62.9&NUMCOLORBANDS=20&LOGSCALE=false&EXCEPTIONS=XML&FORMAT=image%2Fpng&BBOX=-180,-90,180,90&WIDTH=256&HEIGHT=256&LAYERS=Precipitable_water&ELEVATION=0&TIME=";
+  private static String ml8081GfsHalfDegreeBestWmsGetCapUrl = "http://"+ TestDir.threddsServer+"/thredds/wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?service=WMS&version=1.3.0&request=GetCapabilities";
+  private static String ml8081GfsHalfDegreeBestWmsGetMapBaseUrl = "http://"+TestDir.threddsServer+"/thredds/wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?service=WMS&version=1.3.0&request=GetMap&TRANSPARENT=true&STYLES=boxfill%2Frainbow&CRS=EPSG%3A4326&COLORSCALERANGE=0.2%2C62.9&NUMCOLORBANDS=20&LOGSCALE=false&EXCEPTIONS=XML&FORMAT=image%2Fpng&BBOX=-180,-90,180,90&WIDTH=256&HEIGHT=256&LAYERS=Precipitable_water&ELEVATION=0&TIME=";
   private static String[] ml8081GfsHalfDegreeBestWmsTimeStrings = new String[]
           {
                   "2010-11-06T00:00:00.000Z",

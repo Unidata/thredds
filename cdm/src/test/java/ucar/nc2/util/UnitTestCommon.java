@@ -152,7 +152,7 @@ public class UnitTestCommon
         if(DEBUG) {
             System.err.println("UnitTestCommon: dtsServer=" + dtsServer);
         }
-        this.threddsServer = TestDir.threddsTestServer;
+        this.threddsServer = TestDir.remoteTestServer;
         if(DEBUG) {
             System.err.println("UnitTestCommon: threddsServer=" + threddsServer);
         }

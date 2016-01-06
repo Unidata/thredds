@@ -165,6 +165,9 @@ public class CF1Convention extends CSMConvention {
             if (v.findAttribute(_Coordinate.Axes) == null)
               v.addAttribute(new Attribute(_Coordinate.Axes, v.getFullName())); // LOOK: may also be time dependent
           }
+
+          // look for time variables and check to see if they have a calendar attribute. if not, add the default
+          checkTimeVarForCalendar(v);
       }
 
       // look for horiz transforms. only ones that are referenced by another variable.

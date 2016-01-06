@@ -85,9 +85,9 @@ public class TestGrid2 extends UnitTestCommon
         boolean pass = true;
         NetcdfDataset ncfile = null;
         if(TestDir.threddsTestServer.startsWith("localhost"))
-            url = "dods://" + TestDir.threddsTestServer + URLPATH_LOCAL;
+            url = "dods://" + TestDir.remoteTestServer + URLPATH_LOCAL;
         else
-            url = "dods://" + TestDir.threddsTestServer + URLPATH_REMOTE;
+            url = "dods://" + TestDir.remoteTestServer + URLPATH_REMOTE;
 
         try {
             ncfile = NetcdfDataset.openDataset(url);
