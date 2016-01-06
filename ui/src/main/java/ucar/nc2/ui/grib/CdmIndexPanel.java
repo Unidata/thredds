@@ -1,3 +1,35 @@
+/*
+ * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ *
+ *  Portions of this software were developed by the Unidata Program at the
+ *  University Corporation for Atmospheric Research.
+ *
+ *  Access and use of this software shall impose the following obligations
+ *  and understandings on the user. The user is granted the right, without
+ *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  this software, and any derivative works thereof, and its supporting
+ *  documentation for any purpose whatsoever, provided that this entire
+ *  notice appears in all copies of the software, derivative works and
+ *  supporting documentation.  Further, UCAR requests that the user credit
+ *  UCAR/Unidata in any publications that result from the use of this
+ *  software or in any product that includes this software. The names UCAR
+ *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  to endorse or promote any products or commercial entity unless specific
+ *  written permission is obtained from UCAR/Unidata. The user also
+ *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  any support, consulting, training or assistance of any kind with regard
+ *  to the use, operation and performance of this software nor to provide
+ *  the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package ucar.nc2.ui.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -42,12 +74,11 @@ public class CdmIndexPanel extends JPanel {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndexPanel.class);
 
   private PreferencesExt prefs;
-
   private BeanTable groupTable, varTable, coordTable;
   private JSplitPane split, split2, split3;
 
-  private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
+  private TextHistoryPane infoTA, extraTA;
+  private IndependentWindow infoWindow, extraWindow;
   private MFileTable fileTable;
 
   public CdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
@@ -206,17 +237,28 @@ public class CdmIndexPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Test Time2D isOrthogonal/isRegular", new AbstractAction() {
+    varPopup.addAction("Test Time2D isOrthogonal", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CoordBean bean = (CoordBean) coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           testOrthogonal(f, bean.coord);
-          f.format("%n");
+          extraTA.setText(f.toString());
+          extraTA.gotoTop();
+          extraWindow.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Test Time2D isRegular", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
           testRegular(f, bean.coord);
-          infoTA.setText(f.toString());
-          infoTA.gotoTop();
-          infoWindow.show();
+          extraTA.setText(f.toString());
+          extraTA.gotoTop();
+          extraWindow.show();
         }
       }
     });
@@ -283,8 +325,12 @@ public class CdmIndexPanel extends JPanel {
     /////////////////////////////////////////
     // the info windows
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+
+    extraTA = new TextHistoryPane();
+    extraWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), extraTA);
+    extraWindow.setBounds((Rectangle) prefs.getBean("ExtraWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     setLayout(new BorderLayout());
 
@@ -306,6 +352,7 @@ public class CdmIndexPanel extends JPanel {
     coordTable.saveState(false);
     fileTable.save();
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    prefs.putBeanObject("ExtraWindowBounds", extraWindow.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
     if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
@@ -581,16 +628,44 @@ public class CdmIndexPanel extends JPanel {
     for (int runIdx = 0; runIdx < time2D.getNruns(); runIdx++) {
       coords.add(time2D.getTimeCoordinate(runIdx));
     }
-    return testOrthogonal(f, coords);
+    return testOrthogonal(f, coords, true);
+  }
+
+  private boolean testOrthogonal(Formatter f, List<CoordinateTimeAbstract> times, boolean show) {
+    int max = 0;
+    Map<Object, Integer> allCoords = new HashMap<>(1000);
+    for (CoordinateTimeAbstract coord : times) {
+      max = Math.max(max, coord.getSize());
+      for (Object val : coord.getValues()) {
+        Integer count = allCoords.get(val);
+        if (count == null) allCoords.put(val, 1);
+        else allCoords.put(val, count + 1);
+      }
+    }
+
+    // is the set of all values the same as the component times?
+    int totalMax = allCoords.size();
+    boolean isOrthogonal = (totalMax == max);
+
+    if (show) {
+      f.format("isOrthogonal %s : allCoords.size = %d max of coords=%d%nAllCoords=%n", isOrthogonal, totalMax, max);
+      List allList = new ArrayList<>(allCoords.keySet());
+      Collections.sort(allList);
+      for (Object coord : allList) {
+        Integer count = allCoords.get(coord);
+        f.format("  %4d %s%n", count, coord);
+      }
+    }
+
+    return isOrthogonal;
   }
 
   // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)
   private boolean testRegular(Formatter f, Coordinate c) {
     if (!(c instanceof CoordinateTime2D)) {
-      f.format("testRegular only on CoordinateTime2D%n");
+      f.format("testOrthogonal only on CoordinateTime2D%n");
       return false;
     }
-    f.format("Test isRegular by Offset Hour%n");
     CoordinateTime2D time2D = (CoordinateTime2D) c;
 
     // group time coords by offset hour
@@ -611,34 +686,21 @@ public class CdmIndexPanel extends JPanel {
     boolean ok = true;
     for (int hour : hourMap.keySet()) {
       List<CoordinateTimeAbstract> hg = hourMap.get(hour);
-      f.format("Hour %d: ", hour);
-      for (CoordinateTimeAbstract coord : hg) f.format("%s,", coord.getRefDate());
+      boolean isOrthogonal = testOrthogonal(f, hg, false);
+      f.format("Hour %d: isOrthogonal=%s%n", hour, isOrthogonal);
+      ok &= isOrthogonal;
+    }
+    f.format("%nAll are orthogonal: %s%n", ok);
+    if (ok) return true;
+
+    for (int hour : hourMap.keySet()) {
+      List<CoordinateTimeAbstract> hg = hourMap.get(hour);
+      f.format("Hour %d: %n", hour);
+      testOrthogonal(f, hg, true);
       f.format("%n");
-      ok &= testOrthogonal(f, hg);
     }
-    f.format("%nAll orthogonal: %s%n", ok);
-    return ok;
+    return false;
   }
-
-  private boolean testOrthogonal(Formatter f, List<CoordinateTimeAbstract> times) {
-    int max = 0;
-    Set<Object> allCoords = new HashSet<>(100);
-    for (CoordinateTimeAbstract coord : times) {
-      max = Math.max(max, coord.getSize());
-      for (Object val : coord.getValues())
-        allCoords.add(val);
-    }
-
-    // is the set of all values the same as the component times?
-    int totalMax = allCoords.size();
-    boolean isOrthogonal = (totalMax == max);
-    f.format("isOrthogonal %s : allCoords.size = %d max of coords=%d%nAllCoords=%n", isOrthogonal, totalMax, max);
-    for (Object coord : allCoords) {
-      f.format("  %s%n", coord);
-    }
-    return isOrthogonal;
-  }
-
 
   /* private void compareFiles(Formatter f) throws IOException {
     if (gc == null) return;

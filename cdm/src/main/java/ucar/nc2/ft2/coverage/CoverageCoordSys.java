@@ -152,6 +152,7 @@ public class CoverageCoordSys {
       }
     }
 
+    // LOOK would be better maybe to share time2DCoordSys across CoordSys
     if (timeOffsetAxis != null) {
       if (runtimeAxis == null)
         throw new RuntimeException("TimeOffset Axis must have a RunTime axis in a CoverageCoordSys");

@@ -33,6 +33,7 @@
 
 package thredds.server.admin;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -50,6 +51,10 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -64,9 +69,11 @@ import thredds.inventory.*;
 import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.config.TdsContext;
+import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -106,7 +113,6 @@ public class AdminCollectionController {
 
   @PostConstruct
   public void afterPropertiesSet() {
-    Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
     Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
 
     DebugCommands.Category debugHandler = debugCommands.findCategory("Collections");
@@ -116,12 +122,12 @@ public class AdminCollectionController {
       public void doAction(DebugCommands.Event e) {
         // get sorted list of collections
         List<FeatureCollectionRef> fcList = dataRootManager.getFeatureCollections();
-        Collections.sort(fcList, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+        Collections.sort(fcList, (o1, o2) -> o1.getCollectionName().compareTo(o2.getCollectionName()));
 
         for (FeatureCollectionRef fc : fcList) {
           String uriParam = Escape.uriParam(fc.getCollectionName());
           String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + uriParam;
-          e.pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
+          e.pw.printf("<p/><a href='%s'>%s</a> (%s)%n", url, fc.getCollectionName(), fc.getName());
           FeatureCollectionConfig config = fc.getConfig();
           if (config != null)
             e.pw.printf("%s%n", config.spec);
@@ -194,7 +200,7 @@ public class AdminCollectionController {
 
   // LOOK change to ResponseEntity<String>
   @RequestMapping(value = {"/showStatus"})
-  protected ModelAndView handleCollectionStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
+  protected ModelAndView showCollectionStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
     res.setContentType(ContentType.html.getContentHeader());
     PrintWriter pw = res.getWriter();
 
@@ -205,7 +211,7 @@ public class AdminCollectionController {
     for (FeatureCollectionRef fc : fcList) {
       String uriParam = Escape.uriParam(fc.getCollectionName());
       String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + uriParam;
-      pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
+      pw.printf("<p/><a href='%s'>%s</a> (%s)%n", url, fc.getCollectionName(), fc.getName());
       InvDatasetFeatureCollection fcd = datasetManager.openFeatureCollection(fc);
 
       pw.printf("<pre>%s</pre>%n", fcd.showStatusShort("txt"));
@@ -215,7 +221,7 @@ public class AdminCollectionController {
 
   // LOOK change to ResponseEntity<String>
   @RequestMapping(value = {"/showStatus.csv"})
-  protected ModelAndView handleCollectionStatusCsv(HttpServletRequest req, HttpServletResponse res) throws Exception {
+  protected ModelAndView showCollectionStatusCsv(HttpServletRequest req, HttpServletResponse res) throws Exception {
     res.setContentType(ContentType.csv.getContentHeader());
     PrintWriter pw = res.getWriter();
 
@@ -287,7 +293,7 @@ public class AdminCollectionController {
 
   // LOOK change to ResponseEntity<String>
   @RequestMapping(value = {""})
-  protected ModelAndView showFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws Exception {
+  protected ModelAndView showCollection(HttpServletRequest req, HttpServletResponse res) throws Exception {
     res.setContentType(ContentType.html.getContentHeader());
     PrintWriter pw = res.getWriter();
 
@@ -307,9 +313,28 @@ public class AdminCollectionController {
 
     String uriParam = Escape.uriParam(want.getCollectionName());
     String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + uriParam + "&" + TRIGGER + "=" + CollectionUpdateType.nocheck;
-    pw.printf("<p/><a href='%s'>Send trigger to %s</a>%n", url, Escape.html(want.getName()));
+    pw.printf("<p/><a href='%s'>Send trigger to %s</a>%n", url, Escape.html(want.getCollectionName()));
+
+    String url2 = tdsContext.getContextPath() + PATH + "/download?" + COLLECTION + "=" + uriParam;
+    pw.printf("<p/><a href='%s'>Download index file for %s</a>%n", url2, Escape.html(want.getCollectionName()));
 
     pw.flush();
+    return null;
+  }
+
+  @RequestMapping(value = {"/download"})
+  protected ResponseEntity<String> downloadIndex(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    String collectName = StringUtil2.unescape(req.getParameter(COLLECTION)); // this is the collection name
+    FeatureCollectionRef want = dataRootManager.findFeatureCollection(collectName);
+
+    if (want == null) {
+      HttpHeaders responseHeaders = new HttpHeaders();
+      responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+      return new ResponseEntity<>(Escape.html(collectName) + " NOT FOUND", responseHeaders, HttpStatus.NOT_FOUND);
+    }
+
+    File idxFile = GribCdmIndex.getTopIndexFileFromConfig(want.getConfig());
+    ServletUtil.returnFile(req, res, idxFile, ContentType.binary.toString());
     return null;
   }
 

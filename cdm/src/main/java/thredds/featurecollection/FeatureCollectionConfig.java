@@ -125,9 +125,9 @@ public class FeatureCollectionConfig {
     String increasingS = filesSortElem.getAttributeValue("increasing");
     if (increasingS != null) {
       if (increasingS.equalsIgnoreCase("true"))
-        filesSortIncreasing  = Optional.of(true);
+        filesSortIncreasing = Optional.of(true);
       else if (increasingS.equalsIgnoreCase("false"))
-        filesSortIncreasing  = Optional.of(false);
+        filesSortIncreasing = Optional.of(false);
     }
   }
 
@@ -341,7 +341,7 @@ public class FeatureCollectionConfig {
 
   ////////////////////////////////////////////////
 
-    //
+  //
   public static void setRegularizeDefault(boolean t) {
     regularizeDefault = t;
   }
@@ -522,9 +522,9 @@ public class FeatureCollectionConfig {
         String increasingS = filesSortElem.getAttributeValue("increasing");
         if (increasingS != null) {
           if (increasingS.equalsIgnoreCase("true"))
-            filesSortIncreasing  = Optional.of(true);
+            filesSortIncreasing = Optional.of(true);
           else if (increasingS.equalsIgnoreCase("false"))
-            filesSortIncreasing  = Optional.of(false);
+            filesSortIncreasing = Optional.of(false);
 
         } else { // older way
           Element lexigraphicByName = filesSortElem.getChild("lexigraphicByName", ns);
@@ -532,9 +532,9 @@ public class FeatureCollectionConfig {
             increasingS = lexigraphicByName.getAttributeValue("increasing");
             if (increasingS != null) {
               if (increasingS.equalsIgnoreCase("true"))
-               filesSortIncreasing  = Optional.of(true);
-             else if (increasingS.equalsIgnoreCase("false"))
-               filesSortIncreasing  = Optional.of(false);
+                filesSortIncreasing = Optional.of(true);
+              else if (increasingS.equalsIgnoreCase("false"))
+                filesSortIncreasing = Optional.of(false);
             }
           }
         }
@@ -544,13 +544,16 @@ public class FeatureCollectionConfig {
       for (Element intvElem : intvElems) {
         if (intvFilter == null) intvFilter = new GribIntvFilter();
         String excludeZero = intvElem.getAttributeValue("excludeZero");
-        if (excludeZero != null) setExcludeZero( !excludeZero.equals("false"));
+        if (excludeZero != null) setExcludeZero(!excludeZero.equals("false"));
+        String intervalS = intvElem.getAttributeValue("interval");
+        if (intervalS != null) intvFilter.addInterval(intervalS);
+
         String intvLengthS = intvElem.getAttributeValue("intvLength");
-        if (intvLengthS == null) continue;
-        int intvLength = Integer.parseInt(intvLengthS);
-        List<Element> varElems = intvElem.getChildren("variable", ns);
-        for (Element varElem : varElems) {
-          intvFilter.addVariable(intvLength, varElem.getAttributeValue("id"), varElem.getAttributeValue("prob"));
+        if (intvLengthS != null) {
+          int intvLength = Integer.parseInt(intvLengthS);
+          List<Element> varElems = intvElem.getChildren("variable", ns);
+          for (Element varElem : varElems)
+            intvFilter.addVariable(intvLength, varElem.getAttributeValue("id"), varElem.getAttributeValue("prob"));
         }
       }
 
@@ -580,9 +583,9 @@ public class FeatureCollectionConfig {
         return true;
       }
       if (name.equalsIgnoreCase("runtimeCoordinate") && value.equalsIgnoreCase("union")) {
-         unionRuntimeCoord = true;
+        unionRuntimeCoord = true;
         return true;
-       }
+      }
       return false;
     }
 
@@ -713,8 +716,8 @@ public class FeatureCollectionConfig {
     }
 
     public Object getIospMessage() {
-      if (lookupTablePath != null) return "gribParameterTableLookup="+lookupTablePath;
-      if (paramTablePath != null) return "gribParameterTable="+paramTablePath;
+      if (lookupTablePath != null) return "gribParameterTableLookup=" + lookupTablePath;
+      if (paramTablePath != null) return "gribParameterTable=" + paramTablePath;
       return null;
     }
 
@@ -727,20 +730,56 @@ public class FeatureCollectionConfig {
 
   } // GribConfig
 
-  static public class GribIntvFilterParam {
+  //////////////////////////////////////////////////////////////////////////
+
+  interface IntvFilter {
+    // true means discard
+    boolean filter(int id, int intvStart, int intvEnd, int prob);
+  }
+
+  static class IntvLengthFilter implements IntvFilter {
     public final int id;
     public final int intvLength;
     public final int prob; // none = Integer.MIN_VALUE;
 
-   public GribIntvFilterParam(int id, int intvLength, int prob) {
+    public IntvLengthFilter(int id, int intvLength, int prob) {
       this.id = id;
       this.intvLength = intvLength;
       this.prob = prob;
     }
+
+    public boolean filter(int id, int intvStart, int intvEnd, int prob) {
+      int intvLength = intvEnd - intvStart;
+      boolean needProb = (this.prob != Integer.MIN_VALUE); // filter uses prob
+      boolean hasProb = (prob != Integer.MIN_VALUE); // record has prob
+      boolean isMine = !needProb || hasProb && (this.prob == prob);
+      if (this.id == id && isMine) { // first match in the filter list is used
+        if (this.intvLength != intvLength)
+          return true; // remove the ones whose intervals dont match
+      }
+      return false;
+    }
+  }
+
+  static class IntervalFilter implements IntvFilter {
+    public final int start, end;
+
+    public IntervalFilter(int start, int end) {
+      this.start = start;
+      this.end = end;
+    }
+
+    public boolean filter(int id, int intvStart, int intvEnd, int prob) {
+      boolean match = (this.start == intvStart) && (this.end == intvEnd); // remove ones that match
+      if (match) {
+        log.info("interval filter applied id="+id);
+      }
+      return match;
+    }
   }
 
   static public class GribIntvFilter {
-    public List<GribIntvFilterParam> filter;
+    public List<IntvFilter> filterList = new ArrayList<>();
     public boolean isZeroExcluded = true; // default is true 3/2/2015
 
     public boolean isZeroExcluded() {
@@ -748,34 +787,53 @@ public class FeatureCollectionConfig {
     }
 
     public boolean hasFilter() {
-      return (filter != null);
+      return (filterList.size() > 0);
     }
-    /*
-          <intvFilter intvLength="12">
-            <variable id="0-1-8" prob="50800"/>
-          </intvFilter>
-          <intvFilter intvLength="3">
-            <variable id="0-1-8"/>
-          </intvFilter>
 
-     */
+    // true means discard
+    public boolean filter(int id, int intvStart, int intvEnd, int prob) {
+      int intvLength = intvEnd - intvStart;
+      if (intvLength == 0 && isZeroExcluded()) return true;
 
-    // true means use, false means discard
-    public boolean filterOk(int id, int intvLength, int prob) {
-      if (intvLength == 0 && isZeroExcluded()) return false;
-      if (filter == null) return true;
-      for (GribIntvFilterParam param : filter) {
-        boolean needProb = (param.prob != Integer.MIN_VALUE); // filter uses prob
-        boolean hasProb = (prob != Integer.MIN_VALUE); // record has prob
-        boolean isMine = !needProb || hasProb && (param.prob == prob);
-        if (param.id == id && isMine) { // first match in the filter list is used
-          if (param.intvLength != intvLength)
-            return false; // remove the ones whose intervals dont match
-        }
+      for (IntvFilter filter : filterList) {
+        if (filter.filter(id, intvStart, intvEnd, prob)) return true;
       }
-      return true;
+      return false;
     }
 
+    // <intvFilter interval="225,228">
+    void addInterval(String intervalS) {
+      if (intervalS == null) {
+        log.warn("Error on interval attribute: must not be empty");
+        return;
+      }
+
+      String[] s = intervalS.split(",");
+      if (s.length != 2) {
+        log.warn("Error on interval attribute: must be of form 'start,end'");
+        return;
+      }
+
+      try {
+        int start = Integer.parseInt(s[0]);
+        int end = Integer.parseInt(s[1]);
+
+        filterList.add(new IntervalFilter(start, end));
+
+      } catch (NumberFormatException e) {
+        log.info("Error on intvFilter element - attribute must be an integer");
+      }
+    }
+
+    /*
+      <intvFilter intvLength="12">
+        <variable id="0-1-8" prob="50800"/>
+      </intvFilter>
+
+      <intvFilter intvLength="3">
+        <variable id="0-1-8"/>
+      </intvFilter>
+ */
     void addVariable(int intvLength, String idS, String probS) {
       if (idS == null) {
         log.warn("Error on intvFilter: must have an id attribute");
@@ -784,7 +842,7 @@ public class FeatureCollectionConfig {
 
       String[] s = idS.split("-");
       if (s.length != 3 && s.length != 4) {
-        log.warn("Error on intvFilter: id attribute must be of format 'discipline-category-number' (GRIB2) or 'center-subcenter-version-param' (GRIB1)");
+        log.warn("Error on intvFilter: id attribute must be of form 'discipline-category-number' (GRIB2) or 'center-subcenter-version-param' (GRIB1)");
         return;
       }
 
@@ -802,11 +860,9 @@ public class FeatureCollectionConfig {
           int param = Integer.parseInt(s[3]);
           id = (center << 8) + (subcenter << 16) + (version << 24) + param;
         }
-
         int prob = (probS == null) ? Integer.MIN_VALUE : Integer.parseInt(probS);
 
-        if (filter == null) filter = new ArrayList<>(10);
-        filter.add(new GribIntvFilterParam(id, intvLength, prob));
+        filterList.add(new IntvLengthFilter(id, intvLength, prob));
 
       } catch (NumberFormatException e) {
         log.info("Error on intvFilter element - attribute must be an integer");

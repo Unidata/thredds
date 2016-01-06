@@ -36,13 +36,13 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- *  Pluggable Look and Feel management.
+ * Pluggable Look and Feel management.
+ *
  * @author John Caron
  */
 
 public class PLAF {
-  private static UIManager.LookAndFeelInfo[] plafInfo = UIManager.getInstalledLookAndFeels();
-  private JComponent tree;
+  private JComponent topComponent;
   private boolean debug = false;
 
   /* Constructor.
@@ -57,48 +57,49 @@ public class PLAF {
     });
     </pre>
     */
-  public PLAF(JComponent tree) {
-    this.tree = tree;
+  public PLAF(JComponent topComponent) {
+    this.topComponent = topComponent;
   }
 
-    /** Add a set of MenuItems to the given JMenu, one for each possible L&F.
-     *  if this platform doesnt support the L&F, disable the MenuItem.
-    */
-  public void addToMenu( JMenu menu) {
-    if (debug) System.out.println("PLAF LookAndFeelInfo  ");
-    for (int i = 0; i < plafInfo.length; i++) {
-      addToMenu(plafInfo[i].getName(), plafInfo[i].getClassName(), menu);
+  /**
+   * Add a set of MenuItems to the given JMenu, one for each possible L&F.
+   * if this platform doesnt support the L&F, disable the MenuItem.
+   */
+  public void addToMenu(JMenu menu) {
+    UIManager.LookAndFeelInfo[] plafInfo = UIManager.getInstalledLookAndFeels();
+    for (UIManager.LookAndFeelInfo aPlafInfo : plafInfo) {
+      addToMenu(aPlafInfo.getName(), aPlafInfo.getClassName(), menu);
     }
 
-    addToMenu("Plastic", "com.jgoodies.plaf.plastic.PlasticLookAndFeel", menu);
+    LookAndFeel current = UIManager.getLookAndFeel();
+    System.out.printf("current L&F=%s%n", current.getName());
+
+    /* addToMenu("Plastic", "com.jgoodies.plaf.plastic.PlasticLookAndFeel", menu);
     addToMenu("Plastic3D", "com.jgoodies.plaf.plastic.Plastic3DLookAndFeel", menu);
     addToMenu("PlasticXP", "com.jgoodies.plaf.plastic.PlasticXPLookAndFeel", menu);
-    addToMenu("JGoodiesWindows", "com.jgoodies.plaf.windows.ExtWindowsLookAndFeel", menu);
+    addToMenu("JGoodiesWindows", "com.jgoodies.plaf.windows.ExtWindowsLookAndFeel", menu); */
   }
 
-  private void addToMenu( String name, String className, JMenu menu) {
-    if (debug) System.out.println("PLAF LookAndFeelInfo  "+className);
-      boolean isSupported = true;
-      try {
-        Class cl = Class.forName(className);
-        LookAndFeel lf = (LookAndFeel) cl.newInstance();
-        if (!lf.isSupportedLookAndFeel())
-          isSupported = false;
-      } catch (Throwable t) {
+  private void addToMenu(String name, String className, JMenu menu) {
+    if (debug) System.out.println("PLAF LookAndFeelInfo  " + className);
+    boolean isSupported = true;
+    try {
+      Class cl = Class.forName(className);
+      LookAndFeel lf = (LookAndFeel) cl.newInstance();
+      if (!lf.isSupportedLookAndFeel())
         isSupported = false;
-      }
+    } catch (Throwable t) {
+      isSupported = false;
+    }
 
-      AbstractAction act = new PLAFAction( name, className);
-      JMenuItem mi = menu.add( act);
-      if (!isSupported)
-        mi.setEnabled(false);
+    AbstractAction act = new PLAFAction(name, className);
+    JMenuItem mi = menu.add(act);
+    if (!isSupported)
+      mi.setEnabled(false);
   }
 
 
-  private void configureLF() {
-    /*
-
-
+  /*private void configureLF() {
 import com.jgoodies.plaf.FontSizeHints;
 import com.jgoodies.plaf.LookUtils;
 import com.jgoodies.plaf.Options;
@@ -120,29 +121,30 @@ import com.jgoodies.plaf.Options;
     Options.setGlobalFontSizeHints(FontSizeHints.MIXED);
     com.jgoodies.plaf.plastic.PlasticLookAndFeel.setFontSizeHints(FontSizeHints.LARGE);
 
-    Options.setDefaultIconSize(new Dimension(18, 18)); */
-  }
+    Options.setDefaultIconSize(new Dimension(18, 18));
+  } */
 
 
   private class PLAFAction extends AbstractAction {
     String plafClassName;
 
-    PLAFAction( String name, String plafClassName) {
+    PLAFAction(String name, String plafClassName) {
       this.plafClassName = plafClassName;
-      putValue( Action.NAME, name);
+      putValue(Action.NAME, name);
     }
 
     public void actionPerformed(ActionEvent evt) {
-      try{
-        UIManager.setLookAndFeel( plafClassName);
-      } catch (Exception ex){
-        System.out.println(ex);
+      try {
+        UIManager.setLookAndFeel(plafClassName);
+
+      } catch (Exception ex) {
+        ex.printStackTrace();
         return;
       }
 
       //this sets L&F for top level and its children only
       // Dialog boxes must listen fo L&F PropertyChangeEvents
-      SwingUtilities.updateComponentTreeUI( tree);
+      SwingUtilities.updateComponentTreeUI(topComponent);
     }
   }
 }

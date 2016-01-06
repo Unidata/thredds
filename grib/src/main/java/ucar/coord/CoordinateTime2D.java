@@ -225,8 +225,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s:", indent, getType());
-    info.format(" %s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, nruns, ntimes, isOrthogonal, isRegular);
-    runtime.showInfo(info, indent);
+    info.format(" %s runtime=%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, runtime.getName(), nruns, ntimes, isOrthogonal, isRegular);
+    //runtime.showInfo(info, indent);
     indent.incr();
 
     info.format("%sAll time values=", indent);
@@ -254,8 +254,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, nruns, ntimes, isOrthogonal, isRegular);
-    runtime.showCoords(info);
+    info.format("%s runtime=%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, runtime.getName(), nruns, ntimes, isOrthogonal, isRegular);
+    //runtime.showCoords(info);
 
     if (isOrthogonal)
       otime.showCoords(info);

@@ -917,12 +917,21 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         f.format(" Group total nrecords=%d", nrecords);
         f.format(", ndups=%d", ndups);
         f.format(", nmiss=%d%n", nmissing);
+
+        int nruntimes = 0, ntimes = 0, ntimes2D = 0, ntimeIntvs = 0;
+        for (Coordinate coord : g.getCoordinates()) {
+          if (coord.getType() == Coordinate.Type.runtime) nruntimes++;
+          if (coord.getType() == Coordinate.Type.time) ntimes++;
+          if (coord.getType() == Coordinate.Type.timeIntv) ntimeIntvs++;
+          if (coord.getType() == Coordinate.Type.time2D) ntimes2D++;
+        }
+        f.format(" Group nruntimes=%d ntimes=%d ntimeIntvs=%d ntimes2D=%d%n", nruntimes, ntimes, ntimeIntvs, ntimes2D);
       }
     }
     if (fileMap == null) {
-      f.format("Files empty%n");
+      f.format("%nFiles empty%n");
     } else {
-      f.format("Files count = %d%n", fileMap.size());
+      f.format("%nFiles count = %d%n", fileMap.size());
       for (int index : fileMap.keySet())
         f.format("  %d: %s%n", index, fileMap.get(index));
       f.format("%n");

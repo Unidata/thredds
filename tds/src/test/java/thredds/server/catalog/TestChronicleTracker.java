@@ -92,7 +92,7 @@ public class TestChronicleTracker {
           countDs[1]++;
           return true;
         }
-      });
+      }, null, null, null);
 
 
       PrintWriter pw = new PrintWriter(System.out);
@@ -107,7 +107,7 @@ public class TestChronicleTracker {
 
       //Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
       //count += crawler.crawlAllInDirectory(top, false, null, null, null);
-      count += crawler.crawl("file:B:/esgf/gfdl/esgcet/catalog.xml", null, null, null);
+      count += crawler.crawl("file:B:/esgf/gfdl/esgcet/catalog.xml");
 
       pw.flush();
 

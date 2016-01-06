@@ -34,17 +34,12 @@
 package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
-import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.MCollection;
 import ucar.coord.*;
 import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Common superclass for writing Grib ncx files
@@ -198,7 +193,7 @@ class GribCollectionWriter {
   }
 
   ///////////////////////////////////////////////////////
-  // not currently used
+  /* not currently used
 
   protected GribCollectionProto.FcConfig writeConfig(FeatureCollectionConfig config) throws IOException {
     GribCollectionProto.FcConfig.Builder b = GribCollectionProto.FcConfig.newBuilder();
@@ -225,7 +220,7 @@ class GribCollectionWriter {
 
     if (gribConfig.intvFilter != null) {
       b.setIntvExcludeZero(gribConfig.intvFilter.isZeroExcluded());
-      for (FeatureCollectionConfig.GribIntvFilterParam intvFilter : gribConfig.intvFilter.filter) {
+      for (FeatureCollectionConfig.GribIntvFilterParam intvFilter : gribConfig.intvFilter.filterList) {
         GribCollectionProto.IntvFilter.Builder bIntv = GribCollectionProto.IntvFilter.newBuilder();
         bIntv.setVariableId(intvFilter.id);
         bIntv.setIntvLength(intvFilter.intvLength);
@@ -277,10 +272,10 @@ class GribCollectionWriter {
     if ( isZeroExcluded || pconfig.getIntvFilterCount() > 0) {
       config.gribConfig.intvFilter =  new FeatureCollectionConfig.GribIntvFilter();
       config.gribConfig.intvFilter.isZeroExcluded = isZeroExcluded;
-      config.gribConfig.intvFilter.filter = new ArrayList<>();
+      config.gribConfig.intvFilter.filterList = new ArrayList<>();
       for (GribCollectionProto.IntvFilter pi :  pconfig.getIntvFilterList()) {
         int prob =  pi.getIntvProb();
-        config.gribConfig.intvFilter.filter.add(new FeatureCollectionConfig.GribIntvFilterParam(pi.getVariableId(), pi.getIntvLength(), prob));
+        config.gribConfig.intvFilter.filterList.add(new FeatureCollectionConfig.GribIntvFilterParam(pi.getVariableId(), pi.getIntvLength(), prob));
       }
     }
 
@@ -295,7 +290,7 @@ class GribCollectionWriter {
       config.gribConfig.setUserTimeUnit(pconfig.getDateFormatMark());
 
     return config;
-  }
+  } */
 
   static public GribCollectionProto.GribAxisType convertAxisType(Coordinate.Type type) {
     switch (type) {

@@ -105,31 +105,4 @@ public class TestCdmRemoteServer {
     System.out.println("ThreddsDataFactory.Result= "+dataResult);
   }
 
-  public void utestUrlReading() throws IOException {
-    Catalog cat = TdsLocalCatalog.open(null);
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, 0, null, new CatalogCrawler.Listener() {
-
-      @Override
-      public void getDataset(Dataset dd, Object context) {
-        try {
-          doOne(dd);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-
-      @Override
-      public boolean getCatalogRef(CatalogRef dd, Object context) {
-        return true;
-      }
-    });
-    long start = System.currentTimeMillis();
-    try {
-      crawler.crawl(cat, null, null, null, new Indent(2));
-    } finally {
-      long took = (System.currentTimeMillis() - start);
-      System.out.format("***Done " + cat + " took = " + took + " msecs%n");
-    }
-  }
-
 }

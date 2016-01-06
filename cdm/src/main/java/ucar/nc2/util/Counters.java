@@ -48,7 +48,7 @@ public class Counters {
   Map<String, Counter> map = new HashMap<>();
 
   public Counter add(String name) {
-    CounterImpl c = new CounterImpl(name);
+    Counter c = new Counter(name);
     counters.add(c);
     map.put(name, c);
     return c;
@@ -70,7 +70,7 @@ public class Counters {
 
   // return true if its a new value, not seen before
   public boolean count(String name, Comparable value) {
-    CounterImpl counter = (CounterImpl) map.get(name);
+    Counter counter = map.get(name);
     return counter.count(value);
   }
 
@@ -89,7 +89,7 @@ public class Counters {
     return result;
   }
 
-  public interface Counter {
+  /* public interface Counter {
     void show(Formatter f);
 
     String showRange();
@@ -98,12 +98,13 @@ public class Counters {
 
     void addTo(Counter sub);
 
+    // number of unique values
     int getUnique();
 
     // lowest value
     Comparable getFirst();
 
-    // highest value added
+    // highest value
     Comparable getLast();
 
     // mode of the dist: value with highest count
@@ -115,12 +116,18 @@ public class Counters {
     Counter setShowRange(boolean showRange);
 
     void reset();
-  }
+  } */
 
-  private static class CounterImpl implements Counter {
-    protected String name;
-    protected boolean showRange;
+  static public class Counter {
+    private String name;
+    private boolean showRange;
     private Comparable first, last;
+    private Map<Comparable, Integer> set = new HashMap<>();
+    private String range;
+
+    public Counter(String name) {
+      this.name = name;
+    }
 
     public String getName() {
       return name;
@@ -135,13 +142,6 @@ public class Counters {
       set = new HashMap<>();
     }
 
-    private Map<Comparable, Integer> set = new HashMap<>();
-    private String range;
-
-    public CounterImpl(String name) {
-      this.name = name;
-    }
-
     public boolean count(Comparable value) {
       Integer count = set.get(value);
       if (count == null) {
@@ -154,13 +154,52 @@ public class Counters {
     }
 
     public void addTo(Counter sub) {
-      CounterImpl subs = (CounterImpl) sub;
-      for (Map.Entry<Comparable, Integer> entry : subs.set.entrySet()) {
+      for (Map.Entry<Comparable, Integer> entry : sub.set.entrySet()) {
         Integer count = this.set.get(entry.getKey());
         if (count == null)
           count = 0;
         set.put(entry.getKey(), count + entry.getValue());
       }
+    }
+
+    public int getUnique() {
+      return set.size();
+    }
+
+    public Set<Comparable> getValues() {
+      return set.keySet();
+    }
+
+    public Integer getCount(Comparable key) {
+      return set.get(key);
+    }
+
+    public Comparable getFirst() {
+      return first;
+    }
+
+    public Comparable getLast() {
+      return last;
+    }
+
+    public Comparable getMode() {
+      int max = -1;
+      Comparable mode = null;
+      for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
+        if (entry.getValue() > max) {
+          max = entry.getValue();
+          mode = entry.getKey();
+        }
+      }
+      return mode;
+    }
+
+    public int getTotal() {
+      int total = 0;
+      for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
+        total += entry.getValue();
+      }
+      return total;
     }
 
     public void show(Formatter f) {
@@ -202,43 +241,6 @@ public class Counters {
         range = f.toString();
       }
       return range;
-    }
-
-    @Override
-    public int getUnique() {
-      return set.size();
-    }
-
-    @Override
-    public Comparable getFirst() {
-      return first;
-    }
-
-    @Override
-    public Comparable getLast() {
-      return last;
-    }
-
-    @Override
-    public Comparable getMode() {
-      int max = -1;
-      Comparable mode = null;
-      for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
-        if (entry.getValue() > max) {
-          max = entry.getValue();
-          mode = entry.getKey();
-        }
-      }
-      return mode;
-    }
-
-    @Override
-    public int getTotal() {
-      int total = 0;
-      for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
-        total += entry.getValue();
-      }
-      return total;
     }
   }
 

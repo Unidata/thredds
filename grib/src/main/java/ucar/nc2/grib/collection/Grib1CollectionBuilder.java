@@ -182,8 +182,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     if (intv == null) return false;
     int haveLength = intv[1] - intv[0];
 
-    // discard zero length intervals
-    if (haveLength == 0 && intvFilter != null && intvFilter.isZeroExcluded()) // default dont discard
+    // keep zero length intervals unless configured otherwise
+    if (haveLength == 0 && intvFilter != null && intvFilter.isZeroExcluded())
       return true;
 
     if (intvFilter != null && intvFilter.hasFilter()) {
@@ -193,7 +193,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       int param = pdss.getParameterNumber();
       int id = (center << 8) + (subcenter << 16) + (version << 24) + param;
 
-      return !intvFilter.filterOk(id, haveLength, Integer.MIN_VALUE);
+      return intvFilter.filter(id, intv[0], intv[1], Integer.MIN_VALUE);
     }
 
     return false;

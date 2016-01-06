@@ -171,7 +171,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     return groups;
   }
 
-  // true means remove
+  // true means discard
   private boolean filterIntervals(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
     // hack a whack - filter out records with unknown time units
     int timeUnit = gr.getPDS().getTimeUnit();
@@ -184,7 +184,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     if (intv == null) return false;   // not an interval
     int haveLength = intv[1] - intv[0];
 
-        // discard zero length intervals (default)
+    // discard zero length intervals (default)
     if (haveLength == 0 && (intvFilter == null || intvFilter.isZeroExcluded()))
       return true;
 
@@ -202,8 +202,8 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         prob = (int) (1000 * pdsProb.getProbabilityUpperLimit());
       }
 
-      // true means use, false means discard
-      return !intvFilter.filterOk(id, haveLength, prob);
+      // true means discard
+      return intvFilter.filter(id, intv[0], intv[1], prob);
     }
 
     return false;

@@ -353,6 +353,34 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   ////////////////////////////////
 
+  // this could be moved into grib ncx calculation
+  private boolean isRegular(Counters.Counter resol, double missingTolerence) {
+    if (resol.getUnique() == 1) return true; // all same resolution
+
+    Comparable mode = resol.getMode();
+    Number modeNumber = (Number) mode;
+    int modeCount = 0;
+    int nonModeCount = 0;
+
+    for (Comparable value : resol.getValues()) {
+      if (value.compareTo(mode) == 0)
+        modeCount = resol.getCount(value);
+      else {
+        Number valueNumber = (Number) value;
+        // non mode must be a multiple of mode - means there are some missing values
+        int rem = (valueNumber.intValue() % modeNumber.intValue());
+        if (rem != 0)
+          return false;
+        int multiple = (valueNumber.intValue() / modeNumber.intValue());
+        nonModeCount += multiple * resol.getCount(value);
+      }
+    }
+
+    // only tolerate these many missing values
+    double ratio =  (nonModeCount / (double) modeCount);
+    return ratio < missingTolerence;
+  }
+
   private void addRuntimeCoordAxis(CoordinateRuntime runtime) {
     String units = runtime.getPeriodName() + " since " + gribCollection.getMasterFirstDate().toString();
 
@@ -370,8 +398,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     //int n = master.getSize();
     boolean isScalar = (n == 1);      // this is the case of runtime[1]
     CoverageCoordAxis.DependenceType dependence = isScalar ? CoverageCoordAxis.DependenceType.scalar : CoverageCoordAxis.DependenceType.independent;
-    // LOOK CoverageCoordAxis.Spacing spacing = Misc.closeEnough(resol, resol2, percentTolerence) ? CoverageCoordAxis.Spacing.regular : CoverageCoordAxis.Spacing.irregularPoint;
-    CoverageCoordAxis.Spacing spacing = CoverageCoordAxis.Spacing.irregularPoint;
+    CoverageCoordAxis.Spacing spacing = isRegular(counters.get("resol"), missingTolerence) ? CoverageCoordAxis.Spacing.regular : CoverageCoordAxis.Spacing.irregularPoint;
 
     double[] values = null;
     if (spacing == CoverageCoordAxis.Spacing.irregularPoint) {
@@ -411,7 +438,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     return -1;
   }
 
-  private static final double percentTolerence = .10;
+  private static final double missingTolerence = .05;
+  private static final double smooshTolerence = .02;
   private Map<String, String> substCoords = new HashMap<>();
   private List<RuntimeSmoosher> runtimes = new ArrayList<>();
 
@@ -446,23 +474,26 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       return new RuntimeSmoosher(this.runtime, start, end, this.resol, npts);
     }
 
-    // LOOK assumes regular
     // try to merge runtime that are close enough: start, end, npts within percentTolerence, must have same resolution
     public boolean closeEnough(RuntimeSmoosher that) {
-      double total = (end - start);
-      double totalOther = (that.end - that.start);
-      if (!Misc.closeEnough(totalOther, total, percentTolerence)) return false;
-
-      double startP = Math.abs(start - that.start) / total;
-      if (startP > percentTolerence) return false;
-
-      double endP = Math.abs(end - that.end) / total;
-      if (endP > percentTolerence) return false;
+      // must be regular
+      if (runtime.getSpacing() != CoverageCoordAxis.Spacing.regular) return false;
+      if (that.runtime.getSpacing() != CoverageCoordAxis.Spacing.regular) return false;
 
       double nptsP = Math.abs(npts - that.npts) / (double) npts;
-      if (nptsP > percentTolerence) return false;
+      if (nptsP > smooshTolerence) return false;
 
-      return (Double.compare(that.resol, resol) == 0);
+      double total = (end - start);
+      double totalOther = (that.end - that.start);
+      if (!Misc.closeEnough(totalOther, total, smooshTolerence)) return false;
+
+      double startP = Math.abs(start - that.start) / total;
+      if (startP > smooshTolerence) return false;
+
+      double endP = Math.abs(end - that.end) / total;
+      if (endP > smooshTolerence) return false;
+
+      return Misc.closeEnough(that.resol, resol);
     }
   }
 
