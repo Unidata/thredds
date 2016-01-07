@@ -32,20 +32,21 @@
  */
 package ucar.nc2.util.cache;
 
-import net.jcip.annotations.ThreadSafe;
 import net.jcip.annotations.GuardedBy;
 
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.io.IOException;
 
+import net.jcip.annotations.ThreadSafe;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Keep cache of open FileCacheable objects, for example NetcdfFile.
@@ -351,8 +352,9 @@ public class FileCache implements FileCacheIF {
 
     // check if modified, remove if so
     if (want.ncfile != null) {
-      long lastModified = want.ncfile.getLastModified();
-      boolean changed = lastModified != want.lastModified;
+      long lastModified = want.ncfile.getLastModified();  // Will be 0 if ncfile is closed.
+      boolean changed = lastModified != 0 && lastModified != want.lastModified;
+
       if (cacheLog.isDebugEnabled() && changed)
         cacheLog.debug("FileCache " + name + ": acquire from cache " + hashKey + " " + want.ncfile.getLocation() + " was changed; discard");
       if (changed) {
@@ -364,11 +366,17 @@ public class FileCache implements FileCacheIF {
       try {
         want.ncfile.reacquire(); // rehydrate
       } catch (IOException ioe) {
-        remove(want);           // failed
+        if (cacheLog.isDebugEnabled())
+          cacheLog.debug("FileCache " + name + " acquire from cache " + hashKey + " " + want.ncfile.getLocation() +
+                         " failed: " + ioe.getMessage());
+        remove(want);  // failed
       }
     }
 
-    if (debugPrint) System.out.printf("  FileCache %s found in cache %s (countLocks %d)%n", name, hashKey, countLocked());
+    if (debugPrint && want.ncfile != null) {
+      System.out.printf("  FileCache %s found in cache %s (countLocks %d)%n", name, hashKey, countLocked());
+    }
+
     return want.ncfile;
   }
 
@@ -438,8 +446,7 @@ public class FileCache implements FileCacheIF {
     CacheElement.CacheFile file = files.get(ncfile); // using hashCode of the FileCacheable
     if (file != null) {
       if (!file.isLocked.get()) {
-        Exception e = new Exception("Stack trace");
-        cacheLog.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked; hash= "+ncfile.hashCode(), e);
+        cacheLog.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked; hash= "+ncfile.hashCode());
       }
       file.lastAccessed = System.currentTimeMillis();
       file.countAccessed++;

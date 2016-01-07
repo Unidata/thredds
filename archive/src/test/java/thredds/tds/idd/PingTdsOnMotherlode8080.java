@@ -39,6 +39,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 @RunWith(Parameterized.class)
 public class PingTdsOnMotherlode8080
@@ -60,7 +61,7 @@ public class PingTdsOnMotherlode8080
     @Test
     public void ping()
     {
-        String tdsUrl = "http://thredds.ucar.edu/thredds/";
+        String tdsUrl = "http://"+ TestDir.threddsServer+"/thredds/";
         CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );
     }
 }

@@ -47,7 +47,6 @@ import java.util.List;
  * @since 10/28/2014
  */
 public interface FileCacheIF {
-
   void enable();
   void disable();
 

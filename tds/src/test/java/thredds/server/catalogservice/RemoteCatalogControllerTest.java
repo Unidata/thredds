@@ -20,6 +20,7 @@ import thredds.core.StandardService;
 import thredds.mock.web.MockTdsContextLoader;
 import ucar.unidata.test.util.NeedsContentRoot;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

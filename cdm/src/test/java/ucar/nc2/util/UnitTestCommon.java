@@ -137,20 +137,21 @@ public class UnitTestCommon {
     initPaths();
   }
 
-  protected void
-  initPaths() {
-    // Compute the root path
-    this.threddsroot = locateThreddsRoot();
-    // Compute server names
-    this.dtsServer = TestDir.dap2TestServer;
-    if (DEBUG) {
-      System.err.println("UnitTestCommon: dtsServer=" + dtsServer);
+    protected void
+    initPaths()
+    {
+        // Compute the root path
+        this.threddsroot = locateThreddsRoot();
+        // Compute server names
+        this.dtsServer = TestDir.dap2TestServer;
+        if(DEBUG) {
+            System.err.println("UnitTestCommon: dtsServer=" + dtsServer);
+        }
+        this.threddsServer = TestDir.remoteTestServer;
+        if(DEBUG) {
+            System.err.println("UnitTestCommon: threddsServer=" + threddsServer);
+        }
     }
-    this.threddsServer = TestDir.threddsTestServer;
-    if (DEBUG) {
-      System.err.println("UnitTestCommon: threddsServer=" + threddsServer);
-    }
-  }
 
   /**
    * Try to get the system properties

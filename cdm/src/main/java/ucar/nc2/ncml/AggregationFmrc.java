@@ -32,21 +32,16 @@
  */
 package ucar.nc2.ncml;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.DateExtractorFromName;
-import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dataset.*;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.util.Formatter;
+import java.util.Set;
 
 /**
  * Implement NcML Forecast Model Run Collection Aggregation
@@ -114,6 +109,8 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
     // fill in the ncDataset
     fmrc.getDataset2D( ncDataset);
+
+    ncDataset.finish();
   }
 
   // we assume the variables are complete, but the time dimensions and values have to be recomputed

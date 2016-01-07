@@ -113,4 +113,9 @@ public class TestReadAndCountDods {
     TestReadandCount.doOne(base, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
+  //@Test
+  public void testProblem() throws Exception {
+    TestReadandCount.doOne("thredds:resolve:http://"+TestDir.threddsTestServer+"/thredds/",
+            "catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
+  }
 }

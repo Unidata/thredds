@@ -74,10 +74,20 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
-import static org.apache.http.auth.AuthScope.ANY_HOST;
-import static org.apache.http.auth.AuthScope.ANY_PORT;
-import static org.apache.http.auth.AuthScope.ANY_REALM;
-import static org.apache.http.auth.AuthScope.ANY_SCHEME;
+import javax.net.ssl.SSLException;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.ConnectException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+import static org.apache.http.auth.AuthScope.*;
 
 /**
  * A session is encapsulated in an instance of the class

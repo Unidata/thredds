@@ -54,7 +54,7 @@ import ucar.unidata.test.util.TestDir;
 /** Test remote netcdf over HTTP in the JUnit framework. */
 @Category(NeedsExternalResource.class)
 public class TestHTTP  {
-  String url = TestWithLocalServer.withPath("fileServer/scanLocal/testWrite.nc");
+  String url = "http://" + TestDir.remoteTestServer + "/thredds/fileServer/testdata/mydata1.nc";
 
   @Test
   public void testOpenNetcdfFile() throws IOException {

@@ -33,14 +33,14 @@
 
 package ucar.nc2.ncml;
 
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.DatasetConstructor;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.DatasetConstructor;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Aggregation on datasets to be simply combined - aka "union".
@@ -64,9 +64,12 @@ public class AggregationUnion extends Aggregation {
       // LOOK could just open the file, not use acquire.
       NetcdfFile ncfile = vnested.acquireFile(cancelTask);
       DatasetConstructor.transferDataset(ncfile, ncDataset, null);
-      // do not close - all stay open. Could use Proxy if need to open only as needed.
-      openDatasets.add(ncfile);
+
+      setDatasetAcquireProxy(vnested, ncDataset);
+      vnested.close( ncfile);  // close it because we use DatasetProxyReader to acquire
     }
+
+    ncDataset.finish();
   }
 
   @Override
@@ -74,17 +77,4 @@ public class AggregationUnion extends Aggregation {
     ncDataset.empty();
     buildNetcdfDataset( null);
   }
-
-  @Override
-  protected void closeDatasets() throws IOException {
-    for (NetcdfFile ncfile : openDatasets) {
-      try {
-        ncfile.close();
-      } catch (IOException e) {
-       // ignore
-      }
-    }
-    super.closeDatasets();
-  }
-
 }

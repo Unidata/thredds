@@ -5,6 +5,7 @@ import dap4.core.util.*;
 import dap4.dap4shared.RequestMode;
 import dap4.servlet.Generator;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -134,24 +135,9 @@ public class TestFilters extends DapTestCommon
     String root = null;
 
     //////////////////////////////////////////////////
-    // Constructor(s)
 
-    public TestFilters()
-        throws Exception
-    {
-        this("TestFilters");
-    }
-
-    public TestFilters(String name)
-        throws Exception
-    {
-        this(name, null);
-    }
-
-    public TestFilters(String name, String[] argv)
-        throws Exception
-    {
-        super(name);
+    @Before
+    public void setup() throws Exception {
         this.root = getDAP4Root();
         if(this.root == null)
             throw new Exception("dap4 root not found");

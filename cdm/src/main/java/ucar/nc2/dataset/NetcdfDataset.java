@@ -863,7 +863,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private EnumSet<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
 
   // If its an aggregation
-  private ucar.nc2.ncml.Aggregation agg = null; // used to close underlying files
+  private ucar.nc2.ncml.Aggregation agg = null;
 
   /**
    * If its an NcML aggregation, it has an Aggregation object associated.
@@ -1023,7 +1023,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (agg != null) {
       agg.persistWrite(); // LOOK  maybe only on real close ??
       agg.close();
-      agg = null;
     }
 
     if (cache != null) {

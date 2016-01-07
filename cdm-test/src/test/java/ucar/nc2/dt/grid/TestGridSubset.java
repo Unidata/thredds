@@ -200,6 +200,42 @@ public class TestGridSubset {
   }
 
   @Test
+  @Category(NeedsExternalResource.class)
+  public void testDODS() throws Exception {
+    String ds = "http://"+TestDir.threddsServer+"/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
+    GridDataset dataset = null;
+
+    try {
+      DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null);
+      System.out.println("result errlog= " + result.errLog);
+      assert !result.fatalError;
+      assert result.featureType == FeatureType.GRID;
+      assert result.featureDataset != null;
+
+      dataset = (GridDataset) result.featureDataset;
+
+      GeoGrid grid = dataset.findGridByName("Temperature_isobaric");
+      assert null != grid;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 4;
+
+      GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
+      int[] shape = grid_section.getShape();
+      System.out.println("grid_section.getShape= " + new Section(shape));
+
+      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getShape()[0] == shape[0] : data.getShape()[0];
+      assert data.getShape()[1] == shape[1] : data.getShape()[1];
+      assert data.getShape()[2] == 101 : data.getShape()[2];
+      assert data.getShape()[3] == 164 : data.getShape()[3];
+
+    } finally {
+      if (dataset != null) dataset.close();
+    }
+  }
+
+  @Test
   @Ignore("Bad URL, as of 2015/03/11.")
   @Category(NeedsExternalResource.class)
   public void testDODS2() throws Exception {
@@ -301,7 +337,7 @@ public class TestGridSubset {
   public void test3D() throws Exception {
     try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
       System.out.printf("%s%n", dataset.getLocation());
-      //GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
+      //GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
 
       GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
       assert null != grid;
@@ -465,7 +501,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsExternalResource.class)
   public void testBBSubset() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best")) {
+    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsServer+"/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best")) {
       GeoGrid grid = dataset.findGridByName("Pressure_surface");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -494,7 +530,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsExternalResource.class)
   public void testBBSubset2() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best")) {
+    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best")) {
       GeoGrid grid = dataset.findGridByName("Pressure_hybrid");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -720,7 +756,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsExternalResource.class)
   public void testFindVerticalCoordinate() throws Exception {
-    String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
+    String filename = "dods://"+TestDir.threddsServer+"/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
     try (GridDataset dataset = GridDataset.open(filename)) {
       GeoGrid grid = dataset.findGridByName("Geopotential_height_isobaric");
       assert null != grid;

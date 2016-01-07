@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.util.IO;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Run sanity check on motherlode
@@ -48,7 +49,7 @@ import ucar.unidata.test.util.NeedsExternalResource;
 @Category(NeedsExternalResource.class)
 public class TestMotherlodePing {
 
-  public static String server = "http://thredds-test.unidata.ucar.edu/thredds";
+  public static String server = "http://"+TestDir.threddsTestServer+"/thredds";
 
   static void ping(String url) {
     try {

@@ -15,8 +15,8 @@ import java.util.*;
  *
  * @author caron
  * @since 3/23/12
- * Modified 5/15/14 to add remote test server paths
- * <p>
+ * Modified 12/31/15 to add various test server paths
+ *
  * This singleton class computes and stores a variety of constants.
  * <p>
  * <table>
@@ -27,11 +27,17 @@ import java.util.*;
  * e.g unidata.testdata.path=//shemp/data/testdata2/
  * the real directory is at shemp:/data/testdata2
  * <tr><td>threddsPropFileName<td>thredds.properties
- * <td>Filename of the user property file read from the "user.home" directory
- * if the "unidata.testdata.path" and "unidata.upc.share.path" are not
- * available as system properties.
+ *     <td>Filename of the user property file read from the "user.home" directory
+ *         if the "unidata.testdata.path" and "unidata.upc.share.path" are not
+ *         available as system properties.
+ * <tr><td>threddsServerPropName<td>thredds
+ *     <td>Property name for the hostname of standard thredds server.
+ * <tr><td>threddsDevServerPropName<td>thredds-dev
+ *     <td>Property name for the hostname of the Java library thredds development server.
+ * <tr><td>threddsTestServerPropName<td>thredds-test
+ *     <td>Property name for the hostname of the Java library thredds test server.
  * <tr><td>remoteTestServerPropName<td>remotetest
- * <td>Property name for the hostname of the remote test server.
+ *     <td>Property name for the hostname of the C-library remote test server.
  * </table>
  * <p>
  * <table>
@@ -43,9 +49,15 @@ import java.util.*;
  * <tr><td>cdmLocalTestDataDir<td>NA<td>../cdm/src/test/data
  * <td>Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
  * <tr><td>temporaryLocalTestDataDir<td>NA<td>target/test/tmp
- * <td>Temporary data directory (for writing temporary data).
+ *     <td>Temporary data directory (for writing temporary data).
+ * <tr><td>threddsServer<td>threddsserver<td>thredds.ucar.edu
+ *     <td>The hostname of the standard thredds server.
+ * <tr><td>threddsDevServer<td>threddsdevserver<td>thredds-dev.unidata.ucar.edu
+ *     <td>The hostname of the standard thredds development server
+ * <tr><td>threddsTestServer<td>threddstestserver<td>thredds-test.unidata.ucar.edu
+ *     <td>The hostname of the standard thredds test server.
  * <tr><td>remoteTestServer<td>remotetestserver<td>remotetest.unidata.ucar.edu
- * <td>The hostname of the test server for doing remote tests
+ *     <td>The hostname of the test server for doing C library remote tests
  * </table>
  */
 public class TestDir {
@@ -90,12 +102,26 @@ public class TestDir {
    */
   private static String threddsPropFileName = "thredds.properties";
 
+  //////////////////////////////////////////////////////////////////////
+  // Various Test Server machines
+  //////////////////////////////////////////////////////////////////////
+
+  // thredds, thredd-dev, and thredd-test Test servers (for testing)
+
+  static public String threddsServerPropName = "threddsserver";
+  static public String threddsServer = "thredds.ucar.edu";
+
+  static public String threddsDevServerPropName = "threddsdevserver";
+  static public String threddsDevServer = "thredds-dev.unidata.ucar.edu";
+
+  static public String threddsTestServerPropName = "threddstestserver";
+  static public String threddsTestServer = "thredds-test.unidata.ucar.edu";
+
   // Remote Test server(s)
 
-  private static String threddsTestServerPropName = "threddstestserver";
+  private static String remoteTestServerPropName = "remotetestserver";
 
-  static public String threddsTestServer = "remotetest.unidata.ucar.edu";
-  //static public String threddsTestServer = "thredds.ucar.edu";
+  static public String remoteTestServer = "remotetest.unidata.ucar.edu";
 
   // DAP 2 Test server (for testing)
 
@@ -159,9 +185,23 @@ public class TestDir {
       }
     }
 
-    String rts = System.getProperty(threddsTestServerPropName);
-    if (rts != null && rts.length() > 0)
-      threddsTestServer = rts;
+    // Initialize various server values
+
+    String ts = System.getProperty(threddsServerPropName);
+    if(ts != null && ts.length() > 0)
+      	threddsServer = ts;
+
+    String tds = System.getProperty(threddsDevServerPropName);
+    if(tds != null && tds.length() > 0)
+      	threddsDevServer = tds;
+
+    String tts = System.getProperty(threddsTestServerPropName);
+    if(tts != null && tts.length() > 0)
+      	threddsTestServer = tts;
+
+    String rts = System.getProperty(remoteTestServerPropName);
+	if(rts != null && rts.length() > 0)
+		remoteTestServer = rts;
 
     String dts = System.getProperty(dap2TestServerPropName);
     if (dts != null && dts.length() > 0)

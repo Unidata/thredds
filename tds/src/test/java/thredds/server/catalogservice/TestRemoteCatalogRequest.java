@@ -34,6 +34,7 @@ package thredds.server.catalogservice;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindingResult;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * _defunct for now
@@ -51,7 +52,7 @@ public class TestRemoteCatalogRequest
   private String bindResultMsg;
   private RemoteCatalogRequest rcr;
 
-  private String catUriString = "http://thredds-test.unidata.ucar.edu/thredds/catalog.xml";
+  private String catUriString = "http://"+ TestDir.threddsTestServer+"/thredds/catalog.xml";
   private String cmdShow = "show";
   private String cmdSubset = "subset";
   private String cmdValidate = "validate";

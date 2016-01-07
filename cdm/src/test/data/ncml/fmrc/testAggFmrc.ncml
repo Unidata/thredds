@@ -1,0 +1,5 @@
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+    <aggregation dimName="run" type="forecastModelRunCollection">
+        <scan location="." suffix=".nc" dateFormatMark="GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm"/>
+    </aggregation>
+</netcdf>

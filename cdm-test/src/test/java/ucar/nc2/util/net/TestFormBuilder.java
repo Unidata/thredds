@@ -83,7 +83,7 @@ public class TestFormBuilder extends UnitTestCommon
 
     // This needs to be a real site in order to get
     // the request info
-    static final String NULLURL = "http://" + TestDir.threddsTestServer;
+    static final String NULLURL = "http://" + TestDir.remoteTestServer;
 
     //////////////////////////////////////////////////
     // Instance Variables

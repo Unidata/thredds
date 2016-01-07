@@ -70,7 +70,6 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
 
   @Override
   protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
-
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical = typicalDataset.acquireFile(null);
@@ -131,7 +130,9 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
     }
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);
-    typicalDataset.close(typical); // close it because we use DatasetProxyReader to acquire    */
+    typicalDataset.close(typical); // close it because we use DatasetProxyReader to acquire
+
+    ncDataset.finish();
   }
 
   // a variable is tiled if any of its dimensions are tiled

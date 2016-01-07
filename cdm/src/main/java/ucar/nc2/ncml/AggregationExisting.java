@@ -182,6 +182,8 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     if (debugInvocation)
       System.out.println(ncDataset.getLocation() + " invocation count = " + AggregationOuterDimension.invocation);
+
+    ncDataset.finish();
   }
 
   protected void rebuildDataset() throws IOException {

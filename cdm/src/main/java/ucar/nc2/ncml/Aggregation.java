@@ -278,7 +278,6 @@ public abstract class Aggregation {
 
   public void close() throws IOException {
     persistWrite();
-    closeDatasets();
   }
 
   /**
@@ -310,7 +309,6 @@ public abstract class Aggregation {
     if (!datasetManager.scan(true))
       return false; // nothing changed LOOK what about grib extention ??
     cacheDirty = true;
-    closeDatasets();
     makeDatasets(null);
 
     // rebuild the metadata
@@ -402,11 +400,6 @@ public abstract class Aggregation {
   protected void persistRead() {
   }
 
-  // close any open datasets
-  protected void closeDatasets() throws IOException {
-   // datasets = null;
-  }
-
   public void getDetailInfo(Formatter f) {
     f.format("  Type=%s%n", type);
     f.format("  dimName=%s%n", dimName);
@@ -423,7 +416,6 @@ public abstract class Aggregation {
   public void finish(CancelTask cancelTask) throws IOException {
     datasetManager.scan(true); // Make the list of Datasets, by scanning if needed.
     cacheDirty = true;
-    closeDatasets();
     makeDatasets(cancelTask);
 
     //ucar.unidata.io.RandomAccessFile.setDebugAccess( true);

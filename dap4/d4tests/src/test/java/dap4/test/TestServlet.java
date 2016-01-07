@@ -1,21 +1,23 @@
 package dap4.test;
 
-import dap4.dap4shared.ChunkInputStream;
 import dap4.core.util.DapDump;
+import dap4.dap4shared.ChunkInputStream;
 import dap4.dap4shared.RequestMode;
-import dap4.servlet.*;
+import dap4.servlet.DapCache;
+import dap4.servlet.Generator;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * TestServlet has multiple purposes.
@@ -148,11 +150,9 @@ public class TestServlet extends DapTestCommon
 
 
     //////////////////////////////////////////////////
-    // Constructor(s)
 
-    public TestServlet()
-    {
-        super("TestServlet");
+    @Before
+    public void setup() {
         if(prop_ascii)
             Generator.setASCII(true);
         ServletTest.setRoots(canonjoin(getResourceDir(),TESTINPUTDIR),

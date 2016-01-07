@@ -43,14 +43,15 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.*;
 
 public class TestMotherlodeLatest extends TimerTask {
-  static private final String server1 = "http://thredds.ucar.edu/";
+  static private final String server1 = "http://"+ TestDir.threddsServer+"/";
   //static private final String server1 = "http://thredds.cise-nsf.gov:8080/";
-  static private final String server2 = "http://thredds-dev.ucar.edu/";
+  static private final String server2 = "http://"+TestDir.threddsDevServer+"/";
 
   // fmrc
   static private final String latestPrefix = "thredds/catalog/fmrc/";

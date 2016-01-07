@@ -2,10 +2,10 @@
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 
   <aggregation dimName="lat lon" type="tiled">
-    <netcdf location="file:src/test/data/ncml/tiled/testWriteTile1.nc" section="0:5,0:11"/>
-    <netcdf location="file:src/test/data/ncml/tiled/testWriteTile2.nc" section="0:5,12:23"/>
-    <netcdf location="file:src/test/data/ncml/tiled/testWriteTile3.nc" section="6:11,0:11"/>
-    <netcdf location="file:src/test/data/ncml/tiled/testWriteTile4.nc" section="6:11,12:23"/>
+    <netcdf location="testWriteTile1.nc" section="0:5,0:11"/>
+    <netcdf location="testWriteTile2.nc" section="0:5,12:23"/>
+    <netcdf location="testWriteTile3.nc" section="6:11,0:11"/>
+    <netcdf location="testWriteTile4.nc" section="6:11,12:23"/>
   </aggregation>
 	
 </netcdf>

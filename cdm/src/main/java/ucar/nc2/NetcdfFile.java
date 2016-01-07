@@ -84,6 +84,17 @@ import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+import java.nio.channels.WritableByteChannel;
+import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
  * Immutable after setImmutable() is called. However, reading data is not thread-safe.
@@ -1934,14 +1945,19 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     variables = new ArrayList<>();
     gattributes = new ArrayList<>();
     dimensions = new ArrayList<>();
-    if (rootGroup == null)
-      rootGroup = makeRootGroup(); //  only make the root group once
+    rootGroup = makeRootGroup();
     // addedRecordStructure = false;
   }
 
   protected Group makeRootGroup() {
     Group root = new Group(this, null, "");
+
+    // The value of rootGroup will be queried during the course of setParentGroup.
+    // If there's an existing rootGroup that we're trying to replace, it's important that the value of the
+    // field be null for that.
+    rootGroup = null;
     root.setParentGroup(null);
+
     return root;
   }
 
