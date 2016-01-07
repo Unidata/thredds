@@ -1,11 +1,14 @@
 package dap4.test;
 
-import dap4.core.util.DapException;
 import dap4.servlet.CDMDSP;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import ucar.nc2.dataset.NetcdfDataset;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -31,14 +34,6 @@ public class TestNc4Iosp extends DapTestCommon
 
 
     static protected final BigInteger MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
-
-    static {
-        try {
-            CDMDSP.loadNc4Iosp();
-        } catch (DapException de) {
-            System.err.println("Cannot load Nc4Iosp.netcdf library");
-        }
-    }
 
     //////////////////////////////////////////////////
     // Type Declarations
@@ -89,24 +84,8 @@ public class TestNc4Iosp extends DapTestCommon
     protected String root = null;
 
     //////////////////////////////////////////////////
-    // Constructor(s)
-
-    public TestNc4Iosp()
-        throws Exception
-    {
-        this("TestServlet");
-    }
-
-    public TestNc4Iosp(String name)
-        throws Exception
-    {
-        this(name, null);
-    }
-
-    public TestNc4Iosp(String name, String[] argv)
-        throws Exception
-    {
-        super(name);
+    @Before
+    public void setup() throws Exception {
         if(!HDF5) {
             CDMDSP.loadNc4Iosp();  // Load Nc4Iosp
         }
@@ -158,6 +137,7 @@ public class TestNc4Iosp extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
+    @Test
     public void testNc4Iosp()
         throws Exception
     {

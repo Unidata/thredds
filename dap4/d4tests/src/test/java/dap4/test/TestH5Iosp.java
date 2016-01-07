@@ -1,6 +1,8 @@
 package dap4.test;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.NotJenkins;
@@ -79,24 +81,8 @@ public class TestH5Iosp extends DapTestCommon
     protected String root = null;
 
     //////////////////////////////////////////////////
-    // Constructor(s)
-
-    public TestH5Iosp()
-        throws Exception
-    {
-        this("TestServlet");
-    }
-
-    public TestH5Iosp(String name)
-        throws Exception
-    {
-        this(name, null);
-    }
-
-    public TestH5Iosp(String name, String[] argv)
-        throws Exception
-    {
-        super(name);
+    @Before
+    public void setup() throws Exception {
         this.root = getDAP4Root();
         if(this.root == null)
             throw new Exception("dap4 root not found");
@@ -145,6 +131,7 @@ public class TestH5Iosp extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
+    @Test
     public void testH5Iosp()
         throws Exception
     {

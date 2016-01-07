@@ -1,19 +1,21 @@
 package dap4.test;
 
+import dap4.core.util.DapUtil;
+import dap4.dap4shared.D4DSP;
+import dap4.servlet.DapCache;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsExternalResource;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import dap4.core.util.DapUtil;
-import dap4.dap4shared.D4DSP;
-import dap4.servlet.DapCache;
-import org.junit.Assert;
-import org.junit.experimental.categories.Category;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.NeedsExternalResource;
 
 /**
  * Test at the NetcdfDataset level
@@ -143,24 +145,9 @@ public class TestCDMClient extends DapTestCommon
     String sourceurl = null;
 
     //////////////////////////////////////////////////
-    // Constructor(s)
 
-    public TestCDMClient()
-            throws Exception
-    {
-        this("TestCDMClient");
-    }
-
-    public TestCDMClient(String name)
-            throws Exception
-    {
-        this(name, null);
-    }
-
-    public TestCDMClient(String name, String[] argv)
-            throws Exception
-    {
-        super(name);
+    @Before
+    public void setup() throws Exception {
         DapCache.flush();
         this.root = getDAP4Root();
         if(this.root == null)
@@ -226,6 +213,7 @@ public class TestCDMClient extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test method
     @Category(NeedsExternalResource.class)
+    @Test
     public void testCDMClient()
             throws Exception
     {

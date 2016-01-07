@@ -1,11 +1,12 @@
 package dap4.test;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,24 +153,9 @@ public class TestHyrax extends DapTestCommon
     String sourceurl = null;
 
     //////////////////////////////////////////////////
-    // Constructor(s)
 
-    public TestHyrax()
-        throws Exception
-    {
-        this("TestCDMClient");
-    }
-
-    public TestHyrax(String name)
-        throws Exception
-    {
-        this(name, null);
-    }
-
-    public TestHyrax(String name, String[] argv)
-        throws Exception
-    {
-        super(name);
+    @Before
+    public void setup() throws Exception {
         this.root = getDAP4Root();
         if(this.root == null)
             throw new Exception("dap4 root cannot be located");

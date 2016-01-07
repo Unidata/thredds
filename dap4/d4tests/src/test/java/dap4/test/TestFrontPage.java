@@ -1,6 +1,7 @@
 package dap4.test;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -33,24 +34,9 @@ public class TestFrontPage extends DapTestCommon
     protected String root = null;
 
     //////////////////////////////////////////////////
-    // Constructor(s)
 
-    public TestFrontPage()
-        throws Exception
-    {
-        this("TestFrontPage");
-    }
-
-    public TestFrontPage(String name)
-        throws Exception
-    {
-        this(name, null);
-    }
-
-    public TestFrontPage(String name, String[] argv)
-        throws Exception
-    {
-        super(name);
+    @Before
+    public void setup() throws Exception {
         this.root = getDAP4Root();
         if(this.root == null)
             throw new Exception("dap4 root not found");
