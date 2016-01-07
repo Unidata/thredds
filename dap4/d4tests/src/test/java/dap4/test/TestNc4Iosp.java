@@ -1,13 +1,14 @@
 package dap4.test;
 
-import dap4.core.util.DapException;
 import dap4.servlet.CDMDSP;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ucar.nc2.dataset.NetcdfDataset;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -33,14 +34,6 @@ public class TestNc4Iosp extends DapTestCommon
 
 
     static protected final BigInteger MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
-
-    static {
-        try {
-            CDMDSP.loadNc4Iosp();
-        } catch (DapException de) {
-            System.err.println("Cannot load Nc4Iosp.netcdf library");
-        }
-    }
 
     //////////////////////////////////////////////////
     // Type Declarations
