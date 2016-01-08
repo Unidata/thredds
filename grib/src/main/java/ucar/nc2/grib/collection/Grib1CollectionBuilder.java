@@ -113,11 +113,11 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           continue;
         }
 
-        // add all gcs to tracker
+        /* add all gcs to tracker
         for (Grib1SectionGridDefinition gds : index.getGds()) {
           long crc = gds.calcCRC();
           if (gdsTrack.get(crc) == null) gdsTrack.put(crc, 0);
-        }
+        } */
 
         int n = index.getNRecords();
         totalRecords += n;

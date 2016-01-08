@@ -43,11 +43,11 @@ import java.util.zip.CRC32;
 
 /**
  * The Grid Definition Section for GRIB-1 files
- *
+ * Effectively immutable, but caching lazy gds
  * @author caron
  */
 
-@Immutable
+// @Immutable gds makes it not immutable
 public class Grib1SectionGridDefinition {
   private final byte[] rawData;
   private final long startingPosition;
@@ -162,11 +162,16 @@ public class Grib1SectionGridDefinition {
     return rawData[index - 1] & 0xff;
   }
 
-  public Grib1Gds getGDS() {
-    if (predefinedGridDefinition != -1)
-      return ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(predefinedGridDefinitionCenter, predefinedGridDefinition);
+  private Grib1Gds gds = null;
+  public synchronized Grib1Gds getGDS() {
+    if (gds != null) return gds;
 
-    Grib1Gds gds = Grib1Gds.factory(gridTemplate, rawData);
+    if (predefinedGridDefinition != -1) {
+      gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(predefinedGridDefinitionCenter, predefinedGridDefinition);
+      return gds;
+    }
+
+    gds = Grib1Gds.factory(gridTemplate, rawData);
     if (isThin()) {
       gds.setNptsInLine(getNptsInLine(gds));
     }

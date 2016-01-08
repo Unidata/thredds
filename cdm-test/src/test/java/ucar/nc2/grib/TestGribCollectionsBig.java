@@ -53,7 +53,7 @@ import java.util.Formatter;
 
 /**
  * Look for missing data in large Grib Collections.
- * THese numbers wwill be different if we index with unionRuntimeCoords
+ * These numbers will be different if we index with unionRuntimeCoords
  * Indicates that coordinates are not matching,
  *
  * @author John

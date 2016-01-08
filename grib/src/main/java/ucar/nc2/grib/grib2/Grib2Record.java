@@ -61,8 +61,7 @@ public class Grib2Record {
   private Grib2SectionData dataSection;
 
   private Grib2Pds pds2 = null;
-  private Grib2Gds gds2 = null;
-
+  // private Grib2Gds gds2 = null;
 
   private final byte[] header; // anything in between the records - eg idd header
   private int file; // for multiple files in same dataset
@@ -185,10 +184,8 @@ public class Grib2Record {
     return pds2;
   }
 
-  public Grib2Gds getGDS() {
-    if (gds2 == null)
-      gds2 = gdss.getGDS();
-    return gds2;
+  public synchronized Grib2Gds getGDS() {
+    return gdss.getGDS();
   }
 
   public int getScanMode() {

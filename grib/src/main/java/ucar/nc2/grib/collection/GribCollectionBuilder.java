@@ -66,7 +66,7 @@ abstract class GribCollectionBuilder {
   protected final org.slf4j.Logger logger;
   protected final boolean isGrib1;
   protected GribCollectionImmutable.Type type;
-  protected Map<Long, Integer> gdsTrack = new HashMap<>();
+  //protected Map<Long, Integer> gdsTrack = new HashMap<>();
 
   protected String name;            // collection name
   protected File directory;         // top directory

@@ -54,26 +54,22 @@ import java.util.List;
  * testing non-othogonal 2D time coords
  *
  * @author caron
- * @since 1/5/2016.
+ * @since 1/6/2016.
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGribCoverageOrthP {
+public class TestGribCoverageOrth {
   private static String topdir = "D:/work/rdavm/index/";
 
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>(30);
-    try {
-      TestDir.actOnAllParameterized(topdir, new SuffixFileFilter(".ncx4"), result);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    List<Object[]> result = new ArrayList<>();
+    result.add(new Object[]{topdir + "ds277.6.ncx4"});
     return result;
   }
 
   String filename;
-  public TestGribCoverageOrthP(String filename) {
+  public TestGribCoverageOrth(String filename) {
     this.filename = filename;
   }
 
@@ -86,10 +82,10 @@ public class TestGribCoverageOrthP {
       Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
 
       System.out.printf(" %s type=%s%n", cc.getName(), cc.getCoverageType());
-      //for (CoverageCoordSys coordSys : cc.getCoordSys()) {
-        //Assert.assertTrue( coordSys.isTime2D(coordSys.getAxis(AxisType.RunTime)));
-        //Assert.assertTrue( coordSys.isTime2D(coordSys.getTimeAxis()));
-      //}
+      for (CoverageCoordSys coordSys : cc.getCoordSys()) {
+        Assert.assertTrue( coordSys.isTime2D(coordSys.getAxis(AxisType.RunTime)));
+        Assert.assertTrue( coordSys.isTime2D(coordSys.getTimeAxis()));
+      }
 
       for (CoverageCoordAxis axis : cc.getCoordAxes()) {
         if (axis.getAxisType().isTime())
@@ -97,5 +93,4 @@ public class TestGribCoverageOrthP {
       }
     }
   }
-
 }
