@@ -79,7 +79,7 @@ public class TestServerSite extends TestCase
   private WebConversation wc;
 
   /** The TDS site to test. */
-  private String host = TestDir.threddsServer+":";
+  private String host = TestDir.threddsTestServer+":";
   /** The name of a user with tdsConfig role. */
   private String tdsConfigUser;
   private String tdsConfigWord;

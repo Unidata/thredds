@@ -32,9 +32,8 @@ import java.util.*;
  *         if the "unidata.testdata.path" and "unidata.upc.share.path" are not
  *         available as system properties.
  * <tr><td>threddsServerPropName<td>thredds
- *     <td>Property name for the hostname of standard thredds server.
- * <tr><td>threddsDevServerPropName<td>thredds-dev
- *     <td>Property name for the hostname of the Java library thredds development server.
+ *     <td>Property name for the hostname of standard thredds server. Only used in
+ *         classes that explicitly reference motherlode.
  * <tr><td>threddsTestServerPropName<td>thredds-test
  *     <td>Property name for the hostname of the Java library thredds test server.
  * <tr><td>remoteTestServerPropName<td>remotetest
@@ -107,9 +106,6 @@ public class TestDir {
 
   static public String threddsServerPropName = "threddsserver";
   static public String threddsServer = "thredds.ucar.edu";
-
-  static public String threddsDevServerPropName = "threddsdevserver";
-  static public String threddsDevServer = "thredds-dev.unidata.ucar.edu";
 
   static public String threddsTestServerPropName = "threddstestserver";
   static public String threddsTestServer = "thredds-test.unidata.ucar.edu";
@@ -188,10 +184,6 @@ public class TestDir {
     String ts = System.getProperty(threddsServerPropName);
     if(ts != null && ts.length() > 0)
       	threddsServer = ts;
-
-    String tds = System.getProperty(threddsDevServerPropName);
-    if(tds != null && tds.length() > 0)
-      	threddsDevServer = tds;
 
     String tts = System.getProperty(threddsTestServerPropName);
     if(tts != null && tts.length() > 0)

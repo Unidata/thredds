@@ -51,7 +51,7 @@ import ucar.unidata.test.util.TestDir;
 public class TestTdsPingMotherlode extends TestCase
 {
 
-  private String host = TestDir.threddsServer;
+  private String host = TestDir.threddsTestServer;
   private String targetTomcatUrl;
   private String targetTdsUrl;
 

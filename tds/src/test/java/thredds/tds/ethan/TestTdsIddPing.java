@@ -48,7 +48,7 @@ import ucar.unidata.test.util.TestDir;
 public class TestTdsIddPing extends TestCase
 {
 
-  private String host = TestDir.threddsServer;
+  private String host = TestDir.threddsTestServer;
   private String targetTdsUrl;
 
   public TestTdsIddPing( String name )

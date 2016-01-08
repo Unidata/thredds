@@ -49,9 +49,9 @@ import java.io.IOException;
 import java.util.*;
 
 public class TestMotherlodeLatest extends TimerTask {
-  static private final String server1 = "http://"+ TestDir.threddsServer+"/";
+  static private final String server1 = "http://"+ TestDir.threddsTestServer+"/";
   //static private final String server1 = "http://thredds.cise-nsf.gov:8080/";
-  static private final String server2 = "http://"+TestDir.threddsDevServer+"/";
+  static private final String server2 = "http://"+TestDir.threddsTestServer+"/";
 
   // fmrc
   static private final String latestPrefix = "thredds/catalog/fmrc/";

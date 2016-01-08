@@ -138,7 +138,7 @@ public class TestConcurrentAccess {
 
   public static void main(String args[]) throws IOException {
     String dodsName = "http://localhost:8080/thredds/dodsC/fmrc/NAM-CONUS-12/Formica-NAM-CONUS-12_best.ncd";
-    String catName = "http://"+ TestDir.threddsServer+"/thredds/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/catalog.html";
+    String catName = "http://"+ TestDir.threddsTestServer+"/thredds/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/catalog.html";
 
     JFrame frame = new JFrame("TestTDS");
     frame.addWindowListener(new WindowAdapter() {

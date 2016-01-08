@@ -87,7 +87,7 @@ public class TestMlodeThreaded implements Runnable {
 
   public static JPanel main;
   public static void main(String args[]) throws IOException {
-    String server = "http://"+ TestDir.threddsServer+"/thredds";
+    String server = "http://"+ TestDir.threddsTestServer+"/thredds";
 
     // HEY LOOK
     //ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( true);
