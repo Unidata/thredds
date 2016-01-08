@@ -55,7 +55,7 @@ public class TestServerSiteIDD extends TestCase
   private WebConversation wc;
 
   /** The TDS site to test. */
-  private String host = TestDir.threddsServer;
+  private String host = TestDir.threddsTestServer;
 
   private String targetUrl = "http://" + host + "/thredds/";
 

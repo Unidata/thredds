@@ -144,7 +144,7 @@ public class TestAll extends TestCase
   private boolean showDebug;
   private boolean verbose;
 
-  private String host = TestDir.threddsServer;
+  private String host = TestDir.threddsTestServer;
   private String[] catalogList;
 
   private String targetTdsUrl;
@@ -160,7 +160,7 @@ public class TestAll extends TestCase
     if ( null == System.getProperty( "thredds.tds.test.id"))
       System.setProperty( "thredds.tds.test.id", "crawl-newmlode-8080" );
     if ( null == System.getProperty( "thredds.tds.test.server" ) )
-      System.setProperty( "thredds.tds.test.server", TestDir.threddsServer );
+      System.setProperty( "thredds.tds.test.server", TestDir.threddsTestServer );
     if ( null == System.getProperty( "thredds.tds.test.level" ) )
       System.setProperty( "thredds.tds.test.level", "crawl-catalogs" );
     if ( null == System.getProperty( "thredds.tds.test.catalogs" ) )
@@ -781,7 +781,7 @@ public class TestAll extends TestCase
     for ( String curCat : catList )
     {
       gcsMsg.append( "********************\n<h4>" ).append( curCat ).append( "</h4>\n\n<pre>\n" );
-      curCat = "http://"+TestDir.threddsServer+"/thredds/catalog/" + curCat + "/files/catalog.xml";
+      curCat = "http://"+TestDir.threddsTestServer+"/thredds/catalog/" + curCat + "/files/catalog.xml";
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       PrintWriter out = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
       int numDs = 0;

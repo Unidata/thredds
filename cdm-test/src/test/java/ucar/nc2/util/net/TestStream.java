@@ -60,7 +60,7 @@ import ucar.unidata.test.util.TestDir;
 public class TestStream {
   @Test
   public void testStream1() throws URISyntaxException {
-    String catalogName = "http://"+ TestDir.threddsServer+"/thredds/catalog.xml";
+    String catalogName = "http://"+ TestDir.threddsTestServer+"/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
     try {
@@ -84,7 +84,7 @@ public class TestStream {
 
   @Test
   public void testString() throws URISyntaxException {
-    String catalogName = "http://"+TestDir.threddsServer+"/thredds/catalog.xml";
+    String catalogName = "http://"+TestDir.threddsTestServer+"/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
     try {

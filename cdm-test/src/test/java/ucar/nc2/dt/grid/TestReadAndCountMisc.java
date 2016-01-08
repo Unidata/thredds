@@ -49,7 +49,7 @@ public class TestReadAndCountMisc {
   // We assume that thredds.ucar.edu is unreachable due to some limitation and/or bug in Travis.
   @Test
   public void testLiveServer() throws Exception {
-    TestReadandCount.doOne("thredds:resolve:http://"+TestDir.threddsServer+"/thredds/",
+    TestReadandCount.doOne("thredds:resolve:http://"+TestDir.threddsTestServer+"/thredds/",
             "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);  // flips between 40 and 33
   }
 
@@ -61,7 +61,7 @@ public class TestReadAndCountMisc {
 
   @Test
   public void testDevServer() throws Exception {
-    TestReadandCount.doOne("thredds:resolve:http://"+TestDir.threddsDevServer+"/thredds/",
+    TestReadandCount.doOne("thredds:resolve:http://"+TestDir.threddsTestServer+"/thredds/",
             "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
   }
 }
