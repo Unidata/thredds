@@ -134,16 +134,16 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
           gr.setFile(fileno); // each record tracks which file it belongs to
           Grib1Gds gds = gr.getGDS();  // use GDS to group records
-          int hashOverride = gribConfig.convertGdsHash(gds.hashCode());  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
-          if (0 == hashOverride) continue; // skip this group
-          GdsHashObject gdsHashObject = new GdsHashObject(gr.getGDS(), hashOverride);
+          int hashCode = gribConfig.convertGdsHash(gds.hashCode());  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
+          if (0 == hashCode) continue; // skip this group
+          //GdsHashObject gdsHashObject = new GdsHashObject(gr.getGDS(), hashOverride);
 
           CalendarDate runtimeDate = gr.getReferenceDate();
           long runtime = singleRuntime ? runtimeDate.getMillis() : 0;  // seperate Groups for each runtime, if singleRuntime is true
-          GroupAndRuntime gar = new GroupAndRuntime(gdsHashObject, runtime);
+          GroupAndRuntime gar = new GroupAndRuntime(hashCode, runtime);
           Grib1CollectionWriter.Group g = gdsMap.get(gar);
           if (g == null) {
-            g = new Grib1CollectionWriter.Group(gr.getGDSsection(), gdsHashObject, runtimeDate);
+            g = new Grib1CollectionWriter.Group(gr.getGDSsection(), hashCode, runtimeDate);
             gdsMap.put(gar, g);
           }
           g.records.add(gr);
@@ -158,7 +158,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     List<Grib1CollectionWriter.Group> groups = new ArrayList<>(gdsMap.values());
     for (Grib1CollectionWriter.Group g : groups) {
       GribRecordStats stats = new GribRecordStats(); // debugging
-      Grib1Rectilyser rect = new Grib1Rectilyser(g.records, g.gdsHashObject);
+      Grib1Rectilyser rect = new Grib1Rectilyser(g.records, g.hashCode);
       rect.make(gribConfig, stats, errlog);
       g.gribVars = rect.gribvars;
       g.coords = rect.coords;
@@ -247,15 +247,16 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
   // for a single group, create multidimensional (rectangular) variables
   private class Grib1Rectilyser {
-    private final int gdsHashOverride;
+    private final int hashCode;
     private final List<Grib1Record> records;
     private List<VariableBag> gribvars;
     private List<Coordinate> coords;
 
-    Grib1Rectilyser(List<Grib1Record> records, Object gdsHashObject) {
+    Grib1Rectilyser(List<Grib1Record> records, int hashCode) {
       this.records = records;
-      int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());
-      gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash;
+      this.hashCode = hashCode;
+      //int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());
+      //gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash;
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, GribRecordStats counter, Formatter info) throws IOException {
@@ -266,7 +267,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       for (Grib1Record gr : records) {
         Grib1Variable cdmHash;
         try {
-          cdmHash =  new Grib1Variable(cust, gr, gdsHashOverride, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
+          cdmHash =  new Grib1Variable(cust, gr, hashCode, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
         } catch (Throwable t) {
           logger.warn("Exception on record ", t);
           continue; // keep going

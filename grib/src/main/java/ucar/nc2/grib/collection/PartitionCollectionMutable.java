@@ -59,9 +59,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
   static class PartitionForVariable2D {
     int partno, groupno, varno; // , flag;     // what the hell is the flag used for ?
-    //public int ndups, nrecords, missing;  // optional debugging - remove ? or factor out ??
-    //public float density;                 // optional
-
+    GribCollectionMutable.VariableIndex vi;
 
     PartitionForVariable2D(int partno, int groupno, int varno) {
       this.partno = partno;

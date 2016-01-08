@@ -88,7 +88,7 @@ public class Grib2Variable {
     this.center = center;
     this.subcenter = subcenter;
     this.gds = gds;
-    this.gdsHash = gds.hashCode;             // LOOK this requires no overridden gds hashCodes have made it into the ncx
+    this.gdsHash = gds.hashCode;             // ok because no overridden gds hashCodes have made it into the ncx
     this.pds = pds;
     this.intvMerge = intvMerge;
     this.useGenType = useGenType;
