@@ -41,7 +41,11 @@ This file contains everything in the GRIB file except the data.
 Generally it is 300-1000 times smaller than the original file.
 Once written, it typically never has to be rewritten. If the GRIB file changes, the CDM should detect that and rewrite the index file. If there is any doubt about that, delete the index file and let it get recreated.
 
-For each GRIB collection, a _CDM collection index_ file is written with suffix *.ncx4.* This file contains all the metadata and the coordinates for the collection. It is usually fairly small (a few dozen KBytes to a few MBytes for a large collection), and once created, makes accessing the GRIB collection very fast. In general it will be updated if needed,
+For each GRIB collection, a _CDM collection index_ file is written with
+suffix *.ncx4.* This file contains all the metadata and the coordinates
+for the collection. It is usually fairly small (a few dozen KBytes to a
+few MBytes for a large collection), and once created, makes accessing
+the GRIB collection very fast. In general it will be updated if needed,
 but one can always delete it and let it be recreated.
 
 If one opens a single GRIB file in the CDM, a *gbx9* and *ncx4* file
