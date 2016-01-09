@@ -218,6 +218,19 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  public void testRdvamds083p2_1999() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2008/**/.*gbx9",
+            null, null, null,  "directory", null);
+    config.gribConfig.unionRuntimeCoord = true;
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  @Test
   public void testRdvamds094p1() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.1_Aggregation", "test/ds094.1", FeatureCollectionType.GRIB2,
@@ -250,11 +263,14 @@ public class TestGribIndexCreation {
   }
 
   @Test
-  public void testRdvamds626p0() throws IOException {
+  public void testRdvamds094p2t() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds626.0_Aggregation", "test/ds626.0", FeatureCollectionType.GRIB2,
-            "D:/work/rdavm/ds626.0/.*gbx9",
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.2_t", "test/ds094.2_t", FeatureCollectionType.GRIB2,
+            "D:\\work\\rdavm\\ds094.2\\timeseries/.*gbx9",
             null, null, null, "directory", null);
+    config.gribConfig.addGdsHash("341801380", "342723940");
+    config.gribConfig.useGenType = true;
+
     //config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
@@ -263,12 +279,28 @@ public class TestGribIndexCreation {
   }
 
   @Test
-  public void testRdvamds083p2_1999() throws IOException {
+  public void testRdvamds094p2dt() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2", FeatureCollectionType.GRIB1,
-            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2008/**/.*gbx9",
-            null, null, null,  "directory", null);
-    config.gribConfig.unionRuntimeCoord = true;
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.2_dt", "test/ds094.2_dt", FeatureCollectionType.GRIB2,
+            "D:\\work\\rdavm\\ds094.2\\diurnal_timeseries/.*gbx9",
+            null, null, null, "directory", null);
+    config.gribConfig.addGdsHash("341801380", "342723940");
+    config.gribConfig.useGenType = true;
+
+    //config.gribConfig.unionRuntimeCoord = true;
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  @Test
+  public void testRdvamds626p0() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds626.0_Aggregation", "test/ds626.0", FeatureCollectionType.GRIB2,
+            "D:/work/rdavm/ds626.0/.*gbx9",
+            null, null, null, "directory", null);
+    //config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);

@@ -33,11 +33,6 @@
 
 package ucar.nc2.grib.grib1.tables;
 
-import ucar.nc2.grib.GribLevelType;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * NCAR (center 60) overrides
  *

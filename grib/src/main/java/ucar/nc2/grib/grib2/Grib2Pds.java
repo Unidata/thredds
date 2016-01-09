@@ -313,6 +313,10 @@ public abstract class Grib2Pds {
     return input[index - 1] & 0xff;
   }
 
+  public final int getInt4StartingAtOctet(int index) {
+    return GribNumbers.int4(getOctet(index), getOctet(index+1), getOctet(index+2), getOctet(index+3));
+  }
+
   public final int getOctetSigned(int index) {
     return GribNumbers.convertSignedByte(input[index - 1]);
   }

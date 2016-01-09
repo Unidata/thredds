@@ -7,11 +7,11 @@
 
 There are a number of ways that the user can intervene in the processing
 of GRIB Collections, all of them controlled by *<gribConfig>* elements
-inside the <**featureCollection**> elements of the TDS configuration
+inside the <*featureCollection*> elements of the TDS configuration
 catalogs or inside NcML. Its important to understand when these elements
 are applied and when index files need to be regenerated.
 
-As of version 4.5, there are two stages of processing.
+There are two stages of processing.
 
 The first stage creates GribCollections, which are collections of GRIB
 records stored in one or more files. Grib Collections try to make all of
@@ -26,7 +26,7 @@ Variables with **pdsHash**, how time intervals are handled with
 **intvFilter**, and a few other options described below.
 
 If you make changes to any *gribConfig* parameters that affect stage one
-processing, you need to delete the CDM index files (***.ncx3**) to force
+processing, you need to delete the CDM index files (*.ncx4*) to force
 them to be recreated. You do not need to delete the *gbx9* index files.
 
 The second stage happens when the GribCollection is turned into a
@@ -37,12 +37,14 @@ to recreate the collection indices. They will take affect the next time
 the TDS starts.
 
 These instructions are tailored for TDS users. To work with Grib
-Collections in client software using the CDM stack, see link:../../../netcdf-java/reference/formats/GribFiles.adoc[CDM Grib Files].
+Collections in client software using the CDM stack,
+see link:../../../netcdf-java/reference/formats/GribFiles.adoc[CDM Grib Files].
 
 == Stage One: GribCollection Creation
 
 === *gdsHash*: Fix errors in GDS encoding
 
+[source,xml]
 -----------------------------------------------------------------
    <xsd:element name="gdsHash" minOccurs="0">
      <xsd:complexType>
@@ -69,6 +71,7 @@ differences in the GDS and the corresponding hashcodes. If you confirm
 that they are, in fact, the same GDS, then you can fix this problem, by
 merging the two groups, for example:
 
+[source,xml]
 -----------------------------------------------
  <gribConfig>
    <gdsHash from="1450218978" to="1450192070"/>
@@ -82,6 +85,7 @@ the spurious group in the resulting CDM index file.
 Sometimes you want to remove spurious records altogether. To do so, set
 the gdsHash to 0:
 
+[source,xml]
 --------------------------------------
  <gribConfig>
    <gdsHash from="1450218978" to="0"/>
@@ -92,6 +96,7 @@ will ignore any records with GDS hashcode 1450218978.
 
 === *pdsHash*: Control how PDS are made into variables
 
+[source,xml]
 -----------------------------------------------------------------------
   <xsd:element name="pdsHash" minOccurs="0" maxOccurs="unbounded">
    <xsd:complexType>
@@ -122,6 +127,7 @@ discipline-category-parameter but with different generating types that
 should be made into diffeerent variables. By default, different
 generating types will be ignored.
 
+[source,xml]
 ---------------------------------
 <gribConfig>
   <pdsHash>
@@ -138,6 +144,7 @@ number but with different table versions that should be made into
 different variables. By default, different table versions will be
 ignored.
 
+[source,xml]
 ------------------------------------------
  <pdsHash>
    <useTableVersion>true</useTableVersion>
@@ -149,6 +156,7 @@ merged. If false, seperate variables are created for each time interval
 length. Default is true, which will generate "mixed interval
 variables" if a variable has records of different interval lengths.
 
+[source,xml]
 -------------------------------
  <pdsHash>
    <intvMerge>false</intvMerge>
@@ -162,6 +170,7 @@ same dataset, you have records with the same parameter from different
 centers that should be made into different variables. By default,
 different centers will be ignored.
 
+[source,xml]
 ------------------------------
  <pdsHash>
    <useCenter>true</useCenter>
@@ -170,6 +179,7 @@ different centers will be ignored.
 
 === *intvFilter*: filter on Time Interval
 
+[source,xml]
 --------------------------------------------------------------------------
   <xsd:element name="intvFilter" minOccurs="0" maxOccurs="unbounded">
    <xsd:complexType>
@@ -234,6 +244,7 @@ For example, the 3 hour intervals (0,3), (3, 6), (6,9), (9,12) intervals are all
 
 Here are examples using NcML:
 
+[source,xml]
 ------------------------------------
   <gribConfig>
    <intvFilter excludeZero="false"/> # <1>
@@ -265,6 +276,7 @@ The unit of the time coordinates is taken from the first GRIB record in
 the collection. Occasionally you may want to override this. The value
 must be a valid string for *ucar.nc2.time.CalendarPeriod.of( timeUnit)*
 
+[source,xml]
 ---------------------------------------------
 <gribConfig>
   <option name="timeUnit" value="1 minute" />
@@ -281,6 +293,7 @@ a few missing records. By setting the *runtimeCoordinate* option to
 coordinates, at the cost of some extra missing values. This happens only
 at the leaf collections (eg. a file or directory).
 
+[source,xml]
 ---------------------------------------------------
 <gribConfig>
   <option name="runtimeCoordinate" value="union" />
@@ -299,6 +312,7 @@ A user can set group names manually in the TDS configuration catalog. To
 do so, find the group hash as in the gdsHash example above. Then use the
 gdsName element like this:
 
+[source,xml]
 -----------------------------------------------------------------------
 <gribConfig>
   <gdsName hash='-1960629519' groupName='KTUA Arkansas-Red River RFC'/>
@@ -315,6 +329,7 @@ collection in IOSP/GRIB1(2)/GribCollection tab, and click on the "Show
 GDS use" button on the top right. This will create a template you can
 then modify:
 
+[source,xml]
 -----------------------------------------------------------------------------
 <gdsName hash='1450192070' groupName='Gaussian latitude/longitude-576X1152'/>
 -----------------------------------------------------------------------------
@@ -330,6 +345,7 @@ Define which datasets are available in the TDS catalog. By default, all are enab
 4.  **Files**: show component files, allow them to be downloaded via HTTP.
 (For File partitions which have a single file in each partition, this functionality is enabled by including an HTTPServer in the services.)
 
+[source,xml]
 ----------------------------------------------
 <gribConfig datasetTypes="TwoD Best Latest" />
 ----------------------------------------------
@@ -341,6 +357,7 @@ Rename the latest file dataset
 Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is "Latest File").
 The datasetTypes options _*LatestFile*_ and __*Files*__, must be enabled. Note that this does not affect dataset **urlPath**, which is always __latest.xml__.
 
+[source,xml]
 --------------------------------------
 <gribConfig>
   <latestNamer name="My Latest Name"/>
@@ -354,6 +371,7 @@ Rename the Best dataset
 Change the name of the Best dataset in the collection (the default name is "Best Timeseries").
 The datasetTypes *_Best_* option must be selected. Note that this does not affect dataset **urlPath**.
 
+[source,xml]
 -----------------------------------
 <gribConfig>
   <bestNamer name="My Best Name" />
@@ -367,6 +385,7 @@ Sort the dataset listings under the Files dataset
 Sort the files lexigraphically, either increasing or decreasing (default
 GRIB Feature Collection behavior is the same as __increasing = True__).
 
+[source,xml]
 ----------------------------------
 <gribConfig>
   <filesSort increasing="false" />
@@ -380,6 +399,7 @@ The gribConfig schema definition, version 1.2
 see:
 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd]
 
+[source,xml]
 --------------------------------------------------------------------------
 <xsd:complexType name="gribConfigType">
  <xsd:sequence>
@@ -453,6 +473,7 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[http://www.unid
 </xsd:complexType>
 --------------------------------------------------------------------------
 
+[source,xml]
 ----------------------------------------
 <xsd:simpleType name="gribDatasetTypes">
  <xsd:union memberTypes="xsd:token">
