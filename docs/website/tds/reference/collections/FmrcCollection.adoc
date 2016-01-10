@@ -131,7 +131,7 @@ debug);* +
 
 The collection may be one of:
 
-1.  <<CollectionSpecification.adoc,collection specification>> string
+1.  <<CollectionSpecification#,collection specification>> string
 2.  __catalog__:catalogURL
 3.  filename.ncml
 

@@ -27,7 +27,7 @@ your collection is changing, partitioned collections will only have to
 update the partitions that change. So all of these are reasons you may
 want to use time partitioning.
 
-See <<TDM.adoc,here>> for options on how to get your collections
+See <<TDM#,here>> for options on how to get your collections
 indexed.
 
 A time partition is the partitioning of the GRIB records into disjoint

@@ -39,9 +39,9 @@ ________________________
 
 === See also :
 
-* <<../CDM/index.adoc,CDM Object Model>>.
+* <<../CDM/index#,CDM Object Model>>.
 * _Coordinate Attribute
-<<../reference/CoordinateAttributes.adoc,Reference>>
+<<../reference/CoordinateAttributes#,Reference>>
 
 === Contents:
 

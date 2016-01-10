@@ -7,7 +7,7 @@
 
 A *_Point Feature Collection_* is a collection of files which the CDM
 can recognize as containing
-<<../../../netcdf-java/reference/FeatureDatasets/PointFeatures.adoc,Point Features>>.
+<<../../../netcdf-java/reference/FeatureDatasets/PointFeatures#,Point Features>>.
 
 === Constraints on Point Feature Collections
 

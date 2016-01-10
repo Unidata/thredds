@@ -24,16 +24,16 @@ only while actively configuring the server, and turn it off when in
 production mode.
 
 In any case, we strongly recommend that you also read and follow the
-<<TomcatSecurity.adoc,Tomcat/TDS Security guidelines>>.
+<<TomcatSecurity#,Tomcat/TDS Security guidelines>>.
 
-Follow the <<../tutorial/Checklist.adoc,checklist>> for more concise
+Follow the <<../tutorial/Checklist#,checklist>> for more concise
 and up-to-date configuration instruction.
 
 == Configuring Tomcat Users
 
 Special permissions (like remote management) are done in Tomcat by
 creating _*users*_ with special __*roles*__. As long as you also follow
-the <<TomcatSecurity.adoc,Tomcat/TDS Security guidelines>>, using the
+the <<TomcatSecurity#,Tomcat/TDS Security guidelines>>, using the
 simplest Tomcat mechanism to do this should be safe.
 
 Edit **$\{tomcat_home}/conf/tomcat-users.xml**, adding roles

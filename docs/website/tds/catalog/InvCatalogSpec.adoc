@@ -52,7 +52,7 @@ It is written to help clients read and understand THREDDS catalogs recieved from
 
 === Related resources:
 
-* Catalog <<../tutorial/CatalogPrimer.adoc,Primer>>
+* Catalog <<../tutorial/CatalogPrimer#,Primer>>
 
 * Catalog link:Example1.0rc8.xml[Example]
 
@@ -68,13 +68,13 @@ It is written to help clients read and understand THREDDS catalogs recieved from
 ** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd[Version 1.0.1]
 ** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd[Version 1.0]
 
-* <<../reference/DigitalLibraries.adoc,Writing metadata for Digital Libraries>>
+* <<../reference/DigitalLibraries#,Writing metadata for Digital Libraries>>
 
 * Java API to read catalogs in the http://www.unidata.ucar.edu/software/netcdf-java/[netCDF-Java library].
 
-* <<Changes.adoc,Changes>> since version 1.0.1.
+* <<Changes#,Changes>> since version 1.0.1.
 
-* <<InvCatalogServerSpec.adoc,Server-side catalog specification>>
+* <<InvCatalogServerSpec#,Server-side catalog specification>>
 
 [[baseElements]]
 == Base Catalog Elements

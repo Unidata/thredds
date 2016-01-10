@@ -23,7 +23,7 @@ Host]
 * link:#proxy[Reverse Proxy]
 * link:#shutdown[Protecting the Tomcat `SHUTDOWN` Port]
 
-You should know how to do a <<GettingStarted.adoc,basic installation>>
+You should know how to do a <<GettingStarted#,basic installation>>
 of Tomcat, Java, and the TDS; and be familiar with the
 <<GettingStarted.adoc#tour,Tomcat directory structure>>;
 <<GettingStarted.adoc#files,Tomcat server configuration>>; and the
@@ -425,7 +425,7 @@ error: `java.io.IOException: Cannot recover key`.
 Other than the compelling security reasons, you will want to enable
 TSL/SSL to take advantage of a couple of monitoring and debugging tools:
 the http://localhost:8080/thredds/admin/debug[TDS Remote Management
-Tool], and the <<tdsMonitor.adoc,TdsMonitor Tool>> – both of which
+Tool], and the <<tdsMonitor#,TdsMonitor Tool>> – both of which
 (out-of-the-box) require TSL/SSL to access.
 
 The web application deployment descriptor, aka `web.xml`, specifies if
@@ -441,7 +441,7 @@ container-managed security constraints upon application deployment.
 _The TDS has been pre-configured to require that TSL/SSL encryption is
 enabled in order to access the both the
 http://localhost:8080/thredds/admin/debug[TDS Remote Management Tool],
-and the <<tdsMonitor.adoc,TdsMonitor Tool>>._
+and the <<tdsMonitor#,TdsMonitor Tool>>._
 
 `web.xml` from the TDS Remote Management Tool:
 
@@ -496,7 +496,7 @@ constrained requests on any connection, including an unprotected one.
 Other than the compelling security reasons, you will want to enable
 TSL/SSL to take advantage of a couple of monitoring and debugging tools:
 the http://localhost:8080/thredds/admin/debug[TDS Remote Management
-Tool], and the <<tdsMonitor.adoc,TdsMonitor Tool>> – both of which
+Tool], and the <<tdsMonitor#,TdsMonitor Tool>> – both of which
 (out-of-the-box) require TSL/SSL to access.
 
 Enable TSL/SSL in Tomcat

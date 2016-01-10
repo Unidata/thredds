@@ -11,22 +11,22 @@ TDS Configuration Checklist for Production
 
 * Edit the server information in
 *$\{tomcat_home}/content/thredds/threddsConfig.xml*
-(<<BasicThreddsConfig_xml.adoc,more info>>)
+(<<BasicThreddsConfig_xml#,more info>>)
 * If modifying CSS, place css files in
 *$\{tomcat_home}/content/thredds/public/* and make changes to the
 *htmlSetup* tag in *$\{tomcat_home}/content/thredds/threddsConfig.xml*
-(<<BasicThreddsConfig_xml.adoc,more info>>)
+(<<BasicThreddsConfig_xml#,more info>>)
 * Enable netCDF-4 output, if desired and the C netCDF library is
 installed on your system (new as of TDS 4.3.13)
 (<<../reference/ThreddsConfigXMLFile.adoc#netcdfCLibrary,more info>>)
 * Configure caches, if required
 (<<../reference/ThreddsConfigXMLFile.adoc#Cache_Locations,more info>>)
 * Configure and add new Viewer links
-(<<../reference/Viewers.adoc,more info>>)
+(<<../reference/Viewers#,more info>>)
 * Specify other root catalogs, if needed
 (<<../reference/ThreddsConfigXMLFile.adoc#catalogRoots,more info>>)
 * If needed, Restrict Dataset Access using Tomcat
-(<<../reference/RestrictedAccess.adoc,more info>>)
+(<<../reference/RestrictedAccess#,more info>>)
 
 == Configuration Catalogs
 
@@ -35,21 +35,21 @@ the *catalogRef* tag: +
      &ltcatalogRef xlink:title=``Title of linked catalog''
 xlink:href=``otherCatalog.xml'' name=``''/>
 * Enable the services you wish to expose for your dataset
-(<<ConfigCatalogs.adoc,more info>>)
+(<<ConfigCatalogs#,more info>>)
 ** Note: Make sure these services are enabled in the
 *$\{tomcat_home}/content/thredds/threddsConfig.xml* file
 (<<../reference/ThreddsConfigXMLFile.adoc#Remote,more info>>)
 ** Make sure the service base URLs (the ``base'' attribute) exactly
-match the values given on <<ConfigCatalogs.adoc,this>> page
+match the values given on <<ConfigCatalogs#,this>> page
 * Add or link to metadata related to your dataset
-(<<ConfigCatalogs.adoc,more info>>)
+(<<ConfigCatalogs#,more info>>)
 * If your catalog will serve GRIB data, use the GribFeatureCollection!
-(<<../reference/collections/GribCollections.adoc,more info>>)
+(<<../reference/collections/GribCollections#,more info>>)
 * Configure datasetRoot, dataset (single file), and datasetScan
 (directory) tags to expose the datafiles on your system through the
-catalog (<<BasicConfigCatalogs.adoc,more info>>)
+catalog (<<BasicConfigCatalogs#,more info>>)
 * If needed, Restrict Dataset Access at the catalog level
-(<<../reference/RestrictedAccess.adoc,more info>>)
+(<<../reference/RestrictedAccess#,more info>>)
 
 == Adding New TDS Configuration options or New Configuration Catalogs
 

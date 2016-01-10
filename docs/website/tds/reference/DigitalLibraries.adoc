@@ -80,7 +80,7 @@ already configured for use with the TDS.
 
 == Related Documents
 
-* <<DLexport.adoc,Exporting THREDDS Datasets to Digital Libraries>>
+* <<DLexport#,Exporting THREDDS Datasets to Digital Libraries>>
 
 '''''
 

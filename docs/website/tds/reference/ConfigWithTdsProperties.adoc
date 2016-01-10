@@ -27,7 +27,7 @@ The Java system properties that TDS uses for configuration are:
 
 |`tds.content.root.path`
 |Root path for TDS content directory
-|*None*. The user must <<../UpgradingTo4.6.adoc,provide this value>>.
+|*None*. The user must <<../UpgradingTo4.6#,provide this value>>.
 
 |`tds.version`
 |TDS version number

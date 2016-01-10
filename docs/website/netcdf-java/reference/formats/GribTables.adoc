@@ -174,7 +174,7 @@ version that a GRIB file uses, you must track down the corrrect table
 and add it to the CDM at runtime. (Also, send it to us so we can include
 it in the next release). To add a table at runtime:
 
-1.  Use <<../RuntimeLoading.adoc,Runtime Loading>> to add your own
+1.  Use <<../RuntimeLoading#,Runtime Loading>> to add your own
 table programmatically within your application, or by using the Runtime
 configuration file.
 2.  Tables that are added at runtime take precedence over the standard

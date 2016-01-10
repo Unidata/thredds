@@ -57,7 +57,7 @@ is built.
 given time unit.
 
 There are a number of requirements that you must understand for each
-type. <<Partitions.adoc,Details>>.
+type. <<Partitions#,Details>>.
 
 '''''
 

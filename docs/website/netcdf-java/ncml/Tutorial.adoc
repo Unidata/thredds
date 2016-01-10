@@ -322,9 +322,9 @@ ncfileOut.close();
 ncfileIn.close();
 ----
 
-See also: <<AnnotatedSchema4.adoc,Annotated NcML Schema>>
+See also: <<AnnotatedSchema4#,Annotated NcML Schema>>
 
-Next: <<Aggregation.adoc,Aggregation>>
+Next: <<Aggregation#,Aggregation>>
 
 '''''
 

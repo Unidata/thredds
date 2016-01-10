@@ -160,7 +160,7 @@ for example:
 
 A _datasetScan_ element can specify which files and directories it will
 include with a _filter_ element (also see
-<<../catalog/InvCatalogServerSpec.adoc,server catalog spec>> for
+<<../catalog/InvCatalogServerSpec#,server catalog spec>> for
 details). When no filter element is given, all files and directories are
 included in the generated catalog(s). Adding a *filter* element to your
 datasetScan element allows you to include (and/or exclude) the files and

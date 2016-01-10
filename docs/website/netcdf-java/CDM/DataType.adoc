@@ -248,7 +248,7 @@ Sequence data thus cannot be subset, but only sequentially traversed.
 === Variable Length Data
 
 When a Variable has a variable length dimension, *Variable.isVariableLength()* is true and things are more complicated
-than with rectangular arrays. <<VariableLengthData.adoc,Details>>.
+than with rectangular arrays. <<VariableLengthData#,Details>>.
 
 '''''
 

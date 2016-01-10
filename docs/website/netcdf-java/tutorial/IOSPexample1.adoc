@@ -278,7 +278,7 @@ understood by the higher layers of the CDM, you should also add the
 Coordinate System and Typed Dataset information that is needed. To do
 so, you need to understand the Conventions used by these layers. In this
 case, we have Point data, so we are going to use Unidata’s
-<<../reference/CoordinateAttributes.adoc,_Coordinate Conventions>> and
+<<../reference/CoordinateAttributes#,_Coordinate Conventions>> and
 Unidata’s
 http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html[Point
 Observation Conventions] which requires us to add certain attributes.

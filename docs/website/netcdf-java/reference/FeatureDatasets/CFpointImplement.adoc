@@ -199,8 +199,8 @@ some of the forms.
 
 also see:
 
-* <<CFencodingTable.adoc,DSG Encoding Table>>
-* <<DSGtableNotation.adoc,CDM table notation for DSG>>
+* <<CFencodingTable#,DSG Encoding Table>>
+* <<DSGtableNotation#,CDM table notation for DSG>>
 
 === H.1 Point Data
 

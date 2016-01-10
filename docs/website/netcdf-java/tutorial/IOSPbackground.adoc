@@ -208,7 +208,7 @@ ArrayDouble.D4, ArrayDouble.D5, ArrayDouble.D6, ArrayDouble.D7.*
 
 There is also ArrayStructure, but this is handled different from the
 numeric and String types. See
-<<../reference/StructureData.adoc,ArrayStructures>>. +
+<<../reference/StructureData#,ArrayStructures>>. +
 
 == ucar.ma2.DataType
 

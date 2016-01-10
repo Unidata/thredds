@@ -214,4 +214,4 @@ server load. _Don’t use both of them on the same dataset on a real
 production server._
 
 More details are in the
-<<../reference/collections/FeatureCollections.adoc,reference doc>>.
+<<../reference/collections/FeatureCollections#,reference doc>>.

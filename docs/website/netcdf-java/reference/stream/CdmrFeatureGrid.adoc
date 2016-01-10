@@ -19,7 +19,7 @@ Example request:
 http://thredds.ucar.edu/thredds/cdmrfeature/grid/grib/NCEP/GFS/Global_0p5deg/Best?req=data&var=Albedo_surface_Mixed_intervals_Average
 ----
 
-See <<CdmrfGrammer.adoc,CdmrFeature Grammer>> for a description of the on-the-wire protocol.
+See <<CdmrfGrammer#,CdmrFeature Grammer>> for a description of the on-the-wire protocol.
 
 include::{tdsDocs}/CdmrfParams.adoc[]
 

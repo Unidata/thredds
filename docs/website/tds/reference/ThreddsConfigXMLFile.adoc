@@ -190,7 +190,7 @@ static catalogs must live within the *$\{tomcat_home}/content/thredds* directory
 ------------------------------------
 
 You can place a link to your own _*Viewer*_ on the TDS HTML page, by
-loading a <<Viewers.adoc,viewer>> at runtime. This line is needed in
+loading a <<Viewers#,viewer>> at runtime. This line is needed in
 the config file only if you are writing your own Java class.
 
 === Adding Dataset Sources
@@ -260,7 +260,7 @@ Header on all OPeNDAP responses.
 === WCS Service
 
 The OGC WCS service provided as part of the TDS is described in more
-detail <<WCS.adoc,here>>. By default this service is enabled, and can
+detail <<WCS#,here>>. By default this service is enabled, and can
 be disabled by including the following in the `threddsConfig.xml` file:
 
 ----------------------
@@ -300,7 +300,7 @@ successful download. Do not set to <= 0.
 === WMS Service
 
 The OGC WMS service provided as part of the TDS is described in more
-detail <<WMS.adoc,here>>. By default this service is enabled, and can
+detail <<WMS#,here>>. By default this service is enabled, and can
 be disabled by including the following in the `threddsConfig.xml` file:
 
 ----------------------
@@ -344,7 +344,7 @@ service will return.
 === NetCDF Subset Service (NCSS)
 
 The NetCDF Subset Service provided as part of the TDS is described in
-more detail <<NetcdfSubsetServiceReference.adoc,here>>. By default
+more detail <<NetcdfSubsetServiceReference#,here>>. By default
 this service is enabled, and can be disabled by including the following
 in the `threddsConfig.xml` file:
 
@@ -402,7 +402,7 @@ the following in the `threddsConfig.xml` file:
 
 Each of the *allow* elements above enables the corresponding ncISO
 service (NCML, UDDC, and ISO). The ncISO services are described in more
-detail on the <<ncISO.adoc,ncISO page>>.
+detail on the <<ncISO#,ncISO page>>.
 
 '''''
 
@@ -778,7 +778,7 @@ thus > 7M datastes), and so Linux is preferred for large installations.
 
 === User Triggering
 
-You must have <<RemoteManagement.adoc,Remote Managenment>> enabled
+You must have <<RemoteManagement#,Remote Managenment>> enabled
 (enable SSL in Tomcat, and login as a user with the *tdsConfig*
 user-role).
 

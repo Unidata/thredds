@@ -45,10 +45,10 @@ where:
 == nccopy
 
 Copies a dataset to a netCDF-3 (default) or netCDF-4 file. The input may
-be any <<formats/FileTypes.adoc,CDM dataset>>, including OPeNDAP URLs,
+be any <<formats/FileTypes#,CDM dataset>>, including OPeNDAP URLs,
 NcML, GRIB files, etc. If the dataset uses the extended data model, you
 must write to netCDF-4. If writing to netCDF-4, you must have the
-<<netcdf4Clibrary.adoc,netcdf-4 C library loaded>>.
+<<netcdf4Clibrary#,netcdf-4 C library loaded>>.
 
 -------------------------------------------------------------------------------------
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.write.Nccopy [options]
@@ -186,7 +186,7 @@ Note that the output file is placed in the root directory of the
 collection, as specified by the
 link:../../tds/reference/collections/CollectionSpecification.adoc[Collection
 Specification] of the GRIB
-<<../../tds/reference/collections/FeatureCollections.adoc,<featureCollection>>>.
+<<../../tds/reference/collections/FeatureCollections#,<featureCollection>>>.
 
 [[FeatureScan]]
 == FeatureScan

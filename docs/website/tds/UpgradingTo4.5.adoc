@@ -56,7 +56,7 @@ featureType="**GRIB2**".
 2.  The valid options for timePartitions are *directory* or **file**.
 3.  On-the-fly updating of datasets is no longer supported. If you have
 datasets that change, you must use the
-<<reference/collections/TDM.adoc,TDM>>.
+<<reference/collections/TDM#,TDM>>.
 4.  Datasets are automatically partitioned by GRIB reference time. If
 there are multiple reference times, you have the option of giving access
 to a TwoD dataset which has two time dimensions, reference time and
@@ -93,8 +93,8 @@ For version 4.5 should be:
 ------------------------------------------------------------------------------------------------------------------
 
 For complete information, see
-<<reference/collections/GribCollections.adoc,GRIB Collections>> and
-<<reference/collections/TDM.adoc,TDM>>.
+<<reference/collections/GribCollections#,GRIB Collections>> and
+<<reference/collections/TDM#,TDM>>.
 
 == Netcdf Subset Service Changes
 
@@ -106,7 +106,7 @@ catalog, then you dont need to do anything different)
 3.  The REST interface has changed. If you have been using NCSS from a
 script, you will need to check your URLs and parameters, and possibly
 change them, see the
-<<reference/NetcdfSubsetServiceReference.adoc,NCSS REST API>>. (If you
+<<reference/NetcdfSubsetServiceReference#,NCSS REST API>>. (If you
 are accessing NCSS from the HTML form, then you dont need to do anything
 different).
 

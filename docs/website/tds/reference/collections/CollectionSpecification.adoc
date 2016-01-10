@@ -67,7 +67,7 @@ and its subdirectories for files that match the regular expression:
 Remember that an unescaped ``.'' matches any character. An escaped ``\.'' matches the literal ``.'' character.
 
 From the filename, extract the date by applying the
-<<SimpleDateFormat.adoc,SimpleDateFormat>> template _yyyyMMdd_HHmm_ to
+<<SimpleDateFormat#,SimpleDateFormat>> template _yyyyMMdd_HHmm_ to
 the portion of the filename after
 
 -----------------
@@ -96,7 +96,7 @@ Demarcate the part of the filename where the run date is encoded, using
 /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#20090301_0600#.grib1
 -----------------------------------------------------------------------------------------
 
-Substitute a <<SimpleDateFormat.adoc,SimpleDateFormat>>:
+Substitute a <<SimpleDateFormat#,SimpleDateFormat>>:
 
 -----------------------------------------------------------------------------------------
 /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1

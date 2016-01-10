@@ -17,7 +17,7 @@ all cases have equivalent or improved functionality in 4.0. Most of the
 changes are in implementation classes not often used by simple
 applications.
 
-<<jarDiff.adoc,A complete list of all API changes>>
+<<jarDiff#,A complete list of all API changes>>
 
 link:APIchanges.txt[An overview of the most important changes]
 

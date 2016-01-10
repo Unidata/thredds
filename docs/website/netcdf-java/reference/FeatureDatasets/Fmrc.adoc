@@ -7,8 +7,8 @@
 :stylesheet: ../../cdm.css
 
 A Forecast Model Run Collection (FMRC) is a collection of forecast model output.
-An FMRC *featureCollection* supersedes using NcML <<../../ncml/FmrcAggregation.adoc,FMRC Aggregation>>.
-In the TDS, one uses a <<../../../tds/reference/collections/FeatureCollections.adoc,FMRC FeatureCollection>> element.
+An FMRC *featureCollection* supersedes using NcML <<../../ncml/FmrcAggregation#,FMRC Aggregation>>.
+In the TDS, one uses a <<../../../tds/reference/collections/FeatureCollections#,FMRC FeatureCollection>> element.
 This document covers the CDM aspects of FMRC feature collections.
 
 == Overview
@@ -19,7 +19,7 @@ cannot put output from multiple runs in the same file; that is, all the
 variables in a file are assumed to have a single run time.
 
 The file collections are managed with a
-<<../../../tds/reference/collections/FeatureCollections.adoc,CollectionManager>>.
+<<../../../tds/reference/collections/FeatureCollections#,CollectionManager>>.
 Datasets are opened as GridDatasets, so that the coordinate system information is available.
 
 The ToolsUI FMRC tab allows you to view internal structures of an FMRC.
@@ -88,7 +88,7 @@ elements.
 
 * http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[FMRC Aggregation] and
 http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[poster]
-* <<../../../tds/reference/collections/FeatureCollections.adoc,Configuring TDS with the FeatureCollection element>>
+* <<../../../tds/reference/collections/FeatureCollections#,Configuring TDS with the FeatureCollection element>>
 
 '''''
 
