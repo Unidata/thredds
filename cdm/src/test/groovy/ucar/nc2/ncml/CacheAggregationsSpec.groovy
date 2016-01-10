@@ -3,6 +3,7 @@ package ucar.nc2.ncml
 import spock.lang.Specification
 import ucar.ma2.Array
 import ucar.nc2.Variable
+import ucar.nc2.dataset.DatasetUrl
 import ucar.nc2.dataset.NetcdfDataset
 
 /**
@@ -42,7 +43,7 @@ class CacheAggregationsSpec extends Specification {
 
         (1..numTrials).each {
             when:
-            NetcdfDataset.acquireDataset(filename, null).withCloseable {
+            NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), false, null).withCloseable {
                 Variable var = it.findVariable('Temperature')
                 Array array = var.read('1,1,:')  // Prior to fix, failure happened here on 2nd trial.
                 actuals = array.getStorage() as List
@@ -61,7 +62,7 @@ class CacheAggregationsSpec extends Specification {
 
         (1..numTrials).each {
             when:
-            NetcdfDataset.acquireDataset(filename, null).withCloseable {
+            NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), false, null).withCloseable {
                 Variable var = it.findVariable('P')
                 Array array = var.read('42,1,:')
                 actuals = array.getStorage() as List
@@ -80,7 +81,7 @@ class CacheAggregationsSpec extends Specification {
 
         (1..numTrials).each {
             when:
-            NetcdfDataset.acquireDataset(filename, null).withCloseable {
+            NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), false, null).withCloseable {
                 Variable var = it.findVariable('T')
                 Array array = var.read('1,1,:')
                 actuals = array.getStorage() as List
@@ -99,7 +100,7 @@ class CacheAggregationsSpec extends Specification {
 
         (1..numTrials).each {
             when:
-            NetcdfDataset.acquireDataset(filename, null).withCloseable {
+            NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), false, null).withCloseable {
                 Variable var = it.findVariable('temperature')
                 Array array = var.read('10,10:16:2')
                 actuals = array.getStorage() as List
@@ -118,7 +119,7 @@ class CacheAggregationsSpec extends Specification {
 
         (1..numTrials).each {
             when:
-            NetcdfDataset.acquireDataset(filename, null).withCloseable {
+            NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(filename), false, null).withCloseable {
                 Variable var = it.findVariable('Temperature_isobaric')
                 Array array = var.read(':, 11, 0, 0, 0')
                 actuals = array.getStorage() as List

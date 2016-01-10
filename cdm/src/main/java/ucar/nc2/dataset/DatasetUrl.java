@@ -44,10 +44,7 @@ import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Detection of the protocol from a location string.
@@ -441,5 +438,20 @@ public class DatasetUrl {
   public DatasetUrl(ServiceType serviceType, String trueurl) {
     this.serviceType = serviceType;
     this.trueurl = trueurl;
+  }
+
+  @Override public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DatasetUrl that = (DatasetUrl) o;
+    return serviceType == that.serviceType && Objects.equals(trueurl, that.trueurl);
+  }
+
+  @Override public int hashCode() {
+    return Objects.hash(serviceType, trueurl);
   }
 }

@@ -1,6 +1,7 @@
 package ucar.nc2.util.cache
 
 import spock.lang.Specification
+import ucar.nc2.dataset.DatasetUrl
 import ucar.nc2.dataset.NetcdfDataset
 import ucar.unidata.test.util.TestDir
 
@@ -18,7 +19,7 @@ class ReacquireClosedDatasetSpec extends Specification {
 
         when: 'Acquire and close dataset 4 times'
         (1..4).each { println ''
-            NetcdfDataset.acquireDataset(location, null).close()
+            NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(location), true, null).close()
         }
 
         and: 'Query cache stats'
