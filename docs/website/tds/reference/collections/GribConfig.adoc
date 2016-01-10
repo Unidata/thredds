@@ -7,7 +7,7 @@
 
 There are a number of ways that the user can intervene in the processing
 of GRIB Collections, all of them controlled by *<gribConfig>* elements
-inside the <*featureCollection*> elements of the TDS configuration
+inside the *<featureCollection>* elements of the TDS configuration
 catalogs or inside NcML. Its important to understand when these elements
 are applied and when index files need to be regenerated.
 
