@@ -62,9 +62,12 @@ public class HttpClientManager
      */
     static public void init(CredentialsProvider provider, String userAgent)
     {
-        if(provider != null) try {
-            HTTPSession.setGlobalCredentialsProvider(provider,HTTPAuthSchemes.BASIC);
-        } catch (HTTPException e) {};
+        if(provider != null)
+            try {
+                HTTPSession.setGlobalCredentialsProvider(provider);
+            } catch(HTTPException e) {
+                throw new IllegalArgumentException(e);
+            }
         if(userAgent != null)
             HTTPSession.setGlobalUserAgent(userAgent + "/NetcdfJava/HttpClient");
         else
@@ -99,13 +102,14 @@ public class HttpClientManager
     public static String getContentAsString(HTTPSession session, String urlencoded) throws IOException
     {
         HTTPSession useSession = session;
-        try {
-            if(useSession == null)
+	try {
+        if(useSession == null)
                 useSession = HTTPFactory.newSession(urlencoded);
-            HTTPMethod m = HTTPFactory.Get(useSession, urlencoded);
+        try(HTTPMethod m = HTTPFactory.Get(useSession, urlencoded)) {
             m.execute();
             return m.getResponseAsString();
-        } finally {
+        }
+	} finally {
             if((session == null) && (useSession != null))
                 useSession.close();
         }
@@ -156,10 +160,9 @@ public class HttpClientManager
             if(useSession == null) {
                 useSession = HTTPFactory.newSession(urlencoded);
             }
-
             try (HTTPMethod m = HTTPFactory.Get(useSession, urlencoded)) {
                 m.setFollowRedirects(true);
-                m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+                m.setCompression("gzip,deflate");
 
                 int status = m.execute();
                 if(status != 200) {
@@ -175,6 +178,7 @@ public class HttpClientManager
 
                 if(encoding != null && encoding.equals("deflate")) {
                     byte[] body = m.getResponseAsBytes();
+                    if (body == null) throw new IOException("empty body");
                     InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
                     if(useSession != null) {
                         useSession.close();
@@ -183,6 +187,7 @@ public class HttpClientManager
 
                 } else if(encoding != null && encoding.equals("gzip")) {
                     byte[] body = m.getResponseAsBytes();
+                    if (body == null) throw new IOException("empty body");
                     InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
                     if(useSession != null) {
                         useSession.close();
@@ -191,6 +196,7 @@ public class HttpClientManager
 
                 } else {
                     byte[] body = m.getResponseAsBytes(maxKbytes * 1000);
+                    if (body == null) throw new IOException("empty body");
                     if(useSession != null) {
                         useSession.close();
                     }
@@ -226,7 +232,7 @@ public class HttpClientManager
                 useSession = HTTPFactory.newSession(urlencoded);
 
             HTTPMethod m = HTTPFactory.Get(useSession, urlencoded);
-            m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+            m.setCompression("gzip,deflate");
 
             int status = m.execute();
 
@@ -278,8 +284,8 @@ public class HttpClientManager
             }
 
             try (HTTPMethod m = HTTPFactory.Get(useSession, urlencoded)) {
-                m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-                m.setRequestHeader("Range", "bytes=" + start + "-" + end);
+                m.setCompression("gzip,deflate");
+                m.setRange(start,end);
 
                 int status = m.execute();
                 if((status != 200) && (status != 206)) {

@@ -12,9 +12,6 @@ import ucar.unidata.test.Diff;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.Set;
@@ -261,15 +258,10 @@ public class UnitTestCommon
     checkServer(String candidate)
     {
         if(candidate == null) return false;
-/* requires httpclient4
-        int savecount = HTTPSession.getRetryCount();
-        HTTPSession.setRetryCount(1);
-*/
-        // See if the sourceurl is available by trying to get the DSR
+        // ping to see if we get a response
         System.err.print("Checking for sourceurl: " + candidate);
         try {
-            try (
-                    HTTPMethod method = HTTPFactory.Get(candidate)) {
+            try (HTTPMethod method = HTTPFactory.Get(candidate)) {
                 method.execute();
                 String s = method.getResponseAsString();
                 System.err.println(" ; found");

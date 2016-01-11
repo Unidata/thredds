@@ -152,23 +152,11 @@ public class Tdm {
 
     servers = new ArrayList<>(serverNames.length);
     for (String name : serverNames) {
-      HTTPSession session = new HTTPSession(name);
-      // AuthScope scope = new AuthScope(ANY_HOST, -1, ANY_REALM, "Digest");
-      session.setCredentialsProvider(name,new CredentialsProvider() {
-        public Credentials getCredentials(AuthScope scope) {
-          //System.out.printf("getCredentials called %s %s%n", user, pass);
-          return new UsernamePasswordCredentials(user, pass);
-        }
-
-        public void setCredentials(AuthScope scope, Credentials creds) {
-        }
-
-        public void clear() {
-        }
-      });
-
-      session.setUserAgent("TDM");
-      servers.add(new Server(name, session));
+      try (HTTPSession session = HTTPFactory.newSession(name)) {
+        session.setCredentials(new UsernamePasswordCredentials(user, pass));
+        session.setUserAgent("TDM");
+        servers.add(new Server(name, session));
+      }
     }
   }
 

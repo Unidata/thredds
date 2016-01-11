@@ -23,7 +23,6 @@ public class TestDConnect2 extends TestSources {
   static boolean debug = false;
   static boolean createbaseline = true;
 
-
   final String TITLE = "DAP DConnect2 Tests";
 
 // Define the test sets
@@ -70,7 +69,7 @@ public class TestDConnect2 extends TestSources {
     failcount = 0;
   }
 
-  void test1(String test) throws Exception {
+  void dotest(String test) throws Exception {
     boolean constrained = false;
     this.test = test;
     this.testname = test;
@@ -107,7 +106,6 @@ public class TestDConnect2 extends TestSources {
     if (constrained) testpart(TestPart.DATADDS, ce);
     if (!pass)
       Assert.assertTrue(testname, pass);
-
   }
 
   void testpart(TestPart part, String ce) {
@@ -148,12 +146,12 @@ public class TestDConnect2 extends TestSources {
         System.out.println(result);
       }
 
-      String testdata = accessTestData(testprefix, testdataname, part);
+      String testdata = accessTestData(testdir, testdataname, part);
       if (testdata == null) {
         System.err.println("No comparison testdata found: " + testdataname + partext(part));
         System.err.println(result);
         if (createbaseline) {
-          String fname = testprefix + "/" + testdataname + partext(part);
+          String fname = this.testdir + "/" + testdataname + partext(part);
           System.err.println("Creating: " + fname);
           FileWriter fw = new FileWriter(fname);
           fw.write(result);
@@ -198,7 +196,7 @@ public class TestDConnect2 extends TestSources {
       System.out.printf("Base URL: %s\n", currentTestSet.url);
 
       for (String test : currentTestSet.tests) {
-        test1(test);
+        dotest(test);
       }
     }
 

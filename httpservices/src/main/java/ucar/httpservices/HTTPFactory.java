@@ -33,6 +33,7 @@
 
 package ucar.httpservices;
 
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 
 /**
@@ -56,39 +57,20 @@ public class HTTPFactory
         return new HTTPSession(url);
     }
 
+    static public HTTPSession newSession(HttpHost target) throws HTTPException
+    {
+        return new HTTPSession(target);
+    }
+
+    @Deprecated
     static public HTTPSession newSession(AuthScope scope) throws HTTPException
     {
-        return new HTTPSession(scope);
+	HttpHost hh = new HttpHost(scope.getHost(),scope.getPort(),null);
+        return new HTTPSession(hh);
     }
 
     //////////////////////////////////////////////////////////////////////////
     // Static factory methods for creating HTTPMethod instances
-
-
-    static public HTTPMethod Get(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Get, session);
-    }
-
-    static public HTTPMethod Head(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Head, session);
-    }
-
-    static public HTTPMethod Put(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Put, session);
-    }
-
-    static public HTTPMethod Post(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Post, session);
-    }
-
-    static public HTTPMethod Options(HTTPSession session) throws HTTPException
-    {
-        return new HTTPMethod(HTTPSession.Methods.Options, session);
-    }
 
     static public HTTPMethod Get(HTTPSession session, String legalurl) throws HTTPException
     {
@@ -113,6 +95,31 @@ public class HTTPFactory
     static public HTTPMethod Options(HTTPSession session, String legalurl) throws HTTPException
     {
         return new HTTPMethod(HTTPSession.Methods.Options, session, legalurl);
+    }
+
+    static public HTTPMethod Get(HTTPSession session) throws HTTPException
+    {
+        return new HTTPMethod(HTTPSession.Methods.Get, session);
+    }
+
+    static public HTTPMethod Head(HTTPSession session) throws HTTPException
+    {
+        return new HTTPMethod(HTTPSession.Methods.Head, session);
+    }
+
+    static public HTTPMethod Put(HTTPSession session) throws HTTPException
+    {
+        return new HTTPMethod(HTTPSession.Methods.Put, session);
+    }
+
+    static public HTTPMethod Post(HTTPSession session) throws HTTPException
+    {
+        return new HTTPMethod(HTTPSession.Methods.Post, session);
+    }
+
+    static public HTTPMethod Options(HTTPSession session) throws HTTPException
+    {
+        return new HTTPMethod(HTTPSession.Methods.Options, session);
     }
 
     static public HTTPMethod Get(String legalurl) throws HTTPException

@@ -138,11 +138,11 @@ libraries["bounce"] = "org.bounce:bounce:0.14"
 
 libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"
 
-libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.4.1"
+libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.1"
 
-libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.1"
+libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.4"
 
-libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.4.1"
+libraries["httpmime"] = "org.apache.httpcomponents:httpmime:4.5.1"
 
 // Old and crufty. Only used by TdsMonitor in :ui. Can we switch to Guava caches?
 libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"

@@ -304,17 +304,17 @@ public class URLDumpPane extends TextHistoryPane {
       if (cmd == Command.GET)
           m = HTTPFactory.Get(httpclient,urlString);
       else if (cmd == Command.HEAD)
-          m = HTTPFactory.Head(httpclient);
+          m = HTTPFactory.Head(httpclient,urlString);
       else if (cmd == Command.OPTIONS)
-          m = HTTPFactory.Options(httpclient);
+          m = HTTPFactory.Options(httpclient,urlString);
       else if (cmd == Command.PUT) {
-          m = HTTPFactory.Put(httpclient);
+          m = HTTPFactory.Put(httpclient,urlString);
           m.setRequestContent(new StringEntity(ta.getText())); // was  setRequestContentAsString(ta.getText());
       } else {
           throw new IOException("Unsupported command: " + cmd);
       }
 
-      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+      m.setCompression("gzip,deflate");
 
       /* FIX
       appendLine("HttpClient " + m.getName() + " " + urlString);
