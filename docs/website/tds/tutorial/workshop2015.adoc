@@ -17,8 +17,8 @@
 === 9:00 - 9:30 Welcome and Logistics / TDS Motivation and Technology Overview (Ethan)
  * Review of schedule
  * Why use TDS? (link:TDSOverview.pptx[PPT])(link:TDSOverview.pdf[PDF])
- * TDS Resources: <<../TDS.adoc,Web page>>,
-   <<../reference/index.adoc[Reference], link:../faq.adoc,FAQ>>
+ * TDS Resources: <<../TDS#,Web page>>,
+   <<../reference/index.adoc[Reference], link:../faq#,FAQ>>
  * link:http://www.unidata.ucar.edu/community/surveys/2015training/survey.html[Feedback/Evaluation
 Form] (Repeated submissions encouraged)
  * link:https://etherpad.net/p/TdsWorkshop2015[Etherpad] for real-time feedback!
@@ -35,30 +35,30 @@ Form] (Repeated submissions encouraged)
 
 === 10:30 - 11:45 TDS Server Configuration
  * TDS Refresher (all default catalogs, no modifications)
- ** <<CatalogPrimer.adoc,TDS Client Catalog Overview>> (Ryan)
- ** <<BasicConfigCatalogs.adoc,TDS Configuration Catalogs - Basic>> (Ryan)
- ** <<ConfigCatalogs.adoc,TDS Configuration Catalogs - Intermediate>> (Ryan)
+ ** <<CatalogPrimer#,TDS Client Catalog Overview>> (Ryan)
+ ** <<BasicConfigCatalogs#,TDS Configuration Catalogs - Basic>> (Ryan)
+ ** <<ConfigCatalogs#,TDS Configuration Catalogs - Intermediate>> (Ryan)
  *** Unidata's https://github.com/Unidata/TdsConfig[TDS Server catalogs]
- * <<../reference/ThreddsConfigXMLFile.adoc,threddsConfig.xml Reference>> (Christian)
+ * <<../reference/ThreddsConfigXMLFile#,threddsConfig.xml Reference>> (Christian)
  * URL Construction (<<CatalogPrimer.adoc#Constructing_an_access_URL,tutorial>>)
    (<<../catalog/InvCatalogSpec.adoc#constructingURLs,reference>>) (Christian)
 
 === 11:45 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis, Christian)
  * General Overview (Christian)
- ** <<../reference/Services.adoc,Available services>>
+ ** <<../reference/Services#,Available services>>
  *** `serviceType` and `base` attributes are not configurable
  *** `HTTPServer` requires physical files, not virtual ones
  ** Using compound services
  ** Example: <<../reference/ThreddsConfigXMLFile.adoc#ncss,Turn on NCSS in threddsConfig.xml>>
- *** <<../../netcdf-java/reference/netcdf4Clibrary.adoc,Enabling NetCDF4>> for NCSS: Compression!
- * Dataset Subsetting Services (Dennis) (<<Subset.adoc,presentation>>)
- ** Netcdf Subset Service (<<../reference/NetcdfSubsetServiceConfigure.adoc[configure])(link:../reference/NetcdfSubsetServiceReference.adoc,reference>>)
+ *** <<../../netcdf-java/reference/netcdf4Clibrary#,Enabling NetCDF4>> for NCSS: Compression!
+ * Dataset Subsetting Services (Dennis) (<<Subset#,presentation>>)
+ ** Netcdf Subset Service (<<../reference/NetcdfSubsetServiceConfigure.adoc[configure])(link:../reference/NetcdfSubsetServiceReference#,reference>>)
  ** OPeNDAP Services: DAP2 and DAP4 Protocols
  ** Other Services (Not covered) 
- *** Catalog Service (<<../reference/CatalogService.adoc,reference>>)
- *** WCS (<<../reference/WCS.adoc,reference>>)
- *** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(<<../reference/WMS.adoc,reference>>)
- *** ncIso (<<AddingServices.adoc#Setup[configure])(link:../reference/ncISO.adoc,reference>>)
+ *** Catalog Service (<<../reference/CatalogService#,reference>>)
+ *** WCS (<<../reference/WCS#,reference>>)
+ *** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(<<../reference/WMS#,reference>>)
+ *** ncIso (<<AddingServices.adoc#Setup[configure])(link:../reference/ncISO#,reference>>)
 
 === 12:30 - 2:00 Lunch
 
@@ -68,7 +68,7 @@ Form] (Repeated submissions encouraged)
 ** link:http://nbviewer.ipython.org/github/Unidata/unidata-python-workshop/blob/master/wms_sample.ipynb[ncWMS]
 
 === 2:30 - 3:00 Using ToolsUI (Christian)
- * Running <<../../netcdf-java/reference/ToolsUI/ToolsUI.adoc,ToolsUI>>
+ * Running <<../../netcdf-java/reference/ToolsUI/ToolsUI#,ToolsUI>>
  * Use Case: Using ToolsUI to serve new data
  ** Access local and remote TDS servers in ToolsUI
  * IOSPs and FeatureTypes
@@ -80,16 +80,16 @@ Form] (Repeated submissions encouraged)
  ** <<TomcatAndTDSLogs.adoc#access,Tomcat>>
  ** <<TomcatAndTDSLogs.adoc#tds,TDS>>
  * Looking at logs 'remotely' (good for when things do start):
- ** via http and the <<../reference/RemoteManagement.adoc,debug>> page
- ** using the <<tdsMonitor.adoc,TdsMonitor>> Desktop tool
- * <<TroubleShooting.adoc,Troubleshooting>> Configuration Catalogs
+ ** via http and the <<../reference/RemoteManagement#,debug>> page
+ ** using the <<tdsMonitor#,TdsMonitor>> Desktop tool
+ * <<TroubleShooting#,Troubleshooting>> Configuration Catalogs
 
 === 3:45 - 4:30 Software Engineering and Contributing (Christian)
  * Source code on https://github.com/Unidata/thredds[GitHub]
- ** Exercise: <<../../netcdf-java/tutorial/SourceCodeBuild.adoc,Build THREDDS from source code>>
- ** Exercise: <<../../netcdf-java/tutorial/Contributing.adoc,Submit a pull request>>
+ ** Exercise: <<../../netcdf-java/tutorial/SourceCodeBuild#,Build THREDDS from source code>>
+ ** Exercise: <<../../netcdf-java/tutorial/Contributing#,Submit a pull request>>
  * Maven artifacts on https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
- ** <<../../netcdf-java/reference/BuildDependencies.adoc,How to use them in your project>>
+ ** <<../../netcdf-java/reference/BuildDependencies#,How to use them in your project>>
  * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
  * Continuous Integration on https://travis-ci.org/Unidata/thredds[Travis]
  * Static code analysis on https://scan.coverity.com/projects/388?tab=overview[Coverity]
@@ -108,11 +108,11 @@ Form] (Repeated submissions encouraged)
 === 8:00 - 8:30 Coffee and continental breakfast
 
 === 8:30 - 9:30 Advanced TDS Configuration (John)
- * <<../reference/collections/FeatureCollections.adoc,FeatureCollections>>
- * <<FmrcFeatureCollectionsTutorial.adoc,FMRC Tutorial>>
- * <<../reference/collections/PointFeatures.adoc,Point Feature Collections>>
+ * <<../reference/collections/FeatureCollections#,FeatureCollections>>
+ * <<FmrcFeatureCollectionsTutorial#,FMRC Tutorial>>
+ * <<../reference/collections/PointFeatures#,Point Feature Collections>>
  * GRIB Feature Collections (after lunch)
- * <<../UpgradingTo4.6.adoc,Upgrading to 4.6>>
+ * <<../UpgradingTo4.6#,Upgrading to 4.6>>
 
 === 9:30 - 11:30 Open Exploration, 1-on-1
 After looking over the workshop schedule, please consider topics you'd like
@@ -169,10 +169,10 @@ to explore/discuss during this time. Potential topics include:
 
 === 2:45 - 4:00 GRIB Feature Collections (John)
  * cache, index files, partition types (architecture background) (https://docs.google.com/presentation/d/18Kj9FzRQBwSoVYbd1zbx-IUWH7weT3FOV4MRZxWHe0E/edit#slide=id.g3b75fa140_2_15[slides])
- * <<GRIBFeatureCollectionTutorial.adoc,GRIB Feature Collection Tutorial>>
- * Using the THREDDS Data Manager (TDM) <<../reference/collections/TDM.adoc,TDM>>
- * <<GribCollectionExamples.adoc,GRIB Collection Examples>>
+ * <<GRIBFeatureCollectionTutorial#,GRIB Feature Collection Tutorial>>
+ * Using the THREDDS Data Manager (TDM) <<../reference/collections/TDM#,TDM>>
+ * <<GribCollectionExamples#,GRIB Collection Examples>>
  * <<../reference/ThreddsConfigXMLFile.adoc#GribIndexWriting,GRIB Index redirection>>
- * GRIB <<../reference/collections/GribCollectionFaq.adoc,FAQ>>
+ * GRIB <<../reference/collections/GribCollectionFaq#,FAQ>>
 
 === Day Two Finish

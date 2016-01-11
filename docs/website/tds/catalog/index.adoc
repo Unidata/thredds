@@ -18,17 +18,17 @@ TDS sends the catalog to the client, called the *_client-side catalog_*.
 
 For client-side catalogs, see:
 
-* <<InvCatalogSpec.adoc,Catalog specification>> is an annotated XML Schema that explains the details of THREDDS Catalogs.
+* <<InvCatalogSpec#,Catalog specification>> is an annotated XML Schema that explains the details of THREDDS Catalogs.
 * The XML Schema document: http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[Online catalog schema].
-* <<../tutorial/CatalogPrimer.adoc,Catalog Primer>>
-* The <<../../netcdf-java/documentation.adoc,Java NetCDF library>> has a complete package (thredds.client.catalog) to parse client-side catalogs.
+* <<../tutorial/CatalogPrimer#,Catalog Primer>>
+* The <<../../netcdf-java/documentation#,Java NetCDF library>> has a complete package (thredds.client.catalog) to parse client-side catalogs.
 * [Syphon] is a python library that includes catalog parsing.
 
 The TDS dynamically generates THREDDS catalogs based on the TDS
 configuration catalogs. For server-side catalogs, see:
 
-* <<InvCatalogServerSpec.adoc,Server-side Catalog Specification>>
-* <<../tutorial/index.adoc,THREDDS Data Server Administration Tutorial>>
+* <<InvCatalogServerSpec#,Server-side Catalog Specification>>
+* <<../tutorial/index#,THREDDS Data Server Administration Tutorial>>
 
 '''''
 

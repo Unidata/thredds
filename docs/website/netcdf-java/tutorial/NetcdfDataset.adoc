@@ -46,7 +46,7 @@ NetcdfDataset.openFile does the follwing:
 
 * Opens an OPeNDAP remote dataset, if the location is a URL that starts
 with *http:* , *dods:* or *dap4:* (version 4.4+)
-* Opens a <<../reference/stream/CdmRemote.adoc,CdmRemote>> dataset, if
+* Opens a <<../reference/stream/CdmRemote#,CdmRemote>> dataset, if
 the location is a URL that starts with *cdmremote:*
 * Opens a THREDDS dataset, if the location look like
 *thredds:<catalog>#<datasetId>*
@@ -125,7 +125,7 @@ specifics):
 :image:../images/CoordSys.png[image]
 
 To write your Coordinate System Builder, see
-<<CoordSysBuilder.adoc,here>>. To see the list of CoordinateBuilder
+<<CoordSysBuilder#,here>>. To see the list of CoordinateBuilder
 classes, look at the source code in the *ucar.nc2.dataset.conv* package.
 
 When writing netCDF files, we recommend using the

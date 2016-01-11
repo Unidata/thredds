@@ -27,7 +27,7 @@ Simply click link:../../webstart/netCDFtools.jnlp[here] to launch ToolsUI from y
 The Viewer tab reads a dataset and displays its metadata in a tabular format.
 
 ==== Testing dataset readability
-The NetCDF-Java library can read data from a wide variety of <<../formats/FileTypes.adoc,scientific data formats>>.
+The NetCDF-Java library can read data from a wide variety of <<../formats/FileTypes#,scientific data formats>>.
 To check that your dataset can be read by NetCDF-Java, try to open it in the Viewer tab. You can open it in two ways:
 
 * Enter the URL or file path of the dataset in the "dataset" field. Then hit the "Enter" key.
@@ -55,7 +55,7 @@ image:ncdump_variable_data2.png[Sliced]
 In general, it's a good idea to make the number of values dumped reasonably small, if possible.
 
 === Writer
-The Writer tab takes a dataset in <<../formats/FileTypes.adoc,any format that NetCDF-Java can understand>> and writes
+The Writer tab takes a dataset in <<../formats/FileTypes#,any format that NetCDF-Java can understand>> and writes
 it out to NetCDF. Several NetCDF "flavors" are supported:
 
 * netcdf3
@@ -65,7 +65,7 @@ it out to NetCDF. Several NetCDF "flavors" are supported:
 * netcdf3c64
 * ncstream
 
-Note: to write to NetCDF-4, you must have the <<../netcdf4Clibrary.adoc,C library loaded>>.
+Note: to write to NetCDF-4, you must have the <<../netcdf4Clibrary#,C library loaded>>.
 
 image:writer1.png[Writer tab]
 
@@ -85,7 +85,7 @@ image:coordsys1.png[CoordSys tab]
 
 === FeatureTypes
 The sub-tabs of FeatureTypes provide detailed information about the various
-<<../FeatureDatasets/Overview.adoc,scientific feature types>> that a CDM dataset can contain.
+<<../FeatureDatasets/Overview#,scientific feature types>> that a CDM dataset can contain.
 
 ==== FeatureTypes -> Grids
 The Grids sub-tab can be used to determine if a dataset contains grids or not. Simply try to open the dataset, the
@@ -99,7 +99,7 @@ image:gridViewer1.png[Grid Viewer]
 
 ==== FeatureTypes -> PointFeature
 The PointFeature sub-tab can be used to determine if a dataset contains
-<<../FeatureDatasets/PointFeatures.adoc,point features>> or not. Simply try to open the dataset, the same way you did
+<<../FeatureDatasets/PointFeatures#,point features>> or not. Simply try to open the dataset, the same way you did
 in the <<Viewer>> tab. If a metadata row appears in the top-left table, the dataset is "pointed"; otherwise it's not
 (or perhaps NetCDF-Java just doesn't recognize it as such). Note that the middle-left table will populate as soon as
 you choose a row in the top-left table. Similarly, the bottom table will populate as soon as you choose a row in the
@@ -118,7 +118,7 @@ image:thredds1.png[THREDDS tab]
 
 === NcML
 When you open a dataset in the NcML tab, an NcML document containing all its metadata will be generated. From here,
-it's easy to modify the dataset using the <<../../ncml/Tutorial.adoc,powers of NcML>> and write the document out to
+it's easy to modify the dataset using the <<../../ncml/Tutorial#,powers of NcML>> and write the document out to
 disk.
 
 image:ncml1.png[NcML tab]

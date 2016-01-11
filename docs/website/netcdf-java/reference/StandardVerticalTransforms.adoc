@@ -82,9 +82,9 @@ vertical coordinate.
 === Resources
 
 * Standard vertical transforms are documented on this page. You can
-also <<../tutorial/CoordTransBuilder.adoc,implement your own>>.
-* You may also be interested in <<StandardCoordinateTransforms.adoc,Standard Horizontal Coordinate Transforms>>.
-* <<CoordinateAttributes.adoc,The CDM _Coordinate Conventions>>
+also <<../tutorial/CoordTransBuilder#,implement your own>>.
+* You may also be interested in <<StandardCoordinateTransforms#,Standard Horizontal Coordinate Transforms>>.
+* <<CoordinateAttributes#,The CDM _Coordinate Conventions>>
 
 == Standard Vertical Transforms
 

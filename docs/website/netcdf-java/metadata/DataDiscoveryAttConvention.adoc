@@ -39,7 +39,7 @@ vs "creator_*"). +
 
 * Example netCDF file
 [link:../reference/formats/examples/2005092200_sst_21-24.en.nc[netCDF]][link:../reference/formats/examples/2005092200_sst_21-24.en.ncml[ncML]] +
-* <<DataDiscoveryAttConvention-Issues-ToDo.adoc,Issues and ToDo List>>
+* <<DataDiscoveryAttConvention-Issues-ToDo#,Issues and ToDo List>>
 * link:ncACDD-metadataMappings.adoc[Map attributes into various
 standards]
 * https://geo-ide.noaa.gov/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery[NOAA
@@ -86,7 +86,7 @@ separator.
 "keywords" attribute, put the name of that guideline here. +
 |metadata/keyword@vocabulary
 
-|<<#cdm_data_type_Attribute[cdm_data_type] |The link:../../tds/catalog/InvCatalogServerSpec.adoc,THREDDS data type>> appropriate for this dataset. |metadata/dataType
+|<<#cdm_data_type_Attribute[cdm_data_type] |The link:../../tds/catalog/InvCatalogServerSpec#,THREDDS data type>> appropriate for this dataset. |metadata/dataType
 
 |link:#history_Attribute[history] | Provides an audit trail for modifications to the original data. metadata/documentation | [@type="history"]
 

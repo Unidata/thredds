@@ -71,15 +71,15 @@ http://www.freeformatter.com/message-digest.html
 
 . Define the roles
 <<../tutorial/GettingStarted.adoc#grantingAccess,manager-gui>>,
-<<../tutorial/examples/accessingTDSMonitoringAndDebuggingTools.adoc,tdsConfig>> and (optionally)
-<<../tutorial/examples/accessingTDSMonitoringAndDebuggingTools.adoc,tdsMonitor>>.
+<<../tutorial/examples/accessingTDSMonitoringAndDebuggingTools#,tdsConfig>> and (optionally)
+<<../tutorial/examples/accessingTDSMonitoringAndDebuggingTools#,tdsMonitor>>.
 . link:../tutorial/GettingStarted.adoc#grantingAccess[Add yourself as a
 user] with the roles manager-gui and tdsConfig using your digest
 password your created in step #6 above.
 
 4. *Make the following modifications to $\{tomcat_home}/webapps/manager/WEB-INF/web.xml*:
 
-.  Make sure the manager is only <<../tutorial/examples/tomcatManagerSSL.adoc,available via SSL>> by
+.  Make sure the manager is only <<../tutorial/examples/tomcatManagerSSL#,available via SSL>> by
 adding a user-data-constraint with a transport-guarantee of CONFIDENTIAL
 inside the security-constraint element.
 .  DO NOT ENABLE THE MANAGER WITHOUT RESTRICTING TO SSL ACCESS ONLY. (!)
@@ -107,7 +107,7 @@ Modify  **$\{tomcat_home}/content/thredds/threddsConfig.xml** for your
 site in the following manner:
 
 * Add the needed information to the <<../tutorial/BasicThreddsConfig_xml.adoc#serverInfo,serverInformation element>>
-* <<../tutorial/AddingServices.adoc,Enable any other optional services>> like WMS or WCS.
+* <<../tutorial/AddingServices#,Enable any other optional services>> like WMS or WCS.
 
 If needed, link:../tutorial/Security.adoc#access[limit access to the
 TDS] and create a robots.txt file in *$\{tomcat_home}/webapps/ROOT/* to

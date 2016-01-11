@@ -163,7 +163,7 @@ Catalogs served by the TDS can be subset and/or viewed as HTML. Remote
 catalogs, if allowed/enabled, can be validated, displayed as HTML, or
 subset.
 
-* More details are available <<CatalogService.adoc,here>>.
+* More details are available <<CatalogService#,here>>.
 * Services for remote catalogs can be enabled with the TDS Configuration
 File (<<ThreddsConfigXMLFile.adoc#Remote,threddsConfig.xml>>).
 
@@ -213,7 +213,7 @@ Service Base URL
 Provide ISO 19115 metadata representation of a dataset’s structure and
 metadata
 
-* More details are available <<ncISO.adoc,here>>.
+* More details are available <<ncISO#,here>>.
 * Enable ncISO with the TDS Configuration File
 (<<ThreddsConfigXMLFile.adoc#ncISO,threddsConfig.xml>>).
 
@@ -242,7 +242,7 @@ Service Base URL
 
 Provide NCML representation of a dataset
 
-* More details are available <<ncISO.adoc,here>>.
+* More details are available <<ncISO#,here>>.
 * Enable ncISO with the TDS Configuration File
 (<<ThreddsConfigXMLFile.adoc#ncISO,threddsConfig.xml>>).
 
@@ -274,7 +274,7 @@ conforms to the
 http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discovery[NetCDF
 Attribute Convention for Data Discovery (NACDD)]
 
-* More details are available <<ncISO.adoc,here>>.
+* More details are available <<ncISO#,here>>.
 * Enable ncISO with the TDS Configuration File
 (<<ThreddsConfigXMLFile.adoc#ncISO,threddsConfig.xml>>).
 
@@ -340,12 +340,12 @@ Service Base URL
 NetCDF Subset Service: a data access protocol.
 
 * More details are available
-<<NetcdfSubsetServiceReference.adoc,here>>.
+<<NetcdfSubsetServiceReference#,here>>.
 * Enable NCSS and set other configuration options with the TDS
 Configuration File
 (<<ThreddsConfigXMLFile.adoc#ncss,threddsConfig.xml>>). More setup and
 configuration details are available
-<<NetcdfSubsetServiceConfigure.adoc,here>>.
+<<NetcdfSubsetServiceConfigure#,here>>.
 
 CDM Remote
 
@@ -375,7 +375,7 @@ default. It is automatically enabled when an appropriate
 FeatureCollection is used.
 
 * More details are available
-<<../../netcdf-java/reference/stream/CdmRemote.adoc,here>>.
+<<../../netcdf-java/reference/stream/CdmRemote#,here>>.
 
 OGC Web Coverage Service (WCS)
 
@@ -408,7 +408,7 @@ http://www.opengeospatial.org/standards/wcs[here].
 Configuration File
 (<<ThreddsConfigXMLFile.adoc#wcs,threddsConfig.xml>>). More setup,
 configuration, and implementation details for the TDS’s OGC WCS
-implementation are available <<WCS.adoc,here>>.
+implementation are available <<WCS#,here>>.
 
 OGC Web Map Service (WMS)
 
@@ -442,7 +442,7 @@ http://www.opengeospatial.org/standards/wms[here].
 Configuration File
 (<<ThreddsConfigXMLFile.adoc#wms,threddsConfig.xml>>). More setup,
 configuration, and implementation details for the TDS’s OGC WMS
-implementation are available <<WMS.adoc,here>>. Including a link to
+implementation are available <<WMS#,here>>. Including a link to
 configuration information for the underlying WMS implementation (ncWMS:
 "http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[Detailed
 ncWMS Configuration]")

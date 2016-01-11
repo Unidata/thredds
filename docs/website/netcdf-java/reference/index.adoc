@@ -3,62 +3,62 @@
 
 = NetCDF-Java Library Reference Documentation
 
-* <<faq.adoc,Frequently Asked Questions>>
-* <<manPages.adoc,CDM utility programs>>
-* <<Cookbook.adoc,Cookbook Examples>>
-* <<BuildDependencies.adoc,Building from source>>
+* <<faq#,Frequently Asked Questions>>
+* <<manPages#,CDM utility programs>>
+* <<Cookbook#,Cookbook Examples>>
+* <<BuildDependencies#,Building from source>>
 
 == NetCDF-Java library
 
-* <<StructureData.adoc,ArrayStructures>>
-* <<formats/BufrFiles.adoc,BUFR Files>>
-* <<formats/BufrTables.adoc,BUFR Tables>>
-* <<BuildDependencies.adoc,Build Dependencies>>
-* <<CoordinateAttributes.adoc,_Coordinate Attribute Convention>>
-* <<DatasetUrls.adoc,Dataset URLs>>
-* <<Caching.adoc,Disk Caching>>
-* <<formats/FileTypes.adoc,File Types>>
-* <<formats/GribFiles.adoc,GRIB Files>>
-* <<formats/GribTables.adoc,GRIB Tables>>
-* HTTP <<Auth.adoc[Authentication] and link:Session.adoc,Session Control>>
-* <<HTTPservice.adoc,HTTP Server: remote files using HTTP>>
-* <<netcdf4Clibrary.adoc,NetCDF-4 file writing>>
-* <<../ncml/index.adoc,NcML>>
-* <<RuntimeLoading.adoc,Runtime Loading>> (aka _plug-ins_)
-* <<StandardCoordinateTransforms.adoc,Standard Horizontal Coordinate Transforms>>
-* <<StandardVerticalTransforms.adoc,Standard Vertical Coordinate Transforms>>
-* <<ThreddsCatalogs.adoc,THREDDS Catalogs>>
+* <<StructureData#,ArrayStructures>>
+* <<formats/BufrFiles#,BUFR Files>>
+* <<formats/BufrTables#,BUFR Tables>>
+* <<BuildDependencies#,Build Dependencies>>
+* <<CoordinateAttributes#,_Coordinate Attribute Convention>>
+* <<DatasetUrls#,Dataset URLs>>
+* <<Caching#,Disk Caching>>
+* <<formats/FileTypes#,File Types>>
+* <<formats/GribFiles#,GRIB Files>>
+* <<formats/GribTables#,GRIB Tables>>
+* HTTP <<Auth.adoc[Authentication] and link:Session#,Session Control>>
+* <<HTTPservice#,HTTP Server: remote files using HTTP>>
+* <<netcdf4Clibrary#,NetCDF-4 file writing>>
+* <<../ncml/index#,NcML>>
+* <<RuntimeLoading#,Runtime Loading>> (aka _plug-ins_)
+* <<StandardCoordinateTransforms#,Standard Horizontal Coordinate Transforms>>
+* <<StandardVerticalTransforms#,Standard Vertical Coordinate Transforms>>
+* <<ThreddsCatalogs#,THREDDS Catalogs>>
 
 == Common Data Model (CDM)
 
-* <<../CDM/index.adoc,Overview>>
-* <<../CDM/CdmAttributes.adoc,CDM Attributes>>
-* <<../CDM/CalendarDateTime.adoc,CDM Calendar Dates>>
-* <<../CDM/Identifiers.adoc,CDM Identifiers>>
-* <<../CDM/CFdiff.adoc,CF and CDM differences>>
-* <<../CDM/DataType.adoc,Data Types>>
-* <<../CDM/Netcdf4.adoc,NetCDF4 vs CDM>>
-* <<../CDM/Opendap.adoc,OPeNDAP vs CDM>>
-* <<../CDM/SectionSpec.adoc,Section specification (Fortran 90 array syntax)>>
-* <<../CDM/VariableLengthData.adoc,Variable Length Data>>
+* <<../CDM/index#,Overview>>
+* <<../CDM/CdmAttributes#,CDM Attributes>>
+* <<../CDM/CalendarDateTime#,CDM Calendar Dates>>
+* <<../CDM/Identifiers#,CDM Identifiers>>
+* <<../CDM/CFdiff#,CF and CDM differences>>
+* <<../CDM/DataType#,Data Types>>
+* <<../CDM/Netcdf4#,NetCDF4 vs CDM>>
+* <<../CDM/Opendap#,OPeNDAP vs CDM>>
+* <<../CDM/SectionSpec#,Section specification (Fortran 90 array syntax)>>
+* <<../CDM/VariableLengthData#,Variable Length Data>>
 
 === Feature Types
 
-* <<FeatureDatasets/Overview.adoc,Feature Dataset Overview>>
-* <<FeatureDatasets/CoverageFeatures.adoc,Grid/Coverage Features>>
-** <<FeatureDatasets/FMRC.adoc,Forecast Model Run Collection (FMRC)>>
-* <<FeatureDatasets/PointFeatures.adoc,Point Features>> (Discrete Sampling Geometry)
-** <<FeatureDatasets/CFpointImplement.adoc,CDM vs CF >>
-** <<FeatureDatasets/CFencodingTable.adoc,CDM encoding summary of CF DSG>>
-** <<FeatureDatasets/DSGtableNotation.adoc,CDM nested table notation for DSG>>
+* <<FeatureDatasets/Overview#,Feature Dataset Overview>>
+* <<FeatureDatasets/CoverageFeatures#,Grid/Coverage Features>>
+** <<FeatureDatasets/FMRC#,Forecast Model Run Collection (FMRC)>>
+* <<FeatureDatasets/PointFeatures#,Point Features>> (Discrete Sampling Geometry)
+** <<FeatureDatasets/CFpointImplement#,CDM vs CF >>
+** <<FeatureDatasets/CFencodingTable#,CDM encoding summary of CF DSG>>
+** <<FeatureDatasets/DSGtableNotation#,CDM nested table notation for DSG>>
 
 == CDM Remote Web services and Ncstream
 
-* <<stream/CdmRemote.adoc,CDM Remote Overview>>
-* <<stream/CdmrFeatureGrid.adoc,CDM Remote Feature for Coverage/Grid Data>>
-* <<stream/CdmrFeaturePoint.adoc,CDM Remote Feature for Point Data>>
-* <<stream/NcStream.adoc,Ncstream Overview>>
-* <<stream/NcStreamGrammer.adoc,Ncstream Grammer>>
+* <<stream/CdmRemote#,CDM Remote Overview>>
+* <<stream/CdmrFeatureGrid#,CDM Remote Feature for Coverage/Grid Data>>
+* <<stream/CdmrFeaturePoint#,CDM Remote Feature for Point Data>>
+* <<stream/NcStream#,Ncstream Overview>>
+* <<stream/NcStreamGrammer#,Ncstream Grammer>>
 
 '''''
 

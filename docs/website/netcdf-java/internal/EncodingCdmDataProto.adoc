@@ -235,7 +235,7 @@ Issues
 
 === Vlen
 
-. see <<../CDM/VariableLengthData.adoc,vlen data>>
+. see <<../CDM/VariableLengthData#,vlen data>>
 . when encoding, the length of each vlen is known, so:
 .. _float vlen(*)_ will have a known length, so can be encoded the same as a regular array
 .. _float vlen(21, *)_ has 21 variable length arrays, put those lengths into vlens array

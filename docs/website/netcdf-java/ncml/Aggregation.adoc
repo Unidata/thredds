@@ -17,7 +17,7 @@ for the dimension.
 3.  **link:#joinNew[JoinNew]**: Variables of the same name (in different
 files) are connected along a new outer dimension. Each file becomes one
 . A new coordinate variable is created for the dimension.
-4.  <<FmrcAggregation.adoc,*ForecastModelRunCollection*>> (FMRC): A
+4.  <<FmrcAggregation#,*ForecastModelRunCollection*>> (FMRC): A
 collection of forecast model runs with two time coordinates: a _*run
 time*_ and a __*forecast time*__.
 
@@ -715,7 +715,7 @@ One can nest netcdf elements in aggregation, for example:
 </netcdf>
 ----
 
-See also: <<AnnotatedSchema4.adoc,Annotated NcML Schema>>
+See also: <<AnnotatedSchema4#,Annotated NcML Schema>>
 
 '''''
 

@@ -18,22 +18,22 @@ Documentation for the THREDDS Data Server.
 
 . Getting Started
 .. Tomcat Configuration
-... <<tutorial/GettingStarted.adoc,Getting Started With the TDS: Local Test Server Setup>>
-... <<tutorial/Security.adoc,Security Overview>>
+... <<tutorial/GettingStarted#,Getting Started With the TDS: Local Test Server Setup>>
+... <<tutorial/Security#,Security Overview>>
 .. TDS Configuration
-... <<tutorial/CatalogPrimer.adoc,Client Catalog Primer>>
-... <<tutorial/BasicConfigCatalogs.adoc,Basic TDS Configuration Catalogs>>
-... <<tutorial/ConfigCatalogs.adoc,TDS Configuration Catalogs>>
-... <<tutorial/BasicThreddsConfig_xml.adoc,Basic threddsConfig.xml>>
-... <<tutorial/AddingServices.adoc,Adding OGC/ISO Services>>
-... <<reference/WMS.adoc,Detailed WMS Configuration>>
+... <<tutorial/CatalogPrimer#,Client Catalog Primer>>
+... <<tutorial/BasicConfigCatalogs#,Basic TDS Configuration Catalogs>>
+... <<tutorial/ConfigCatalogs#,TDS Configuration Catalogs>>
+... <<tutorial/BasicThreddsConfig_xml#,Basic threddsConfig.xml>>
+... <<tutorial/AddingServices#,Adding OGC/ISO Services>>
+... <<reference/WMS#,Detailed WMS Configuration>>
 ... Netcdf Subset Service:
-.... <<reference/services/NetcdfSubsetServiceConfigure.adoc,configure>>
-.... <<reference/services/NetcdfSubsetServiceReference.adoc,reference>>
-... <<reference/ThreddsConfigXMLFile.adoc,threddsConfig.xml reference>>
-.. <<tutorial/TDSMonitoringAndDebugging.adoc,TDS Monitoring and Debugging>>
-... <<tutorial/TomcatAndTDSLogs.adoc,Tomcat and TDS Logs>>
-... <<tutorial/tdsMonitor.adoc,Using the TdsMonitor tool>>
+.... <<reference/services/NetcdfSubsetServiceConfigure#,configure>>
+.... <<reference/services/NetcdfSubsetServiceReference#,reference>>
+... <<reference/ThreddsConfigXMLFile#,threddsConfig.xml reference>>
+.. <<tutorial/TDSMonitoringAndDebugging#,TDS Monitoring and Debugging>>
+... <<tutorial/TomcatAndTDSLogs#,Tomcat and TDS Logs>>
+... <<tutorial/tdsMonitor#,Using the TdsMonitor tool>>
 ... There are also various free, 3rd-party monitoring and debugging tools:
 .... http://www.google.com/search?btnG=1&pws=0&q=log+analyzers[Log analyzers]
 .... http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html[Tomcat manager application]
@@ -45,37 +45,37 @@ Documentation for the THREDDS Data Server.
 ..... http://www.youtube.com/watch?v=Xy0tsT-GD68[JConsole]
 .. Using NcML in TDS
 // Can't seem to link to files above the base dir of SUMMARY and README.adoc
-// ... <<./../netcdf-java/ncml/Tutorial.adoc,Basic NcML tutorial>>
-// ... <<./../netcdf-java/ncml/Aggregation.adoc,NcML Aggregation>>
-... <<tutorial/NcML.adoc,Using NcML in the TDS>>
-... <<tutorial/NcMLExamples.adoc,NcML Example Problems>>
-... <<tutorial/NcMLAggExamples.adoc,NcML Aggregation Example Problems>>
-.. <<reference/collections/FeatureCollections.adoc,Feature Collections>>
-... <<reference/collections/GribCollections.adoc,GRIB Feature Collections>>
-... <<tutorial/GRIBFeatureCollectionTutorial.adoc,GRIB Feature Collection Tutorial>>
-... <<reference/collections/FmrcCollection.adoc,FMRC (Forecast Model Run Collections)>>
-... <<tutorial/FmrcFeatureCollectionsTutorial.adoc,FMRC Tutorial>>
-// ... <<../../netcdf-java/reference/formats/GribFiles.adoc,GRIB Files in CDM>>
-// ... <<../../netcdf-java/reference/formats/GribTables.adoc,GRIB Tables in CDM>>
+// ... <<./../netcdf-java/ncml/Tutorial#,Basic NcML tutorial>>
+// ... <<./../netcdf-java/ncml/Aggregation#,NcML Aggregation>>
+... <<tutorial/NcML#,Using NcML in the TDS>>
+... <<tutorial/NcMLExamples#,NcML Example Problems>>
+... <<tutorial/NcMLAggExamples#,NcML Aggregation Example Problems>>
+.. <<reference/collections/FeatureCollections#,Feature Collections>>
+... <<reference/collections/GribCollections#,GRIB Feature Collections>>
+... <<tutorial/GRIBFeatureCollectionTutorial#,GRIB Feature Collection Tutorial>>
+... <<reference/collections/FmrcCollection#,FMRC (Forecast Model Run Collections)>>
+... <<tutorial/FmrcFeatureCollectionsTutorial#,FMRC Tutorial>>
+// ... <<../../netcdf-java/reference/formats/GribFiles#,GRIB Files in CDM>>
+// ... <<../../netcdf-java/reference/formats/GribTables#,GRIB Tables in CDM>>
 .. Other Advanced Features
-... <<reference/RestrictedAccess.adoc,Restricting dataset access>>
-... <<reference/Viewers.adoc,Viewer Links>>
+... <<reference/RestrictedAccess#,Restricting dataset access>>
+... <<reference/Viewers#,Viewer Links>>
 .. Metadata
-... <<tutorial/Metadata.adoc,THREDDS Metadata>>
-... <<reference/ncISO.adoc,ISO metadata generation (ncIso)>>
+... <<tutorial/Metadata#,THREDDS Metadata>>
+... <<reference/ncISO#,ISO metadata generation (ncIso)>>
 .. Production Servers
-... <<tutorial/Checklist.adoc,Installation Checklist for Production>>
-... <<tutorial/TroubleShooting.adoc,TroubleShooting Problems>>
-... <<reference/Performance.adoc,Performance Tips>>
-... <<UpgradingTo5.0.adoc,Upgrading to 5>>
+... <<tutorial/Checklist#,Installation Checklist for Production>>
+... <<tutorial/TroubleShooting#,TroubleShooting Problems>>
+... <<reference/Performance#,Performance Tips>>
+... <<UpgradingTo5.0#,Upgrading to 5>>
 //
 // User Documentation (reference)
 //
 . User Documentation
 .. THREDDS Catalogs
-... <<tutorial/CatalogPrimer.adoc,Primer>>
-... <<catalog/InvCatalogSpec.adoc,Specification (as annotated XML Schema)>>
-... <<catalog/InvCatalogServerSpec.adoc,Extensions for Server Configuration>>
+... <<tutorial/CatalogPrimer#,Primer>>
+... <<catalog/InvCatalogSpec#,Specification (as annotated XML Schema)>>
+... <<catalog/InvCatalogServerSpec#,Extensions for Server Configuration>>
 .. THREDDS Data Server (TDS)
 ... System Admin
 .... Checklist for Production Installation
@@ -99,10 +99,10 @@ Documentation for the THREDDS Data Server.
 .... Data Access Services
 ..... OPeNDAP
 ..... NetCDF Subset Service:
-...... <<reference/services/NetcdfSubsetServiceConfigure.adoc,configure>>
-...... <<reference/services/NetcdfSubsetServiceReference.adoc,reference>>
-...... <<reference/services/NcssGrid.adoc,Grid datasets>>
-...... <<reference/services/NcssPoint.adoc,Point and Station (Discrete Sampling Geometry) datasets>>
+...... <<reference/services/NetcdfSubsetServiceConfigure#,configure>>
+...... <<reference/services/NetcdfSubsetServiceReference#,reference>>
+...... <<reference/services/NcssGrid#,Grid datasets>>
+...... <<reference/services/NcssPoint#,Point and Station (Discrete Sampling Geometry) datasets>>
 ..... CdmRemote
 ..... CdmrFeature
 ..... WCS 1.0 Service
@@ -137,4 +137,4 @@ Documentation for the THREDDS Data Server.
 //
 // FAQ
 //
-. <<faq.adoc,FAQ>>
+. <<faq#,FAQ>>

@@ -45,7 +45,7 @@ The *_Point Feature Types_* that are implemented are:
 === Related documents:
 
 * CF {cf}#discrete-sampling-geometries[Discrete Sampling Geometries Conventions]
-* <<CFencodingTable.adoc,CDM Nested Table encoding>>
+* <<CFencodingTable#,CDM Nested Table encoding>>
 * Complete link:PointFeatureUML.svg[Point Feature UML]
 
 == Point Features

@@ -41,7 +41,7 @@ setting to disallow all accesses, then enable just the ones that are
 needed.
 
 * Port *8080* should have unrestricted access.
-* If you are allowing <<RemoteManagement.adoc,remote management>>, you
+* If you are allowing <<RemoteManagement#,remote management>>, you
 must also open up port **8443**.
 * Tomcat also uses port *8005* to enable shutdown. However, shutdown can
 only be run from the same machine as Tomcat is running from. As long as

@@ -24,7 +24,7 @@ messages to the TDS when a dataset changes.
 
 == Installing the TDM
 
-Get the current jar linked from the TDS <<../../TDS.adoc,Home Page>>
+Get the current jar linked from the TDS <<../../TDS#,Home Page>>
 
 The TDM can be run from anywhere, but by convention we create a
 directory **\{tomcat}/content/tdm**, and run the TDM from there.

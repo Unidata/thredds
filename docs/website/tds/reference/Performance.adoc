@@ -211,9 +211,9 @@ If you are serving GRIB files through any of the subsetting services
 (OPENDAP, WCS, etc), the CDM must write indices the first time it tries
 to read it. This can take several minutes for very large GRIB files. For
 large aggregations and
-<<collections/FeatureCollections.adoc,collections>>, this can take
+<<collections/FeatureCollections#,collections>>, this can take
 hours or even days. By indexing GRIB files before they are accessed with
-the <<collections/TDM.adoc,TDM>>, users get much faster response time.
+the <<collections/TDM#,TDM>>, users get much faster response time.
 As of TDS 4.6+ f these collections change, you must use the TDM to
 detect those changes, the TDS will no longer update GRIB collections on
 the fly.

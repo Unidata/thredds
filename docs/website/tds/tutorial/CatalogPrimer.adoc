@@ -8,7 +8,7 @@
 
 === Reference documentation
 
-The <<../catalog/InvCatalogSpec.adoc,catalog specification>> is the
+The <<../catalog/InvCatalogSpec#,catalog specification>> is the
 best complete description of THREDDS catalogs.
 
 A _*THREDDS Catalog*_ describes what datasets a server has, and how they
@@ -191,7 +191,7 @@ is especially important to add the `ID` attribute to your datasets.
 === Reference documentation
 
 A complete listing of necessary attributes can be found
-<<../reference/DLexport.adoc,here>>.
+<<../reference/DLexport#,here>>.
 
 === Exporting THREDDS datasets to digital libraries
 
@@ -388,7 +388,7 @@ location like so:
 The schema referenced in the example can be found
 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd[here].
 However, you’ll probably want to study the
-<<../catalog/InvCatalogSpec.adoc,catalog specification>> instead, as
+<<../catalog/InvCatalogSpec#,catalog specification>> instead, as
 it is much more digestable.
 
 * The first bolded line declares the schema-instance namespace. Just

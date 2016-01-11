@@ -16,8 +16,8 @@ purposes of monitoring and debugging:
 TDS]
 
 You should be familiar with Tomcat, Java, and TDS
-<<Checklist.adoc,installation>>; as well as
-<<tdsConfigChecklist.adoc,basic and advanced TDS configuration>>.
+<<Checklist#,installation>>; as well as
+<<tdsConfigChecklist#,basic and advanced TDS configuration>>.
 
 == Tomcat Access Logs
 

@@ -176,7 +176,7 @@ ending with the present time.
 scanning the directory named by **location**. The *name* attribute is
 used as the title of DL records, so try to make it concise yet
 descriptive. The *ID* is also very important. See
-<<../reference/DatasetScan.adoc,here>> for a full description of the
+<<../reference/DatasetScan#,here>> for a full description of the
 datasetScan element.
 7.  This metadata also applies to all the dynamically created datasets
 in the datasetScan element.
@@ -207,7 +207,7 @@ datasets in a collection differ only in their time coverage.
 Catalog 1.0 Specification]
 * http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html[NetCDF
 Attribute Convention for Dataset Discovery]
-* <<../catalog/InvCatalogSpec.adoc,THREDDS Catalog specification>> -
+* <<../catalog/InvCatalogSpec#,THREDDS Catalog specification>> -
 link:../catalog/InvCatalogSpec.adoc#threddsMetadataGroup[Metadata
 Section]
 

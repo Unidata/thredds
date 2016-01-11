@@ -633,7 +633,7 @@ directory created above.
 `content` directory by setting the *tds.content.root.path* system
 property with a command-line argument (e.g.,
 "`-Dtds.content.root.path=/some/absolute/path`"). More information is
-available <<reference/DirectoryLocations.adoc,here>>.
+available <<reference/DirectoryLocations#,here>>.
 ______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 '''''
@@ -734,7 +734,7 @@ restart Tomcat.
 
 The other possibility is that you havent given the TDS enough heap
 space. The default heap size is quite small, so you need to always set
-this, eg in <<reference/ChecklistReference.adoc,setenv.sh>>, this sets
+this, eg in <<reference/ChecklistReference#,setenv.sh>>, this sets
 the heap to 4 GB.
 
 --------------------------------
@@ -757,7 +757,7 @@ without restarting Tomcat, you will eventually run into
 JDK/Tomcat. The only thing to do is to stop and restart Tomcat.
 
 You can increase PermGen using this JVM option, eg in
-<<reference/ChecklistReference.adoc,setenv.sh>>:
+<<reference/ChecklistReference#,setenv.sh>>:
 
 -----------------------------------
 MAX_PERM_GEN="-XX:MaxPermSize=256m"

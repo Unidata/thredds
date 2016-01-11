@@ -10,9 +10,9 @@ Unidata | THREDDS Data Server (TDS)
 *Page menu:*
 
 * link:#home[THREDDS Data Server]
-* <<TDS.adoc,Version History>>
-* <<faq.adoc,FAQs>>
-* <<TDS.adoc,Documentation>>
+* <<TDS#,Version History>>
+* <<faq#,FAQs>>
+* <<TDS#,Documentation>>
 * link:/downloads/thredds/[Download]
 * link:#help[Support]
 * link:/data/#tds[Data Available via the TDS]
@@ -30,7 +30,7 @@ THREDDS Data Server (TDS) is a web server that provides metadata and
 data access for scientific datasets, using a variety of remote data
 access protocols.
 
-<<TDS.adoc,See the TDS package overview>>
+<<TDS#,See the TDS package overview>>
 
 ===== Citing the TDS
 
@@ -58,7 +58,7 @@ support-thredds@unidata.ucar.edu
 
 ===== How To Get TDS Support
 
-Didn’t find a solution in the <<TDS.adoc,TDS documentation>>? Try the
+Didn’t find a solution in the <<TDS#,TDS documentation>>? Try the
 following:
 
 Use the *link:/mailing_lists/archives/thredds/[TDS Mailing List]* to
@@ -80,7 +80,7 @@ link:/events/index.adoc#training[training +
 Learn about TDS administration +
  from an online and link:tutorial/[in-depth tutorial]
 * link:tutorial/workshop2013.adoc[image:/community/img/monitors-32x32.png[Training
-Workshop]] View the <<tutorial/workshop2013.adoc,workshop tutorial>>
+Workshop]] View the <<tutorial/workshop2013#,workshop tutorial>>
 from +
  the latest TDS training session
 

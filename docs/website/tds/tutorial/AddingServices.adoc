@@ -16,7 +16,7 @@ sections for each of these services.
 
 ==== WCS Configuration
 
-To enable the <<../reference/WCS.adoc,WCS service>> for locally served
+To enable the <<../reference/WCS#,WCS service>> for locally served
 datasets, you will need the following in your `threddsConfig.xml` file:
 
 ---------------------
@@ -33,7 +33,7 @@ Additional WCS configuration options can be set in the
 [[wms_configuration]]
 ==== WMS Configuration
 
-To enable the <<../reference/WMS.adoc,WMS service>> for locally served
+To enable the <<../reference/WMS#,WMS service>> for locally served
 datasets, you will need the following in your `threddsConfig.xml` file:
 
 ---------------------
@@ -49,7 +49,7 @@ Additional WMS configuration options can be set in the
 
 ==== ncISO Configuration
 
-To enable the <<../reference/ncISO.adoc,ncISO services>> for locally
+To enable the <<../reference/ncISO#,ncISO services>> for locally
 served datasets, you will need the following in your `threddsConfig.xml`
 file:
 

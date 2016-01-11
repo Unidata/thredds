@@ -71,10 +71,10 @@ A more advanced use is to modify existing NetCDF files, as well as to
 create "virtual" NetCDF datasets, for example through aggregation. In
 that case, you’ll have to read more:
 
-* <<Tutorial.adoc,Tutorial>>
-* <<Aggregation.adoc,Aggregation>>
-* <<Cookbook.adoc,Cookbook Examples>>
-* <<AnnotatedSchema4.adoc,Annotated Schema for Netcdf-Java 4>>
+* <<Tutorial#,Tutorial>>
+* <<Aggregation#,Aggregation>>
+* <<Cookbook#,Cookbook Examples>>
+* <<AnnotatedSchema4#,Annotated Schema for Netcdf-Java 4>>
 
 == *Acknowledgments and History*
 
@@ -97,7 +97,7 @@ georeferencing coordinate systems
 3.  *_NcML Dataset_* extended NcML Core Schema to use NcML to define a netCDF file, similar to the *ncgen* command line tool,
 as well as to redefine, aggregate, and subset existing netCDF files.
 
-*_NcML Core Schema_* and *_NcML Dataset_* have now been combined into a single _<<AnnotatedSchema4.adoc,NcML Schema>>_
+*_NcML Core Schema_* and *_NcML Dataset_* have now been combined into a single _<<AnnotatedSchema4#,NcML Schema>>_
 
 *_NcML Coordinate System_* is now superceded by *_NcML-GML_*.
 http://www.ogcnetwork.net/node/214[NcML-GML] is an extension of ncML core schema, based on GML grammar.

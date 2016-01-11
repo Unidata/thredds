@@ -11,7 +11,7 @@ order. Writes are always appended. Later messages override earlier ones whenever
 simply append a new header message. Each data message identifies the variable and the section (rectangular subset) of data it contains. A variable's
 data thus consists of the collection of data messages for it, if any.
 
-Ncstream implements the full <<../../CDM/index.adoc,CDM data model.>>
+Ncstream implements the full <<../../CDM/index#,CDM data model.>>
 
 === Design Goals
 
@@ -59,9 +59,9 @@ The protobuf messages are defined by
 
 === See also
 
-* <<NcStreamGrammer.adoc,ncstream grammer>>
-* <<CdmRemote.adoc,CdmRemote service>>
-* <<CdmrFeature.adoc,CdmrFeature service>>
+* <<NcStreamGrammer#,ncstream grammer>>
+* <<CdmRemote#,CdmRemote service>>
+* <<CdmrFeature#,CdmrFeature service>>
 
 '''''
 

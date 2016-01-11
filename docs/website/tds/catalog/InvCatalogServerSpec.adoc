@@ -22,8 +22,8 @@ Server-side elements described in this document:
 
 Also see:
 
-* <<../reference/DatasetScan.adoc,DatasetScan>> reference
-* <<../reference/collections/FeatureCollections.adoc,FeatureCollection>> reference
+* <<../reference/DatasetScan#,DatasetScan>> reference
+* <<../reference/collections/FeatureCollections#,FeatureCollection>> reference
 * http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[Catalog XML Schema] +
 
 [[catalog]]
@@ -129,7 +129,7 @@ directory and all subdirectories. (NOT IMPLEMENTED)
 == The dataset element
 
 The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to server side catalogs, along with the
-*<<../reference/RestrictedAccess.adoc,restrictAccess>>* attribute:
+*<<../reference/RestrictedAccess#,restrictAccess>>* attribute:
 
 [source,xml]
 --------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to server side 
 --------------------------------------------------------------------------------
 
 * The *restrictAccess* attribute is a server-side option that tells the
-TDS to <<../reference/RestrictedAccess.adoc,restrict access>> to this
+TDS to <<../reference/RestrictedAccess#,restrict access>> to this
 dataset. It is always inherited by all contained datasets.
 * The *ncml:netcdf* element is used only on the server, it
 link:../tutorial/NcML.htm[modifies the dataset with NcML]. For

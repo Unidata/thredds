@@ -217,7 +217,7 @@ instead of the exact comparison done by `equals(Array, Array)`.
 * Completely new package *ucar.nc2.ft2.coverage* that replaces *ucar.nc2.dt.grid*.
 The class *FeatureDatasetCoverage* replaces *GridDataset*.
 * Uses of classes in *ucar.nc2.dt.grid* are deprecated, though the code is still in the core jar file for now.
-* For new API see <<../netcdf-java/reference/FeatureDatasets/CoverageFeatures.adoc,CoverageFeatures>>
+* For new API see <<../netcdf-java/reference/FeatureDatasets/CoverageFeatures#,CoverageFeatures>>
 * *FeatureType.COVERAGE* is the general term for *GRID, FMRC, SWATH, CURVILINEAR* types.
 Previously, GRID was used as the general type, now it referes to a specific type of Coverage.
 Affects FeatureDatasetFactoryManager.open(FeatureType wantFeatureType, ...)
@@ -271,7 +271,7 @@ _<<reference/DatasetScan.adoc#filesSort,filesSort>>_ element.
 * *sort:* deprecated in favor of *filesSort*
 * *User pluggable classes implementing UserImplType* (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl,
 crawlableDatasetSorterImpl) are no longer supported. (This was never officially released or documented).
-* DatasetScan details are <<catalog/InvCatalogServerSpec.adoc,here>>
+* DatasetScan details are <<catalog/InvCatalogServerSpec#,here>>
 
 ==== Standard Services
 
@@ -280,7 +280,7 @@ crawlableDatasetSorterImpl) are no longer supported. (This was never officially 
 * User defined services in non-root catalogs are local to that catalog and override (by name) any global services.
 * All services are enabled unless explicitly disabled
 ** Except for remote catalog services
-* Standard service details are <<reference/Services.adoc,here>>
+* Standard service details are <<reference/Services#,here>>
 
 ==== FeatureCollections
 
@@ -297,7 +297,7 @@ that element in the *<gribConfig>* element, or the older verbose *lexigraphicByN
     <lexigraphicByName increasing="false" />  // deprecated
   </filesSort>
 -----------------------------------------------------------
-* Feature Collection details are <<reference/collections/FeatureCollections.adoc,here>>
+* Feature Collection details are <<reference/collections/FeatureCollections#,here>>
 
 ==== Recommendations for 5.0 catalogs
 
@@ -310,7 +310,7 @@ that element in the *<gribConfig>* element, or the older verbose *lexigraphicByN
 === Netcdf Subset Service (NCSS)
 
 NCSS queries and responses have been improved and clarified. Generally the previous queries are backwards compatible. See
-<<reference/services/NetcdfSubsetServiceReference.adoc,NCSS Reference>> for details.
+<<reference/services/NetcdfSubsetServiceReference#,NCSS Reference>> for details.
 
 * New functionality:
 . 2D time can now be handled for gridded datasets, with addition of _runtime_ and _timeOffset_ parameters.
@@ -346,7 +346,7 @@ A new TDS service has been added for remote access to CDM Feature Datasets.
 == Recommendations for ESGF
 
 You must determine the number of datasets that are contained in all of your catalogs. To get a report, enable
-<<reference/RemoteManagement.adoc,Remote Management>>, and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__. This may
+<<reference/RemoteManagement#,Remote Management>>, and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__. This may
 take 5-20 minutes, depending on the numbers of catalogs.
 
 Add the <<reference/ThreddsConfigXMLFile.adoc#CatalogCaching,ConfigCatalog>> element to threddsConfig.xml:

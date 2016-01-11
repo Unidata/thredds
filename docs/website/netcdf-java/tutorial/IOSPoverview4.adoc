@@ -113,7 +113,7 @@ defines the requested data subset.
 4.  Release all resources, for example, by calling
 **RandomAccessFile.close**().
 5.  You must give your IOSP a unique id. See
-<<../reference/formats/FileTypes.adoc,CDM File Types>>.
+<<../reference/formats/FileTypes#,CDM File Types>>.
 6.  If you use Structures, data for Variables that are members of
 Structures are read through this method. If you dont override, the
 default implementation in *AbstractIOServiceProvider* is used. Override

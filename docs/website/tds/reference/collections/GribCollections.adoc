@@ -78,7 +78,7 @@ did that in 4.5. Sorry, it wasnt good enough.
 rewritten first time you access the files. The *gbx9* files do NOT need
 to be rewritten, which is good because those are the slow ones.
 * TimePartition can now be set to *directory* (default), *file,* a time
-period**,** or **none**. Details <<Partitions.adoc,here>>.
+period**,** or **none**. Details <<Partitions#,here>>.
 * Multiple reference times are handled more efficiently, eg only one
 index file typically needs to be written.
 * Global attributes promoted to dataset properties in the catalog
@@ -98,9 +98,9 @@ Type]._
 
 Also see:
 
-* <<FeatureCollections.adoc,Feature Collection>> overview
-* <<GribConfig.adoc,GRIB specific configuration>>
-* <<GribCollectionFaq.adoc,GRIB Collection FAQs>>
+* <<FeatureCollections#,Feature Collection>> overview
+* <<GribConfig#,GRIB specific configuration>>
+* <<GribCollectionFaq#,GRIB Collection FAQs>>
 * link:../../../netcdf-java/reference/formats/GribFiles.adoc[CDM GRIB
 Collection Processing]
 
@@ -136,16 +136,16 @@ which, as it is specified in the featureType, and will be added
 automatically.
 4.  The collection *name* should be short but descriptive, it must be
 unique across all collections on your TDS, and should not change.
-5.  The <<CollectionSpecification.adoc,collection specification>>
+5.  The <<CollectionSpecification#,collection specification>>
 defines the collection of files that are in this dataset.
-6.  The <<Partitions.adoc,partitionType>> is **none**.
+6.  The <<Partitions#,partitionType>> is **none**.
 7.  This *update* element tells the TDS to use the existing indices, and
 to read them only when an external trigger is sent. This is the default
 behavior as of 4.5.4.
-8.  This *tdm* element tells the <<TDM.adoc,TDM>> to test every 15
+8.  This *tdm* element tells the <<TDM#,TDM>> to test every 15
 minutes if the collection has changed, and to rewrite the indices and
 and send a trigger to the TDS when it has changed.
-9.  <<GribConfig.adoc,GRIB specific configuration>>.
+9.  <<GribConfig#,GRIB specific configuration>>.
 
 === Resulting Datasets:
 
@@ -217,7 +217,7 @@ becomes a seperate partition. In order to use this, each file must
 contain GRIB records from a single runtime.
 2.  The starting time of the partition must be encoded into the
 filename. One must define a date extractor in the
-<<CollectionSpecification.adoc,collection specification>>, or by using
+<<CollectionSpecification#,collection specification>>, or by using
 a dateFormatMark, as in this example.
 3.  In this example, the collection is readied when the server starts
 up. Manual triggers for updating are enabled.
@@ -324,7 +324,7 @@ dataset has only a single (unnamed, aka __root__) group.
 --------------------------------------------------------------------------------------------
 
 1.  This dataset has many different groups, and we are using a
-<gribConfig> element to name them (see <<GribConfig.adoc,below>> for
+<gribConfig> element to name them (see <<GribConfig#,below>> for
 details).
 
 === Resulting Datasets:
@@ -407,11 +407,11 @@ be time partitioned by the directories)
 2.  One still needs a date extractor from the filename, even when using
 a directory partition.
 3.  Minor errors in GRIB coding can create spurious differernces in the
-GDS. Here we correct one such problem (see <<GribConfig.adoc,below>>
+GDS. Here we correct one such problem (see <<GribConfig#,below>>
 for details).
 4.  Group renaming as in example 2
 5.  Exclude GRIB records that have a time coordinate interval of (0,0)
-(see <<GribConfig.adoc,below>> for details).
+(see <<GribConfig#,below>> for details).
 
 === Resulting Datasets:
 

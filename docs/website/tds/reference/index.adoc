@@ -5,79 +5,79 @@
 
 == THREDDS Catalogs
 
-* <<../tutorial/CatalogPrimer.adoc,Primer>>
-* <<../catalog/InvCatalogSpec.adoc,Specification>> (as annotated XML Schema)
-* <<../catalog/InvCatalogServerSpec.adoc,Extensions for Server Configuration>>
+* <<../tutorial/CatalogPrimer#,Primer>>
+* <<../catalog/InvCatalogSpec#,Specification>> (as annotated XML Schema)
+* <<../catalog/InvCatalogServerSpec#,Extensions for Server Configuration>>
 
 == THREDDS Data Server (TDS)
 
 === System Admin
 
-* <<ChecklistReference.adoc,Checklist for Production Installation>>
-* <<RecommendedUpgradeProcessForTDS.adoc,Recommended Process for Upgrading a TDS>>
-* <<DirectoryLocations.adoc,Location of Directories>>
-* <<RunningMultipleTDS.adoc,Running Multiple TDS in a Single Tomcat Instance>> (not recommended)
-* <<TomcatBehindProxyServer.adoc,Running The TDS Behind a Proxy Server>>
+* <<ChecklistReference#,Checklist for Production Installation>>
+* <<RecommendedUpgradeProcessForTDS#,Recommended Process for Upgrading a TDS>>
+* <<DirectoryLocations#,Location of Directories>>
+* <<RunningMultipleTDS#,Running Multiple TDS in a Single Tomcat Instance>> (not recommended)
+* <<TomcatBehindProxyServer#,Running The TDS Behind a Proxy Server>>
 
 === Tomcat Configuration
 
-* <<TomcatSecurity.adoc,Tomcat Security>>
-* <<AccessLog.adoc,Tomcat Logging>>
+* <<TomcatSecurity#,Tomcat Security>>
+* <<AccessLog#,Tomcat Logging>>
 
 === TDS Configuration
 
-* <<CatalogConfiguration.adoc,Configuration Catalogs>>
-* <<DatasetScan.adoc,DatasetScan>>
-* <<collections/FeatureCollections.adoc,FeatureCollections>>
-* <<ServletLog.adoc,Logging>>
-* <<ConfigWithTdsProperties.adoc,Properties>>
-* <<RemoteManagement.adoc,Remote Management>>
-* <<ThreddsConfigXMLFile.adoc,threddsConfig.xml>>
+* <<CatalogConfiguration#,Configuration Catalogs>>
+* <<DatasetScan#,DatasetScan>>
+* <<collections/FeatureCollections#,FeatureCollections>>
+* <<ServletLog#,Logging>>
+* <<ConfigWithTdsProperties#,Properties>>
+* <<RemoteManagement#,Remote Management>>
+* <<ThreddsConfigXMLFile#,threddsConfig.xml>>
 
 === TDS Services
 
-* <<services/StandardServices.adoc,Standard Services>> 
-* <<services/CatalogService.adoc,Catalog Services>> 
+* <<services/StandardServices#,Standard Services>> 
+* <<services/CatalogService#,Catalog Services>> 
 * Data Access Services:
 ** OPeNDAP
 ** NetCDF Subset Service:
-<<services/NetcdfSubsetServiceConfigure.adoc,configure>>,
-<<services/NetcdfSubsetServiceReference.adoc,reference>>
-** <<services/CdmRemote.adoc,Cdmremote web service>>
-** <<services/CdmrFeature.adoc,CdmrFeature web service>>
-** <<services/WCS.adoc,WCS 1.0 Service>>
-** <<services/WMS.adoc,WMS 1.3.0 Service>>
+<<services/NetcdfSubsetServiceConfigure#,configure>>,
+<<services/NetcdfSubsetServiceReference#,reference>>
+** <<services/CdmRemote#,Cdmremote web service>>
+** <<services/CdmrFeature#,CdmrFeature web service>>
+** <<services/WCS#,WCS 1.0 Service>>
+** <<services/WMS#,WMS 1.3.0 Service>>
 * Metadata
-** <<services/ncISO.adoc,ncISO: Dataset Metadata Services>>
-** <<DigitalLibraries.adoc,OAI Metadata harvesting>>
+** <<services/ncISO#,ncISO: Dataset Metadata Services>>
+** <<DigitalLibraries#,OAI Metadata harvesting>>
 ** also see:
 http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discovery[Attribute Conventions for Dataset Discovery (ACDD)]
 * <<ThreddsConfigXMLFile.adoc#Server_Info_Docs,Server Information>>
 
 === Customization
 
-* <<DatasetSource.adoc,Dataset Source Plug-in>>
-* <<Viewers.adoc,Viewer Links>>
+* <<DatasetSource#,Dataset Source Plug-in>>
+* <<Viewers#,Viewer Links>>
 
 === Restricted Access to Datasets
 
-* <<RestrictedAccess.adoc,Restricted Access>> to Datasets
-* <<PluggableRestrictedAccess.adoc,Adding your own Authenticator for Restricting Access>>
-* <<HTTPsecurityChallenge.adoc,HTTP Security Challenge Messages Example>>
+* <<RestrictedAccess#,Restricted Access>> to Datasets
+* <<PluggableRestrictedAccess#,Adding your own Authenticator for Restricting Access>>
+* <<HTTPsecurityChallenge#,HTTP Security Challenge Messages Example>>
 
 == Thredds Data Manager (TDM)
 
 TDM does background Indexing for GRIB and Point Feature Collections
 
-* <<collections/TDM.adoc,Thredds Data Manager (TDM)>>
+* <<collections/TDM#,Thredds Data Manager (TDM)>>
 * <<collections/TDM.adoc#GCPass1,GCPass1>> is a utility program to examine the files in a collection before actually indexing them.
 
 == Also see:
 
-* <<../faq.adoc,TDS FAQ>>
-* <<../tutorial/index.adoc,TDS Tutorial>>
+* <<../faq#,TDS FAQ>>
+* <<../tutorial/index#,TDS Tutorial>>
 * TDS Architecture link:TDSarchictecture.ppt[powerpoint]
-* <<Performance.adoc,TDS Performance>>
+* <<Performance#,TDS Performance>>
 // * https://wiki.ucar.edu/display/unidata/TDS+Servlets+Configuration+(4.4.0-alpha)[TDS Servlets Configuration]
 
 === Tomcat Resources

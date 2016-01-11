@@ -10,7 +10,7 @@ THREDDS Data Server Administration Tutorial
 '''''
 
 This is the on-line, self-guided tutorial. Follow this link for the
-<<workshop2015.adoc,2015 TDS Workshop schedule>>
+<<workshop2015#,2015 TDS Workshop schedule>>
 
 '''''
 
@@ -21,27 +21,27 @@ This is the on-line, self-guided tutorial. Follow this link for the
 
 * link:GettingStarted.adoc[Getting Started With the TDS: Local Test
 Server Setup]
-* <<Security.adoc,Security Overview>>
+* <<Security#,Security Overview>>
 
 === 2. TDS Configuration
 
-* <<CatalogPrimer.adoc,Client Catalog Primer>>
-* <<BasicConfigCatalogs.adoc,Basic TDS Configuration Catalogs>>
-* <<ConfigCatalogs.adoc,TDS Configuration Catalogs>>
-* <<BasicThreddsConfig_xml.adoc,Basic threddsConfig.xml>>
-* <<AddingServices.adoc,Adding OGC/ISO Services>>
-* <<../reference/WMS.adoc,Detailed WMS Configuration>>
+* <<CatalogPrimer#,Client Catalog Primer>>
+* <<BasicConfigCatalogs#,Basic TDS Configuration Catalogs>>
+* <<ConfigCatalogs#,TDS Configuration Catalogs>>
+* <<BasicThreddsConfig_xml#,Basic threddsConfig.xml>>
+* <<AddingServices#,Adding OGC/ISO Services>>
+* <<../reference/WMS#,Detailed WMS Configuration>>
 * Netcdf Subset Service:
-<<../reference/NetcdfSubsetServiceConfigure.adoc,configure>>,
-<<../reference/NetcdfSubsetServiceReference.adoc,reference>>
+<<../reference/NetcdfSubsetServiceConfigure#,configure>>,
+<<../reference/NetcdfSubsetServiceReference#,reference>>
 * threddsConfig.xml
-<<../reference/ThreddsConfigXMLFile.adoc,reference>>
+<<../reference/ThreddsConfigXMLFile#,reference>>
 
 === 4. TDS Monitoring and Debugging
 
-* <<TDSMonitoringAndDebugging.adoc,TDS Monitoring and Debugging>>
-* <<TomcatAndTDSLogs.adoc,Tomcat and TDS Logs>>
-* <<tdsMonitor.adoc,Using the TdsMonitor tool>>
+* <<TDSMonitoringAndDebugging#,TDS Monitoring and Debugging>>
+* <<TomcatAndTDSLogs#,Tomcat and TDS Logs>>
+* <<tdsMonitor#,Using the TdsMonitor tool>>
 * There are also various free, 3rd-party monitoring and debugging tools:
 ** http://www.google.com/search?btnG=1&pws=0&q=log+analyzers[Log
 analyzers]
@@ -58,11 +58,11 @@ manager application]
 
 === 5. Using NcML in TDS
 
-* <<../../netcdf-java/ncml/Tutorial.adoc,Basic NcML tutorial>>
-* <<../../netcdf-java/ncml/Aggregation.adoc,NcML Aggregation>>
+* <<../../netcdf-java/ncml/Tutorial#,Basic NcML tutorial>>
+* <<../../netcdf-java/ncml/Aggregation#,NcML Aggregation>>
 * link:NcML.htm[Using NcML in the TDS]
-* <<NcMLExamples.adoc,NcML Example Problems>>
-* <<NcMLAggExamples.adoc,NcML Aggregation Example Problems>>
+* <<NcMLExamples#,NcML Example Problems>>
+* <<NcMLAggExamples#,NcML Aggregation Example Problems>>
 
 === 6. Feature Collections
 
@@ -74,7 +74,7 @@ Collections]
 Tutoria]l
 * link:../reference/collections/FmrcCollection.adoc[FMRC (Forecast Model
 Run Collections)]
-* <<FmrcFeatureCollectionsTutorial.adoc,FMRC Tutorial>>
+* <<FmrcFeatureCollectionsTutorial#,FMRC Tutorial>>
 * link:../../netcdf-java/reference/formats/GribFiles.adoc[GRIB Files in
 CDM]
 * link:../../netcdf-java/reference/formats/GribTables.adoc[GRIB Tables
@@ -82,23 +82,23 @@ in CDM]
 
 === 7. Other Advanced Features
 
-* <<../reference/RestrictedAccess.adoc,Restricting dataset access>>
-* <<../reference/Viewers.adoc,Viewer Links>>
+* <<../reference/RestrictedAccess#,Restricting dataset access>>
+* <<../reference/Viewers#,Viewer Links>>
 
 === 8. Metadata
 
-* <<Metadata.adoc,THREDDS Metadata>>
-* <<../reference/ncISO.adoc,ISO metadata generation: (ncIso)>>
+* <<Metadata#,THREDDS Metadata>>
+* <<../reference/ncISO#,ISO metadata generation: (ncIso)>>
 
 === 9. Production Servers
 
-* <<Checklist.adoc,Installation Checklist for Production>>
-* <<TroubleShooting.adoc,TroubleShooting Problems>>
+* <<Checklist#,Installation Checklist for Production>>
+* <<TroubleShooting#,TroubleShooting Problems>>
 * link:../reference/Performance.adoc[Performance
-Tips]<<TroubleShooting.adoc,>>
-* <<../UpgradingTo4.5.adoc,Upgrading to 4.5>>
+Tips]<<TroubleShooting#,>>
+* <<../UpgradingTo4.5#,Upgrading to 4.5>>
 
 === Other Resources:
 
-* <<../reference/index.adoc,Reference documentation>>
-* <<../faq.adoc,FAQ>>
+* <<../reference/index#,Reference documentation>>
+* <<../faq#,FAQ>>
