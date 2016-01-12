@@ -38,11 +38,13 @@ import ucar.nc2.util.UnitTestCommon;
 import java.io.File;
 import java.io.FileReader;
 
-// WARNING: assumes we are operating inside cdm directory
+// WARNING: assumes we are operating inside module directory
 // when invoked
 
 abstract public class TestFiles extends UnitTestCommon
 {
+    static final boolean DEBUG = false;
+
     // Following are with respect to threddsRoot
     static final String TESTSUFFIX = "opendap/src/test/data";
     static final String RESULTSUFFIX = "opendap/target/results";
@@ -55,6 +57,12 @@ abstract public class TestFiles extends UnitTestCommon
     {
         DAS, DDS, DATADDS;
     }
+
+    //////////////////////////////////////////////////
+    // Static variables
+
+    //////////////////////////////////////////////////
+    // Static methods
 
     // List all the base names from testdata1
     static String partext(TestPart part)
@@ -101,26 +109,23 @@ abstract public class TestFiles extends UnitTestCommon
     protected String resultsdir = null;
     protected String test = null;
     protected String testname = null;
+    protected String threddsRoot = null;
 
     public TestFiles()
     {
-        String testdir = null;
-        String baselinedir = null;
-        String resultsdir = null;
-        String threddsRoot = getThreddsroot();
-
-        testdir = threddsRoot + "/" + TESTSUFFIX + "/" + TESTDATA1DIR;
-        baselinedir = threddsRoot + "/" + TESTSUFFIX + "/" + BASELINE1DIR;
-        resultsdir = threddsRoot + "/" + RESULTSUFFIX;
+        this.threddsRoot = getThreddsroot();
+        this.testdir = threddsRoot + "/" + TESTSUFFIX + "/" + TESTDATA1DIR;
+        this.baselinedir = threddsRoot + "/" + TESTSUFFIX + "/" + BASELINE1DIR;
+        this.resultsdir = threddsRoot + "/" + RESULTSUFFIX;
 
         File tmp = new File(testdir);
         if(!tmp.exists()) {
-            System.err.println("Cannot locate testdata1 directory; path does not exist: " + tmp.getAbsolutePath());
+            System.err.printf("Cannot locate %s directory; path does not exist: %n",tmp.getAbsolutePath());
             System.exit(1);
         }
         tmp = new File(baselinedir);
         if(!tmp.exists()) {
-            System.err.println("Cannot locate baseline1 directory; path does not exist: " + tmp.getAbsolutePath());
+            System.err.printf("Cannot locate %s directory; path does not exist: %n",tmp.getAbsolutePath());
             System.exit(1);
         }
         tmp = new File(resultsdir);
@@ -136,12 +141,9 @@ abstract public class TestFiles extends UnitTestCommon
             System.exit(1);
         }
         if(!tmp.canWrite()) {
-            System.err.println("Cannot write results directory: " + tmp.getAbsolutePath());
+            System.err.printf("Cannot write %s directory%n",tmp.getAbsolutePath());
             System.exit(1);
         }
-        this.testdir = testdir;
-        this.baselinedir = baselinedir;
-        this.resultsdir = resultsdir;
     }
 
     //////////////////////////////////////////////////
@@ -166,7 +168,6 @@ abstract public class TestFiles extends UnitTestCommon
             "test.vs4", "test.vs5", "test1", "test2", "test3",
             "whoi"
     };
-
 
     static String[] ddstestfiles = {
             "123.nc", "123bears.nc", "bears.nc", "1990-S1700101.HDF.WVC_Lat", "1998-6-avhrr.dat", "D1",
@@ -196,7 +197,6 @@ abstract public class TestFiles extends UnitTestCommon
     static String[] errtestfiles = {
             "test1"
     };
-
 
     // define the xfails
     static String[] dasxfails = {

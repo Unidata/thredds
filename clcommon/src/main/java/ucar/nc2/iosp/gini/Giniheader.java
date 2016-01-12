@@ -81,7 +81,7 @@ class Giniheader {
     if (pos == -1) pos = pib.indexOf("CHIZ");
 
     if (pos != -1) {                    /* 'KNES' or 'CHIZ' found         */
-      pos = pib.indexOf("\r\r\n");    /* <<<<< UPC mod 20030710 >>>>>   */
+      pos = pib.indexOf("\r\r\n");    /* ----- UPC mod 20030710 -----   */
       if (pos != -1) {                 /* CR CR NL found             */
         pos = pos + 3;
       }

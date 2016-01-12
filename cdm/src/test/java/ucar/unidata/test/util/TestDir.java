@@ -52,8 +52,6 @@ import java.util.*;
  *     <td>Temporary data directory (for writing temporary data).
  * <tr><td>threddsServer<td>threddsserver<td>thredds.ucar.edu
  *     <td>The hostname of the standard thredds server.
- * <tr><td>threddsDevServer<td>threddsdevserver<td>thredds-dev.unidata.ucar.edu
- *     <td>The hostname of the standard thredds development server
  * <tr><td>threddsTestServer<td>threddstestserver<td>thredds-test.unidata.ucar.edu
  *     <td>The hostname of the standard thredds test server.
  * <tr><td>remoteTestServer<td>remotetestserver<td>remotetest.unidata.ucar.edu
@@ -62,7 +60,9 @@ import java.util.*;
  *
  */
 public class TestDir {
-  /** path to the Unidata test data directory */
+  /**
+   * path to the Unidata test data directory
+   */
   public static String testdataDir = null;
 
   /**
@@ -84,25 +84,29 @@ public class TestDir {
   /**
    * Temporary data directory (for writing temporary data).
    */
-  public static String temporaryLocalDataDir = "target/test/tmp/";
+  public static String temporaryLocalDataDir = "build/test/tmp/";
 
   //////////////////////////////////////////////////////////////////////
-  /** Property name for the path to the Unidata test data directory,
+  /**
+   * Property name for the path to the Unidata test data directory,
    * e.g unidata.testdata2.path=//shemp/data/testdata2/
    * the real directory is at shemp:/data/testdata2
    */
   private static String testdataDirPropName ="unidata.testdata.path";
 
-  /** Filename of the user property file read from the "user.home" directory
+  /**
+   * Filename of the user property file read from the "user.home" directory
    * if the "unidata.testdata2.path" and "unidata.upc.share.path" are not
-   * available as system properties. */
+   * available as system properties.
+   */
   private static String threddsPropFileName = "thredds.properties";
 
   //////////////////////////////////////////////////////////////////////
   // Various Test Server machines
   //////////////////////////////////////////////////////////////////////
 
-  // thredds, thredd-dev, and thredd-test Test servers (for testing)
+  // thredds and thredd-test Test servers (for testing)
+  // thredds can go away when misc. obsolete tests go away
 
   static public String threddsServerPropName = "threddsserver";
   static public String threddsServer = "thredds.ucar.edu";
@@ -144,8 +148,7 @@ public class TestDir {
         Properties userThreddsProps = new Properties();
         try {
           userThreddsProps.load( new FileInputStream( userThreddsPropsFile ) );
-        }
-        catch ( IOException e ) {
+        } catch ( IOException e ) {
           System.err.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
         }
         if ( userThreddsProps != null && ! userThreddsProps.isEmpty() ) {

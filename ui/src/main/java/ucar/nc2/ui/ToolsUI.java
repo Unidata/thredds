@@ -38,7 +38,6 @@ import thredds.client.catalog.writer.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import thredds.ui.catalog.ThreddsUI;
-import ucar.httpservices.HTTPAuthSchemes;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.*;
@@ -6531,7 +6530,7 @@ public class ToolsUI extends JPanel {
 
       UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
       try {
-        HTTPSession.setGlobalCredentialsProvider(provider,HTTPAuthSchemes.BASIC);
+        HTTPSession.setGlobalCredentialsProvider(provider);
       }catch (HTTPException e) {
         log.error("Failed to set global credentials");
       }

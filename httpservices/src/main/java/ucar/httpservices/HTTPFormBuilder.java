@@ -39,7 +39,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.*;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.File;
@@ -139,28 +142,33 @@ public class HTTPFormBuilder
         return this.charset.displayName();
     }
 
-    public void setCharset(String charset)
+    public HTTPFormBuilder setCharset(String charset)
     {
         this.charset = Charset.forName(charset);
+	return this;
     }
 
-    public void setCharset(Charset charset)
+    public HTTPFormBuilder setCharset(Charset charset)
     {
         this.charset = charset;
+	return this;
     }
     //////////////////////////////////////////////////
     // Field construction
 
-    public void add(String fieldname, String text)
+    public HTTPFormBuilder
+    add(String fieldname, String text)
             throws HTTPException
     {
         if(fieldname == null || text == null || fieldname.length() == 0)
             throw new IllegalArgumentException();
         Field f = new Field(Sort.TEXT, fieldname, text, null);
         parts.put(fieldname, f);
+	return this;
     }
 
-    public void add(String fieldname, byte[] content, String filename)
+    public HTTPFormBuilder
+    add(String fieldname, byte[] content, String filename)
             throws HTTPException
     {
         if(isempty(fieldname))
@@ -171,9 +179,11 @@ public class HTTPFormBuilder
         Field f = new Field(Sort.BYTES, fieldname, content, filename);
         parts.put(fieldname, f);
         this.usemultipart = true;
+	return this;
     }
 
-    public void add(String fieldname, final InputStream content, String filename)
+    public HTTPFormBuilder
+    add(String fieldname, final InputStream content, String filename)
             throws HTTPException
     {
         if(isempty(fieldname) || content == null || isempty(filename))
@@ -181,9 +191,11 @@ public class HTTPFormBuilder
         Field f = new Field(Sort.STREAM, fieldname, content, filename);
         parts.put(fieldname, f);
         this.usemultipart = true;
+	return this;
     }
 
-    public void add(String fieldname, File content)
+    public HTTPFormBuilder
+    add(String fieldname, File content)
             throws HTTPException
     {
         if(isempty(fieldname) || content == null)
@@ -191,6 +203,7 @@ public class HTTPFormBuilder
         Field f = new Field(Sort.FILE, fieldname, content, content.getName());
         parts.put(fieldname, f);
         this.usemultipart = true;
+	return this;
     }
 
     public HttpEntity build()
@@ -230,11 +243,7 @@ public class HTTPFormBuilder
             ContentBody body = null;
             switch (sort) {
             case TEXT:
-                try {
-                    body = new StringBody(field.value.toString());
-                } catch (UnsupportedEncodingException e) {
-                    assert false;
-                }
+                body = new StringBody(field.value.toString(), ct);
                 break;
             case BYTES:
                 body = new ByteArrayBody((byte[]) field.value, field.name);
@@ -252,8 +261,7 @@ public class HTTPFormBuilder
                 }
                 break;
             case FILE:
-                body = new FileBody((File) field.value, field.name,
-                        Sort.mimetype(sort), "US-ASCII");
+                body = new FileBody((File) field.value, ct, field.name);
                 break;
             }
             mpb.addPart(field.fieldname, body);

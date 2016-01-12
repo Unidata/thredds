@@ -42,6 +42,7 @@ package opendap.servlet;
 
 import opendap.dap.DAP2Exception;
 import ucar.httpservices.HTTPSession;
+import ucar.httpservices.HTTPUtil;
 
 import java.util.Enumeration;
 import javax.servlet.ServletConfig;
@@ -137,7 +138,7 @@ public class ReqState {
     {
         this.myServletConfig = sv.getServletConfig();
         this.myServletContext = sv.getServletContext();
-        this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));
+        this.rootpath = HTTPUtil.canonicalpath(this.myServletContext.getRealPath("/"));
         if(this.rootpath == null) {
             this.rootpath = "";
         }
@@ -288,7 +289,7 @@ public class ReqState {
         if (cacheDir == null)
             cacheDir = dfalt;
         else {
-            cacheDir = HTTPSession.canonicalpath(cacheDir);
+            cacheDir = HTTPUtil.canonicalpath(cacheDir);
             if(cacheDir.startsWith("/"))
                 cacheDir = cacheDir.substring(1);
             cacheDir = realpath + "/" + cacheDir;
@@ -461,9 +462,9 @@ public class ReqState {
         AbstractServlet.log.debug("url="+path3);
         AbstractServlet.log.debug("path="+path4);
 
-        this.dataSetName = HTTPSession.canonicalpath(myHttpRequest.getPathInfo());
-        String cxtpath = HTTPSession.canonicalpath(myHttpRequest.getContextPath());
-        String servletpath = HTTPSession.canonicalpath(myHttpRequest.getServletPath());
+        this.dataSetName = HTTPUtil.canonicalpath(myHttpRequest.getPathInfo());
+        String cxtpath = HTTPUtil.canonicalpath(myHttpRequest.getContextPath());
+        String servletpath = HTTPUtil.canonicalpath(myHttpRequest.getServletPath());
 
 	// simplify subsequent tests
  	if(this.dataSetName != null && this.dataSetName.length() == 0) this.dataSetName = null;
