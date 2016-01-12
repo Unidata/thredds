@@ -9023,13 +9023,21 @@ public final class GribCollectionProto {
        */
       MRSTC(3, 6),
       /**
+       * <code>MRUTC = 8;</code>
+       *
+       * <pre>
+       * Multiple Runtime Unique Time Collection
+       * </pre>
+       */
+      MRUTC(4, 8),
+      /**
        * <code>TP = 7;</code>
        *
        * <pre>
        * time partition collection 1D
        * </pre>
        */
-      TP(4, 7),
+      TP(5, 7),
       /**
        * <code>TwoD = 1;</code>
        *
@@ -9037,7 +9045,7 @@ public final class GribCollectionProto {
        * time partition 2D
        * </pre>
        */
-      TwoD(5, 1),
+      TwoD(6, 1),
       /**
        * <code>Best = 2;</code>
        *
@@ -9045,15 +9053,15 @@ public final class GribCollectionProto {
        * time partition Best
        * </pre>
        */
-      Best(6, 2),
+      Best(7, 2),
       /**
-       * <code>Analysis = 3;</code>
+       * <code>MRUTP = 9;</code>
        *
        * <pre>
-       * not implemented yet
+       * Multiple Runtime Unique Time Partition
        * </pre>
        */
-      Analysis(7, 3),
+      MRUTP(8, 9),
       UNRECOGNIZED(-1, -1),
       ;
 
@@ -9090,6 +9098,14 @@ public final class GribCollectionProto {
        */
       public static final int MRSTC_VALUE = 6;
       /**
+       * <code>MRUTC = 8;</code>
+       *
+       * <pre>
+       * Multiple Runtime Unique Time Collection
+       * </pre>
+       */
+      public static final int MRUTC_VALUE = 8;
+      /**
        * <code>TP = 7;</code>
        *
        * <pre>
@@ -9114,13 +9130,13 @@ public final class GribCollectionProto {
        */
       public static final int Best_VALUE = 2;
       /**
-       * <code>Analysis = 3;</code>
+       * <code>MRUTP = 9;</code>
        *
        * <pre>
-       * not implemented yet
+       * Multiple Runtime Unique Time Partition
        * </pre>
        */
-      public static final int Analysis_VALUE = 3;
+      public static final int MRUTP_VALUE = 9;
 
 
       public final int getNumber() {
@@ -9137,10 +9153,11 @@ public final class GribCollectionProto {
           case 4: return SRC;
           case 5: return MRC;
           case 6: return MRSTC;
+          case 8: return MRUTC;
           case 7: return TP;
           case 1: return TwoD;
           case 2: return Best;
-          case 3: return Analysis;
+          case 9: return MRUTP;
           default: return null;
         }
       }
@@ -14979,7 +14996,7 @@ public final class GribCollectionProto {
      * <code>optional string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx3 file, reletive to gc.
+     * the gribCollection.ncx file, reletive to gc.
      * </pre>
      */
     java.lang.String getFilename();
@@ -14987,7 +15004,7 @@ public final class GribCollectionProto {
      * <code>optional string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx3 file, reletive to gc.
+     * the gribCollection.ncx file, reletive to gc.
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -14995,10 +15012,6 @@ public final class GribCollectionProto {
 
     /**
      * <code>optional uint64 lastModified = 4;</code>
-     *
-     * <pre>
-     * string directory = 3;  // top directory LOOK USED?
-     * </pre>
      */
     long getLastModified();
 
@@ -15158,7 +15171,7 @@ public final class GribCollectionProto {
      * <code>optional string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx3 file, reletive to gc.
+     * the gribCollection.ncx file, reletive to gc.
      * </pre>
      */
     public java.lang.String getFilename() {
@@ -15177,7 +15190,7 @@ public final class GribCollectionProto {
      * <code>optional string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx3 file, reletive to gc.
+     * the gribCollection.ncx file, reletive to gc.
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -15198,10 +15211,6 @@ public final class GribCollectionProto {
     private long lastModified_;
     /**
      * <code>optional uint64 lastModified = 4;</code>
-     *
-     * <pre>
-     * string directory = 3;  // top directory LOOK USED?
-     * </pre>
      */
     public long getLastModified() {
       return lastModified_;
@@ -15581,7 +15590,7 @@ public final class GribCollectionProto {
        * <code>optional string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx3 file, reletive to gc.
+       * the gribCollection.ncx file, reletive to gc.
        * </pre>
        */
       public java.lang.String getFilename() {
@@ -15600,7 +15609,7 @@ public final class GribCollectionProto {
        * <code>optional string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx3 file, reletive to gc.
+       * the gribCollection.ncx file, reletive to gc.
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -15620,7 +15629,7 @@ public final class GribCollectionProto {
        * <code>optional string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx3 file, reletive to gc.
+       * the gribCollection.ncx file, reletive to gc.
        * </pre>
        */
       public Builder setFilename(
@@ -15637,7 +15646,7 @@ public final class GribCollectionProto {
        * <code>optional string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx3 file, reletive to gc.
+       * the gribCollection.ncx file, reletive to gc.
        * </pre>
        */
       public Builder clearFilename() {
@@ -15650,7 +15659,7 @@ public final class GribCollectionProto {
        * <code>optional string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx3 file, reletive to gc.
+       * the gribCollection.ncx file, reletive to gc.
        * </pre>
        */
       public Builder setFilenameBytes(
@@ -15668,20 +15677,12 @@ public final class GribCollectionProto {
       private long lastModified_ ;
       /**
        * <code>optional uint64 lastModified = 4;</code>
-       *
-       * <pre>
-       * string directory = 3;  // top directory LOOK USED?
-       * </pre>
        */
       public long getLastModified() {
         return lastModified_;
       }
       /**
        * <code>optional uint64 lastModified = 4;</code>
-       *
-       * <pre>
-       * string directory = 3;  // top directory LOOK USED?
-       * </pre>
        */
       public Builder setLastModified(long value) {
         
@@ -15691,10 +15692,6 @@ public final class GribCollectionProto {
       }
       /**
        * <code>optional uint64 lastModified = 4;</code>
-       *
-       * <pre>
-       * string directory = 3;  // top directory LOOK USED?
-       * </pre>
        */
       public Builder clearLastModified() {
         
@@ -19872,45 +19869,45 @@ public final class GribCollectionProto {
       "ds\022\013\n\003gds\030\001 \001(\014\022 \n\030predefinedGridDefinit" +
       "ion\030\002 \001(\r\"d\n\005Group\022\021\n\003gds\030\001 \001(\0132\004.Gds\022\034\n",
       "\tvariables\030\002 \003(\0132\t.Variable\022\026\n\006coords\030\003 " +
-      "\003(\0132\006.Coord\022\022\n\006fileno\030\004 \003(\rB\002\020\001\"\225\001\n\007Data" +
+      "\003(\0132\006.Coord\022\022\n\006fileno\030\004 \003(\rB\002\020\001\"\235\001\n\007Data" +
       "set\022\033\n\004type\030\001 \001(\0162\r.Dataset.Type\022\026\n\006grou" +
-      "ps\030\002 \003(\0132\006.Group\"U\n\004Type\022\006\n\002GC\020\000\022\007\n\003SRC\020" +
-      "\004\022\007\n\003MRC\020\005\022\t\n\005MRSTC\020\006\022\006\n\002TP\020\007\022\010\n\004TwoD\020\001\022" +
-      "\010\n\004Best\020\002\022\014\n\010Analysis\020\003\"N\n\005MFile\022\020\n\010file" +
-      "name\030\001 \001(\t\022\024\n\014lastModified\030\002 \001(\004\022\r\n\005inde" +
-      "x\030\003 \001(\r\022\016\n\006length\030\004 \001(\004\"\235\003\n\016GribCollecti" +
-      "on\022\014\n\004name\030\001 \001(\t\022\016\n\006topDir\030\002 \001(\t\022\026\n\006mfil" +
-      "es\030\003 \003(\0132\006.MFile\022\031\n\007dataset\030\004 \003(\0132\010.Data",
-      "set\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\rmasterRuntime\030" +
-      "\006 \001(\0132\006.Coord\022\016\n\006center\030\007 \001(\005\022\021\n\tsubcent" +
-      "er\030\010 \001(\005\022\016\n\006master\030\t \001(\005\022\r\n\005local\030\n \001(\005\022" +
-      "\026\n\016genProcessType\030\013 \001(\005\022\024\n\014genProcessId\030" +
-      "\014 \001(\005\022\025\n\rbackProcessId\030\r \001(\005\022\017\n\007version\030" +
-      "\016 \001(\005\022\031\n\006config\030\025 \001(\0132\t.FcConfig\022\036\n\npart" +
-      "itions\030d \003(\0132\n.Partition\022\037\n\027isPartitionO" +
-      "fPartitions\030e \001(\010\022\024\n\010run2part\030f \003(\rB\002\020\001\"" +
-      "u\n\021PartitionVariable\022\017\n\007groupno\030\001 \001(\r\022\r\n" +
-      "\005varno\030\002 \001(\r\022\016\n\006partno\030\004 \001(\r\022\r\n\005ndups\030\010 ",
-      "\001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030\n \001(\r\"h" +
-      "\n\tPartition\022\014\n\004name\030\001 \001(\t\022\020\n\010filename\030\002 " +
-      "\001(\t\022\024\n\014lastModified\030\004 \001(\004\022\016\n\006length\030\005 \001(" +
-      "\003\022\025\n\rpartitionDate\030\006 \001(\003\"(\n\tStringMap\022\014\n" +
-      "\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\"\n\006IntMap\022\014\n\004" +
-      "from\030\001 \001(\021\022\n\n\002to\030\002 \001(\021\"F\n\nIntvFilter\022\022\n\n" +
-      "intvLength\030\001 \001(\021\022\022\n\nvariableId\030\002 \001(\r\022\020\n\010" +
-      "intvProb\030\003 \001(\021\"\315\002\n\010FcConfig\022\014\n\004name\030\001 \001(" +
-      "\t\022\026\n\016collectionSpec\030\002 \001(\t\022\025\n\rpartitionTy" +
-      "pe\030\003 \001(\t\022\026\n\016dateFormatMark\030\004 \001(\t\022\033\n\ngdsC",
-      "onvert\030\013 \003(\0132\007.IntMap\022\025\n\rpdsUseGenType\030\014" +
-      " \001(\010\022\032\n\022pdsUseTableVersion\030\r \001(\010\022\024\n\014pdsI" +
-      "ntvMerge\030\016 \001(\010\022\024\n\014pdsUseCenter\030\017 \001(\010\022\027\n\017" +
-      "intvExcludeZero\030\020 \001(\010\022\037\n\nintvFilter\030\021 \003(" +
-      "\0132\013.IntvFilter\022 \n\017timeUnitConvert\030\022 \003(\0132" +
-      "\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(\t*R\n\014GribAx" +
-      "isType\022\013\n\007runtime\020\000\022\010\n\004time\020\001\022\014\n\010timeInt" +
-      "v\020\002\022\010\n\004vert\020\003\022\n\n\006time2D\020\004\022\007\n\003ens\020\005B/\n\030uc" +
-      "ar.nc2.grib.collectionB\023GribCollectionPr" +
-      "otob\006proto3"
+      "ps\030\002 \003(\0132\006.Group\"]\n\004Type\022\006\n\002GC\020\000\022\007\n\003SRC\020" +
+      "\004\022\007\n\003MRC\020\005\022\t\n\005MRSTC\020\006\022\t\n\005MRUTC\020\010\022\006\n\002TP\020\007" +
+      "\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\t\n\005MRUTP\020\t\"N\n\005MFile" +
+      "\022\020\n\010filename\030\001 \001(\t\022\024\n\014lastModified\030\002 \001(\004" +
+      "\022\r\n\005index\030\003 \001(\r\022\016\n\006length\030\004 \001(\004\"\235\003\n\016Grib" +
+      "Collection\022\014\n\004name\030\001 \001(\t\022\016\n\006topDir\030\002 \001(\t" +
+      "\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007dataset\030\004 \003(",
+      "\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\rmaster" +
+      "Runtime\030\006 \001(\0132\006.Coord\022\016\n\006center\030\007 \001(\005\022\021\n" +
+      "\tsubcenter\030\010 \001(\005\022\016\n\006master\030\t \001(\005\022\r\n\005loca" +
+      "l\030\n \001(\005\022\026\n\016genProcessType\030\013 \001(\005\022\024\n\014genPr" +
+      "ocessId\030\014 \001(\005\022\025\n\rbackProcessId\030\r \001(\005\022\017\n\007" +
+      "version\030\016 \001(\005\022\031\n\006config\030\025 \001(\0132\t.FcConfig" +
+      "\022\036\n\npartitions\030d \003(\0132\n.Partition\022\037\n\027isPa" +
+      "rtitionOfPartitions\030e \001(\010\022\024\n\010run2part\030f " +
+      "\003(\rB\002\020\001\"u\n\021PartitionVariable\022\017\n\007groupno\030" +
+      "\001 \001(\r\022\r\n\005varno\030\002 \001(\r\022\016\n\006partno\030\004 \001(\r\022\r\n\005",
+      "ndups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing" +
+      "\030\n \001(\r\"h\n\tPartition\022\014\n\004name\030\001 \001(\t\022\020\n\010fil" +
+      "ename\030\002 \001(\t\022\024\n\014lastModified\030\004 \001(\004\022\016\n\006len" +
+      "gth\030\005 \001(\003\022\025\n\rpartitionDate\030\006 \001(\003\"(\n\tStri" +
+      "ngMap\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\"\n\006In" +
+      "tMap\022\014\n\004from\030\001 \001(\021\022\n\n\002to\030\002 \001(\021\"F\n\nIntvFi" +
+      "lter\022\022\n\nintvLength\030\001 \001(\021\022\022\n\nvariableId\030\002" +
+      " \001(\r\022\020\n\010intvProb\030\003 \001(\021\"\315\002\n\010FcConfig\022\014\n\004n" +
+      "ame\030\001 \001(\t\022\026\n\016collectionSpec\030\002 \001(\t\022\025\n\rpar" +
+      "titionType\030\003 \001(\t\022\026\n\016dateFormatMark\030\004 \001(\t",
+      "\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap\022\025\n\rpdsUseG" +
+      "enType\030\014 \001(\010\022\032\n\022pdsUseTableVersion\030\r \001(\010" +
+      "\022\024\n\014pdsIntvMerge\030\016 \001(\010\022\024\n\014pdsUseCenter\030\017" +
+      " \001(\010\022\027\n\017intvExcludeZero\030\020 \001(\010\022\037\n\nintvFil" +
+      "ter\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitConver" +
+      "t\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(\t*R" +
+      "\n\014GribAxisType\022\013\n\007runtime\020\000\022\010\n\004time\020\001\022\014\n" +
+      "\010timeIntv\020\002\022\010\n\004vert\020\003\022\n\n\006time2D\020\004\022\007\n\003ens" +
+      "\020\005B/\n\030ucar.nc2.grib.collectionB\023GribColl" +
+      "ectionProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

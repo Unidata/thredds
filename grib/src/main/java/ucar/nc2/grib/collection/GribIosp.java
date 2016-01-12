@@ -65,6 +65,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
   static public final String GRIB_VALID_TIME = "GRIB forecast or observation time";
   static public final String GRIB_RUNTIME = "GRIB reference time";
+  static public final String GRIB_STAT_TYPE = "Grib_Statistical_Interval_Type";
 
   // do not use
   static public boolean debugRead = false;
@@ -344,6 +345,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           coordinateAtt.format("%s %s ", run.getName(), time.getName());
           break;
 
+        case MRUTP:             // GC: Multiple Runtime Unique Time Partition  [ntimes]
+        case MRUTC:             // GC: Multiple Runtime Unique Time Collection  [ntimes]
         case MRSTC:             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
         case TP:                // PC: Multiple Runtime Single Time Partition   [nruns, 1]         (run, 2D)  ignore the run, its generated from the 2D in
           dimNames.format("%s ", time.getName());
@@ -423,13 +426,13 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       if (vindex.getIntvType() >= 0) {
         GribStatType statType = gribTable.getStatType(vindex.getIntvType());   // LOOK find the time coordinate
         if (statType != null) {
-          v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", statType.toString()));
+          v.addAttribute(new Attribute(GRIB_STAT_TYPE, statType.toString()));
           CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
           Coordinate timeCoord = vindex.getCoordinate(Coordinate.Type.timeIntv);
           if (cm != null && timeCoord != null)
             v.addAttribute(new Attribute(CF.CELL_METHODS, timeCoord.getName() + ": " + cm.toString()));
         } else {
-          v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.getIntvType()));
+          v.addAttribute(new Attribute(GRIB_STAT_TYPE, vindex.getIntvType()));
         }
       }
 

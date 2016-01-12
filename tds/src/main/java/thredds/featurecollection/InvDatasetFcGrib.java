@@ -259,7 +259,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Single reference time Grib Collection"));
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "Reference Time", runtime.toString()));
 
-        } else if (ds.getType() == GribCollectionImmutable.Type.MRSTC) {
+        } else if (ds.getType() == GribCollectionImmutable.Type.MRSTC || ds.getType() == GribCollectionImmutable.Type.MRUTC) {
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference time Grib Collection"));
         }
 

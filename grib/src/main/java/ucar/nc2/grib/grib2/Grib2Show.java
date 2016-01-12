@@ -34,8 +34,11 @@
 package ucar.nc2.grib.grib2;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -194,5 +197,37 @@ public class Grib2Show {
     f.format(" Second Surface val = %3f %n", pds.getLevelValue2());
     f.format("%n Level Name (from table 4.5) = %3s %n", cust.getTableValue("4.5", pds.getLevelType1()));
     f.format(" Gen Process Ttype (from table 4.3) = %3s %n", cust.getTableValue("4.3", pds.getGenProcessType()));
+  }
+
+  public static void showProcessedGridRecord(Grib2Customizer cust, Grib2Record gr, Formatter f) {
+    GribTables.Parameter param = cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+    if (param != null) {
+      f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
+    } else {
+      f.format(" Unknown Parameter  = %d-%d-%d %n", gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+    }
+
+    Grib2Pds pds = gr.getPDS();
+    VertCoord.VertUnit levelUnit = cust.getVertUnit(pds.getLevelType1());
+    f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(), cust.getLevelNameShort(pds.getLevelType1()));
+
+    String intvName = "none";
+    if (pds instanceof Grib2Pds.PdsInterval) {
+      Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
+      Grib2Pds.TimeInterval[] ti = pdsi.getTimeIntervals();
+      int statType = ti[0].statProcessType;
+      intvName = cust.getStatisticNameShort(statType);
+    }
+
+    f.format("  Time Unit=%s; Stat=%s%n", Grib2Utils.getCalendarPeriod( pds.getTimeUnit()), intvName);
+    f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
+    f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
+    TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
+    if (intv != null) f.format("  TimeInterval=%s%n", intv);
+    f.format("%n");
+    pds.show(f);
+
+    //CFSR malarky
+    cust.showSpecialPdsInfo(gr, f);
   }
 }

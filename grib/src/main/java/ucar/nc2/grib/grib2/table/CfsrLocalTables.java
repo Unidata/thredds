@@ -34,6 +34,7 @@
 package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.constants.CDM;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -180,6 +181,56 @@ public class CfsrLocalTables extends NcepLocalTables {
     return ti.length != 1;
   }
 
+
+  @Override
+  public void showSpecialPdsInfo(Grib2Record gr, Formatter f) {
+    Grib2Pds pds = gr.getPDS();
+    if (!pds.isTimeInterval()) return;
+    if (pds.getRawLength() < 65) return;
+
+    /*     Octet(s)	Description
+        47	From NCEP Code Table 4.10
+        48	Should be ignored
+        49	Should be ignored
+        50-53	Number of grids used in the average
+        54	Should be ignored
+        55-58	This is "P2" from the GRIB1 format
+        59	From NCEP Code Table 4.10
+        60	Should be ignored
+        61	Should be ignored
+        62-65	This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+        66	Should be ignored
+        67-70	Should be ignored */
+
+    int statType = pds.getOctet(47);
+    int statType2 = pds.getOctet(59);
+    int ngrids = pds.getInt4StartingAtOctet(50);
+    int p2 = pds.getInt4StartingAtOctet(55);
+    int p2mp1 = pds.getInt4StartingAtOctet(62);
+
+    f.format("%nCFSR MM special encoding (NCAR)%n");
+    f.format("  (47) Code Table 4.10 = %d%n", statType);
+    f.format("  (50-53) N in avg     = %d%n", ngrids);
+    f.format("  (55-58) Grib1 P2     = %d%n", p2);
+    f.format("  (59) Code Table 4.10 = %d%n", statType2);
+    f.format("  (62-65) P2 minus P1  = %d%n", p2mp1);
+    f.format("                   P1  = %d%n", p2 - p2mp1);
+
+    int[] intv = getForecastTimeIntervalOffset(gr);
+    if (intv == null) return;
+    f.format("ForecastTimeIntervalOffset  = (%d,%d)%n", intv[0],intv[1]);
+    f.format("      ForecastTimeInterval  = %s%n", getForecastTimeInterval(gr));
+
+    /* Section 4 Octet 58 (possibly 32 bits: 55-58) is the length of the averaging period per unit.
+       For cycle fractions, this is 24, for complete monthly averages, it is 6.
+       The product of this and the num_in_avg {above} should always equal the total number of hours in a respective month.
+     - Section 4 Octet 65 is the hours skipped between each calculation component.
+    f.format("%nCFSR MM special encoding (Swank)%n");
+    f.format("  (55-58) length of avg period per unit                     = %d%n", p2);
+    f.format("  (62-65) hours skipped between each calculation component  = %d%n", p2mp1);
+    f.format("  nhours in month %d should be  = %d%n", ngrids * p2, 24 * 31); */
+  }
+
   //////////////////////////////////////////////////////////////////////
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
@@ -226,6 +277,7 @@ public class CfsrLocalTables extends NcepLocalTables {
       throw new RuntimeException(ioe);
     }
   }
+
 /*
 0	0	0	TMP	. Temperature	. K
 0	0	2	POT	. Potential temperature	. K

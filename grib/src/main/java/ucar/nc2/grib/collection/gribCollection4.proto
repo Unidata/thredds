@@ -89,11 +89,12 @@ message Dataset {
     SRC = 4;        // single runtime collection
     MRC = 5;        // multiple runtime collection
     MRSTC = 6;      // multiple runtime single time collection
+    MRUTC = 8;      // Multiple Runtime Unique Time Collection
 
     TP = 7;         // time partition collection 1D
     TwoD = 1;       // time partition 2D
     Best = 2;       // time partition Best
-    Analysis = 3;   // not implemented yet
+    MRUTP = 9;      // Multiple Runtime Unique Time Partition
   }
 
   Type type = 1;

@@ -168,9 +168,9 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
     } else {
       int val = pds.getForecastTime();
-      CalendarPeriod period = Grib2Utils.getCalendarPeriod( convertTimeUnit(pds.getTimeUnit()));
+      CalendarPeriod period = Grib2Utils.getCalendarPeriod(convertTimeUnit(pds.getTimeUnit()));
       if (period == null) return null;
-      return gr.getReferenceDate().add( period.multiply(val));
+      return gr.getReferenceDate().add(period.multiply(val));
     }
   }
 
@@ -198,6 +198,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   /**
    * Get the time interval in units of gr.getPDS().getTimeUnit()
+   *
    * @param gr Grib record
    * @return time interval in units of gr.getPDS().getTimeUnit()
    */
@@ -247,7 +248,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
    * Get interval size in units of hours.
    * Only use in GribVariable to decide on variable identity when intvMerge = false.
    * @param pds must be a Grib2Pds.PdsInterval
-   * @return  interval size in units of hours
+   * @return interval size in units of hours
    */
   public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
@@ -274,9 +275,9 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
     double fac;
     if (timeUnitPeriod.getField() == CalendarPeriod.Field.Month) {
-       fac = 30.0 * 24.0;  // nominal hours in a month
+      fac = 30.0 * 24.0;  // nominal hours in a month
     } else if (timeUnitPeriod.getField() == CalendarPeriod.Field.Year) {
-       fac = 365.0 * 24.0; // nominal hours in a year
+      fac = 365.0 * 24.0; // nominal hours in a year
     } else {
       fac = CalendarPeriod.Hour.getConvertFactor(timeUnitPeriod);
     }
@@ -285,6 +286,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   /**
    * If this has a time interval coordinate, get time interval
+   *
    * @param gr from this record
    * @return time interval in units of pds.getTimeUnit(), or null if not a time interval
    */
@@ -307,7 +309,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   public String getStatisticNameShort(int id) {
     GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
-    return (stat == null) ?"UnknownStatType-" + id : stat.toString();
+    return (stat == null) ? "UnknownStatType-" + id : stat.toString();
   }
 
   @Override
@@ -356,10 +358,10 @@ Code Table Code table 4.7 - Derived forecast (4.7)
         return "maximumEnsemble";
       default:
         return "UnknownProbType" + id;
-     }
+    }
   }
 
- ///////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////
   // Vert
 
   /**
@@ -522,7 +524,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     }
   }
 
-    /////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////
   // debugging
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
     return WmoCodeTable.getParameterEntry(discipline, category, number);
@@ -554,4 +556,6 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   public void lookForProblems(Formatter f) {
   }
 
+  public void showSpecialPdsInfo(Grib2Record pds, Formatter f) {
+  }
 }

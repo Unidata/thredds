@@ -1030,13 +1030,13 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     if (gribVar.getIntvType() >= 0) {
       GribStatType statType = gribVar.getStatType();
       if (statType != null) {
-        atts.addAttribute(new Attribute("Grib_Statistical_Interval_Type", statType.toString()));
+        atts.addAttribute(new Attribute(GribIosp.GRIB_STAT_TYPE, statType.toString()));
         CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
         Coordinate timeCoord = gribVar.getCoordinate(Coordinate.Type.timeIntv);
         if (cm != null && timeCoord != null)
           atts.addAttribute(new Attribute(CF.CELL_METHODS, timeCoord.getName() + ": " + cm.toString()));
       } else {
-        atts.addAttribute(new Attribute("Grib_Statistical_Interval_Type", gribVar.getIntvType()));
+        atts.addAttribute(new Attribute(GribIosp.GRIB_STAT_TYPE, gribVar.getIntvType()));
       }
     } */
 

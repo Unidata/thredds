@@ -166,48 +166,6 @@ public class NcepLocalTables extends LocalTables {
     return null;
   }
 
-  // temp for cfsr
-  public void showCfsr(Grib2Pds pds, Formatter f) {
-    if (!pds.isTimeInterval()) return;
-    if (pds.getRawLength() < 65) return;
-
-    /*     Octet(s)	Description
-        47	From NCEP Code Table 4.10
-        48	Should be ignored
-        49	Should be ignored
-        50-53	Number of grids used in the average
-        54	Should be ignored
-        55-58	This is "P2" from the GRIB1 format
-        59	From NCEP Code Table 4.10
-        60	Should be ignored
-        61	Should be ignored
-        62-65	This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
-        66	Should be ignored
-        67-70	Should be ignored */
-
-    int statType = pds.getOctet(47);
-    int statType2 = pds.getOctet(59);
-    int ngrids = GribNumbers.int4(pds.getOctet(50), pds.getOctet(51), pds.getOctet(52), pds.getOctet(53));
-    int p2 = GribNumbers.int4(pds.getOctet(55), pds.getOctet(56), pds.getOctet(57), pds.getOctet(58));
-    int p2mp1 = GribNumbers.int4(pds.getOctet(62), pds.getOctet(63), pds.getOctet(64), pds.getOctet(65));
-
-    f.format("%nCFSR MM special encoding (NCAR)%n");
-    f.format("  (47) Code Table 4.10 = %d%n", statType);
-    f.format("  (50-53) N in avg     = %d%n", ngrids);
-    f.format("  (55-58) Grib1 P2     = %d%n", p2);
-    f.format("  (59) Code Table 4.10 = %d%n", statType2);
-    f.format("  (62-65) P2 minus P1  = %d%n", p2mp1);
-
-    /* Section 4 Octet 58 (possibly 32 bits: 55-58) is the length of the averaging period per unit.
-       For cycle fractions, this is 24, for complete monthly averages, it is 6.
-       The product of this and the num_in_avg {above} should always equal the total number of hours in a respective month.
-     - Section 4 Octet 65 is the hours skipped between each calculation component. */
-    f.format("%nCFSR MM special encoding (Swank)%n");
-    f.format("  (55-58) length of avg period per unit                     = %d%n", p2);
-    f.format("  (62-65) hours skipped between each calculation component  = %d%n", p2mp1);
-    f.format("  nhours in month %d should be  = %d%n", ngrids * p2, 24 * 31);
-  }
-
   @Override
   public String getVariableName(int discipline, int category, int parameter) {
     if ((category <= 191) && (parameter <= 191))

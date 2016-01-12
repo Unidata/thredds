@@ -54,30 +54,28 @@ public interface GribTables {
 
   String getGeneratingProcessTypeName(int code);
 
-  // int addVariableHash(Object gribRecord);
+  interface Parameter {
+    int getDiscipline();
 
-  public static interface Parameter {
-    public int getDiscipline();
+    int getCategory();
 
-    public int getCategory();
+    int getNumber();
 
-    public int getNumber();
+    int getValue();
 
-    public int getValue();
+    String getName();
 
-    public String getName();
+    String getUnit();
 
-    public String getUnit();
+    String getAbbrev();
 
-    public String getAbbrev();
+    String getDescription();
 
-    public String getDescription();
+    String getId();
 
-    public String getId();
+    Float getFill();
 
-    public Float getFill();
-
-    public Float getMissing();
+    Float getMissing();
   }
 
 
