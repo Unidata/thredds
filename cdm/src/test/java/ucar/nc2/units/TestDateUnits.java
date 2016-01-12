@@ -32,13 +32,11 @@
  */
 package ucar.nc2.units;
 
-import junit.framework.*;
-
-import java.util.*;
-
+import junit.framework.TestCase;
 import ucar.nc2.util.Misc;
 import ucar.units.*;
-import ucar.nc2.TestAll;
+
+import java.util.Date;
 
 public class TestDateUnits extends TestCase {
 

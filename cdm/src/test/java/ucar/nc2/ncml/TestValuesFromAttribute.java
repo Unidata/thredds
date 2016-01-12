@@ -32,17 +32,14 @@
 package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.io.StringReader;
-
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.TestAll;
 
 /**
  * Class Description
