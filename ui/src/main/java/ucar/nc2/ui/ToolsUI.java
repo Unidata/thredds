@@ -86,7 +86,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -6285,10 +6284,14 @@ public class ToolsUI extends JPanel {
     }
 
     done = true; // on some systems, still get a window close event
-    ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-    if (cache != null)
-      cache.clearCache(true);
-    FileCache.shutdown(); // shutdown threads
+
+    // open files caches
+    ucar.unidata.io.RandomAccessFile.shutdown();
+    NetcdfDataset.shutdown();
+
+    // memory caches
+    GribCdmIndex.shutdown();
+
     MetadataManager.closeAll(); // shutdown bdb
   }
 
