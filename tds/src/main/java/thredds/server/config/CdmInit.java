@@ -169,7 +169,9 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     dir = ThreddsConfig.get("AggregationCache.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/agg/").getPath());
     scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
     maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
+    String cachePathPolicy = ThreddsConfig.get("AggregationCache.cachePathPolicy", null);
     aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
+    aggCache.setPolicy(cachePathPolicy);
     Aggregation.setPersistenceCache(aggCache);
     startupLog.info("CdmInit:  AggregationCache= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
